@@ -5,7 +5,7 @@ import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/I
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import {
-    IAnalyticStats, ICountAndValueStats, IAddressesStats, ILockedStorageDeposit
+    IAnalyticStats, ICountAndValue, IAddressesStats, ILockedStorageDeposit
 } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
@@ -90,12 +90,12 @@ export class ChronicleService {
     ): Promise<IAnalyticStats> | undefined {
         let dailyAddresses: IAddressesStats;
 
-        const nativeTokens = await this.fetchHelperTryGet<ICountAndValueStats>(
+        const nativeTokens = await this.fetchHelperTryGet<ICountAndValue>(
             CHRONICLE_ENDPOINTS.nativeTokensStats,
             { ledgerIndex: currentMilestoneIndex }
         );
 
-        const nfts = await this.fetchHelperTryGet<ICountAndValueStats>(
+        const nfts = await this.fetchHelperTryGet<ICountAndValue>(
             CHRONICLE_ENDPOINTS.nftStats,
             { ledgerIndex: currentMilestoneIndex }
         );
@@ -216,6 +216,7 @@ export class ChronicleService {
         const claimingStats = this.fetchHelperTryGet<IShimmerClaimed>(
             CHRONICLE_ENDPOINTS.shimmerClaiming, {}
         );
+
         return claimingStats;
     }
 

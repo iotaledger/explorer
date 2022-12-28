@@ -2,14 +2,14 @@ import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
 import {
-    CACHE_INIT, DayKey, DAY_KEY_FORMAT, IInfluxDbCache
+    CACHE_INFLUX_DAILY_INIT, DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache
 } from "../../../models/influx/IInfluxDbCache";
 import {
     IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
     IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
-    IStorageDepositDailyInflux, ITimedEntry, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
-    ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
-    IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
+    IStorageDepositDailyInflux, ITimedEntry, ITokensHeldPerOutputDailyInflux,
+    ITokensHeldWithUnlockConditionDailyInflux, ITokensTransferredDailyInflux, ITransactionsDailyInflux,
+    IUnclaimedGenesisOutputsDailyInflux, IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
 } from "../../../models/influx/IInfluxTimedEntries";
 import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY, ALIAS_ACTIVITY_DAILY_QUERY,
@@ -19,7 +19,12 @@ import {
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY, TOKENS_HELD_WITH_UC_DAILY_QUERY,
     TOKENS_TRANSFERRED_DAILY_QUERY, TRANSACTION_DAILY_QUERY,
     UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY, UNCLAIMED_TOKENS_DAILY_QUERY,
-    UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY
+    UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
+    ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
+    NATIVE_TOKENS_STAT_TOTAL_QUERY,
+    NFT_STAT_TOTAL_QUERY,
+    LOCKED_STORAGE_DEPOSIT_TOTAL_QUERY,
+    SHIMMER_CLAIMED_TOTAL_QUERY
 } from "./influxQueries";
 
 /**
@@ -42,9 +47,14 @@ export abstract class InfluxDbClient {
     protected _client: InfluxDB;
 
     /**
-     * The current cache instance.
+     * The current influx graphs cache instance.
      */
-    protected readonly _cache: IInfluxDbCache;
+    protected readonly _dailyCache: IInfluxDailyCache;
+
+    /**
+     * The current influx analytics cache instance.
+     */
+    protected readonly _analyticsCache: IInfluxAnalyticsCache;
 
     /**
      * The network in context for this client.
@@ -62,7 +72,8 @@ export abstract class InfluxDbClient {
      */
     constructor(network: INetwork) {
         this._network = network;
-        this._cache = CACHE_INIT;
+        this._dailyCache = CACHE_INFLUX_DAILY_INIT;
+        this._analyticsCache = {};
     }
 
     /**
@@ -95,7 +106,7 @@ export abstract class InfluxDbClient {
                     if (anyHostIsOnline) {
                         console.info("[InfluxDbClient(", network, ")] started!");
                         this._client = influxDbClient;
-                        // here we hook into periodic data collection
+                        console.info("[InfluxDbClient(", network, ")] data collection...");
                         this.setupDataCollection();
                     }
 
@@ -123,7 +134,6 @@ export abstract class InfluxDbClient {
         moment(a.time).isBefore(moment(z.time)) ? -1 : 1
     );
 
-
     /**
      * Setup a InfluxDb data collection periodic job.
      * Runs once at the start, then every COLLECT_DATA_FREQ_MS interval.
@@ -143,82 +153,141 @@ export abstract class InfluxDbClient {
      * Populates the cache.
      */
     private collectData() {
-        console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics data...");
+        // eslint-disable-next-line no-void
+        void this.collectGraphsDaily();
+        // eslint-disable-next-line no-void
+        void this.collectAnalytics();
+    }
+
+    /**
+     * Performs the InfluxDb daily graph data collection.
+     * Populates the dailyCache.
+     */
+    private async collectGraphsDaily() {
+        console.info("[InfluxDbClient(", this._network.network, ")] collecting daily...");
         this.updateCacheEntry<IBlocksDailyInflux>(
             BLOCK_DAILY_QUERY,
-            this._cache.blocksDaily,
+            this._dailyCache.blocksDaily,
             "Blocks Daily"
         );
         this.updateCacheEntry<ITransactionsDailyInflux>(
             TRANSACTION_DAILY_QUERY,
-            this._cache.transactionsDaily,
+            this._dailyCache.transactionsDaily,
             "Transactions Daily"
         );
         this.updateCacheEntry<IOutputsDailyInflux>(
             OUTPUTS_DAILY_QUERY,
-            this._cache.outputsDaily,
+            this._dailyCache.outputsDaily,
             "Outpus Daily"
         );
         this.updateCacheEntry<ITokensHeldPerOutputDailyInflux>(
             TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
-            this._cache.tokensHeldDaily,
+            this._dailyCache.tokensHeldDaily,
             "Tokens Held Daily"
         );
         this.updateCacheEntry<IAddressesWithBalanceDailyInflux>(
             ADDRESSES_WITH_BALANCE_DAILY_QUERY,
-            this._cache.addressesWithBalanceDaily,
+            this._dailyCache.addressesWithBalanceDaily,
             "Addresses with balance Daily"
         );
         this.updateCacheEntry<IActiveAddressesDailyInflux>(
             TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
-            this._cache.activeAddressesDaily,
+            this._dailyCache.activeAddressesDaily,
             "Number of Daily Active Addresses"
         );
         this.updateCacheEntry<ITokensTransferredDailyInflux>(
             TOKENS_TRANSFERRED_DAILY_QUERY,
-            this._cache.tokensTransferredDaily,
+            this._dailyCache.tokensTransferredDaily,
             "Tokens transferred Daily"
         );
         this.updateCacheEntry<IAliasActivityDailyInflux>(
             ALIAS_ACTIVITY_DAILY_QUERY,
-            this._cache.aliasActivityDaily,
+            this._dailyCache.aliasActivityDaily,
             "Alias activity Daily"
         );
         this.updateCacheEntry<IUnlockConditionsPerTypeDailyInflux>(
             UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
-            this._cache.unlockConditionsPerTypeDaily,
+            this._dailyCache.unlockConditionsPerTypeDaily,
             "Unlock conditions per type Daily"
         );
         this.updateCacheEntry<INftActivityDailyInflux>(
             NFT_ACTIVITY_DAILY_QUERY,
-            this._cache.nftActivityDaily,
+            this._dailyCache.nftActivityDaily,
             "Nft activity Daily"
         );
         this.updateCacheEntry<ITokensHeldWithUnlockConditionDailyInflux>(
             TOKENS_HELD_WITH_UC_DAILY_QUERY,
-            this._cache.tokensHeldWithUnlockConditionDaily,
+            this._dailyCache.tokensHeldWithUnlockConditionDaily,
             "Tokens held with Unlock condition Daily"
         );
         this.updateCacheEntry<IUnclaimedTokensDailyInflux>(
             UNCLAIMED_TOKENS_DAILY_QUERY,
-            this._cache.unclaimedTokensDaily,
+            this._dailyCache.unclaimedTokensDaily,
             "Unclaimed Tokens Daily"
         );
         this.updateCacheEntry<IUnclaimedGenesisOutputsDailyInflux>(
             UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY,
-            this._cache.unclaimedGenesisOutputsDaily,
+            this._dailyCache.unclaimedGenesisOutputsDaily,
             "Unclaimed genesis outputs Daily"
         );
         this.updateCacheEntry<ILedgerSizeDailyInflux>(
             LEDGER_SIZE_DAILY_QUERY,
-            this._cache.ledgerSizeDaily,
+            this._dailyCache.ledgerSizeDaily,
             "Ledger size Daily"
         );
         this.updateCacheEntry<IStorageDepositDailyInflux>(
             STORAGE_DEPOSIT_DAILY_QUERY,
-            this._cache.storageDepositDaily,
+            this._dailyCache.storageDepositDaily,
             "Storage Deposit Daily"
         );
+    }
+
+    /**
+     * Performs the InfluxDb analytics data collection.
+     * Populates the analyticsCache.
+     */
+    private async collectAnalytics() {
+        console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics...");
+        // nativeTokensStats nftStats addresses lockedStorageDeposit shimmerClaiming
+        for (const update of await
+            this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
+                ADDRESSES_WITH_BALANCE_TOTAL_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            this._analyticsCache.addressesWithBalance = update.addressesWithBalance;
+        }
+
+        for (const update of await
+            this.queryInflux<ITimedEntry & { nativeTokensCount: string }>(
+                NATIVE_TOKENS_STAT_TOTAL_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            this._analyticsCache.nativeTokensCount = update.nativeTokensCount;
+        }
+
+        for (const update of await
+            this.queryInflux<ITimedEntry & { nftsCount: string }>(
+                NFT_STAT_TOTAL_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            this._analyticsCache.nftsCount = update.nftsCount;
+        }
+
+        for (const update of await
+            this.queryInflux<ITimedEntry & { lockedStorageDeposit: string }>(
+                LOCKED_STORAGE_DEPOSIT_TOTAL_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
+        }
+
+        for (const update of await
+            this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
+                SHIMMER_CLAIMED_TOTAL_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
+        }
     }
 
     /**

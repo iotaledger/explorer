@@ -10,7 +10,7 @@ import { ChronicleService } from "./chronicleService";
  */
 export class StardustStatsService extends BaseStatsService {
     /**
-     * Gather more statistics.
+     * Gather general statistics.
      */
     protected async updateStatistics(): Promise<void> {
         void this.refreshGeneralStatistics();
@@ -28,7 +28,6 @@ export class StardustStatsService extends BaseStatsService {
 
         try {
             const latestMsFromStatistics: number = this._statistics[this._statistics.length - 1].latestMilestoneIndex;
-
 
             if (analyticsStore && chronicleService && latestMsFromStatistics !== 0) {
                 // if we have some stats in storage, we can load it in mem already

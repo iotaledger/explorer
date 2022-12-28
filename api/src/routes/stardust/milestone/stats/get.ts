@@ -12,12 +12,12 @@ const MILESTONE_CACHE_MAX = 20;
 
 /**
  * Find the object from the network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
+    _: IConfiguration,
     request: IMilestoneStatsRequest
 ): Promise<IMilestoneAnalyticStats> {
     const networkService = ServiceFactory.get<NetworkService>("network");

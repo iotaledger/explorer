@@ -35,7 +35,7 @@ export interface ILockedStorageDeposit {
 /**
  * Count and value analytic stats used for native tokens & nfts.
  */
-export type ICountAndValueStats = ICountStat & IValueStat;
+export type ICountAndValue = ICountStat & IValueStat;
 
 /**
  * The addresses stats.
@@ -50,8 +50,8 @@ export interface IAddressesStats {
  * The chronicle analytics.
  */
 export interface IAnalyticStats {
-    nativeTokens?: ICountAndValueStats;
-    nfts?: ICountAndValueStats;
+    nativeTokens?: ICountAndValue;
+    nfts?: ICountAndValue;
     totalAddresses?: IAddressesStats;
     dailyAddresses?: IAddressesStats;
     lockedStorageDeposit?: ILockedStorageDeposit;

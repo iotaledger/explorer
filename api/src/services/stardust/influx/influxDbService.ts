@@ -7,92 +7,112 @@ import { InfluxDbClient } from "./influxDbClient";
 export class InfluxDBService extends InfluxDbClient {
     public get blocksDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.blocksDaily
+            this._dailyCache.blocksDaily
         );
     }
 
     public get transactionsDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.transactionsDaily
+            this._dailyCache.transactionsDaily
         );
     }
 
     public get outputsDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.outputsDaily
+            this._dailyCache.outputsDaily
         );
     }
 
     public get tokensHeldDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.tokensHeldDaily
+            this._dailyCache.tokensHeldDaily
         );
     }
 
     public get addressesWithBalanceDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.addressesWithBalanceDaily
+            this._dailyCache.addressesWithBalanceDaily
         );
     }
 
     public get activeAddressesDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.activeAddressesDaily
+            this._dailyCache.activeAddressesDaily
         );
     }
 
     public get tokensTransferredDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.tokensTransferredDaily
+            this._dailyCache.tokensTransferredDaily
         );
     }
 
     public get aliasActivityDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.aliasActivityDaily
+            this._dailyCache.aliasActivityDaily
         );
     }
 
     public get unlockConditionsPerTypeDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.unlockConditionsPerTypeDaily
+            this._dailyCache.unlockConditionsPerTypeDaily
         );
     }
 
     public get nftActivityDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.nftActivityDaily
+            this._dailyCache.nftActivityDaily
         );
     }
 
     public get tokensHeldWithUnlockConditionDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.tokensHeldWithUnlockConditionDaily
+            this._dailyCache.tokensHeldWithUnlockConditionDaily
         );
     }
 
     public get unclaimedTokensDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.unclaimedTokensDaily
+            this._dailyCache.unclaimedTokensDaily
         );
     }
 
     public get unclaimedGenesisOutputsDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.unclaimedGenesisOutputsDaily
+            this._dailyCache.unclaimedGenesisOutputsDaily
         );
     }
 
     public get ledgerSizeDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.ledgerSizeDaily
+            this._dailyCache.ledgerSizeDaily
         );
     }
 
     public get storageDepositDaily() {
         return this.mapToSortedValuesArray(
-            this._cache.storageDepositDaily
+            this._dailyCache.storageDepositDaily
         );
+    }
+
+    public get addressesWithBalance() {
+        return this._analyticsCache.addressesWithBalance;
+    }
+
+    public get nativeTokensCount() {
+        return this._analyticsCache.nativeTokensCount;
+    }
+
+    public get nftsCount() {
+        return this._analyticsCache.nftsCount;
+    }
+
+    public get lockedStorageDeposit() {
+        return this._analyticsCache.lockedStorageDeposit;
+    }
+
+    public get totalUnclaimedShimmer() {
+        return this._analyticsCache.totalUnclaimedShimmer;
     }
 
     private mapToSortedValuesArray<T extends ITimedEntry>(cacheEntry: Map<string, T>): T[] {

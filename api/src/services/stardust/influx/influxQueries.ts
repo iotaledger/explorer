@@ -278,3 +278,35 @@ export const STORAGE_DEPOSIT_DAILY_QUERY = {
     `
 };
 
+/* ANALYTIC QUERIES */
+
+export const ADDRESSES_WITH_BALANCE_TOTAL_QUERY = `
+    SELECT
+        last("address_with_balance_count") AS "addressesWithBalance"
+    FROM "stardust_addresses"
+`;
+
+export const NATIVE_TOKENS_STAT_TOTAL_QUERY = `
+    SELECT
+        last("foundry_count") AS "nativeTokensCount"
+    FROM "stardust_ledger_outputs"
+`;
+
+export const NFT_STAT_TOTAL_QUERY = `
+    SELECT
+        last("nft_count") AS "nftsCount"
+    FROM "stardust_ledger_outputs"
+`;
+
+export const LOCKED_STORAGE_DEPOSIT_TOTAL_QUERY = `
+    SELECT
+        last("total_storage_deposit_value") AS "lockedStorageDeposit"
+    FROM "stardust_ledger_size"
+`;
+
+export const SHIMMER_CLAIMED_TOTAL_QUERY = `
+    SELECT
+        last("unclaimed_value") / 1000000 AS "totalUnclaimedShimmer"
+    FROM "stardust_unclaimed_rewards"
+`;
+

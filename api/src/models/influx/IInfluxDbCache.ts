@@ -17,9 +17,9 @@ export type DayKey = string;
 export const DAY_KEY_FORMAT = "DD-MM-YYYY";
 
 /**
- * The influx Db cache object.
+ * The cache for influx graphs (daily).
  */
-export interface IInfluxDbCache {
+export interface IInfluxDailyCache {
     blocksDaily: Map<DayKey, IBlocksDailyInflux>;
     transactionsDaily: Map<DayKey, ITransactionsDailyInflux>;
     outputsDaily: Map<DayKey, IOutputsDailyInflux>;
@@ -37,10 +37,18 @@ export interface IInfluxDbCache {
     storageDepositDaily: Map<DayKey, IStorageDepositDailyInflux>;
 }
 
+export interface IInfluxAnalyticsCache {
+    addressesWithBalance?: string;
+    nativeTokensCount?: string;
+    nftsCount?: string;
+    lockedStorageDeposit?: string;
+    totalUnclaimedShimmer?: string;
+}
+
 /**
  * The initial empty cache object.
  */
-export const CACHE_INIT = {
+export const CACHE_INFLUX_DAILY_INIT = {
     blocksDaily: new Map(),
     transactionsDaily: new Map(),
     outputsDaily: new Map(),
