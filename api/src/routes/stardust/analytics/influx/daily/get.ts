@@ -1,6 +1,7 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../../../models/api/stardust/INetworkBoundGetRequest";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
+import { STARDUST } from "../../../../../models/db/protocolVersion";
 import {
     IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
     IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
@@ -46,7 +47,12 @@ export async function get(
 ): Promise<IDailyAnalyticsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
+    const networkConfig = networkService.get(request.network);
     ValidationHelper.oneOf(request.network, networks, "network");
+
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return {};
+    }
 
     const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
 

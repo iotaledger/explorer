@@ -1,13 +1,10 @@
-import { MILESTONE_PAYLOAD_TYPE, RECEIPT_MILESTONE_OPTION_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import moment from "moment";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
-import { StardustTangleHelper } from "../../utils/stardust/stardustTangleHelper";
 
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
@@ -77,86 +74,6 @@ export class ChronicleService {
         } while (cursor);
 
         return { milestoneId, blocks };
-    }
-
-    /**
-     * Get the current milestone stats by milestoneId
-     * @param network The network in context.
-     * @param milestoneId The milestone id.
-     * @returns The milestone stats.
-     */
-    public async milestoneAnalytics(
-        network: INetwork,
-        milestoneId: string
-    ): Promise<IMilestoneAnalyticStats | undefined> {
-        let analyticStats: IMilestoneAnalyticStats = {};
-        let txPayloadCount: number = 0;
-        let txTreasuryPayloadCount: number = 0;
-        let milestonePayloadCount: number = 0;
-        let taggedDataPayloadCount: number = 0;
-        let noPayloadCount: number = 0;
-
-        try {
-            // hack to retry untill blocks are there from chronicle
-            let retry = 0;
-            let blockIdsResponse = await this.milestoneBlocks(milestoneId);
-
-            while (
-                !blockIdsResponse.error &&
-                (!blockIdsResponse.blocks || blockIdsResponse.blocks?.length === 0) &&
-                retry < 6
-            ) {
-                retry += 1;
-                blockIdsResponse = await this.milestoneBlocks(milestoneId);
-                setTimeout(() => {}, 500);
-            }
-
-            if (!blockIdsResponse.error) {
-                for (const blockId of blockIdsResponse.blocks) {
-                    const blockResponse = await StardustTangleHelper.block(network, blockId);
-
-                    switch (blockResponse.block?.payload?.type) {
-                        case TAGGED_DATA_PAYLOAD_TYPE:
-                            taggedDataPayloadCount += 1;
-                            break;
-                        case TRANSACTION_PAYLOAD_TYPE:
-                            txPayloadCount += 1;
-                            break;
-                        case MILESTONE_PAYLOAD_TYPE:
-                            milestonePayloadCount += 1;
-                            if (blockResponse.block?.payload?.options) {
-                                for (const option of blockResponse.block.payload.options) {
-                                    if (option?.type === RECEIPT_MILESTONE_OPTION_TYPE) {
-                                        txTreasuryPayloadCount += 1;
-                                    }
-                                }
-                            }
-                            break;
-                        default:
-                        case undefined:
-                            noPayloadCount += 1;
-                            break;
-                    }
-                }
-
-                analyticStats = {
-                    blocksCount: blockIdsResponse.blocks.length,
-                    perPayloadType: {
-                        txPayloadCount,
-                        txTreasuryPayloadCount,
-                        milestonePayloadCount,
-                        taggedDataPayloadCount,
-                        noPayloadCount
-                    }
-                };
-            } else {
-                return { error: blockIdsResponse.error };
-            }
-        } catch (error) {
-            return { error };
-        }
-
-        return analyticStats;
     }
 
     /**
@@ -241,3 +158,4 @@ export class ChronicleService {
         }
     }
 }
+

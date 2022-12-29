@@ -1,4 +1,3 @@
-import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { INetwork } from "../../models/db/INetwork";
 import { IStatistics } from "../../models/services/IStatistics";
 import { IStatsService } from "../../models/services/IStatsService";
@@ -18,13 +17,6 @@ export abstract class BaseStatsService implements IStatsService {
     protected _statistics: IStatistics[];
 
     /**
-     * The shimmer milestones stats cache.
-     */
-    protected _milestoneStatsCache: {
-        [milestoneId: string]: IMilestoneAnalyticStats;
-    };
-
-    /**
      * Create a new instance of BaseStatsService.
      * @param networkConfiguration The network configuration.
      */
@@ -39,7 +31,6 @@ export abstract class BaseStatsService implements IStatsService {
                 latestMilestoneIndexTime: 0
             }
         ];
-        this._milestoneStatsCache = {};
 
         setInterval(async () => this.updateStatistics(), 2000);
     }
@@ -50,14 +41,6 @@ export abstract class BaseStatsService implements IStatsService {
      */
     public getStats(): IStatistics {
         return this._statistics[this._statistics.length - 1];
-    }
-
-    /**
-     * Fetch the current Shimmer milestone stats.
-     * @returns The current shimmer milestone stats.
-     */
-    public getMilestoneStats(): { [milestoneId: string]: IMilestoneAnalyticStats } {
-        return this._milestoneStatsCache;
     }
 
     /**

@@ -1,6 +1,6 @@
 import { IResponse } from "../../IResponse";
 
-export interface IBlocksDailyInflux {
+interface IBlocksDailyInflux {
     time: Date;
     transaction: number | null;
     milestone: number | null;
@@ -8,13 +8,13 @@ export interface IBlocksDailyInflux {
     noPayload: number | null;
 }
 
-export interface ITransactionsDailyInflux {
+interface ITransactionsDailyInflux {
     time: Date;
     confirmed: number | null;
     conflicting: number | null;
 }
 
-export interface IOutputsDailyInflux {
+interface IOutputsDailyInflux {
     time: Date;
     basic: number | null;
     alias: number | null;
@@ -22,7 +22,7 @@ export interface IOutputsDailyInflux {
     nft: number | null;
 }
 
-export interface ITokensHeldPerOutputDailyInflux {
+interface ITokensHeldPerOutputDailyInflux {
     time: Date;
     basic: number | null;
     alias: number | null;
@@ -30,22 +30,22 @@ export interface ITokensHeldPerOutputDailyInflux {
     nft: number | null;
 }
 
-export interface IAddressesWithBalanceDailyInflux {
+interface IAddressesWithBalanceDailyInflux {
     time: Date;
     addressesWithBalance: number | null;
 }
 
-export interface IActiveAddressesDailyInflux {
+interface IActiveAddressesDailyInflux {
     time: Date;
     activeAddresses: number | null;
 }
 
-export interface ITokensTransferredDailyInflux {
+interface ITokensTransferredDailyInflux {
     time: Date;
     tokens: number | null;
 }
 
-export interface IAliasActivityDailyInflux {
+interface IAliasActivityDailyInflux {
     time: Date;
     created: number | null;
     governorChanged: number | null;
@@ -53,44 +53,44 @@ export interface IAliasActivityDailyInflux {
     destroyed: number | null;
 }
 
-export interface IUnlockConditionsPerTypeDailyInflux {
+interface IUnlockConditionsPerTypeDailyInflux {
     time: Date;
     timelock: number | null;
     storageDepositReturn: number | null;
     expiration: number | null;
 }
 
-export interface INftActivityDailyInflux {
+interface INftActivityDailyInflux {
     time: Date;
     created: number | null;
     transferred: number | null;
     destroyed: number | null;
 }
 
-export interface ITokensHeldWithUnlockConditionDailyInflux {
+interface ITokensHeldWithUnlockConditionDailyInflux {
     time: Date;
     timelock: number | null;
     storageDepositReturn: number | null;
     expiration: number | null;
 }
 
-export interface IUnclaimedTokensDailyInflux {
+interface IUnclaimedTokensDailyInflux {
     time: Date;
     unclaimed: number | null;
 }
 
-export interface IUnclaimedGenesisOutputsDailyInflux {
+interface IUnclaimedGenesisOutputsDailyInflux {
     time: Date;
     unclaimed: number | null;
 }
 
-export interface ILedgerSizeDailyInflux {
+interface ILedgerSizeDailyInflux {
     time: Date;
     keyBytes: number | null;
     dataBytes: number | null;
 }
 
-export interface IStorageDepositDailyInflux {
+interface IStorageDepositDailyInflux {
     time: Date;
     storageDeposit: number | null;
 }

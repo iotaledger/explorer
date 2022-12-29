@@ -7,6 +7,7 @@ import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInte
 import { INetwork } from "../../../../models/config/INetwork";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
 import Tooltip from "../../../components/Tooltip";
+import MilestoneFeedAnalyics from "../../../MilestoneFeedAnalytics";
 import "./MilestoneFeed.scss";
 
 const FEED_ITEMS_MAX = 10;
@@ -31,9 +32,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         if (msIndex > highestIndex) {
             highestIndex = msIndex;
         }
-
         milestonesToRender.push(milestone);
-
         if (milestonesToRender.length === FEED_ITEMS_MAX) {
             break;
         }
@@ -48,6 +47,8 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                 <div className="row feed-item--header ms-feed">
                     <span className="label ms-index">Index</span>
                     <span className="label ms-id">Milestone Id</span>
+                    <span className="label ms-blocks">Blocks</span>
+                    <span className="label ms-txs">Txs</span>
                     <span className="label ms-timestamp">Timestamp</span>
                 </div>
                 {milestonesToRender.length === 0 && (
@@ -84,6 +85,10 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     {milestoneIdShort}
                                 </Link>
                             </div>
+                            <MilestoneFeedAnalyics
+                                network={network}
+                                milestoneIndex={index}
+                            />
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Timestamp</span>
                                 <span className="feed-item--value ms-timestamp desktop-only">

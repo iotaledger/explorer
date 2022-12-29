@@ -27,7 +27,7 @@
 
 .feed-items {
     min-height: 440px;
-    padding: 15px 48px;
+    padding: 15px 0;
 
     p {
         color: var(--body-color);
@@ -105,7 +105,14 @@
                 @include tablet-down {
                     display: none;
                 }
+
+                .feed-item--value {
+                    .feed-item__ms-stat {
+                        margin-left: 4px;
+                    }
+                }
             }
+
         }
 
         .feed-item--label {

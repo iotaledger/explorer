@@ -314,17 +314,19 @@ export class StardustTangleCacheService extends TangleCacheService {
     /**
      * Get the milestone analytics stats by milestone id.
      * @param networkId The network to search
-     * @param milestoneId The milestone to get the details for.
+     * @param milestoneIndex The milestone to get the details for.
      * @returns The details response.
      */
-    public async milestoneStats(networkId: string, milestoneId: string): Promise<IMilestoneAnalyticStats | undefined> {
-        const key = `milestoneStats-${milestoneId}`;
+    public async milestoneStats(
+        networkId: string, milestoneIndex: string
+    ): Promise<IMilestoneAnalyticStats | undefined> {
+        const key = `milestoneStats-${milestoneIndex}`;
         const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.milestoneStats;
 
         if (!cacheEntry) {
             const response: IMilestoneAnalyticStats = await this._api.milestoneStats({
                 networkId,
-                milestoneId
+                milestoneIndex
             });
 
             if (!response.error) {

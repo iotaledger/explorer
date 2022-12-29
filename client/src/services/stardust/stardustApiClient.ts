@@ -188,7 +188,7 @@ export class StardustApiClient extends ApiClient {
      */
     public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
         return this.callApi<unknown, IMilestoneAnalyticStats>(
-            `stardust/milestone/stats/${request.networkId}/${request.milestoneId}`,
+            `stardust/milestone/stats/${request.networkId}/${request.milestoneIndex}`,
             "get"
         );
     }

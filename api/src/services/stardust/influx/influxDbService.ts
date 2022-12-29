@@ -115,6 +115,10 @@ export class InfluxDBService extends InfluxDbClient {
         return this._analyticsCache.totalUnclaimedShimmer;
     }
 
+    public get milestoneAnalytics() {
+        return this._milestoneCache;
+    }
+
     private mapToSortedValuesArray<T extends ITimedEntry>(cacheEntry: Map<string, T>): T[] {
         return Array.from(
             cacheEntry.values()

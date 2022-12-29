@@ -37,6 +37,9 @@ export interface IInfluxDailyCache {
     storageDepositDaily: Map<DayKey, IStorageDepositDailyInflux>;
 }
 
+/**
+ * The cache for influx analytics.
+ */
 export interface IInfluxAnalyticsCache {
     addressesWithBalance?: string;
     nativeTokensCount?: string;
@@ -44,6 +47,26 @@ export interface IInfluxAnalyticsCache {
     lockedStorageDeposit?: string;
     totalUnclaimedShimmer?: string;
 }
+
+/**
+ * An entry influx milestone stats cache.
+ */
+interface IMilestoneAnalyticStats {
+    milestoneIndex: number;
+    blockCount: number;
+    perPayloadType: {
+        transaction: number;
+        milestone: number;
+        taggedData: number;
+        treasuryTransaction: number;
+        noPayload: number;
+    };
+}
+
+/**
+ * The milestone stats cache. Map milestone index to stats.
+ */
+export type IInfluxMilestoneAnalyticsCache = Map<number, IMilestoneAnalyticStats>;
 
 /**
  * The helper to initialize empty maps

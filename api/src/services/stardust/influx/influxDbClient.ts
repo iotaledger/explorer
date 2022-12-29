@@ -4,7 +4,8 @@ import cron from "node-cron";
 import { INetwork } from "../../../models/db/INetwork";
 import { SHIMMER } from "../../../models/db/networkType";
 import {
-    DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache, initializeEmptyDailyCache
+    DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache,
+    IInfluxMilestoneAnalyticsCache, initializeEmptyDailyCache
 } from "../../../models/influx/IInfluxDbCache";
 import {
     IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
@@ -27,7 +28,8 @@ import {
     NFT_STAT_TOTAL_QUERY,
     SHIMMER_CLAIMED_TOTAL_QUERY,
     BYTE_PROTOCOL_PARAMS_QUERY,
-    KEY_DATA_BYTES_QUERY
+    KEY_DATA_BYTES_QUERY,
+    MILESTONE_STATS_QUERY
 } from "./influxQueries";
 
 /**
@@ -54,6 +56,11 @@ const COLLECT_SHIMMER_DATA_CRON = "*/30 * * * * *";
 const NANOSECONDS_IN_MILLISECOND = 1000000;
 
 /**
+ * Milestone analyitics cache MAX size.
+ */
+const MILESTONE_CACHE_MAX = 20;
+
+/**
  * The InfluxDb Client wrapper.
  */
 export abstract class InfluxDbClient {
@@ -73,6 +80,11 @@ export abstract class InfluxDbClient {
     protected readonly _analyticsCache: IInfluxAnalyticsCache;
 
     /**
+     * The current influx milestone analytics cache instance.
+     */
+    protected readonly _milestoneCache: IInfluxMilestoneAnalyticsCache;
+
+    /**
      * The network in context for this client.
      */
     private readonly _network: INetwork;
@@ -85,6 +97,7 @@ export abstract class InfluxDbClient {
         this._network = network;
         this._dailyCache = initializeEmptyDailyCache();
         this._analyticsCache = {};
+        this._milestoneCache = new Map();
     }
 
     /**
@@ -156,6 +169,8 @@ export abstract class InfluxDbClient {
         void this.collectGraphsDaily();
         // eslint-disable-next-line no-void
         void this.collectAnalytics();
+        // eslint-disable-next-line no-void
+        void this.collectMilestoneStats();
         if (this._network.network === SHIMMER) {
             // eslint-disable-next-line no-void
             void this.collectShimmerUnclaimed();
@@ -170,6 +185,11 @@ export abstract class InfluxDbClient {
             cron.schedule(COLLECT_ANALYTICS_DATA_CRON, async () => {
                 // eslint-disable-next-line no-void
                 void this.collectAnalytics();
+            });
+
+            cron.schedule("*/5 * * * * *", async () => {
+                // eslint-disable-next-line no-void
+                void this.collectMilestoneStats();
             });
 
             if (this._network.network === SHIMMER) {
@@ -344,6 +364,75 @@ export abstract class InfluxDbClient {
             }
         } catch (err) {
             console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing analytics", err);
+        }
+    }
+
+    private async collectMilestoneStats() {
+        const debug = false;
+        if (debug) {
+            console.info("[InfluxDbClient(", this._network.network, ")] collecting milestone stats...");
+        }
+        try {
+            for (const update of await
+                this.queryInflux<ITimedEntry & {
+                    milestoneIndex: number;
+                    taggedData: number;
+                    milestone: number;
+                    transaction: number;
+                    treasuryTransaction: number;
+                    noPayload: number;
+                }>(
+                    MILESTONE_STATS_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                if (update.milestoneIndex !== undefined && !this._milestoneCache.has(update.milestoneIndex)) {
+                    const {
+                        milestoneIndex, transaction, milestone, taggedData, treasuryTransaction, noPayload
+                    } = update;
+                    const blockCount = transaction + milestone + taggedData + treasuryTransaction + noPayload;
+                    this._milestoneCache.set(milestoneIndex, {
+                        milestoneIndex,
+                        blockCount,
+                        perPayloadType: {
+                            transaction,
+                            milestone,
+                            taggedData,
+                            treasuryTransaction,
+                            noPayload
+                        }
+                    });
+
+                    if (debug) {
+                        console.info(
+                            "[InfluxDbClient(", this._network.network, ")] milestone cache added",
+                            this._milestoneCache.get(milestoneIndex)
+                        );
+                    }
+
+                    if (this._milestoneCache.size > MILESTONE_CACHE_MAX) {
+                        let lowestIndex: number;
+                        for (const index of this._milestoneCache.keys()) {
+                            if (!lowestIndex) {
+                                lowestIndex = index;
+                            }
+
+                            if (milestoneIndex < lowestIndex) {
+                                lowestIndex = index;
+                            }
+                        }
+
+                        if (debug) {
+                            console.info(
+                                "[InfluxDbClient(", this._network.network, ")] milestone cache deleting",
+                                this._milestoneCache.get(lowestIndex)
+                            );
+                        }
+                        this._milestoneCache.delete(lowestIndex);
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing milestone stats", err);
         }
     }
 
