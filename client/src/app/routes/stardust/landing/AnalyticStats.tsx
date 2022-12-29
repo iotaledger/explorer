@@ -21,7 +21,8 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
 
     let claimedAndPercentLabels: [string, string] | undefined;
     if (analytics?.unclaimedShimmer && circulatingSupply) {
-        const shimmerClaimed = circulatingSupply - Number.parseInt(analytics.unclaimedShimmer, 10);
+        // magic number since influx doesn't account for the unclaimable portion of 20%
+        const shimmerClaimed = circulatingSupply - (Number.parseInt(analytics.unclaimedShimmer, 10) - 362724101812273);
         claimedAndPercentLabels = buildShimmerClaimedStats(
             shimmerClaimed.toString(),
             String(circulatingSupply),
