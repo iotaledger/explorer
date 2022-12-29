@@ -11,10 +11,6 @@ export class StardustStatsService extends BaseStatsService {
      * Gather general statistics.
      */
     protected async updateStatistics(): Promise<void> {
-        void this.refreshGeneralStatistics();
-    }
-
-    private async refreshGeneralStatistics(): Promise<void> {
         try {
             const client = new SingleNodeClient(this._networkConfiguration.provider);
             const info = await client.info();

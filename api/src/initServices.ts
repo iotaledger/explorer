@@ -2,7 +2,6 @@ import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
-import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
@@ -223,9 +222,6 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
 
         ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
             config.rootStorageFolder, "currency", "id"));
-
-        ServiceFactory.register("analytics-storage", () => new LocalStorageService<IAnalyticsStore>(
-            config.rootStorageFolder, "analytics", "network"));
     } else if (config.dynamoDbConnection) {
         ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
             config.dynamoDbConnection, "network", "network"));
@@ -235,13 +231,6 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
 
         ServiceFactory.register("currency-storage", () => new AmazonDynamoDbService<ICurrencyState>(
             config.dynamoDbConnection, "currency", "id"));
-
-        const analyticsStore = new AmazonDynamoDbService<IAnalyticsStore>(
-            config.dynamoDbConnection, "analytics", "network"
-        );
-        // eslint-disable-next-line no-void
-        await analyticsStore.create();
-        ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }
 

@@ -1,10 +1,7 @@
-import { ServiceFactory } from "../../factories/serviceFactory";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { IAnalyticsStore } from "../../models/db/IAnalyticsStore";
 import { INetwork } from "../../models/db/INetwork";
 import { IStatistics } from "../../models/services/IStatistics";
 import { IStatsService } from "../../models/services/IStatsService";
-import { IStorageService } from "../../models/services/IStorageService";
 
 /**
  * Class to handle stats service.
@@ -21,11 +18,6 @@ export abstract class BaseStatsService implements IStatsService {
     protected _statistics: IStatistics[];
 
     /**
-     * The analytics storage.
-     */
-    protected readonly _analyticsStorage: IStorageService<IAnalyticsStore>;
-
-    /**
      * The shimmer milestones stats cache.
      */
     protected _milestoneStatsCache: {
@@ -37,7 +29,6 @@ export abstract class BaseStatsService implements IStatsService {
      * @param networkConfiguration The network configuration.
      */
     constructor(networkConfiguration: INetwork) {
-        this._analyticsStorage = ServiceFactory.get<IStorageService<IAnalyticsStore>>("analytics-storage");
         this._networkConfiguration = networkConfiguration;
         this._statistics = [
             {
@@ -50,10 +41,7 @@ export abstract class BaseStatsService implements IStatsService {
         ];
         this._milestoneStatsCache = {};
 
-        // eslint-disable-next-line no-void
-        void this.initAnalyticsStoreIfNeeded(networkConfiguration.network).then(() => {
-            setInterval(async () => this.updateStatistics(), 2000);
-        });
+        setInterval(async () => this.updateStatistics(), 2000);
     }
 
     /**
@@ -78,26 +66,6 @@ export abstract class BaseStatsService implements IStatsService {
      */
     public getItemsPerSecondHistory(): number[] {
         return this._statistics.map(s => s.itemsPerSecond);
-    }
-
-    /**
-     * Initialize the analytics store with default values.
-     * @param network The network in context.
-     * @returns The initialized analytics store.
-     */
-    protected async initAnalyticsStoreIfNeeded(network: string): Promise<IAnalyticsStore> {
-        const analyticsStore = await this._analyticsStorage.get(network);
-
-        if (!analyticsStore) {
-            console.log("Initializing analytics store for", network);
-            await this._analyticsStorage.set({
-                network,
-                analytics: {}
-            });
-        }
-
-        const initialized = await this._analyticsStorage.get(network);
-        return initialized;
     }
 
     /**
