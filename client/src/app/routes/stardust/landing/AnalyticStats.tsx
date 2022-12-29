@@ -14,15 +14,16 @@ interface AnalyticStatsProps {
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
     { analytics, circulatingSupply, tokenInfo }
 ) => {
-    const nativeTokensCount = analytics?.nativeTokens?.count;
-    const nftsCount = analytics?.nfts?.count;
-    const totalAddresses = analytics?.totalAddresses?.totalActiveAddresses;
-    const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalByteCost;
+    const nativeTokensCount = analytics?.nativeTokens;
+    const nftsCount = analytics?.nfts;
+    const totalAddresses = analytics?.totalAddresses;
+    const lockedStorageDepositValue = analytics?.lockedStorageDeposit;
 
     let claimedAndPercentLabels: [string, string] | undefined;
-    if (analytics?.shimmerClaimed?.count && circulatingSupply) {
+    if (analytics?.unclaimedShimmer && circulatingSupply) {
+        const shimmerClaimed = circulatingSupply - Number.parseInt(analytics.unclaimedShimmer, 10);
         claimedAndPercentLabels = buildShimmerClaimedStats(
-            analytics.shimmerClaimed.count,
+            shimmerClaimed.toString(),
             String(circulatingSupply),
             tokenInfo
         );

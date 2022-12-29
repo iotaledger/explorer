@@ -1,16 +1,16 @@
-import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { INetworkBoundGetRequest } from "../../../../models/api/stardust/INetworkBoundGetRequest";
-import { IConfiguration } from "../../../../models/configuration/IConfiguration";
+import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { INetworkBoundGetRequest } from "../../../../../models/api/stardust/INetworkBoundGetRequest";
+import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import {
     IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
     IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
     IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
     IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
-} from "../../../../models/influx/IInfluxTimedEntries";
-import { NetworkService } from "../../../../services/networkService";
-import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
-import { ValidationHelper } from "../../../../utils/validationHelper";
+} from "../../../../../models/influx/IInfluxTimedEntries";
+import { NetworkService } from "../../../../../services/networkService";
+import { InfluxDBService } from "../../../../../services/stardust/influx/influxDbService";
+import { ValidationHelper } from "../../../../../utils/validationHelper";
 
 /**
  * The response with the current cached analytic data.

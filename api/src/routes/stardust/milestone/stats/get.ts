@@ -47,7 +47,7 @@ export async function get(
             `chronicle-${networkConfig.network}`
         );
 
-        const fetchedStats = await chronicleService.milestoneAnalytics(request.milestoneId);
+        const fetchedStats = await chronicleService.milestoneAnalytics(networkConfig, request.milestoneId);
         currentMilesoneStats[request.milestoneId] = fetchedStats;
 
         // remove last

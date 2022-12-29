@@ -79,7 +79,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     }, []);
 
     const lockedStorageDepositValue = formatAmount(
-        Number(analyticStats?.lockedStorageDeposit?.totalByteCost),
+        Number(analyticStats?.lockedStorageDeposit),
         tokenInfo
     ).replace(COMMAS_REGEX, ",") ?? "-";
 
@@ -144,11 +144,11 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row info-panel">
                                 <ChartInfoPanel
                                     label="Native tokens minted"
-                                    value={analyticStats?.nativeTokens?.count ?? "-"}
+                                    value={analyticStats?.nativeTokens ?? "-"}
                                 />
                                 <ChartInfoPanel
                                     label="NFTs minted"
-                                    value={analyticStats?.nfts?.count ?? "-"}
+                                    value={analyticStats?.nfts ?? "-"}
                                 />
                                 <ChartInfoPanel
                                     label="Locked storage deposit"

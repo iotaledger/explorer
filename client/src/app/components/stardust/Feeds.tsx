@@ -1,6 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IShimmerClaimed } from "../../../models/api/stats/IAnalyticStats";
 import { INetwork } from "../../../models/config/INetwork";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
@@ -250,9 +249,9 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             const response = await this._tangleCacheService?.chronicleAnalytics(this._networkConfig?.network);
 
             if (!response?.error) {
-                let shimmerClaimed: IShimmerClaimed | undefined;
-                if (response?.analyticStats?.shimmerClaimed?.count !== undefined) {
-                    shimmerClaimed = { count: response.analyticStats.shimmerClaimed.count };
+                let unclaimedShimmer: string | undefined;
+                if (response?.analyticStats?.unclaimedShimmer !== undefined) {
+                    unclaimedShimmer = response.analyticStats.unclaimedShimmer;
                 }
 
                 this.setState({
@@ -262,7 +261,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                         totalAddresses: response?.analyticStats?.totalAddresses,
                         dailyAddresses: response?.analyticStats?.dailyAddresses,
                         lockedStorageDeposit: response?.analyticStats?.lockedStorageDeposit,
-                        shimmerClaimed
+                        unclaimedShimmer
                     }
                 });
             } else {

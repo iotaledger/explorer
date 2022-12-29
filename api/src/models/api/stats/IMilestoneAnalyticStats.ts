@@ -23,21 +23,6 @@ interface IMilestoneStatsPerPayloadType {
     noPayloadCount: number;
 }
 
-interface IMilestoneStatsPerInclusionState {
-    /**
-     * The number of confirmed transactions referenced by the requested milestone.
-     */
-    confirmedTxCount: number;
-    /**
-     * The number of conflicting transactions referenced by the requested milestone.
-     */
-    conflictingTxCount: number;
-    /**
-     * The number of non - transaction blocks referenced by the requested milestone.
-     */
-    noTxCount: number;
-}
-
 export interface IMilestoneAnalyticStats extends IResponse {
     /**
      * The number of blocks referenced by the requested milestone.
@@ -47,9 +32,5 @@ export interface IMilestoneAnalyticStats extends IResponse {
      * The various per payload type counts.
      */
     perPayloadType?: IMilestoneStatsPerPayloadType;
-    /**
-     * The various per inclusion state counts.
-     */
-    perInclusionState?: IMilestoneStatsPerInclusionState;
 }
 

@@ -140,7 +140,9 @@ export abstract class InfluxDbClient {
      */
     private setupDataCollection() {
         const network = this._network.network;
+
         this.collectData();
+
         if (!this._collectIntervalHandle && this._client) {
             this._collectIntervalHandle = setInterval(() => this.collectData(), COLLECT_DATA_FREQ_MS);
         } else {

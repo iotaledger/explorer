@@ -1,4 +1,3 @@
-import { MILESTONE_PAYLOAD_TYPE, RECEIPT_MILESTONE_OPTION_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import moment from "moment";
 import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
@@ -97,40 +96,23 @@ export class ChronicleService {
         milestoneId: string
     ): Promise<IMilestoneAnalyticStats | undefined> {
         let analyticStats: IMilestoneAnalyticStats = {};
-        let txPayloadCount: number = 0;
-        let txTreasuryPayloadCount: number = 0;
-        let milestonePayloadCount: number = 0;
-        let taggedDataPayloadCount: number = 0;
-        let noPayloadCount: number = 0;
 
         try {
             const blockIdsResponse = await this.milestoneBlocks(milestoneId);
+            let txPayloadCount: number = 0;
+            let txTreasuryPayloadCount: number = 0;
+            let milestonePayloadCount: number = 0;
+            let taggedDataPayloadCount: number = 0;
+            let noPayloadCount: number = 0;
 
             if (!blockIdsResponse.error) {
                 for (const blockId of blockIdsResponse.blocks) {
                     const blockResponse = await StardustTangleHelper.block(network, blockId);
 
-                    switch (blockResponse.block?.payload?.type) {
-                        case TAGGED_DATA_PAYLOAD_TYPE:
-                            taggedDataPayloadCount += 1;
-                            break;
-                        case TRANSACTION_PAYLOAD_TYPE:
-                            txPayloadCount += 1;
-                            break;
-                        case MILESTONE_PAYLOAD_TYPE:
-                            milestonePayloadCount += 1;
-                            if (blockResponse.block?.payload?.options) {
-                                for (const option of blockResponse.block.payload.options) {
-                                    if (option?.type === RECEIPT_MILESTONE_OPTION_TYPE) {
-                                        txTreasuryPayloadCount += 1;
-                                    }
-                                }
-                            }
-                            break;
-                        default:
-                        case undefined:
-                            noPayloadCount += 1;
-                            break;
+                    switch (blockResponse.block.payload.type) {
+                        case 6: { throw new Error('Not implemented yet: 6 case') }
+                        case 7: { throw new Error('Not implemented yet: 7 case') }
+                        case 5: { throw new Error('Not implemented yet: 5 case') }
                     }
                 }
 

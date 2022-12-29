@@ -50,10 +50,10 @@ export interface IAddressesStats {
  * The chronicle analytics.
  */
 export interface IAnalyticStats {
-    nativeTokens?: ICountAndValue;
-    nfts?: ICountAndValue;
-    totalAddresses?: IAddressesStats;
-    dailyAddresses?: IAddressesStats;
-    lockedStorageDeposit?: ILockedStorageDeposit;
+    nativeTokens?: string;
+    nfts?: string;
+    totalAddresses?: string;
+    dailyAddresses?: string;
+    lockedStorageDeposit?: string;
 }
 

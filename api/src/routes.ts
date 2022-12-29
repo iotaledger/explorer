@@ -100,11 +100,11 @@ export const routes: IRoute[] = [
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     {
         path: "/stardust/analytics/:network", method: "get",
-        folder: "stardust/analytics/chronicle", func: "get", sign: true
+        folder: "stardust/analytics/influx/stats", func: "get", sign: true
     },
     {
         path: "/stardust/analytics/daily/:network", method: "get",
-        folder: "stardust/analytics/influx", func: "get", sign: true
+        folder: "stardust/analytics/influx/daily", func: "get", sign: true
     },
     {
         path: "/stardust/did/:network/:did/document", method: "get",
