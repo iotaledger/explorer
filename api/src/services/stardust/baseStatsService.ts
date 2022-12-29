@@ -49,6 +49,11 @@ export abstract class BaseStatsService implements IStatsService {
             }
         ];
         this._milestoneStatsCache = {};
+
+        // eslint-disable-next-line no-void
+        void this.initAnalyticsStoreIfNeeded(networkConfiguration.network).then(() => {
+            setInterval(async () => this.updateStatistics(), 2000);
+        });
     }
 
     /**

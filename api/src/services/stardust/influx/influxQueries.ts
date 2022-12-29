@@ -306,7 +306,7 @@ export const LOCKED_STORAGE_DEPOSIT_TOTAL_QUERY = `
 
 export const SHIMMER_CLAIMED_TOTAL_QUERY = `
     SELECT
-        last("unclaimed_value") / 1000000 AS "totalUnclaimedShimmer"
+        last("unclaimed_value") AS "totalUnclaimedShimmer"
     FROM "stardust_unclaimed_rewards"
 `;
 
