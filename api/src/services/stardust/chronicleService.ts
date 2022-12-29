@@ -57,7 +57,7 @@ export class ChronicleService {
         const blocks: string[] = [];
 
         do {
-            const params = FetchHelper.urlParams({ pageSize: 20, sort: "newest", cursor });
+            const params = FetchHelper.urlParams({ pageSize: 10, sort: "newest", cursor });
 
             try {
                 const response = await FetchHelper.json<never, { blocks?: string[]; cursor?: string }>(
@@ -97,7 +97,19 @@ export class ChronicleService {
         let noPayloadCount: number = 0;
 
         try {
-            const blockIdsResponse = await this.milestoneBlocks(milestoneId);
+            // hack to retry untill blocks are there from chronicle
+            let retry = 0;
+            let blockIdsResponse = await this.milestoneBlocks(milestoneId);
+
+            while (
+                !blockIdsResponse.error &&
+                (!blockIdsResponse.blocks || blockIdsResponse.blocks?.length === 0) &&
+                retry < 6
+            ) {
+                retry += 1;
+                blockIdsResponse = await this.milestoneBlocks(milestoneId);
+                setTimeout(() => {}, 500);
+            }
 
             if (!blockIdsResponse.error) {
                 for (const blockId of blockIdsResponse.blocks) {
