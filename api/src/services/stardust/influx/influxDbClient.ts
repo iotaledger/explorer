@@ -250,7 +250,6 @@ export abstract class InfluxDbClient {
      */
     private async collectAnalytics() {
         console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics...");
-        // nativeTokensStats nftStats addresses lockedStorageDeposit shimmerClaiming
         for (const update of await
             this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
                 ADDRESSES_WITH_BALANCE_TOTAL_QUERY, null, this.getToNanoDate()

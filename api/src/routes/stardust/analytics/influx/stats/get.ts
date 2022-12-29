@@ -33,10 +33,11 @@ export async function get(
         nativeTokens: influxService.nativeTokensCount,
         nfts: influxService.nftsCount,
         totalAddresses: influxService.addressesWithBalance,
-        dailyAddresses: "1337",
+        dailyAddresses: "",
         lockedStorageDeposit: influxService.lockedStorageDeposit,
         unclaimedShimmer: influxService.totalUnclaimedShimmer
     } : {
         error: "Influx service not found for this network."
     };
 }
+
