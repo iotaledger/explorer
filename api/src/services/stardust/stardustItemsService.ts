@@ -5,8 +5,10 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/stardust/IFeedItemMetadata";
 import { IFeedSubscriptionItem } from "../../models/api/stardust/IFeedSubscriptionItem";
 import { ILatestMilestone } from "../../models/api/stardust/milestone/ILatestMilestonesResponse";
+import { IMilestoneStatsPerInclusionState, IMilestoneStatsPerPayloadType } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/stardust/IItemsService";
+import { ChronicleService } from "./chronicleService";
 
 /**
  * Service to handle blocks on stardust.
@@ -21,6 +23,11 @@ export class StardustItemsService implements IItemsService {
      * The mqtt client.
      */
     private _mqttClient: IMqttClient;
+
+    /**
+     * Chronicle service.
+     */
+    private _chronicleService: ChronicleService;
 
     /**
      * Feed service.
@@ -87,6 +94,7 @@ export class StardustItemsService implements IItemsService {
 
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${this._networkId}`);
         this._feedService = ServiceFactory.get<IFeedService>(`feed-${this._networkId}`);
+        this._chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${this._networkId}`);
 
         this.startSubscription();
 
@@ -202,18 +210,34 @@ export class StardustItemsService implements IItemsService {
             });
 
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
-            (milestone: number, id: string, timestamp: number, milestoneId: string) => {
+            async (milestone: number, id: string, timestamp: number, milestoneId: string) => {
                 this._itemMetadata[id] = {
                     milestone,
                     timestamp,
                     ...this._itemMetadata[id]
                 };
 
+
+                const milestoneAnalytics = await this._chronicleService.milestoneAnalytics(milestoneId);
+
+                let blocksCount: number;
+                let perPayloadType: IMilestoneStatsPerPayloadType;
+                let perInclusionState: IMilestoneStatsPerInclusionState;
+
+                if (milestoneAnalytics) {
+                    blocksCount = milestoneAnalytics.blocksCount;
+                    perPayloadType = milestoneAnalytics.perPayloadType;
+                    perInclusionState = milestoneAnalytics.perInclusionState;
+                }
+
                 this._latestMilestones.unshift({
                     blockId: id,
                     milestoneId,
                     index: milestone,
-                    timestamp: timestamp / 1000
+                    timestamp: timestamp / 1000,
+                    blocksCount,
+                    perPayloadType,
+                    perInclusionState
                 });
 
                 if (this._latestMilestones.length > 15) {
