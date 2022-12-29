@@ -1,6 +1,5 @@
 import { MILESTONE_PAYLOAD_TYPE, RECEIPT_MILESTONE_OPTION_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import moment from "moment";
-import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
@@ -22,14 +21,8 @@ export class ChronicleService {
      */
     private readonly _endpoint: string;
 
-    /**
-     * The permanode JWT.
-     */
-    private readonly _jwt?: string;
-
     constructor(config: INetwork) {
         this._endpoint = config.permaNodeEndpoint;
-        this._jwt = config.permaNodeJwt;
     }
 
     /**
@@ -235,27 +228,4 @@ export class ChronicleService {
             console.log("Problem while building Transaction History download", error);
         }
     }
-
-    private async fetchHelperTryGet<R>(path: string, params: Record<string, unknown>): Promise<R> {
-        let response: R | undefined;
-
-        if (!this._jwt) {
-            throw new NetworkConfigurationError(`Chronicle JWT not configured for ${this._endpoint}...`);
-        }
-
-        try {
-            response = await FetchHelper.json<unknown, R>(
-                this._endpoint,
-                `${path}${FetchHelper.urlParams(params)}`,
-                "get",
-                null,
-                { "Authorization": `Bearer ${this._jwt}` }
-            );
-        } catch (err) {
-            console.log("Failed fetching analytics stats on", path, "with params", params, "reason", err);
-        }
-
-        return response;
-    }
 }
-
