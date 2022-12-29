@@ -9,6 +9,8 @@ import { IFeedItem } from "../../../../models/feed/IFeedItem";
 import Tooltip from "../../../components/Tooltip";
 import "./MilestoneFeed.scss";
 
+const FEED_ITEMS_MAX = 10;
+
 interface MilestoneFeedProps {
     networkConfig: INetwork;
     milestones: IFeedItem[];
@@ -22,11 +24,18 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span>
     ) : "";
 
+    const milestonesToRender: IFeedItem[] = [];
     let highestIndex = 0;
     for (const milestone of milestones) {
         const msIndex = milestone.properties?.index as number;
         if (msIndex > highestIndex) {
             highestIndex = msIndex;
+        }
+
+        milestonesToRender.push(milestone);
+
+        if (milestonesToRender.length === FEED_ITEMS_MAX) {
+            break;
         }
     }
 
@@ -41,10 +50,10 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <span className="label ms-id">Milestone Id</span>
                     <span className="label ms-timestamp">Timestamp</span>
                 </div>
-                {milestones.length === 0 && (
+                {milestonesToRender.length === 0 && (
                     <p>There are no milestones in the feed.</p>
                 )}
-                {milestones.map(milestone => {
+                {milestonesToRender.map(milestone => {
                     const blockId = HexHelper.addPrefix(milestone.id);
                     const index = milestone.properties?.index as number;
                     const milestoneId = milestone.properties?.milestoneId as string;

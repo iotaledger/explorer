@@ -2,6 +2,7 @@ import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";
 import { INetwork } from "../../../models/db/INetwork";
+import { SHIMMER } from "../../../models/db/networkType";
 import {
     DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache, initializeEmptyDailyCache
 } from "../../../models/influx/IInfluxDbCache";
@@ -155,8 +156,10 @@ export abstract class InfluxDbClient {
         void this.collectGraphsDaily();
         // eslint-disable-next-line no-void
         void this.collectAnalytics();
-        // eslint-disable-next-line no-void
-        void this.collectShimmerUnclaimed();
+        if (this._network.network === SHIMMER) {
+            // eslint-disable-next-line no-void
+            void this.collectShimmerUnclaimed();
+        }
 
         if (this._client) {
             cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
@@ -169,10 +172,12 @@ export abstract class InfluxDbClient {
                 void this.collectAnalytics();
             });
 
-            cron.schedule(COLLECT_SHIMMER_DATA_CRON, async () => {
-                // eslint-disable-next-line no-void
-                void this.collectShimmerUnclaimed();
-            });
+            if (this._network.network === SHIMMER) {
+                cron.schedule(COLLECT_SHIMMER_DATA_CRON, async () => {
+                    // eslint-disable-next-line no-void
+                    void this.collectShimmerUnclaimed();
+                });
+            }
         } else {
             console.log("[InfluxDbClient(", network, ")] client isn't configured for this network");
         }
@@ -267,70 +272,78 @@ export abstract class InfluxDbClient {
      */
     private async collectAnalytics() {
         console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics...");
-        for (const update of await
-            this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
-                ADDRESSES_WITH_BALANCE_TOTAL_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            this._analyticsCache.addressesWithBalance = update.addressesWithBalance;
-        }
+        try {
+            for (const update of await
+                this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
+                    ADDRESSES_WITH_BALANCE_TOTAL_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                this._analyticsCache.addressesWithBalance = update.addressesWithBalance;
+            }
 
-        for (const update of await
-            this.queryInflux<ITimedEntry & { nativeTokensCount: string }>(
-                NATIVE_TOKENS_STAT_TOTAL_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            this._analyticsCache.nativeTokensCount = update.nativeTokensCount;
-        }
+            for (const update of await
+                this.queryInflux<ITimedEntry & { nativeTokensCount: string }>(
+                    NATIVE_TOKENS_STAT_TOTAL_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                this._analyticsCache.nativeTokensCount = update.nativeTokensCount;
+            }
 
-        for (const update of await
-            this.queryInflux<ITimedEntry & { nftsCount: string }>(
-                NFT_STAT_TOTAL_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            this._analyticsCache.nftsCount = update.nftsCount;
-        }
+            for (const update of await
+                this.queryInflux<ITimedEntry & { nftsCount: string }>(
+                    NFT_STAT_TOTAL_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                this._analyticsCache.nftsCount = update.nftsCount;
+            }
 
-        // Locked storage deposit
-        let byteCost: number;
-        let factorData: number;
-        let factorKey: number;
-        let bytesData: number;
-        let bytesKey: number;
+            // Locked storage deposit
+            let byteCost: number;
+            let factorData: number;
+            let factorKey: number;
+            let bytesData: number;
+            let bytesKey: number;
 
-        for (const update of await
-            this.queryInflux<ITimedEntry & { byteCost: string; factorData: string; factorKey: string }>(
-                BYTE_PROTOCOL_PARAMS_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            byteCost = Number.parseInt(update.byteCost, 10);
-            factorData = Number.parseInt(update.factorData, 10);
-            factorKey = Number.parseInt(update.factorKey, 10);
-        }
+            for (const update of await
+                this.queryInflux<ITimedEntry & { byteCost: string; factorData: string; factorKey: string }>(
+                    BYTE_PROTOCOL_PARAMS_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                byteCost = Number.parseInt(update.byteCost, 10);
+                factorData = Number.parseInt(update.factorData, 10);
+                factorKey = Number.parseInt(update.factorKey, 10);
+            }
 
-        for (const update of await
-            this.queryInflux<ITimedEntry & { bytesData: string; bytesKey: string }>(
-                KEY_DATA_BYTES_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            bytesData = Number.parseInt(update.bytesData, 10);
-            bytesKey = Number.parseInt(update.bytesKey, 10);
-        }
+            for (const update of await
+                this.queryInflux<ITimedEntry & { bytesData: string; bytesKey: string }>(
+                    KEY_DATA_BYTES_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                bytesData = Number.parseInt(update.bytesData, 10);
+                bytesKey = Number.parseInt(update.bytesKey, 10);
+            }
 
-        if (byteCost && factorData && factorKey && bytesData && bytesKey) {
-            const lockedStorageDeposit = byteCost * ((factorData * bytesData) + factorKey + bytesKey);
-            this._analyticsCache.lockedStorageDeposit = lockedStorageDeposit.toString();
+            if (byteCost && factorData && factorKey && bytesData && bytesKey) {
+                const lockedStorageDeposit = byteCost * ((factorData * bytesData) + factorKey + bytesKey);
+                this._analyticsCache.lockedStorageDeposit = lockedStorageDeposit.toString();
+            }
+        } catch (err) {
+            console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing analytics", err);
         }
     }
 
     private async collectShimmerUnclaimed() {
         console.info("[InfluxDbClient(", this._network.network, ")] collecting shimmer...");
-        for (const update of await
-            this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
-                SHIMMER_CLAIMED_TOTAL_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
+        try {
+            for (const update of await
+                this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
+                    SHIMMER_CLAIMED_TOTAL_QUERY, null, this.getToNanoDate()
+                )
+            ) {
+                this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
+            }
+        } catch (err) {
+            console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing analytics", err);
         }
     }
 
