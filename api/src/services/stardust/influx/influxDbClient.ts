@@ -23,8 +23,9 @@ import {
     ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
     NATIVE_TOKENS_STAT_TOTAL_QUERY,
     NFT_STAT_TOTAL_QUERY,
-    LOCKED_STORAGE_DEPOSIT_TOTAL_QUERY,
-    SHIMMER_CLAIMED_TOTAL_QUERY
+    SHIMMER_CLAIMED_TOTAL_QUERY,
+    BYTE_PROTOCOL_PARAMS_QUERY,
+    KEY_DATA_BYTES_QUERY
 } from "./influxQueries";
 
 /**
@@ -275,19 +276,42 @@ export abstract class InfluxDbClient {
         }
 
         for (const update of await
-            this.queryInflux<ITimedEntry & { lockedStorageDeposit: string }>(
-                LOCKED_STORAGE_DEPOSIT_TOTAL_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
-        }
-
-        for (const update of await
             this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
                 SHIMMER_CLAIMED_TOTAL_QUERY, null, this.getToNanoDate()
             )
         ) {
             this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
+        }
+
+        // Locked storage deposit
+        let byteCost: number;
+        let factorData: number;
+        let factorKey: number;
+        let bytesData: number;
+        let bytesKey: number;
+
+        for (const update of await
+            this.queryInflux<ITimedEntry & { byteCost: string; factorData: string; factorKey: string }>(
+                BYTE_PROTOCOL_PARAMS_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            byteCost = Number.parseInt(update.byteCost, 10);
+            factorData = Number.parseInt(update.factorData, 10);
+            factorKey = Number.parseInt(update.factorKey, 10);
+        }
+
+        for (const update of await
+            this.queryInflux<ITimedEntry & { bytesData: string; bytesKey: string }>(
+                KEY_DATA_BYTES_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            bytesData = Number.parseInt(update.bytesData, 10);
+            bytesKey = Number.parseInt(update.bytesKey, 10);
+        }
+
+        if (byteCost && factorData && factorKey && bytesData && bytesKey) {
+            const lockedStorageDeposit = byteCost * ((factorData * bytesData) + factorKey + bytesKey);
+            this._analyticsCache.lockedStorageDeposit = lockedStorageDeposit.toString();
         }
     }
 
