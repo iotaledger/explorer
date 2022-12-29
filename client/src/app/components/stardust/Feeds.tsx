@@ -249,11 +249,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             const response = await this._tangleCacheService?.chronicleAnalytics(this._networkConfig?.network);
 
             if (!response?.error) {
-                let unclaimedShimmer: string | undefined;
-                if (response?.analyticStats?.unclaimedShimmer !== undefined) {
-                    unclaimedShimmer = response.analyticStats.unclaimedShimmer;
-                }
-
                 this.setState({
                     networkAnalytics: {
                         nativeTokens: response?.analyticStats?.nativeTokens,
@@ -261,7 +256,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                         totalAddresses: response?.analyticStats?.totalAddresses,
                         dailyAddresses: response?.analyticStats?.dailyAddresses,
                         lockedStorageDeposit: response?.analyticStats?.lockedStorageDeposit,
-                        unclaimedShimmer
+                        unclaimedShimmer: response?.analyticStats?.unclaimedShimmer
                     }
                 });
             } else {
