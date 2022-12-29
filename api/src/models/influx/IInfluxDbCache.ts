@@ -46,9 +46,10 @@ export interface IInfluxAnalyticsCache {
 }
 
 /**
- * The initial empty cache object.
+ * The helper to initialize empty maps
+ * @returns The initial cache object
  */
-export const CACHE_INFLUX_DAILY_INIT = {
+export const initializeEmptyDailyCache = () => ({
     blocksDaily: new Map(),
     transactionsDaily: new Map(),
     outputsDaily: new Map(),
@@ -64,5 +65,5 @@ export const CACHE_INFLUX_DAILY_INIT = {
     unclaimedGenesisOutputsDaily: new Map(),
     ledgerSizeDaily: new Map(),
     storageDepositDaily: new Map()
-};
+});
 

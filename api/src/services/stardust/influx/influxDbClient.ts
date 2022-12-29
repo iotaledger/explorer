@@ -2,7 +2,7 @@ import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import { INetwork } from "../../../models/db/INetwork";
 import {
-    CACHE_INFLUX_DAILY_INIT, DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache
+    DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache, initializeEmptyDailyCache
 } from "../../../models/influx/IInfluxDbCache";
 import {
     IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
@@ -73,7 +73,7 @@ export abstract class InfluxDbClient {
      */
     constructor(network: INetwork) {
         this._network = network;
-        this._dailyCache = CACHE_INFLUX_DAILY_INIT;
+        this._dailyCache = initializeEmptyDailyCache();
         this._analyticsCache = {};
     }
 
