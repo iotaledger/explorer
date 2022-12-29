@@ -1,5 +1,6 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
+import cron from "node-cron";
 import { INetwork } from "../../../models/db/INetwork";
 import {
     DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache, initializeEmptyDailyCache
@@ -29,9 +30,22 @@ import {
 } from "./influxQueries";
 
 /**
- * The collect job interval (1h).
+ * The collect graph data interval cron expression.
+ * Every hour at 59 min 55 sec
  */
-const COLLECT_DATA_FREQ_MS = 1000 * 60 * 60;
+const COLLECT_GRAPHS_DATA_CRON = "55 59 * * * *";
+
+/**
+ * The collect analyitics data interval cron expression.
+ * Every hour at 58 min 55 sec
+ */
+const COLLECT_ANALYTICS_DATA_CRON = "55 58 * * * *";
+
+/**
+ * The collect shimmer (un)claimed data interval cron expression.
+ * Every 30 sec.
+ */
+const COLLECT_SHIMMER_DATA_CRON = "*/30 * * * * *";
 
 /**
  * N of nanoseconds in a millsecond.
@@ -61,11 +75,6 @@ export abstract class InfluxDbClient {
      * The network in context for this client.
      */
     private readonly _network: INetwork;
-
-    /**
-     * The collect job handle.
-     */
-    private _collectIntervalHandle: NodeJS.Timer;
 
     /**
      * Create a new instance of InfluxDbClient.
@@ -107,7 +116,6 @@ export abstract class InfluxDbClient {
                     if (anyHostIsOnline) {
                         console.info("[InfluxDbClient(", network, ")] started!");
                         this._client = influxDbClient;
-                        console.info("[InfluxDbClient(", network, ")] data collection...");
                         this.setupDataCollection();
                     }
 
@@ -141,25 +149,33 @@ export abstract class InfluxDbClient {
      */
     private setupDataCollection() {
         const network = this._network.network;
+        console.info("[InfluxDbClient(", network, ")] data collection setup...");
 
-        this.collectData();
-
-        if (!this._collectIntervalHandle && this._client) {
-            this._collectIntervalHandle = setInterval(() => this.collectData(), COLLECT_DATA_FREQ_MS);
-        } else {
-            console.log("[InfluxDbClient(", network, ")] data is already collecting or client isn't configured for");
-        }
-    }
-
-    /**
-     * Performs the InfluxDb bulk data collection.
-     * Populates the cache.
-     */
-    private collectData() {
         // eslint-disable-next-line no-void
         void this.collectGraphsDaily();
         // eslint-disable-next-line no-void
         void this.collectAnalytics();
+        // eslint-disable-next-line no-void
+        void this.collectShimmerUnclaimed();
+
+        if (this._client) {
+            cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectGraphsDaily();
+            });
+
+            cron.schedule(COLLECT_ANALYTICS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectAnalytics();
+            });
+
+            cron.schedule(COLLECT_SHIMMER_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectShimmerUnclaimed();
+            });
+        } else {
+            console.log("[InfluxDbClient(", network, ")] client isn't configured for this network");
+        }
     }
 
     /**
@@ -275,14 +291,6 @@ export abstract class InfluxDbClient {
             this._analyticsCache.nftsCount = update.nftsCount;
         }
 
-        for (const update of await
-            this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
-                SHIMMER_CLAIMED_TOTAL_QUERY, null, this.getToNanoDate()
-            )
-        ) {
-            this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
-        }
-
         // Locked storage deposit
         let byteCost: number;
         let factorData: number;
@@ -312,6 +320,17 @@ export abstract class InfluxDbClient {
         if (byteCost && factorData && factorKey && bytesData && bytesKey) {
             const lockedStorageDeposit = byteCost * ((factorData * bytesData) + factorKey + bytesKey);
             this._analyticsCache.lockedStorageDeposit = lockedStorageDeposit.toString();
+        }
+    }
+
+    private async collectShimmerUnclaimed() {
+        console.info("[InfluxDbClient(", this._network.network, ")] collecting shimmer...");
+        for (const update of await
+            this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
+                SHIMMER_CLAIMED_TOTAL_QUERY, null, this.getToNanoDate()
+            )
+        ) {
+            this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
         }
     }
 
