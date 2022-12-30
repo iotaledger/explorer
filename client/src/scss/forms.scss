@@ -181,3 +181,67 @@ button {
     }
   }
 }
+
+.calendar-wrapper {
+  position: relative;
+  display: inline-block;
+
+  .material-icons {
+    position: absolute;
+    color: var(--body-color);
+    right: 10px;
+    top: 9px;
+  }
+
+  .rdt {
+    font-family: $inter;
+
+    table {
+      thead tr th {
+        @include font-size(12px);
+
+        font-weight: 600;
+        text-transform: uppercase;
+        /* stylelint-disable selector-class-pattern */
+        &.rdtSwitch,
+        &.rdtPrev,
+        &.rdtNext {
+          @include font-size(18px);
+
+          text-transform: capitalize;
+        }
+      }
+
+      tbody {
+        @include font-size(14px);
+      }
+    }
+
+    .rdtPicker {
+      background-color: var(--body-background);
+      color: var(--body-color);
+
+      td.rdtDay:hover,
+      td.rdtHour:hover,
+      td.rdtMinute:hover,
+      td.rdtSecond:hover,
+      .rdtTimeToggle:hover,
+      thead tr:first-of-type th:hover,
+      td.rdtMonth:hover,
+      td.rdtYear:hover {
+        background: var(--calendar-hover);
+      }
+
+      td.rdtActive,
+      td.rdtActive:hover {
+        background-color: var(--link-color);
+      }
+    }
+    /* stylelint-enable selector-class-pattern */
+    input {
+      background-color: transparent;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  }
+}

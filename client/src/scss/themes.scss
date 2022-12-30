@@ -53,6 +53,8 @@
   --statistics-charts-axis: #{$gray-1};
   --statistics-select-bg: #{$gray-1};
   --statistics-select-border: #{$gray-1};
+  --calendar-bg: #{$white};
+  --calendar-hover: #{$gray-1};
 
   body.darkmode {
     --body-background: #091326;
@@ -107,6 +109,8 @@
     --statistics-charts-axis: #{$gray-9};
     --statistics-select-bg: #{$gray-9};
     --statistics-select-border: #{$gray-8};
+    --calendar-bg: #{$gray-9};
+    --calendar-hover: #{$gray-7};
   }
 
   body.shimmer.darkmode {

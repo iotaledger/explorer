@@ -1,5 +1,6 @@
 import moment from "moment";
 import React, { useState } from "react";
+import Datetime from "react-datetime";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -7,6 +8,7 @@ import { StardustApiClient } from "../../../services/stardust/stardustApiClient"
 import Spinner from "../Spinner";
 import Tooltip from "../Tooltip";
 import "./DownloadModal.scss";
+import "react-datetime/css/react-datetime.css";
 
 interface DownloadModalProps {
     network: string;
@@ -102,17 +104,20 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                 <div className="row middle">
                                     <div className="date-label">Select target date</div>
                                     <Tooltip tooltipContent={DOWNLOAD_INFO}>
-                                        <span className="material-icons">
-                                            info
-                                        </span>
+                                        <div className="modal--icon">
+                                            <span className="material-icons">
+                                                info
+                                            </span>
+                                        </div>
                                     </Tooltip>
                                 </div>
-                                <div>
-                                    <input
-                                        type="date"
-                                        className="target-date"
-                                        max={moment().format("YYYY-MM-DD")}
-                                        onChange={({ target: { value } }) => onDateSelect(value)}
+                                <div className="calendar-wrapper">
+                                    <span className="material-icons">calendar_month</span>
+                                    <Datetime
+                                        isValidDate={(current: moment.Moment) => current.isBefore(moment())}
+                                        inputProps={{ placeholder: "MM/DD/YYYY" }}
+                                        timeFormat={false}
+                                        onChange={value => onDateSelect(value as string)}
                                     />
                                 </div>
                             </div>
