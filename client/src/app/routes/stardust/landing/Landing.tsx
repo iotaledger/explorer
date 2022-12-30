@@ -3,11 +3,13 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { isShimmerNetwork } from "../../../../helpers/networkHelper";
+import { ILatestMilestonesReponse } from "../../../../models/api/stardust/ILatestMilestonesReponse";
 import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
 import { NetworkService } from "../../../../services/networkService";
+import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
 import Feeds from "../../../components/stardust/Feeds";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
@@ -52,6 +54,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         this.state = getDefaultLandingState(network);
     }
 
+    public async componentDidMount(): Promise<void> {
+        await super.componentDidMount();
+
+        // eslint-disable-next-line no-void
+        void this.initializeLatestCachedMilestones(this.state.networkConfig.network);
+    }
+
     /**
      * The component was updated.
      * @param prevProps The previous properties.
@@ -65,6 +74,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
 
         if (this.props.match.params.network !== prevProps.match.params.network && this._networkConfig) {
             this.setState({ networkConfig: this._networkConfig });
+            this.initializeLatestCachedMilestones(this.props.match.params.network).catch(
+                err => console.log("Failed to init cached milestones", err)
+            );
         }
     }
 
@@ -186,13 +198,49 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected itemsUpdated(newItems: IFeedItem[]): void {
         super.itemsUpdated(newItems);
         if (this._feedClient) {
-            const milestones = this._feedClient.getItems()
+            // update milestones
+            const milestoneFeedItems = this._feedClient.getItems()
                 .filter(item => item.payloadType === "MS").slice(0, MAX_MILESTONE_ITEMS);
 
-            this.setState({
-                milestones
-            });
+            const milestones = [...this.state.milestones];
+            let milestonesUpdated = false;
+
+            for (const milestoneFeedItem of milestoneFeedItems) {
+                if (!milestones.some(ms => ms.index === milestoneFeedItem.properties?.index)) {
+                    milestones.unshift({
+                        blockId: milestoneFeedItem.id,
+                        milestoneId: milestoneFeedItem.properties?.milestoneId as string,
+                        index: milestoneFeedItem.properties?.index as number,
+                        timestamp: milestoneFeedItem.properties?.timestamp as number
+                    });
+
+                    if (milestones.length > MAX_MILESTONE_ITEMS) {
+                        milestones.pop();
+                    }
+
+                    milestonesUpdated = true;
+                    break;
+                }
+            }
+
+            if (milestonesUpdated) {
+                this.setState({
+                    milestones
+                });
+            }
         }
+    }
+
+    private async initializeLatestCachedMilestones(network: string) {
+        const stardustTangleService = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+        const latestMilestones: ILatestMilestonesReponse = await stardustTangleService.latestMilestones(
+            network
+        );
+
+        // Cached milestones
+        this.setState({
+            milestones: latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
+        });
     }
 }
 

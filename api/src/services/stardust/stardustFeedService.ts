@@ -1,4 +1,4 @@
-import { blockIdFromMilestonePayload, SingleNodeClient } from "@iota/iota.js-stardust";
+import { blockIdFromMilestonePayload, SingleNodeClient, milestoneIdFromMilestonePayload } from "@iota/iota.js-stardust";
 import type { IMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedService } from "../../models/services/IFeedService";
@@ -54,7 +54,9 @@ export class StardustFeedService implements IFeedService {
      * @param callback The callback for new milestones.
      * @returns The subscription id.
      */
-    public subscribeMilestones(callback: (milestone: number, id: string, timestamp: number) => void): string {
+    public subscribeMilestones(
+        callback: (milestone: number, id: string, timestamp: number, milestoneId: string) => void
+    ): string {
         return this._mqttClient.milestonesLatest(async (topic, block) => {
             try {
                 const apiClient = new SingleNodeClient(this._endpoint, {
@@ -62,9 +64,10 @@ export class StardustFeedService implements IFeedService {
                     password: this._password
                 });
                 const milestonePayload = await apiClient.milestoneByIndex(block.index);
+                const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(2, milestonePayload);
 
-                callback(block.index, blockId, block.timestamp * 1000);
+                callback(block.index, blockId, block.timestamp * 1000, milestoneId);
             } catch (err) {
                 console.error(err);
             }
