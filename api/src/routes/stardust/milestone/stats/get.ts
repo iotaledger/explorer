@@ -39,6 +39,10 @@ export async function get(
     if (currentMilesoneStats[request.milestoneId]?.blocksCount) {
         stats = currentMilesoneStats[request.milestoneId];
     } else {
+        if (!networkConfig.permaNodeEndpoint) {
+            return {};
+        }
+
         const chronicleService = ServiceFactory.get<ChronicleService>(
             `chronicle-${networkConfig.network}`
         );

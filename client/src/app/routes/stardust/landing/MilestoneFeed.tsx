@@ -95,8 +95,8 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     const milestoneId = milestone.properties?.milestoneId as string;
                     const milestoneIdShort = `${milestoneId.slice(0, 6)}....${milestoneId.slice(-6)}`;
                     const timestamp = milestone.properties?.timestamp as number * 1000;
-                    const includedBlocks = milestoneIdToStats.get(milestoneId)?.blocksCount ?? "";
-                    const txs = milestoneIdToStats.get(milestoneId)?.perPayloadType?.txPayloadCount ?? "";
+                    const includedBlocks = milestoneIdToStats.get(milestoneId)?.blocksCount ?? "-";
+                    const txs = milestoneIdToStats.get(milestoneId)?.perPayloadType?.txPayloadCount ?? "-";
                     const ago = moment(timestamp).fromNow();
                     const tooltipContent = DateHelper.formatShort(timestamp);
 
