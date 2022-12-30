@@ -1,5 +1,5 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
-import { INetworkBoundGetRequest } from "../../../../../models/api/stardust/INetworkBoundGetRequest";
+import { INetworkBoundGetRequest } from "../../../../../models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import {

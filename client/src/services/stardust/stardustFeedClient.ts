@@ -5,10 +5,10 @@ import {
 } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IFeedItem } from "../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
@@ -28,7 +28,7 @@ export class StardustFeedClient extends FeedClient {
 
         try {
             if (!this._subscriptionId) {
-                const subscribeRequest: IFeedSubscribeRequest = {
+                const subscribeRequest: INetworkBoundGetRequest = {
                     network: this._networkId
                 };
 

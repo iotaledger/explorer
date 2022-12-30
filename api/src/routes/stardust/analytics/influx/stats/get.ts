@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { INetworkBoundGetRequest } from "../../../../../models/api/INetworkBoundGetRequest";
 import { IResponse } from "../../../../../models/api/IResponse";
-import { INetworkBoundGetRequest } from "../../../../../models/api/stardust/INetworkBoundGetRequest";
 import { IAnalyticStats } from "../../../../../models/api/stats/IAnalyticStats";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";

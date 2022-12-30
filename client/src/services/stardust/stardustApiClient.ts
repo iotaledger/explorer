@@ -2,6 +2,7 @@ import { FetchHelper } from "../../helpers/fetchHelper";
 import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { IRawResponse } from "../../models/api/IRawResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
@@ -24,7 +25,6 @@ import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
-import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
@@ -40,7 +40,6 @@ import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsRe
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
-import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
@@ -55,7 +54,7 @@ export class StardustApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+    public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
             "get"
@@ -308,7 +307,7 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async chronicleAnalytics(request: IAnalyticStatsRequest): Promise<IAnalyticStats> {
+    public async chronicleAnalytics(request: INetworkBoundGetRequest): Promise<IAnalyticStats> {
         return this.callApi<unknown, IAnalyticStats>(
             `stardust/analytics/${request.network}`,
             "get"
