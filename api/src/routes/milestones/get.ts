@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IMilestonesGetRequest } from "../../models/api/IMilestonesGetRequest";
 import { IMilestonesGetResponse } from "../../models/api/IMilestonesGetResponse";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { MilestonesService } from "../../services/milestonesService";
 import { NetworkService } from "../../services/networkService";
@@ -8,13 +8,13 @@ import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
  * Get milestones for the requested network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
-    request: IMilestonesGetRequest
+    _: IConfiguration,
+    request: INetworkBoundGetRequest
 ): Promise<IMilestonesGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();

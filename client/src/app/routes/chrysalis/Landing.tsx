@@ -33,6 +33,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             label: "Custom network",
             network: CUSTOM,
             protocolVersion: OG,
+            hasStatisticsSupport: false,
             isEnabled: false
         };
 

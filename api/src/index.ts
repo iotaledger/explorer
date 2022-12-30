@@ -6,8 +6,8 @@ import { Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { NetworkConfigurationError } from "./errors/networkConfigurationError";
 import { initServices } from "./initServices";
-import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IFeedUnsubscribeRequest } from "./models/api/IFeedUnsubscribeRequest";
+import { INetworkBoundGetRequest } from "./models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
 import { subscribe } from "./routes/feed/subscribe";
@@ -90,7 +90,7 @@ const sockets: {
 
 socketServer.on("connection", socket => {
     console.log("Socket::Connection", socket.id);
-    socket.on("subscribe", async (data: IFeedSubscribeRequest) => {
+    socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
         const response = await subscribe(config, socket, data);
         if (!response.error) {
             sockets[socket.id] = data.network;

@@ -1,5 +1,5 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { STARDUST } from "../../models/db/protocolVersion";
@@ -9,13 +9,13 @@ import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
  * Get the node info of the network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function info(
-    config: IConfiguration,
-    request: INodeInfoRequest
+    _: IConfiguration,
+    request: INetworkBoundGetRequest
 ): Promise<INodeInfoResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();

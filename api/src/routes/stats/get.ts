@@ -8,12 +8,12 @@ import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
  * Get stats for the requested network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
+    _: IConfiguration,
     request: IStatsGetRequest
 ): Promise<IStatsGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
@@ -57,3 +57,4 @@ export async function get(
         health: 0
     };
 }
+

@@ -1,8 +1,7 @@
-import { IShimmerClaimed } from "../../api/stats/IShimmerClaimed";
-
 export interface IShimmerClaimedResponse {
     /**
-     * The shimmer token claimed stat.
+     * The total unclaimed shimmer token.
      */
-    shimmerClaimed?: IShimmerClaimed;
+    unclaimedShimmer?: string;
 }
+

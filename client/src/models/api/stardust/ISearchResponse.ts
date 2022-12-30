@@ -1,9 +1,11 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
+import { IAnalyticStats } from "../stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
+import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
 
@@ -99,7 +101,18 @@ export interface ISearchResponse extends IResponse {
     milestoneStats?: IMilestoneAnalyticStats;
 
     /**
+     * The influx analytic stats.
+     */
+    analyticStats?: IAnalyticStats;
+
+    /**
+     * The influx daily graphs data.
+     */
+    influxStats?: IInfluxDailyResponse;
+
+    /**
      * DiD identifier.
      */
     did?: string;
 }
+

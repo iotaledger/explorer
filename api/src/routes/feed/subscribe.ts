@@ -1,7 +1,7 @@
 import SocketIO from "socket.io";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
 import { IItemsService as IItemsServiceStardust } from "../../models/services/stardust/IItemsService";
@@ -18,7 +18,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
 export async function subscribe(
     config: IConfiguration,
     socket: SocketIO.Socket,
-    request: IFeedSubscribeRequest): Promise<IFeedSubscribeResponse> {
+    request: INetworkBoundGetRequest): Promise<IFeedSubscribeResponse> {
     let response: IFeedSubscribeResponse;
 
     try {

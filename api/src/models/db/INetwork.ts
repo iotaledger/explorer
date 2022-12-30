@@ -71,6 +71,26 @@ export interface INetwork {
     permaNodeJwt?: string;
 
     /**
+     * The analytics influxDB endpoint.
+     */
+    analyticsInfluxDbEndpoint?: string;
+
+    /**
+     * The analytics influxDB database name.
+     */
+    analyticsInfluxDbDatabase?: string;
+
+    /**
+     * The analytics influxDB username.
+     */
+    analyticsInfluxDbUsername?: string;
+
+    /**
+     * The analytics influxDB password.
+     */
+    analyticsInfluxDbPassword?: string;
+
+    /**
      * The feed to communicate with.
      */
     feedEndpoint?: string;
@@ -89,16 +109,6 @@ export interface INetwork {
      * The bech32 human readable part prefix.
      */
     bechHrp?: string;
-
-    /**
-     * The primary color.
-     */
-    primaryColor?: string;
-
-    /**
-     * The secondary color.
-     */
-    secondaryColor?: string;
 
     /**
      * Is the network enabled.
