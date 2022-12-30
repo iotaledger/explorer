@@ -353,7 +353,10 @@ export abstract class InfluxDbClient {
     }
 
     private async collectShimmerUnclaimed() {
-        console.info("[InfluxDbClient(", this._network.network, ")] collecting shimmer...");
+        const debug = false;
+        if (debug) {
+            console.info("[InfluxDbClient(", this._network.network, ")] collecting shimmer...");
+        }
         try {
             for (const update of await
                 this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
