@@ -47,6 +47,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             label: "Custom network",
             network: CUSTOM,
             protocolVersion: STARDUST,
+            hasStatisticsSupport: false,
             isEnabled: false
         };
 
@@ -56,15 +57,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     public async componentDidMount(): Promise<void> {
         await super.componentDidMount();
 
-        const stardustTangleService = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
-        const latestMilestones: ILatestMilestonesReponse = await stardustTangleService.latestMilestones(
-            this.state.networkConfig.network
-        );
-
-        // Cached milestones
-        this.setState({
-            milestones: latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
-        });
+        // eslint-disable-next-line no-void
+        void this.initializeLatestCachedMilestones(this.state.networkConfig.network);
     }
 
     /**
@@ -79,7 +73,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         super.componentDidUpdate(prevProps, prevState);
 
         if (this.props.match.params.network !== prevProps.match.params.network && this._networkConfig) {
+            console.log("componentDidUpdate");
             this.setState({ networkConfig: this._networkConfig });
+
+            this.initializeLatestCachedMilestones(this.props.match.params.network).catch(
+                err => console.log("Failed to init cached milestones", err)
+            );
         }
     }
 
@@ -91,7 +90,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const {
             networkConfig, marketCapCurrency, priceCurrency,
             milestones, itemsPerSecond, confirmedItemsPerSecondPercent,
-            latestMilestoneIndex, networkAnalytics, shimmerClaimed
+            latestMilestoneIndex, networkAnalytics
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -118,7 +117,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     </div>
                     <AnalyticStats
                         analytics={networkAnalytics}
-                        shimmerClaimed={shimmerClaimed}
                         circulatingSupply={networkConfig.circulatingSupply}
                         tokenInfo={tokenInfo}
                     />
@@ -202,6 +200,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected itemsUpdated(newItems: IFeedItem[]): void {
         super.itemsUpdated(newItems);
         if (this._feedClient) {
+            // update milestones
             const milestoneFeedItems = this._feedClient.getItems()
                 .filter(item => item.payloadType === "MS").slice(0, MAX_MILESTONE_ITEMS);
 
@@ -217,7 +216,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         timestamp: milestoneFeedItem.properties?.timestamp as number
                     });
 
-                    if (milestones.length > 10) {
+                    if (milestones.length > MAX_MILESTONE_ITEMS) {
                         milestones.pop();
                     }
 
@@ -232,6 +231,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 });
             }
         }
+    }
+
+    private async initializeLatestCachedMilestones(network: string) {
+        const stardustTangleService = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+        const latestMilestones: ILatestMilestonesReponse = await stardustTangleService.latestMilestones(
+            network
+        );
+
+        // Cached milestones
+        this.setState({
+            milestones: latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
+        });
     }
 }
 

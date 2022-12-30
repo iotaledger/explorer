@@ -15,14 +15,17 @@ export const routes: IRoute[] = [
             } as IResponse;
         }
     },
+    // Generic
     { path: "/init", method: "get", func: "init" },
     { path: "/networks", method: "get", folder: "networks", func: "get" },
     { path: "/node-info/:network", method: "get", folder: "node", func: "info" },
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
+    // OG
     { path: "/transactions/:network/:hash", method: "get", folder: "og/transactions", func: "get" },
     { path: "/transactions/:network/:hash/action/:action", method: "get", folder: "og/transactions", func: "action" },
     { path: "/trytes/:network", method: "post", folder: "og/trytes", func: "post" },
     { path: "/address/:network/:hash", method: "get", folder: "og/address", func: "get" },
+    // Chrysalis
     { path: "/search/:network/:query", method: "get", folder: "chrysalis", func: "search" },
     { path: "/message/:network/:messageId", method: "get", folder: "chrysalis/message", func: "get" },
     { path: "/milestone/:network/:milestoneIndex", method: "get", folder: "chrysalis/milestone", func: "get" },
@@ -43,6 +46,7 @@ export const routes: IRoute[] = [
         path: "/chrysalis/did/:network/diffHistory/:integrationMsgId", method: "post",
         folder: "/chrysalis/identity/diff", func: "get", dataBody: true
     },
+    // Stardust
     { path: "/stardust/search/:network/:query", method: "get", folder: "stardust", func: "search" },
     {
         path: "/stardust/balance/:network/:address", method: "get",
@@ -67,8 +71,8 @@ export const routes: IRoute[] = [
     },
     { path: "/stardust/milestone/:network/:milestoneIndex", method: "get", folder: "stardust/milestone", func: "get" },
     {
-        path: "/stardust/milestone/stats/:network/:milestoneId", method: "get",
-        folder: "stardust/milestone/stats", func: "get"
+        path: "/stardust/milestone/stats/:network/:milestoneIndex", method: "get",
+        folder: "stardust/milestone/influx", func: "get"
     },
     { path: "/stardust/output/:network/:outputId", method: "get", folder: "stardust/output", func: "get" },
     {
@@ -96,13 +100,16 @@ export const routes: IRoute[] = [
         folder: "stardust/alias/foundries", func: "get"
     },
     { path: "/stardust/foundry/:network/:foundryId", method: "get", folder: "stardust/foundry", func: "get" },
-    { path: "/stardust/analytics/:network", method: "get", folder: "stardust/analytics", func: "get", sign: true },
-    {
-        path: "/stardust/analytics/shimmer/:network", method: "get",
-        folder: "stardust/analytics/shimmer", func: "get", sign: true
-    },
     { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
     { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
+    {
+        path: "/stardust/analytics/:network", method: "get",
+        folder: "stardust/analytics/influx/stats", func: "get", sign: true
+    },
+    {
+        path: "/stardust/analytics/daily/:network", method: "get",
+        folder: "stardust/analytics/influx/daily", func: "get", sign: true
+    },
     {
         path: "/stardust/did/:network/:did/document", method: "get",
         folder: "stardust/identity/resolution-stardust", func: "get"

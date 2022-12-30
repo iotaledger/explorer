@@ -1,26 +1,15 @@
 import moment from "moment";
-import { NetworkConfigurationError } from "../../errors/networkConfigurationError";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import {
-    IAnalyticStats, ICountAndValueStats, IAddressesStats, ILockedStorageDeposit
-} from "../../models/api/stats/IAnalyticStats";
-import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { IShimmerClaimed } from "../../models/api/stats/IShimmerClaimed";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
     balance: "/api/explorer/v2/balance/",
-    nativeTokensStats: "/api/analytics/v2/ledger/native-tokens",
-    nftStats: "/api/analytics/v2/ledger/nfts",
-    addresses: "/api/analytics/v2/activity/addresses",
-    lockedStorageDeposit: "/api/analytics/v2/ledger/storage-deposit",
-    milestones: "/api/analytics/v2/activity/milestones/",
-    shimmerClaiming: "/api/analytics/v2/activity/claimed-tokens"
+    milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"]
 };
 
 export class ChronicleService {
@@ -29,14 +18,8 @@ export class ChronicleService {
      */
     private readonly _endpoint: string;
 
-    /**
-     * The permanode JWT.
-     */
-    private readonly _jwt?: string;
-
     constructor(config: INetwork) {
         this._endpoint = config.permaNodeEndpoint;
-        this._jwt = config.permaNodeJwt;
     }
 
     /**
@@ -59,71 +42,38 @@ export class ChronicleService {
     }
 
     /**
-     * Get the current milestone stats by milestoneId
+     * Get the blocks in a given milestone.
      * @param milestoneId The milestone id.
-     * @returns The milestone stats.
+     * @returns The milestone blocks response.
      */
-    public async milestoneAnalytics(
+    public async milestoneBlocks(
         milestoneId: string
-    ): Promise<IMilestoneAnalyticStats | undefined> {
-        try {
-            return await this.fetchHelperTryGet<IMilestoneAnalyticStats>(
-                `${CHRONICLE_ENDPOINTS.milestones}${milestoneId}`,
-                {}
-            );
-        } catch (error) {
-            return { error };
-        }
-    }
+    ): Promise<{ milestoneId?: string; blocks?: string[]; error?: string } | undefined> {
+        const path = `${CHRONICLE_ENDPOINTS.milestoneBlocks[0]}${milestoneId}${CHRONICLE_ENDPOINTS.milestoneBlocks[1]}`;
+        let cursor: string | undefined;
+        const blocks: string[] = [];
 
-    /**
-     * Fetch the analytic stats.
-     * @param currentMilestoneIndex The latest milestone index.
-     * @param firstMilestoneOfYesterday The first milestone at beginning of previous day.
-     * @param lastMilestoneOfYesterday The last milestone at end of previous day.
-     * @returns The analytic stats.
-     */
-    public async analytics(
-        currentMilestoneIndex: number,
-        firstMilestoneOfYesterday: number,
-        lastMilestoneOfYesterday: number
-    ): Promise<IAnalyticStats> | undefined {
-        let dailyAddresses: IAddressesStats;
+        do {
+            const params = FetchHelper.urlParams({ pageSize: 10, sort: "newest", cursor });
 
-        const nativeTokens = await this.fetchHelperTryGet<ICountAndValueStats>(
-            CHRONICLE_ENDPOINTS.nativeTokensStats,
-            { ledgerIndex: currentMilestoneIndex }
-        );
+            try {
+                const response = await FetchHelper.json<never, { blocks?: string[]; cursor?: string }>(
+                    this._endpoint,
+                    `${path}${params}`,
+                    "get"
+                );
 
-        const nfts = await this.fetchHelperTryGet<ICountAndValueStats>(
-            CHRONICLE_ENDPOINTS.nftStats,
-            { ledgerIndex: currentMilestoneIndex }
-        );
+                cursor = response.cursor;
 
-        const totalAddresses = await this.fetchHelperTryGet<IAddressesStats>(
-            CHRONICLE_ENDPOINTS.addresses,
-            { endIndex: currentMilestoneIndex }
-        );
+                if (response.blocks) {
+                    blocks.push(...response.blocks);
+                }
+            } catch (error) {
+                return { error };
+            }
+        } while (cursor);
 
-        const lockedStorageDeposit = await this.fetchHelperTryGet<ILockedStorageDeposit>(
-            CHRONICLE_ENDPOINTS.lockedStorageDeposit,
-            { ledgerIndex: currentMilestoneIndex }
-        );
-
-        if (firstMilestoneOfYesterday && lastMilestoneOfYesterday) {
-            dailyAddresses = await this.fetchHelperTryGet<IAddressesStats>(
-                CHRONICLE_ENDPOINTS.addresses,
-                { startIndex: firstMilestoneOfYesterday, endIndex: lastMilestoneOfYesterday }
-            );
-        }
-
-        return {
-            nativeTokens,
-            nfts,
-            totalAddresses,
-            dailyAddresses,
-            lockedStorageDeposit
-        };
+        return { milestoneId, blocks };
     }
 
     /**
@@ -206,39 +156,6 @@ export class ChronicleService {
         } catch (error) {
             console.log("Problem while building Transaction History download", error);
         }
-    }
-
-    /**
-     * Get the shimmer claiming statistics.
-     * @returns The claiming statistics.
-     */
-    public async fetchShimmerClaimedCount(): Promise<IShimmerClaimed> {
-        const claimingStats = this.fetchHelperTryGet<IShimmerClaimed>(
-            CHRONICLE_ENDPOINTS.shimmerClaiming, {}
-        );
-        return claimingStats;
-    }
-
-    private async fetchHelperTryGet<R>(path: string, params: Record<string, unknown>): Promise<R> {
-        let response: R | undefined;
-
-        if (!this._jwt) {
-            throw new NetworkConfigurationError(`Chronicle JWT not configured for ${this._endpoint}...`);
-        }
-
-        try {
-            response = await FetchHelper.json<unknown, R>(
-                this._endpoint,
-                `${path}${FetchHelper.urlParams(params)}`,
-                "get",
-                null,
-                { "Authorization": `Bearer ${this._jwt}` }
-            );
-        } catch (err) {
-            console.log("Failed fetching analytics stats on", path, "with params", params, "reason", err);
-        }
-
-        return response;
     }
 }
 

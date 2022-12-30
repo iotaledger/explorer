@@ -105,7 +105,14 @@
                 @include tablet-down {
                     display: none;
                 }
+
+                .feed-item--value {
+                    .feed-item__ms-stat {
+                        margin-left: 4px;
+                    }
+                }
             }
+
         }
 
         .feed-item--label {

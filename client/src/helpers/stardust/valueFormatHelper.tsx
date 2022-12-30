@@ -5,7 +5,7 @@ import Tooltip from "../../app/components/Tooltip";
 /**
  * The id of the Genesis block.
  */
-export const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
+const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 /**
  * Format amount using passed base token info.

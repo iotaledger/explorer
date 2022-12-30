@@ -2,7 +2,6 @@ import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
 import { IConfiguration } from "./models/configuration/IConfiguration";
-import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
@@ -23,6 +22,7 @@ import { OgItemsService } from "./services/og/ogItemsService";
 import { OgStatsService } from "./services/og/ogStatsService";
 import { ZmqService } from "./services/og/zmqService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
 import { StardustFeedService } from "./services/stardust/stardustFeedService";
 import { StardustItemsService } from "./services/stardust/stardustItemsService";
@@ -195,6 +195,17 @@ function initStardustServices(networkConfig: INetwork): void {
             () => new ChronicleService(networkConfig)
         );
     }
+
+    const influxDBService = new InfluxDBService(networkConfig);
+    influxDBService.buildClient().then(hasClient => {
+        console.log("Registering client with name:", `influxdb-${networkConfig.network}`, "hasClient", hasClient);
+        if (hasClient) {
+            ServiceFactory.register(
+                `influxdb-${networkConfig.network}`,
+                () => influxDBService
+            );
+        }
+    }).catch(e => console.log("Failed to build influxDb client for", networkConfig.network, e));
 }
 
 /**
@@ -211,9 +222,6 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
 
         ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
             config.rootStorageFolder, "currency", "id"));
-
-        ServiceFactory.register("analytics-storage", () => new LocalStorageService<IAnalyticsStore>(
-            config.rootStorageFolder, "analytics", "network"));
     } else if (config.dynamoDbConnection) {
         ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
             config.dynamoDbConnection, "network", "network"));
@@ -223,12 +231,6 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
 
         ServiceFactory.register("currency-storage", () => new AmazonDynamoDbService<ICurrencyState>(
             config.dynamoDbConnection, "currency", "id"));
-
-        const analyticsStore = new AmazonDynamoDbService<IAnalyticsStore>(
-            config.dynamoDbConnection, "analytics", "network"
-        );
-        // eslint-disable-next-line no-void
-        await analyticsStore.create();
-        ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }
+

@@ -5,10 +5,8 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/stardust/IFeedItemMetadata";
 import { IFeedSubscriptionItem } from "../../models/api/stardust/IFeedSubscriptionItem";
 import { ILatestMilestone } from "../../models/api/stardust/milestone/ILatestMilestonesResponse";
-import { IMilestoneStatsPerInclusionState, IMilestoneStatsPerPayloadType } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/stardust/IItemsService";
-import { ChronicleService } from "./chronicleService";
 
 /**
  * Service to handle blocks on stardust.
@@ -23,11 +21,6 @@ export class StardustItemsService implements IItemsService {
      * The mqtt client.
      */
     private _mqttClient: IMqttClient;
-
-    /**
-     * Chronicle service.
-     */
-    private _chronicleService: ChronicleService;
 
     /**
      * Feed service.
@@ -69,7 +62,7 @@ export class StardustItemsService implements IItemsService {
     /**
      * The latest milestones.
      */
-    private readonly _latestMilestones: ILatestMilestone[] = [];
+    private readonly _latestMilestonesCache: ILatestMilestone[] = [];
 
     /**
      * Timer id.
@@ -94,7 +87,6 @@ export class StardustItemsService implements IItemsService {
 
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${this._networkId}`);
         this._feedService = ServiceFactory.get<IFeedService>(`feed-${this._networkId}`);
-        this._chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${this._networkId}`);
 
         this.startSubscription();
 
@@ -134,7 +126,7 @@ export class StardustItemsService implements IItemsService {
      * @returns The latest milestones.
      */
     public getLatestMilestones(): ILatestMilestone[] {
-        return this._latestMilestones;
+        return this._latestMilestonesCache;
     }
 
     /**
@@ -184,7 +176,6 @@ export class StardustItemsService implements IItemsService {
         this.startTimer();
     }
 
-
     /**
      * Start the subscriptions.
      */
@@ -192,12 +183,12 @@ export class StardustItemsService implements IItemsService {
         this.stopSubscription();
 
         this._itemSubscriptionId = this._mqttClient.blocksRaw(
-            (topic: string, block: Uint8Array) => {
+            (_: string, block: Uint8Array) => {
                 this._items.push(Converter.bytesToHex(block));
             });
 
         this._metadataSubscriptionId = this._mqttClient.blocksReferenced(
-            (topic: string, metadata: IBlockMetadata) => {
+            (_: string, metadata: IBlockMetadata) => {
                 this._itemMetadata[metadata.blockId] = {
                     milestone: metadata.milestoneIndex,
                     referenced: metadata.referencedByMilestoneIndex,
@@ -217,33 +208,24 @@ export class StardustItemsService implements IItemsService {
                     ...this._itemMetadata[id]
                 };
 
-
-                const milestoneAnalytics = await this._chronicleService.milestoneAnalytics(milestoneId);
-
-                let blocksCount: number;
-                let perPayloadType: IMilestoneStatsPerPayloadType;
-                let perInclusionState: IMilestoneStatsPerInclusionState;
-
-                if (milestoneAnalytics) {
-                    blocksCount = milestoneAnalytics.blocksCount;
-                    perPayloadType = milestoneAnalytics.perPayloadType;
-                    perInclusionState = milestoneAnalytics.perInclusionState;
-                }
-
-                this._latestMilestones.unshift({
-                    blockId: id,
-                    milestoneId,
-                    index: milestone,
-                    timestamp: timestamp / 1000,
-                    blocksCount,
-                    perPayloadType,
-                    perInclusionState
-                });
-
-                if (this._latestMilestones.length > 15) {
-                    this._latestMilestones.pop();
-                }
+                // eslint-disable-next-line no-void
+                void this.updateLatestMilestoneCache(id, milestone, milestoneId, timestamp);
             });
+    }
+
+    private async updateLatestMilestoneCache(
+        blockId: string, milestoneIndex: number, milestoneId: string, timestamp: number
+    ): Promise<void> {
+        this._latestMilestonesCache.unshift({
+            blockId,
+            milestoneId,
+            index: milestoneIndex,
+            timestamp: timestamp / 1000
+        });
+
+        if (this._latestMilestonesCache.length > 15) {
+            this._latestMilestonesCache.pop();
+        }
     }
 
     /**

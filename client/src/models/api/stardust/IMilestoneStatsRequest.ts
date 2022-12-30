@@ -5,8 +5,8 @@ export interface IMilestoneStatsRequest {
     networkId: string;
 
     /**
-     * The milestone id to get the stats for.
+     * The milestone index to get the stats for.
      */
-    milestoneId: string;
+    milestoneIndex: string;
 }
 

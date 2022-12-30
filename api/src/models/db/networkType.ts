@@ -2,7 +2,7 @@
 const LEGACY_MAINNET = "legacy-mainnet";
 const MAINNET = "mainnet";
 const DEVNET = "devnet";
-const SHIMMER = "shimmer";
+export const SHIMMER = "shimmer";
 const TESTNET = "testnet";
 const ALPHANET = "alphanet";
 const CUSTOM = "custom";

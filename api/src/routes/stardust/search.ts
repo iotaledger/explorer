@@ -10,12 +10,12 @@ import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
  * Find the object from the network.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function search(
-    config: IConfiguration,
+    _: IConfiguration,
     request: ISearchRequest
 ): Promise<ISearchResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");

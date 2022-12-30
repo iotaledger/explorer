@@ -2,6 +2,7 @@ import { FetchHelper } from "../../helpers/fetchHelper";
 import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { IRawResponse } from "../../models/api/IRawResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
@@ -24,7 +25,7 @@ import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
-import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
@@ -40,9 +41,7 @@ import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsRe
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
-import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { IShimmerClaimedResponse } from "../../models/api/stats/IShimmerClaimed";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -56,7 +55,7 @@ export class StardustApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+    public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
             "get"
@@ -189,7 +188,7 @@ export class StardustApiClient extends ApiClient {
      */
     public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
         return this.callApi<unknown, IMilestoneAnalyticStats>(
-            `stardust/milestone/stats/${request.networkId}/${request.milestoneId}`,
+            `stardust/milestone/stats/${request.networkId}/${request.milestoneIndex}`,
             "get"
         );
     }
@@ -321,18 +320,22 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async analytics(request: IAnalyticStatsRequest): Promise<IAnalyticStats> {
-        return this.callApi<unknown, IAnalyticStats>(`stardust/analytics/${request.network}`, "get");
+    public async chronicleAnalytics(request: INetworkBoundGetRequest): Promise<IAnalyticStats> {
+        return this.callApi<unknown, IAnalyticStats>(
+            `stardust/analytics/${request.network}`,
+            "get"
+        );
     }
 
     /**
-     * Get the shimmer claiming stats.
+     * Get the influx analytics stats.
      * @param request The request to send.
+     * @param request.network The network to fetch for.
      * @returns The response from the request.
      */
-    public async shimmerClaimingAnalytics(request: IAnalyticStatsRequest): Promise<IShimmerClaimedResponse> {
-        return this.callApi<unknown, IShimmerClaimedResponse>(
-            `stardust/analytics/shimmer/${request.network}`, "get"
+    public async influxAnalytics(request: { network: string }): Promise<IInfluxDailyResponse> {
+        return this.callApi<unknown, IInfluxDailyResponse>(
+            `stardust/analytics/daily/${request.network}`, "get"
         );
     }
 
