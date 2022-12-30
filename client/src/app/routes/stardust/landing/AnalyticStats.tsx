@@ -2,35 +2,29 @@ import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
 import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
     analytics: IAnalyticStats | undefined;
     circulatingSupply: number | undefined;
-    shimmerClaimed: IShimmerClaimed | undefined;
     tokenInfo: INodeInfoBaseToken;
 }
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
-    { analytics, shimmerClaimed, circulatingSupply, tokenInfo }
+    { analytics, circulatingSupply, tokenInfo }
 ) => {
-    const nativeTokensCount = analytics?.nativeTokens?.count;
-    const nftsCount = analytics?.nfts?.count;
-    const totalAddresses = analytics?.totalAddresses?.totalActiveAddresses;
-    const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalByteCost;
+    const nativeTokensCount = analytics?.nativeTokens;
+    const nftsCount = analytics?.nfts;
+    const totalAddresses = analytics?.totalAddresses;
+    const lockedStorageDepositValue = analytics?.lockedStorageDeposit;
 
     let claimedAndPercentLabels: [string, string] | undefined;
-    if (shimmerClaimed?.count && circulatingSupply) {
+    if (analytics?.unclaimedShimmer && circulatingSupply) {
+        // magic number since influx doesn't account for the unclaimable portion of 20%
+        const shimmerClaimed = circulatingSupply - (Number.parseInt(analytics.unclaimedShimmer, 10) - 362724101812273);
         claimedAndPercentLabels = buildShimmerClaimedStats(
-            shimmerClaimed.count,
-            String(circulatingSupply),
-            tokenInfo
-        );
-    } else if (analytics?.shimmerClaimed?.count && circulatingSupply) {
-        claimedAndPercentLabels = buildShimmerClaimedStats(
-            analytics.shimmerClaimed.count,
+            shimmerClaimed.toString(),
             String(circulatingSupply),
             tokenInfo
         );

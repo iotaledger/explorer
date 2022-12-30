@@ -8,7 +8,7 @@
     max-width: 372px;
     position: absolute;
     right: 8%;
-    top: 32%;
+    top: 18%;
     display: grid;
     grid-template-columns: auto auto;
     padding: 10px 20px;
@@ -17,7 +17,7 @@
     backdrop-filter: blur(20px);
 
     @include desktop-down {
-        top: 35%;
+        top: 20%;
         right: 4%;
     }
 

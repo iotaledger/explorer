@@ -1,0 +1,98 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/fonts";
+@import "../../../../scss/variables";
+@import "../../../../scss/media-queries";
+
+.chart-header {
+    .chart-header__title {
+        h4 {
+            @include font-size(16px);
+
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            color: $gray-6;
+            font-family: $inter;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            line-height: 24px;
+            font-feature-settings: 'pnum' on, 'lnum' on, 'ss01' on;
+
+            @include phone-down {
+                padding-left: 4px;
+                padding-right: 4px;
+                @include font-size(14px);
+            }
+        }
+    }
+
+    .chart-header__select {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .select-wrapper {
+            position: relative;
+            margin-right: 20px;
+
+            select {
+                cursor: pointer;
+                background: var(--statistics-select-bg);
+                color: var(--card-color);
+                border-color: var(--statistics-select-border);
+                height: 40px;
+
+                @include phone-down {
+                    height: 32px;
+                }
+            }
+
+            .chevron {
+                top: 23%;
+                color: var(--card-color);
+                z-index: 1;
+
+                @include phone-down {
+                    top: 13%;
+                }
+            }
+        }
+    }
+    .charts-css.legend {
+        padding: 1rem;
+        border: 1px solid var(--legend-border-color);
+        list-style: none;
+        font-size: 1rem;
+        &.legend-inline {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-direction: normal;
+            -webkit-box-orient: horizontal;
+            -ms-flex-direction: row;
+            flex-direction: row;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+        }
+    }
+    .charts-css.legend li:first-child::before {
+        background-color: var(--modal-color,transparent);
+        border-color: var(--border-color,var(--border-color,#000));
+    }
+
+    .charts-css.legend-circle li::before {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+    }
+
+    .charts-css.legend li::before {
+        content: "";
+        display: inline-block;
+        vertical-align: middle;
+        -webkit-margin-end: .5rem;
+        margin-inline-end: .5rem;
+        border-width: 2px;
+        border-style: solid;
+    }
+}
+

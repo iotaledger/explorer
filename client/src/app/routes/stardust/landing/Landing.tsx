@@ -45,6 +45,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             label: "Custom network",
             network: CUSTOM,
             protocolVersion: STARDUST,
+            hasStatisticsSupport: false,
             isEnabled: false
         };
 
@@ -75,7 +76,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const {
             networkConfig, marketCapCurrency, priceCurrency,
             milestones, itemsPerSecond, confirmedItemsPerSecondPercent,
-            latestMilestoneIndex, networkAnalytics, shimmerClaimed
+            latestMilestoneIndex, networkAnalytics
         } = this.state;
 
         const { network } = this.props.match.params;
@@ -102,7 +103,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     </div>
                     <AnalyticStats
                         analytics={networkAnalytics}
-                        shimmerClaimed={shimmerClaimed}
                         circulatingSupply={networkConfig.circulatingSupply}
                         tokenInfo={tokenInfo}
                     />

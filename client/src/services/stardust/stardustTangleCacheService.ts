@@ -1,5 +1,9 @@
 /* eslint-disable camelcase */
-import { IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse, IOutputResponse, IOutputsResponse, OutputTypes } from "@iota/iota.js-stardust";
+import {
+    IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse,
+    IOutputResponse, IOutputsResponse, OutputTypes
+} from "@iota/iota.js-stardust";
+import moment from "moment";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
@@ -11,6 +15,7 @@ import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutpu
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
+import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
@@ -18,6 +23,7 @@ import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsReq
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
 import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
+import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { TangleCacheService } from "../tangleCacheService";
@@ -309,17 +315,19 @@ export class StardustTangleCacheService extends TangleCacheService {
     /**
      * Get the milestone analytics stats by milestone id.
      * @param networkId The network to search
-     * @param milestoneId The milestone to get the details for.
+     * @param milestoneIndex The milestone to get the details for.
      * @returns The details response.
      */
-    public async milestoneStats(networkId: string, milestoneId: string): Promise<IMilestoneAnalyticStats | undefined> {
-        const key = `milestoneStats-${milestoneId}`;
+    public async milestoneStats(
+        networkId: string, milestoneIndex: string
+    ): Promise<IMilestoneAnalyticStats | undefined> {
+        const key = `milestoneStats-${milestoneIndex}`;
         const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.milestoneStats;
 
         if (!cacheEntry) {
             const response: IMilestoneAnalyticStats = await this._api.milestoneStats({
                 networkId,
-                milestoneId
+                milestoneIndex
             });
 
             if (!response.error) {
@@ -350,7 +358,7 @@ export class StardustTangleCacheService extends TangleCacheService {
 
         if (!cacheEntry) {
             const response: IMilestoneBlocksResponse = await this._api.milestoneReferencedBlocks({
-                networkId,
+                network: networkId,
                 milestoneId
             });
 
@@ -580,6 +588,71 @@ export class StardustTangleCacheService extends TangleCacheService {
 
         return this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`]
             ?.data?.nftRegistryDetails;
+    }
+
+    /**
+     * Get the chronicle analytics Statistics.
+     * @param network The network to fetch data for.
+     * @param skipCache Skip looking in the cache.
+     * @returns The cached data.
+     */
+    public async chronicleAnalytics(
+        network: string,
+        skipCache: boolean = false
+    ): Promise<{ analyticStats?: IAnalyticStats; error?: string }> {
+        const cacheKey = `${network}--analytics-stats`;
+        const cacheEntry = this._stardustSearchCache[network][cacheKey];
+
+        if (!cacheEntry?.data?.analyticStats || skipCache) {
+            const response = await this._api.chronicleAnalytics({ network });
+
+            if (!response.error && Object.getOwnPropertyNames(response).length > 0) {
+                this._stardustSearchCache[network][cacheKey] = {
+                    data: { analyticStats: response },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            analyticStats: this._stardustSearchCache[network][cacheKey]?.data?.analyticStats
+        };
+    }
+
+    /**
+     * Get the Statistics data.
+     * @param network The network to fetch data for.
+     * @param skipCache Skip looking in the cache.
+     * @returns The cached data.
+     */
+    public async influxStatisticsData(
+        network: string,
+        skipCache: boolean = false
+    ): Promise<{ influxStats?: IInfluxDailyResponse; error?: string }> {
+        const cacheKey = `${network}--influx-stats`;
+        const cacheEntry = this._stardustSearchCache[network][cacheKey];
+
+        if (!cacheEntry?.data?.influxStats || skipCache) {
+            const response = await this._api.influxAnalytics({ network });
+
+            if (!response.error) {
+                this._stardustSearchCache[network][cacheKey] = {
+                    data: { influxStats: response },
+                    // Data should become stale at and of day (+5min?)
+                    cached: moment().add(1, "day").hours(0)
+                        .minutes(5)
+                        .valueOf()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            influxStats: this._stardustSearchCache[network][cacheKey]?.data?.influxStats
+        };
     }
 
     /**

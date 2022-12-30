@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IMilestoneBlocksRequest } from "../../../../models/api/stardust/milestone/IMilestoneBlocksRequest";
 import { IMilestoneBlocksResponse } from "../../../../models/api/stardust/milestone/IMilestoneBlocksResponse";
-import { IMilestoneStatsRequest } from "../../../../models/api/stardust/milestone/IMilestoneStatsRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -15,7 +15,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  */
 export async function get(
     _: IConfiguration,
-    request: IMilestoneStatsRequest
+    request: IMilestoneBlocksRequest
 ): Promise<IMilestoneBlocksResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
