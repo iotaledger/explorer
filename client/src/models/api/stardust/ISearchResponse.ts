@@ -101,12 +101,12 @@ export interface ISearchResponse extends IResponse {
     milestoneStats?: IMilestoneAnalyticStats;
 
     /**
-     * The chronicle analytic stats.
+     * The influx analytic stats.
      */
     analyticStats?: IAnalyticStats;
 
     /**
-     * Statistics data from influxDb.
+     * The influx daily graphs data.
      */
     influxStats?: IInfluxDailyResponse;
 
@@ -115,3 +115,4 @@ export interface ISearchResponse extends IResponse {
      */
     did?: string;
 }
+
