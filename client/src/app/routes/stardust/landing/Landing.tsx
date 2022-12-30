@@ -73,9 +73,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         super.componentDidUpdate(prevProps, prevState);
 
         if (this.props.match.params.network !== prevProps.match.params.network && this._networkConfig) {
-            console.log("componentDidUpdate");
             this.setState({ networkConfig: this._networkConfig });
-
             this.initializeLatestCachedMilestones(this.props.match.params.network).catch(
                 err => console.log("Failed to init cached milestones", err)
             );
