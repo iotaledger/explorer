@@ -6,33 +6,29 @@ import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
 type Result = ITransactionResponse | null | undefined;
 
-// eslint-disable-next-line jsdoc/require-returns
 /**
  *
  * @param network
  * @param txId
+ * @param query
  */
-export function useTx(network: string, txId: string): [Result, boolean] {
+export function useSearch(network: string, query: string): [Result, boolean] {
     const [tx, setTx] = useState<ITransactionResponse | null>();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isSearching, setIsSearching] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
         (async () => {
-            setIsLoading(true);
-            try {
-                const fetchedTx = await apiClient.transaction({ network, txId });
-                if (fetchedTx.error || fetchedTx.tx === undefined) {
-                    throw new Error(fetchedTx.error);
-                }
-                setTx(fetchedTx.tx);
-            } catch {
+            const fetchedTx = await apiClient.transaction({ network, txId: query });
+            if (fetchedTx.error || fetchedTx.tx === undefined) {
+                // eslint-disable-next-line no-warning-comments
+                // TODO: handle error
                 setTx(null);
-            } finally {
-                setIsLoading(false);
+                return;
             }
+            setTx(fetchedTx.tx);
         })();
-    }, [txId]);
+    }, [query]);
 
-    return [tx, isLoading];
+    return [tx, isSearching];
 }

@@ -33,15 +33,17 @@ export function useEpoch(network: string, epochId: string, index?: number): [Epo
     useEffect(() => {
         (async () => {
             setIsLoading(true);
-            const fetchedEpoch = await apiClient.epochById({ network, epochId, index });
-            if (fetchedEpoch.error) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
+            try {
+                const fetchedEpoch = await apiClient.epochById({ network, epochId, index });
+                if (fetchedEpoch.error || fetchedEpoch.epoch === undefined) {
+                    throw new Error(fetchedEpoch.error);
+                }
+                setEpoch(fetchedEpoch.epoch);
+            } catch {
                 setEpoch(null);
-                return;
+            } finally {
+                setIsLoading(false);
             }
-            setEpoch(fetchedEpoch.epoch);
-            setIsLoading(false);
         })();
     }, [epochId]);
 

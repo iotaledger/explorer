@@ -19,15 +19,17 @@ export function useOutput(network: string, outputId: string): [OutputResult, boo
     useEffect(() => {
         (async () => {
             setIsLoading(true);
-            const fetchedOutput = await apiClient.output({ network, outputId });
-            if (fetchedOutput.error || fetchedOutput.output === undefined) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
+            try {
+                const fetchedOutput = await apiClient.output({ network, outputId });
+                if (fetchedOutput.error || fetchedOutput.output === undefined) {
+                    throw new Error(fetchedOutput.error);
+                }
+                setOutput(fetchedOutput.output);
+            } catch {
                 setOutput(null);
-                return;
+            } finally {
+                setIsLoading(false);
             }
-            setOutput(fetchedOutput.output);
-            setIsLoading(false);
         })();
     }, [outputId]);
 

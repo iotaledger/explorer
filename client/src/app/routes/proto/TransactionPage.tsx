@@ -11,7 +11,7 @@ interface TransactionProps {
 const TransactionPage: React.FC<RouteComponentProps<TransactionProps>> = (
     { match: { params: { network, txId } } }
 ) => (
-    <div className="block-page">
+    <div className="transaction-page">
         <div className="wrapper">
             <div className="inner">
                 <div className="transaction-page--header">

@@ -21,16 +21,18 @@ export function useBlock(network: string, blockId: string): [BlockResult, string
     useEffect(() => {
         (async () => {
             setIsLoading(true);
-            const fetchedBlock = await apiClient.block({ network, id: blockId });
-            if (fetchedBlock.error || fetchedBlock.block === undefined) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
+            try {
+                const fetchedBlock = await apiClient.block({ network, id: blockId });
+                if (fetchedBlock.error || fetchedBlock.block === undefined) {
+                    throw new Error(fetchedBlock.error);
+                }
+                setBlock(fetchedBlock.block);
+                setPayloadName(cleanTypeName(fetchedBlock.block.payloadType.toString()));
+            } catch {
                 setBlock(null);
-                return;
+            } finally {
+                setIsLoading(false);
             }
-            setBlock(fetchedBlock.block);
-            setPayloadName(cleanTypeName(fetchedBlock.block.payloadType.toString()));
-            setIsLoading(false);
         })();
     }, [blockId]);
 

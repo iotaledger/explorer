@@ -1,13 +1,10 @@
 import { IWsNodeStatus } from "@iota/protonet.js";
 import React from "react";
-import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
 import { INetwork } from "../../../../models/config/INetwork";
 import Spinner from "../../../components/Spinner";
 import "./EpochFeed.scss";
 import ShortID, { LinkType } from "../ShortID";
 import EpochFeedItem from "./EpochFeedItem";
-
-// const FEED_ITEMS_MAX = 10;
 
 interface EpochFeedProps {
     networkConfig: INetwork;

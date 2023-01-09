@@ -27,15 +27,17 @@ export function useAddress(network: string, addressBase58: string): [Result, boo
     useEffect(() => {
         (async () => {
             setIsLoading(true);
-            const fetchedAddr = await apiClient.address({ network, addressBase58 });
-            if (fetchedAddr.error) {
-                // eslint-disable-next-line no-warning-comments
-                // TODO: handle error
+            try {
+                const fetchedAddr = await apiClient.address({ network, addressBase58 });
+                if (fetchedAddr.error) {
+                    throw new Error(fetchedAddr.error);
+                }
+                setAddr(fetchedAddr.address);
+            } catch {
                 setAddr(null);
-                return;
+            } finally {
+                setIsLoading(false);
             }
-            setAddr(fetchedAddr.address);
-            setIsLoading(false);
         })();
     }, [addressBase58]);
 

@@ -26,8 +26,11 @@ import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import ProtoAddressPage from "./routes/proto/AddressPage";
 import ProtoBlockPage from "./routes/proto/BlockPage";
+import ProtoConflictPage from "./routes/proto/ConflictPage";
 import ProtoEpochPage from "./routes/proto/EpochPage";
 import ProtoLanding from "./routes/proto/landing/Landing";
+import ProtoOutputPage from "./routes/proto/OutputPage";
+import ProtoSearch from "./routes/proto/Search";
 import ProtoTransactionPage from "./routes/proto/TransactionPage";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
@@ -227,6 +230,18 @@ const buildAppRoutes = (
         <Route exact path="/:network/address/:address"
             key={keys.next().value}
             component={ProtoAddressPage}
+        />,
+        <Route path="/:network/search/:query"
+            key={keys.next().value}
+            component={ProtoSearch}
+        />,
+        <Route path="/:network/output/:outputId"
+            key={keys.next().value}
+            component={ProtoOutputPage}
+        />,
+        <Route path="/:network/conflict/:conflictId"
+            key={keys.next().value}
+            component={ProtoConflictPage}
         />
         /* ,
         <Route path="/:network/visualizer/"
@@ -238,10 +253,6 @@ const buildAppRoutes = (
             component={StardustVisualizer}
         />,
         <Route exact path="/:network/validators/:epochId"
-            key={keys.next().value}
-            component={StardustLanding}
-        />,
-        <Route exact path="/:network/addr/:address"
             key={keys.next().value}
             component={StardustLanding}
         />

@@ -105,6 +105,19 @@ export const routes: IRoute[] = [
         path: "/proto/epoch/:network/voters/:index", method: "get",
         folder: "proto/epoch/voters", func: "get"
     },
+    { path: "/proto/conflict/:network/:conflictId", method: "get", folder: "proto/conflict", func: "get" },
+    {
+        path: "/proto/conflict/:network/:conflictId/children", method: "get",
+        folder: "proto/conflict/children", func: "get"
+    },
+    {
+        path: "/proto/conflict/:network/:conflictId/conflicts", method: "get",
+        folder: "proto/conflict/conflicts", func: "get"
+    },
+    {
+        path: "/proto/conflict/:network/:conflictId/voters", method: "get",
+        folder: "proto/conflict/voters", func: "get"
+    },
     { path: "/proto/output/:network/:outputId", method: "get", folder: "proto/output", func: "get" },
     {
         path: "/proto/output/metadata/:network/:outputId", method: "get",

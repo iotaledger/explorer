@@ -4,6 +4,11 @@ import { IBlockMetadataRequest } from "../../models/api/proto/IBlockMetadataRequ
 import { IBlockMetadataResponse } from "../../models/api/proto/IBlockMetadataResponse";
 import { IBlockRequest } from "../../models/api/proto/IBlockRequest";
 import { IBlockResponse } from "../../models/api/proto/IBlockResponse";
+import { IConflictChildrenResponse } from "../../models/api/proto/IConflictChildrenResponse";
+import { IConflictConflictsResponse } from "../../models/api/proto/IConflictConflictsResponse";
+import { IConflictRequest } from "../../models/api/proto/IConflictRequest";
+import { IConflictVotersResponse } from "../../models/api/proto/IConflictVotersResponse";
+import { IConflictWeightResponse } from "../../models/api/proto/IConflictWeightResponse";
 import { IEpochBlocksReponse } from "../../models/api/proto/IEpochBlocks";
 import { IEpochRequest } from "../../models/api/proto/IEpochRequest";
 import { IEpochResponse } from "../../models/api/proto/IEpochResponse";
@@ -71,6 +76,35 @@ export class ProtoApiClient extends ApiClient {
             "get"
         );
     }
+
+    public async conflict(request: IConflictRequest): Promise<IConflictWeightResponse> {
+        return this.callApi<unknown, IConflictWeightResponse>(
+            `proto/conflict/${request.network}/${request.conflictId}`,
+            "get"
+        );
+    }
+
+    public async conflictConflicts(request: IConflictRequest): Promise<IConflictConflictsResponse> {
+        return this.callApi<unknown, IConflictConflictsResponse>(
+            `proto/conflict/${request.network}/${request.conflictId}/conflicts`,
+            "get"
+        );
+    }
+
+    public async conflictChildren(request: IConflictRequest): Promise<IConflictChildrenResponse> {
+        return this.callApi<unknown, IConflictChildrenResponse>(
+            `proto/conflict/${request.network}/${request.conflictId}/children`,
+            "get"
+        );
+    }
+
+    public async conflictVoters(request: IConflictRequest): Promise<IConflictVotersResponse> {
+        return this.callApi<unknown, IConflictVotersResponse>(
+            `proto/conflict/${request.network}/${request.conflictId}/voters`,
+            "get"
+        );
+    }
+
 
     public async output(request: IOutputRequest): Promise<IOutputResponse> {
         return this.callApi<unknown, IOutputResponse>(

@@ -1,19 +1,20 @@
-import { ITransactionResponse } from "@iota/protonet.js";
+import { IConflictChildren } from "@iota/protonet.js";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
 import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
-type Result = ITransactionResponse | null | undefined;
+type Result = IConflictChildren | null | undefined;
 
 // eslint-disable-next-line jsdoc/require-returns
 /**
  *
  * @param network
  * @param txId
+ * @param conflictId
  */
-export function useTx(network: string, txId: string): [Result, boolean] {
-    const [tx, setTx] = useState<ITransactionResponse | null>();
+export function useConflictChildren(network: string, conflictId: string): [Result, boolean] {
+    const [children, setChildren] = useState<IConflictChildren | null>();
     const [isLoading, setIsLoading] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
@@ -21,18 +22,18 @@ export function useTx(network: string, txId: string): [Result, boolean] {
         (async () => {
             setIsLoading(true);
             try {
-                const fetchedTx = await apiClient.transaction({ network, txId });
-                if (fetchedTx.error || fetchedTx.tx === undefined) {
-                    throw new Error(fetchedTx.error);
+                const fetchedChildren = await apiClient.conflictChildren({ network, conflictId });
+                if (fetchedChildren.error || fetchedChildren.children === undefined) {
+                    throw new Error(fetchedChildren.error);
                 }
-                setTx(fetchedTx.tx);
+                setChildren(fetchedChildren.children);
             } catch {
-                setTx(null);
+                setChildren(null);
             } finally {
                 setIsLoading(false);
             }
         })();
-    }, [txId]);
+    }, [conflictId]);
 
-    return [tx, isLoading];
+    return [children, isLoading];
 }

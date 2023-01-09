@@ -97,7 +97,9 @@ const Output: React.FC<OutputProps> = (
                     <div className="output margin-l-t">
                         <div className="card--label">Output ID:</div>
                         <div className="card--value row middle">
-                            {output?.outputID.base58}
+                            <Link to={`/${network}/output/${output?.outputID.base58}`} className="margin-r-t">
+                                {output?.outputID.base58}
+                            </Link>
                             <CopyButton copy={output?.outputID.base58} />
                         </div>
                         <div className="card--label">Address:</div>
@@ -127,7 +129,9 @@ const Output: React.FC<OutputProps> = (
                     <div className="output margin-l-t">
                         <div className="card--label">Output ID:</div>
                         <div className="card--value row middle">
-                            {output?.outputID.base58}
+                            <Link to={`/${network}/output/${output?.outputID.base58}`} className="margin-r-t">
+                                {output?.outputID.base58}
+                            </Link>
                             <CopyButton copy={output?.outputID.base58} />
                         </div>
                         <div className="card--label">Address:</div>
@@ -157,7 +161,9 @@ const Output: React.FC<OutputProps> = (
                     <div className="output margin-l-t">
                         <div className="card--label">Output ID:</div>
                         <div className="card--value row middle">
-                            {output?.outputID.base58}
+                            <Link to={`/${network}/output/${output?.outputID.base58}`} className="margin-r-t">
+                                {output?.outputID.base58}
+                            </Link>
                             <CopyButton copy={output?.outputID.base58} />
                         </div>
                         <div className="card--label">Address:</div>

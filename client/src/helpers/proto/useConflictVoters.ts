@@ -1,19 +1,20 @@
-import { ITransactionResponse } from "@iota/protonet.js";
+import { IConflictVoters } from "@iota/protonet.js";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
 import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
-type Result = ITransactionResponse | null | undefined;
+type Result = IConflictVoters | null | undefined;
 
 // eslint-disable-next-line jsdoc/require-returns
 /**
  *
  * @param network
  * @param txId
+ * @param conflictId
  */
-export function useTx(network: string, txId: string): [Result, boolean] {
-    const [tx, setTx] = useState<ITransactionResponse | null>();
+export function useConflictVoters(network: string, conflictId: string): [Result, boolean] {
+    const [voters, setVoters] = useState<IConflictVoters | null>();
     const [isLoading, setIsLoading] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
@@ -21,18 +22,18 @@ export function useTx(network: string, txId: string): [Result, boolean] {
         (async () => {
             setIsLoading(true);
             try {
-                const fetchedTx = await apiClient.transaction({ network, txId });
-                if (fetchedTx.error || fetchedTx.tx === undefined) {
-                    throw new Error(fetchedTx.error);
+                const fetchedVoters = await apiClient.conflictVoters({ network, conflictId });
+                if (fetchedVoters.error || fetchedVoters.voters === undefined) {
+                    throw new Error(fetchedVoters.error);
                 }
-                setTx(fetchedTx.tx);
+                setVoters(fetchedVoters.voters);
             } catch {
-                setTx(null);
+                setVoters(null);
             } finally {
                 setIsLoading(false);
             }
         })();
-    }, [txId]);
+    }, [conflictId]);
 
-    return [tx, isLoading];
+    return [voters, isLoading];
 }

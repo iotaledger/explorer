@@ -1,19 +1,20 @@
-import { ITransactionResponse } from "@iota/protonet.js";
+import { IConflictConflicts, IConflictWeight } from "@iota/protonet.js";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
 import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
-type Result = ITransactionResponse | null | undefined;
+type Result = IConflictWeight | null | undefined;
 
 // eslint-disable-next-line jsdoc/require-returns
 /**
  *
  * @param network
  * @param txId
+ * @param conflictId
  */
-export function useTx(network: string, txId: string): [Result, boolean] {
-    const [tx, setTx] = useState<ITransactionResponse | null>();
+export function useConflict(network: string, conflictId: string): [Result, boolean] {
+    const [conflict, setConflict] = useState<IConflictWeight | null>();
     const [isLoading, setIsLoading] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
@@ -21,18 +22,18 @@ export function useTx(network: string, txId: string): [Result, boolean] {
         (async () => {
             setIsLoading(true);
             try {
-                const fetchedTx = await apiClient.transaction({ network, txId });
-                if (fetchedTx.error || fetchedTx.tx === undefined) {
-                    throw new Error(fetchedTx.error);
+                const fetchedConflict = await apiClient.conflict({ network, conflictId });
+                if (fetchedConflict.error || fetchedConflict.conflict === undefined) {
+                    throw new Error(fetchedConflict.error);
                 }
-                setTx(fetchedTx.tx);
+                setConflict(fetchedConflict.conflict);
             } catch {
-                setTx(null);
+                setConflict(null);
             } finally {
                 setIsLoading(false);
             }
         })();
-    }, [txId]);
+    }, [conflictId]);
 
-    return [tx, isLoading];
+    return [conflict, isLoading];
 }

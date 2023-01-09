@@ -51,7 +51,7 @@ const EpochFeedItem: React.FC<EpochFeedItemProps> = (
             </div>
             <div className="feed-item__content desktop-only">
                 <span className="feed-item--label">Commitment</span>
-                {epochBlocks ?
+                {epoch ?
                     <Link
                         className="feed-item--hash ms-id"
                         to={`/${network}/epoch/${epoch?.commitment}`}

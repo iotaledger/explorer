@@ -3,7 +3,6 @@ import { RouteComponentProps } from "react-router-dom";
 import { calcBalance, useAddress } from "../../../helpers/proto/useAddress";
 import "./AddressPage.scss";
 import Balances from "../../components/proto/Balances";
-import balanceTable from "../../components/proto/Balances";
 import Output from "../../components/proto/Output";
 import Spinner from "../../components/Spinner";
 
