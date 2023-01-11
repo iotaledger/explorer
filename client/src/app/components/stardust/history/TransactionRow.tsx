@@ -12,6 +12,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
     { outputId, transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts, darkBackgroundRow }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
+    const outputIdTransaction = outputId.slice(0, -4);
     const outputIdIndex = outputId.slice(-4);
     const ago = moment(date * 1000).fromNow();
 
@@ -33,7 +34,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
             <td className="output-id">
                 <Link to={`/${network}/output/${outputId}`} className="row margin-r-t">
                     <TruncateId
-                        id={outputId}
+                        id={outputIdTransaction}
                     />
                     <span className="highlight">{outputIdIndex}</span>
                 </Link>
