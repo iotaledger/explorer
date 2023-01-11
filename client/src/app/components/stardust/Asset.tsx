@@ -3,6 +3,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AssetProps } from "./AssetProps";
+import TruncateId from "./TruncateId";
 
 /**
  * Component which will display an asset.
@@ -17,12 +18,14 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
     return (
         tableFormat ? (
             <tr>
-                <td className="highlight">
+                <td className="row middle highlight">
                     <Link
                         to={`/${network}/foundry/${name}`}
                         className="margin-r-t"
                     >
-                        {shortName}
+                        <TruncateId
+                            id={name}
+                        />
                     </Link>
                 </td>
                 <td>{symbol ?? "-"}</td>

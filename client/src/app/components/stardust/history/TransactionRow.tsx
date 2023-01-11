@@ -5,15 +5,14 @@ import { Link } from "react-router-dom";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
+import TruncateId from "../TruncateId";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
     { outputId, transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts, darkBackgroundRow }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
-    const outputIdTransactionShort = `${outputId.slice(0, 11)}....${outputId.slice(-11, -4)}`;
     const outputIdIndex = outputId.slice(-4);
-    const transactionIdShort = `${transactionId.slice(0, 11)}....${transactionId.slice(-11)}`;
     const ago = moment(date * 1000).fromNow();
 
     const valueView = (
@@ -24,14 +23,19 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
 
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
-            <td className="transaction-id">
+            <td className="row middle transaction-id">
                 <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
-                    {transactionIdShort}
+                    <TruncateId
+                        id={transactionId}
+                    />
                 </Link>
             </td>
             <td className="output-id">
-                <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
-                    <span>{outputIdTransactionShort}</span> <span className="highlight">{outputIdIndex}</span>
+                <Link to={`/${network}/output/${outputId}`} className="row margin-r-t">
+                    <TruncateId
+                        id={outputId}
+                    />
+                    <span className="highlight">{outputIdIndex}</span>
                 </Link>
             </td>
             <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
