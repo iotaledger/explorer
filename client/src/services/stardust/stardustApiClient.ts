@@ -22,6 +22,7 @@ import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsReq
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
+import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
@@ -189,6 +190,18 @@ export class StardustApiClient extends ApiClient {
     public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
         return this.callApi<unknown, IMilestoneAnalyticStats>(
             `stardust/milestone/stats/${request.networkId}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the latest milestones.
+     * @param network The network in context.
+     * @returns The latest milestones response.
+     */
+    public async latestMilestones(network: string): Promise<ILatestMilestonesReponse> {
+        return this.callApi<unknown, ILatestMilestonesReponse>(
+            `stardust/milestone/latest/${network}`,
             "get"
         );
     }

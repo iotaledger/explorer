@@ -41,6 +41,7 @@
         "moment": "^2.29.4",
         "qr.js": "0.0.0",
         "react": "^18.2.0",
+        "react-datetime": "^3.2.0",
         "react-diff-viewer": "github:msarcev/react-diff-viewer#16b45a0f585913e57d5637db4d57f4c93a0c9559",
         "react-dom": "^18.2.0",
         "react-helmet": "^6.1.0",

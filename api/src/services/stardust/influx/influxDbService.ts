@@ -1,3 +1,4 @@
+import { IMilestoneAnalyticStats } from "../../../models/api/stats/IMilestoneAnalyticStats";
 import { ITimedEntry } from "../../../models/influx/IInfluxTimedEntries";
 import { InfluxDbClient } from "./influxDbClient";
 
@@ -117,6 +118,25 @@ export class InfluxDBService extends InfluxDbClient {
 
     public get milestoneAnalytics() {
         return this._milestoneCache;
+    }
+
+    public async fetchAnalyticsForMilestoneWithRetries(
+        milestoneIndex: number
+    ): Promise<IMilestoneAnalyticStats | undefined> {
+        const MAX_RETRY = 30;
+        const RETRY_TIMEOUT = 350;
+
+        let retries = 0;
+        let maybeMsStats = this._milestoneCache.get(milestoneIndex);
+
+        while (!maybeMsStats && retries < MAX_RETRY) {
+            retries += 1;
+            maybeMsStats = this._milestoneCache.get(milestoneIndex);
+
+            await new Promise(f => setTimeout(f, RETRY_TIMEOUT));
+        }
+
+        return maybeMsStats;
     }
 
     private mapToSortedValuesArray<T extends ITimedEntry>(cacheEntry: Map<string, T>): T[] {

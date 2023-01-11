@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
 import { INetwork } from "../../../../models/config/INetwork";
-import { IFeedItem } from "../../../../models/feed/IFeedItem";
+import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
 import Tooltip from "../../../components/Tooltip";
 import MilestoneFeedAnalyics from "../../../MilestoneFeedAnalytics";
 import "./MilestoneFeed.scss";
@@ -14,7 +14,7 @@ const FEED_ITEMS_MAX = 10;
 
 interface MilestoneFeedProps {
     networkConfig: INetwork;
-    milestones: IFeedItem[];
+    milestones: IMilestoneFeedItem[];
     latestMilestoneIndex?: number;
 }
 
@@ -25,13 +25,13 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
         <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span>
     ) : "";
 
-    const milestonesToRender: IFeedItem[] = [];
     let highestIndex = 0;
+    const milestonesToRender: IMilestoneFeedItem[] = [];
     for (const milestone of milestones) {
-        const msIndex = milestone.properties?.index as number;
-        if (msIndex > highestIndex) {
-            highestIndex = msIndex;
+        if (milestone.index > highestIndex) {
+            highestIndex = milestone.index;
         }
+
         milestonesToRender.push(milestone);
         if (milestonesToRender.length === FEED_ITEMS_MAX) {
             break;
@@ -55,16 +55,15 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <p>There are no milestones in the feed.</p>
                 )}
                 {milestonesToRender.map(milestone => {
-                    const blockId = HexHelper.addPrefix(milestone.id);
-                    const index = milestone.properties?.index as number;
-                    const milestoneId = milestone.properties?.milestoneId as string;
+                    const blockId = HexHelper.addPrefix(milestone.blockId);
+                    const milestoneId = milestone.milestoneId;
                     const milestoneIdShort = `${milestoneId.slice(0, 10)}....${milestoneId.slice(-10)}`;
-                    const timestamp = milestone.properties?.timestamp as number * 1000;
+                    const timestamp = milestone.timestamp * 1000;
                     const ago = moment(timestamp).fromNow();
                     const tooltipContent = DateHelper.formatShort(timestamp);
 
                     return (
-                        <div className="feed-item ms-feed" key={milestone.id}>
+                        <div className="feed-item ms-feed" key={milestoneId}>
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Index</span>
                                 <span className="feed-item--value ms-index">
@@ -72,7 +71,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                         className="feed-item--hash ms-id"
                                         to={`/${network}/block/${blockId}`}
                                     >
-                                        {index}
+                                        {milestone.index}
                                     </Link>
                                 </span>
                             </div>
@@ -87,7 +86,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                             </div>
                             <MilestoneFeedAnalyics
                                 network={network}
-                                milestoneIndex={index}
+                                milestoneIndex={milestone.index}
                             />
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Timestamp</span>
@@ -95,11 +94,11 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     <Tooltip
                                         tooltipContent={tooltipContent}
                                     >
-                                        {index === highestIndex ? secondsSinceLastView : ago}
+                                        {milestone.index === highestIndex ? secondsSinceLastView : ago}
                                     </Tooltip>
                                 </span>
                                 <span className="feed-item--value ms-timestamp mobile">
-                                    {tooltipContent} ({index === highestIndex ? secondsSinceLastView : ago})
+                                    {tooltipContent} ({milestone.index === highestIndex ? secondsSinceLastView : ago})
                                 </span>
                             </div>
                         </div>

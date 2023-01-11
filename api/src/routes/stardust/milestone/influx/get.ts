@@ -29,26 +29,14 @@ export async function get(
         return {};
     }
 
-    let influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
+    const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
 
     if (!influxService) {
         return { error: "Influx service not found for this network." };
     }
 
-    const MAX_RETRY = 30;
-    const RETRY_TIMEOUT = 350;
-
-    let retries = 0;
     const milestoneIndex = Number.parseInt(request.milestoneIndex, 10);
-    let maybeMsStats = influxService.milestoneAnalytics.get(milestoneIndex);
-
-    while (!maybeMsStats && retries < MAX_RETRY) {
-        retries += 1;
-        influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
-        maybeMsStats = influxService.milestoneAnalytics.get(milestoneIndex);
-
-        await new Promise(f => setTimeout(f, RETRY_TIMEOUT));
-    }
+    const maybeMsStats = await influxService.fetchAnalyticsForMilestoneWithRetries(milestoneIndex);
 
     return maybeMsStats ? {
         milestoneIndex: maybeMsStats.milestoneIndex,

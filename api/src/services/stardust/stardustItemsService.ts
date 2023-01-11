@@ -4,6 +4,7 @@ import { Converter } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/stardust/IFeedItemMetadata";
 import { IFeedSubscriptionItem } from "../../models/api/stardust/IFeedSubscriptionItem";
+import { ILatestMilestone } from "../../models/api/stardust/milestone/ILatestMilestonesResponse";
 import { IFeedService } from "../../models/services/IFeedService";
 import { IItemsService } from "../../models/services/stardust/IItemsService";
 
@@ -57,6 +58,11 @@ export class StardustItemsService implements IItemsService {
      * The most recent item metadata.
      */
     private _itemMetadata: { [id: string]: IFeedItemMetadata };
+
+    /**
+     * The latest milestones.
+     */
+    private readonly _latestMilestonesCache: ILatestMilestone[] = [];
 
     /**
      * Timer id.
@@ -116,6 +122,14 @@ export class StardustItemsService implements IItemsService {
     }
 
     /**
+     * Fetch the latest milestone stats.
+     * @returns The latest milestones.
+     */
+    public getLatestMilestones(): ILatestMilestone[] {
+        return this._latestMilestonesCache;
+    }
+
+    /**
      * Start the timer for tps.
      */
     private startTimer(): void {
@@ -162,7 +176,6 @@ export class StardustItemsService implements IItemsService {
         this.startTimer();
     }
 
-
     /**
      * Start the subscriptions.
      */
@@ -170,12 +183,12 @@ export class StardustItemsService implements IItemsService {
         this.stopSubscription();
 
         this._itemSubscriptionId = this._mqttClient.blocksRaw(
-            (topic: string, block: Uint8Array) => {
+            (_: string, block: Uint8Array) => {
                 this._items.push(Converter.bytesToHex(block));
             });
 
         this._metadataSubscriptionId = this._mqttClient.blocksReferenced(
-            (topic: string, metadata: IBlockMetadata) => {
+            (_: string, metadata: IBlockMetadata) => {
                 this._itemMetadata[metadata.blockId] = {
                     milestone: metadata.milestoneIndex,
                     referenced: metadata.referencedByMilestoneIndex,
@@ -188,13 +201,31 @@ export class StardustItemsService implements IItemsService {
             });
 
         this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
-            (milestone: number, id: string, timestamp: number) => {
+            async (milestone: number, id: string, timestamp: number, milestoneId: string) => {
                 this._itemMetadata[id] = {
                     milestone,
                     timestamp,
                     ...this._itemMetadata[id]
                 };
+
+                // eslint-disable-next-line no-void
+                void this.updateLatestMilestoneCache(id, milestone, milestoneId, timestamp);
             });
+    }
+
+    private async updateLatestMilestoneCache(
+        blockId: string, milestoneIndex: number, milestoneId: string, timestamp: number
+    ): Promise<void> {
+        this._latestMilestonesCache.unshift({
+            blockId,
+            milestoneId,
+            index: milestoneIndex,
+            timestamp: timestamp / 1000
+        });
+
+        if (this._latestMilestonesCache.length > 15) {
+            this._latestMilestonesCache.pop();
+        }
     }
 
     /**
