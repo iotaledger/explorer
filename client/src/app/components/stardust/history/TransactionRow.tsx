@@ -24,7 +24,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
 
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
-            <td className="row middle transaction-id">
+            <td className="row center transaction-id">
                 <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
                     <TruncateId
                         id={transactionId}
@@ -32,7 +32,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                 </Link>
             </td>
             <td className="output-id">
-                <Link to={`/${network}/output/${outputId}`} className="row margin-r-t">
+                <Link to={`/${network}/output/${outputId}`} className="row center margin-r-t">
                     <TruncateId
                         id={outputIdTransaction}
                     />

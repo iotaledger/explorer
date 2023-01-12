@@ -1,17 +1,9 @@
 .truncate-id {
     span {
-        white-space: nowrap;
-        overflow: hidden;
-        display: inline-block;
-    }
-
-    span:first-child {
         width: 100px;
         text-overflow: ellipsis;
-    }
-
-    span + span {
-        text-align: left;
-        margin-left: -5px;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
     }
 }
