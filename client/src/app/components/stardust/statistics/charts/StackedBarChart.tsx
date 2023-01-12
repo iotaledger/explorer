@@ -7,6 +7,7 @@ import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
@@ -21,6 +22,7 @@ import "./Chart.scss";
 
 interface StackedBarChartProps {
     title?: string;
+    info?: ModalData;
     subgroups: string[];
     groupLabels?: string[];
     colors: string[];
@@ -31,6 +33,7 @@ const DAY_LABEL_FORMAT = "DD MMM";
 
 const StackedBarChart: React.FC<StackedBarChartProps> = ({
     title,
+    info,
     subgroups,
     groupLabels,
     colors,
@@ -165,6 +168,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
+                data={info?.data}
                 legend={{
                     labels: groupLabels ?? subgroups,
                     colors
@@ -186,6 +190,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
 StackedBarChart.defaultProps = {
     groupLabels: undefined,
+    info: undefined,
     title: undefined
 };
 

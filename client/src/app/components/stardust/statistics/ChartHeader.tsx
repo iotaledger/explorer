@@ -1,9 +1,11 @@
 import classNames from "classnames";
 import React from "react";
+import Modal from "../../Modal";
+import { ModalData } from "../../ModalProps";
 import ChartLegend from "./ChartLegend";
 import "./ChartHeader.scss";
 
-interface ChartHeaderProps {
+interface ChartHeaderProps extends Partial<ModalData> {
     title?: string;
     onTimespanSelected: (value: TimespanOption) => void;
     disabled?: boolean;
@@ -15,12 +17,15 @@ interface ChartHeaderProps {
 
 export type TimespanOption = "7" | "30" | "90" | "all";
 
-const ChartHeader: React.FC<ChartHeaderProps> = ({ title, onTimespanSelected, disabled, legend }) => (
+const ChartHeader: React.FC<ChartHeaderProps> = ({ title, data, onTimespanSelected, disabled, legend }) => (
     <div className="chart-header">
         <div className="row space-between margin-b-m ">
             {title && (
                 <div className="chart-header__title">
                     <h4>{title}</h4>
+                    {data && (
+                        <Modal icon="info" data={data} />
+                    )}
                 </div>
             )}
 

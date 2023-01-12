@@ -9,6 +9,7 @@ import { line } from "d3-shape";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
@@ -23,12 +24,13 @@ import "./Chart.scss";
 
 interface LineChartProps {
     title?: string;
+    info?: ModalData;
     data: { [name: string]: number; time: number }[];
     label?: string;
     color: string;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
+const LineChart: React.FC<LineChartProps> = ({ title, info, data, label, color }) => {
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
         if (chartWrapper !== null) {
@@ -209,6 +211,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
         <div className={classNames("chart-wrapper line-chart", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
+                data={info?.data}
                 onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
@@ -225,6 +228,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, data, label, color }) => {
 };
 
 LineChart.defaultProps = {
+    info: undefined,
     label: undefined,
     title: undefined
 };

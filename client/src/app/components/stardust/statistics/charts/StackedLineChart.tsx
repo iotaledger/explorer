@@ -8,6 +8,7 @@ import { area, line, SeriesPoint, stack } from "d3-shape";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
@@ -22,6 +23,7 @@ import "./Chart.scss";
 
 interface StackedLineChartProps {
     title?: string;
+    info?: ModalData;
     subgroups: string[];
     groupLabels?: string[];
     colors: string[];
@@ -30,6 +32,7 @@ interface StackedLineChartProps {
 
 const StackedLineChart: React.FC<StackedLineChartProps> = ({
     title,
+    info,
     subgroups,
     groupLabels,
     colors,
@@ -267,6 +270,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
+                data={info?.data}
                 onTimespanSelected={value => setTimespan(value)}
                 legend={{
                     labels: groupLabels ?? subgroups,
@@ -288,6 +292,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
 StackedLineChart.defaultProps = {
     groupLabels: undefined,
+    info: undefined,
     title: undefined
 };
 
