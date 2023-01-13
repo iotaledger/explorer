@@ -7,7 +7,7 @@
 .refblocks {
     .refblocks__table {
         width: 100%;
-        border-spacing: 18px;
+        border-spacing: 0 18px;
         border-collapse: separate;
 
         @include tablet-down {

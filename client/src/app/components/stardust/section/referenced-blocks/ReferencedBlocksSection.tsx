@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import referencedBlocksMessage from "../../../../../assets/modals/stardust/block/milestone-referenced-blocks.json";
-import Modal from "../../../Modal";
 import Pagination from "../../../Pagination";
 import Spinner from "../../../Spinner";
 import ReferencedBlocksSectionRow from "./ReferencedBlocksSectionRow";
@@ -36,12 +34,6 @@ const ReferenceBlocksSection: React.FC<ReferenceBlocksSectionProps> = ({ blockId
 
     return (
         <div className="section refblocks">
-            <div className="section--header row space-between">
-                <div className="row middle">
-                    <h2>Referenced Blocks</h2>
-                    <Modal icon="info" data={referencedBlocksMessage} />
-                </div>
-            </div>
             {currentPage.length > 0 ? (
                 <React.Fragment>
                     <table className="refblocks__table">

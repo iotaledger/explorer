@@ -1,8 +1,6 @@
 import { IBlockMetadata } from "@iota/iota.js-stardust";
 import * as H from "history";
 import React from "react";
-import metadataMessage from "../../../assets/modals/stardust/block/metadata.json";
-import Modal from "../Modal";
 import Spinner from "../Spinner";
 import InclusionState from "./InclusionState";
 
@@ -19,14 +17,6 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
     { network, metadata, metadataError, conflictReason, isLinksDisabled, history }
 ) => (
     <div className="section metadata-section">
-        <div className="section--header section--header__space-between">
-            <div className="row middle">
-                <h2>
-                    Metadata
-                </h2>
-                <Modal icon="info" data={metadataMessage} />
-            </div>
-        </div>
         <div className="section--data">
             {!metadata && !metadataError && (<Spinner />)}
             {metadataError && (

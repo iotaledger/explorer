@@ -38,6 +38,7 @@
                 border-radius: 0;
                 white-space: nowrap;
                 border: none;
+                padding-right: 4px;
 
                 &:focus {
                     box-shadow: none;
@@ -47,6 +48,10 @@
                     font-size: 12px;
                     padding: 3px 5px;
                 }
+            }
+
+            .modal button {
+                padding-left: 0;
             }
 
             .tab-counter {

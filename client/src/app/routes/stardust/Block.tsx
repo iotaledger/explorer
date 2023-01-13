@@ -5,6 +5,12 @@ import {
 } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
+import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
+import milestonePayloadInfo from "../../../assets/modals/stardust/block/milestone-payload.json";
+import referencedBlocksInfo from "../../../assets/modals/stardust/block/milestone-referenced-blocks.json";
+import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
+import taggedDataPayloadInfo from "../../../assets/modals/stardust/block/tagged-data-payload.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
@@ -25,7 +31,6 @@ import BlockTangleState from "../../components/stardust/BlockTangleState";
 import ReferenceBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
-import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import { BlockData, BlockMetadata } from "./BlockState";
@@ -200,6 +205,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     const isMarketed = isMarketedNetwork(network);
     const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
+    const isTransactionBlock = block?.payload?.type === TRANSACTION_PAYLOAD_TYPE;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
     const milestoneId = isMilestoneBlock ?
@@ -388,11 +394,19 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         {
                             "Referenced Blocks": {
                                 disabled: !milestoneReferencedBlocks,
-                                counter: milestoneReferencedBlocks?.blocks?.length ?? undefined
+                                counter: milestoneReferencedBlocks?.blocks?.length ?? undefined,
+                                infoContent: referencedBlocksInfo
                             },
-                            Payload: { disabled: !block?.payload }
+                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
+                            "Metadata": { infoContent: metadataInfo }
                         } :
-                        { Payload: { disabled: !block?.payload } }
+                        {
+                            Payload: {
+                                disabled: !block?.payload,
+                                infoContent: isTransactionBlock ? transactionPayloadInfo : taggedDataPayloadInfo
+                            },
+                            "Metadata": { infoContent: metadataInfo }
+                        }
                 }
             >
                 {tabbedSections}
