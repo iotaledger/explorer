@@ -33,11 +33,10 @@
 
         .signatures--entry {
             display: flex;
-            flex-direciton: column;
             background-color: var(--light-bg);
             border-radius: 8px;
 
-            &:not(last-child) {
+            &:not(:last-child) {
                 margin-bottom: 12px;
             }
 

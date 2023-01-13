@@ -22,7 +22,7 @@ import Spinner from "../../components/Spinner";
 import BlockMetadataSection from "../../components/stardust/BlockMetadataSection";
 import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
-import ReferenceBlocksSection from "../../components/stardust/ReferencedBlocksSection";
+import ReferenceBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import mainHeaderMessage from "./../../../assets/modals/stardust/block/main-header.json";

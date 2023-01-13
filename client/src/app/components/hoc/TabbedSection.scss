@@ -36,6 +36,7 @@
                 background: var(--associated-outputs-tabs-bg);
                 color: $gray-6;
                 border-radius: 0;
+                white-space: nowrap;
                 border: none;
 
                 &:focus {
