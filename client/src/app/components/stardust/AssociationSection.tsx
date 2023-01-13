@@ -15,7 +15,7 @@ import Spinner from "../Spinner";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
 import "./AssociationSection.scss";
-import TruncateId from "./TruncateId";
+import TruncatedId from "./TruncatedId";
 
 interface IAssociatedSectionProps {
     association: AssociationType;
@@ -152,9 +152,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                                     to={`/${network}/output/${outputId}`}
                                                     className="margin-r-t output-id"
                                                 >
-                                                    <TruncateId
-                                                        id={outputId}
-                                                    />
+                                                    <TruncatedId id={outputId} />
                                                 </Link>
                                             </td>
                                             <td className="date-created">{dateCreated} ({ago})</td>

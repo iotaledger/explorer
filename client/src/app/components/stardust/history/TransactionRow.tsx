@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
-import TruncateId from "../TruncateId";
+import TruncatedId from "../TruncatedId";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
@@ -26,16 +26,12 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
         <tr className={darkBackgroundRow ? "dark" : ""}>
             <td className="row center transaction-id">
                 <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
-                    <TruncateId
-                        id={transactionId}
-                    />
+                    <TruncatedId id={transactionId} />
                 </Link>
             </td>
             <td className="output-id">
                 <Link to={`/${network}/output/${outputId}`} className="row center margin-r-t">
-                    <TruncateId
-                        id={outputIdTransaction}
-                    />
+                    <TruncatedId id={outputIdTransaction} />
                     <span className="highlight">{outputIdIndex}</span>
                 </Link>
             </td>

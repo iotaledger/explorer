@@ -6,7 +6,7 @@ import { DateHelper } from "../../../../helpers/dateHelper";
 import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
 import { INetwork } from "../../../../models/config/INetwork";
 import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
-import TruncateId from "../../../components/stardust/TruncateId";
+import TruncatedId from "../../../components/stardust/TruncatedId";
 import Tooltip from "../../../components/Tooltip";
 import MilestoneFeedAnalyics from "../../../MilestoneFeedAnalytics";
 import "./MilestoneFeed.scss";
@@ -81,9 +81,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     className="feed-item--hash ms-id"
                                     to={`/${network}/block/${blockId}`}
                                 >
-                                    <TruncateId
-                                        id={milestoneId}
-                                    />
+                                    <TruncatedId id={milestoneId} />
                                 </Link>
                             </div>
                             <MilestoneFeedAnalyics

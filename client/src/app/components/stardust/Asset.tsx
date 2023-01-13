@@ -3,7 +3,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AssetProps } from "./AssetProps";
-import TruncateId from "./TruncateId";
+import TruncatedId from "./TruncatedId";
 
 /**
  * Component which will display an asset.
@@ -23,9 +23,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
                         to={`/${network}/foundry/${name}`}
                         className="margin-r-t"
                     >
-                        <TruncateId
-                            id={name}
-                        />
+                        <TruncatedId id={name} />
                     </Link>
                 </td>
                 <td>{symbol ?? "-"}</td>
