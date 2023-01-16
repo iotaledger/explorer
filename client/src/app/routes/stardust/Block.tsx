@@ -280,16 +280,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 <div className="row middle">
                     <h2>General</h2>
                 </div>
-                <BlockTangleState
-                    network={network}
-                    status={blockTangleStatus}
-                    milestoneIndex={metadata?.referencedByMilestoneIndex ?? metadata?.milestoneIndex}
-                    hasConflicts={isLinksDisabled}
-                    conflictReason={conflictReason}
-                    onClick={metadata?.referencedByMilestoneIndex
-                        ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
-                        : undefined}
-                />
             </div>
             <div className="section--data">
                 <div className="label">
@@ -436,6 +426,16 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             onToggle={e => setAdvancedMode(e.target.checked)}
                         />
                     </div>
+                    <BlockTangleState
+                        network={network}
+                        status={blockTangleStatus}
+                        milestoneIndex={metadata?.referencedByMilestoneIndex ?? metadata?.milestoneIndex}
+                        hasConflicts={isLinksDisabled}
+                        conflictReason={conflictReason}
+                        onClick={metadata?.referencedByMilestoneIndex
+                            ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
+                            : undefined}
+                    />
                     <div className="section">{blockContent}</div>
                 </div>
             </div>

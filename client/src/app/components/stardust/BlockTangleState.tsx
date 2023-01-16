@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import moment from "moment";
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -57,6 +58,7 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const ago = this.state.timestamp ? moment(this.state.timestamp * 1000).fromNow() : undefined;
         return (
             <div className="blocks-tangle-state">
                 {this.props.status === "referenced" &&
@@ -75,17 +77,17 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
                                         }}
                                     >Milestone {this.props.milestoneIndex}
                                     </span>
-                                    {" "} {this.state.timestamp}
+                                    {" "} {this.state.formattedTimestamp}
                                 </div>
                             ) : ""}
                     </div>}
 
                 {this.props.status === "milestone" &&
                     <div className="block-tangle-reference">
-
                         {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
                             ? (
                                 <div>
+                                    Confirmed by {" "}
                                     <span
                                         className="block-tangle-reference__link"
                                         onClick={() => {
@@ -95,7 +97,7 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
                                         }}
                                     >Milestone  {" "} {this.props.milestoneIndex}
                                     </span>
-                                    {" "} created at {this.state.timestamp}
+                                    {" "} created {ago}
                                 </div>
                             ) : ""}
                     </div>}
@@ -141,7 +143,8 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
             );
             if (result) {
                 this.setState({
-                    timestamp: result.milestone?.timestamp
+                    timestamp: result.milestone?.timestamp,
+                    formattedTimestamp: result.milestone?.timestamp
                         ? ` at ${DateHelper.formatShort(DateHelper.milliseconds(result.milestone?.timestamp))}`
                         : undefined,
                     blockId: result.blockId
