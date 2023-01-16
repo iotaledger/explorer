@@ -8,10 +8,8 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
-import Modal from "../../components/Modal";
 import DataToggle from "../DataToggle";
 import ReceiptPayload from "../stardust/ReceiptPayload";
-import milestoneMessage from "./../../../assets/modals/stardust/block/milestone-payload.json";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import { MilestonePayloadState } from "./MilestonePayloadState";
 import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
@@ -94,10 +92,6 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             <React.Fragment>
                 <div className="section milestone-payload">
                     <div className="section--header row space-between">
-                        <div className="row middle">
-                            <h2>Milestone Payload</h2>
-                            <Modal icon="info" data={milestoneMessage} />
-                        </div>
                         {(previousMsBlockId || nextMsBlockId) && (
                             <div className="section--data row middle">
                                 <button
