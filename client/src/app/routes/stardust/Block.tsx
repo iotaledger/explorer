@@ -280,6 +280,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 <div className="row middle">
                     <h2>General</h2>
                 </div>
+                <Switcher
+                    label="Advanced View"
+                    checked={advancedMode}
+                    onToggle={e => setAdvancedMode(e.target.checked)}
+                />
             </div>
             <div className="section--data">
                 <div className="label">
@@ -420,11 +425,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             <Modal icon="info" data={mainHeaderMessage} />
                             {isLoading && <Spinner />}
                         </div>
-                        <Switcher
-                            label="Advanced View"
-                            checked={advancedMode}
-                            onToggle={e => setAdvancedMode(e.target.checked)}
-                        />
                     </div>
                     <BlockTangleState
                         network={network}
