@@ -28,6 +28,7 @@ import Spinner from "../../components/Spinner";
 import BlockMetadataSection from "../../components/stardust/BlockMetadataSection";
 import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
+import MilestoneControls from "../../components/stardust/MilestoneControls";
 import ReferenceBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
 import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
@@ -425,6 +426,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             <Modal icon="info" data={mainHeaderMessage} />
                             {isLoading && <Spinner />}
                         </div>
+                        {isMilestoneBlock && (
+                            <MilestoneControls
+                                milestone={block.payload as IMilestonePayload}
+                            />
+                        )}
                     </div>
                     <BlockTangleState
                         network={network}
