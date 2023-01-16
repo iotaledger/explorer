@@ -8,6 +8,7 @@
     width: 100%;
     border-spacing: 12px 28px;
     border-collapse: separate;
+    table-layout: fixed;
 
     @include tablet-down {
         display: none;
@@ -30,9 +31,6 @@
         }
 
         td {
-            &:not(:first-child) {
-                padding-left: 16px;
-            }
             color: var(--body-color);
 
             &.highlight {
@@ -45,6 +43,10 @@
                 line-height: 20px;
             }
         }
+    }
+
+    .token__name {
+        align-items: center;        
     }
 }
 
@@ -88,4 +90,12 @@
             }
         }
     }
+}
+
+.token__name {
+    display: flex;
+}
+.token__logo {
+    height: 16px;
+    width: 16px;
 }

@@ -1,24 +1,10 @@
+import { ITokenDetails } from "../../../models/api/stardust/foundry/ITokenDetails";
+
 export interface AssetProps {
     /**
-     * The name of an asset.
+     * Token
      */
-    name: string;
-    /**
-     * The symbol of an asset
-     */
-    symbol?: string;
-    /**
-     * Total quantity related to an asset
-     */
-    amount: number;
-    /**
-     * Price of an asset
-     */
-    price?: number;
-    /**
-     * Value of an asset
-     */
-    value?: number;
+    token: ITokenDetails;
     /**
      * Network
      */
@@ -27,4 +13,8 @@ export interface AssetProps {
      * True if the asset is rendered like a table
      */
     tableFormat?: boolean;
+    /**
+     * True if token data is still loading
+     */
+    isLoading?: boolean;
 }
