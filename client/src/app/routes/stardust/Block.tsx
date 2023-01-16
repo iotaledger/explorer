@@ -435,7 +435,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <BlockTangleState
                         network={network}
                         status={blockTangleStatus}
-                        milestoneIndex={metadata?.referencedByMilestoneIndex ?? metadata?.milestoneIndex}
+                        milestoneIndex={metadata?.referencedByMilestoneIndex}
                         hasConflicts={isLinksDisabled}
                         conflictReason={conflictReason}
                         onClick={metadata?.referencedByMilestoneIndex

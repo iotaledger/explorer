@@ -2,7 +2,6 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { ReactNode } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { DateHelper } from "../../../helpers/dateHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../AsyncComponent";
@@ -58,77 +57,85 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const ago = this.state.timestamp ? moment(this.state.timestamp * 1000).fromNow() : undefined;
+        const { timestamp, blockId } = this.state;
+        const { status, milestoneIndex, hasConflicts, conflictReason, onClick } = this.props;
+        const ago = timestamp ? moment(timestamp * 1000).fromNow() : undefined;
+
         return (
             <div className="blocks-tangle-state">
-                {this.props.status === "referenced" &&
+                {status === "milestone" &&
                     <div className="block-tangle-reference">
-
-                        {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
-                            ? (
-                                <div>
-                                    Referenced by {" "}
-                                    <span
-                                        className="block-tangle-reference__link"
-                                        onClick={() => {
-                                            if (this.props.onClick) {
-                                                this.props.onClick(this.state.blockId);
-                                            }
-                                        }}
-                                    >Milestone {this.props.milestoneIndex}
-                                    </span>
-                                    {" "} {this.state.formattedTimestamp}
-                                </div>
-                            ) : ""}
+                        <div className="row">
+                            <div
+                                className={
+                                    classNames(
+                                        "block-tangle-state",
+                                        { "block-tangle-state__no-click": !onClick },
+                                        { "block-tangle-state__confirmed": milestoneIndex },
+                                        { "block-tangle-state__pending": !milestoneIndex }
+                                    )
+                                }
+                            >
+                                {milestoneIndex && ("Confirmed")}
+                                {!milestoneIndex && ("Pending")}
+                            </div>
+                            {milestoneIndex && (
+                                <span className="row middle">
+                                    Created {" "} {ago}
+                                </span>
+                            )}
+                        </div>
                     </div>}
 
-                {this.props.status === "milestone" &&
-                    <div className="block-tangle-reference">
-                        {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
-                            ? (
-                                <div>
-                                    Confirmed by {" "}
-                                    <span
-                                        className="block-tangle-reference__link"
-                                        onClick={() => {
-                                            if (this.props.onClick) {
-                                                this.props.onClick(this.state.blockId);
-                                            }
-                                        }}
-                                    >Milestone  {" "} {this.props.milestoneIndex}
-                                    </span>
-                                    {" "} created {ago}
-                                </div>
-                            ) : ""}
-                    </div>}
-
-                {this.props.status !== "milestone" &&
-                    <div
-                        className={
-                            classNames(
-                                "block-tangle-state",
-                                { "block-tangle-state__no-click": !this.props.onClick },
-                                {
-                                    "block-tangle-state__confirmed": this.props.status === "referenced" &&
-                                        !this.props.hasConflicts
-                                },
-                                {
-                                    "block-tangle-state__conflicting": this.props.status === "referenced" &&
-                                        this.props.hasConflicts
-                                },
-                                { "block-tangle-state__pending": this.props.status === "pending" },
-                                { "block-tangle-state__unknown": this.props.status === "unknown" }
-                            )
-                        }
-                    >
-                        {this.props.status === "unknown" && ("Unknown")}
-                        {this.props.status === "referenced" && !this.props.hasConflicts && ("Confirmed")}
-                        {this.props.status === "pending" && ("Pending")}
-                        {this.props.hasConflicts &&
-                            <Tooltip tooltipContent={this.props.conflictReason}>
-                                <span style={{ color: "#ca493d" }}>Conflicting</span>
-                            </Tooltip>}
-                    </div>}
+                {status !== "milestone" &&
+                    <React.Fragment>
+                        <div
+                            className={
+                                classNames(
+                                    "block-tangle-state",
+                                    { "block-tangle-state__no-click": !onClick },
+                                    {
+                                        "block-tangle-state__confirmed": status === "referenced" &&
+                                            !hasConflicts
+                                    },
+                                    {
+                                        "block-tangle-state__conflicting": status === "referenced" &&
+                                            hasConflicts
+                                    },
+                                    { "block-tangle-state__pending": status === "pending" },
+                                    { "block-tangle-state__unknown": status === "unknown" }
+                                )
+                            }
+                        >
+                            {status === "unknown" && ("Unknown")}
+                            {status === "referenced" && !hasConflicts && ("Confirmed")}
+                            {status === "pending" && ("Pending")}
+                            {hasConflicts &&
+                                <Tooltip tooltipContent={conflictReason}>
+                                    <span style={{ color: "#ca493d" }}>Conflicting</span>
+                                </Tooltip>}
+                        </div>
+                        {status === "referenced" && (
+                            <div className="block-tangle-reference">
+                                {milestoneIndex !== undefined && milestoneIndex > 1
+                                    ? (
+                                        <div>
+                                            Referenced by {" "}
+                                            <span
+                                                className="block-tangle-reference__link"
+                                                onClick={() => {
+                                                    if (onClick) {
+                                                        onClick(blockId);
+                                                    }
+                                                }}
+                                            >Milestone {milestoneIndex}
+                                            </span>
+                                            {" "} {ago}
+                                        </div>
+                                    ) : ""}
+                            </div>
+                        )}
+                    </React.Fragment>}
             </div>
         );
     }
@@ -144,9 +151,6 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
             if (result) {
                 this.setState({
                     timestamp: result.milestone?.timestamp,
-                    formattedTimestamp: result.milestone?.timestamp
-                        ? ` at ${DateHelper.formatShort(DateHelper.milliseconds(result.milestone?.timestamp))}`
-                        : undefined,
                     blockId: result.blockId
                 });
             }

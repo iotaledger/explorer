@@ -302,7 +302,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                 <BlockTangleState
                                     network={network}
                                     status={blockTangleStatus}
-                                    milestoneIndex={metadata?.referencedByMilestoneIndex ?? metadata?.milestoneIndex}
+                                    milestoneIndex={metadata?.referencedByMilestoneIndex}
                                     hasConflicts={metadata?.ledgerInclusionState === "conflicting"}
                                     onClick={metadata?.referencedByMilestoneIndex
                                         ? (blockId: string) => this.props.history.push(`/${network}/block/${blockId}`)
