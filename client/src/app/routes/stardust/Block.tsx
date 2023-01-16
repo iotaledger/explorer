@@ -9,8 +9,8 @@ import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header
 import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
 import milestonePayloadInfo from "../../../assets/modals/stardust/block/milestone-payload.json";
 import referencedBlocksInfo from "../../../assets/modals/stardust/block/milestone-referenced-blocks.json";
-import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
 import taggedDataPayloadInfo from "../../../assets/modals/stardust/block/tagged-data-payload.json";
+import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
@@ -210,6 +210,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
     const milestoneId = isMilestoneBlock ?
         milestoneIdFromMilestonePayload(block.payload as IMilestonePayload) : undefined;
+    const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
+    const pageTitle = isMilestoneBlock ?
+        `Milestone Block ${milestoneIndex}` :
+        (isTransactionBlock ? "Transaction Block" : "Block");
 
     if (blockError) {
         return (
@@ -219,7 +223,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         <div className="block--header">
                             <div className="row middle">
                                 <h1>
-                                    Block
+                                    {pageTitle}
                                 </h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
                             </div>
@@ -421,7 +425,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <div className="block--header">
                         <div className="row middle">
                             <h1>
-                                Block
+                                {pageTitle}
                             </h1>
                             <Modal icon="info" data={mainHeaderMessage} />
                             {isLoading && <Spinner />}
