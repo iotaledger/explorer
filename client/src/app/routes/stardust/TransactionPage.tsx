@@ -4,13 +4,16 @@ import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import transactionPayloadMessage from "../../../assets/modals/stardust/transaction/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { AsyncState } from "../../../helpers/promise/AsyncState";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
+import FiatValue from "../../components/FiatValue";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
@@ -62,7 +65,8 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
 
         this.state = {
             blockTangleStatus: "pending",
-            jobToStatus: new Map<string, PromiseStatus>()
+            jobToStatus: new Map<string, PromiseStatus>(),
+            isFormattedBalance: true
         };
     }
 
@@ -95,9 +99,10 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
         const {
             inputs, unlocks, outputs, transferTotal, block, blockError,
             tangleNetworkId, inputsCommitment, includedBlockId,
-            blockTangleStatus, metadata, metadataError, conflictReason, jobToStatus
+            blockTangleStatus, metadata, metadataError, conflictReason, jobToStatus, isFormattedBalance
         } = this.state;
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
+        const isMarketed = isMarketedNetwork(network);
 
         if (blockError) {
             return (
@@ -193,6 +198,32 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                         </div>
                     </div>
                 )}
+                {transferTotal !== undefined && (
+                    <div className="section--data">
+                        <div className="label">
+                            Amount transacted
+                        </div>
+                        <div className="amount-transacted value row middle">
+                            <span
+                                onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
+                                className="pointer margin-r-5"
+                            >
+                                {formatAmount(
+                                    transferTotal,
+                                    this.context.tokenInfo,
+                                    !isFormattedBalance
+                                )}
+                            </span>
+                            {isMarketed && (
+                                <React.Fragment>
+                                    <span>(</span>
+                                    <FiatValue value={transferTotal} />
+                                    <span>)</span>
+                                </React.Fragment>
+                            )}
+                        </div>
+                    </div>
+                )}
                 {inputs &&
                     unlocks &&
                     outputs &&
@@ -204,8 +235,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                 inputs={inputs}
                                 unlocks={unlocks}
                                 outputs={outputs}
-                                transferTotal={transferTotal}
-                                header="Content"
+                                header="Payload"
                             />
                         </div>
                     )}

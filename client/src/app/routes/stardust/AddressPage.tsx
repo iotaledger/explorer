@@ -23,7 +23,7 @@ import TransactionHistory from "../../components/stardust/history/TransactionHis
 import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import mainHeaderMessage from "./../../../assets/modals/stardust/address/main-header.json";
+import mainHeaderInfo from "./../../../assets/modals/stardust/address/main-header.json";
 import "./AddressPage.scss";
 
 interface IAddressPageLocationProps {
@@ -226,7 +226,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                 <h1>
                                     Address
                                 </h1>
-                                <Modal icon="info" data={mainHeaderMessage} />
+                                <Modal icon="info" data={mainHeaderInfo} />
                             </div>
                             {isLoading && <Spinner />}
                         </div>

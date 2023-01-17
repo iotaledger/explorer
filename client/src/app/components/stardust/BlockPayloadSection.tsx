@@ -36,8 +36,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
                             inputs={inputs}
                             unlocks={unlocks}
                             outputs={outputs}
-                            transferTotal={transferTotal}
-                            header="Transaction Payload"
                             isLinksDisabled={isLinksDisabled}
                         />
                     </div>

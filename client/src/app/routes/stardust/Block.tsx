@@ -211,10 +211,20 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
     const milestoneId = isMilestoneBlock ?
         milestoneIdFromMilestonePayload(block.payload as IMilestonePayload) : undefined;
-    const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
-    const pageTitle = isMilestoneBlock ?
-        `Milestone Block ${milestoneIndex}` :
-        (isTransactionBlock ? "Transaction Block" : "Block");
+    let pageTitle = "Block";
+    switch (block?.payload?.type) {
+        case MILESTONE_PAYLOAD_TYPE:
+            pageTitle = "Milestone Block";
+            break;
+        case TRANSACTION_PAYLOAD_TYPE:
+            pageTitle = "Transaction Block";
+            break;
+        case TAGGED_DATA_PAYLOAD_TYPE:
+            pageTitle = "Data Block";
+            break;
+        default:
+            break;
+    }
 
     if (blockError) {
         return (
@@ -360,9 +370,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 transferTotal !== undefined && (
                     <div className="section--data">
                         <div className="label">
-                            Value
+                            Amount transacted
                         </div>
-                        <div className="value row middle">
+                        <div className="amount-transacted value row middle">
                             <span
                                 onClick={() => setIsFormattedBalance(!isFormattedBalance)}
                                 className="pointer margin-r-5"
@@ -387,7 +397,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 tabsEnum={
                     isMilestoneBlock ?
                         { RefBlocks: "Referenced Blocks", Payload: "Milestone Payload", Metadata: "Metadata" } :
-                        { Payload: "Payload", Metadata: "Metadata" }
+                        (isTransactionBlock ?
+                            { Payload: "Transaction Payload", Metadata: "Metadata" } :
+                            { Payload: "Tagged Data Payload", Metadata: "Metadata" })
                 }
                 tabOptions={
                     isMilestoneBlock ?
@@ -399,14 +411,20 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             },
                             "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
                             "Metadata": { infoContent: metadataInfo }
-                        } :
-                        {
-                            Payload: {
+                        } : (isTransactionBlock ? {
+                            "Transaction Payload": {
                                 disabled: !block?.payload,
-                                infoContent: isTransactionBlock ? transactionPayloadInfo : taggedDataPayloadInfo
+                                infoContent: transactionPayloadInfo
                             },
                             "Metadata": { infoContent: metadataInfo }
-                        }
+                        } : {
+                            "Tagged Data Payload": {
+                                disabled: !block?.payload,
+                                infoContent: taggedDataPayloadInfo
+                            },
+                            "Metadata": { infoContent: metadataInfo }
+
+                        })
                 }
             >
                 {tabbedSections}
