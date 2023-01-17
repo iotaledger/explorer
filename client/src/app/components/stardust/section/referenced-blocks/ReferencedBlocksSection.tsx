@@ -37,14 +37,14 @@ const ReferenceBlocksSection: React.FC<ReferenceBlocksSectionProps> = ({ blockId
             {currentPage.length > 0 ? (
                 <React.Fragment>
                     <table className="refblocks__table">
-                        <thead>
+                        <thead className="refblocks__table-head">
                             <tr>
-                                <th className="refblocks__table__header__block-id">BLOCK ID</th>
-                                <th className="refblocks__table__header__payload">PAYLOAD TYPE</th>
-                                <th className="refblocks__table__header__tx-value">VALUE</th>
+                                <th className="refblocks__block-id">BLOCK ID</th>
+                                <th className="refblocks__payload">PAYLOAD TYPE</th>
+                                <th className="refblocks__tx-value">VALUE</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="refblocks__table-body">
                             {currentPage.map((blockId, idx) => (
                                 <ReferencedBlocksSectionRow
                                     key={`block-${pageNumber}-${idx}`}

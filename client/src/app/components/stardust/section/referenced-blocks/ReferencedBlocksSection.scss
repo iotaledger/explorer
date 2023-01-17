@@ -31,23 +31,23 @@
             }
         }
 
-        &__header {
-            &__block-id {
+        .refblocks__table-head {
+            .refblocks__block-id {
                 width: 800px;
             }
 
-            &__payload {
+            .refblocks__payload {
                 width: 180px;
                 white-space: nowrap;
             }
 
-            &__tx-value {
+            .refblocks__tx-value {
                 text-align: right!important;
             }
         }
 
-        &__data {
-            &__block-id {
+        .refblocks__table-body {
+            .refblocks__block-id {
                 color: var(--link-color);
                 font-family: $ibm-plex-mono;
                 text-align: left;
@@ -62,7 +62,7 @@
                     }
                 }
             }
-            &__tx-value div {
+            .refblocks__tx-value div {
                 text-align: right;
                 color: $gray-7;
                 font-weight: 600;

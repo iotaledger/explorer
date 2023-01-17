@@ -81,13 +81,13 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
                 <td>
                     <Link
                         to={`/${network}/block/${blockId}`}
-                        className="refblocks__table__data__block-id"
+                        className="refblocks__block-id"
                     >
                         <div>{blockId}</div>
                     </Link>
                 </td>
                 <td>{isLoading ? <Spinner compact /> : payloadType}</td>
-                <td className="refblocks__table__data__tx-value">{
+                <td className="refblocks__tx-value">{
                     isLoading ?
                         <Spinner compact /> :
                         <div
