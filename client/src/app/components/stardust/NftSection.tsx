@@ -1,4 +1,5 @@
-import { IOutputResponse, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
+import { HexEncodedString, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import React, { useEffect, useRef, useState } from "react";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import Modal from "../../components/Modal";
@@ -14,15 +15,29 @@ interface NftSectionProps {
 }
 
 interface INftDetails {
-    /** NFT image. */
-    image?: string;
-    /** NFT name. */
-    name?: string;
     /** NFT id. */
     id: string;
+    /** Immutable metadata */
+    metadata?: INftMetadata;
+}
+
+export interface INftMetadata {
+    standard?: "IRC27";
+    version?: string;
+    type?: "image/jpeg" | "image/png" | "image/gif";
+    uri?: string;
+    name?: string;
+    issuerName?: string;
+    collectionName?: string;
+    description?: string;
+    error?: string;
 }
 
 const PAGE_SIZE = 10;
+const NFT_STANDARD = "IRC27";
+const JPEG = "image/jpeg";
+const PNG = "image/png";
+const GIF = "image/gif";
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
     const mounted = useRef(false);
@@ -47,18 +62,25 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     );
                     const nftOutput = output.output;
                     const nftId = TransactionsHelper.buildIdHashForAliasOrNft(nftOutput.nftId, outputId);
+                    const nftMetadata = nftOutput.immutableFeatures?.find(
+                        feature => feature.type === METADATA_FEATURE_TYPE
+                    ) as IMetadataFeature;
+                    let metadata: INftMetadata | undefined;
+
+                    if (nftMetadata) {
+                        metadata = hexToJson(nftMetadata.data);
+                    }
                     theNfts.push({
                         id: nftId,
-                        image:
-                            "https://cdn.pixabay.com/photo/2021/11/06/14/40/nft-6773494_960_720.png"
+                        metadata
                     });
                 }
             }
-            setNfts(theNfts);
+        }
+        setNfts(theNfts);
 
-            if (setNftCount) {
-                setNftCount(theNfts.length);
-            }
+        if (setNftCount) {
+            setNftCount(theNfts.length);
         }
 
         return unmount;
@@ -89,9 +111,8 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                         <Nft
                             key={idx}
                             id={nft.id}
-                            name={nft.name}
                             network={network}
-                            image={nft.image}
+                            metadata={nft.metadata}
                         />
                     ))}
                 </div>
@@ -106,6 +127,28 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
         ) : null
     );
 };
+
+/**
+ * Helper function to convert HexEncodedString to NFT metadata json.
+ * @param hex The HexEncodedString.
+ * @returns The json.
+ */
+function hexToJson(hex: HexEncodedString) {
+    const utf8 = Converter.hexToUtf8(hex);
+    try {
+        if (utf8) {
+            const json: INftMetadata = JSON.parse(utf8);
+            return json.standard === NFT_STANDARD &&
+                (json.type === JPEG ||
+                    json.type === PNG ||
+                    json.type === GIF) ?
+                json :
+                { error: "Invalid hex provided" };
+        }
+    } catch {
+        return { error: "Invalid hex provided" };
+    }
+}
 
 NftSection.defaultProps = {
     bech32Address: undefined,

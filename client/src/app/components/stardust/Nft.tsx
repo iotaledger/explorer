@@ -8,20 +8,24 @@ import { NftProps } from "./NftProps";
 /**
  * Component which will display a NFT.
  */
-const Nft: React.FC<NftProps> = ({ id, name, network, image }) => (
+const Nft: React.FC<NftProps> = ({ id, network, metadata }) => (
     <div className="NFT-row">
         <div className="nft-data">
             <Link
                 to={`/${network}/nft-registry/${id}`}
                 className="margin-r-t"
             >
-                <img
-                    src={image}
-                    alt="bundle"
-                    className="nft-image"
-                />
+                {
+                    metadata && !metadata?.error ?
+                        <img
+                            src={metadata?.uri}
+                            alt="bundle"
+                            className="nft-image"
+                        /> :
+                        <div>Format not supported</div>
+                }
             </Link>
-            {name && <span className="nft-name">Token: {name}</span>}
+            {metadata?.name && <span className="nft-name">Token: {metadata.name}</span>}
             <span className="nft-id"><span>NFT Id: </span>
                 <Link to={`/${network}/nft-registry/${id}`} className="margin-r-t" >
                     {id}
