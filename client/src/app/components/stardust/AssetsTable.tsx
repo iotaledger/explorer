@@ -3,6 +3,7 @@ import {
     FOUNDRY_OUTPUT_TYPE, IFoundryOutput, IMetadataFeature, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, OutputTypes
 } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
+import * as jsonschema from "jsonschema";
 import React, { useEffect, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
@@ -13,6 +14,7 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import Modal from "../Modal";
 import Pagination from "../Pagination";
 import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
+import tokenSchemeIRC30 from "./../../../assets/schemas/token-schema-IRC30.json";
 import Asset from "./Asset";
 import "./AssetsTable.scss";
 
@@ -28,9 +30,14 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
     const [tokens, setTokens] = useState<ITokenDetails[]>();
     const [currentPage, setCurrentPage] = useState<ITokenDetails[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
+    const [jobToStatus, setJobToStatus] = useState(
+        new Map<string, PromiseStatus>()
+    );
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
+    const validator = new jsonschema.Validator();
+
     useEffect(() => {
         if (outputs) {
             const theTokens: ITokenDetails[] = [];
@@ -65,10 +72,6 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
         }
     }, [tokens, pageNumber]);
 
-    const [jobToStatus, setJobToStatus] = useState(
-        new Map<string, PromiseStatus>()
-    );
-
     const loadTokenDetails = async (network: string, foundryId: string): Promise<void> => {
         const foundryLoadMonitor = new PromiseMonitor(status => {
             setJobToStatus(jobToStatus.set(`loadFoundryDetails-${foundryId}`, status));
@@ -83,23 +86,34 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                         const metadata = immutableFeatures?.find(
                             feature => feature.type === METADATA_FEATURE_TYPE
                         ) as IMetadataFeature;
+
                         if (metadata) {
-                            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.data)) as ITokenSchemaIRC30;
-
-                            if (tokens && tokenInfo?.standard && tokenInfo?.standard === "IRC30") {
-                                const theTokens = [...tokens];
-                                const index = theTokens?.findIndex(token => token.id === foundryId);
-                                    theTokens[index] = {
-                                        ...theTokens[index],
-                                        ...tokenInfo
-                                    };
-
-                                setTokens(theTokens);
-                            }
+                            updateTokenInfo(foundryId, metadata);
                         }
                     }
                 }).catch(_ => { })
         );
+    };
+
+    const updateTokenInfo = (tokenId: string, metadata: IMetadataFeature): void => {
+        const theTokens: ITokenDetails[] = [...tokens ?? []];
+
+        try {
+            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.data)) as ITokenSchemaIRC30;
+            const result = validator.validate(tokenInfo, tokenSchemeIRC30);
+
+            if (result.valid) {
+                const index = theTokens?.findIndex(token => token.id === tokenId);
+                    theTokens[index] = {
+                        ...theTokens[index],
+                        ...tokenInfo
+                    };
+            }
+        } catch {}
+
+        if (theTokens.length > 0) {
+            setTokens(theTokens);
+        }
     };
 
     return (
@@ -120,8 +134,6 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                             <th>Symbol</th>
                             <th>Token id</th>
                             <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Value</th>
                         </tr>
                     </thead>
                     <tbody>

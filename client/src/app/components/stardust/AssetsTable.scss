@@ -8,7 +8,6 @@
     width: 100%;
     border-spacing: 12px 28px;
     border-collapse: separate;
-    table-layout: fixed;
 
     @include tablet-down {
         display: none;

@@ -11,7 +11,7 @@ import { AssetProps } from "./AssetProps";
 const Asset: React.FC<AssetProps> = (
     { network, tableFormat, isLoading, token }
 ) => {
-    const shortId = `${token?.id.slice(0, 6)}...${token?.id.slice(-6)}`;
+    const shortId = `${token?.id.slice(0, 12)}...${token?.id.slice(-12)}`;
 
     const getTokenName = (name: string, logoUrl?: string): string | ReactElement => {
         if (logoUrl) {
@@ -52,8 +52,6 @@ const Asset: React.FC<AssetProps> = (
                     </Link>
                 </td>
                 <td>{token.amount ?? "-"}</td>
-                <td>{token.price ?? "-"}</td>
-                <td>{token.value ?? "-"}</td>
             </tr>
         ) : (
             <div className="asset-card">
@@ -89,15 +87,6 @@ const Asset: React.FC<AssetProps> = (
                 <div className="field">
                     <div className="label">Quantity</div>
                     <div className="value">{token.amount ?? "-"}</div>
-                </div>
-                <div className="field">
-                    <div className="label">Price</div>
-                    <div className="value">{token.price ?? "-"}</div>
-                </div>
-                <div className="field">
-                    <div className="label">Value</div>
-                    <div className="value">{token.value ?? "-"}
-                    </div>
                 </div>
             </div >
         )

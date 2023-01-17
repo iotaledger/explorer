@@ -1,8 +1,11 @@
-export interface ITokenSchemaIRC30 {
+interface ITokenStandard {
     /**
      * The IRC standard of the token metadata
      */
-    standard: string;
+    standard: "IRC30";
+}
+
+export interface ITokenSchemaIRC30 extends ITokenStandard {
     /**
      * The human-readable name of the native token
      */
@@ -18,7 +21,7 @@ export interface ITokenSchemaIRC30 {
     /**
      * Number of decimals the token uses (divide the token amount by decimals to get its user representation)
      */
-    decimals: string;
+    decimals: number;
     /**
      * URL pointing to more resources about the token
      */
