@@ -35,9 +35,6 @@ export interface INftMetadata {
 
 const PAGE_SIZE = 10;
 const NFT_STANDARD = "IRC27";
-const JPEG = "image/jpeg";
-const PNG = "image/png";
-const GIF = "image/gif";
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
     const mounted = useRef(false);
@@ -138,10 +135,7 @@ function hexToJson(hex: HexEncodedString) {
     try {
         if (utf8) {
             const json: INftMetadata = JSON.parse(utf8);
-            return json.standard === NFT_STANDARD &&
-                (json.type === JPEG ||
-                    json.type === PNG ||
-                    json.type === GIF) ?
+            return json.standard === NFT_STANDARD ?
                 json :
                 { error: "Invalid hex provided" };
         }
