@@ -1,0 +1,32 @@
+{
+    "standard": "IRC27",
+    "version": "v1.0",
+    "type": "image/jpeg",
+    "uri": "https://mywebsite.com/my-nft-files-1.jpeg",
+    "name": "My NFT #0001",
+    "collectionName": "My Collection of Art",
+    "royalties": {
+        "iota1qz0ugac37vax29v6fqtxcfm37e95xlm3jq8z2330p62lxvms9pf5s7hsw3f": 0.025,
+        "iota1qzcu634e3my9q8dp4pd2nn5unffwzln89d43syf2qst5vyj9rfe4jrmfep6": 0.025
+    },
+    "issuerName": "My Artist Name",
+    "description": "A little information about my NFT collection",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Purple"
+        },
+        {
+            "trait_type": "Element",
+            "value": "Water"
+        },
+        {
+            "trait_type": "Attack",
+            "value": "150"
+        },
+        {
+            "trait_type": "Health",
+            "value": "500"
+        }
+    ]
+}

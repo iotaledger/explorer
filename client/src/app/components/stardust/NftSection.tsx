@@ -1,11 +1,13 @@
 import { HexEncodedString, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
+import * as jsonschema from "jsonschema";
 import React, { useEffect, useRef, useState } from "react";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
 import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
+import nftSchemeIRC27 from "./../../../assets/schemas/nft-schema-IRC27.json";
 
 interface NftSectionProps {
     network: string;
@@ -22,19 +24,32 @@ interface INftDetails {
 }
 
 export interface INftMetadata {
+    /** The IRC standard of the nft metadata */
     standard?: "IRC27";
+    /** The version of the IRC standard */
     version?: string;
+    /** The defined schema type */
     type?: "image/jpeg" | "image/png" | "image/gif";
+    /** The url pointing to the NFT file location with MIME type defined in type */
     uri?: string;
+    /** The human-readable name of the nft */
     name?: string;
-    issuerName?: string;
+    /** The human-readable name of the collection */
     collectionName?: string;
+    /** The key value pair where payment address mapped to the payout percentage */
+    royalities?: Record<string, unknown>;
+    /** The human-readable name of the creator */
+    issuerName?: string;
+    /** The human-readable description of the nft */
     description?: string;
+    /** The additional attributes of the NFT */
+    attributes?: [];
+    /** The error */
     error?: string;
 }
 
 const PAGE_SIZE = 10;
-const NFT_STANDARD = "IRC27";
+const validator = new jsonschema.Validator();
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
     const mounted = useRef(false);
@@ -135,7 +150,8 @@ function hexToJson(hex: HexEncodedString) {
     try {
         if (utf8) {
             const json: INftMetadata = JSON.parse(utf8);
-            return json.standard === NFT_STANDARD ?
+            const result = validator.validate(json, nftSchemeIRC27);
+            return result.valid ?
                 json :
                 { error: "Invalid hex provided" };
         }
