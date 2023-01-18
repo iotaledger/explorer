@@ -1,10 +1,10 @@
-import { ITokenDetails } from "../../../models/api/stardust/foundry/ITokenDetails";
+import { IToken } from "../../../models/api/stardust/foundry/INativeToken";
 
 export interface AssetProps {
     /**
      * Token
      */
-    token: ITokenDetails;
+    token: IToken;
     /**
      * Network
      */
@@ -13,8 +13,4 @@ export interface AssetProps {
      * True if the asset is rendered like a table
      */
     tableFormat?: boolean;
-    /**
-     * True if token data is still loading
-     */
-    isLoading?: boolean;
 }

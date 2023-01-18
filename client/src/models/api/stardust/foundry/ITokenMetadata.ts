@@ -1,11 +1,8 @@
-interface ITokenStandard {
+export interface ITokenMetadata {
     /**
      * The IRC standard of the token metadata
      */
     standard: "IRC30";
-}
-
-export interface ITokenSchemaIRC30 extends ITokenStandard {
     /**
      * The human-readable name of the native token
      */
@@ -35,3 +32,4 @@ export interface ITokenSchemaIRC30 extends ITokenStandard {
      */
     logo?: string;
 }
+
