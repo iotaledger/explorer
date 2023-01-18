@@ -49,7 +49,6 @@ export interface INftMetadata {
 }
 
 const PAGE_SIZE = 10;
-const validator = new jsonschema.Validator();
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
     const mounted = useRef(false);
@@ -146,6 +145,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
  * @returns The json.
  */
 function hexToJson(hex: HexEncodedString) {
+    const validator = new jsonschema.Validator();
     const utf8 = Converter.hexToUtf8(hex);
     try {
         if (utf8) {
