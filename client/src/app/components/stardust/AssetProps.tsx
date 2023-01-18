@@ -1,4 +1,4 @@
-import { IToken } from "../../../models/api/stardust/foundry/INativeToken";
+import { IToken } from "../../../models/api/stardust/foundry/IToken";
 
 export interface AssetProps {
     /**
