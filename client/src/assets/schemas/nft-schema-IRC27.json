@@ -1,32 +1,56 @@
 {
-    "standard": "IRC27",
-    "version": "v1.0",
-    "type": "image/jpeg",
-    "uri": "https://mywebsite.com/my-nft-files-1.jpeg",
-    "name": "My NFT #0001",
-    "collectionName": "My Collection of Art",
-    "royalties": {
-        "iota1qz0ugac37vax29v6fqtxcfm37e95xlm3jq8z2330p62lxvms9pf5s7hsw3f": 0.025,
-        "iota1qzcu634e3my9q8dp4pd2nn5unffwzln89d43syf2qst5vyj9rfe4jrmfep6": 0.025
-    },
-    "issuerName": "My Artist Name",
-    "description": "A little information about my NFT collection",
-    "attributes": [
-        {
-            "trait_type": "Background",
-            "value": "Purple"
+    "title": "IRC27 IOTA NFT Metadata Schema",
+    "description": "A JSON schema for validating IRC27 compliant NFT metadata",
+    "type": "object",
+    "properties": {
+        "standard": {
+            "type": "string",
+            "description": "identifier for the metadata standard used",
+            "pattern": "^IRC27$"
         },
-        {
-            "trait_type": "Element",
-            "value": "Water"
+        "version": {
+            "type": "string",
+            "description": "version of the metadata standard used",
+            "pattern": "^v\\d+.\\d+$"
         },
-        {
-            "trait_type": "Attack",
-            "value": "150"
+        "name": {
+            "type": "string",
+            "description": "A descriptive name of the token"
         },
-        {
-            "trait_type": "Health",
-            "value": "500"
+        "description": {
+            "type": "string",
+            "description": "some information about the NFT project"
+        },
+        "type": {
+            "type": "string",
+            "description": "MIME type of the asset"
+        },
+        "uri": {
+            "type": "string",
+            "description": "URI pointing to the resource where the file with `type` MIME type is hosted"
+        },
+        "collectionName": {
+            "type": "string",
+            "description": "A human readable name for the NFT collection"
+        },
+        "royalties": {
+            "type": "object",
+            "description": "object containing the payout addresses mapped to their percentage share"
+        },
+        "issuerName": {
+            "type": "string",
+            "description": "name of the artist"
+        },
+        "attributes": {
+            "type": "array",
+            "description": "array containing any additional data as objects."
         }
+    },
+    "required": [
+        "standard",
+        "type",
+        "version",
+        "uri",
+        "name"
     ]
 }
