@@ -28,7 +28,7 @@ import BlockMetadataSection from "../../components/stardust/BlockMetadataSection
 import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import MilestoneControls from "../../components/stardust/MilestoneControls";
-import ReferenceBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
+import ReferencedBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
@@ -242,7 +242,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     let idx = 0;
     if (isMilestoneBlock) {
         tabbedSections.push(
-            <ReferenceBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
+            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
         );
     }
     if (block) {

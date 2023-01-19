@@ -4,13 +4,13 @@ import Spinner from "../../../Spinner";
 import ReferencedBlocksSectionRow from "./ReferencedBlocksSectionRow";
 import "./ReferencedBlocksSection.scss";
 
-interface ReferenceBlocksSectionProps {
+interface ReferencedBlocksSectionProps {
     blockIds?: string[];
 }
 
 const PAGE_SIZE: number = 10;
 
-const ReferenceBlocksSection: React.FC<ReferenceBlocksSectionProps> = ({ blockIds }) => {
+const ReferencedBlocksSection: React.FC<ReferencedBlocksSectionProps> = ({ blockIds }) => {
     const isMounted = useRef(false);
     const [currentPage, setCurrentPage] = useState<string[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
@@ -77,9 +77,9 @@ const ReferenceBlocksSection: React.FC<ReferenceBlocksSectionProps> = ({ blockId
     );
 };
 
-ReferenceBlocksSection.defaultProps = {
+ReferencedBlocksSection.defaultProps = {
     blockIds: undefined
 };
 
-export default ReferenceBlocksSection;
+export default ReferencedBlocksSection;
 
