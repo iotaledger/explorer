@@ -172,9 +172,7 @@ export class TransactionsHelper {
     public static buildIdHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
         return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
             aliasOrNftId :
-            HexHelper.addPrefix(
-                Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
-            );
+            TransactionHelper.resolveIdFromOutputId(outputId);
     }
 
     public static computeStorageRentBalance(outputs: OutputTypes[], rentStructure: IRent): number {

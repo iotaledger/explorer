@@ -8,6 +8,7 @@ export interface BlockData {
      * Block.
      */
     block?: IBlock;
+
     /**
      * The block fetching failed.
      */
@@ -49,6 +50,7 @@ export interface BlockMetadata {
      * The metadata failed.
      */
     metadataError?: string;
+
     /**
      * Reason for the conflict.
      */
