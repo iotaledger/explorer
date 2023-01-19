@@ -14,6 +14,7 @@ import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetail
 import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
+import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
@@ -340,6 +341,43 @@ export class StardustTangleCacheService extends TangleCacheService {
         }
 
         return this._stardustSearchCache[networkId][key]?.data?.milestoneStats;
+    }
+
+    /**
+     * Get the milestone referenced blocks by milestone id.
+     * @param networkId The network to search
+     * @param milestoneId The milestone to get the details for.
+     * @returns The details response.
+     */
+    public async milestoneReferencedBlocks(
+        networkId: string,
+        milestoneId: string
+    ): Promise<{ milestoneId?: string; blocks?: string[]; error?: string }> {
+        const key = `milestoneBlocks-${milestoneId}`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.milestoneBlocks;
+
+        if (!cacheEntry) {
+            const response: IMilestoneBlocksResponse = await this._api.milestoneReferencedBlocks({
+                network: networkId,
+                milestoneId
+            });
+
+            if (!response.error) {
+                this._stardustSearchCache[networkId][key] = {
+                    data: {
+                        milestoneBlocks: response
+                    },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            milestoneId: this._stardustSearchCache[networkId][key]?.data?.milestoneBlocks?.milestoneId,
+            blocks: this._stardustSearchCache[networkId][key]?.data?.milestoneBlocks?.blocks
+        };
     }
 
     /**

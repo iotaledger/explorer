@@ -1,11 +1,7 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import transactionPayloadMessage from "../../../assets/modals/stardust/block/transaction-payload.json";
-import { isMarketedNetwork } from "../../../helpers/networkHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
-import FiatValue from "../FiatValue";
 import Modal from "../Modal";
 import "./TransactionPayload.scss";
 import Input from "./Input";
@@ -52,36 +48,18 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, unlocks, outputs, transferTotal, header, isLinksDisabled } = this.props;
-        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
-        const isMarketed = isMarketedNetwork(network);
+        const { network, inputs, unlocks, outputs, header, isLinksDisabled } = this.props;
 
         return (
             <div className="transaction-payload">
-                <div className="section--header">
-                    <div className="row middle">
-                        <h2>{header}</h2>
-                        <Modal icon="info" data={transactionPayloadMessage} />
-                    </div>
-                    <div className="transaction-value">
-                        <div>
-                            <span
-                                onClick={() => this.setState({
-                                    isFormattedBalance: !this.state.isFormattedBalance
-                                })}
-                                className="value pointer"
-                            >
-                                {formatAmount(transferTotal, tokenInfo, !this.state.isFormattedBalance)}
-                            </span>
-                            <span className="dot-separator">•</span>
-                            {isMarketed && (
-                                <span className="fiat-value">
-                                    <FiatValue value={transferTotal} />
-                                </span>
-                            )}
+                {header && (
+                    <div className="section--header">
+                        <div className="row middle">
+                            <h2>{header}</h2>
+                            <Modal icon="info" data={transactionPayloadMessage} />
                         </div>
                     </div>
-                </div>
+                )}
                 <div className="row row--tablet-responsive fill">
                     <div className="card col fill">
                         <div className="card--header">

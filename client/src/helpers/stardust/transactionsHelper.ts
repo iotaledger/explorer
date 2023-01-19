@@ -32,8 +32,8 @@ interface TransactionInputsAndOutputsResponse {
 
 export class TransactionsHelper {
     public static async getInputsAndOutputs(block: IBlock | undefined, network: string,
-                                            _bechHrp: string, tangleCacheService: StardustTangleCacheService
-                                           ): Promise<TransactionInputsAndOutputsResponse> {
+        _bechHrp: string, tangleCacheService: StardustTangleCacheService
+    ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: IInput[] = [];
         const unlocks: ISignatureUnlock[] = [];
@@ -122,10 +122,10 @@ export class TransactionsHelper {
                     });
                 } else {
                     const output = payload.essence.outputs[i] as IBasicOutput |
-                    IFoundryOutput | IAliasOutput | INftOutput;
+                        IFoundryOutput | IAliasOutput | INftOutput;
 
                     const address: IBech32AddressDetails = TransactionsHelper
-                    .bechAddressFromAddressUnlockCondition(output.unlockConditions, _bechHrp, output.type);
+                        .bechAddressFromAddressUnlockCondition(output.unlockConditions, _bechHrp, output.type);
 
                     const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
 
@@ -171,10 +171,8 @@ export class TransactionsHelper {
      */
     public static buildIdHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
         return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
-        aliasOrNftId :
-        HexHelper.addPrefix(
-            Converter.bytesToHex(Blake2b.sum256(Converter.hexToBytes(HexHelper.stripPrefix(outputId))))
-        );
+            aliasOrNftId :
+            TransactionHelper.resolveIdFromOutputId(outputId);
     }
 
     public static computeStorageRentBalance(outputs: OutputTypes[], rentStructure: IRent): number {

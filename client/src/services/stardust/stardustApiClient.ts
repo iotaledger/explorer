@@ -23,6 +23,7 @@ import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsRe
 import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
+import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
 import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
@@ -206,6 +207,22 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get the blocks (Ids) referenced by a Milestone.
+     * @param request The milestone analytic stats get request.
+     * @param request.network The network in context.
+     * @param request.milestoneId The milestone in context.
+     * @returns The milestone referenced blocks.
+     */
+    public async milestoneReferencedBlocks(
+        request: { network: string; milestoneId: string }
+    ): Promise<IMilestoneBlocksResponse> {
+        return this.callApi<unknown, IMilestoneBlocksResponse>(
+            `stardust/milestone/blocks/${request.network}/${request.milestoneId}`,
+            "get"
+        );
+    }
+
+    /**
      * Get the transaction history of an address (chronicle).
      * @param request The request to send.
      * @returns The response from the request.
@@ -358,3 +375,4 @@ export class StardustApiClient extends ApiClient {
         );
     }
 }
+
