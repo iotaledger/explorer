@@ -17,7 +17,6 @@ import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseM
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
-import { SettingsService } from "../../../services/settingsService";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
@@ -30,7 +29,6 @@ import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import MilestoneControls from "../../components/stardust/MilestoneControls";
 import ReferenceBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
-import Switcher from "../../components/Switcher";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
@@ -45,8 +43,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [settingsService] = useState(ServiceFactory.get<SettingsService>("settings"));
-    const [advancedMode, setAdvancedMode] = useState<boolean>(false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
     const [updateMetadataTimerId, setUpdateMetadataTimerId] = useState<NodeJS.Timer | undefined>();
@@ -58,7 +54,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     useEffect(() => {
         isMounted.current = true;
-        setAdvancedMode(settingsService.get().advancedMode ?? false);
 
         return () => {
             isMounted.current = false;
@@ -67,13 +62,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             }
         };
     }, []);
-
-    useEffect(() => {
-        if (advancedMode !== settingsService.get().advancedMode) {
-            settingsService.saveSingle("advancedMode", advancedMode);
-        }
-    }, [advancedMode]);
-
 
     useEffect(() => {
         setBlockData({});
@@ -269,7 +257,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 outputs={outputs}
                 transferTotal={transferTotal}
                 history={history}
-                advancedMode={advancedMode}
                 isLinksDisabled={isLinksDisabled}
             />
         );
@@ -292,11 +279,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 <div className="row middle">
                     <h2>General</h2>
                 </div>
-                <Switcher
-                    label="Advanced View"
-                    checked={advancedMode}
-                    onToggle={e => setAdvancedMode(e.target.checked)}
-                />
             </div>
             <div className="section--data">
                 <div className="label">
@@ -357,7 +339,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         ("No Payload")}
                 </div>
             </div>
-            {advancedMode && (
+            {!isMilestoneBlock && (
                 <div className="section--data">
                     <div className="label">
                         Nonce

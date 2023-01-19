@@ -29,7 +29,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, milestonePayload, history, advancedMode } = this.props;
+        const { network, milestonePayload, history } = this.props;
         const {
             index, timestamp, previousMilestoneId, inclusionMerkleRoot,
             appliedMerkleRoot, metadata, options, signatures
@@ -71,57 +71,53 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
                         <div className="label">Previous milestone Id</div>
                         <div className="value">{previousMilestoneId}</div>
                     </div>
-                    {advancedMode && (
+                    <div className="section--data">
+                        <div className="label">Inclusion Merkle Root</div>
+                        <div className="value code">{inclusionMerkleRoot}</div>
+                    </div>
+                    <div className="section--data">
+                        <div className="label">Applied Merkle Root</div>
+                        <div className="value code">{appliedMerkleRoot}</div>
+                    </div>
+                    {metadata && (
+                        <div className="section--data">
+                            <div className="label">Metadata</div>
+                            <div className="value">
+                                <DataToggle sourceData={metadata} withSpacedHex={true} />
+                            </div>
+                        </div>
+                    )}
+                    {protocolParamsMilestoneOption && (
                         <React.Fragment>
                             <div className="section--data">
-                                <div className="label">Inclusion Merkle Root</div>
-                                <div className="value code">{inclusionMerkleRoot}</div>
+                                <div className="label">Target milestone index</div>
+                                <div className="value code">
+                                    {protocolParamsMilestoneOption?.targetMilestoneIndex}
+                                </div>
                             </div>
                             <div className="section--data">
-                                <div className="label">Applied Merkle Root</div>
-                                <div className="value code">{appliedMerkleRoot}</div>
+                                <div className="label">Target protocol version</div>
+                                <div className="value code">
+                                    {protocolParamsMilestoneOption?.protocolVersion}
+                                </div>
                             </div>
-                            {metadata && (
-                                <div className="section--data">
-                                    <div className="label">Metadata</div>
-                                    <div className="value">
-                                        <DataToggle sourceData={metadata} withSpacedHex={true} />
-                                    </div>
+                            <div className="section--data">
+                                <div className="label">Protocol paramaters</div>
+                                <div className="value code">
+                                    {protocolParamsMilestoneOption?.params}
                                 </div>
-                            )}
-                            {protocolParamsMilestoneOption && (
-                                <React.Fragment>
-                                    <div className="section--data">
-                                        <div className="label">Target milestone index</div>
-                                        <div className="value code">
-                                            {protocolParamsMilestoneOption?.targetMilestoneIndex}
-                                        </div>
-                                    </div>
-                                    <div className="section--data">
-                                        <div className="label">Target protocol version</div>
-                                        <div className="value code">
-                                            {protocolParamsMilestoneOption?.protocolVersion}
-                                        </div>
-                                    </div>
-                                    <div className="section--data">
-                                        <div className="label">Protocol paramaters</div>
-                                        <div className="value code">
-                                            {protocolParamsMilestoneOption?.params}
-                                        </div>
-                                    </div>
-                                </React.Fragment>
-                            )}
-                            {receiptMilestoneOption && (
-                                <div className="section">
-                                    <ReceiptPayload
-                                        network={network}
-                                        history={history}
-                                        payload={receiptMilestoneOption}
-                                        advancedMode={advancedMode}
-                                    />
-                                </div>
-                            )}
+                            </div>
                         </React.Fragment>
+                    )}
+                    {receiptMilestoneOption && (
+                        <div className="section">
+                            <ReceiptPayload
+                                network={network}
+                                history={history}
+                                payload={receiptMilestoneOption}
+                                advancedMode={true}
+                            />
+                        </div>
                     )}
                 </div>
                 <MilestoneSignaturesSection signatures={signatures} />

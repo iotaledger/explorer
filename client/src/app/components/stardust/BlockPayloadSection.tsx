@@ -19,12 +19,11 @@ interface BlockPayloadSectionProps {
     outputs?: IOutput[];
     transferTotal?: number;
     history: H.History;
-    advancedMode: boolean;
     isLinksDisabled: boolean;
 }
 
 const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
-    { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, advancedMode, history, isLinksDisabled }
+    { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, history, isLinksDisabled }
 ) => (
     <React.Fragment>
         {block.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
@@ -46,7 +45,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
                                 network={network}
                                 history={history}
                                 payload={block.payload.essence.payload}
-                                advancedMode={advancedMode}
                             />
                         </div>
                     }
@@ -57,7 +55,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
                 network={network}
                 history={history}
                 milestonePayload={block.payload}
-                advancedMode={advancedMode}
                 protocolVersion={protocolVersion}
             />
         )}
@@ -67,7 +64,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
                     network={network}
                     history={history}
                     payload={block.payload}
-                    advancedMode={advancedMode}
                 />
             </div>
         )}
