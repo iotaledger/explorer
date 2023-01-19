@@ -11,16 +11,8 @@ interface ReferencedBlocksSectionProps {
 const PAGE_SIZE: number = 10;
 
 const ReferencedBlocksSection: React.FC<ReferencedBlocksSectionProps> = ({ blockIds }) => {
-    const isMounted = useRef(false);
     const [currentPage, setCurrentPage] = useState<string[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
-
-    useEffect(() => {
-        isMounted.current = true;
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
 
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
