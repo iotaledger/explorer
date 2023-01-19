@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Pagination from "../../../Pagination";
 import Spinner from "../../../Spinner";
 import ReferencedBlocksSectionRow from "./ReferencedBlocksSectionRow";
