@@ -9,8 +9,6 @@ import TruncatedId from "./TruncatedId";
  * Component which will display an asset.
  */
 const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, value, tableFormat }) => {
-    const shortName = `${name.slice(0, 12)}...${name.slice(-12)}`;
-
     /**
      * Render the component.
      * @returns The node to render.
@@ -40,7 +38,7 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
                             to={`/${network}/foundry/${name}`}
                             className="margin-r-t"
                         >
-                            {shortName}
+                            <TruncatedId id={name} />
                         </Link>
                     </div>
                 </div>
