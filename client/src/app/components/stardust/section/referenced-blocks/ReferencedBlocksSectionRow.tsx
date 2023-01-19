@@ -21,8 +21,6 @@ interface BlockData {
     value?: number;
 }
 
-const computePayloadType = (block: IBlock | undefined) => NameHelper.getPayloadType(block);
-
 const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
     const isMounted = useRef(false);
     const { name: network, bech32Hrp, tokenInfo } = useContext(NetworkContext);
@@ -70,7 +68,7 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
         return unmount;
     }, [blockId]);
 
-    const payloadType = computePayloadType(blockData?.block);
+    const payloadType = NameHelper.getPayloadType(blockData?.block);
     const transactionValue = blockData?.value && blockData.value !== undefined ?
         formatAmount(Number(blockData.value), tokenInfo, !isFormattedValue) :
         "--";
