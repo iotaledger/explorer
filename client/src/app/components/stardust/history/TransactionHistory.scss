@@ -52,12 +52,21 @@
                     letter-spacing: 0.02em;
                     line-height: 20px;
                     word-break: break-all;
+                    text-align: -webkit-center;
                 }
 
                 &.output-id .highlight {
                     font-weight: 500;
                     color: $gray-6;
                     margin-left: 2px;
+                }
+
+                &.transaction-id a {
+                    max-width: 100px;
+                }
+
+                &.output-id a {
+                    max-width: 100px;
                 }
 
                 &.date {
@@ -97,6 +106,10 @@
                         letter-spacing: 0.5px;
 
                         @include font-size(14px, 21px);
+                    }
+
+                    .card--value a {
+                        max-width: 100px;
                     }
 
                     .value {

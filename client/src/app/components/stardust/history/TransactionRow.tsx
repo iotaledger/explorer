@@ -24,16 +24,16 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
 
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
-            <td className="row center transaction-id">
-                <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
+            <td className="transaction-id">
+                <Link to={`/${network}/transaction/${transactionId}`} className="row center margin-r-t">
                     <TruncatedId id={transactionId} />
                 </Link>
             </td>
-            <td className="output-id">
-                <Link to={`/${network}/output/${outputId}`} className="row center margin-r-t">
+            <td className="row center output-id">
+                <Link to={`/${network}/output/${outputId}`}>
                     <TruncatedId id={outputIdTransaction} />
-                    <span className="highlight">{outputIdIndex}</span>
                 </Link>
+                <span className="highlight">{outputIdIndex}</span>
             </td>
             <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
             <td className={classNames("amount", { "negative": isSpent })}>{valueView}</td>

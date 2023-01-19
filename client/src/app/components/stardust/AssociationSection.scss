@@ -59,6 +59,7 @@
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;
                     text-align: left;
+                    max-width: 200px;
                 }
 
                 &.date-created {
@@ -115,6 +116,7 @@
                     .highlight {
                         color: var(--link-color);
                         font-family: $ibm-plex-mono;
+                        max-width: 200px;
                     }
 
                     .date-created {
