@@ -211,10 +211,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
     const milestoneId = isMilestoneBlock ?
         milestoneIdFromMilestonePayload(block.payload as IMilestonePayload) : undefined;
+    const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {
         case MILESTONE_PAYLOAD_TYPE:
-            pageTitle = "Milestone Block";
+            pageTitle = `Milestone Block ${milestoneIndex}`;
             break;
         case TRANSACTION_PAYLOAD_TYPE:
             pageTitle = "Transaction Block";
