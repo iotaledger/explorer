@@ -14,6 +14,7 @@ import transactionPayloadInfo from "../../../assets/modals/stardust/block/transa
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
@@ -329,14 +330,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     Payload Type
                 </div>
                 <div className="value row middle">
-                    {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                        ("Transaction")}
-                    {block?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
-                        ("Milestone")}
-                    {block?.payload?.type === TAGGED_DATA_PAYLOAD_TYPE &&
-                        ("Data")}
-                    {block?.payload?.type === undefined &&
-                        ("No Payload")}
+                    {NameHelper.getPayloadType(block)}
                 </div>
             </div>
             {!isMilestoneBlock && (
