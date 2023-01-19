@@ -2,7 +2,8 @@ export interface BlockTangleStateState {
     /**
      * Timestamp of the milestone.
      */
-    timestamp?: string;
+    timestamp?: number;
+
     /**
      * Block id of the milestone.
      */

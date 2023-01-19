@@ -4,6 +4,7 @@ import { IResponse } from "../IResponse";
 import { IAnalyticStats } from "../stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
+import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
@@ -101,6 +102,11 @@ export interface ISearchResponse extends IResponse {
     milestoneStats?: IMilestoneAnalyticStats;
 
     /**
+     * Milestone referenced blocks from chornicle.
+     */
+    milestoneBlocks?: IMilestoneBlocksResponse;
+
+    /**
      * The influx analytic stats.
      */
     analyticStats?: IAnalyticStats;
@@ -115,4 +121,3 @@ export interface ISearchResponse extends IResponse {
      */
     did?: string;
 }
-
