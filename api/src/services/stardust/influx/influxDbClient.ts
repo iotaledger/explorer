@@ -27,9 +27,8 @@ import {
     NATIVE_TOKENS_STAT_TOTAL_QUERY,
     NFT_STAT_TOTAL_QUERY,
     SHIMMER_CLAIMED_TOTAL_QUERY,
-    BYTE_PROTOCOL_PARAMS_QUERY,
-    KEY_DATA_BYTES_QUERY,
-    MILESTONE_STATS_QUERY
+    MILESTONE_STATS_QUERY,
+    STORAGE_DEPOSIT_TOTAL_QUERY
 } from "./influxQueries";
 
 /**
@@ -317,35 +316,12 @@ export abstract class InfluxDbClient {
                 this._analyticsCache.nftsCount = update.nftsCount;
             }
 
-            // Locked storage deposit
-            let byteCost: number;
-            let factorData: number;
-            let factorKey: number;
-            let bytesData: number;
-            let bytesKey: number;
-
             for (const update of await
-                this.queryInflux<ITimedEntry & { byteCost: string; factorData: string; factorKey: string }>(
-                    BYTE_PROTOCOL_PARAMS_QUERY, null, this.getToNanoDate()
+                this.queryInflux<ITimedEntry & { lockedStorageDeposit: string }>(
+                    STORAGE_DEPOSIT_TOTAL_QUERY, null, this.getToNanoDate()
                 )
             ) {
-                byteCost = Number.parseInt(update.byteCost, 10);
-                factorData = Number.parseInt(update.factorData, 10);
-                factorKey = Number.parseInt(update.factorKey, 10);
-            }
-
-            for (const update of await
-                this.queryInflux<ITimedEntry & { bytesData: string; bytesKey: string }>(
-                    KEY_DATA_BYTES_QUERY, null, this.getToNanoDate()
-                )
-            ) {
-                bytesData = Number.parseInt(update.bytesData, 10);
-                bytesKey = Number.parseInt(update.bytesKey, 10);
-            }
-
-            if (byteCost && factorData && factorKey && bytesData && bytesKey) {
-                const lockedStorageDeposit = byteCost * ((factorData * bytesData) + factorKey + bytesKey);
-                this._analyticsCache.lockedStorageDeposit = lockedStorageDeposit.toString();
+                this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
             }
         } catch (err) {
             console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing analytics", err);
