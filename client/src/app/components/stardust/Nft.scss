@@ -2,37 +2,39 @@
 @import "../../../scss/mixins";
 @import "../../../scss/variables";
 
-.NFT-row {
+.nft-card {
     display: flex;
+    width: 200px;
     flex-direction: column;
-    margin-right: 20px;
-    margin-bottom: 20px;
+    font-family: $inter;
+    margin: 4px 8px;
 
-    .nft-data {
+    &__nft-metadata {
         display: flex;
         flex-direction: column;
-        width: 200px;
+        align-items: center;
+        height: 208px;
+        margin-bottom: 8px;
 
-        .nft-image {
+        .nft-metadata__image {
+            border: 2px solid $white;
+            border-radius: 8px;
+            object-fit: cover;
+            width: 200px;
             height: 180px;
-            margin-top: 6px;
         }
 
-        .nft-name {
-            margin-top: 12px;
-            font-weight: 600;
+        .nft-metadata__name {
+            @include font-size(14px);
+            margin-top: 4px;
+            font-weight: 400;
         }
+    }
 
-        .nft-id {
-            margin-top: 12px;
-            @include font-size(12px);
-            font-family: $ibm-plex-mono;
-            font-weight: normal;
-            letter-spacing: 0.02em;
-            line-height: 20px;
-            color: var(--link-color);
-            line-height: 16px;
-            overflow-wrap: break-word;
-        }
+    &__nft-id {
+        @include font-size(14px);
+        font-family: $ibm-plex-mono;
+        font-weight: normal;
+        color: var(--link-color);
     }
 }

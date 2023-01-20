@@ -1,50 +1,65 @@
-/* eslint-disable jsdoc/require-param */
-/* eslint-disable jsdoc/require-returns */
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Nft.scss";
+import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
+import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { NftProps } from "./NftProps";
+import TruncatedId from "./TruncatedId";
+import "./Nft.scss";
 
 /**
- * Supported schema type.
+ * Supported image MIME formats.
  */
-const SUPPORTED_TYPES = ["image/jpeg", "image/png", "image/gif"];
+const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
-/**
- * Component which will display a NFT.
- */
-const Nft: React.FC<NftProps> = ({ id, network, metadata }) => (
-    <div className="NFT-row">
-        <div className="nft-data">
-            <Link
-                to={`/${network}/nft-registry/${id}`}
-                className="margin-r-t"
-            >
-                {metadata && !metadata?.error && validateMetadataType(metadata.type) ?
-                    <img
-                        src={metadata?.uri}
-                        alt="bundle"
-                        className="nft-image"
-                    /> :
-                    <div>Format not supported</div>}
-            </Link>
-            {metadata?.name && <span className="nft-name">Token: {metadata.name}</span>}
-            <span className="nft-id"><span>NFT Id: </span>
+const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
+    const nftImage = !metadata ? (
+        <img
+            className="nft-metadata__image"
+            src={metadataMissingPlaceholder}
+        />
+    ) : (isSupportedImageFormat(metadata.type) ? (
+        <img
+            className="nft-metadata__image"
+            src={metadata?.uri}
+            alt="bundle"
+        />
+    ) : (
+        <img
+            className="nft-metadata__image"
+            src={unsupportedFormatPlaceholder}
+        />
+    ));
+
+    return (
+        <div className="nft-card">
+            <div className="nft-card__nft-metadata">
+                <Link
+                    to={`/${network}/nft-registry/${id}`}
+                >
+                    {nftImage}
+                </Link>
+                {metadata?.name && <span className="nft-metadata__name">{metadata.name}</span>}
+            </div>
+            <span className="nft-card__nft-id">
                 <Link to={`/${network}/nft-registry/${id}`} className="margin-r-t" >
-                    {id}
+                    <TruncatedId id={id} />
                 </Link>
             </span>
         </div>
-    </div>
-);
+    );
+};
 
 /**
- * Validate schema type.
- * @param nftType The schema type.
- * @returns result.
+ * Validate NFT image MIME type.
+ * @param nftType The NFT image MIME type.
+ * @returns A bool.
  */
-function validateMetadataType(nftType: string | undefined) {
-    return SUPPORTED_TYPES.find(type => nftType === type);
+function isSupportedImageFormat(nftType: string | undefined): boolean {
+    if (nftType === undefined) {
+        return false;
+    }
+
+    return SUPPORTED_IMAGE_FORMATS.has(nftType);
 }
 
 export default Nft;

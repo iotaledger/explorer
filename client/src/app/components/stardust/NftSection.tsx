@@ -1,4 +1,6 @@
-import { HexEncodedString, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
+import {
+    HexEncodedString, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper
+} from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import * as jsonschema from "jsonschema";
 import React, { useEffect, useRef, useState } from "react";
@@ -128,6 +130,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     ))}
                 </div>
                 <Pagination
+                    classNames="margin-t-t"
                     currentPage={pageNumber}
                     totalCount={nfts?.length ?? 0}
                     pageSize={PAGE_SIZE}
