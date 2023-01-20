@@ -168,7 +168,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
-                data={info?.data}
+                info={info}
                 legend={{
                     labels: groupLabels ?? subgroups,
                     colors

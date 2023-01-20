@@ -105,7 +105,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <StackedBarChart
                                     title="Daily Blocks"
-                                    info={{ data: graphMessages.dailyBlocks }}
+                                    info={graphMessages.dailyBlocks}
                                     subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                                     groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
                                     colors={["#7AFFF2", "#00E0CA", "#36A1AC", "#186575"]}
@@ -113,7 +113,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 />
                                 <StackedBarChart
                                     title="Daily Transactions"
-                                    info={{ data: graphMessages.dailyTransactions }}
+                                    info={graphMessages.dailyTransactions}
                                     subgroups={["confirmed", "conflicting"]}
                                     groupLabels={["Confirmed", "Conflicting"]}
                                     colors={["#00E0CA", "#36A1AC"]}
@@ -129,7 +129,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <StackedLineChart
                                     title="Total Outputs by Type"
-                                    info={{ data: graphMessages.totalOutputs }}
+                                    info={graphMessages.totalOutputs}
                                     subgroups={["basic", "alias", "foundry", "nft"]}
                                     groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
                                     colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
@@ -137,7 +137,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 />
                                 <StackedLineChart
                                     title="Total Tokens by Output Type"
-                                    info={{ data: graphMessages.totalTokens }}
+                                    info={graphMessages.totalTokens}
                                     subgroups={["basic", "alias", "foundry", "nft"]}
                                     groupLabels={["Basic", "Alias", "Foundry", "Nft"]}
                                     colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
@@ -167,14 +167,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row margin-b-s">
                                 <LineChart
                                     title="Total Addresses with Tokens"
-                                    info={{ data: graphMessages.totalAddressesWithTokens }}
+                                    info={graphMessages.totalAddressesWithTokens}
                                     label="Addresses"
                                     color="#00F5DD"
                                     data={addressesWithBalance}
                                 />
                                 <LineChart
                                     title="Daily Active Addresses"
-                                    info={{ data: graphMessages.dailyActiveAddresses }}
+                                    info={graphMessages.dailyActiveAddresses}
                                     label="Addresses"
                                     color="#00F5DD"
                                     data={activeAddresses}
@@ -183,7 +183,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <BarChart
                                     title="Daily Sent Tokens"
-                                    info={{ data: graphMessages.dailySentTokens }}
+                                    info={graphMessages.dailySentTokens}
                                     color="#00E0CA"
                                     label="Tokens"
                                     data={tokensTransferred}
@@ -198,7 +198,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <StackedBarChart
                                     title="Daily Alias Activity"
-                                    info={{ data: graphMessages.dailyAliasActivity }}
+                                    info={graphMessages.dailyAliasActivity}
                                     subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
                                     groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
                                     colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
@@ -206,7 +206,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 />
                                 <StackedBarChart
                                     title="Daily NFT Activity"
-                                    info={{ data: graphMessages.dailyNftActivity }}
+                                    info={graphMessages.dailyNftActivity}
                                     subgroups={["created", "transferred", "destroyed"]}
                                     groupLabels={["Created", "Transferred", "Destroyed"]}
                                     colors={["#4140DF", "#00F5DD", "#36A1AC"]}
@@ -222,7 +222,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row margin-b-s">
                                 <StackedLineChart
                                     title="Total Unlock Conditions"
-                                    info={{ data: graphMessages.totalUnlockConditions }}
+                                    info={graphMessages.totalUnlockConditions}
                                     subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                     groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
                                     colors={["#4140DF", "#00F5DD", "#36A1AC"]}
@@ -232,7 +232,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <StackedLineChart
                                     title="Total Locked Tokens"
-                                    info={{ data: graphMessages.totalLockedTokens }}
+                                    info={graphMessages.totalLockedTokens}
                                     subgroups={["timelock", "storageDepositReturn", "expiration"]}
                                     groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
                                     colors={["#4140DF", "#00F5DD", "#36A1AC"]}
@@ -248,14 +248,14 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <LineChart
                                     title="Total Unclaimed Tokens"
-                                    info={{ data: graphMessages.totalUnclaimedTokens }}
+                                    info={graphMessages.totalUnclaimedTokens}
                                     label="Unclaimed Tokens"
                                     color="#00F5DD"
                                     data={unclaimedTokens}
                                 />
                                 <LineChart
                                     title="Total Unclaimed Outputs"
-                                    info={{ data: graphMessages.totalUnclaimedOutputs }}
+                                    info={graphMessages.totalUnclaimedOutputs}
                                     label="Outputs"
                                     color="#00F5DD"
                                     data={unclaimedGenesisOutputs}
@@ -270,7 +270,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             <div className="row statistics-row">
                                 <StackedBarChart
                                     title="Total Ledger Size"
-                                    info={{ data: graphMessages.totalLedgerSize }}
+                                    info={graphMessages.totalLedgerSize}
                                     subgroups={["keyBytes", "dataBytes"]}
                                     groupLabels={["Key bytes", "Data bytes"]}
                                     colors={["#00E0CA", "#36A1AC"]}
@@ -278,7 +278,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                                 />
                                 <LineChart
                                     title="Total Storage Deposit"
-                                    info={{ data: graphMessages.totalStorageDeposit }}
+                                    info={graphMessages.totalStorageDeposit}
                                     label="Storage Deposit"
                                     color="#00F5DD"
                                     data={storageDeposit}
@@ -293,4 +293,3 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
 };
 
 export default StatisticsPage;
-

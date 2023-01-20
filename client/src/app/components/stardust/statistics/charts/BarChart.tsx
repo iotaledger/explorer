@@ -144,7 +144,7 @@ const BarChart: React.FC<BarChartProps> = ({ title, info, data, label, color }) 
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
             <ChartHeader
                 title={title}
-                data={info?.data}
+                info={info}
                 onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
