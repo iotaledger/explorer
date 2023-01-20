@@ -68,4 +68,9 @@ export interface TransactionPageState {
      * The state of the block on the tangle.
      */
     blockTangleStatus: TangleStatus;
+
+    /**
+     * Is formatted balance boolean.
+     */
+    isFormattedBalance: boolean;
 }

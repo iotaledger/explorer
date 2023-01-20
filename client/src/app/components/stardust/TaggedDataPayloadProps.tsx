@@ -16,10 +16,5 @@ export interface TaggedDataPayloadProps {
      * History for navigation.
      */
     history: H.History;
-
-    /**
-     * Display advanced mode.
-     */
-     advancedMode: boolean;
 }
 

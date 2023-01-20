@@ -21,9 +21,4 @@ export interface MilestonePayloadProps {
      * The network protocol version.
      */
     protocolVersion: number;
-
-    /**
-     * Display advanced mode.
-     */
-    advancedMode: boolean;
 }
