@@ -55,7 +55,8 @@
                     padding-left: 0px;
                 }
 
-                &.card .output-id {
+                &.output .output-id {
+                    display: flex;
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;
                     text-align: left;
