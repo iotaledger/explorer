@@ -1,5 +1,7 @@
 import classNames from "classnames";
 import React, { useState } from "react";
+import Modal from "../Modal";
+import { ModalData } from "../ModalProps";
 import Spinner from "../Spinner";
 import "./TabbedSection.scss";
 
@@ -16,6 +18,10 @@ interface TabOption {
      * Is the Tab data loading (it will render a loading spinner on the tab).
      */
     isLoading?: boolean;
+    /**
+     * Content for info icon modal that will be rendered on the tab.
+     */
+    infoContent?: ModalData;
 }
 
 interface TabOptions {
@@ -69,6 +75,10 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                     (tabOptions[tab]?.isLoading !== undefined ? tabOptions[tab].isLoading : false)
                     : false;
 
+                const infoContent = tabOptions ?
+                    (tabOptions[tab]?.infoContent !== undefined ? tabOptions[tab].infoContent : undefined)
+                    : undefined;
+
                 return (
                     <div
                         key={`tab-btn-${idx}`}
@@ -85,6 +95,9 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                         >
                             {tab}
                         </button>
+                        {infoContent && (
+                            <Modal icon="info" data={infoContent} />
+                        )}
                         {isLoading && (
                             <Spinner />
                         )}

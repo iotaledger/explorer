@@ -59,5 +59,12 @@
                 line-height: 20px;
             }
         }
+
+        .section--data {
+            .amount-transacted {
+                @include font-size(15px);
+                font-weight: 700;
+            }
+        }
     }
 }

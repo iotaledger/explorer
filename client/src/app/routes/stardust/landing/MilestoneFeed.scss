@@ -211,7 +211,7 @@
             }
 
             &.ms-id {
-                min-width: 136px;
+                max-width: 136px;
                 text-align: left;
 
                 @include tablet-down {

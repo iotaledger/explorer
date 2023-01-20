@@ -15,6 +15,7 @@ import Spinner from "../Spinner";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
 import "./AssociationSection.scss";
+import TruncatedId from "./TruncatedId";
 
 interface IAssociatedSectionProps {
     association: AssociationType;
@@ -143,16 +144,15 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                             <tbody>
                                 {outputDetails.map((details, idx) => {
                                     const { outputId, dateCreated, ago, amount } = details;
-                                    const outputIdShort = `${outputId.slice(0, 15)}....${outputId.slice(-15)}`;
 
                                     return (
                                         <tr key={idx}>
-                                            <td className="card">
+                                            <td className="association__output">
                                                 <Link
                                                     to={`/${network}/output/${outputId}`}
                                                     className="margin-r-t output-id"
                                                 >
-                                                    <span>{outputIdShort}</span>
+                                                    <TruncatedId id={outputId} />
                                                 </Link>
                                             </td>
                                             <td className="date-created">{dateCreated} ({ago})</td>
@@ -173,7 +173,6 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                         <div className="association-section--cards">
                             {outputDetails.map((details, idx) => {
                                 const { outputId, dateCreated, ago, amount } = details;
-                                const outputIdShort = `${outputId.slice(0, 11)}....${outputId.slice(-11)}`;
 
                                 return (
                                     <div key={idx} className="card">
@@ -181,9 +180,9 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                             <div className="label">Output Id</div>
                                             <Link
                                                 to={`/${network}/output/${outputId}`}
-                                                className="margin-r-t value"
+                                                className="row margin-r-t value highlight"
                                             >
-                                                <span className="highlight">{outputIdShort}</span>
+                                                <TruncatedId id={outputId} />
                                             </Link>
                                         </div>
                                         <div className="field">

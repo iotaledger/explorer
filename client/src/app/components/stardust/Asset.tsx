@@ -12,6 +12,7 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import Spinner from "../Spinner";
 import tokenSchemeIRC30 from "./../../../assets/schemas/token-schema-IRC30.json";
 import { AssetProps } from "./AssetProps";
+import TruncatedId from "./TruncatedId";
 
 /**
  * Component which will display an asset.
@@ -67,8 +68,6 @@ const Asset: React.FC<AssetProps> = (
         } catch { }
     };
 
-    const shortId = `${token?.id.slice(0, 12)}...${token?.id.slice(-12)}`;
-
     const buildTokenName = (name: string, logoUrl?: string): string | ReactElement => {
         if (logoUrl) {
             return (
@@ -105,9 +104,9 @@ const Asset: React.FC<AssetProps> = (
                 <td className="highlight">
                     <Link
                         to={`/${network}/foundry/${token?.id}`}
-                        className="margin-r-t"
+                        className="row margin-r-t"
                     >
-                        {shortId}
+                        <TruncatedId id={token?.id} />
                     </Link>
                 </td>
                 <td>{token.amount ?? "-"}</td>
@@ -141,7 +140,7 @@ const Asset: React.FC<AssetProps> = (
                             to={`/${network}/foundry/${token?.id}`}
                             className="margin-r-t"
                         >
-                            {shortId}
+                            <TruncatedId id={token?.id} />
                         </Link>
                     </div>
                 </div>
@@ -155,4 +154,3 @@ const Asset: React.FC<AssetProps> = (
 };
 
 export default Asset;
-

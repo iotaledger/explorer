@@ -298,18 +298,9 @@ export const NFT_STAT_TOTAL_QUERY = `
     FROM "stardust_ledger_outputs";
 `;
 
-export const BYTE_PROTOCOL_PARAMS_QUERY = `
-     SELECT
-         last("v_byte_cost") AS byteCost,
-         last("v_byte_factor_data") AS factorData,
-         last("v_byte_factor_key") AS factorKey
-     FROM "stardust_protocol_params";
-`;
-
-export const KEY_DATA_BYTES_QUERY = `
+export const STORAGE_DEPOSIT_TOTAL_QUERY = `
     SELECT
-        last("total_data_bytes") AS bytesData,
-        last("total_key_bytes") AS bytesKey
+        last("total_storage_deposit_value") * 100 AS "lockedStorageDeposit"
     FROM "stardust_ledger_size";
 `;
 
