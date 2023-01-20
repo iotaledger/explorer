@@ -5,6 +5,8 @@
 
 .chart-header {
     .chart-header__title {
+        display: flex;
+
         h4 {
             @include font-size(16px);
 
@@ -23,6 +25,10 @@
                 padding-right: 4px;
                 @include font-size(14px);
             }
+        }
+
+        .modal--icon {
+            margin-top: 10px;
         }
     }
 

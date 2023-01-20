@@ -59,4 +59,3 @@ const Asset: React.FC<AssetProps> = ({ name, network, symbol, amount, price, val
 );
 
 export default Asset;
-
