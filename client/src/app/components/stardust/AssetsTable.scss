@@ -30,9 +30,6 @@
         }
 
         td {
-            &:not(:first-child) {
-                padding-left: 16px;
-            }
             color: var(--body-color);
 
             &.highlight {
@@ -49,6 +46,10 @@
                 }
             }
         }
+    }
+
+    .token__name {
+        align-items: center;        
     }
 }
 
@@ -93,4 +94,12 @@
             }
         }
     }
+}
+
+.token__name {
+    display: flex;
+}
+.token__logo {
+    height: 16px;
+    width: 16px;
 }

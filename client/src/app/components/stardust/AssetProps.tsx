@@ -1,24 +1,10 @@
+import { IToken } from "../../../models/api/stardust/foundry/IToken";
+
 export interface AssetProps {
     /**
-     * The name of an asset.
+     * Token
      */
-    name: string;
-    /**
-     * The symbol of an asset
-     */
-    symbol?: string;
-    /**
-     * Total quantity related to an asset
-     */
-    amount: number;
-    /**
-     * Price of an asset
-     */
-    price?: number;
-    /**
-     * Value of an asset
-     */
-    value?: number;
+    token: IToken;
     /**
      * Network
      */

@@ -3,6 +3,7 @@ import {
     FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, OutputTypes
 } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
+import { IToken } from "../../../models/api/stardust/foundry/IToken";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
 import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
@@ -15,38 +16,25 @@ interface AssetsTableProps {
     setTokenCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-interface ITokenDetails {
-    /** Token name. */
-    name: string;
-    /** Token symbol. */
-    symbol?: string;
-    /** Token held amount. */
-    amount: number;
-    /** Token price. */
-    price?: number;
-    /** Token total value held. */
-    value?: number;
-}
-
 const TOKEN_PAGE_SIZE: number = 10;
 
 const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenCount }) => {
-    const [tokens, setTokens] = useState<ITokenDetails[]>();
-    const [currentPage, setCurrentPage] = useState<ITokenDetails[]>([]);
+    const [tokens, setTokens] = useState<IToken[]>();
+    const [currentPage, setCurrentPage] = useState<IToken[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
 
     useEffect(() => {
         if (outputs) {
-            const theTokens: ITokenDetails[] = [];
+            const theTokens: IToken[] = [];
             for (const output of outputs) {
                 if (output.type === BASIC_OUTPUT_TYPE || output.type === ALIAS_OUTPUT_TYPE ||
                     output.type === FOUNDRY_OUTPUT_TYPE || output.type === NFT_OUTPUT_TYPE) {
                     for (const token of output.nativeTokens ?? []) {
-                        const existingToken = theTokens.find(t => t.name === token.id);
+                        const existingToken = theTokens.find(t => t.id === token.id);
                         if (existingToken) {
                             existingToken.amount += Number(token.amount);
                         } else {
-                            theTokens.push({ name: token.id, amount: Number.parseInt(token.amount, 16) });
+                            theTokens.push({ id: token.id, amount: Number.parseInt(token.amount, 16) });
                         }
                     }
                 }
@@ -81,24 +69,19 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                 <table className="asset-table">
                     <thead>
                         <tr>
-                            <th>Asset</th>
+                            <th>Name</th>
                             <th>Symbol</th>
+                            <th>Token id</th>
                             <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Value</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentPage.map((token, k) => (
-                            <React.Fragment key={`${token?.name}${k}`}>
+                            <React.Fragment key={`${token.id}${k}`}>
                                 <Asset
                                     key={k}
-                                    name={token?.name}
+                                    token={token}
                                     network={networkId}
-                                    symbol={token?.symbol}
-                                    amount={token.amount}
-                                    price={token?.price}
-                                    value={token?.value}
                                     tableFormat={true}
                                 />
                             </React.Fragment>
@@ -109,15 +92,11 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                 {/* Only visible in mobile -- Card assets*/}
                 <div className="asset-cards">
                     {currentPage.map((token, k) => (
-                        <React.Fragment key={`${token?.name}${k}`}>
+                        <React.Fragment key={`${token.id}${k}`}>
                             <Asset
                                 key={k}
-                                name={token?.name}
+                                token={token}
                                 network={networkId}
-                                symbol={token?.symbol}
-                                amount={token?.amount}
-                                price={token?.price}
-                                value={token?.value}
                             />
                         </React.Fragment>
                     ))}
