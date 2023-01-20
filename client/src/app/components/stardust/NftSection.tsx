@@ -18,35 +18,22 @@ interface NftSectionProps {
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-interface INftDetails {
-    /** NFT id. */
+interface INftBase {
     id: string;
-    /** Immutable metadata */
-    metadata?: INftMetadata;
+    metadata?: INftImmutableMetadata;
 }
 
-export interface INftMetadata {
-    /** The IRC standard of the nft metadata */
-    standard?: "IRC27";
-    /** The version of the IRC standard */
-    version?: string;
-    /** The defined schema type */
-    type?: "image/jpeg" | "image/png" | "image/gif";
-    /** The url pointing to the NFT file location with MIME type defined in type */
-    uri?: string;
-    /** The human-readable name of the nft */
-    name?: string;
-    /** The human-readable name of the collection */
+export interface INftImmutableMetadata {
+    standard: "IRC27";
+    version: string;
+    type: string;
+    uri: string;
+    name: string;
     collectionName?: string;
-    /** The key value pair where payment address mapped to the payout percentage */
     royalities?: Record<string, unknown>;
-    /** The human-readable name of the creator */
     issuerName?: string;
-    /** The human-readable description of the nft */
     description?: string;
-    /** The additional attributes of the NFT */
     attributes?: [];
-    /** The error */
     error?: string;
 }
 
@@ -54,8 +41,8 @@ const PAGE_SIZE = 10;
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
     const mounted = useRef(false);
-    const [nfts, setNfts] = useState<INftDetails[]>([]);
-    const [page, setPage] = useState<INftDetails[]>([]);
+    const [nfts, setNfts] = useState<INftBase[]>([]);
+    const [page, setPage] = useState<INftBase[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
 
     const unmount = () => {
@@ -64,36 +51,40 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
 
     useEffect(() => {
         mounted.current = true;
-        const theNfts: INftDetails[] = [];
+        const theNfts: INftBase[] = [];
 
         if (outputs) {
-            for (const output of outputs) {
-                if (output && !output.metadata.isSpent && output.output.type === NFT_OUTPUT_TYPE) {
+            for (const outputResponse of outputs) {
+                if (
+                    outputResponse &&
+                    !outputResponse.metadata.isSpent &&
+                    outputResponse.output.type === NFT_OUTPUT_TYPE
+                ) {
                     const outputId = TransactionHelper.outputIdFromTransactionData(
-                        output.metadata.transactionId,
-                        output.metadata.outputIndex
+                        outputResponse.metadata.transactionId,
+                        outputResponse.metadata.outputIndex
                     );
-                    const nftOutput = output.output;
+
+                    const nftOutput = outputResponse.output;
                     const nftId = TransactionsHelper.buildIdHashForAliasOrNft(nftOutput.nftId, outputId);
-                    const nftMetadata = nftOutput.immutableFeatures?.find(
+                    const metadataFeature = nftOutput.immutableFeatures?.find(
                         feature => feature.type === METADATA_FEATURE_TYPE
                     ) as IMetadataFeature;
-                    let metadata: INftMetadata | undefined;
 
-                    if (nftMetadata) {
-                        metadata = hexToJson(nftMetadata.data);
-                    }
                     theNfts.push({
                         id: nftId,
-                        metadata
+                        metadata: metadataFeature ? tryParseNftMetadata(metadataFeature.data) : undefined
                     });
                 }
             }
         }
-        setNfts(theNfts);
 
-        if (setNftCount) {
-            setNftCount(theNfts.length);
+        if (mounted.current) {
+            setNfts(theNfts);
+
+            if (setNftCount) {
+                setNftCount(theNfts.length);
+            }
         }
 
         return unmount;
@@ -143,24 +134,20 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
 };
 
 /**
- * Helper function to convert HexEncodedString to NFT metadata json.
- * @param hex The HexEncodedString.
- * @returns The json.
+ * Tries to parse hex data into NFT immutable metadata (tip-27).
+ * @param metadataHex The encoded data.
+ * @returns The parsed INftImmutableMetadata or undefined.
  */
-function hexToJson(hex: HexEncodedString) {
+function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
     const validator = new jsonschema.Validator();
-    const utf8 = Converter.hexToUtf8(hex);
     try {
-        if (utf8) {
-            const json: INftMetadata = JSON.parse(utf8);
-            const result = validator.validate(json, nftSchemeIRC27);
-            return result.valid ?
-                json :
-                { error: "Invalid hex provided" };
+        const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
+        const result = validator.validate(json, nftSchemeIRC27);
+
+        if (result.valid) {
+            return json as INftImmutableMetadata;
         }
-    } catch {
-        return { error: "Invalid hex provided" };
-    }
+    } catch { }
 }
 
 NftSection.defaultProps = {

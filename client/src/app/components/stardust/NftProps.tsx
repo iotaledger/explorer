@@ -1,4 +1,4 @@
-import { INftMetadata } from "./NftSection";
+import { INftImmutableMetadata } from "./NftSection";
 
 export interface NftProps {
     /**
@@ -12,5 +12,5 @@ export interface NftProps {
     /**
      * NFT Metadata
      */
-    metadata: INftMetadata | undefined;
+    metadata: INftImmutableMetadata | undefined;
 }
