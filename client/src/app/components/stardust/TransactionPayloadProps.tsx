@@ -24,14 +24,9 @@ export interface TransactionPayloadProps {
     outputs: IOutput[];
 
     /**
-     * The total of the transfer excluding remainders.
-     */
-    transferTotal: number;
-
-    /**
      * The header title of this section.
      */
-    header: string;
+    header?: string;
 
     /**
      * Disable links if block is conflicting.

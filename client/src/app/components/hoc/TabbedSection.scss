@@ -6,7 +6,7 @@
 .tabbed-section {
     .tabbed-section--tabs-wrapper {
         display: flex;
-        margin-top:36px;
+        margin-top:16px;
         border-bottom: 1px solid var(--border-color);
 
         .tab-wrapper {
@@ -36,7 +36,9 @@
                 background: var(--associated-outputs-tabs-bg);
                 color: $gray-6;
                 border-radius: 0;
+                white-space: nowrap;
                 border: none;
+                padding-right: 4px;
 
                 &:focus {
                     box-shadow: none;
@@ -46,6 +48,10 @@
                     font-size: 12px;
                     padding: 3px 5px;
                 }
+            }
+
+            .modal button {
+                padding-left: 0;
             }
 
             .tab-counter {
@@ -74,8 +80,7 @@
 
     .tab-content {
         &:not(.active) {
-            position: absolute;
-            left: -4000px;
+            display: none;
         };
     }
 }

@@ -8,14 +8,17 @@ export interface BlockData {
      * Block.
      */
     block?: IBlock;
+
     /**
      * The block fetching failed.
      */
     blockError?: string;
+
     /**
      * The transaction id.
      */
     transactionId?: string;
+
     /**
      * The inputs of the transaction
      */
@@ -30,6 +33,7 @@ export interface BlockData {
      * The outputs.
      */
     outputs?: IOutput[];
+
     /**
      * The total of the transfer excluding remainders.
      */
@@ -46,6 +50,7 @@ export interface BlockMetadata {
      * The metadata failed.
      */
     metadataError?: string;
+
     /**
      * Reason for the conflict.
      */
@@ -56,3 +61,4 @@ export interface BlockMetadata {
      */
     blockTangleStatus: TangleStatus;
 }
+
