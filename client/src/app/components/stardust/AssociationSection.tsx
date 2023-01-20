@@ -147,7 +147,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
 
                                     return (
                                         <tr key={idx}>
-                                            <td className="output">
+                                            <td className="association__output">
                                                 <Link
                                                     to={`/${network}/output/${outputId}`}
                                                     className="margin-r-t output-id"

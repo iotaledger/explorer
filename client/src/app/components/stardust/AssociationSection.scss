@@ -34,10 +34,6 @@
             font-family: $inter;
             letter-spacing: 0.5px;
 
-            .card .card--content {
-                padding: 0px;
-            }
-
             th {
                 @include font-size(12px);
 
@@ -55,7 +51,7 @@
                     padding-left: 0px;
                 }
 
-                &.output .output-id {
+                &.association__output .output-id {
                     display: flex;
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;
@@ -78,10 +74,6 @@
                     text-align: left;
                     padding-left: 0px;
                 }
-
-                .card--content__output {
-                    padding: 0;
-                }
             }
         }
     }
@@ -94,10 +86,6 @@
             display: block;
 
             .card {
-                .card--content__output {
-                    padding: 8px 8px 4px 4px;
-                }
-
                 .field {
                     margin: 8px 0 0 8px;
                     margin-bottom: 8px;
