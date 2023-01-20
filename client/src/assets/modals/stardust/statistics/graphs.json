@@ -12,7 +12,7 @@
     },
     "dailyBlocks": {
         "title": "Daily Blocks",
-        "description": "<p>How many blocks the network has issued in a day. The values are separated by by the block payload type.</p>",
+        "description": "<p>How many blocks the network has issued in a day. The values are separated by the block payload type.</p>",
         "links": [
             {
               "label": "Read more",
@@ -232,14 +232,7 @@
     },
     "totalLedgerSize": {
         "title": "Total Ledger Size",
-        "description": "<p>The total size of the ledger, measured daily. The ledger presents the information as a structure of key-value pairs, and the graph separates the total amount of key bytes from the value bytes.</p>",
-        "links": [
-            {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
-              "isExternal": true
-            }
-        ]
+        "description": "<p>The total size of the ledger, measured daily. The ledger presents the information as a structure of key-value pairs, and the graph separates the total amount of key bytes from the value bytes.</p>"
     },
     "totalStorageDeposit": {
         "title": "Total Storage Deposit",
