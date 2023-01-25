@@ -8,6 +8,7 @@ import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
+import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
@@ -275,6 +276,111 @@ export class StardustTangleHelper {
 
         return {
             outputIds
+        };
+    }
+
+    /**
+     * Get the relevant basic output details for an address.
+     * @param network The network to find the items on.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The basic output details.
+     */
+    public static async basicOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { addressBech32, cursor },
+                "basicOutputs",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(outputIdsResponse.items);
+            cursor = outputIdsResponse.cursor;
+        } while (cursor);
+
+        const outputResponses: IOutputResponse[] = [];
+        for (const outputId of outputIds) {
+            const outputResponse = await this.outputDetails(network, outputId);
+            outputResponses.push(outputResponse.output);
+        }
+
+        return {
+            outputs: outputResponses
+        };
+    }
+
+    /**
+     * Get the relevant alias output details for an address.
+     * @param network The network to find the items on.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public static async aliasOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { stateControllerBech32: addressBech32, cursor },
+                "aliases",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(outputIdsResponse.items);
+            cursor = outputIdsResponse.cursor;
+        } while (cursor);
+
+        const outputResponses: IOutputResponse[] = [];
+        for (const outputId of outputIds) {
+            const outputResponse = await this.outputDetails(network, outputId);
+            outputResponses.push(outputResponse.output);
+        }
+
+        return {
+            outputs: outputResponses
+        };
+    }
+
+    /**
+     * Get the relevant nft output details for an address.
+     * @param network The network to find the items on.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public static async nftOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { addressBech32, cursor },
+                "nfts",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(outputIdsResponse.items);
+            cursor = outputIdsResponse.cursor;
+        } while (cursor);
+
+        const outputResponses: IOutputResponse[] = [];
+        for (const outputId of outputIds) {
+            const outputResponse = await this.outputDetails(network, outputId);
+            outputResponses.push(outputResponse.output);
+        }
+
+        return {
+            outputs: outputResponses
         };
     }
 

@@ -57,6 +57,18 @@ export const routes: IRoute[] = [
         folder: "stardust/address/balance/chronicle", func: "get"
     },
     {
+        path: "/stardust/address/outputs/basic/:network/:address", method: "get",
+        folder: "stardust/address/outputs/basic", func: "get"
+    },
+    {
+        path: "/stardust/address/outputs/alias/:network/:address", method: "get",
+        folder: "stardust/address/outputs/alias", func: "get"
+    },
+    {
+        path: "/stardust/address/outputs/nft/:network/:address", method: "get",
+        folder: "stardust/address/outputs/nft", func: "get"
+    },
+    {
         path: "/stardust/address/outputs/:network/:address", method: "get",
         folder: "stardust/address/outputs", func: "get"
     },

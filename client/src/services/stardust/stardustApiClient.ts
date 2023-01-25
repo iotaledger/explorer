@@ -11,6 +11,7 @@ import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryReque
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAddressOutputsRequest } from "../../models/api/stardust/IAddressOutputsRequest";
 import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
@@ -95,6 +96,42 @@ export class StardustApiClient extends ApiClient {
     public async addressOutputs(request: IAddressOutputsRequest): Promise<IAddressOutputsResponse> {
         return this.callApi<unknown, IAddressOutputsResponse>(
             `stardust/address/outputs/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the basic outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async basicOutputsDetails(request: IAddressOutputsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `stardust/address/outputs/basic/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the alias outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async aliasOutputsDetails(request: IAddressOutputsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `stardust/address/outputs/alias/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the nft outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async nftOutputsDetails(request: IAddressOutputsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `stardust/address/outputs/nft/${request.network}/${request.address}`,
             "get"
         );
     }

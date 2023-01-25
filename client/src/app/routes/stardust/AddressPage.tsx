@@ -1,9 +1,10 @@
+/* eslint-disable no-void */
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -41,7 +42,6 @@ enum ADDRESS_PAGE_TABS {
 }
 
 const TX_HISTORY_JOB = "tx-history";
-const ADDR_OUTPUTS_JOB = "addr-outputs";
 const ASSOC_OUTPUTS_JOB = "assoc-outputs";
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
@@ -58,6 +58,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
     const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
     const [outputResponse, setOutputResponse] = useState<IOutputResponse[] | undefined>();
+    const [basicOutputResponse, setBasicOutputResponse] = useState<IOutputResponse[] | undefined>();
+    const [aliasOutputResponse, setAliasOutputResponse] = useState<IOutputResponse[] | undefined>();
+    const [nftOutputResponse, setNftOutputResponse] = useState<IOutputResponse[] | undefined>();
     const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -95,8 +98,10 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     useEffect(() => {
         if (bech32AddressDetails) {
-            // eslint-disable-next-line no-void
-            void loadAddressData();
+            void getAddressBalance();
+            void loadBasicAddressData();
+            void loadAliasAddressData();
+            void loadNftAddressData();
         }
     }, [bech32AddressDetails]);
 
@@ -105,15 +110,17 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         setIsLoading(loading);
     }, [jobToStatus.values()]);
 
-    /**
-     * Load the Address balance and UTXOs.
-     */
-    async function loadAddressData() {
-        // eslint-disable-next-line no-void
-        void getAddressBalance();
-        // eslint-disable-next-line no-void
-        void getAddressOutputs();
-    }
+    useEffect(() => {
+        if (basicOutputResponse && aliasOutputResponse && nftOutputResponse) {
+            const response = [...basicOutputResponse, ...aliasOutputResponse, ...nftOutputResponse];
+            const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
+                response.map(or => or.output),
+                rentStructure
+            );
+            setOutputResponse(response);
+            setStorageRentBalance(storageRentBalanceUpdate);
+        }
+    }, [basicOutputResponse, aliasOutputResponse, nftOutputResponse]);
 
     /**
      * Fetch the address balance details.
@@ -144,61 +151,48 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }
 
     /**
-     * Fetch the address relevant outputs (basic, alias and nft)
+     * Fetch the address relevant output details for basic outputs
      */
-    async function getAddressOutputs(): Promise<void> {
-        const addressBech32 = bech32AddressDetails?.bech32;
-        if (!addressBech32) {
-            return;
+    async function loadBasicAddressData() {
+        if (bech32AddressDetails) {
+            const addressBech32 = bech32AddressDetails?.bech32;
+            const response = await tangleCacheService.basicOutputsDetails(network, addressBech32);
+            if (!response?.error) {
+                setBasicOutputResponse(response?.outputs);
+            } else {
+                setBasicOutputResponse([]);
+            }
         }
+    }
 
-        const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-            buildOnAsyncStatusJobHandler(ADDR_OUTPUTS_JOB)(status);
-        });
+    /**
+     * Fetch the address relevant output details for alias outputs
+     */
+    async function loadAliasAddressData() {
+        if (bech32AddressDetails) {
+            const addressBech32 = bech32AddressDetails?.bech32;
+            const response = await tangleCacheService.aliasOutputsDetails(network, addressBech32);
+            if (!response?.error) {
+                setAliasOutputResponse(response?.outputs);
+            } else {
+                setAliasOutputResponse([]);
+            }
+        }
+    }
 
-        // eslint-disable-next-line no-void
-        void outputIdsMonitor.enqueue(
-            async () => tangleCacheService.addressOutputs(network, addressBech32).then(idsResponse => {
-                if (idsResponse?.outputIds && idsResponse.outputIds.length > 0) {
-                    const outputResponsesUpdate: IOutputResponse[] = [];
-                    const addressOutputIds = idsResponse.outputIds;
-                    let storageRentBalanceUpdate: number | undefined;
-
-                    const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-                        buildOnAsyncStatusJobHandler("outputDetails")(status);
-                        if (status === PromiseStatus.DONE && isMounted.current) {
-                            storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
-                                outputResponsesUpdate.map(or => or.output),
-                                rentStructure
-                            );
-                            if (isMounted.current) {
-                                setOutputResponse(outputResponsesUpdate);
-                                setStorageRentBalance(storageRentBalanceUpdate);
-                            }
-                        }
-                    });
-
-                    for (const outputId of addressOutputIds) {
-                        // eslint-disable-next-line no-void
-                        void outputDetailsMonitor.enqueue(
-                            async () => tangleCacheService.outputDetails(network, outputId).then(
-                                response => {
-                                    if (!response.error && response.output && response.metadata) {
-                                        const outputDetails = {
-                                            output: response.output,
-                                            metadata: response.metadata
-                                        };
-
-                                        outputResponsesUpdate.push(outputDetails);
-                                    }
-                                })
-                        );
-                    }
-                } else {
-                    setOutputResponse([]);
-                }
-            })
-        );
+    /**
+     * Fetch the address relevant output details for nft outputs
+     */
+    async function loadNftAddressData() {
+        if (bech32AddressDetails) {
+            const addressBech32 = bech32AddressDetails?.bech32;
+            const response = await tangleCacheService.nftOutputsDetails(network, addressBech32);
+            if (!response?.error) {
+                setNftOutputResponse(response?.outputs);
+            } else {
+                setNftOutputResponse([]);
+            }
+        }
     }
 
     /**
@@ -296,12 +290,12 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                         [ADDRESS_PAGE_TABS.NativeTokens]: {
                                             disabled: tokensCount === 0,
                                             counter: tokensCount,
-                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
+                                            isLoading: !outputResponse
                                         },
                                         [ADDRESS_PAGE_TABS.Nfts]: {
                                             disabled: nftCount === 0,
                                             counter: nftCount,
-                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
+                                            isLoading: !nftOutputResponse
                                         },
                                         [ADDRESS_PAGE_TABS.AssocOutputs]: {
                                             disabled: associatedOutputCount === 0,
@@ -323,7 +317,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                     <NftSection
                                         network={network}
                                         bech32Address={addressBech32}
-                                        outputs={outputResponse}
+                                        outputs={nftOutputResponse}
                                         setNftCount={setNftCount}
                                     />
                                     <AssociatedOutputs

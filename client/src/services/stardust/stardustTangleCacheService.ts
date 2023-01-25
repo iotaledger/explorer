@@ -10,6 +10,7 @@ import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesR
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
@@ -252,6 +253,87 @@ export class StardustTangleCacheService extends TangleCacheService {
         });
 
         return response;
+    }
+
+    /**
+     * Get the basic output details for an address.
+     * @param networkId The network in context.
+     * @param address The address in bech32 format.
+     * @returns The basic output details.
+     */
+    public async basicOutputsDetails(
+        networkId: string,
+        address: string
+    ): Promise<IAddressDetailsResponse | undefined> {
+        if (!this._stardustSearchCache[networkId][`${address}-basic-outputs-details`]?.data?.outputs) {
+            const response = await this._api.basicOutputsDetails({
+                network: networkId,
+                address
+            });
+
+            if (response.outputs) {
+                this._stardustSearchCache[networkId][`${address}-basic-outputs-details`] = {
+                    data: { outputs: response },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[networkId][`${address}-basic-outputs-details`].data?.outputs;
+    }
+
+    /**
+     * Get the alias outputs details for an address.
+     * @param networkId The network in context.
+     * @param address The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public async aliasOutputsDetails(
+        networkId: string,
+        address: string
+    ): Promise<IAddressDetailsResponse | undefined> {
+        if (!this._stardustSearchCache[networkId][`${address}-alias-outputs-details`]?.data?.outputs) {
+            const response = await this._api.aliasOutputsDetails({
+                network: networkId,
+                address
+            });
+
+            if (response.outputs) {
+                this._stardustSearchCache[networkId][`${address}-alias-outputs-details`] = {
+                    data: { outputs: response },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[networkId][`${address}-alias-outputs-details`].data?.outputs;
+    }
+
+    /**
+     * Get the nft outputs details for an address.
+     * @param networkId The network in context.
+     * @param address The address in bech32 format.
+     * @returns The nft output details.
+     */
+    public async nftOutputsDetails(
+        networkId: string,
+        address: string
+    ): Promise<IAddressDetailsResponse | undefined> {
+        if (!this._stardustSearchCache[networkId][`${address}-nft-outputs-details`]?.data?.outputs) {
+            const response = await this._api.nftOutputsDetails({
+                network: networkId,
+                address
+            });
+
+            if (response.outputs) {
+                this._stardustSearchCache[networkId][`${address}-nft-outputs-details`] = {
+                    data: { outputs: response },
+                    cached: Date.now()
+                };
+            }
+        }
+
+        return this._stardustSearchCache[networkId][`${address}-nft-outputs-details`].data?.outputs;
     }
 
     /**
