@@ -112,12 +112,12 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     useEffect(() => {
         if (basicOutputResponse && aliasOutputResponse && nftOutputResponse) {
-            const response = [...basicOutputResponse, ...aliasOutputResponse, ...nftOutputResponse];
+            const details = [...basicOutputResponse, ...aliasOutputResponse, ...nftOutputResponse];
             const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
-                response.map(or => or.output),
+                details.map(or => or.output),
                 rentStructure
             );
-            setOutputResponse(response);
+            setOutputResponse(details);
             setStorageRentBalance(storageRentBalanceUpdate);
         }
     }, [basicOutputResponse, aliasOutputResponse, nftOutputResponse]);
