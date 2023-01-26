@@ -1,5 +1,5 @@
 import {
-    IAddressResponse,
+    IAddress,
     IAliasOutput,
     IExtendedLockedOutput,
     IOutput,
@@ -12,7 +12,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
 import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
-type Result = IAddressResponse | null | undefined;
+type Result = IAddress | null | undefined;
 
 /**
  *
@@ -20,7 +20,7 @@ type Result = IAddressResponse | null | undefined;
  * @param addressBase58
  */
 export function useAddress(network: string, addressBase58: string): [Result, boolean] {
-    const [addr, setAddr] = useState<IAddressResponse | null>();
+    const [addr, setAddr] = useState<IAddress | null>();
     const [isLoading, setIsLoading] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 

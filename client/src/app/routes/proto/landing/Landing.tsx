@@ -2,7 +2,8 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { useStats } from "../../../../helpers/proto/useStats";
+import { useBPSStream } from "../../../../helpers/proto/useBPSStream";
+import { useGlobalMetrics } from "../../../../helpers/proto/useGlobalMetrics";
 import { useStatusStream } from "../../../../helpers/proto/useStatusStream";
 import { INetwork } from "../../../../models/config/INetwork";
 import { CUSTOM } from "../../../../models/config/networkType";
@@ -27,10 +28,10 @@ const defaultNetworkConfig: INetwork = {
 const Landing: React.FC<RouteComponentProps<LandingProps>> = (
     { match: { params: { network } } }
 ) => {
-    const [bps, inclusionRate, confLatency] = useStats(network);
+    const [bps] = useBPSStream(network);
     const networkConfig = ServiceFactory.get<NetworkService>("network").get(network) ?? defaultNetworkConfig;
     const [status, lastEpochIndex, latestEpochIndices] = useStatusStream(network);
-    const [protoStats, setProtoStats] = useState();
+    const [globalMetrics] = useGlobalMetrics(network);
 
     return (
         <div className="landing-protonet">
@@ -43,12 +44,12 @@ const Landing: React.FC<RouteComponentProps<LandingProps>> = (
                         </div>
                         <InfoBox
                             bps={bps}
-                            confLatency={confLatency}
-                            inclusionRate={inclusionRate}
+                            confLatency={globalMetrics?.confirmationDelay ?? "NA"}
+                            inclusionRate={globalMetrics?.inclusionRate ?? 0}
                         />
                     </div>
                 </div>
-                <AnalyticStats protoStats={protoStats} />
+                <AnalyticStats globalMetrics={globalMetrics ?? undefined} />
             </div>
             <div className={classNames("wrapper feeds-wrapper", { "protonet": true })}>
                 <div className="inner">

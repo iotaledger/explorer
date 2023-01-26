@@ -1,4 +1,4 @@
-import { ITransactionResponse } from "@iota/protonet.js";
+import { ITransaction } from "@iota/protonet.js";
 import React from "react";
 import Output from "./Output";
 import "./TransactionPayload.scss";
@@ -10,7 +10,7 @@ import UnlockBlock from "./UnlockBlock";
 // import Unlocks from "./Unlocks";
 
 interface TransactionPayloadProps {
-    tx: ITransactionResponse;
+    tx: ITransaction;
     network: string;
 }
 
@@ -29,7 +29,7 @@ const TransactionPayload: React.FC<TransactionPayloadProps> = (
                     {tx.inputs.map((input, idx) => (
                         <Output
                             key={idx} network={network} isPreExpanded={false}
-                            outputId={input.referencedOutputID.base58}
+                            outputId={input.referencedOutputID?.base58 ?? ""}
                         />
                     ))}
                 </div>
@@ -58,8 +58,8 @@ const TransactionPayload: React.FC<TransactionPayloadProps> = (
                     <span>{tx.unlockBlocks.length}</span>
                 </div>
                 <div className="transaction-from card--content">
-                    {tx.unlockBlocks.map(unlockBlock => (
-                        <UnlockBlock key={unlockBlock.publicKey} unlockBlock={unlockBlock} isPreExpanded={false} />
+                    {tx.unlockBlocks.map((unlockBlock, i) => (
+                        <UnlockBlock key={i} unlockBlock={unlockBlock} isPreExpanded={false} />
                         )
                     )}
                 </div>

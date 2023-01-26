@@ -89,7 +89,7 @@ export async function initServices(socketServer: SocketIOServer, config: IConfig
             const websocketClient = ServiceFactory.get<WebSocketClient>(`ws-${networkConfig.network}`);
             if (websocketClient) {
                 console.log("init websocket proto");
-                websocketClient.init();
+                websocketClient.init(5000);
             }
         }
 

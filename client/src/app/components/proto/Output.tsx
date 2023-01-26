@@ -225,7 +225,7 @@ const Output: React.FC<OutputProps> = (
                                 <div className="card--label">State metadata:</div>
                                 <div className="card--value row">
                                     <DataToggle
-                                        sourceData={(output?.output as IAliasOutput).stateData ?? ""}
+                                        sourceData={(output?.output as IAliasOutput).stateData?.toString() ?? ""}
                                         withSpacedHex={true}
                                     />
                                 </div>

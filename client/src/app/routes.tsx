@@ -32,6 +32,7 @@ import ProtoLanding from "./routes/proto/landing/Landing";
 import ProtoOutputPage from "./routes/proto/OutputPage";
 import ProtoSearch from "./routes/proto/Search";
 import ProtoTransactionPage from "./routes/proto/TransactionPage";
+import ProtoVisualizer from "./routes/proto/Visualizer";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
 import Alias from "./routes/stardust/Alias";
@@ -242,12 +243,12 @@ const buildAppRoutes = (
         <Route path="/:network/conflict/:conflictId"
             key={keys.next().value}
             component={ProtoConflictPage}
-        />
-        /* ,
+        />,
         <Route path="/:network/visualizer/"
             key={keys.next().value}
-            component={StardustVisualizer}
-        />,
+            component={ProtoVisualizer}
+        />
+        /*
         <Route path="/:network/network/"
             key={keys.next().value}
             component={StardustVisualizer}

@@ -10,11 +10,8 @@ const apiEndpoint = (window as any).env.API_ENDPOINT as string;
  * @param network
  * @param txId
  */
-export function useStats(network: string): [number, number, number] {
+export function useBPSStream(network: string): [number] {
     const [bps, setBPS] = useState(0);
-    const [inclusionRate, setInclusionRate] = useState(0);
-    const [confirmationLatency, setConfirmationLatency] = useState(0);
-    // const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
         let socket: Socket;
@@ -23,7 +20,7 @@ export function useStats(network: string): [number, number, number] {
 
             socket?.emit(`proto-${WsMsgType.BPSMetric}`);
             socket?.on(WsMsgType.BPSMetric.toString(), async (data: IWsBPS) => {
-                setBPS(data as number);
+                setBPS(data);
             });
         })();
 
@@ -32,5 +29,5 @@ export function useStats(network: string): [number, number, number] {
         };
     }, []);
 
-    return [bps, inclusionRate, confirmationLatency];
+    return [bps];
 }

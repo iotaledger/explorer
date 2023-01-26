@@ -82,6 +82,10 @@ export const routes: IRoute[] = [
         path: "/stardust/analytics/shimmer/:network", method: "get",
         folder: "stardust/analytics/shimmer", func: "get", sign: true
     },
+    {
+        path: "/proto/metrics/global/:network", method: "get",
+        folder: "proto/metrics/global", func: "get"
+    },
     { path: "/proto/block/:network/:blockId", method: "get", folder: "proto/block", func: "get" },
     {
         path: "/proto/block/metadata/:network/:blockId", method: "get",

@@ -5,7 +5,7 @@ import "./InfoBox.scss";
 interface InfoBoxProps {
     bps: number;
     inclusionRate: number;
-    confLatency: number;
+    confLatency: string;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = (

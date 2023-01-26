@@ -2,11 +2,9 @@ import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import "./BlockPage.scss";
 import moment from "moment";
-import { IDataPayload } from "../../../../../../protonet.js/packages";
 import metadataMessage from "../../../assets/modals/stardust/block/metadata.json";
 import { pastMarkersToNodes } from "../../../helpers/proto/misc";
 import { useBlock, useBlockMeta } from "../../../helpers/proto/useBlock";
-import { useStatusStream } from "../../../helpers/proto/useStatusStream";
 import Modal from "../../components/Modal";
 import BlockTransaction from "../../components/proto/BlockTransaction";
 import Spinner from "../../components/Spinner";
@@ -510,7 +508,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                 <div className="section--data">
                                                     <div className="label">Data</div>
                                                     <div className="value">
-                                                        {(block.payload as IDataPayload).data ?? "Empty"}
+                                                        {(block.payload) ?? "Empty"}
                                                     </div>
                                                 </div>
                                             </div>

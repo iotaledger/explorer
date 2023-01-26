@@ -1,10 +1,10 @@
-import { ITransactionResponse } from "@iota/protonet.js";
+import { ITransaction } from "@iota/protonet.js";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
 import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
-type Result = ITransactionResponse | null | undefined;
+type Result = ITransaction | null | undefined;
 
 /**
  *
@@ -13,7 +13,7 @@ type Result = ITransactionResponse | null | undefined;
  * @param query
  */
 export function useSearch(network: string, query: string): [Result, boolean] {
-    const [tx, setTx] = useState<ITransactionResponse | null>();
+    const [tx, setTx] = useState<ITransaction | null>();
     const [isSearching, setIsSearching] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 

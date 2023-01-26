@@ -1,9 +1,11 @@
+import { IGlobalMetrics } from "../../../../../protonet.js/packages";
 import { IAddressRequest } from "../../models/api/proto/IAddressRequest";
 import { IAddressResponse } from "../../models/api/proto/IAddressResponse";
 import { IBlockMetadataRequest } from "../../models/api/proto/IBlockMetadataRequest";
 import { IBlockMetadataResponse } from "../../models/api/proto/IBlockMetadataResponse";
 import { IBlockRequest } from "../../models/api/proto/IBlockRequest";
 import { IBlockResponse } from "../../models/api/proto/IBlockResponse";
+import { ICommonRequest } from "../../models/api/proto/ICommonRequest";
 import { IConflictChildrenResponse } from "../../models/api/proto/IConflictChildrenResponse";
 import { IConflictConflictsResponse } from "../../models/api/proto/IConflictConflictsResponse";
 import { IConflictRequest } from "../../models/api/proto/IConflictRequest";
@@ -14,6 +16,7 @@ import { IEpochRequest } from "../../models/api/proto/IEpochRequest";
 import { IEpochResponse } from "../../models/api/proto/IEpochResponse";
 import { IEpochTransactionsResponse } from "../../models/api/proto/IEpochTransactions";
 import { IEpochVotersWeightResponse } from "../../models/api/proto/IEpochVotersWeight";
+import { IGlobalMetricsResponse } from "../../models/api/proto/IGlobalMetricsResponse";
 import { IOutputMetadataRequest } from "../../models/api/proto/IOutputMetadataRequest";
 import { IOutputMetadataResponse } from "../../models/api/proto/IOutputMetadataResponse";
 import { IOutputRequest } from "../../models/api/proto/IOutputRequest";
@@ -38,6 +41,18 @@ export class ProtoApiClient extends ApiClient {
     public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
+            "get"
+        );
+    }
+
+    /**
+     * Perform a request to get the global metrics for a network.
+     * @param request The network request.
+     * @returns The response from the request.
+     */
+    public async globalMetrics(request: ICommonRequest): Promise<IGlobalMetricsResponse> {
+        return this.callApi<unknown, IGlobalMetricsResponse>(
+            `proto/metrics/global/${request.network}`,
             "get"
         );
     }

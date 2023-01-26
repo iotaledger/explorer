@@ -1,10 +1,10 @@
-import { ITransaction } from "@iota/protonet.js";
+import { IGlobalMetrics } from "@iota/protonet.js";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
 import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
-type Result = ITransaction | null | undefined;
+type Result = IGlobalMetrics | null | undefined;
 
 // eslint-disable-next-line jsdoc/require-returns
 /**
@@ -12,8 +12,8 @@ type Result = ITransaction | null | undefined;
  * @param network
  * @param txId
  */
-export function useTx(network: string, txId: string): [Result, boolean] {
-    const [tx, setTx] = useState<ITransaction | null>();
+export function useGlobalMetrics(network: string): [Result, boolean] {
+    const [globalMetrics, setGlobalMetrics] = useState<IGlobalMetrics | null>();
     const [isLoading, setIsLoading] = useState(true);
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
@@ -21,18 +21,18 @@ export function useTx(network: string, txId: string): [Result, boolean] {
         (async () => {
             setIsLoading(true);
             try {
-                const fetchedTx = await apiClient.transaction({ network, txId });
-                if (fetchedTx.error || fetchedTx.tx === undefined) {
-                    throw new Error(fetchedTx.error);
+                const fetchedMetrics = await apiClient.globalMetrics({ network });
+                if (fetchedMetrics.error || fetchedMetrics.metrics === undefined) {
+                    throw new Error(fetchedMetrics.error);
                 }
-                setTx(fetchedTx.tx);
+                setGlobalMetrics(fetchedMetrics.metrics);
             } catch {
-                setTx(null);
+                setGlobalMetrics(null);
             } finally {
                 setIsLoading(false);
             }
         })();
-    }, [txId]);
+    }, []);
 
-    return [tx, isLoading];
+    return [globalMetrics, isLoading];
 }
