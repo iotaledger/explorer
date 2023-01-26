@@ -68,10 +68,6 @@ export const routes: IRoute[] = [
         path: "/stardust/address/outputs/nft/:network/:address", method: "get",
         folder: "stardust/address/outputs/nft", func: "get"
     },
-    {
-        path: "/stardust/address/outputs/:network/:address", method: "get",
-        folder: "stardust/address/outputs", func: "get"
-    },
     { path: "/stardust/block/:network/:blockId", method: "get", folder: "stardust/block", func: "get" },
     {
         path: "/stardust/block/metadata/:network/:blockId", method: "get",

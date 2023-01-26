@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { IAddressDetailsRequest } from "../../../../../models/api/stardust/IAddressDetailsRequest";
 import { IAddressDetailsResponse } from "../../../../../models/api/stardust/IAddressDetailsResponse";
-import { IAddressOutputsRequest } from "../../../../../models/api/stardust/IAddressOutputsRequest";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
@@ -15,7 +15,7 @@ import { ValidationHelper } from "../../../../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: IAddressOutputsRequest
+    request: IAddressDetailsRequest
 ): Promise<IAddressDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();

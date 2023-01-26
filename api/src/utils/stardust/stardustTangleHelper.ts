@@ -10,7 +10,6 @@ import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundries
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
-import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
@@ -220,63 +219,6 @@ export class StardustTangleHelper {
                 milestone: milestonePayload
             };
         }
-    }
-
-    /**
-     * Get the relevant upspent output ids for an address.
-     * @param network The network to find the items on.
-     * @param addressBech32 The address in bech32 format.
-     * @returns The output ids.
-     */
-    public static async outputIdsByAddress(
-        network: INetwork, addressBech32: string
-    ): Promise<IAddressOutputsResponse | undefined> {
-        let cursor: string | undefined;
-        let outputIds: string[] = [];
-
-        do {
-            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32, cursor },
-                "basicOutputs",
-                network,
-                true
-            );
-
-            outputIds = outputIds.concat(outputIdsResponse.items);
-            cursor = outputIdsResponse.cursor;
-        } while (cursor);
-
-        cursor = undefined;
-
-        do {
-            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32, cursor },
-                "nfts",
-                network,
-                true
-            );
-
-            outputIds = outputIds.concat(nftOutputs.items);
-            cursor = nftOutputs.cursor;
-        } while (cursor);
-
-        cursor = undefined;
-
-        do {
-            const aliasOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { governorBech32: addressBech32, cursor },
-                "aliases",
-                network,
-                true
-            );
-
-            outputIds = outputIds.concat(aliasOutputs.items);
-            cursor = aliasOutputs.cursor;
-        } while (cursor);
-
-        return {
-            outputIds
-        };
     }
 
     /**

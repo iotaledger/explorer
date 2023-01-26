@@ -12,7 +12,6 @@ import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanc
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
-import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
@@ -235,24 +234,6 @@ export class StardustTangleCacheService extends TangleCacheService {
             output: this._stardustSearchCache[networkId][outputId]?.data?.output?.output,
             metadata: this._stardustSearchCache[networkId][outputId]?.data?.output?.metadata
         };
-    }
-
-    /**
-     * Get the unspend output ids for an address.
-     * @param networkId The network in context.
-     * @param address The address in bech32 format.
-     * @returns The output ids.
-     */
-    public async addressOutputs(
-        networkId: string,
-        address: string
-    ): Promise<IAddressOutputsResponse | undefined> {
-        const response = await this._api.addressOutputs({
-            network: networkId,
-            address
-        });
-
-        return response;
     }
 
     /**
