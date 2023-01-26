@@ -1,8 +1,9 @@
 import { IBlock, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { useIsMounted } from "../../../../../helpers/hooks/useIsMounted";
 import { NameHelper } from "../../../../../helpers/stardust/nameHelper";
 import { TransactionsHelper } from "../../../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../../../helpers/stardust/valueFormatHelper";
@@ -22,7 +23,7 @@ interface BlockData {
 }
 
 const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
-    const isMounted = useRef(false);
+    const isMounted = useIsMounted();
     const { name: network, bech32Hrp, tokenInfo } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -31,12 +32,7 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isFormattedValue, setIsFormattedValue] = useState<boolean>(true);
 
-    const unmount = () => {
-        isMounted.current = false;
-    };
-
     useEffect(() => {
-        isMounted.current = true;
         setIsLoading(true);
         // eslint-disable-next-line no-void
         void tangleCacheService.block(network, blockId).then(async response => {
@@ -64,9 +60,7 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
 
             setIsLoading(false);
         });
-
-        return unmount;
-    }, [blockId]);
+    }, [isMounted, blockId]);
 
     const payloadType = NameHelper.getPayloadType(blockData?.block);
     const transactionValue = blockData?.value && blockData.value !== undefined ?

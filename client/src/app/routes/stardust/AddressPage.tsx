@@ -1,8 +1,9 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
@@ -47,7 +48,7 @@ const ASSOC_OUTPUTS_JOB = "assoc-outputs";
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
-    const isMounted = useRef(false);
+    const isMounted = useIsMounted();
     const { tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -66,8 +67,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
-        isMounted.current = true;
-
         if (!location.state) {
             location.state = {
                 addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address)
@@ -87,11 +86,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                 setBech32AddressDetails(addressDetails);
             }
         }
-
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
+    }, [isMounted]);
 
     useEffect(() => {
         if (bech32AddressDetails) {
