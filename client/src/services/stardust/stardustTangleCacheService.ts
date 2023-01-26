@@ -246,7 +246,10 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         address: string
     ): Promise<IAddressDetailsResponse | undefined> {
-        if (!this._stardustSearchCache[networkId][`${address}-basic-outputs-details`]?.data?.outputs) {
+        const key = `${address}-basic-outputs-details`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.outputs;
+
+        if (!cacheEntry) {
             const response = await this._api.basicOutputsDetails({
                 network: networkId,
                 address
@@ -260,7 +263,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             }
         }
 
-        return this._stardustSearchCache[networkId][`${address}-basic-outputs-details`].data?.outputs;
+        return this._stardustSearchCache[networkId][key]?.data?.outputs;
     }
 
     /**
@@ -273,7 +276,10 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         address: string
     ): Promise<IAddressDetailsResponse | undefined> {
-        if (!this._stardustSearchCache[networkId][`${address}-alias-outputs-details`]?.data?.outputs) {
+        const key = `${address}-alias-outputs-details`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.outputs;
+
+        if (!cacheEntry) {
             const response = await this._api.aliasOutputsDetails({
                 network: networkId,
                 address
@@ -287,7 +293,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             }
         }
 
-        return this._stardustSearchCache[networkId][`${address}-alias-outputs-details`].data?.outputs;
+        return this._stardustSearchCache[networkId][key]?.data?.outputs;
     }
 
     /**
@@ -300,7 +306,10 @@ export class StardustTangleCacheService extends TangleCacheService {
         networkId: string,
         address: string
     ): Promise<IAddressDetailsResponse | undefined> {
-        if (!this._stardustSearchCache[networkId][`${address}-nft-outputs-details`]?.data?.outputs) {
+        const key = `${address}-nft-outputs-details`;
+        const cacheEntry = this._stardustSearchCache[networkId][key]?.data?.outputs;
+
+        if (!cacheEntry) {
             const response = await this._api.nftOutputsDetails({
                 network: networkId,
                 address
@@ -314,7 +323,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             }
         }
 
-        return this._stardustSearchCache[networkId][`${address}-nft-outputs-details`].data?.outputs;
+        return this._stardustSearchCache[networkId][key]?.data?.outputs;
     }
 
     /**
