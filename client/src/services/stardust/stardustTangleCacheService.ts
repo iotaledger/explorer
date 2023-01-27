@@ -256,7 +256,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             });
 
             if (response.outputs) {
-                this._stardustSearchCache[networkId][`${address}-basic-outputs-details`] = {
+                this._stardustSearchCache[networkId][key] = {
                     data: { outputs: response },
                     cached: Date.now()
                 };
@@ -286,7 +286,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             });
 
             if (response.outputs) {
-                this._stardustSearchCache[networkId][`${address}-alias-outputs-details`] = {
+                this._stardustSearchCache[networkId][key] = {
                     data: { outputs: response },
                     cached: Date.now()
                 };
@@ -316,7 +316,7 @@ export class StardustTangleCacheService extends TangleCacheService {
             });
 
             if (response.outputs) {
-                this._stardustSearchCache[networkId][`${address}-nft-outputs-details`] = {
+                this._stardustSearchCache[networkId][key] = {
                     data: { outputs: response },
                     cached: Date.now()
                 };
