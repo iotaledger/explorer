@@ -82,8 +82,8 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
 const copyrightInnerContent = "This explorer implementation is inspired by ";
 export const copyrightInner = (
     <React.Fragment>
-        {copyrightInnerContent}
         <span>
+            {copyrightInnerContent}
             <a href="https://thetangle.org">
                 thetangle.org
             </a>.

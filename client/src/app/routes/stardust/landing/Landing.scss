@@ -173,12 +173,30 @@
             .description {
                 display: flex;
                 justify-content: center;
-                padding: 20px;
-
                 @include font-size(14px);
-
                 color: $gray;
                 font-family: $metropolis;
+            }
+
+            .faucet {
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+                @include font-size(14px);
+                color: $gray;
+                font-family: $metropolis;
+
+                .data-link {
+                    @include phone-down {
+                        margin-left: 0px;
+                        margin-top: 10px;
+                    }
+                }
+
+                @include phone-down {
+                    padding: 10px;
+                    flex-direction: column;
+                }
             }
         }
 

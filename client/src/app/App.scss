@@ -59,11 +59,11 @@
       font-weight: 600;
 
       @include phone-down {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         width: 300px;
         line-height: 20px;
+        text-align: center;
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
       a {

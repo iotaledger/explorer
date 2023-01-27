@@ -134,7 +134,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             <div className="card margin-t-m">
                                 <div className="card--content description">{networkConfig.description}</div>
                                 {networkConfig.faucet && (
-                                    <div className="card--content description">
+                                    <div className="card--content faucet">
                                         <span>Get tokens from the Faucet:</span>
                                         <a
                                             className="data-link margin-l-t"
