@@ -81,14 +81,12 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
 
 const copyrightInnerContent = "This explorer implementation is inspired by ";
 export const copyrightInner = (
-    <React.Fragment>
-        <span>
-            {copyrightInnerContent}
-            <a href="https://thetangle.org">
-                thetangle.org
-            </a>.
-        </span>
-    </React.Fragment>
+    <span>
+        {copyrightInnerContent}
+        <a href="https://thetangle.org">
+            thetangle.org
+        </a>.
+    </span>
 );
 
 export const buildMetaLabel = (network: NetworkType | undefined): string => {
