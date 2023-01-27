@@ -71,6 +71,10 @@
                         margin-bottom: 66px;
                     }
 
+                    @include phone-down {
+                        margin-left: 0px;
+                    }
+
                     h1 {
                         @include font-size(48px, 58px);
 
@@ -98,6 +102,10 @@
 
                 .switcher {
                     margin: 0 20px 20px 20px;
+                }
+
+                @include phone-down {
+                    width: 100%;
                 }
             }
         }
@@ -176,6 +184,7 @@
                 @include font-size(14px);
                 color: $gray;
                 font-family: $metropolis;
+                padding-top: 20px;
             }
 
             .faucet {
