@@ -8,6 +8,13 @@
         display: flex;
         margin-top:16px;
         border-bottom: 1px solid var(--border-color);
+        overflow: scroll;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
 
         .tab-wrapper {
             display: flex;
