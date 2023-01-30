@@ -99,9 +99,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     useEffect(() => {
         if (bech32AddressDetails) {
             void getAddressBalance();
-            void loadBasicAddressData();
-            void loadAliasAddressData();
-            void loadNftAddressData();
+            void loadAddressBasicOutputs();
+            void loadAddressAliasOutputs();
+            void loadAddressNftOutputs();
         }
     }, [bech32AddressDetails]);
 
@@ -153,7 +153,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     /**
      * Fetch the address relevant output details for basic outputs
      */
-    async function loadBasicAddressData() {
+    async function loadAddressBasicOutputs() {
         if (bech32AddressDetails) {
             const addressBech32 = bech32AddressDetails?.bech32;
             const response = await tangleCacheService.basicOutputsDetails(network, addressBech32);
@@ -168,7 +168,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     /**
      * Fetch the address relevant output details for alias outputs
      */
-    async function loadAliasAddressData() {
+    async function loadAddressAliasOutputs() {
         if (bech32AddressDetails) {
             const addressBech32 = bech32AddressDetails?.bech32;
             const response = await tangleCacheService.aliasOutputsDetails(network, addressBech32);
@@ -183,7 +183,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     /**
      * Fetch the address relevant output details for nft outputs
      */
-    async function loadNftAddressData() {
+    async function loadAddressNftOutputs() {
         if (bech32AddressDetails) {
             const addressBech32 = bech32AddressDetails?.bech32;
             const response = await tangleCacheService.nftOutputsDetails(network, addressBech32);
