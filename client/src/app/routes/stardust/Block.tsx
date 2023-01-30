@@ -64,7 +64,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 clearTimeout(updateMetadataTimerId);
             }
         };
-    }, [isMounted, blockId]);
+    }, [blockId]);
 
     useEffect(() => {
         if (!blockData.blockError) {

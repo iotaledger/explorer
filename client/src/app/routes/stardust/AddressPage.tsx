@@ -86,7 +86,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                 setBech32AddressDetails(addressDetails);
             }
         }
-    }, [isMounted]);
+    }, []);
 
     useEffect(() => {
         if (bech32AddressDetails) {

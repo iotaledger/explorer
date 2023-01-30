@@ -66,7 +66,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 
         // eslint-disable-next-line no-void
         void loadFoundryDetails();
-    }, [isMounted]);
+    }, []);
 
 
     if (foundryError) {

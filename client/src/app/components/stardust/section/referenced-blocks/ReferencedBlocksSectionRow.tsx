@@ -60,7 +60,7 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
 
             setIsLoading(false);
         });
-    }, [isMounted, blockId]);
+    }, [blockId]);
 
     const payloadType = NameHelper.getPayloadType(blockData?.block);
     const transactionValue = blockData?.value && blockData.value !== undefined ?
