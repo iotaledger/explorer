@@ -98,7 +98,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                     </Tooltip>
                                 </span>
                                 <span className="feed-item--value ms-timestamp mobile">
-                                    {tooltipContent} ({milestone.index === highestIndex ? secondsSinceLastView : ago})
+                                    {milestone.index === highestIndex ? secondsSinceLastView : ago}
                                 </span>
                             </div>
                         </div>

@@ -105,10 +105,14 @@
                 @include tablet-down {
                     display: none;
                 }
+            }
 
-                .feed-item--value {
-                    .feed-item__ms-stat {
-                        margin-left: 4px;
+            .feed-item--value {
+                .feed-item__ms-stat {
+                    @include tablet-down {
+                        min-height: 100%;
+                        padding-left: 8px;
+                        @include font-size(14px, 20px);
                     }
                 }
             }
