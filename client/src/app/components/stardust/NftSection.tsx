@@ -1,5 +1,6 @@
 import { IOutputResponse, NFT_OUTPUT_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
@@ -9,7 +10,7 @@ import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-walle
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-    outputs: IOutputResponse[] | undefined;
+    outputs: IOutputResponse[] | null;
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
@@ -25,17 +26,12 @@ interface INftDetails {
 const PAGE_SIZE = 10;
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
-    const mounted = useRef(false);
+    const isMounted = useIsMounted();
     const [nfts, setNfts] = useState<INftDetails[]>([]);
     const [page, setPage] = useState<INftDetails[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
 
-    const unmount = () => {
-        mounted.current = false;
-    };
-
     useEffect(() => {
-        mounted.current = true;
         const theNfts: INftDetails[] = [];
 
         if (outputs) {
@@ -54,21 +50,22 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     });
                 }
             }
-            setNfts(theNfts);
 
-            if (setNftCount) {
-                setNftCount(theNfts.length);
+            if (isMounted) {
+                setNfts(theNfts);
+
+                if (setNftCount) {
+                    setNftCount(theNfts.length);
+                }
             }
         }
-
-        return unmount;
     }, [outputs, network, bech32Address]);
 
     // On page change handler
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        if (mounted.current) {
+        if (isMounted) {
             setPage(nfts?.slice(from, to));
         }
     }, [nfts, pageNumber]);

@@ -1,9 +1,10 @@
 import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
@@ -23,7 +24,7 @@ import "./Foundry.scss";
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     { match: { params: { network, foundryId } } }
 ) => {
-    const isMounted = useRef(false);
+    const isMounted = useIsMounted();
     const { tokenInfo } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -37,7 +38,6 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [controllerAlias, setControllerAlias] = useState<string>();
 
     useEffect(() => {
-        isMounted.current = true;
         const foundryLoadMonitor = new PromiseMonitor(status => {
             setJobToStatus(jobToStatus.set("loadFoundryDetails", status));
         });
@@ -53,11 +53,11 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 theFoundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
                             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
-                            if (isMounted.current) {
+                            if (isMounted) {
                                 setFoundryOutput(theFoundryOutput);
                                 setControllerAlias(aliasId);
                             }
-                        } else if (isMounted.current) {
+                        } else if (isMounted) {
                             setFoundryError(response.error);
                         }
                     }).catch(_ => { })
@@ -66,9 +66,6 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 
         // eslint-disable-next-line no-void
         void loadFoundryDetails();
-        return () => {
-            isMounted.current = false;
-        };
     }, []);
 
 
