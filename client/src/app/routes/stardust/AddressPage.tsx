@@ -1,9 +1,12 @@
 /* eslint-disable no-void */
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
+import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
+import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
 import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
@@ -57,10 +60,10 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [balance, setBalance] = useState<number | undefined>();
     const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
     const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
-    const [outputResponse, setOutputResponse] = useState<IOutputResponse[] | undefined>();
-    const [basicOutputResponse, setBasicOutputResponse] = useState<IOutputResponse[] | undefined>();
-    const [aliasOutputResponse, setAliasOutputResponse] = useState<IOutputResponse[] | undefined>();
-    const [nftOutputResponse, setNftOutputResponse] = useState<IOutputResponse[] | undefined>();
+    const [addressOutputs, setAddressOutputs] = useState<IOutputResponse[] | undefined>();
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
+    const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
     const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -99,9 +102,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     useEffect(() => {
         if (bech32AddressDetails) {
             void getAddressBalance();
-            void loadAddressBasicOutputs();
-            void loadAddressAliasOutputs();
-            void loadAddressNftOutputs();
         }
     }, [bech32AddressDetails]);
 
@@ -111,16 +111,17 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }, [jobToStatus.values()]);
 
     useEffect(() => {
-        if (basicOutputResponse && aliasOutputResponse && nftOutputResponse) {
-            const details = [...basicOutputResponse, ...aliasOutputResponse, ...nftOutputResponse];
+        if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
+            const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
+            const outputs = outputResponses.map<OutputTypes>(or => or.output);
             const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
-                details.map(or => or.output),
+                outputs,
                 rentStructure
             );
-            setOutputResponse(details);
+            setAddressOutputs(outputResponses);
             setStorageRentBalance(storageRentBalanceUpdate);
         }
-    }, [basicOutputResponse, aliasOutputResponse, nftOutputResponse]);
+    }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
 
     /**
      * Fetch the address balance details.
@@ -151,51 +152,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }
 
     /**
-     * Fetch the address relevant output details for basic outputs
-     */
-    async function loadAddressBasicOutputs() {
-        if (bech32AddressDetails) {
-            const addressBech32 = bech32AddressDetails?.bech32;
-            const response = await tangleCacheService.basicOutputsDetails(network, addressBech32);
-            if (!response?.error) {
-                setBasicOutputResponse(response?.outputs);
-            } else {
-                setBasicOutputResponse([]);
-            }
-        }
-    }
-
-    /**
-     * Fetch the address relevant output details for alias outputs
-     */
-    async function loadAddressAliasOutputs() {
-        if (bech32AddressDetails) {
-            const addressBech32 = bech32AddressDetails?.bech32;
-            const response = await tangleCacheService.aliasOutputsDetails(network, addressBech32);
-            if (!response?.error) {
-                setAliasOutputResponse(response?.outputs);
-            } else {
-                setAliasOutputResponse([]);
-            }
-        }
-    }
-
-    /**
-     * Fetch the address relevant output details for nft outputs
-     */
-    async function loadAddressNftOutputs() {
-        if (bech32AddressDetails) {
-            const addressBech32 = bech32AddressDetails?.bech32;
-            const response = await tangleCacheService.nftOutputsDetails(network, addressBech32);
-            if (!response?.error) {
-                setNftOutputResponse(response?.outputs);
-            } else {
-                setNftOutputResponse([]);
-            }
-        }
-    }
-
-    /**
      * Helper function to build a asyncJobHandler.
      * @param jobName The job name.
      * @returns Function than can be used to update job PromiseStatus.
@@ -209,6 +165,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }
 
     const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+    const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
 
     return (
         <div className="address-page">
@@ -290,12 +247,12 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                         [ADDRESS_PAGE_TABS.NativeTokens]: {
                                             disabled: tokensCount === 0,
                                             counter: tokensCount,
-                                            isLoading: !outputResponse
+                                            isLoading: isAddressOutputsLoading
                                         },
                                         [ADDRESS_PAGE_TABS.Nfts]: {
                                             disabled: nftCount === 0,
                                             counter: nftCount,
-                                            isLoading: !nftOutputResponse
+                                            isLoading: isNftOutputsLoading
                                         },
                                         [ADDRESS_PAGE_TABS.AssocOutputs]: {
                                             disabled: associatedOutputCount === 0,
@@ -311,13 +268,13 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                     />
                                     <AssetsTable
                                         networkId={network}
-                                        outputs={outputResponse?.map(output => output.output)}
+                                        outputs={addressOutputs?.map(output => output.output)}
                                         setTokenCount={setTokenCount}
                                     />
                                     <NftSection
                                         network={network}
                                         bech32Address={addressBech32}
-                                        outputs={nftOutputResponse}
+                                        outputs={addressNftOutputs}
                                         setNftCount={setNftCount}
                                     />
                                     <AssociatedOutputs

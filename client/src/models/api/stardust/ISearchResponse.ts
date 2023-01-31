@@ -3,7 +3,6 @@ import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
 import { IAnalyticStats } from "../stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
-import { IAddressDetailsResponse } from "./IAddressDetailsResponse";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
@@ -33,9 +32,9 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
-     * The outputs data.
+     * The addres UTXOs.
      */
-    outputs?: IAddressDetailsResponse;
+    addressOutputs?: IOutputResponse[];
 
     /**
      * Outputs response.
