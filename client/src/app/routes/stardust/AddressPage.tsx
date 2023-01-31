@@ -87,7 +87,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                 behavior: "smooth"
             });
 
-            if (isMounted.current) {
+            if (isMounted) {
                 setBech32AddressDetails(addressDetails);
             }
         }
@@ -129,7 +129,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             });
 
             if (response?.totalBalance !== undefined) {
-                if (isMounted.current) {
+                if (isMounted) {
                     setBalance(response.totalBalance);
                     setSigLockedBalance(response.sigLockedBalance);
                 }
@@ -139,7 +139,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                     { network, address: addr }
                 );
 
-                if (addressDetailsWithBalance && isMounted.current) {
+                if (addressDetailsWithBalance && isMounted) {
                     setBalance(Number(addressDetailsWithBalance.balance));
                 }
             }
@@ -153,7 +153,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     function buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
         return (status: PromiseStatus) => {
-            if (isMounted.current) {
+            if (isMounted) {
                 setJobToStatus(jobToStatus.set(jobName, status));
             }
         };
@@ -215,7 +215,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             <div className="row middle value featured">
                                                 <span
                                                     onClick={() => {
-                                                        if (isMounted.current) {
+                                                        if (isMounted) {
                                                             setIsFormatStorageRentFull(!isFormatStorageRentFull);
                                                         }
                                                     }}

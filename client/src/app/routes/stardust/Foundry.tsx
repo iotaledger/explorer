@@ -53,11 +53,11 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 theFoundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
                             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
-                            if (isMounted.current) {
+                            if (isMounted) {
                                 setFoundryOutput(theFoundryOutput);
                                 setControllerAlias(aliasId);
                             }
-                        } else if (isMounted.current) {
+                        } else if (isMounted) {
                             setFoundryError(response.error);
                         }
                     }).catch(_ => { })

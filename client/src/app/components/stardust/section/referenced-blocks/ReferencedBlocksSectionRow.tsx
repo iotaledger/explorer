@@ -45,13 +45,13 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
                         tangleCacheService
                     );
 
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setBlockData({
                             block: response.block,
                             value: transferTotal
                         });
                     }
-                } else if (isMounted.current) {
+                } else if (isMounted) {
                     setBlockData({
                         block: response.block
                     });

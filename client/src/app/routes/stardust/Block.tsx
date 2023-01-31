@@ -110,7 +110,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             );
                         }
 
-                        if (isMounted.current) {
+                        if (isMounted) {
                             setBlockData(
                                 {
                                     block,
@@ -122,7 +122,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 }
                             );
                         }
-                    } else if (isMounted.current) {
+                    } else if (isMounted) {
                         setBlockData({ blockError: response.error ?? "Couldn't load block" });
                     }
                 }
@@ -142,7 +142,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         void blockDetailsLoadMonitor.enqueue(
             async () => tangleCacheService.blockDetails(network, blockId).then(
                 details => {
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setBlockMetadata({
                             metadata: details?.metadata,
                             metadataError: details?.error,
@@ -177,7 +177,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         void referencedBlocksPromiseMonitor.enqueue(
             async () => tangleCacheService.milestoneReferencedBlocks(network, milestoneId).then(
                 milestoneBlocksResponse => {
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setMilestoneReferencedBlocks(milestoneBlocksResponse);
                     }
                 }
