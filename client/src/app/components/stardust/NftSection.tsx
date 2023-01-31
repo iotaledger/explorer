@@ -9,7 +9,7 @@ import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-walle
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-    outputs: IOutputResponse[] | undefined;
+    outputs: IOutputResponse[] | null;
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
