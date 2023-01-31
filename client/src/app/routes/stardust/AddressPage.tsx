@@ -1,12 +1,12 @@
-/* eslint-disable no-void */
 import { IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
@@ -50,7 +50,7 @@ const ASSOC_OUTPUTS_JOB = "assoc-outputs";
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
-    const isMounted = useRef(false);
+    const isMounted = useIsMounted();
     const { tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -72,8 +72,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
-        isMounted.current = true;
-
         if (!location.state) {
             location.state = {
                 addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address)
@@ -89,18 +87,15 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                 behavior: "smooth"
             });
 
-            if (isMounted.current) {
+            if (isMounted) {
                 setBech32AddressDetails(addressDetails);
             }
         }
-
-        return () => {
-            isMounted.current = false;
-        };
     }, []);
 
     useEffect(() => {
         if (bech32AddressDetails) {
+            // eslint-disable-next-line no-void
             void getAddressBalance();
         }
     }, [bech32AddressDetails]);
@@ -134,7 +129,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             });
 
             if (response?.totalBalance !== undefined) {
-                if (isMounted.current) {
+                if (isMounted) {
                     setBalance(response.totalBalance);
                     setSigLockedBalance(response.sigLockedBalance);
                 }
@@ -144,7 +139,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                     { network, address: addr }
                 );
 
-                if (addressDetailsWithBalance && isMounted.current) {
+                if (addressDetailsWithBalance && isMounted) {
                     setBalance(Number(addressDetailsWithBalance.balance));
                 }
             }
@@ -158,7 +153,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     function buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
         return (status: PromiseStatus) => {
-            if (isMounted.current) {
+            if (isMounted) {
                 setJobToStatus(jobToStatus.set(jobName, status));
             }
         };
@@ -220,7 +215,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             <div className="row middle value featured">
                                                 <span
                                                     onClick={() => {
-                                                        if (isMounted.current) {
+                                                        if (isMounted) {
                                                             setIsFormatStorageRentFull(!isFormatStorageRentFull);
                                                         }
                                                     }}
