@@ -11,7 +11,6 @@ import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryReque
 import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
-import { IAddressOutputsResponse } from "../../models/api/stardust/IAddressOutputsResponse";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
@@ -237,21 +236,96 @@ export class StardustTangleCacheService extends TangleCacheService {
     }
 
     /**
-     * Get the unspend output ids for an address.
-     * @param networkId The network in context.
+     * Get the basic output details for an address.
+     * @param network The network in context.
      * @param address The address in bech32 format.
-     * @returns The output ids.
+     * @returns The basic output details.
      */
-    public async addressOutputs(
-        networkId: string,
+    public async addressBasicOutputs(
+        network: string,
         address: string
-    ): Promise<IAddressOutputsResponse | undefined> {
-        const response = await this._api.addressOutputs({
-            network: networkId,
-            address
-        });
+    ): Promise<{ outputs?: IOutputResponse[]; error?: string }> {
+        const key = `${address}-basic-outputs-details`;
+        const cacheEntry = this._stardustSearchCache[network][key]?.data?.addressOutputs;
 
-        return response;
+        if (!cacheEntry) {
+            const response = await this._api.basicOutputsDetails({ network, address });
+
+            if (!response.error) {
+                this._stardustSearchCache[network][key] = {
+                    data: { addressOutputs: response.outputs },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            outputs: this._stardustSearchCache[network][key]?.data?.addressOutputs
+        };
+    }
+
+    /**
+     * Get the alias outputs details for an address.
+     * @param network The network in context.
+     * @param address The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public async addressAliasOutputs(
+        network: string,
+        address: string
+    ): Promise<{ outputs?: IOutputResponse[]; error?: string }> {
+        const key = `${address}-alias-outputs-details`;
+        const cacheEntry = this._stardustSearchCache[network][key]?.data?.addressOutputs;
+
+        if (!cacheEntry) {
+            const response = await this._api.aliasOutputsDetails({ network, address });
+
+            if (!response.error) {
+                this._stardustSearchCache[network][key] = {
+                    data: { addressOutputs: response.outputs },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            outputs: this._stardustSearchCache[network][key]?.data?.addressOutputs
+        };
+    }
+
+    /**
+     * Get the nft outputs details for an address.
+     * @param network The network in context.
+     * @param address The address in bech32 format.
+     * @returns The nft output details.
+     */
+    public async addressNftOutputs(
+        network: string,
+        address: string
+    ): Promise<{ outputs?: IOutputResponse[]; error?: string }> {
+        const key = `${address}-nft-outputs-details`;
+        const cacheEntry = this._stardustSearchCache[network][key]?.data?.addressOutputs;
+
+        if (!cacheEntry) {
+            const response = await this._api.nftOutputsDetails({ network, address });
+
+            if (!response.error) {
+                this._stardustSearchCache[network][key] = {
+                    data: { addressOutputs: response.outputs },
+                    cached: Date.now()
+                };
+            } else {
+                return { error: response.error };
+            }
+        }
+
+        return {
+            outputs: this._stardustSearchCache[network][key]?.data?.addressOutputs
+        };
     }
 
     /**
