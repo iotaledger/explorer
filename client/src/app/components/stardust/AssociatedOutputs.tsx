@@ -1,6 +1,7 @@
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { AsyncProps } from "../../../helpers/promise/AsyncProps";
 import PromiseMonitor from "../../../helpers/promise/promiseMonitor";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
@@ -31,7 +32,7 @@ interface AssociatedOutputsTableProps {
 const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
     { network, addressDetails, onAsyncStatusChange, setOutputCount }
 ) => {
-    const mounted = useRef(false);
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -39,13 +40,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
     const [associations, setAssociations] = useState<IAssociation[]>([]);
     const [tabsToRender, setTabsToRender] = useState<AssociatedOutputTab[]>([]);
 
-    const unmount = () => {
-        mounted.current = false;
-    };
-
     useEffect(() => {
-        mounted.current = true;
-
         const loadAssociatedOutputIdsMonitor = new PromiseMonitor(status => {
             onAsyncStatusChange(status);
         });
@@ -53,7 +48,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
         // eslint-disable-next-line no-void
         void loadAssociatedOutputIdsMonitor.enqueue(
             async () => tangleCacheService.associatedOutputs(network, addressDetails).then(response => {
-                if (response?.associations && mounted.current) {
+                if (response?.associations && isMounted) {
                     setAssociations(response.associations);
 
                     if (setOutputCount) {
@@ -65,8 +60,6 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
                 }
             })
         );
-
-        return unmount;
     }, [network, addressDetails]);
 
     useEffect(() => {

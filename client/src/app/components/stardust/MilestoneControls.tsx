@@ -1,5 +1,5 @@
 import { blockIdFromMilestonePayload, IMilestonePayload } from "@iota/iota.js-stardust";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -12,7 +12,6 @@ interface MilestoneControlProps {
 }
 
 const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {
-    const isMounted = useRef(false);
     const { name: network, protocolVersion } = useContext(NetworkContext);
     const history = useHistory();
     const [tangleCacheService] = useState(
@@ -23,7 +22,6 @@ const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {
     const [nextMsBlockId, setNextMsBlockId] = useState<string | undefined>();
 
     useEffect(() => {
-        isMounted.current = true;
         // eslint-disable-next-line no-void
         void checkForAdjacentMilestones();
         return () => {
@@ -31,7 +29,6 @@ const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {
                 clearTimeout(checkNextMSTimerId);
                 setCheckNextMSTimerId(null);
             }
-            isMounted.current = false;
         };
     }, [milestone, network]);
 

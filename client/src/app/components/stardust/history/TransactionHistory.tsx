@@ -1,8 +1,9 @@
 /* eslint-disable no-void */
 import { IOutputResponse } from "@iota/iota.js-stardust";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import transactionHistoryMessage from "../../../../assets/modals/stardust/address/transaction-history.json";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { useIsMounted } from "../../../../helpers/hooks/useIsMounted";
 import { AsyncProps } from "../../../../helpers/promise/AsyncProps";
 import PromiseMonitor, { PromiseStatus } from "../../../../helpers/promise/promiseMonitor";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
@@ -33,7 +34,7 @@ const SORT: string = "newest";
 const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
     { network, address, onAsyncStatusChange }
 ) => {
-    const mounted = useRef(false);
+    const isMounted = useIsMounted();
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
     const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
     const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
@@ -43,21 +44,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
 
     const [isLoading, setIsLoading] = useState(true);
 
-    const unmount = () => {
-        mounted.current = false;
-    };
-
     const tangleService = useCallback(
         () => ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`),
         [network, address]
     );
 
     useEffect(() => {
-        mounted.current = true;
         loadHistory();
         setHistoryView(history);
-
-        return unmount;
     }, [network, address]);
 
     const loadHistory = () => {
@@ -72,7 +66,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
 
             tangleService().transactionHistory(request)
                 .then((response: ITransactionHistoryResponse | undefined) => {
-                    if (response?.items && mounted.current) {
+                    if (response?.items && isMounted) {
                         setHistory([...history, ...response.items]);
                         setCursor(response.cursor);
                     }
@@ -88,7 +82,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
 
             const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
                 onAsyncStatusChange(status);
-                if (status === PromiseStatus.DONE && mounted.current) {
+                if (status === PromiseStatus.DONE && isMounted) {
                     setOutputDetailsMap(detailsPage);
                     setIsLoading(false);
                     const updatedHistoryView = [...history].sort((a, b) => {
@@ -131,7 +125,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
     }, [history]);
 
     const loadMoreHandler = () => {
-        if (mounted.current) {
+        if (isMounted) {
             setIsLoading(true);
             loadHistory();
         }

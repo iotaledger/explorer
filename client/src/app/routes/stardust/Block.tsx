@@ -3,7 +3,7 @@ import {
     MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE,
     TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload, IMilestonePayload
 } from "@iota/iota.js-stardust";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
 import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
@@ -12,6 +12,7 @@ import referencedBlocksInfo from "../../../assets/modals/stardust/block/mileston
 import taggedDataPayloadInfo from "../../../assets/modals/stardust/block/tagged-data-payload.json";
 import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
@@ -39,7 +40,7 @@ import "./Block.scss";
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
-    const isMounted = useRef(false);
+    const isMounted = useIsMounted();
     const { tokenInfo, bech32Hrp, protocolVersion } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -54,21 +55,15 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     >();
 
     useEffect(() => {
-        isMounted.current = true;
-
-        return () => {
-            isMounted.current = false;
-            if (updateMetadataTimerId) {
-                clearTimeout(updateMetadataTimerId);
-            }
-        };
-    }, []);
-
-    useEffect(() => {
         setBlockData({});
         setBlockMetadata({ blockTangleStatus: "pending" });
         // eslint-disable-next-line no-void
         void loadBlock(blockId);
+        return () => {
+            if (updateMetadataTimerId) {
+                clearTimeout(updateMetadataTimerId);
+            }
+        };
     }, [blockId]);
 
     useEffect(() => {
@@ -115,7 +110,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             );
                         }
 
-                        if (isMounted.current) {
+                        if (isMounted) {
                             setBlockData(
                                 {
                                     block,
@@ -127,7 +122,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 }
                             );
                         }
-                    } else if (isMounted.current) {
+                    } else if (isMounted) {
                         setBlockData({ blockError: response.error ?? "Couldn't load block" });
                     }
                 }
@@ -147,7 +142,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         void blockDetailsLoadMonitor.enqueue(
             async () => tangleCacheService.blockDetails(network, blockId).then(
                 details => {
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setBlockMetadata({
                             metadata: details?.metadata,
                             metadataError: details?.error,
@@ -182,7 +177,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         void referencedBlocksPromiseMonitor.enqueue(
             async () => tangleCacheService.milestoneReferencedBlocks(network, milestoneId).then(
                 milestoneBlocksResponse => {
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setMilestoneReferencedBlocks(milestoneBlocksResponse);
                     }
                 }
