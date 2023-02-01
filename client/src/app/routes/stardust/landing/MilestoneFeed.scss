@@ -8,6 +8,10 @@
     padding-top: 28px;
     margin-bottom: 16px;
 
+    @include phone-down {
+        margin-bottom: 0px;
+    }
+
     span {
         @include font-size(18px, 24px);
 

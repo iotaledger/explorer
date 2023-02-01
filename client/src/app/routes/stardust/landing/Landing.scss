@@ -163,12 +163,6 @@
                         flex: 1;
                         overflow: hidden;
 
-                        .milestone-feed-header {
-                            @include phone-down {
-                                margin-bottom: 0px;
-                            }
-                        }
-
                         @include desktop-down {
                             width: 100%;
                             margin-top: 20px;
