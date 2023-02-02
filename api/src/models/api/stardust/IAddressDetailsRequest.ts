@@ -1,4 +1,4 @@
-export interface IAddressOutputsRequest {
+export interface IAddressDetailsRequest {
     /**
      * The network to search on.
      */
@@ -9,4 +9,3 @@ export interface IAddressOutputsRequest {
      */
     address: string;
 }
-

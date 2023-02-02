@@ -3,7 +3,8 @@ import {
 } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import * as jsonschema from "jsonschema";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import Modal from "../../components/Modal";
@@ -15,7 +16,7 @@ import nftSchemeIRC27 from "./../../../assets/schemas/nft-schema-IRC27.json";
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-    outputs: IOutputResponse[] | undefined;
+    outputs: IOutputResponse[] | null;
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
@@ -27,17 +28,12 @@ interface INftBase {
 const PAGE_SIZE = 10;
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
-    const mounted = useRef(false);
+    const isMounted = useIsMounted();
     const [nfts, setNfts] = useState<INftBase[]>([]);
     const [page, setPage] = useState<INftBase[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
 
-    const unmount = () => {
-        mounted.current = false;
-    };
-
     useEffect(() => {
-        mounted.current = true;
         const theNfts: INftBase[] = [];
 
         if (outputs) {
@@ -66,22 +62,20 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
             }
         }
 
-        if (mounted.current) {
+        if (isMounted) {
             setNfts(theNfts);
 
             if (setNftCount) {
                 setNftCount(theNfts.length);
             }
         }
-
-        return unmount;
     }, [outputs, network, bech32Address]);
 
     // On page change handler
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        if (mounted.current) {
+        if (isMounted) {
             setPage(nfts?.slice(from, to));
         }
     }, [nfts, pageNumber]);
