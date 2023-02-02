@@ -43,6 +43,14 @@
             flex-direction: column;
             justify-content: flex-start;
         }
+
+        .header--wrapper {
+            h1 {
+                @include phone-down {
+                    font-size: 1.45rem;
+                }
+            }
+        }
       }
 
       .section .section--header .messages--number {

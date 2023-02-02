@@ -409,7 +409,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             <div className="wrapper">
                 <div className="inner">
                     <div className="block--header">
-                        <div>
+                        <div className="header--wrapper">
                             <div className="row middle">
                                 <h1>{pageTitle}</h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
@@ -435,7 +435,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <div className="section">{blockContent}</div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 
