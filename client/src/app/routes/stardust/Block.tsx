@@ -409,12 +409,22 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             <div className="wrapper">
                 <div className="inner">
                     <div className="block--header">
-                        <div className="row middle">
-                            <h1>
-                                {pageTitle}
-                            </h1>
-                            <Modal icon="info" data={mainHeaderMessage} />
-                            {isLoading && <Spinner />}
+                        <div>
+                            <div className="row middle">
+                                <h1>{pageTitle}</h1>
+                                <Modal icon="info" data={mainHeaderMessage} />
+                                {isLoading && <Spinner />}
+                            </div>
+                            <BlockTangleState
+                                network={network}
+                                status={blockTangleStatus}
+                                milestoneIndex={metadata?.referencedByMilestoneIndex}
+                                hasConflicts={isLinksDisabled}
+                                conflictReason={conflictReason}
+                                onClick={metadata?.referencedByMilestoneIndex
+                                    ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
+                                    : undefined}
+                            />
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
@@ -422,16 +432,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             />
                         )}
                     </div>
-                    <BlockTangleState
-                        network={network}
-                        status={blockTangleStatus}
-                        milestoneIndex={metadata?.referencedByMilestoneIndex}
-                        hasConflicts={isLinksDisabled}
-                        conflictReason={conflictReason}
-                        onClick={metadata?.referencedByMilestoneIndex
-                            ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
-                            : undefined}
-                    />
                     <div className="section">{blockContent}</div>
                 </div>
             </div>

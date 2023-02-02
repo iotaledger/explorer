@@ -64,14 +64,11 @@
                     @include desktop-down {
                         margin: 0;
                         margin-bottom: 28px;
-                        margin-left: 60px;
+                        margin-left: 160px;
                     }
 
                     @include tablet-down {
-                        margin-bottom: 66px;
-                    }
-
-                    @include phone-down {
+                        margin-bottom: 172px;
                         margin-left: 0px;
                     }
 

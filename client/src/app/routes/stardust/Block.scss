@@ -37,8 +37,12 @@
 
       .block--header {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+
+        @include tablet-down {
+            flex-direction: column;
+            justify-content: flex-start;
+        }
       }
 
       .section .section--header .messages--number {

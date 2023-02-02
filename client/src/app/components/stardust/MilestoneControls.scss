@@ -4,6 +4,11 @@
 @import "../../../scss/themes";
 
 .milestone-controls {
+
+    @include tablet-down {
+        margin-top: 18px;
+    }
+
     .milestone-controls__action {
         display: flex;
         align-items: center;
