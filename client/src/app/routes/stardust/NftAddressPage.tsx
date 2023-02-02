@@ -1,27 +1,31 @@
-import { INftOutput } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
+import { HexEncodedString, IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import { Converter, HexHelper } from "@iota/util.js-stardust";
 import { optional } from "@ruffy/ts-optional";
+import * as jsonschema from "jsonschema";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import mainMessage from "../../../assets/modals/stardust/nft/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { AsyncState } from "../../../helpers/promise/AsyncState";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
+import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
-import Bech32Address from "../../components/stardust/Bech32Address";
 import Feature from "../../components/stardust/Feature";
+import NftGeneralSection from "../../components/stardust/NftMetadataSection";
 import NetworkContext from "../../context/NetworkContext";
 import { NftRouteProps } from "../NftRouteProps";
-import mainMessage from "./../../../assets/modals/stardust/nft/main-header.json";
-import Modal from "./../../components/Modal";
-import "./Nft.scss";
+import "./NftAddressPage.scss";
+import nftSchemeIRC27 from "./../../../assets/schemas/nft-schema-IRC27.json";
 import { NftState } from "./NftState";
+
 
 /**
  * Component which will show the nft address page for stardust.
@@ -53,6 +57,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
         this.state = {
             bech32AddressDetails: undefined,
             nftOutput: undefined,
+            nftMetadata: undefined,
             jobToStatus: new Map<string, PromiseStatus>()
         };
     }
@@ -94,9 +99,15 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
 
                         const nftOutput = response.nftDetails?.output as INftOutput;
 
+                        const metadataFeature = nftOutput.immutableFeatures?.find(
+                            feature => feature.type === METADATA_FEATURE_TYPE
+                        ) as IMetadataFeature;
+                        const nftMetadata = this.tryParseNftMetadata(metadataFeature.data);
+
                         this.setState({
                             bech32AddressDetails: nftAddressDetails,
-                            nftOutput
+                            nftOutput,
+                            nftMetadata
                         });
                     } else {
                         this.setState({ nftError: response.error });
@@ -111,7 +122,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { bech32AddressDetails, nftOutput, nftError, jobToStatus } = this.state;
+        const { bech32AddressDetails, nftOutput, nftError, jobToStatus, nftMetadata } = this.state;
         const { network, nftAddress } = this.props.match.params;
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
@@ -138,7 +149,7 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
 
         const nftPageContent = !nftOutput ? null : (
             <React.Fragment>
-                <div className="section">
+                {/* <div className="section">
                     <div className="section--header">
                         <div className="row middle">
                             <h2>General</h2>
@@ -150,7 +161,13 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
                             advancedMode={true}
                         />
                     </div>
-                </div>
+                </div> */}
+                {(nftMetadata && bech32AddressDetails) && (
+                    <NftGeneralSection
+                        metadata={nftMetadata}
+                        bech32AddressDetails={bech32AddressDetails}
+                    />
+                )}
                 {optional(nftOutput?.features).nonEmpty() && (
                     <div className="section">
                         <div className="section--header row row--tablet-responsive middle space-between">
@@ -206,6 +223,23 @@ class Nft extends AsyncComponent<RouteComponentProps<NftRouteProps>, NftState & 
                 </div>
             </div>
         );
+    }
+
+    /**
+     * Tries to parse hex data into NFT immutable metadata (tip-27).
+     * @param metadataHex The encoded data.
+     * @returns The parsed INftImmutableMetadata or undefined.
+     */
+    public tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
+        const validator = new jsonschema.Validator();
+        try {
+            const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
+            const result = validator.validate(json, nftSchemeIRC27);
+
+            if (result.valid) {
+                return json as INftImmutableMetadata;
+            }
+        } catch { }
     }
 }
 

@@ -5,6 +5,7 @@ import { Converter } from "@iota/util.js-stardust";
 import * as jsonschema from "jsonschema";
 import React, { useEffect, useRef, useState } from "react";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
@@ -21,20 +22,6 @@ interface NftSectionProps {
 interface INftBase {
     id: string;
     metadata?: INftImmutableMetadata;
-}
-
-export interface INftImmutableMetadata {
-    standard: "IRC27";
-    version: string;
-    type: string;
-    uri: string;
-    name: string;
-    collectionName?: string;
-    royalities?: Record<string, unknown>;
-    issuerName?: string;
-    description?: string;
-    attributes?: [];
-    error?: string;
 }
 
 const PAGE_SIZE = 10;

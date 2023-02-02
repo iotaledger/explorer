@@ -1,0 +1,23 @@
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+
+.nft-metadata{
+    display: flex;
+    flex-direction: row;
+
+    .nft-metadata__image {
+        width: 398px;
+        height: 390px;
+
+        @include desktop-down {
+          width: 300px;
+          height: 290px;
+        }
+    }
+
+    .value{
+        font-size: 12px !important;
+        line-height: 18px;
+        font-weight: 500;
+    }
+}

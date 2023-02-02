@@ -1,4 +1,4 @@
-import { INftImmutableMetadata } from "./NftSection";
+import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 
 export interface NftProps {
     /**
@@ -12,5 +12,5 @@ export interface NftProps {
     /**
      * NFT Metadata
      */
-    metadata: INftImmutableMetadata | undefined;
+    metadata?: INftImmutableMetadata;
 }

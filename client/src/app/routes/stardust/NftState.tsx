@@ -1,6 +1,7 @@
 /* eslint-disable no-shadow */
 import { INftOutput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
+import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 
 export interface NftState {
     /**
@@ -14,8 +15,12 @@ export interface NftState {
     nftOutput?: INftOutput;
 
     /**
+     * The nft output.
+     */
+    nftMetadata?: INftImmutableMetadata;
+
+    /**
      * Error fetching nft output.
      */
     nftError?: string;
-
 }
