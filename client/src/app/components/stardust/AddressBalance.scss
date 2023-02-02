@@ -68,6 +68,8 @@
 
                 .material-icons {
                     font-size: 18px;
+                    color: #b0bfd9;
+                    padding-left: 5px;
                 }
             }
         }
@@ -84,6 +86,10 @@
                 }
             }
         }
+    }
+
+    @include phone-down {
+        justify-content: center;
     }
 }
 

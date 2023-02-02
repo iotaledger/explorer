@@ -44,7 +44,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
         <div className="balance">
             {showWallet && <Icon icon="wallet" boxed />}
             <div>
-                <div className="row balance-heading">
+                <div className="row middle balance-heading">
                     <div className="label">{label}</div>
                     {showInfo &&
                         <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
@@ -98,6 +98,14 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                             false,
                             true
                         )}
+                        {buildBalanceView(
+                            "Conditionally Locked Balance",
+                            conditionalBalance,
+                            formatConditionalBalanceFull,
+                            setFormatConditionalBalanceFull,
+                            true,
+                            false
+                        )}
                         {storageRentBalance &&
                             buildBalanceView(
                                 "Storage Deposit",
@@ -107,14 +115,6 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                                 false,
                                 false
                             )}
-                        {buildBalanceView(
-                            "Conditionally Locked Balance",
-                            conditionalBalance,
-                            formatConditionalBalanceFull,
-                            setFormatConditionalBalanceFull,
-                            true,
-                            false
-                        )}
                     </React.Fragment>
                 ) : (
                     <React.Fragment>

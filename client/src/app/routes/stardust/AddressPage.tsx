@@ -198,7 +198,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                                 />
                                             )}
                                         </div>
-                                        <div className="section--data">
+                                        <div className="section--data qr-content">
                                             {bech32AddressDetails?.bech32 && (
                                                 //  eslint-disable-next-line react/jsx-pascal-case
                                                 <QR data={bech32AddressDetails.bech32} />
