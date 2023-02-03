@@ -188,7 +188,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
-                                                showCopyButton={true}
                                             />
                                             {balance !== undefined && (
                                                 <AddressBalance
