@@ -20,7 +20,6 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
@@ -31,6 +30,7 @@ import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import MilestoneControls from "../../components/stardust/MilestoneControls";
 import ReferencedBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
@@ -280,11 +280,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 <div className="label">
                     Block ID
                 </div>
-                <div className="value code row middle">
-                    <span className="margin-r-t">
-                        {blockId}
-                    </span>
-                    <CopyButton copy={blockId} />
+                <div className="value code">
+                    <TruncatedId id={blockId} showCopyButton={true} />
                 </div>
             </div>
             {milestoneId && (
@@ -292,11 +289,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <div className="label">
                         Milestone ID
                     </div>
-                    <div className="value code row middle">
-                        <span className="margin-r-t">
-                            {milestoneId}
-                        </span>
-                        <CopyButton copy={milestoneId} />
+                    <div className="value code">
+                        <TruncatedId id={milestoneId} showCopyButton={true} />
                     </div>
                 </div>
             )}
@@ -307,16 +301,12 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                     <div className="value value__secondary row middle link">
                         {isLinksDisabled ?
-                            <span className="margin-r-t">
-                                {transactionId}
-                            </span> :
+                            <TruncatedId id={transactionId} showCopyButton={true} /> :
                             <Link
                                 to={`/${network}/transaction/${transactionId}`}
-                                className="margin-r-t"
                             >
-                                {transactionId}
+                                <TruncatedId id={transactionId} showCopyButton={true} />
                             </Link>}
-                        <CopyButton copy={transactionId} />
                     </div>
                 </div>
             )}

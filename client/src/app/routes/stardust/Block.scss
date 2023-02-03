@@ -77,6 +77,12 @@
           font-weight: normal;
           letter-spacing: 0.02em;
           line-height: 20px;
+
+          a {
+            @include tablet-down {
+              max-width: 100%;
+            }
+          }
       }
     }
 

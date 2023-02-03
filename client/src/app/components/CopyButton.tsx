@@ -52,6 +52,7 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
      * @param event The mouse click event
      */
     private activate(event: React.MouseEvent): void {
+        event.preventDefault();
         ClipboardHelper.copy(this.props.copy);
         if (event) {
             event.stopPropagation();
