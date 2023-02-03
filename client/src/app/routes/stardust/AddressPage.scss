@@ -244,4 +244,32 @@
       flex-direction: column;
     }
   }
+
+  .feature-block {
+    .card--label {
+      @include font-size(12px);
+
+      display: flex;
+      align-items: center;
+      height: 32px;
+      color: var(--card-color);
+      font-family: $inter;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .card--value {
+      @include font-size(14px, 20px);
+      margin-bottom: 12px;
+      color: var(--body-color);
+      font-family: $ibm-plex-mono;
+      word-break: break-all;
+
+      a,
+      button {
+          color: var(--link-color);
+      }
+    }
+  }
 }

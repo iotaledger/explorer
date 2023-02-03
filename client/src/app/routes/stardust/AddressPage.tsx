@@ -1,4 +1,4 @@
-import { IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
+import { IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOu
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
+import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
@@ -23,7 +24,9 @@ import AddressBalance from "../../components/stardust/AddressBalance";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
+import FeaturesSection from "../../components/stardust/FeaturesSection";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
+import NftMetadataSection from "../../components/stardust/NftMetadataSection";
 import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
@@ -43,6 +46,10 @@ enum ADDRESS_PAGE_TABS {
     Nfts = "NFTs",
     AssocOutputs = "Associated Outputs"
 }
+enum NFT_PAGE_TABS {
+    NftMetadata = "Metadata",
+    Features = "Features"
+}
 
 const TX_HISTORY_JOB = "tx-history";
 const ASSOC_OUTPUTS_JOB = "assoc-outputs";
@@ -55,7 +62,11 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
+    const [jobToStatus, setJobToStatus] = useState(
+        new Map<string, PromiseStatus>()
+            .set(TX_HISTORY_JOB, PromiseStatus.PENDING)
+            .set(ASSOC_OUTPUTS_JOB, PromiseStatus.PENDING)
+    );
     const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
     const [balance, setBalance] = useState<number | undefined>();
     const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
@@ -64,9 +75,11 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
+    const [nftOutput, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
     const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
+    const [transactionsCount, setTransactionsCount] = useState<number>(0);
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
@@ -161,6 +174,90 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
+    /**
+     * Tab header options.
+     */
+    const addressTabOptions = {
+        [ADDRESS_PAGE_TABS.Transactions]: {
+            enabled: transactionsCount > 0,
+            isLoading: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE
+        },
+        [ADDRESS_PAGE_TABS.NativeTokens]: {
+            enabled: tokensCount > 0,
+            counter: tokensCount,
+            isLoading: isAddressOutputsLoading
+        },
+        [ADDRESS_PAGE_TABS.Nfts]: {
+            enabled: nftCount > 0,
+            counter: nftCount,
+            isLoading: isNftOutputsLoading
+        },
+        [ADDRESS_PAGE_TABS.AssocOutputs]: {
+            enabled: associatedOutputCount > 0,
+            counter: associatedOutputCount,
+            isLoading: jobToStatus.get(ASSOC_OUTPUTS_JOB) !== PromiseStatus.DONE
+        }
+    };
+
+    const nftTabOptions = {
+        [NFT_PAGE_TABS.NftMetadata]: {
+            enabled: nftMetadata !== undefined,
+            isLoading: isNftDetailsLoading
+        },
+        [NFT_PAGE_TABS.Features]: {
+            enabled: nftOutput?.features !== undefined || nftOutput?.immutableFeatures !== undefined,
+            isLoading: isNftDetailsLoading
+        }
+    };
+
+    const tabOptions = bech32AddressDetails?.type === NFT_ADDRESS_TYPE ?
+        { ...nftTabOptions, ...addressTabOptions } :
+        addressTabOptions;
+    /**
+     * Tab sections.
+     */
+    const addressSections = [
+        <TransactionHistory
+            key={1}
+            network={network}
+            address={addressBech32}
+            onAsyncStatusChange={buildOnAsyncStatusJobHandler(TX_HISTORY_JOB)}
+            setTransactionCount={setTransactionsCount}
+        />,
+        <AssetsTable
+            key={2}
+            networkId={network}
+            outputs={addressOutputs?.map(output => output.output)}
+            setTokenCount={setTokenCount}
+        />,
+        <NftSection
+            key={3}
+            network={network}
+            bech32Address={addressBech32}
+            outputs={addressNftOutputs}
+            setNftCount={setNftCount}
+        />,
+        <AssociatedOutputs
+            key={4}
+            network={network}
+            addressDetails={bech32AddressDetails}
+            onAsyncStatusChange={buildOnAsyncStatusJobHandler(ASSOC_OUTPUTS_JOB)}
+            setOutputCount={setAssociatedOutputCount}
+        />
+    ];
+    const nftSections = [
+        <NftMetadataSection
+            key={5}
+            metadata={nftMetadata}
+        />,
+        <FeaturesSection
+            key={6}
+            output={nftOutput}
+        />
+    ];
+    const tabbedSections = bech32AddressDetails?.type === NFT_ADDRESS_TYPE ?
+        [...nftSections, ...addressSections] :
+        addressSections;
 
     return (
         <div className="address-page">
@@ -170,7 +267,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                         <div className="addr--header">
                             <div className="row middle">
                                 <h1>
-                                    Address
+                                    {bech32AddressDetails.typeLabel?.replace("Ed25519", "")} Address
                                 </h1>
                                 <Modal icon="info" data={mainHeaderInfo} />
                             </div>
@@ -207,7 +304,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             )}
                                         </div>
                                     </div>
-                                    {storageRentBalance && (
+                                    {storageRentBalance !== undefined && (
                                         <div className="section--data margin-t-m">
                                             <div className="label">
                                                 Storage deposit
@@ -233,51 +330,14 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                     )}
                                 </div>
                                 <TabbedSection
-                                    tabsEnum={ADDRESS_PAGE_TABS}
-                                    tabOptions={{
-                                        [ADDRESS_PAGE_TABS.Transactions]: {
-                                            disabled: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE,
-                                            isLoading: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE
-                                        },
-                                        [ADDRESS_PAGE_TABS.NativeTokens]: {
-                                            disabled: tokensCount === 0,
-                                            counter: tokensCount,
-                                            isLoading: isAddressOutputsLoading
-                                        },
-                                        [ADDRESS_PAGE_TABS.Nfts]: {
-                                            disabled: nftCount === 0,
-                                            counter: nftCount,
-                                            isLoading: isNftOutputsLoading
-                                        },
-                                        [ADDRESS_PAGE_TABS.AssocOutputs]: {
-                                            disabled: associatedOutputCount === 0,
-                                            counter: associatedOutputCount,
-                                            isLoading: jobToStatus.get(ASSOC_OUTPUTS_JOB) !== PromiseStatus.DONE
-                                        }
-                                    }}
+                                    tabsEnum={
+                                        bech32AddressDetails.type === NFT_ADDRESS_TYPE ?
+                                            { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
+                                            ADDRESS_PAGE_TABS
+                                    }
+                                    tabOptions={tabOptions}
                                 >
-                                    <TransactionHistory
-                                        network={network}
-                                        address={addressBech32}
-                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler(TX_HISTORY_JOB)}
-                                    />
-                                    <AssetsTable
-                                        networkId={network}
-                                        outputs={addressOutputs?.map(output => output.output)}
-                                        setTokenCount={setTokenCount}
-                                    />
-                                    <NftSection
-                                        network={network}
-                                        bech32Address={addressBech32}
-                                        outputs={addressNftOutputs}
-                                        setNftCount={setNftCount}
-                                    />
-                                    <AssociatedOutputs
-                                        network={network}
-                                        addressDetails={bech32AddressDetails}
-                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler(ASSOC_OUTPUTS_JOB)}
-                                        setOutputCount={setAssociatedOutputCount}
-                                    />
+                                    {tabbedSections}
                                 </TabbedSection>
                             </div>
                         </div>

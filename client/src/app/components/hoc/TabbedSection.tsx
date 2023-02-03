@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { ModalData } from "../ModalProps";
 import Spinner from "../Spinner";
@@ -7,9 +7,9 @@ import "./TabbedSection.scss";
 
 interface TabOption {
     /**
-     * Is the Tab disabled (it will make the tab unclickable).
+     * Is the Tab enabled (if not enabled the tab will be unclickable).
      */
-    disabled?: boolean;
+    enabled?: boolean;
     /**
      * An optional "counter" from this section domain that can be displayed on the tab.
      */
@@ -57,15 +57,27 @@ interface TabbedSectionProps {
  * @returns The React component TSX.
  */
 const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOptions }) => {
-    const [selectedTab, setSelectedTab] = useState<number>(0);
+    const [selectedTab, setSelectedTab] = useState<number | undefined>();
     const TABS: string[] = [...Object.values(tabsEnum)];
+
+    useEffect(() => {
+        for (const [idx, tab] of TABS.entries()) {
+            const isEnabled = tabOptions ?
+                (tabOptions[tab]?.enabled !== undefined ? tabOptions[tab].enabled : false)
+                : false;
+            if (isEnabled) {
+                setSelectedTab(idx);
+                break;
+            }
+        }
+    }, [tabOptions]);
 
     const tabsView = (
         <div className="tabbed-section--tabs-wrapper">
             {TABS.map((tab, idx) => {
-                const isDisabled = tabOptions ?
-                    (tabOptions[tab]?.disabled !== undefined ? tabOptions[tab].disabled : false)
-                    : false;
+                const isEnabled = tabOptions ?
+                (tabOptions[tab]?.enabled !== undefined ? tabOptions[tab].enabled : false)
+                : false;
 
                 const counter = tabOptions ?
                     (tabOptions[tab]?.counter !== undefined ? tabOptions[tab].counter : 0)
@@ -84,14 +96,14 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                         key={`tab-btn-${idx}`}
                         className={classNames("tab-wrapper",
                             { "active": idx === selectedTab },
-                            { "disabled": isDisabled })}
+                            { "disabled": !isEnabled })}
                         onClick={() => setSelectedTab(idx)}
                     >
                         <button
                             className="tab"
                             type="button"
                             key={idx}
-                            disabled={isDisabled}
+                            disabled={!isEnabled}
                         >
                             {tab}
                         </button>

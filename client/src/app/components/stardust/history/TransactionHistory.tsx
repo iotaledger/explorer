@@ -22,6 +22,7 @@ import "./TransactionHistory.scss";
 interface TransactionHistoryProps {
     network: string;
     address?: string;
+    setTransactionCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface IOutputDetailsMap {
@@ -32,7 +33,7 @@ const PAGE_SIZE: number = 10;
 const SORT: string = "newest";
 
 const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
-    { network, address, onAsyncStatusChange }
+    { network, address, onAsyncStatusChange, setTransactionCount }
 ) => {
     const isMounted = useIsMounted();
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
@@ -66,9 +67,17 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
 
             tangleService().transactionHistory(request)
                 .then((response: ITransactionHistoryResponse | undefined) => {
-                    if (response?.items && isMounted) {
-                        setHistory([...history, ...response.items]);
-                        setCursor(response.cursor);
+                    const items = response?.items ?? [];
+                    if (items.length > 0 && isMounted) {
+                        setHistory([...history, ...items]);
+                        setCursor(response?.cursor);
+                    } else {
+                        onAsyncStatusChange(PromiseStatus.DONE);
+                    }
+                })
+                .finally(() => {
+                    if (setTransactionCount) {
+                        setTransactionCount(history.length);
                     }
                 })
                 .catch(e => console.log(e));
@@ -245,7 +254,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
 };
 
 TransactionHistory.defaultProps = {
-    address: undefined
+    address: undefined,
+    setTransactionCount: undefined
 };
 
 export default TransactionHistory;

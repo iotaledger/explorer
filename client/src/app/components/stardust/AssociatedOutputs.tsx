@@ -22,7 +22,7 @@ interface AssociatedOutputsTableProps {
     /**
      * Address details
      */
-    addressDetails: IBech32AddressDetails;
+    addressDetails?: IBech32AddressDetails;
     /**
      * Callback setter to report the associated outputs count.
      */
@@ -41,25 +41,27 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
     const [tabsToRender, setTabsToRender] = useState<AssociatedOutputTab[]>([]);
 
     useEffect(() => {
-        const loadAssociatedOutputIdsMonitor = new PromiseMonitor(status => {
-            onAsyncStatusChange(status);
-        });
+        if (addressDetails) {
+            const loadAssociatedOutputIdsMonitor = new PromiseMonitor(status => {
+                onAsyncStatusChange(status);
+            });
 
-        // eslint-disable-next-line no-void
-        void loadAssociatedOutputIdsMonitor.enqueue(
-            async () => tangleCacheService.associatedOutputs(network, addressDetails).then(response => {
-                if (response?.associations && isMounted) {
-                    setAssociations(response.associations);
+            // eslint-disable-next-line no-void
+            void loadAssociatedOutputIdsMonitor.enqueue(
+                async () => tangleCacheService.associatedOutputs(network, addressDetails).then(response => {
+                    if (response?.associations && isMounted) {
+                        setAssociations(response.associations);
 
-                    if (setOutputCount) {
-                        const outputsCount = response.associations.flatMap(
-                            association => association.outputIds.length
-                        ).reduce((acc, next) => acc + next, 0);
-                        setOutputCount(outputsCount);
+                        if (setOutputCount) {
+                            const outputsCount = response.associations.flatMap(
+                                association => association.outputIds.length
+                            ).reduce((acc, next) => acc + next, 0);
+                            setOutputCount(outputsCount);
+                        }
                     }
-                }
-            })
-        );
+                })
+            );
+        }
     }, [network, addressDetails]);
 
     useEffect(() => {
@@ -111,6 +113,7 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
 };
 
 AssociatedOutputsTable.defaultProps = {
+    addressDetails: undefined,
     setOutputCount: undefined
 };
 
