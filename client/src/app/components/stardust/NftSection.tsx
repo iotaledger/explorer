@@ -1,15 +1,17 @@
 import {
-    HexEncodedString, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper
+    IMetadataFeature,
+    IOutputResponse,
+    METADATA_FEATURE_TYPE,
+    NFT_OUTPUT_TYPE,
+    TransactionHelper
 } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
-import * as jsonschema from "jsonschema";
 import React, { useEffect, useRef, useState } from "react";
+import { INftBase, tryParseNftMetadata } from "../../../helpers/stardust/nftHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
 import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
-import nftSchemeIRC27 from "./../../../assets/schemas/nft-schema-IRC27.json";
 
 interface NftSectionProps {
     network: string;
@@ -18,24 +20,6 @@ interface NftSectionProps {
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-interface INftBase {
-    id: string;
-    metadata?: INftImmutableMetadata;
-}
-
-export interface INftImmutableMetadata {
-    standard: "IRC27";
-    version: string;
-    type: string;
-    uri: string;
-    name: string;
-    collectionName?: string;
-    royalities?: Record<string, unknown>;
-    issuerName?: string;
-    description?: string;
-    attributes?: [];
-    error?: string;
-}
 
 const PAGE_SIZE = 10;
 
@@ -132,23 +116,6 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
         ) : null
     );
 };
-
-/**
- * Tries to parse hex data into NFT immutable metadata (tip-27).
- * @param metadataHex The encoded data.
- * @returns The parsed INftImmutableMetadata or undefined.
- */
-function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
-    const validator = new jsonschema.Validator();
-    try {
-        const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
-        const result = validator.validate(json, nftSchemeIRC27);
-
-        if (result.valid) {
-            return json as INftImmutableMetadata;
-        }
-    } catch { }
-}
 
 NftSection.defaultProps = {
     bech32Address: undefined,

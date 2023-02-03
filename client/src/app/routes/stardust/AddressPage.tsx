@@ -25,6 +25,7 @@ import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 import mainHeaderInfo from "./../../../assets/modals/stardust/address/main-header.json";
 import "./AddressPage.scss";
+import CollectionNFTs from "../../components/stardust/CollectionNFTs";
 
 interface IAddressPageLocationProps {
     /**
@@ -36,7 +37,8 @@ interface IAddressPageLocationProps {
 enum ADDRESS_PAGE_TABS {
     Transactions = "Transactions",
     NativeTokens = "Native Tokens",
-    Nfts = "NFTs",
+    NFTs = "NFTs",
+    CampaignXZY = "CampaignXZY",
     AssocOutputs = "Associated Outputs"
 }
 
@@ -63,6 +65,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
+    const [collNFTCount, setCollNFTCount] = useState<number>(0);
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
@@ -298,9 +301,14 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             counter: tokensCount,
                                             isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
                                         },
-                                        [ADDRESS_PAGE_TABS.Nfts]: {
+                                        [ADDRESS_PAGE_TABS.NFTs]: {
                                             disabled: nftCount === 0,
                                             counter: nftCount,
+                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
+                                        },
+                                        [ADDRESS_PAGE_TABS.CampaignXZY]: {
+                                            disabled: collNFTCount === 0,
+                                            counter: collNFTCount,
                                             isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
                                         },
                                         [ADDRESS_PAGE_TABS.AssocOutputs]: {
@@ -325,6 +333,12 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                         bech32Address={addressBech32}
                                         outputs={outputResponse}
                                         setNftCount={setNftCount}
+                                    />
+                                    <CollectionNFTs
+                                        network={network}
+                                        bech32Address={addressBech32}
+                                        outputs={outputResponse}
+                                        setCount={setCollNFTCount}
                                     />
                                     <AssociatedOutputs
                                         network={network}

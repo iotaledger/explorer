@@ -1,4 +1,4 @@
-import { INftImmutableMetadata } from "./NftSection";
+import { INftImmutableMetadata } from "../../../helpers/stardust/nftHelper";
 
 export interface NftProps {
     /**

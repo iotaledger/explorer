@@ -118,7 +118,7 @@
       z-index: 2;
       top: 100px;
       left: 20px;
-      width: 320px;
+      width: auto;
 
       @include phone-down {
           top: 10px;
