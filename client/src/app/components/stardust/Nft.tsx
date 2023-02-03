@@ -1,7 +1,10 @@
-import React from "react";
+import { INftAddress, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import NetworkContext from "../../context/NetworkContext";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
 import "./Nft.scss";
@@ -12,6 +15,9 @@ import "./Nft.scss";
 const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
 const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
+    const { bech32Hrp } = useContext(NetworkContext);
+    const address: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: id };
+    const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const nftImage = !metadata ? (
         <img
             className="nft-metadata__image"
@@ -34,14 +40,14 @@ const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
         <div className="nft-card">
             <div className="nft-card__nft-metadata">
                 <Link
-                    to={`/${network}/nft-registry/${id}`}
+                    to={`/${network}/nft/${nftAddress.bech32}`}
                 >
                     {nftImage}
                 </Link>
                 {metadata?.name && <span className="nft-metadata__name">{metadata.name}</span>}
             </div>
             <span className="nft-card__nft-id">
-                <Link to={`/${network}/nft-registry/${id}`} className="margin-r-t" >
+                <Link to={`/${network}/nft/${nftAddress.bech32}`} className="margin-r-t" >
                     <TruncatedId id={id} />
                 </Link>
             </span>

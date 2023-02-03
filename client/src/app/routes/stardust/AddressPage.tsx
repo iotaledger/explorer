@@ -92,7 +92,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
-        if (!location.state) {
+        if (!location.state || Object.keys(location.state).length === 0) {
             location.state = {
                 addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address)
             };
