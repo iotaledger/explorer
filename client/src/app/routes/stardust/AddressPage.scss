@@ -240,8 +240,28 @@
   }
 
   .general-content {
-    @include tablet-down {
+    .section--data {
+      @include tablet-down {
+        max-width: 80%;
+      }
+
+      @include phone-down {
+        max-width: 100%;
+      }
+    }
+
+    @include phone-down {
       flex-direction: column;
+    }
+  }
+
+  .qr-content {
+    @include tablet-down {
+      align-self: flex-end;
+    }
+
+    @include phone-down {
+      align-self: center;
     }
   }
 }
