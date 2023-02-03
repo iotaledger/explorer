@@ -1,7 +1,7 @@
-import { IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, ED25519_ADDRESS_TYPE, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useState } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
@@ -40,6 +40,12 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
+const ADDTESS_TYPE_TO_ROUTE: { [id: string]: string } = {
+    [ED25519_ADDRESS_TYPE]: "addr",
+    [ALIAS_ADDRESS_TYPE]: "alias",
+    [NFT_ADDRESS_TYPE]: "nft"
+};
+
 enum ADDRESS_PAGE_TABS {
     Transactions = "Transactions",
     NativeTokens = "Native Tokens",
@@ -58,7 +64,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
     const isMounted = useIsMounted();
-    const { tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
+    const [redirect, setRedirect] = useState<string | undefined>();
+    const { name, tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -101,7 +108,14 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             });
 
             if (isMounted) {
-                setBech32AddressDetails(addressDetails);
+                const addressType = addressDetails.type;
+                const currentRoute = location.pathname.split("/")[2];
+                const redirectRoute = ADDTESS_TYPE_TO_ROUTE[addressType ?? 0];
+                if (currentRoute !== redirectRoute) {
+                    setRedirect(`/${name}/${redirectRoute}/${addressDetails.bech32}`);
+                } else {
+                    setBech32AddressDetails(addressDetails);
+                }
             }
         }
     }, []);
@@ -173,7 +187,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }
 
     const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+    const addressType = bech32AddressDetails?.type ?? undefined;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
+
     /**
      * Tab header options.
      */
@@ -210,7 +226,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         }
     };
 
-    const tabOptions = bech32AddressDetails?.type === NFT_ADDRESS_TYPE ?
+    const tabOptions = addressType === NFT_ADDRESS_TYPE ?
         { ...nftTabOptions, ...addressTabOptions } :
         addressTabOptions;
     /**
@@ -255,96 +271,100 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             output={nftOutput}
         />
     ];
-    const tabbedSections = bech32AddressDetails?.type === NFT_ADDRESS_TYPE ?
+    const tabbedSections = addressType === NFT_ADDRESS_TYPE ?
         [...nftSections, ...addressSections] :
         addressSections;
 
     return (
-        <div className="address-page">
-            <div className="wrapper">
-                {bech32AddressDetails && (
-                    <div className="inner">
-                        <div className="addr--header">
-                            <div className="row middle">
-                                <h1>
-                                    {bech32AddressDetails.typeLabel?.replace("Ed25519", "")} Address
-                                </h1>
-                                <Modal icon="info" data={mainHeaderInfo} />
-                            </div>
-                            {isLoading && <Spinner />}
-                        </div>
-                        <div className="top">
-                            <div className="sections">
-                                <div className="section no-border-bottom">
-                                    <div className="section--header">
-                                        <div className="row middle">
-                                            <h2>
-                                                General
-                                            </h2>
-                                        </div>
-                                    </div>
-                                    <div className="row space-between general-content">
-                                        <div className="section--data">
-                                            <Bech32Address
-                                                addressDetails={bech32AddressDetails}
-                                                advancedMode={true}
-                                                showCopyButton={true}
-                                            />
-                                            {balance !== undefined && (
-                                                <AddressBalance
-                                                    balance={balance}
-                                                    spendableBalance={sigLockedBalance}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="section--data">
-                                            {bech32AddressDetails?.bech32 && (
-                                                //  eslint-disable-next-line react/jsx-pascal-case
-                                                <QR data={bech32AddressDetails.bech32} />
-                                            )}
-                                        </div>
-                                    </div>
-                                    {storageRentBalance !== undefined && (
-                                        <div className="section--data margin-t-m">
-                                            <div className="label">
-                                                Storage deposit
-                                            </div>
-                                            <div className="row middle value featured">
-                                                <span
-                                                    onClick={() => {
-                                                        if (isMounted) {
-                                                            setIsFormatStorageRentFull(!isFormatStorageRentFull);
-                                                        }
-                                                    }}
-                                                    className="pointer margin-r-5"
-                                                >
-                                                    {formatAmount(
-                                                        storageRentBalance,
-                                                        tokenInfo,
-                                                        isFormatStorageRentFull
-                                                    )}
-                                                </span>
-                                                <CopyButton copy={String(storageRentBalance)} />
-                                            </div>
-                                        </div>
-                                    )}
+        redirect ? (
+            <Redirect to={redirect} />
+        ) : (
+            <div className="address-page">
+                <div className="wrapper">
+                    {bech32AddressDetails && (
+                        <div className="inner">
+                            <div className="addr--header">
+                                <div className="row middle">
+                                    <h1>
+                                        {bech32AddressDetails.typeLabel?.replace("Ed25519", "")} Address
+                                    </h1>
+                                    <Modal icon="info" data={mainHeaderInfo} />
                                 </div>
-                                <TabbedSection
-                                    tabsEnum={
-                                        bech32AddressDetails.type === NFT_ADDRESS_TYPE ?
-                                            { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
-                                            ADDRESS_PAGE_TABS
-                                    }
-                                    tabOptions={tabOptions}
-                                >
-                                    {tabbedSections}
-                                </TabbedSection>
+                                {isLoading && <Spinner />}
+                            </div>
+                            <div className="top">
+                                <div className="sections">
+                                    <div className="section no-border-bottom">
+                                        <div className="section--header">
+                                            <div className="row middle">
+                                                <h2>
+                                                    General
+                                                </h2>
+                                            </div>
+                                        </div>
+                                        <div className="row space-between general-content">
+                                            <div className="section--data">
+                                                <Bech32Address
+                                                    addressDetails={bech32AddressDetails}
+                                                    advancedMode={true}
+                                                    showCopyButton={true}
+                                                />
+                                                {balance !== undefined && (
+                                                    <AddressBalance
+                                                        balance={balance}
+                                                        spendableBalance={sigLockedBalance}
+                                                    />
+                                                )}
+                                            </div>
+                                            <div className="section--data">
+                                                {addressBech32 && (
+                                                    //  eslint-disable-next-line react/jsx-pascal-case
+                                                    <QR data={addressBech32} />
+                                                )}
+                                            </div>
+                                        </div>
+                                        {storageRentBalance !== undefined && (
+                                            <div className="section--data margin-t-m">
+                                                <div className="label">
+                                                    Storage deposit
+                                                </div>
+                                                <div className="row middle value featured">
+                                                    <span
+                                                        onClick={() => {
+                                                            if (isMounted) {
+                                                                setIsFormatStorageRentFull(!isFormatStorageRentFull);
+                                                            }
+                                                        }}
+                                                        className="pointer margin-r-5"
+                                                    >
+                                                        {formatAmount(
+                                                            storageRentBalance,
+                                                            tokenInfo,
+                                                            isFormatStorageRentFull
+                                                        )}
+                                                    </span>
+                                                    <CopyButton copy={String(storageRentBalance)} />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <TabbedSection
+                                        tabsEnum={
+                                            bech32AddressDetails.type === NFT_ADDRESS_TYPE ?
+                                                { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
+                                                ADDRESS_PAGE_TABS
+                                        }
+                                        tabOptions={tabOptions}
+                                    >
+                                        {tabbedSections}
+                                    </TabbedSection>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
+        )
     );
 };
 
