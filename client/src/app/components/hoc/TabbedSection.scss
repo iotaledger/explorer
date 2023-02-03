@@ -11,7 +11,7 @@
         overflow: auto;
 
         &::-webkit-scrollbar {
-            height: 6px;
+            height: 4px;
             &-track {
                 background-color: var(--associated-outputs-tabs-bg);
             }

@@ -13,7 +13,6 @@ import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import QR from "../../components/chrysalis/QR";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
@@ -183,7 +182,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             </h2>
                                         </div>
                                     </div>
-                                    <div className="row space-between general-content">
+                                    <div className="general-content">
                                         <div className="section--data">
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
@@ -195,12 +194,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                                     spendableBalance={sigLockedBalance}
                                                     storageRentBalance={storageRentBalance}
                                                 />
-                                            )}
-                                        </div>
-                                        <div className="section--data qr-content">
-                                            {bech32AddressDetails?.bech32 && (
-                                                //  eslint-disable-next-line react/jsx-pascal-case
-                                                <QR data={bech32AddressDetails.bech32} />
                                             )}
                                         </div>
                                     </div>
