@@ -79,16 +79,6 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
     return [{ label: "Maintenance Mode", url: "" }];
 };
 
-const copyrightInnerContent = "This explorer implementation is inspired by ";
-export const copyrightInner = (
-    <span>
-        {copyrightInnerContent}
-        <a href="https://thetangle.org">
-            thetangle.org
-        </a>.
-    </span>
-);
-
 export const buildMetaLabel = (network: NetworkType | undefined): string => {
     let metaLabel = "Tangle Explorer";
     switch (network) {
