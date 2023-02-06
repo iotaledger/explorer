@@ -20,6 +20,7 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
@@ -301,12 +302,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                     <div className="value value__secondary row middle link">
                         {isLinksDisabled ?
-                            <TruncatedId id={transactionId} showCopyButton /> :
+                            <TruncatedId id={transactionId} /> :
                             <Link
                                 to={`/${network}/transaction/${transactionId}`}
                             >
-                                <TruncatedId id={transactionId} showCopyButton />
+                                <TruncatedId id={transactionId} />
                             </Link>}
+                        <CopyButton copy={transactionId} />
                     </div>
                 </div>
             )}
