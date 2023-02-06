@@ -281,7 +281,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     Block ID
                 </div>
                 <div className="value code">
-                    <TruncatedId id={blockId} showCopyButton={true} />
+                    <TruncatedId id={blockId} showCopyButton />
                 </div>
             </div>
             {milestoneId && (
@@ -290,7 +290,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         Milestone ID
                     </div>
                     <div className="value code">
-                        <TruncatedId id={milestoneId} showCopyButton={true} />
+                        <TruncatedId id={milestoneId} showCopyButton />
                     </div>
                 </div>
             )}
@@ -301,11 +301,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                     <div className="value value__secondary row middle link">
                         {isLinksDisabled ?
-                            <TruncatedId id={transactionId} showCopyButton={true} /> :
+                            <TruncatedId id={transactionId} showCopyButton /> :
                             <Link
                                 to={`/${network}/transaction/${transactionId}`}
                             >
-                                <TruncatedId id={transactionId} showCopyButton={true} />
+                                <TruncatedId id={transactionId} showCopyButton />
                             </Link>}
                     </div>
                 </div>

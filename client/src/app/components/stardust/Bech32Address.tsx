@@ -29,11 +29,11 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network}/addr/${this.props.addressDetails?.bech32}`
                                     )}
                                 >
-                                    <TruncatedId id={this.props.addressDetails.bech32} showCopyButton={true} />
+                                    <TruncatedId id={this.props.addressDetails.bech32} showCopyButton />
                                 </button>
                             )}
                             {!this.props.history && (
-                                <TruncatedId id={this.props.addressDetails.bech32} showCopyButton={true} />
+                                <TruncatedId id={this.props.addressDetails.bech32} showCopyButton />
                             )}
                         </div>
                     </div>
@@ -52,11 +52,11 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network}/addr/${this.props.addressDetails?.hex}`
                                     )}
                                 >
-                                    <TruncatedId id={this.props.addressDetails?.hex} showCopyButton={true} />
+                                    <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />
                                 </button>
                             )}
                             {!this.props.history && (
-                                <TruncatedId id={this.props.addressDetails?.hex} showCopyButton={true} />
+                                <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />
                             )}
                         </div>
                     </div>
