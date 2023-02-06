@@ -84,6 +84,10 @@ header {
           height: 40px;
         }
 
+        @include phone-down {
+          height: 36px;
+        }
+
         path {
           fill: var(--body-color);
         }
