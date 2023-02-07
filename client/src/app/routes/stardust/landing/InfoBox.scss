@@ -43,7 +43,7 @@
         padding: 24px;
 
         @include tablet-down {
-            padding: 12px;
+            padding: 16px;
         }
 
         .info-box--title {
@@ -79,9 +79,11 @@
 
             @include tablet-down {
                 text-align: center;
+                font-size: 18px;
             }
 
             @include phone-down {
+                margin-top: 12px;
                 font-size: 14px;
             }
 

@@ -11,12 +11,9 @@ import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import QR from "../../components/chrysalis/QR";
-import CopyButton from "../../components/CopyButton";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
@@ -65,7 +62,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 ) => {
     const isMounted = useIsMounted();
     const [redirect, setRedirect] = useState<string | undefined>();
-    const { name, tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
+    const { name, bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -83,7 +80,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
     const [nftOutput, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
-    const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [transactionsCount, setTransactionsCount] = useState<number>(0);
@@ -292,74 +288,40 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                 </div>
                                 {isLoading && <Spinner />}
                             </div>
-                            <div className="top">
-                                <div className="sections">
-                                    <div className="section no-border-bottom">
-                                        <div className="section--header">
-                                            <div className="row middle">
-                                                <h2>
-                                                    General
-                                                </h2>
-                                            </div>
-                                        </div>
-                                        <div className="row space-between general-content">
-                                            <div className="section--data">
-                                                <Bech32Address
-                                                    addressDetails={bech32AddressDetails}
-                                                    advancedMode={true}
-                                                    showCopyButton={true}
-                                                />
-                                                {balance !== undefined && (
-                                                    <AddressBalance
-                                                        balance={balance}
-                                                        spendableBalance={sigLockedBalance}
-                                                    />
-                                                )}
-                                            </div>
-                                            <div className="section--data">
-                                                {addressBech32 && (
-                                                    //  eslint-disable-next-line react/jsx-pascal-case
-                                                    <QR data={addressBech32} />
-                                                )}
-                                            </div>
-                                        </div>
-                                        {storageRentBalance !== undefined && (
-                                            <div className="section--data margin-t-m">
-                                                <div className="label">
-                                                    Storage deposit
-                                                </div>
-                                                <div className="row middle value featured">
-                                                    <span
-                                                        onClick={() => {
-                                                            if (isMounted) {
-                                                                setIsFormatStorageRentFull(!isFormatStorageRentFull);
-                                                            }
-                                                        }}
-                                                        className="pointer margin-r-5"
-                                                    >
-                                                        {formatAmount(
-                                                            storageRentBalance,
-                                                            tokenInfo,
-                                                            isFormatStorageRentFull
-                                                        )}
-                                                    </span>
-                                                    <CopyButton copy={String(storageRentBalance)} />
-                                                </div>
-                                            </div>
+                            <div className="section no-border-bottom">
+                                <div className="section--header">
+                                    <div className="row middle">
+                                        <h2>
+                                            General
+                                        </h2>
+                                    </div>
+                                </div>
+                                <div className="general-content">
+                                    <div className="section--data">
+                                        <Bech32Address
+                                            addressDetails={bech32AddressDetails}
+                                            advancedMode={true}
+                                        />
+                                        {balance !== undefined && (
+                                            <AddressBalance
+                                                balance={balance}
+                                                spendableBalance={sigLockedBalance}
+                                                storageRentBalance={storageRentBalance}
+                                            />
                                         )}
                                     </div>
-                                    <TabbedSection
-                                        tabsEnum={
-                                            bech32AddressDetails.type === NFT_ADDRESS_TYPE ?
-                                                { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
-                                                ADDRESS_PAGE_TABS
-                                        }
-                                        tabOptions={tabOptions}
-                                    >
-                                        {tabbedSections}
-                                    </TabbedSection>
                                 </div>
                             </div>
+                            <TabbedSection
+                                tabsEnum={
+                                    bech32AddressDetails.type === NFT_ADDRESS_TYPE ?
+                                        { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
+                                        ADDRESS_PAGE_TABS
+                                }
+                                tabOptions={tabOptions}
+                            >
+                                {tabbedSections}
+                            </TabbedSection>
                         </div>
                     )}
                 </div>

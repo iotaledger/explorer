@@ -165,19 +165,19 @@
       border-radius: 6px;
       width: 469px;
       height: 85px;
-  
+
       .inner--asset {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin: 30px;
-  
+
         .assets {
           display: flex;
           flex-direction: column;
         }
       }
-  
+
       .svg-navigation {
         width: 16px;
         height: 16px;
@@ -195,19 +195,19 @@
       width: 469px;
       height: 85px;
       margin-left: 20px;
-  
+
       .inner--asset {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin: 30px;
-  
+
         .assets {
           display: flex;
           flex-direction: column;
         }
       }
-  
+
       .svg-navigation {
         width: 16px;
         height: 16px;
@@ -240,8 +240,20 @@
   }
 
   .general-content {
+      padding-bottom: 26px;
+
+      @include phone-down {
+          flex-direction: column;
+      }
+  }
+
+  .qr-content {
     @include tablet-down {
-      flex-direction: column;
+      align-self: flex-end;
+    }
+
+    @include phone-down {
+      align-self: center;
     }
   }
 

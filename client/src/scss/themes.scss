@@ -45,7 +45,7 @@
   --shimmer-navbar-bg: rgb(255 255 255 / 20%);
   --shimmer-header-bg: #f2f6f9;
   --shimmer-bg: url('../assets/header-bg-light.svg');
-  --shimmer-copyright: #{$white};
+  --shimmer-visualizer-bg: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
   --date-input-theme: light;
@@ -101,7 +101,7 @@
     --shimmer-header-bg: #00121f;
     --shimmer-feeds-bg: #00121f;
     --shimmer-bg: url('../assets/header-bg-dark.svg');
-    --shimmer-copyright: #0f202c;
+    --shimmer-visualizer-bg: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;
     --date-input-theme: dark;
