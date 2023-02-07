@@ -91,7 +91,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                         <Modal icon="info" data={nftsMessage} />
                     </div>
                 </div>
-                <div className="row wrap center">
+                <div className="row wrap">
                     {page?.map((nft, idx) => (
                         <Nft
                             key={idx}
