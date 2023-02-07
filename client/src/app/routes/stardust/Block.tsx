@@ -4,7 +4,7 @@ import {
     TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload, IMilestonePayload
 } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
 import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
 import milestonePayloadInfo from "../../../assets/modals/stardust/block/milestone-payload.json";
@@ -20,7 +20,6 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";

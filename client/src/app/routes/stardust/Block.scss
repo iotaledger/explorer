@@ -35,6 +35,10 @@
         margin: 28px 0;
       }
 
+      @include phone-down {
+          padding: 0 8px;
+      }
+
       .block--header {
         display: flex;
         justify-content: space-between;
