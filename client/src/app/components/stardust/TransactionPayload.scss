@@ -58,15 +58,22 @@
     }
 
     .card--content {
+        @media (min-width: #{768px}) and (max-width: #{820px}) {
+            padding: 0 4px 20px;
+        }
+        @include phone-down {
+            padding: 0 4px 20px;
+        }
+
       .card--value {
         margin-left: auto;
         color: var(--type-color);
       }
 
       .amount-size {
-        width: 200px;
         text-align: end;
         word-break: normal;
+        white-space: nowrap;
       }
 
       .bech32-address {

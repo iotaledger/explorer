@@ -1,6 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressProps } from "../Bech32AddressProps";
-import CopyButton from "../CopyButton";
+import TruncatedId from "./TruncatedId";
 
 /**
  * Component which will display an Bech32Address.
@@ -11,9 +11,6 @@ class Bech32Address extends Component<Bech32AddressProps> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const truncatedAddress =
-            `${this.props.addressDetails?.bech32?.slice(0, 7)}...${this.props.addressDetails?.bech32?.slice(-7)}`;
-
         return (
             <div className="bech32-address">
                 {this.props.addressDetails?.bech32 && (
@@ -32,13 +29,12 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network}/addr/${this.props.addressDetails?.bech32}`
                                     )}
                                 >
-                                    {this.props.truncateAddress ? truncatedAddress : this.props.addressDetails.bech32}
+                                    <TruncatedId id={this.props.addressDetails.bech32} showCopyButton />
                                 </button>
                             )}
                             {!this.props.history && (
-                                <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
+                                <TruncatedId id={this.props.addressDetails.bech32} showCopyButton />
                             )}
-                            {this.props.showCopyButton && <CopyButton copy={this.props.addressDetails?.bech32} />}
                         </div>
                     </div>
                 )}
@@ -56,13 +52,12 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                         `/${this.props.network}/addr/${this.props.addressDetails?.hex}`
                                     )}
                                 >
-                                    {this.props.addressDetails?.hex}
+                                    <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />
                                 </button>
                             )}
                             {!this.props.history && (
-                                <span className="margin-r-t">{this.props.addressDetails?.hex}</span>
+                                <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />
                             )}
-                            <CopyButton copy={this.props.addressDetails?.hex} />
                         </div>
                     </div>
                 )}

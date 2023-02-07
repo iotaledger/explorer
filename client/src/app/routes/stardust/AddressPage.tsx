@@ -10,12 +10,9 @@ import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import QR from "../../components/chrysalis/QR";
-import CopyButton from "../../components/CopyButton";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
@@ -51,7 +48,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
     const isMounted = useIsMounted();
-    const { tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
+    const { bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -64,7 +61,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
-    const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [tokensCount, setTokenCount] = useState<number>(0);
@@ -186,51 +182,21 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                             </h2>
                                         </div>
                                     </div>
-                                    <div className="row space-between general-content">
+                                    <div className="general-content">
                                         <div className="section--data">
                                             <Bech32Address
                                                 addressDetails={bech32AddressDetails}
                                                 advancedMode={true}
-                                                showCopyButton={true}
                                             />
                                             {balance !== undefined && (
                                                 <AddressBalance
                                                     balance={balance}
                                                     spendableBalance={sigLockedBalance}
+                                                    storageRentBalance={storageRentBalance}
                                                 />
                                             )}
                                         </div>
-                                        <div className="section--data">
-                                            {bech32AddressDetails?.bech32 && (
-                                                //  eslint-disable-next-line react/jsx-pascal-case
-                                                <QR data={bech32AddressDetails.bech32} />
-                                            )}
-                                        </div>
                                     </div>
-                                    {storageRentBalance && (
-                                        <div className="section--data margin-t-m">
-                                            <div className="label">
-                                                Storage deposit
-                                            </div>
-                                            <div className="row middle value featured">
-                                                <span
-                                                    onClick={() => {
-                                                        if (isMounted) {
-                                                            setIsFormatStorageRentFull(!isFormatStorageRentFull);
-                                                        }
-                                                    }}
-                                                    className="pointer margin-r-5"
-                                                >
-                                                    {formatAmount(
-                                                        storageRentBalance,
-                                                        tokenInfo,
-                                                        isFormatStorageRentFull
-                                                    )}
-                                                </span>
-                                                <CopyButton copy={String(storageRentBalance)} />
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                                 <TabbedSection
                                     tabsEnum={ADDRESS_PAGE_TABS}

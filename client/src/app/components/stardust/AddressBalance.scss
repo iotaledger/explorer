@@ -1,8 +1,7 @@
 @import "../../../scss/media-queries";
 
 .balance-wrapper {
-    margin-left: 4px;
-    margin-top: 28px;
+    margin-top: 40px;
 
     .icon {
         margin-right: 16px;
@@ -12,18 +11,65 @@
         display: flex;
 
         .balance {
-            &:first-child {
-                margin-right: 32px;
+            display: flex;
+            flex-direction: row;
+
+            .icon {
+                align-self: center;
+
+                @include tablet-down {
+                    display: none;
+                }
             }
 
-            span {
+            &:not(:last-child) {
+                margin-right: 40px;
+
+                @include tablet-down {
+                    margin-right: 0px;
+                }
+            }
+
+            .balance-value {
+                display: flex;
+                flex-direction: column;
+
+                @include tablet-down {
+                    flex-direction: row;
+                }
+
+                .balance-value--inline {
+                    @include tablet-down {
+                        margin-left: 5px;
+                    }
+                }
+            }
+
+            .balance-smr, .balance-fiat {
                 color: #b0bfd9;
-                font-size: 20px;
-                padding-left: 10px;
+                font-size: 18px;
+            }
+
+            &:first-child {
+                .balance-smr {
+                    color: #000;
+                }
+
+                .balance-value--inline {
+                    span {
+                        color: #000;
+                    }
+                }
             }
 
             .balance-heading {
                 height: 20px;
+
+                .material-icons {
+                    font-size: 18px;
+                    color: #b0bfd9;
+                    padding-left: 5px;
+                }
             }
         }
     }
@@ -33,8 +79,8 @@
             flex-direction: column;
 
             .balance {
-                &:last-child {
-                    margin-top: 12px;
+                &:not(:first-child) {
+                    margin-top: 26px;
                 }
             }
         }

@@ -249,17 +249,23 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 <div className="stats-panel-container">
                     <div className="card stats-panel">
                         <div className="card--content">
-                            <div className="card--label">Blocks</div>
-                            <div className="card--value">
-                                {itemCount}
+                            <div className="stats-panel__info">
+                                <div className="card--label">Blocks</div>
+                                <div className="card--value">
+                                    {itemCount}
+                                </div>
                             </div>
-                            <div className="card--label">BPS / CBPS</div>
-                            <div className="card--value">
-                                {itemsPerSecond} / {confirmedItemsPerSecond}
+                            <div className="stats-panel__info">
+                                <div className="card--label">BPS / CBPS</div>
+                                <div className="card--value">
+                                    {itemsPerSecond} / {confirmedItemsPerSecond}
+                                </div>
                             </div>
-                            <div className="card--label">Referenced Rate</div>
-                            <div className="card--value">
-                                {confirmedItemsPerSecondPercent}
+                            <div className="stats-panel__info">
+                                <div className="card--label">Referenced Rate</div>
+                                <div className="card--value">
+                                    {confirmedItemsPerSecondPercent}
+                                </div>
                             </div>
                         </div>
                     </div>

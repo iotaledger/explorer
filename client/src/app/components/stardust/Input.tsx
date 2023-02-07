@@ -67,7 +67,6 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                             advancedMode
                             hideLabel
                             truncateAddress={false}
-                            showCopyButton={true}
                             labelPosition="bottom"
                         />
                     </div>

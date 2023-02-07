@@ -39,7 +39,7 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
 
     return (
         <React.Fragment>
-            <div className="feed-item__content desktop-only">
+            <div className="feed-item__content">
                 <span className="feed-item--label">Blocks</span>
                 <span className="feed-item--value ms-blocks">
                     {fetching ?
@@ -47,7 +47,7 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
                         <div className="feed-item__ms-stat">{includedBlocks ?? "--"}</div>}
                 </span>
             </div>
-            <div className="feed-item__content desktop-only">
+            <div className="feed-item__content">
                 <span className="feed-item--label">Txs</span>
                 <span className="feed-item--value ms-txs">
                     {fetching ?

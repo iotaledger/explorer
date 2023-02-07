@@ -27,8 +27,8 @@ import mainHeaderMessage from "./../../../assets/modals/chrysalis/address/main-h
 import transactionHistoryMessage from "./../../../assets/modals/chrysalis/address/transaction-history.json";
 import Transaction from "./../../components/chrysalis/Transaction";
 import Modal from "./../../components/Modal";
-import "./Addr.scss";
 import { AddrState } from "./AddrState";
+import "./Addr.scss";
 
 /**
  * Component which will show the address page for chrysalis and older.
@@ -210,7 +210,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                             )} */}
 
                                             {this.state.balance !== undefined && (
-                                                <div className="row middle">
+                                                <div className="row middle margin-t-m">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">
                                                         <div className="label">
