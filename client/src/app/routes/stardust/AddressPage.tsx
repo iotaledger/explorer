@@ -80,9 +80,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
     const [nftOutput, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
+    const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const [transactionsCount, setTransactionsCount] = useState<number>(0);
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
@@ -191,8 +191,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     const addressTabOptions = {
         [ADDRESS_PAGE_TABS.Transactions]: {
-            disabled: transactionsCount === 0,
-            isLoading: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE
+            isLoading: isAddressHistoryLoading
         },
         [ADDRESS_PAGE_TABS.NativeTokens]: {
             disabled: tokensCount === 0,
@@ -233,8 +232,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             key={1}
             network={network}
             address={addressBech32}
-            onAsyncStatusChange={buildOnAsyncStatusJobHandler(TX_HISTORY_JOB)}
-            setTransactionCount={setTransactionsCount}
+            setLoading={setIsAddressHistoryLoading}
         />,
         <AssetsTable
             key={2}

@@ -57,7 +57,7 @@ interface TabbedSectionProps {
  * @returns The React component TSX.
  */
 const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOptions }) => {
-    const [selectedTab, setSelectedTab] = useState<number | undefined>();
+    const [selectedTab, setSelectedTab] = useState<number>(0);
     const TABS: string[] = [...Object.values(tabsEnum)];
 
     const tabsView = (
@@ -66,7 +66,6 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                 const isDisabled = tabOptions ?
                     (tabOptions[tab]?.disabled !== undefined ? tabOptions[tab].disabled : false)
                     : false;
-
 
                 const counter = tabOptions ?
                     (tabOptions[tab]?.counter !== undefined ? tabOptions[tab].counter : 0)
