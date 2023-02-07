@@ -157,14 +157,14 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                 </div>
                             </div>
 
-                            {this.state.paramMessageId !== this.state.actualMessageId && (
+                            {this.state.transactionId && (
                                 <div className="section--data">
                                     <div className="label">
                                         Transaction Id
                                     </div>
                                     <div className="value value__secondary row middle">
-                                        <span className="margin-r-t">{this.state.paramMessageId}</span>
-                                        <CopyButton copy={this.state.paramMessageId} />
+                                        <span className="margin-r-t">{this.state.transactionId}</span>
+                                        <CopyButton copy={this.state.transactionId} />
                                     </div>
                                 </div>
                             )}
@@ -425,6 +425,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             this.props.match.params.network, messageId);
 
         if (result?.message) {
+            const message = result.message;
             if (!updateUrl) {
                 window.scrollTo({
                     left: 0,
@@ -434,21 +435,29 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
             }
 
             const { inputs, outputs, unlockAddresses, transferTotal } =
-                await TransactionsHelper.getInputsAndOutputs(result?.message,
+                await TransactionsHelper.getInputsAndOutputs(message,
                     this.props.match.params.network,
                     this._bechHrp,
                     this._tangleCacheService);
+            let transactionId;
+
+            if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
+                    message.payload
+                );
+            }
+
             this.setState({
                 inputs,
                 outputs,
                 unlockAddresses,
-                transferTotal
+                transferTotal,
+                transactionId
             });
 
             this.setState({
-                paramMessageId: messageId,
                 actualMessageId: result.includedMessageId ?? messageId,
-                message: result.message
+                message
             }, async () => {
                 await this.updateMessageDetails();
             });
