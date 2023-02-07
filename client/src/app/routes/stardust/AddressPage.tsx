@@ -195,21 +195,21 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     const addressTabOptions = {
         [ADDRESS_PAGE_TABS.Transactions]: {
-            enabled: transactionsCount > 0,
+            disabled: transactionsCount === 0,
             isLoading: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE
         },
         [ADDRESS_PAGE_TABS.NativeTokens]: {
-            enabled: tokensCount > 0,
+            disabled: tokensCount === 0,
             counter: tokensCount,
             isLoading: isAddressOutputsLoading
         },
         [ADDRESS_PAGE_TABS.Nfts]: {
-            enabled: nftCount > 0,
+            disabled: nftCount === 0,
             counter: nftCount,
             isLoading: isNftOutputsLoading
         },
         [ADDRESS_PAGE_TABS.AssocOutputs]: {
-            enabled: associatedOutputCount > 0,
+            disabled: associatedOutputCount === 0,
             counter: associatedOutputCount,
             isLoading: jobToStatus.get(ASSOC_OUTPUTS_JOB) !== PromiseStatus.DONE
         }
@@ -217,11 +217,11 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     const nftTabOptions = {
         [NFT_PAGE_TABS.NftMetadata]: {
-            enabled: nftMetadata !== undefined,
+            disabled: !nftMetadata,
             isLoading: isNftDetailsLoading
         },
         [NFT_PAGE_TABS.Features]: {
-            enabled: nftOutput?.features !== undefined || nftOutput?.immutableFeatures !== undefined,
+            disabled: !nftOutput?.features && !nftOutput?.immutableFeatures,
             isLoading: isNftDetailsLoading
         }
     };

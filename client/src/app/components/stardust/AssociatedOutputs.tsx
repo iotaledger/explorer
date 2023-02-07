@@ -14,7 +14,7 @@ import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociatio
 import AssociationSection from "./AssociationSection";
 import "./AssociatedOutputs.scss";
 
-interface AssociatedOutputsTableProps {
+interface AssociatedOutputsProps {
     /**
      * The network in context.
      */
@@ -29,7 +29,7 @@ interface AssociatedOutputsTableProps {
     setOutputCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
+const AssociatedOutputs: React.FC<AssociatedOutputsProps & AsyncProps> = (
     { network, addressDetails, onAsyncStatusChange, setOutputCount }
 ) => {
     const isMounted = useIsMounted();
@@ -112,10 +112,10 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
     );
 };
 
-AssociatedOutputsTable.defaultProps = {
+AssociatedOutputs.defaultProps = {
     addressDetails: undefined,
     setOutputCount: undefined
 };
 
-export default AssociatedOutputsTable;
+export default AssociatedOutputs;
 

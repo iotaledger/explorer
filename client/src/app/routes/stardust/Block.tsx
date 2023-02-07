@@ -377,24 +377,21 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     isMilestoneBlock ?
                         {
                             "Referenced Blocks": {
-                                enabled: milestoneReferencedBlocks !== undefined,
+                                disabled: !milestoneReferencedBlocks,
                                 counter: milestoneReferencedBlocks?.blocks?.length ?? undefined,
                                 infoContent: referencedBlocksInfo
                             },
-                            "Milestone Payload": {
-                                enabled: block?.payload !== undefined,
-                                infoContent: milestonePayloadInfo
-                            },
+                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
                             "Metadata": { infoContent: metadataInfo }
                         } : (isTransactionBlock ? {
                             "Transaction Payload": {
-                                enabled: block?.payload !== undefined,
+                                disabled: !block?.payload,
                                 infoContent: transactionPayloadInfo
                             },
                             "Metadata": { infoContent: metadataInfo }
                         } : {
                             "Tagged Data Payload": {
-                                enabled: block?.payload !== undefined,
+                                disabled: !block?.payload,
                                 infoContent: taggedDataPayloadInfo
                             },
                             "Metadata": { infoContent: metadataInfo }

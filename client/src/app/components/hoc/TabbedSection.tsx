@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Modal from "../Modal";
 import { ModalData } from "../ModalProps";
 import Spinner from "../Spinner";
@@ -7,9 +7,9 @@ import "./TabbedSection.scss";
 
 interface TabOption {
     /**
-     * Is the Tab enabled (if not enabled the tab will be unclickable).
+     * Is the Tab disabled (it will make the tab unclickable).
      */
-    enabled?: boolean;
+    disabled?: boolean;
     /**
      * An optional "counter" from this section domain that can be displayed on the tab.
      */
@@ -60,24 +60,13 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
     const [selectedTab, setSelectedTab] = useState<number | undefined>();
     const TABS: string[] = [...Object.values(tabsEnum)];
 
-    useEffect(() => {
-        for (const [idx, tab] of TABS.entries()) {
-            const isEnabled = tabOptions ?
-                (tabOptions[tab]?.enabled !== undefined ? tabOptions[tab].enabled : false)
-                : false;
-            if (isEnabled) {
-                setSelectedTab(idx);
-                break;
-            }
-        }
-    }, [tabOptions]);
-
     const tabsView = (
         <div className="tabbed-section--tabs-wrapper">
             {TABS.map((tab, idx) => {
-                const isEnabled = tabOptions ?
-                (tabOptions[tab]?.enabled !== undefined ? tabOptions[tab].enabled : false)
-                : false;
+                const isDisabled = tabOptions ?
+                    (tabOptions[tab]?.disabled !== undefined ? tabOptions[tab].disabled : false)
+                    : false;
+
 
                 const counter = tabOptions ?
                     (tabOptions[tab]?.counter !== undefined ? tabOptions[tab].counter : 0)
@@ -96,14 +85,14 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                         key={`tab-btn-${idx}`}
                         className={classNames("tab-wrapper",
                             { "active": idx === selectedTab },
-                            { "disabled": !isEnabled })}
+                            { "disabled": isDisabled })}
                         onClick={() => setSelectedTab(idx)}
                     >
                         <button
                             className="tab"
                             type="button"
                             key={idx}
-                            disabled={!isEnabled}
+                            disabled={isDisabled}
                         >
                             {tab}
                         </button>
