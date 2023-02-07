@@ -11,7 +11,7 @@ import { FeatureState } from "./FeatureState";
 /**
  * Component which will display an Feature Block.
  */
-class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
+class Feature extends AsyncComponent<FeatureProps, FeatureState> {
     constructor(props: FeatureProps) {
         super(props);
 
@@ -87,4 +87,4 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
     }
 }
 
-export default FeatureBlock;
+export default Feature;

@@ -1,5 +1,4 @@
 import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
-import { optional } from "@ruffy/ts-optional";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
@@ -16,7 +15,7 @@ import Icon from "../../components/Icon";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
-import Feature from "../../components/stardust/Feature";
+import FeaturesSection from "../../components/stardust/FeaturesSection";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
@@ -211,30 +210,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                         <AssetsTable networkId={network} outputs={[foundryOutput]} />
                     )}
                 </div>
-                {optional(foundryOutput.features).nonEmpty() && (
-                    <div className="section">
-                        <div className="section--header row row--tablet-responsive middle space-between">
-                            <div className="row middle">
-                                <h2>Features</h2>
-                            </div>
-                        </div>
-                        {foundryOutput.features?.map((feature, idx) => (
-                            <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
-                        ))}
-                    </div>
-                )}
-                {optional(foundryOutput.immutableFeatures).nonEmpty() && (
-                    <div className="section">
-                        <div className="section--header row row--tablet-responsive middle space-between">
-                            <div className="row middle">
-                                <h2>Immutable features</h2>
-                            </div>
-                        </div>
-                        {foundryOutput.immutableFeatures?.map((feature, idx) => (
-                            <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={true} />
-                        ))}
-                    </div>
-                )}
+                <FeaturesSection output={foundryOutput} />
             </React.Fragment>
         );
     }

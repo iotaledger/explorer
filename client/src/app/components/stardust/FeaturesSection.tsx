@@ -1,4 +1,4 @@
-import { IAliasOutput, INftOutput } from "@iota/iota.js-stardust";
+import { IAliasOutput, IFoundryOutput, INftOutput } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional";
 import React from "react";
 import Feature from "./Feature";
@@ -8,7 +8,7 @@ interface FeaturesSectionProps {
     /**
      * The Output
      */
-    output?: INftOutput | IAliasOutput;
+    output?: INftOutput | IAliasOutput | IFoundryOutput;
 }
 
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({ output }) => (
