@@ -35,7 +35,7 @@
                 }
 
                 .copy-button {
-                    margin-left: 4px;
+                    margin-left: 2px;
                 }
             }
         }
@@ -44,6 +44,7 @@
             width: min-content;
             text-align: end;
             cursor: pointer;
+            margin-right: 2px;
 
             span {
                 word-break: keep-all;
