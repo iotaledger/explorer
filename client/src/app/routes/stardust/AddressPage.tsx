@@ -256,7 +256,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         <AssociatedOutputs
             key={4}
             network={network}
-            addressDetails={bech32AddressDetails}
+            addressDetails={bech32AddressDetails ?? {} as IBech32AddressDetails}
             onAsyncStatusChange={buildOnAsyncStatusJobHandler(ASSOC_OUTPUTS_JOB)}
             setOutputCount={setAssociatedOutputCount}
         />
