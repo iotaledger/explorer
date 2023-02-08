@@ -6,6 +6,8 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
+import { useAliasControlledFoundries } from "../../../helpers/hooks/useAliasControlledFoundries";
+import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
@@ -17,6 +19,8 @@ import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
+import AliasFoundriesSection from "../../components/stardust/AliasFoundriesSection";
+import AliasStateSection from "../../components/stardust/AliasStateSection";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
@@ -48,6 +52,11 @@ enum ADDRESS_PAGE_TABS {
     Nfts = "NFTs",
     AssocOutputs = "Associated Outputs"
 }
+enum ALIAS_PAGE_TABS {
+    State = "State",
+    Features = "Features",
+    Foundries = "Foundries",
+}
 enum NFT_PAGE_TABS {
     NftMetadata = "Metadata",
     Features = "Features"
@@ -71,6 +80,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
     const [nftOutput, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
+    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, bech32AddressDetails?.hex);
+    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(network, bech32AddressDetails);
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [isAssociatedOutputsLoading, setIsAssociatedOutputsLoading] = useState(true);
 
@@ -164,6 +175,16 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         isAssociatedOutputsLoading;
 
     /**
+     * Tab enums.
+     */
+    const tabEnums = addressType === ALIAS_ADDRESS_TYPE ?
+    { ...ALIAS_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
+    (addressType === NFT_ADDRESS_TYPE ?
+        { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
+        ADDRESS_PAGE_TABS
+    );
+
+    /**
      * Tab header options.
      */
     const addressTabOptions = {
@@ -187,6 +208,21 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         }
     };
 
+    const aliasTabOptions = {
+        [ALIAS_PAGE_TABS.State]: {
+            disabled: !aliasOutput,
+            isLoading: isAliasDetailsLoading
+        },
+        [ALIAS_PAGE_TABS.Features]: {
+            disabled: !aliasOutput?.features && !aliasOutput?.immutableFeatures,
+            isLoading: isAliasDetailsLoading
+        },
+        [ALIAS_PAGE_TABS.Foundries]: {
+            disabled: !aliasFoundries,
+            isLoading: isAliasFoundriesLoading
+        }
+    };
+
     const nftTabOptions = {
         [NFT_PAGE_TABS.NftMetadata]: {
             disabled: !nftMetadata,
@@ -198,9 +234,14 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         }
     };
 
-    const tabOptions = addressType === NFT_ADDRESS_TYPE ?
-        { ...nftTabOptions, ...addressTabOptions } :
-        addressTabOptions;
+
+    const tabOptions = addressType === ALIAS_ADDRESS_TYPE ?
+        { ...aliasTabOptions, ...addressTabOptions } :
+        (addressType === NFT_ADDRESS_TYPE ?
+            { ...nftTabOptions, ...addressTabOptions } :
+            addressTabOptions
+        );
+
     /**
      * Tab sections.
      */
@@ -232,19 +273,40 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             setIsLoading={setIsAssociatedOutputsLoading}
         />
     ];
-    const nftSections = [
-        <NftMetadataSection
+
+    const aliasSections = [
+        <AliasStateSection
             key={5}
-            metadata={nftMetadata}
+            output={aliasOutput}
         />,
         <FeaturesSection
             key={6}
+            output={aliasOutput}
+        />,
+        <AliasFoundriesSection
+            key={7}
+            network={network}
+            foundries={aliasFoundries}
+        />
+    ];
+
+    const nftSections = [
+        <NftMetadataSection
+            key={8}
+            metadata={nftMetadata}
+        />,
+        <FeaturesSection
+            key={9}
             output={nftOutput}
         />
     ];
-    const tabbedSections = addressType === NFT_ADDRESS_TYPE ?
-        [...nftSections, ...addressSections] :
-        addressSections;
+
+    const tabbedSections = addressType === ALIAS_ADDRESS_TYPE ?
+        [...aliasSections, ...addressSections] :
+        (addressType === NFT_ADDRESS_TYPE ?
+            [...nftSections, ...addressSections] :
+            addressSections
+        );
 
     return (
         redirect ? (
@@ -257,7 +319,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                             <div className="addr--header">
                                 <div className="row middle">
                                     <h1>
-                                        {bech32AddressDetails.typeLabel?.replace("Ed25519", "")} Address
+                                        {bech32AddressDetails.typeLabel?.replace("Ed25519", "Address")}
                                     </h1>
                                     <Modal icon="info" data={mainHeaderInfo} />
                                 </div>
@@ -288,11 +350,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                 </div>
                             </div>
                             <TabbedSection
-                                tabsEnum={
-                                    bech32AddressDetails.type === NFT_ADDRESS_TYPE ?
-                                        { ...NFT_PAGE_TABS, ...ADDRESS_PAGE_TABS } :
-                                        ADDRESS_PAGE_TABS
-                                }
+                                tabsEnum={tabEnums}
                                 tabOptions={tabOptions}
                             >
                                 {tabbedSections}
