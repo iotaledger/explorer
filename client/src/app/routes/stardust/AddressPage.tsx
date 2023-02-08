@@ -8,7 +8,6 @@ import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOu
 import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
-import { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
@@ -54,9 +53,6 @@ enum NFT_PAGE_TABS {
     Features = "Features"
 }
 
-const TX_HISTORY_JOB = "tx-history";
-const ASSOC_OUTPUTS_JOB = "assoc-outputs";
-
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
@@ -65,11 +61,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const { name, bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
-    const [jobToStatus, setJobToStatus] = useState(
-        new Map<string, PromiseStatus>()
-            .set(TX_HISTORY_JOB, PromiseStatus.PENDING)
-            .set(ASSOC_OUTPUTS_JOB, PromiseStatus.PENDING)
     );
     const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
     const [balance, setBalance] = useState<number | undefined>();
@@ -81,7 +72,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
     const [nftOutput, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isAssociatedOutputsLoading, setIsAssociatedOutputsLoading] = useState(true);
 
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
@@ -124,11 +115,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     }, [bech32AddressDetails]);
 
     useEffect(() => {
-        const loading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-        setIsLoading(loading);
-    }, [jobToStatus.values()]);
-
-    useEffect(() => {
         if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
             const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
             const outputs = outputResponses.map<OutputTypes>(or => or.output);
@@ -169,22 +155,13 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         });
     }
 
-    /**
-     * Helper function to build a asyncJobHandler.
-     * @param jobName The job name.
-     * @returns Function than can be used to update job PromiseStatus.
-     */
-    function buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
-        return (status: PromiseStatus) => {
-            if (isMounted) {
-                setJobToStatus(jobToStatus.set(jobName, status));
-            }
-        };
-    }
-
     const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
     const addressType = bech32AddressDetails?.type ?? undefined;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
+    const isPageLoading = isAddressOutputsLoading ||
+        isNftDetailsLoading ||
+        isAddressHistoryLoading ||
+        isAssociatedOutputsLoading;
 
     /**
      * Tab header options.
@@ -206,7 +183,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         [ADDRESS_PAGE_TABS.AssocOutputs]: {
             disabled: associatedOutputCount === 0,
             counter: associatedOutputCount,
-            isLoading: jobToStatus.get(ASSOC_OUTPUTS_JOB) !== PromiseStatus.DONE
+            isLoading: isAssociatedOutputsLoading
         }
     };
 
@@ -251,8 +228,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             key={4}
             network={network}
             addressDetails={bech32AddressDetails ?? {} as IBech32AddressDetails}
-            onAsyncStatusChange={buildOnAsyncStatusJobHandler(ASSOC_OUTPUTS_JOB)}
             setOutputCount={setAssociatedOutputCount}
+            setIsLoading={setIsAssociatedOutputsLoading}
         />
     ];
     const nftSections = [
@@ -284,7 +261,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                     </h1>
                                     <Modal icon="info" data={mainHeaderInfo} />
                                 </div>
-                                {isLoading && <Spinner />}
+                                {isPageLoading && <Spinner />}
                             </div>
                             <div className="section no-border-bottom">
                                 <div className="section--header">

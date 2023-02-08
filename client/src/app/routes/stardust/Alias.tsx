@@ -295,7 +295,7 @@ class Alias extends AsyncComponent<RouteComponentProps<AliasRouteProps>, AliasSt
                     <AssociatedOutputs
                         network={network}
                         addressDetails={bech32AddressDetails}
-                        onAsyncStatusChange={() => { }}
+                        setIsLoading={() => { }}
                     />
                 )}
             </React.Fragment>
