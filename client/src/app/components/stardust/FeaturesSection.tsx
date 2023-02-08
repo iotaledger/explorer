@@ -2,7 +2,6 @@ import { IAliasOutput, IFoundryOutput, INftOutput } from "@iota/iota.js-stardust
 import { optional } from "@ruffy/ts-optional";
 import React from "react";
 import Feature from "./Feature";
-import "./NftMetadataSection.scss";
 
 interface FeaturesSectionProps {
     /**
