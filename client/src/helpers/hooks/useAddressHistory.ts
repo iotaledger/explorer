@@ -40,6 +40,7 @@ export function useAddressHistory(
 
     const loadHistory = () => {
         if (address) {
+            setIsAddressHistoryLoading(true);
             const request: ITransactionHistoryRequest = {
                 network,
                 address,
@@ -57,12 +58,15 @@ export function useAddressHistory(
                         setCursor(response?.cursor);
                     }
                 })
-                .catch(e => console.log(e));
+                .finally(() => {
+                    setIsAddressHistoryLoading(false);
+                });
         }
     };
 
     useEffect(() => {
         if (history.length > 0) {
+            setIsAddressHistoryLoading(true);
             const promises: Promise<void>[] = [];
             const detailsPage: IOutputDetailsMap = {};
 
@@ -83,25 +87,26 @@ export function useAddressHistory(
                 promises.push(promise);
             }
 
-            Promise.all(promises).then(_ => {
-                setOutputDetailsMap(detailsPage);
-                setIsAddressHistoryLoading(false);
-                const updatedHistoryView = [...history].sort((a, b) => {
-                    // Ensure that entries with equal timestamp, but different isSpent,
-                    // have the spending before the depositing
-                    if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                        return !a.isSpent ? -1 : 1;
-                    }
-                    return 1;
-                });
+            Promise.allSettled(promises)
+                .then(_ => {
+                    setOutputDetailsMap(detailsPage);
+                    setIsAddressHistoryLoading(false);
+                    const updatedHistoryView = [...history].sort((a, b) => {
+                        // Ensure that entries with equal timestamp, but different isSpent,
+                        // have the spending before the depositing
+                        if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                            return !a.isSpent ? -1 : 1;
+                        }
+                        return 1;
+                    });
 
-                setHistoryView(updatedHistoryView);
-            }).catch(_ => {
-                console.log("Failed loading transaction history details!");
-            })
-            .finally(() => {
-                setIsAddressHistoryLoading(false);
-            });
+                    setHistoryView(updatedHistoryView);
+                }).catch(_ => {
+                    console.log("Failed loading transaction history details!");
+                })
+                .finally(() => {
+                    setIsAddressHistoryLoading(false);
+                });
         }
     }, [history]);
 
