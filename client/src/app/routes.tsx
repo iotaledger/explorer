@@ -23,7 +23,6 @@ import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
-import Alias from "./routes/stardust/Alias";
 import StardustBlock from "./routes/stardust/Block";
 import Foundry from "./routes/stardust/Foundry";
 import StardustLanding from "./routes/stardust/landing/Landing";
@@ -173,9 +172,9 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={Foundry}
         />,
-        <Route path="/:network/alias/:aliasAddress"
+        <Route path="/:network/alias/:address"
             key={keys.next().value}
-            component={Alias}
+            component={StardustAddressPage}
         />,
         <Route path="/:network/nft/:address"
             key={keys.next().value}
