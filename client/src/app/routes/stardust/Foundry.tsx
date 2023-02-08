@@ -123,7 +123,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             Controller Alias
                         </div>
                         <div className="value code row middle highlight">
-                            <Link to={`/${network}/alias/${controllerAlias}`} className="margin-r-t">
+                            <Link to={`/${network}/addr/${controllerAlias}`} className="margin-r-t">
                                 {controllerAlias}
                             </Link>
                             <CopyButton copy={controllerAlias} />

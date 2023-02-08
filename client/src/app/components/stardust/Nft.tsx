@@ -40,14 +40,14 @@ const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
         <div className="nft-card">
             <div className="nft-card__nft-metadata">
                 <Link
-                    to={`/${network}/nft/${nftAddress.bech32}`}
+                    to={`/${network}/addr/${nftAddress.bech32}`}
                 >
                     {nftImage}
                 </Link>
                 {metadata?.name && <span className="nft-metadata__name">{metadata.name}</span>}
             </div>
             <span className="nft-card__nft-id">
-                <Link to={`/${network}/nft/${nftAddress.bech32}`} className="margin-r-t" >
+                <Link to={`/${network}/addr/${nftAddress.bech32}`} className="margin-r-t" >
                     <TruncatedId id={id} />
                 </Link>
             </span>

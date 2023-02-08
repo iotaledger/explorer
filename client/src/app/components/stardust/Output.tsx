@@ -145,7 +145,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <div className="card--value row middle">
                                     {isLinksDisabled ?
                                         <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                        <Link to={`/${network}/alias/${aliasOrNftBech32}`} className="margin-r-t">
+                                        <Link to={`/${network}/addr/${aliasOrNftBech32}`} className="margin-r-t">
                                             {aliasOrNftBech32}
                                         </Link>}
                                     <CopyButton copy={aliasOrNftBech32} />
@@ -174,7 +174,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <div className="card--value row middle">
                                     {isLinksDisabled ?
                                         <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                        <Link to={`/${network}/nft/${aliasOrNftBech32}`} className="margin-r-t">
+                                        <Link to={`/${network}/addr/${aliasOrNftBech32}`} className="margin-r-t">
                                             {aliasOrNftBech32}
                                         </Link>}
                                     <CopyButton copy={aliasOrNftBech32} />

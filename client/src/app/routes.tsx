@@ -172,14 +172,6 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={Foundry}
         />,
-        <Route path="/:network/alias/:address"
-            key={keys.next().value}
-            component={StardustAddressPage}
-        />,
-        <Route path="/:network/nft/:address"
-            key={keys.next().value}
-            component={StardustAddressPage}
-        />,
         <Route path="/:network/statistics"
             key={keys.next().value}
             component={StatisticsPage}
