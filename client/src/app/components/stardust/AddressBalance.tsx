@@ -35,11 +35,11 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
 
     const buildBalanceView = (
         label: string,
-        amount: number,
         isFormatFull: boolean,
         setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
         showInfo: boolean,
-        showWallet: boolean
+        showWallet: boolean,
+        amount?: number
     ) => (
         <div className="balance">
             {showWallet && <Icon icon="wallet" boxed />}
@@ -54,7 +54,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                         </Tooltip>}
                 </div>
                 <div className="value featured">
-                    {amount > 0 ? (
+                    {amount !== undefined && amount > 0 ? (
                         <div className="balance-value middle">
                             <div className="row middle">
                                 <span
@@ -88,54 +88,31 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
     return (
         <div className="row middle balance-wrapper">
             <div className="balance-wrapper--inner">
-                {shouldShowExtendedBalance ? (
-                    <React.Fragment>
-                        {buildBalanceView(
-                            "Available Balance",
-                            spendableBalance,
-                            formatBalanceFull,
-                            setFormatBalanceFull,
-                            false,
-                            true
-                        )}
-                        {buildBalanceView(
-                            "Conditionally Locked Balance",
-                            conditionalBalance,
-                            formatConditionalBalanceFull,
-                            setFormatConditionalBalanceFull,
-                            true,
-                            false
-                        )}
-                        {storageRentBalance &&
-                            buildBalanceView(
-                                "Storage Deposit",
-                                storageRentBalance,
-                                formatStorageBalanceFull,
-                                setFormatStorageBalanceFull,
-                                false,
-                                false
-                            )}
-                    </React.Fragment>
-                ) : (
-                    <React.Fragment>
-                        {buildBalanceView(
-                            "Balance",
-                            balance,
-                            formatBalanceFull,
-                            setFormatBalanceFull,
-                            false,
-                            true
-                        )}
-                        {storageRentBalance &&
-                            buildBalanceView(
-                                "Storage Deposit",
-                                storageRentBalance,
-                                formatStorageBalanceFull,
-                                setFormatStorageBalanceFull,
-                                false,
-                                false
-                            )}
-                    </React.Fragment>
+                {buildBalanceView(
+                    "Available Balance",
+                    formatBalanceFull,
+                    setFormatBalanceFull,
+                    false,
+                    true,
+                    shouldShowExtendedBalance ? spendableBalance : balance
+                )}
+                {shouldShowExtendedBalance && (
+                    buildBalanceView(
+                        "Conditionally Locked Balance",
+                        formatConditionalBalanceFull,
+                        setFormatConditionalBalanceFull,
+                        true,
+                        false,
+                        conditionalBalance
+                    )
+                )}
+                {buildBalanceView(
+                    "Storage Deposit",
+                    formatStorageBalanceFull,
+                    setFormatStorageBalanceFull,
+                    false,
+                    false,
+                    storageRentBalance
                 )}
             </div>
         </div>
