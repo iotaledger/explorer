@@ -13,12 +13,17 @@ interface TransactionHistoryProps {
     network: string;
     address?: string;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (
-    { network, address, setLoading }
+    { network, address, setLoading, setDisabled }
 ) => {
-    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(network, address);
+    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
+        network,
+        address,
+        setDisabled
+    );
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
 
     useEffect(() => {
@@ -139,7 +144,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 };
 
 TransactionHistory.defaultProps = {
-    address: undefined
+    address: undefined,
+    setDisabled: undefined
 };
 
 export default TransactionHistory;

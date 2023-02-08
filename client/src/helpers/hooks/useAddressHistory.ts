@@ -15,11 +15,13 @@ interface IOutputDetailsMap {
  * Fetch Address history
  * @param network The Network in context
  * @param address The address in bech32 format
+ * @param setDisabled Optional callback to signal there is no history.
  * @returns The history items, The map of outputId to output details, callback load next page, isLoading, hasMore
  */
 export function useAddressHistory(
     network: string,
-    address?: string
+    address?: string,
+    setDisabled?: React.Dispatch<React.SetStateAction<boolean>> | undefined
 ): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
     const tangleService = useCallback(
@@ -56,6 +58,8 @@ export function useAddressHistory(
                     if (items.length > 0 && isMounted) {
                         setHistory([...history, ...items]);
                         setCursor(response?.cursor);
+                    } else if (setDisabled) {
+                        setDisabled(true);
                     }
                 })
                 .finally(() => {

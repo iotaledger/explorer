@@ -83,6 +83,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, bech32AddressDetails?.hex);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(network, bech32AddressDetails);
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
+    const [isAddressHistoryDisabled, setIsAddressHistoryDisabled] = useState(false);
     const [isAssociatedOutputsLoading, setIsAssociatedOutputsLoading] = useState(true);
 
     const [tokensCount, setTokenCount] = useState<number>(0);
@@ -189,6 +190,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     const addressTabOptions = {
         [ADDRESS_PAGE_TABS.Transactions]: {
+            disabled: isAddressHistoryDisabled,
             isLoading: isAddressHistoryLoading
         },
         [ADDRESS_PAGE_TABS.NativeTokens]: {
@@ -251,6 +253,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             network={network}
             address={addressBech32}
             setLoading={setIsAddressHistoryLoading}
+            setDisabled={setIsAddressHistoryDisabled}
         />,
         <AssetsTable
             key={2}
