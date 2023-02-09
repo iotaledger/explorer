@@ -1,4 +1,4 @@
-import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
@@ -6,6 +6,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -24,7 +25,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     { match: { params: { network, foundryId } } }
 ) => {
     const isMounted = useIsMounted();
-    const { tokenInfo } = useContext(NetworkContext);
+    const { tokenInfo, bech32Hrp } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -100,6 +101,10 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
         const mintedTokens = Number(foundryOutput.tokenScheme.mintedTokens);
         const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
 
+        const controllerAliasBech32 = controllerAlias ?
+            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
+            undefined;
+
         foundryContent = (
             <React.Fragment>
                 <div className="section">
@@ -118,17 +123,19 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             </span>
                         </div>
                     </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Controller Alias
+                    {controllerAlias && controllerAliasBech32 && (
+                        <div className="section--data">
+                            <div className="label">
+                                Controller Alias
+                            </div>
+                            <div className="value code row middle highlight">
+                                <Link to={`/${network}/addr/${controllerAliasBech32.bech32}`} className="margin-r-t">
+                                    {controllerAlias}
+                                </Link>
+                                <CopyButton copy={controllerAlias} />
+                            </div>
                         </div>
-                        <div className="value code row middle highlight">
-                            <Link to={`/${network}/addr/${controllerAlias}`} className="margin-r-t">
-                                {controllerAlias}
-                            </Link>
-                            <CopyButton copy={controllerAlias} />
-                        </div>
-                    </div>
+                    )}
                     <div className="section--data">
                         <div className="row middle">
                             <Icon icon="wallet" boxed />

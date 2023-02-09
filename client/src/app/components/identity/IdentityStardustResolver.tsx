@@ -103,7 +103,7 @@ class IdentityStardustResolver extends AsyncComponent<
                                             <div className="margin-r-t">
                                                 <a onClick={() => {
                                                     // eslint-disable-next-line max-len
-                                                    window.location.href = `/${network}/addr/${this.state.aliasId}`;
+                                                    window.location.href = `/${network}/search/${this.state.aliasId}`;
                                                 }}
                                                 >
                                                     {this.state.aliasId}

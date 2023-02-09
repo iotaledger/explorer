@@ -49,7 +49,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                     type="button"
                                     className="margin-r-t"
                                     onClick={() => this.props.history?.push(
-                                        `/${this.props.network}/addr/${this.props.addressDetails?.hex}`
+                                        `/${this.props.network}/addr/${this.props.addressDetails?.bech32}`
                                     )}
                                 >
                                     <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />

@@ -83,8 +83,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
-        const { addressDetails } = location.state ?
-            location.state as IAddressPageLocationProps :
+        const locationState = location.state as IAddressPageLocationProps;
+        const { addressDetails } = locationState?.addressDetails ? locationState :
             { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
 
         if (addressDetails?.hex) {
