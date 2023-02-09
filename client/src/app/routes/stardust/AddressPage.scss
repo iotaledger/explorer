@@ -165,19 +165,19 @@
       border-radius: 6px;
       width: 469px;
       height: 85px;
-  
+
       .inner--asset {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin: 30px;
-  
+
         .assets {
           display: flex;
           flex-direction: column;
         }
       }
-  
+
       .svg-navigation {
         width: 16px;
         height: 16px;
@@ -195,19 +195,19 @@
       width: 469px;
       height: 85px;
       margin-left: 20px;
-  
+
       .inner--asset {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin: 30px;
-  
+
         .assets {
           display: flex;
           flex-direction: column;
         }
       }
-  
+
       .svg-navigation {
         width: 16px;
         height: 16px;
@@ -240,8 +240,48 @@
   }
 
   .general-content {
+      padding-bottom: 26px;
+
+      @include phone-down {
+          flex-direction: column;
+      }
+  }
+
+  .qr-content {
     @include tablet-down {
-      flex-direction: column;
+      align-self: flex-end;
+    }
+
+    @include phone-down {
+      align-self: center;
+    }
+  }
+
+  .feature-block {
+    .card--label {
+      @include font-size(12px);
+
+      display: flex;
+      align-items: center;
+      height: 32px;
+      color: var(--card-color);
+      font-family: $inter;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .card--value {
+      @include font-size(14px, 20px);
+      margin-bottom: 12px;
+      color: var(--body-color);
+      font-family: $ibm-plex-mono;
+      word-break: break-all;
+
+      a,
+      button {
+          color: var(--link-color);
+      }
     }
   }
 }

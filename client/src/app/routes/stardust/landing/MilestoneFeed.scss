@@ -8,6 +8,10 @@
     padding-top: 28px;
     margin-bottom: 16px;
 
+    @include phone-down {
+        margin-bottom: 0px;
+    }
+
     span {
         @include font-size(18px, 24px);
 
@@ -105,10 +109,14 @@
                 @include tablet-down {
                     display: none;
                 }
+            }
 
-                .feed-item--value {
-                    .feed-item__ms-stat {
-                        margin-left: 4px;
+            .feed-item--value {
+                .feed-item__ms-stat {
+                    @include tablet-down {
+                        min-height: 100%;
+                        padding-left: 8px;
+                        @include font-size(14px, 20px);
                     }
                 }
             }

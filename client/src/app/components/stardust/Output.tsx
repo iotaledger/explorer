@@ -77,7 +77,7 @@ class Output extends Component<OutputProps, OutputState> {
             output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
                 output.unlockConditions.map((unlockCondition, idx) => (
                     <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
-                        <span className="material-icons unlock-condiiton-icon">
+                        <span className="material-icons unlock-condition-icon">
                             {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && "arrow_back"}
                             {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && "hourglass_bottom"}
                             {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE && "schedule"}
@@ -91,13 +91,13 @@ class Output extends Component<OutputProps, OutputState> {
                 onClick={() => this.setState({ isExpanded: !isExpanded })}
                 className="card--value card-header--wrapper"
             >
-                <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
+                <div className={classNames("card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
                 <div className="output-header">
                     <button
                         type="button"
-                        className="output-type--name margin-r-t color"
+                        className="output-type--name color"
                     >
                         {NameHelper.getOutputTypeName(output.type)}
                     </button>
@@ -120,7 +120,7 @@ class Output extends Component<OutputProps, OutputState> {
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
                         <span
-                            className="pointer margin-r-t"
+                            className="pointer"
                             onClick={e => {
                                 this.setState({ isFormattedBalance: !isFormattedBalance });
                                 e.stopPropagation();
@@ -145,7 +145,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <div className="card--value row middle">
                                     {isLinksDisabled ?
                                         <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                        <Link to={`/${network}/alias/${aliasOrNftBech32}`} className="margin-r-t">
+                                        <Link to={`/${network}/addr/${aliasOrNftBech32}`} className="margin-r-t">
                                             {aliasOrNftBech32}
                                         </Link>}
                                     <CopyButton copy={aliasOrNftBech32} />
@@ -174,7 +174,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 <div className="card--value row middle">
                                     {isLinksDisabled ?
                                         <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                        <Link to={`/${network}/nft/${aliasOrNftBech32}`} className="margin-r-t">
+                                        <Link to={`/${network}/addr/${aliasOrNftBech32}`} className="margin-r-t">
                                             {aliasOrNftBech32}
                                         </Link>}
                                     <CopyButton copy={aliasOrNftBech32} />

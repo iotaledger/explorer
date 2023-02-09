@@ -1,6 +1,7 @@
 @import "../../../scss/fonts";
 @import "../../../scss/variables";
 @import "../../../scss/mixins";
+@import "../../../scss/media-queries";
 
 .qr-container {
     display: flex;
@@ -15,5 +16,20 @@
         font-weight: 600;
         text-align: center;
         margin-top: 24px;
+    }
+
+    svg {
+        @include desktop-down {
+            width: 80px;
+            height: 80px;
+        }
+    }
+
+    @include desktop-down {
+        width: 80px;
+    }
+
+    @include phone-down {
+        width: 180px;
     }
 }

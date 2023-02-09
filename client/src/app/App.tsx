@@ -11,7 +11,7 @@ import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
 import {
-    buildMetaLabel, buildUtilities, copyrightInner, getFooterItems,
+    buildMetaLabel, buildUtilities, getFooterItems,
     getPages, getFaviconHelmet, networkContextWrapper
 } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
@@ -108,9 +108,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                             </div>
                         )}
                         {networkConfig && routes}
-                        <div className={classNames("copyright", { "shimmer-copyright": isShimmer })}>
-                            <div className="copyright-inner">{copyrightInner}</div>
-                        </div>
                     </React.Fragment> : (
                         <div className="maintenance">
                             <div className="maintenance-inner">

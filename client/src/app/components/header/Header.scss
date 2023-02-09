@@ -63,6 +63,10 @@ header {
       .shimmer-heading {
           align-self: center;
           margin-left: 20px;
+
+          @include phone-down {
+            display: none;
+        }
       }
 
       @include desktop-down {
@@ -78,6 +82,10 @@ header {
 
         @include desktop-down {
           height: 40px;
+        }
+
+        @include phone-down {
+          height: 36px;
         }
 
         path {

@@ -251,20 +251,26 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.transactionBlock) {
                                     route = "transaction";
                                 } else if (response.aliasId) {
-                                    route = "alias";
+                                    route = "addr";
                                     const aliasAddress = this.buildAddressFromIdAndType(
                                         response.aliasId, ALIAS_ADDRESS_TYPE
                                     );
+                                    redirectState = {
+                                        addressDetails: aliasAddress
+                                    };
                                     routeParam = aliasAddress.bech32;
                                 } else if (response.foundryId) {
                                     route = "foundry";
                                     routeParam = response.foundryId;
                                 } else if (response.nftId) {
-                                    route = "nft";
+                                    route = "addr";
                                     const nftAddress = this.buildAddressFromIdAndType(
                                         response.nftId,
                                         NFT_ADDRESS_TYPE
                                     );
+                                    redirectState = {
+                                        addressDetails: nftAddress
+                                    };
                                     routeParam = nftAddress.bech32;
                                 } else if (response.milestone?.blockId) {
                                     route = "block";
