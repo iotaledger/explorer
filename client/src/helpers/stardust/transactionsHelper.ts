@@ -41,6 +41,7 @@ export class TransactionsHelper {
         const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
         let transferTotal = 0;
+        let sortedOutputs: IOutput[] = [];
 
         if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             const payload: ITransactionPayload = block.payload;
@@ -152,9 +153,46 @@ export class TransactionsHelper {
                     }
                 }
             }
+
+            sortedOutputs = [...outputs, ...remainderOutputs];
+            // Sort outputs in ascending order based on their output index
+            sortedOutputs.sort((a, b) => {
+                const firstOutputIndex = a.id.slice(-4);
+                const secondOutputIndex = b.id.slice(-4);
+                const firstFormattedIndex = TransactionsHelper.convertToBigEndian(firstOutputIndex);
+                const secondFormattedIndex = TransactionsHelper.convertToBigEndian(secondOutputIndex);
+
+                return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
+            });
+            // Sort inputs in ascending order based on their output index
+            inputs.sort((a, b) => {
+                const firstInputIndex = a.outputId.slice(-4);
+                const secondInputIndex = b.outputId.slice(-4);
+                const firstFormattedIndex = TransactionsHelper.convertToBigEndian(firstInputIndex);
+                const secondFormattedIndex = TransactionsHelper.convertToBigEndian(secondInputIndex);
+
+                return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
+            });
         }
 
-        return { inputs, unlocks, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
+        return { inputs, unlocks, outputs: sortedOutputs, unlockAddresses, transferTotal };
+    }
+
+    /**
+     * Convert little endian to big endian.
+     * @param index Output index in little endian format.
+     * @returns Output index in big endian format.
+     */
+    public static convertToBigEndian(index: string) {
+        const bigEndian = [];
+        let hexLength = index.length;
+        while (hexLength >= 0) {
+            const slicedBits = index.slice(hexLength - 2, hexLength);
+            bigEndian.push(slicedBits);
+            hexLength -= 2;
+        }
+
+        return bigEndian.join("");
     }
 
     public static computeTransactionIdFromTransactionPayload(payload: ITransactionPayload) {
