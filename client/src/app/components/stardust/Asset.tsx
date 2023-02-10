@@ -4,7 +4,6 @@ import { IFoundryOutput, IMetadataFeature, METADATA_FEATURE_TYPE } from "@iota/i
 import { Converter } from "@iota/util.js-stardust";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { ITokenMetadata } from "../../../models/api/stardust/foundry/ITokenMetadata";
 import { STARDUST } from "../../../models/config/protocolVersion";
@@ -102,12 +101,10 @@ const Asset: React.FC<AssetProps> = (
                     )}
                 </td>
                 <td className="highlight">
-                    <Link
-                        to={`/${network}/foundry/${token?.id}`}
-                        className="row margin-r-t"
-                    >
-                        <TruncatedId id={token?.id} />
-                    </Link>
+                    <TruncatedId
+                        id={token?.id}
+                        link={`/${network}/foundry/${token?.id}`}
+                    />
                 </td>
                 <td>{token.amount ?? "-"}</td>
             </tr>
@@ -135,13 +132,11 @@ const Asset: React.FC<AssetProps> = (
                 </div>
                 <div className="field">
                     <div className="label">Token id</div>
-                    <div className="value highlight">
-                        <Link
-                            to={`/${network}/foundry/${token?.id}`}
-                            className="margin-r-t"
-                        >
-                            <TruncatedId id={token?.id} />
-                        </Link>
+                    <div className="value">
+                        <TruncatedId
+                            id={token?.id}
+                            link={`/${network}/foundry/${token?.id}`}
+                        />
                     </div>
                 </div>
                 <div className="field">

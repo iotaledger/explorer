@@ -9,29 +9,28 @@
     font-family: $inter;
     margin: 4px 8px;
 
-    &__nft-metadata {
+    &__metadata {
         display: flex;
         flex-direction: column;
         align-items: center;
         height: 208px;
         margin-bottom: 8px;
-
-        .nft-metadata__image {
-            border: 2px solid $white;
-            border-radius: 8px;
-            object-fit: cover;
-            width: 200px;
-            height: 180px;
-        }
-
-        .nft-metadata__name {
-            @include font-size(14px);
-            margin-top: 4px;
-            font-weight: 400;
-        }
+    }
+    &__image {
+        border: 2px solid $white;
+        border-radius: 8px;
+        object-fit: cover;
+        width: 200px;
+        height: 180px;
     }
 
-    &__nft-id {
+    &__name {
+        @include font-size(14px);
+        margin-top: 4px;
+        font-weight: 400;
+    }
+
+    &__id {
         @include font-size(14px);
         font-family: $ibm-plex-mono;
         font-weight: normal;

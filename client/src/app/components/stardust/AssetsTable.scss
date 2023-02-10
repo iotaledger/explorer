@@ -80,7 +80,7 @@
                     font-family: $metropolis;
                     font-weight: 700;
 
-                    &.highlight {
+                    .highlight {
                         color: var(--link-color);
                         @include font-size(14px);
 

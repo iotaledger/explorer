@@ -1,10 +1,9 @@
 import React, { Component, ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../context/NetworkContext";
-import CopyButton from "../CopyButton";
 import { AddressProps } from "./AddressProps";
+import TruncatedId from "./TruncatedId";
 
 /**
  * Component which will display an address.
@@ -29,7 +28,6 @@ class Address extends Component<AddressProps> {
             this.context.bech32Hrp,
             this.props.address
         );
-        const bech32Short = `${address.bech32.slice(0, 12)}....${address.bech32.slice(-12)}`;
         const link = `/${this.context.name}/addr/${address.bech32}`;
 
         return (
@@ -37,14 +35,8 @@ class Address extends Component<AddressProps> {
                 <div className="card--label">
                     {NameHelper.getAddressTypeName(this.props.address.type)}
                 </div>
-                <div className="card--value row middle">
-                    <Link
-                        to={link}
-                        className="margin-r-t"
-                    >
-                        {bech32Short}
-                    </Link>
-                    <CopyButton copy={address.bech32} />
+                <div className="card--value">
+                    <TruncatedId id={address.bech32} link={link} showCopyButton />
                 </div>
             </div>
         );
