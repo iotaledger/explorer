@@ -185,16 +185,13 @@ class Output extends Component<OutputProps, OutputState> {
                             <React.Fragment>
                                 <div className="card--label">Foundry id:</div>
                                 <div className="card--value">
-                                    {isLinksDisabled ?
+                                    {foundryId && (
                                         <TruncatedId
-                                            id={foundryId ?? ""}
+                                            id={foundryId}
+                                            link={isLinksDisabled ? undefined : `/${network}/foundry/${foundryId}`}
                                             showCopyButton
-                                        /> :
-                                        <TruncatedId
-                                            id={foundryId ?? ""}
-                                            link={`/${network}/foundry/${foundryId}`}
-                                            showCopyButton
-                                        />}
+                                        />
+                                    )}
                                 </div>
                                 <div className="card--label">Serial number:</div>
                                 <div className="card--value row">{output.serialNumber}</div>
