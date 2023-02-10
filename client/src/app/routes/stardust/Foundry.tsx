@@ -1,7 +1,6 @@
 import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -10,13 +9,13 @@ import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelp
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Icon from "../../components/Icon";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import FeaturesSection from "../../components/stardust/FeaturesSection";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
@@ -128,11 +127,12 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             <div className="label">
                                 Controller Alias
                             </div>
-                            <div className="value code row middle highlight">
-                                <Link to={`/${network}/addr/${controllerAliasBech32.bech32}`} className="margin-r-t">
-                                    {controllerAlias}
-                                </Link>
-                                <CopyButton copy={controllerAlias} />
+                            <div className="value code highlight">
+                                <TruncatedId
+                                    id={controllerAlias}
+                                    link={`/${network}/addr/${controllerAliasBech32.bech32}`}
+                                    showCopyButton
+                                />
                             </div>
                         </div>
                     )}

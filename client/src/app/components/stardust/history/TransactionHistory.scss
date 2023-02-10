@@ -100,42 +100,8 @@
                 .field {
                     margin-bottom: 8px;
 
-                    .label {
-                        color: $gray-6;
-                        font-family: $inter;
-                        letter-spacing: 0.5px;
-
+                    .card--label {
                         @include font-size(14px, 21px);
-                    }
-
-                    .card--value a {
-                        max-width: 100px;
-                    }
-
-                    .value {
-                        @include font-size(14px, 21px);
-
-                        color: var(--body-color);
-                        font-family: $metropolis;
-                        font-weight: 700;
-
-                        &.message-id {
-                            overflow: hidden;
-                            color: var(--link-color);
-                            font-family: $ibm-plex-mono;
-                            font-weight: 500;
-                            text-decoration: none;
-                            text-overflow: ellipsis;
-                            word-break: break-word;
-                        }
-
-                        .messages-tangle-state {
-                            display: inline-block;
-
-                            .message-tangle-state {
-                                margin-left: 0;
-                            }
-                        }
                     }
 
                     .amount {

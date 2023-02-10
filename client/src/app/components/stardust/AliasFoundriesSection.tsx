@@ -3,7 +3,8 @@ import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import Modal from "../Modal";
 import Pagination from "../Pagination";
 import foundriesMessage from "./../../../assets/modals/stardust/alias/foundries.json";
-import ControlledFoundry from "./ControlledFoundry";
+import TruncatedId from "./TruncatedId";
+import "./AliasFoundriesSection.scss";
 
 interface AliasFoundriesSectionProps {
     network: string;
@@ -36,38 +37,20 @@ const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, 
                     <Modal icon="info" data={foundriesMessage} />
                 </div>
             </div>
-            <table className="controlled-foundry--table">
-                <thead>
-                    <tr>
-                        <th>Foundry Id</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <div className="card controlled-foundry--card">
+                <div className="field">
+                    <div className="card--label margin-b-t">Foundry Id</div>
                     {page?.map((foundryId, k) => (
-                        <React.Fragment key={`${foundryId}${k}`}>
-                            <ControlledFoundry
-                                key={k}
-                                foundryId={foundryId}
-                                network={network}
-                                tableFormat={true}
+                        <div key={k} className="card--value">
+                            <TruncatedId
+                                id={foundryId}
+                                link={`/${network}/foundry/${foundryId}`}
                             />
-                        </React.Fragment>
+                        </div>
                     ))}
-                </tbody>
-            </table>
+                </div>
+            </div >
 
-            {/* Only visible in mobile -- Card assets*/}
-            <div className="controlled-foundry--cards">
-                {page?.map((foundryId, k) => (
-                    <React.Fragment key={`${foundryId}${k}`}>
-                        <ControlledFoundry
-                            key={k}
-                            foundryId={foundryId}
-                            network={network}
-                        />
-                    </React.Fragment>
-                ))}
-            </div>
             <Pagination
                 currentPage={pageNumber}
                 totalCount={foundries?.length ?? 0}

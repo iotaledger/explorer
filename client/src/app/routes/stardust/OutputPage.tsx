@@ -11,6 +11,7 @@ import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
 
@@ -105,7 +106,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="value code row middle highlight">
                                     <Link
                                         to={`/${network}/block/${blockId}`}
-                                        className="margin-r-t text--no-decoration"
+                                        className="margin-r-t text--no-decoration truncate"
                                     >
                                         {formatSpecialBlockId(blockId)}
                                     </Link>
@@ -119,14 +120,12 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Transaction ID
                                 </div>
-                                <div className="value code row middle highlight">
-                                    <Link
-                                        to={`/${network}/transaction/${transactionId}`}
-                                        className="margin-r-t"
-                                    >
-                                        {transactionId}
-                                    </Link>
-                                    <CopyButton copy={transactionId} />
+                                <div className="value code highlight">
+                                    <TruncatedId
+                                        id={transactionId}
+                                        link={`/${network}/transaction/${transactionId}`}
+                                        showCopyButton
+                                    />
                                 </div>
                             </div>
                         )}

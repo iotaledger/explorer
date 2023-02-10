@@ -1,7 +1,6 @@
 import { IBlock, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
 import { useIsMounted } from "../../../../../helpers/hooks/useIsMounted";
 import { NameHelper } from "../../../../../helpers/stardust/nameHelper";
@@ -11,6 +10,7 @@ import { STARDUST } from "../../../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../../../services/stardust/stardustTangleCacheService";
 import NetworkContext from "../../../../context/NetworkContext";
 import Spinner from "../../../Spinner";
+import TruncatedId from "../../TruncatedId";
 
 interface Props {
     blockId: string;
@@ -70,13 +70,11 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
     return (
         isTable ? (
             <tr>
-                <td>
-                    <Link
-                        to={`/${network}/block/${blockId}`}
-                        className="refblocks__block-id"
-                    >
-                        <div>{blockId}</div>
-                    </Link>
+                <td className="refblocks__block-id">
+                    <TruncatedId
+                        id={blockId}
+                        link={`/${network}/block/${blockId}`}
+                    />
                 </td>
                 <td>{isLoading ? <Spinner compact /> : payloadType}</td>
                 <td className="refblocks__tx-value">{
@@ -97,12 +95,12 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
                     <div className="label">
                         Block Id:
                     </div>
-                    <Link
-                        to={`/${network}/block/${blockId}`}
-                        className="value margin-r-t"
-                    >
-                        <p className="value__block-id">{blockId}</p>
-                    </Link>
+                    <div className="card--value value__block-id">
+                        <TruncatedId
+                            id={blockId}
+                            link={`/${network}/block/${blockId}`}
+                        />
+                    </div>
                 </div>
                 {isLoading ? <Spinner compact /> : (
                     <React.Fragment>
@@ -110,7 +108,7 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
                             <div className="label">
                                 Payload type:
                             </div>
-                            <div className="value value--payload">
+                            <div className="card--value card--value--payload">
                                 {payloadType}
                             </div>
                         </div>
@@ -119,7 +117,7 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
                                 <div className="label">
                                     Value:
                                 </div>
-                                <div className="value value--tx-value">
+                                <div className="card--value card--value--tx-value">
                                     <span
                                         onClick={() => setIsFormattedValue(!isFormattedValue)}
                                         className="pointer margin-r-5"

@@ -141,12 +141,11 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                     return (
                                         <tr key={idx}>
                                             <td className="association__output">
-                                                <Link
-                                                    to={`/${network}/output/${outputId}`}
-                                                    className="margin-r-t output-id"
-                                                >
-                                                    <TruncatedId id={outputId} />
-                                                </Link>
+                                                <TruncatedId
+                                                    id={outputId}
+                                                    link={`/${network}/output/${outputId}`}
+                                                    showCopyButton
+                                                />
                                             </td>
                                             <td className="date-created">{dateCreated} ({ago})</td>
                                             <td className="amount">

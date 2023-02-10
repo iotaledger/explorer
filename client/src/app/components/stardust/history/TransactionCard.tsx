@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import moment from "moment";
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
@@ -23,27 +22,29 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
     return (
         <div className="card">
             <div className="field">
-                <div className="label">
+                <div className="card--label">
                     Transaction Id
                 </div>
                 <div className="row card--value">
-                    <Link to={`/${network}/transaction/${transactionId}`} className="margin-r-t">
-                        <TruncatedId id={transactionId} />
-                    </Link>
+                    <TruncatedId
+                        id={transactionId}
+                        link={`/${network}/transaction/${transactionId}`}
+                    />
                 </div>
             </div>
             <div className="field">
-                <div className="label">
+                <div className="card--label">
                     Output Id
                 </div>
                 <div className="row card--value">
-                    <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
-                        <TruncatedId id={outputId} />
-                    </Link>
+                    <TruncatedId
+                        id={outputId}
+                        link={`/${network}/output/${outputId}`}
+                    />
                 </div>
             </div>
             <div className="field">
-                <div className="label">
+                <div className="card--label">
                     Date
                 </div>
                 <div className="card--value">
@@ -51,13 +52,11 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
                 </div>
             </div>
             <div className="field">
-                <div className="label">
+                <div className="card--label">
                     Value
                 </div>
                 <div className={classNames("amount", "card--value", { "negative": isSpent })}>
-                    <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)} >
-                        {valueView}
-                    </span>
+                    {valueView}
                 </div>
             </div>
         </div>
