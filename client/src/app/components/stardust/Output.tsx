@@ -144,16 +144,11 @@ class Output extends Component<OutputProps, OutputState> {
                             <React.Fragment>
                                 <div className="card--label">Alias address:</div>
                                 <div className="card--value">
-                                    {isLinksDisabled ?
-                                        <TruncatedId
-                                            id={aliasOrNftBech32}
-                                            showCopyButton
-                                        /> :
-                                        <TruncatedId
-                                            id={aliasOrNftBech32}
-                                            link={`/${network}/addr/${aliasOrNftBech32}`}
-                                            showCopyButton
-                                        />}
+                                    <TruncatedId
+                                        id={aliasOrNftBech32}
+                                        link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                                        showCopyButton
+                                    />
                                 </div>
                                 <div className="card--label">State index:</div>
                                 <div className="card--value row">{output.stateIndex}</div>
@@ -177,16 +172,11 @@ class Output extends Component<OutputProps, OutputState> {
                             <React.Fragment>
                                 <div className="card--label">Nft address:</div>
                                 <div className="card--value">
-                                    {isLinksDisabled ?
-                                        <TruncatedId
-                                            id={aliasOrNftBech32}
-                                            showCopyButton
-                                        /> :
-                                        <TruncatedId
-                                            id={aliasOrNftBech32}
-                                            link={`/${network}/addr/${aliasOrNftBech32}`}
-                                            showCopyButton
-                                        />}
+                                    <TruncatedId
+                                        id={aliasOrNftBech32}
+                                        link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                                        showCopyButton
+                                    />
                                 </div>
                             </React.Fragment>
                         )}

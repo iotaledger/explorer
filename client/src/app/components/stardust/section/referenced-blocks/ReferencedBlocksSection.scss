@@ -100,11 +100,11 @@
                         @include font-size(14px, 21px);
                     }
 
-                    .value {
+                    .card--value {
                         @include font-size(14px, 21px);
                         font-weight: 700;
 
-                        .value__block-id {
+                        &.value__block-id {
                             width: 350px;
                             @include phone-down {
                                 width: 200px;
