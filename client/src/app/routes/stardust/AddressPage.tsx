@@ -2,6 +2,7 @@ import { ALIAS_ADDRESS_TYPE, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } fr
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
 import associatedOuputsMessage from "../../../assets/modals/stardust/address/associated-outputs.json";
 import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";
 import addressNftsMessage from "../../../assets/modals/stardust/address/nfts-in-wallet.json";
@@ -174,7 +175,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         [DEFAULT_TABS.NativeTokens]: {
             disabled: tokensCount === 0,
             counter: tokensCount,
-            isLoading: isAddressOutputsLoading
+            isLoading: isAddressOutputsLoading,
+            infoContent: nativeTokensMessage
         },
         [DEFAULT_TABS.Nfts]: {
             disabled: nftCount === 0,
