@@ -2,6 +2,13 @@ import { ALIAS_ADDRESS_TYPE, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } fr
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";
+import addressNftsMessage from "../../../assets/modals/stardust/address/nfts-in-wallet.json";
+import foundriesMessage from "../../../assets/modals/stardust/alias/foundries.json";
+import aliasMainHeaderInfo from "../../../assets/modals/stardust/alias/main-header.json";
+import stateMessage from "../../../assets/modals/stardust/alias/state.json";
+import nftMainHeaderInfo from "../../../assets/modals/stardust/nft/main-header.json";
+import nftMetadataMessage from "../../../assets/modals/stardust/nft/metadata.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
@@ -29,12 +36,6 @@ import NftMetadataSection from "../../components/stardust/NftMetadataSection";
 import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import addressMainHeaderInfo from "./../../../assets/modals/stardust/address/main-header.json";
-import foundriesMessage from "./../../../assets/modals/stardust/alias/foundries.json";
-import aliasMainHeaderInfo from "./../../../assets/modals/stardust/alias/main-header.json";
-import stateMessage from "./../../../assets/modals/stardust/alias/state.json";
-import nftMainHeaderInfo from "./../../../assets/modals/stardust/nft/main-header.json";
-import nftMetadataMessage from "./../../../assets/modals/stardust/nft/metadata.json";
 import "./AddressPage.scss";
 
 
@@ -164,7 +165,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     /**
      * Tab header options.
      */
-    const addressTabsOptions = {
+    const defaultTabsOptions = {
         [DEFAULT_TABS.Transactions]: {
             disabled: isAddressHistoryDisabled,
             isLoading: isAddressHistoryLoading
@@ -177,7 +178,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         [DEFAULT_TABS.Nfts]: {
             disabled: nftCount === 0,
             counter: nftCount,
-            isLoading: isNftOutputsLoading
+            isLoading: isNftOutputsLoading,
+            infoContent: addressNftsMessage
         },
         [DEFAULT_TABS.AssocOutputs]: {
             disabled: associatedOutputCount === 0,
@@ -261,20 +263,20 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     let addressMessage = addressMainHeaderInfo;
     let tabEnums = DEFAULT_TABS;
-    let tabOptions = addressTabsOptions;
+    let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;
 
     switch (addressType) {
         case ALIAS_ADDRESS_TYPE:
             addressMessage = aliasMainHeaderInfo;
             tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
-            tabOptions = { ...aliasTabsOptions, ...addressTabsOptions };
+            tabOptions = { ...aliasTabsOptions, ...defaultTabsOptions };
             tabbedSections = [...aliasSections, ...defaultSections];
             break;
         case NFT_ADDRESS_TYPE:
             addressMessage = nftMainHeaderInfo;
             tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
-            tabOptions = { ...nftTabsOptions, ...addressTabsOptions };
+            tabOptions = { ...nftTabsOptions, ...defaultTabsOptions };
             tabbedSections = [...nftSections, ...defaultSections];
             break;
         default:
