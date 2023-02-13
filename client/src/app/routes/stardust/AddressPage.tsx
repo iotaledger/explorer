@@ -6,6 +6,7 @@ import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-
 import associatedOuputsMessage from "../../../assets/modals/stardust/address/associated-outputs.json";
 import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";
 import addressNftsMessage from "../../../assets/modals/stardust/address/nfts-in-wallet.json";
+import transactionHistoryMessage from "../../../assets/modals/stardust/address/transaction-history.json";
 import foundriesMessage from "../../../assets/modals/stardust/alias/foundries.json";
 import aliasMainHeaderInfo from "../../../assets/modals/stardust/alias/main-header.json";
 import stateMessage from "../../../assets/modals/stardust/alias/state.json";
@@ -170,7 +171,8 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const defaultTabsOptions = {
         [DEFAULT_TABS.Transactions]: {
             disabled: isAddressHistoryDisabled,
-            isLoading: isAddressHistoryLoading
+            isLoading: isAddressHistoryLoading,
+            infoContent: transactionHistoryMessage
         },
         [DEFAULT_TABS.NativeTokens]: {
             disabled: tokensCount === 0,

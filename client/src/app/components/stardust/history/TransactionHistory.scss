@@ -4,8 +4,11 @@
 @import "../../../../scss/variables";
 @import "../../../../scss/themes";
 
-.transaction-history--section {
+.section.transaction-history--section {
+    padding-top: 24px;
+
     .section--header {
+        width: 100%;
         min-height: 40px;
     }
 

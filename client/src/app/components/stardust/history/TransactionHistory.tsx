@@ -1,9 +1,6 @@
 /* eslint-disable no-void */
 import React, { useEffect, useState } from "react";
-import transactionHistoryMessage from "../../../../assets/modals/stardust/address/transaction-history.json";
 import { useAddressHistory } from "../../../../helpers/hooks/useAddressHistory";
-import Modal from "../../../components/Modal";
-import Spinner from "../../Spinner";
 import DownloadModal from "../DownloadModal";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
@@ -34,14 +31,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     return (historyView.length > 0 && address ? (
         <div className="section transaction-history--section">
-            <div className="section--header row space-between">
-                <div className="row middle">
-                    <h2>
-                        Transaction History
-                    </h2>
-                    <Modal icon="info" data={transactionHistoryMessage} />
-                    {isLoading && <Spinner />}
-                </div>
+            <div className="section--header row end">
                 <DownloadModal network={network} address={address} />
             </div>
             <table className="transaction-history--table">
