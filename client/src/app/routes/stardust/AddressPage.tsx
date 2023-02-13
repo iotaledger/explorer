@@ -20,6 +20,7 @@ import { useAliasControlledFoundries } from "../../../helpers/hooks/useAliasCont
 import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
+import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
@@ -98,13 +99,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
 
         if (addressDetails?.hex) {
-            // TO DO extract to some utils for one-liner
-            window.scrollTo({
-                left: 0,
-                top: 0,
-                behavior: "smooth"
-            });
-
+            scrollToTop();
             setBech32AddressDetails(addressDetails);
         }
     }, []);
