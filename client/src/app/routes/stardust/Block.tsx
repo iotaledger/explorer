@@ -236,11 +236,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     const tabbedSections = [];
     let idx = 0;
-    if (isMilestoneBlock) {
-        tabbedSections.push(
-            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
-        );
-    }
     if (block) {
         tabbedSections.push(
             <BlockPayloadSection
@@ -266,6 +261,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 isLinksDisabled={isLinksDisabled}
                 history={history}
             />
+        );
+    }
+    if (isMilestoneBlock) {
+        tabbedSections.push(
+            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
         );
     }
 
@@ -356,7 +356,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             <TabbedSection
                 tabsEnum={
                     isMilestoneBlock ?
-                        { RefBlocks: "Referenced Blocks", Payload: "Milestone Payload", Metadata: "Metadata" } :
+                        { Payload: "Milestone Payload", Metadata: "Metadata", RefBlocks: "Referenced Blocks" } :
                         (isTransactionBlock ?
                             { Payload: "Transaction Payload", Metadata: "Metadata" } :
                             { Payload: "Tagged Data Payload", Metadata: "Metadata" })
@@ -364,13 +364,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 tabOptions={
                     isMilestoneBlock ?
                         {
+                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
+                            "Metadata": { infoContent: metadataInfo },
                             "Referenced Blocks": {
                                 disabled: !milestoneReferencedBlocks,
                                 counter: milestoneReferencedBlocks?.blocks?.length ?? undefined,
                                 infoContent: referencedBlocksInfo
-                            },
-                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
-                            "Metadata": { infoContent: metadataInfo }
+                            }
                         } : (isTransactionBlock ? {
                             "Transaction Payload": {
                                 disabled: !block?.payload,
