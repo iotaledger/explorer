@@ -29,8 +29,14 @@ import NftMetadataSection from "../../components/stardust/NftMetadataSection";
 import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import mainHeaderInfo from "./../../../assets/modals/stardust/address/main-header.json";
+import addressMainHeaderInfo from "./../../../assets/modals/stardust/address/main-header.json";
+import foundriesMessage from "./../../../assets/modals/stardust/alias/foundries.json";
+import aliasMainHeaderInfo from "./../../../assets/modals/stardust/alias/main-header.json";
+import stateMessage from "./../../../assets/modals/stardust/alias/state.json";
+import nftMainHeaderInfo from "./../../../assets/modals/stardust/nft/main-header.json";
+import nftMetadataMessage from "./../../../assets/modals/stardust/nft/metadata.json";
 import "./AddressPage.scss";
+
 
 interface IAddressPageLocationProps {
     /**
@@ -155,9 +161,6 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         isAddressHistoryLoading ||
         isAssociatedOutputsLoading;
 
-    const tabEnums = addressType === ALIAS_ADDRESS_TYPE ? { ...ALIAS_TABS, ...DEFAULT_TABS } :
-        (addressType === NFT_ADDRESS_TYPE ? { ...NFT_TABS, ...DEFAULT_TABS } : DEFAULT_TABS);
-
     /**
      * Tab header options.
      */
@@ -186,25 +189,27 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const aliasTabsOptions = {
         [ALIAS_TABS.State]: {
             disabled: !aliasOutput,
-            isLoading: isAliasDetailsLoading
+            isLoading: isAliasDetailsLoading,
+            infoContent: stateMessage
         },
         [ALIAS_TABS.Foundries]: {
             disabled: !aliasFoundries,
-            isLoading: isAliasFoundriesLoading
+            isLoading: isAliasFoundriesLoading,
+            infoContent: foundriesMessage
         }
     };
 
     const nftTabsOptions = {
         [NFT_TABS.NftMetadata]: {
             disabled: !nftMetadata,
-            isLoading: isNftDetailsLoading
+            isLoading: isNftDetailsLoading,
+            infoContent: nftMetadataMessage
         }
     };
 
-
-    const tabOptions = addressType === ALIAS_ADDRESS_TYPE ? { ...aliasTabsOptions, ...addressTabsOptions } :
-        (addressType === NFT_ADDRESS_TYPE ? { ...nftTabsOptions, ...addressTabsOptions } : addressTabsOptions);
-
+    /**
+     * Tabbed sections.
+     */
     const defaultSections = [
         <TransactionHistory
             key="txs-history"
@@ -254,8 +259,27 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         />
     ];
 
-    const tabbedSections = addressType === ALIAS_ADDRESS_TYPE ? [...aliasSections, ...defaultSections] :
-        (addressType === NFT_ADDRESS_TYPE ? [...nftSections, ...defaultSections] : defaultSections);
+    let addressMessage = addressMainHeaderInfo;
+    let tabEnums = DEFAULT_TABS;
+    let tabOptions = addressTabsOptions;
+    let tabbedSections = defaultSections;
+
+    switch (addressType) {
+        case ALIAS_ADDRESS_TYPE:
+            addressMessage = aliasMainHeaderInfo;
+            tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
+            tabOptions = { ...aliasTabsOptions, ...addressTabsOptions };
+            tabbedSections = [...aliasSections, ...defaultSections];
+            break;
+        case NFT_ADDRESS_TYPE:
+            addressMessage = nftMainHeaderInfo;
+            tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
+            tabOptions = { ...nftTabsOptions, ...addressTabsOptions };
+            tabbedSections = [...nftSections, ...defaultSections];
+            break;
+        default:
+            break;
+    }
 
     return (
         <div className="address-page">
@@ -267,7 +291,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                 <h1>
                                     {bech32AddressDetails.typeLabel?.replace("Ed25519", "Address")}
                                 </h1>
-                                <Modal icon="info" data={mainHeaderInfo} />
+                                <Modal icon="info" data={addressMessage} />
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>

@@ -1,8 +1,6 @@
 import { IAliasOutput } from "@iota/iota.js-stardust";
 import React from "react";
 import DataToggle from "../DataToggle";
-import Modal from "../Modal";
-import stateMessage from "./../../../assets/modals/stardust/alias/state.json";
 
 interface AliasStateSectionProps {
     /**
@@ -13,12 +11,6 @@ interface AliasStateSectionProps {
 
 const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => (
     <div className="section">
-        <div className="section--header">
-            <div className="row middle">
-                <h2>State</h2>
-                <Modal icon="info" data={stateMessage} />
-            </div>
-        </div>
         <div className="section--data">
             <div>
                 <div className="label">State Index</div>
