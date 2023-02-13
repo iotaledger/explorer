@@ -1,6 +1,4 @@
-import classNames from "classnames";
-import React, { useState } from "react";
-import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
+import React from "react";
 import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
@@ -20,11 +18,6 @@ interface NftMetadataSectionProps {
 }
 
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ metadata }) => {
-    const [showGeneral, setShowGeneral] = useState<boolean>(true);
-    const [showRoyalties, setShowRoyalties] = useState<boolean>(false);
-    const [showAttributes, setShowAttributes] = useState<boolean>(false);
-    const [showDescription, setShowDescription] = useState<boolean>(false);
-
     const nftImage = !metadata ? (
         <img
             className="nft-metadata__image"
@@ -49,146 +42,89 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ metadata }) => 
                 <div className="section--data nft-metadata">
                     {nftImage}
                     <div className="nft-metadata__info col w100">
-                        <div
-                            className="row pointer"
-                            onClick={() =>
-                                setShowGeneral(!showGeneral)}
-                        >
-                            <div className={classNames("card--content--dropdown", "margin-r-t",
-                                { opened: showGeneral })}
-                            >
-                                <DropdownIcon />
-                            </div>
-                            <h2>General</h2>
-                        </div>
-                        {
-                        showGeneral &&
-                            <ul>
-                                <li className="row space-between margin-t-t">
-                                    <span className="label">Name</span>
-                                    <span className="value">
-                                        {metadata.name}
-                                    </span>
-                                </li>
-                                <li className="row space-between margin-t-t">
-                                    <span className="label">Token Standard</span>
-                                    <span className="value">
-                                        {metadata.standard}
-                                    </span>
-                                </li>
-                                <li className="row space-between margin-t-t">
-                                    <span className="label">Version</span>
-                                    <span className="value">
-                                        {metadata.version}
-                                    </span>
-                                </li>
-                                <li className="row space-between margin-t-t">
-                                    <span className="label">Type</span>
-                                    <span className="value">
-                                        {metadata.type}
-                                    </span>
-                                </li>
-                                {
+                        <ul>
+                            <li className="row middle margin-t-t">
+                                <span className="label">Name:</span>
+                                <span className="value truncate">
+                                    {metadata.name}
+                                </span>
+                            </li>
+                            <li className="row margin-t-t">
+                                <span className="label">Token Standard:</span>
+                                <span className="value truncate">
+                                    {metadata.standard}
+                                </span>
+                            </li>
+                            <li className="row margin-t-t">
+                                <span className="label">Version:</span>
+                                <span className="value truncate">
+                                    {metadata.version}
+                                </span>
+                            </li>
+                            <li className="row margin-t-t">
+                                <span className="label">Type:</span>
+                                <span className="value truncate">
+                                    {metadata.type}
+                                </span>
+                            </li>
+                            {
                                 metadata.collectionName &&
-                                    <li className="row space-between margin-t-t">
-                                        <span className="label">Collection Name</span>
-                                        <span className="value">
-                                            {metadata.collectionName}
-                                        </span>
-                                    </li>
-                                }
-                                {
-                                metadata.issuerName &&
-                                    <li className="row space-between margin-t-t">
-                                        <span className="label">Issuer Name</span>
-                                        <span className="value">
-                                            {metadata.issuerName}
-                                        </span>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        {
-                        metadata.royalties &&
-                            <React.Fragment>
-                                <div
-                                    className="row pointer margin-t-s"
-                                    onClick={() =>
-                                        setShowRoyalties(!showRoyalties)}
-                                >
-                                    <div className={classNames("card--content--dropdown", "margin-r-t",
-                                        { opened: showRoyalties })}
-                                    >
-                                        <DropdownIcon />
-                                    </div>
-                                    <h2>Royalties</h2>
-                                </div>
-                                {
-                                showRoyalties &&
-                                    <div className="data-toggle margin-t-s">
-                                        <div className="data-toggle--content">
-                                            <JsonViewer
-                                                json={JSON.stringify(metadata.royalties, undefined, "  ")}
-                                            />
-                                        </div>
-                                    </div>
-                                }
-                            </React.Fragment>
-                        }
-                        {
-                        metadata.attributes &&
-                            <React.Fragment>
-                                <div
-                                    className="row pointer margin-t-s"
-                                    onClick={() =>
-                                        setShowAttributes(!showAttributes)}
-                                >
-                                    <div className={classNames("card--content--dropdown", "margin-r-t",
-                                        { opened: showAttributes })}
-                                    >
-                                        <DropdownIcon />
-                                    </div>
-                                    <h2>Attributes</h2>
-                                </div>
-                                {
-                                showAttributes &&
-                                    <div className="data-toggle margin-t-s">
-                                        <div className="data-toggle--content">
-                                            <JsonViewer
-                                                json={JSON.stringify(metadata.attributes, undefined, "  ")}
-                                            />
-                                        </div>
-                                    </div>
-                                }
-                            </React.Fragment>
-                        }
-                        {
-                        metadata.description &&
-                            <React.Fragment>
-                                <div
-                                    className="row pointer margin-t-s"
-                                    onClick={() =>
-                                        setShowDescription(!showDescription)}
-                                >
-                                    <div className={classNames("card--content--dropdown", "margin-r-t",
-                                        { opened: showDescription })}
-                                    >
-                                        <DropdownIcon />
-                                    </div>
-                                    <h2>Description</h2>
-                                </div>
-                                {
-                                showDescription &&
-                                    <span className="value margin-t-s">
-                                        {metadata.description}
+                                <li className="row margin-t-t">
+                                    <span className="label">Collection Name:</span>
+                                    <span className="value truncate">
+                                        {metadata.collectionName}
                                     </span>
-                                }
+                                </li>
+                            }
+                            {
+                                metadata.issuerName &&
+                                <li className="row margin-t-t">
+                                    <span className="label">Issuer Name:</span>
+                                    <span className="value truncate">
+                                        {metadata.issuerName}
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                        {
+                            metadata.royalties &&
+                            <React.Fragment>
+                                <h3 className="label margin-t-s">Royalties</h3>
+                                <div className="data-toggle margin-t-s">
+                                    <div className="data-toggle--content">
+                                        <JsonViewer
+                                            json={JSON.stringify(metadata.royalties, undefined, "  ")}
+                                        />
+                                    </div>
+                                </div>
+                            </React.Fragment>
+                        }
+                        {
+                            metadata.attributes &&
+                            <React.Fragment>
+                                <h3 className="label margin-t-s">Attributes</h3>
+                                <div className="data-toggle margin-t-s">
+                                    <div className="data-toggle--content">
+                                        <JsonViewer
+                                            json={JSON.stringify(metadata.attributes, undefined, "  ")}
+                                        />
+                                    </div>
+                                </div>
+                            </React.Fragment>
+                        }
+                        {
+                            metadata.description &&
+                            <React.Fragment>
+                                <h2 className="label margin-t-s">Description</h2>
+                                <span className="value margin-t-t">
+                                    {metadata.description}
+                                </span>
                             </React.Fragment>
                         }
                     </div>
                 </div>
             </div>
-            ) : null
+        ) : null
         )
     );
 };
