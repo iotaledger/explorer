@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
-import Modal from "../Modal";
 import Pagination from "../Pagination";
-import foundriesMessage from "./../../../assets/modals/stardust/alias/foundries.json";
 import TruncatedId from "./TruncatedId";
 import "./AliasFoundriesSection.scss";
 
@@ -29,14 +27,6 @@ const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, 
 
     return (
         <div className="section transaction--section">
-            <div className="section--header row space-between">
-                <div className="row middle">
-                    <h2>
-                        Controlled foundries ({foundries?.length})
-                    </h2>
-                    <Modal icon="info" data={foundriesMessage} />
-                </div>
-            </div>
             <div className="card controlled-foundry--card">
                 <div className="field">
                     <div className="card--label margin-b-t">Foundry Id</div>

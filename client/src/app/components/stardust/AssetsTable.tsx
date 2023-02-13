@@ -4,9 +4,7 @@ import {
 } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { IToken } from "../../../models/api/stardust/foundry/IToken";
-import Modal from "../Modal";
 import Pagination from "../Pagination";
-import assetsMessage from "./../../../assets/modals/stardust/address/assets-in-wallet.json";
 import Asset from "./Asset";
 import "./AssetsTable.scss";
 
@@ -58,14 +56,6 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
     return (
         tokens && tokens?.length > 0 ? (
             <div className="section">
-                <div className="section--header row space-between">
-                    <div className="row middle">
-                        <h2>
-                            Assets in Wallet ({tokens?.length})
-                        </h2>
-                        <Modal icon="info" data={assetsMessage} />
-                    </div>
-                </div>
                 <table className="asset-table">
                     <thead>
                         <tr>

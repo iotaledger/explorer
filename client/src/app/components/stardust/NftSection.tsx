@@ -7,10 +7,8 @@ import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
-import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
-import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
 import nftSchemeIRC27 from "./../../../assets/schemas/nft-schema-IRC27.json";
 
 interface NftSectionProps {
@@ -83,14 +81,6 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
     return (
         nfts.length > 0 ? (
             <div className="section nft--section">
-                <div className="section--header row space-between">
-                    <div className="row middle">
-                        <h2>
-                            NFTs in Wallet ({nfts?.length})
-                        </h2>
-                        <Modal icon="info" data={nftsMessage} />
-                    </div>
-                </div>
                 <div className="row wrap">
                     {page?.map((nft, idx) => (
                         <Nft
