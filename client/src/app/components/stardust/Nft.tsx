@@ -44,7 +44,7 @@ const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
                 >
                     {nftImage}
                 </Link>
-                {metadata?.name && <span className="nft-card__name nft-metadata__name">{metadata.name}</span>}
+                {metadata?.name && <span className="nft-card__name truncate">{metadata.name}</span>}
             </div>
             <span className="nft-card__id">
                 <TruncatedId

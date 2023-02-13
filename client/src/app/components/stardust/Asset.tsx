@@ -86,7 +86,7 @@ const Asset: React.FC<AssetProps> = (
     return (
         tableFormat ? (
             <tr>
-                <td>
+                <td className="truncate">
                     {isLoading ? (
                         <Spinner compact />
                     ) : (
@@ -112,7 +112,7 @@ const Asset: React.FC<AssetProps> = (
             <div className="asset-card">
                 <div className="field">
                     <div className="label">Name</div>
-                    <div className="value">
+                    <div className="value truncate">
                         {isLoading ? (
                             <Spinner compact />
                         ) : (
