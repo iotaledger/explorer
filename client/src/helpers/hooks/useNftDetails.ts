@@ -1,4 +1,7 @@
-import { HexEncodedString, IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import {
+    ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, HexEncodedString, IIssuerFeature,
+    IMetadataFeature, INftOutput, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_ADDRESS_TYPE
+} from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import * as jsonschema from "jsonschema";
 import { useEffect, useState } from "react";
@@ -19,6 +22,7 @@ export function useNftDetails(network: string, nftId?: string):
     [
         INftOutput | undefined,
         INftImmutableMetadata | undefined,
+        string | undefined,
         boolean
     ] {
     const [tangleCacheService] = useState(
@@ -26,6 +30,7 @@ export function useNftDetails(network: string, nftId?: string):
     );
     const [nftOutput, setNftOutput] = useState<INftOutput | undefined>();
     const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
+    const [nftIssuerId, setNftIssuerId] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -44,9 +49,28 @@ export function useNftDetails(network: string, nftId?: string):
                             feature => feature.type === METADATA_FEATURE_TYPE
                         ) as IMetadataFeature;
                         const immutableMetadata = tryParseNftMetadata(metadataFeature.data);
+                        const issuerFeature = output.immutableFeatures?.find(
+                            feature => feature.type === ISSUER_FEATURE_TYPE
+                        ) as IIssuerFeature;
+
+                        let issuerId;
+                        switch (issuerFeature.address.type) {
+                            case ED25519_ADDRESS_TYPE:
+                                issuerId = issuerFeature.address.pubKeyHash;
+                                break;
+                            case ALIAS_ADDRESS_TYPE:
+                                issuerId = issuerFeature.address.aliasId;
+                                break;
+                            case NFT_ADDRESS_TYPE:
+                                issuerId = issuerFeature.address.nftId;
+                                break;
+                            default:
+                                break;
+                        }
 
                         setNftOutput(output);
                         setNftMetadata(immutableMetadata);
+                        setNftIssuerId(issuerId);
                     }
                 }).finally(() => {
                     setIsLoading(false);
@@ -74,6 +98,6 @@ export function useNftDetails(network: string, nftId?: string):
         } catch { }
     }
 
-    return [nftOutput, nftMetadata, isLoading];
+    return [nftOutput, nftMetadata, nftIssuerId, isLoading];
 }
 

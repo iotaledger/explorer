@@ -83,7 +83,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
-    const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
+    const [, nftMetadata, nftIssuerId, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, bech32AddressDetails?.hex);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
         network, bech32AddressDetails ?? undefined
@@ -291,6 +291,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const nftSections = [
         <NftMetadataSection
             key={`nft-meta-${address}`}
+            network={network}
+            nftId={bech32AddressDetails.hex}
+            issuerId={nftIssuerId}
             metadata={nftMetadata}
         />
     ];

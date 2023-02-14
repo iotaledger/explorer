@@ -1,6 +1,7 @@
 import React from "react";
 import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
+import { useTokenRegistry } from "../../../helpers/hooks/useTokenRegistry";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import JsonViewer from "../JsonViewer";
 import "./NftMetadataSection.scss";
@@ -12,12 +13,27 @@ const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]
 
 interface NftMetadataSectionProps {
     /**
+     * The network in context.
+     */
+    network: string;
+    /**
+     * The hex NftId of this NFT
+     */
+    nftId?: string;
+    /**
+     * The hex id of the immutable issuer.
+     */
+    issuerId?: string;
+    /**
      * NFT Metadata
      */
     metadata?: INftImmutableMetadata;
 }
 
-const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ metadata }) => {
+const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId, issuerId, metadata }) => {
+    const [isWhitelisted] = useTokenRegistry(network, nftId, issuerId);
+    console.log("Nft is whitelisted:", isWhitelisted);
+
     const nftImage = !metadata ? (
         <img
             className="nft-metadata__image"
@@ -143,7 +159,9 @@ function isSupportedImageFormat(nftType: string | undefined): boolean {
 }
 
 NftMetadataSection.defaultProps = {
-    metadata: undefined
+    issuerId: undefined,
+    metadata: undefined,
+    nftId: undefined
 };
 
 export default NftMetadataSection;
