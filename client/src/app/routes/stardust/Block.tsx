@@ -354,6 +354,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 )}
             <TabbedSection
+                key={blockId}
                 tabsEnum={
                     isMilestoneBlock ?
                         { Payload: "Milestone Payload", Metadata: "Metadata", RefBlocks: "Referenced Blocks" } :

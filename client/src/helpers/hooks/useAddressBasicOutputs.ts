@@ -19,6 +19,7 @@ export function useAddressBasicOutputs(network: string, addressBech32?: string):
 
     useEffect(() => {
         setIsLoading(true);
+        setOutputs(null);
         if (addressBech32) {
             // eslint-disable-next-line no-void
             void (async () => {

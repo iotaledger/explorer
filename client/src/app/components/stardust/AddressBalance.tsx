@@ -17,11 +17,11 @@ interface AddressBalanceProps {
     /**
      * The trivially unlockable portion of the balance, fetched from chronicle.
      */
-    spendableBalance?: number;
+    spendableBalance: number | null;
     /**
      * The storage rent balance.
      */
-    storageRentBalance?: number;
+    storageRentBalance: number | null;
 }
 
 const CONDITIONAL_BALANCE_INFO =
@@ -39,7 +39,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
         setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
         showInfo: boolean,
         showWallet: boolean,
-        amount?: number
+        amount: number | null
     ) => (
         <div className="balance">
             {showWallet && <Icon icon="wallet" boxed />}
@@ -54,7 +54,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                         </Tooltip>}
                 </div>
                 <div className="value featured">
-                    {amount !== undefined && amount > 0 ? (
+                    {amount !== null && amount > 0 ? (
                         <div className="balance-value middle">
                             <div className="row middle">
                                 <span
@@ -80,7 +80,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
     );
 
     const isMarketed = isMarketedNetwork(network);
-    const conditionalBalance = spendableBalance !== undefined ?
+    const conditionalBalance = spendableBalance !== null ?
         balance - spendableBalance :
         undefined;
     const shouldShowExtendedBalance = conditionalBalance !== undefined && spendableBalance !== undefined;
@@ -119,6 +119,5 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
     );
 };
 
-AddressBalance.defaultProps = { spendableBalance: undefined, storageRentBalance: undefined };
-
 export default AddressBalance;
+

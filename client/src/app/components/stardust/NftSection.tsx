@@ -33,6 +33,9 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
 
     useEffect(() => {
         const theNfts: INftBase[] = [];
+        if (setNftCount) {
+            setNftCount(0);
+        }
 
         if (outputs) {
             for (const outputResponse of outputs) {

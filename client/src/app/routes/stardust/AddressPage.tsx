@@ -75,9 +75,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
     const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
-    const [balance, setBalance] = useState<number | undefined>();
-    const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
-    const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
+    const [balance, setBalance] = useState<number | null>(null);
+    const [sigLockedBalance, setSigLockedBalance] = useState<number | null>(null);
+    const [storageRentBalance, setStorageRentBalance] = useState<number | null>(null);
     const [addressOutputs, setAddressOutputs] = useState<IOutputResponse[] | undefined>();
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
@@ -100,9 +100,13 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
         if (addressDetails?.hex) {
             scrollToTop();
+            // reset balances
+            setBalance(null);
+            setSigLockedBalance(null);
+            setStorageRentBalance(null);
             setBech32AddressDetails(addressDetails);
         }
-    }, []);
+    }, [address]);
 
     useEffect(() => {
         if (bech32AddressDetails) {
@@ -137,7 +141,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             if (response?.totalBalance !== undefined) {
                 if (isMounted) {
                     setBalance(response.totalBalance);
-                    setSigLockedBalance(response.sigLockedBalance);
+                    setSigLockedBalance(response.sigLockedBalance ?? null);
                 }
             } else {
                 // Fallback balance from iotajs (node)
@@ -147,6 +151,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
                 if (addressDetailsWithBalance && isMounted) {
                     setBalance(Number(addressDetailsWithBalance.balance));
+                    setSigLockedBalance(null);
                 }
             }
         });
@@ -215,27 +220,27 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     const defaultSections = [
         <TransactionHistory
-            key="txs-history"
+            key={`txs-history-${address}`}
             network={network}
             address={addressBech32}
             setLoading={setIsAddressHistoryLoading}
             setDisabled={setIsAddressHistoryDisabled}
         />,
         <AssetsTable
-            key="assets-table"
+            key={`assets-table-${address}`}
             networkId={network}
             outputs={addressOutputs?.map(output => output.output)}
             setTokenCount={setTokenCount}
         />,
         <NftSection
-            key="nft-section"
+            key={`nft-section-${address}`}
             network={network}
             bech32Address={addressBech32}
             outputs={addressNftOutputs}
             setNftCount={setNftCount}
         />,
         <AssociatedOutputs
-            key="assoc-outputs"
+            key={`assoc-outputs-${address}`}
             network={network}
             addressDetails={bech32AddressDetails ?? {} as IBech32AddressDetails}
             setOutputCount={setAssociatedOutputCount}
@@ -245,11 +250,11 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     const aliasSections = [
         <AliasStateSection
-            key="alias-state"
+            key={`alias-state-${address}`}
             output={aliasOutput}
         />,
         <AliasFoundriesSection
-            key="alias-foundry"
+            key={`alias-foundry-${address}`}
             network={network}
             foundries={aliasFoundries}
         />
@@ -257,7 +262,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     const nftSections = [
         <NftMetadataSection
-            key="nft-meta"
+            key={`nft-meta-${address}`}
             metadata={nftMetadata}
         />
     ];
@@ -312,7 +317,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                                         addressDetails={bech32AddressDetails}
                                         advancedMode={true}
                                     />
-                                    {balance !== undefined && (
+                                    {balance !== null && (
                                         <AddressBalance
                                             balance={balance}
                                             spendableBalance={sigLockedBalance}
@@ -323,6 +328,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                             </div>
                         </div>
                         <TabbedSection
+                            key={address}
                             tabsEnum={tabEnums}
                             tabOptions={tabOptions}
                         >
