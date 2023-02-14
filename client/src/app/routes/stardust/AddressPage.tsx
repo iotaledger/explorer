@@ -36,13 +36,13 @@ import AliasStateSection from "../../components/stardust/AliasStateSection";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
+import CollectionNFTs from "../../components/stardust/CollectionNFTs";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NftMetadataSection from "../../components/stardust/NftMetadataSection";
 import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 import "./AddressPage.scss";
-
 
 interface IAddressPageLocationProps {
     /**
@@ -54,7 +54,8 @@ interface IAddressPageLocationProps {
 enum DEFAULT_TABS {
     Transactions = "Transactions",
     NativeTokens = "Native Tokens",
-    Nfts = "NFTs",
+    NFTs = "NFTs",
+    CampaignXZY = "CampaignXZY",
     AssocOutputs = "Associated Outputs"
 }
 
@@ -94,6 +95,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
+    const [collNFTCount, setCollNFTCount] = useState<number>(0);
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
@@ -208,9 +210,15 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             isLoading: isAddressOutputsLoading,
             infoContent: nativeTokensMessage
         },
-        [DEFAULT_TABS.Nfts]: {
+        [DEFAULT_TABS.NFTs]: {
             disabled: nftCount === 0,
             counter: nftCount,
+            isLoading: isNftOutputsLoading,
+            infoContent: addressNftsMessage
+        },
+        [DEFAULT_TABS.CampaignXZY]: {
+            disabled: collNFTCount === 0,
+            counter: collNFTCount,
             isLoading: isNftOutputsLoading,
             infoContent: addressNftsMessage
         },
@@ -266,6 +274,13 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             bech32Address={addressBech32}
             outputs={addressNftOutputs}
             setNftCount={setNftCount}
+        />,
+        <CollectionNFTs
+            key={`coll-nft-section-${address}`}
+            network={network}
+            bech32Address={addressBech32}
+            outputs={addressNftOutputs}
+            setCount={setCollNFTCount}
         />,
         <AssociatedOutputs
             key={`assoc-outputs-${address}`}
