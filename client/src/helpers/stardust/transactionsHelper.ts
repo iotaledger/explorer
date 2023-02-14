@@ -155,27 +155,28 @@ export class TransactionsHelper {
             }
 
             sortedOutputs = [...outputs, ...remainderOutputs];
-            // Sort outputs in ascending order based on their output index
-            sortedOutputs.sort((a, b) => {
-                const firstOutputIndex = a.id.slice(-4);
-                const secondOutputIndex = b.id.slice(-4);
-                const firstFormattedIndex = TransactionsHelper.convertToBigEndian(firstOutputIndex);
-                const secondFormattedIndex = TransactionsHelper.convertToBigEndian(secondOutputIndex);
-
-                return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
-            });
-            // Sort inputs in ascending order based on their output index
-            inputs.sort((a, b) => {
-                const firstInputIndex = a.outputId.slice(-4);
-                const secondInputIndex = b.outputId.slice(-4);
-                const firstFormattedIndex = TransactionsHelper.convertToBigEndian(firstInputIndex);
-                const secondFormattedIndex = TransactionsHelper.convertToBigEndian(secondInputIndex);
-
-                return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
-            });
+            this.sortInputsAndOuputsByIndex(sortedOutputs);
+            this.sortInputsAndOuputsByIndex(inputs);
         }
 
         return { inputs, unlocks, outputs: sortedOutputs, unlockAddresses, transferTotal };
+    }
+
+    /**
+     * Sort inputs and outputs in assending order by index.
+     * @param items Inputs or Outputs.
+     * @returns Sorted inputs or outputs.
+     */
+    public static sortInputsAndOuputsByIndex(items: IInput[] | IOutput[]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items.sort((a: any, b: any) => {
+            const firstIndex: string = a.id ? a.id.slice(-4) : a.outputId.slice(-4);
+            const secondIndex: string = b.id ? b.id.slice(-4) : b.outputId.slice(-4);
+            const firstFormattedIndex = this.convertToBigEndian(firstIndex);
+            const secondFormattedIndex = this.convertToBigEndian(secondIndex);
+
+            return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
+        });
     }
 
     /**
