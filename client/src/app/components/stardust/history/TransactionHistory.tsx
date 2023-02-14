@@ -129,7 +129,16 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                     <button type="button">Load more...</button>
                 </div>
             )}
-        </div>) : null
+        </div>) :
+        <div className="section transaction-history--section">
+            <div className="section">
+                <div className="section--data">
+                    <p>
+                        There are no transactions for this address.
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 };
 

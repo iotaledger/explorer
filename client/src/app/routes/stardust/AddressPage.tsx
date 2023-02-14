@@ -198,7 +198,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
      */
     const defaultTabsOptions = {
         [DEFAULT_TABS.Transactions]: {
-            disabled: isAddressHistoryDisabled,
+            disabled: false,
             isLoading: isAddressHistoryLoading,
             infoContent: transactionHistoryMessage
         },
@@ -302,12 +302,14 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
 
     switch (addressType) {
         case ALIAS_ADDRESS_TYPE:
+            defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             addressMessage = aliasMainHeaderInfo;
             tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
             tabOptions = { ...aliasTabsOptions, ...defaultTabsOptions };
             tabbedSections = [...aliasSections, ...defaultSections];
             break;
         case NFT_ADDRESS_TYPE:
+            defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             addressMessage = nftMainHeaderInfo;
             tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
             tabOptions = { ...nftTabsOptions, ...defaultTabsOptions };
