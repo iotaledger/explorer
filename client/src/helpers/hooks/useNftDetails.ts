@@ -1,10 +1,7 @@
 import { HexEncodedString, IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
-import * as jsonschema from "jsonschema";
+import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
-import nftSchemeIRC27 from "../../assets/schemas/nft-schema-IRC27.json";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { INftImmutableMetadata } from "../../models/api/stardust/nft/INftImmutableMetadata";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 
@@ -18,14 +15,14 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 export function useNftDetails(network: string, nftId?: string):
     [
         INftOutput | undefined,
-        INftImmutableMetadata | undefined,
+        HexEncodedString |undefined,
         boolean
     ] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
     const [nftOutput, setNftOutput] = useState<INftOutput | undefined>();
-    const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
+    const [nftMetadata, setNftMetadata] = useState<HexEncodedString | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -43,10 +40,9 @@ export function useNftDetails(network: string, nftId?: string):
                         const metadataFeature = output.immutableFeatures?.find(
                             feature => feature.type === METADATA_FEATURE_TYPE
                         ) as IMetadataFeature;
-                        const immutableMetadata = tryParseNftMetadata(metadataFeature.data);
 
                         setNftOutput(output);
-                        setNftMetadata(immutableMetadata);
+                        setNftMetadata(metadataFeature.data);
                     }
                 }).finally(() => {
                     setIsLoading(false);
@@ -56,23 +52,6 @@ export function useNftDetails(network: string, nftId?: string):
             setIsLoading(false);
         }
     }, [network, nftId]);
-
-    /**
-     * Tries to parse hex data into NFT immutable metadata (tip-27).
-     * @param metadataHex The encoded data.
-     * @returns The parsed INftImmutableMetadata or undefined.
-     */
-    function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
-        const validator = new jsonschema.Validator();
-        try {
-            const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
-            const result = validator.validate(json, nftSchemeIRC27);
-
-            if (result.valid) {
-                return json as INftImmutableMetadata;
-            }
-        } catch { }
-    }
 
     return [nftOutput, nftMetadata, isLoading];
 }
