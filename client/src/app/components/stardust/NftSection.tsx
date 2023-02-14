@@ -5,37 +5,33 @@ import {
     NFT_OUTPUT_TYPE,
     TransactionHelper
 } from "@iota/iota.js-stardust";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { INftBase, tryParseNftMetadata } from "../../../helpers/stardust/nftHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
-import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
-import nftsMessage from "./../../../assets/modals/stardust/address/nfts-in-wallet.json";
 
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-    outputs: IOutputResponse[] | undefined;
+    outputs: IOutputResponse[] | null;
     setNftCount?: React.Dispatch<React.SetStateAction<number>>;
 }
-
 
 const PAGE_SIZE = 10;
 
 const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs, setNftCount }) => {
-    const mounted = useRef(false);
+    const isMounted = useIsMounted();
     const [nfts, setNfts] = useState<INftBase[]>([]);
     const [page, setPage] = useState<INftBase[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
 
-    const unmount = () => {
-        mounted.current = false;
-    };
-
     useEffect(() => {
-        mounted.current = true;
         const theNfts: INftBase[] = [];
+        if (setNftCount) {
+            setNftCount(0);
+        }
 
         if (outputs) {
             for (const outputResponse of outputs) {
@@ -63,22 +59,20 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
             }
         }
 
-        if (mounted.current) {
+        if (isMounted) {
             setNfts(theNfts);
 
             if (setNftCount) {
                 setNftCount(theNfts.length);
             }
         }
-
-        return unmount;
     }, [outputs, network, bech32Address]);
 
     // On page change handler
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        if (mounted.current) {
+        if (isMounted) {
             setPage(nfts?.slice(from, to));
         }
     }, [nfts, pageNumber]);
@@ -86,15 +80,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
     return (
         nfts.length > 0 ? (
             <div className="section nft--section">
-                <div className="section--header row space-between">
-                    <div className="row middle">
-                        <h2>
-                            NFTs in Wallet ({nfts?.length})
-                        </h2>
-                        <Modal icon="info" data={nftsMessage} />
-                    </div>
-                </div>
-                <div className="row wrap center">
+                <div className="row wrap">
                     {page?.map((nft, idx) => (
                         <Nft
                             key={idx}

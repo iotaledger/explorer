@@ -12,7 +12,7 @@ import CollectionNFT from "./CollectionNFT";
 interface CampaignsProps {
     network: string;
     bech32Address?: string;
-    outputs: IOutputResponse[] | undefined;
+    outputs: IOutputResponse[] | null;
     setCount?: React.Dispatch<React.SetStateAction<number>>;
 }
 

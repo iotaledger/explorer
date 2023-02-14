@@ -3,8 +3,8 @@ import {
     MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE,
     TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload, IMilestonePayload
 } from "@iota/iota.js-stardust";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
 import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
 import milestonePayloadInfo from "../../../assets/modals/stardust/block/milestone-payload.json";
@@ -12,6 +12,7 @@ import referencedBlocksInfo from "../../../assets/modals/stardust/block/mileston
 import taggedDataPayloadInfo from "../../../assets/modals/stardust/block/tagged-data-payload.json";
 import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
@@ -19,7 +20,6 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
@@ -30,6 +30,7 @@ import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import MilestoneControls from "../../components/stardust/MilestoneControls";
 import ReferencedBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
@@ -39,7 +40,7 @@ import "./Block.scss";
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
-    const isMounted = useRef(false);
+    const isMounted = useIsMounted();
     const { tokenInfo, bech32Hrp, protocolVersion } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -54,21 +55,15 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     >();
 
     useEffect(() => {
-        isMounted.current = true;
-
-        return () => {
-            isMounted.current = false;
-            if (updateMetadataTimerId) {
-                clearTimeout(updateMetadataTimerId);
-            }
-        };
-    }, []);
-
-    useEffect(() => {
         setBlockData({});
         setBlockMetadata({ blockTangleStatus: "pending" });
         // eslint-disable-next-line no-void
         void loadBlock(blockId);
+        return () => {
+            if (updateMetadataTimerId) {
+                clearTimeout(updateMetadataTimerId);
+            }
+        };
     }, [blockId]);
 
     useEffect(() => {
@@ -115,7 +110,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             );
                         }
 
-                        if (isMounted.current) {
+                        if (isMounted) {
                             setBlockData(
                                 {
                                     block,
@@ -127,7 +122,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 }
                             );
                         }
-                    } else if (isMounted.current) {
+                    } else if (isMounted) {
                         setBlockData({ blockError: response.error ?? "Couldn't load block" });
                     }
                 }
@@ -147,7 +142,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         void blockDetailsLoadMonitor.enqueue(
             async () => tangleCacheService.blockDetails(network, blockId).then(
                 details => {
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setBlockMetadata({
                             metadata: details?.metadata,
                             metadataError: details?.error,
@@ -182,7 +177,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         void referencedBlocksPromiseMonitor.enqueue(
             async () => tangleCacheService.milestoneReferencedBlocks(network, milestoneId).then(
                 milestoneBlocksResponse => {
-                    if (isMounted.current) {
+                    if (isMounted) {
                         setMilestoneReferencedBlocks(milestoneBlocksResponse);
                     }
                 }
@@ -241,11 +236,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     const tabbedSections = [];
     let idx = 0;
-    if (isMilestoneBlock) {
-        tabbedSections.push(
-            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
-        );
-    }
     if (block) {
         tabbedSections.push(
             <BlockPayloadSection
@@ -273,6 +263,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             />
         );
     }
+    if (isMilestoneBlock) {
+        tabbedSections.push(
+            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
+        );
+    }
 
     const blockContent = !block ? null : (
         <React.Fragment>
@@ -285,11 +280,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 <div className="label">
                     Block ID
                 </div>
-                <div className="value code row middle">
-                    <span className="margin-r-t">
-                        {blockId}
-                    </span>
-                    <CopyButton copy={blockId} />
+                <div className="value code">
+                    <TruncatedId id={blockId} showCopyButton />
                 </div>
             </div>
             {milestoneId && (
@@ -297,11 +289,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <div className="label">
                         Milestone ID
                     </div>
-                    <div className="value code row middle">
-                        <span className="margin-r-t">
-                            {milestoneId}
-                        </span>
-                        <CopyButton copy={milestoneId} />
+                    <div className="value code">
+                        <TruncatedId id={milestoneId} showCopyButton />
                     </div>
                 </div>
             )}
@@ -310,18 +299,12 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <div className="label">
                         Transaction Id
                     </div>
-                    <div className="value value__secondary row middle link">
-                        {isLinksDisabled ?
-                            <span className="margin-r-t">
-                                {transactionId}
-                            </span> :
-                            <Link
-                                to={`/${network}/transaction/${transactionId}`}
-                                className="margin-r-t"
-                            >
-                                {transactionId}
-                            </Link>}
-                        <CopyButton copy={transactionId} />
+                    <div className="value value__secondary row middle">
+                        <TruncatedId
+                            id={transactionId}
+                            link={isLinksDisabled ? undefined : `/${network}/transaction/${transactionId}`}
+                            showCopyButton
+                        />
                     </div>
                 </div>
             )}
@@ -371,9 +354,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 )}
             <TabbedSection
+                key={blockId}
                 tabsEnum={
                     isMilestoneBlock ?
-                        { RefBlocks: "Referenced Blocks", Payload: "Milestone Payload", Metadata: "Metadata" } :
+                        { Payload: "Milestone Payload", Metadata: "Metadata", RefBlocks: "Referenced Blocks" } :
                         (isTransactionBlock ?
                             { Payload: "Transaction Payload", Metadata: "Metadata" } :
                             { Payload: "Tagged Data Payload", Metadata: "Metadata" })
@@ -381,13 +365,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 tabOptions={
                     isMilestoneBlock ?
                         {
+                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
+                            "Metadata": { infoContent: metadataInfo },
                             "Referenced Blocks": {
                                 disabled: !milestoneReferencedBlocks,
                                 counter: milestoneReferencedBlocks?.blocks?.length ?? undefined,
                                 infoContent: referencedBlocksInfo
-                            },
-                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
-                            "Metadata": { infoContent: metadataInfo }
+                            }
                         } : (isTransactionBlock ? {
                             "Transaction Payload": {
                                 disabled: !block?.payload,
@@ -414,12 +398,22 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             <div className="wrapper">
                 <div className="inner">
                     <div className="block--header">
-                        <div className="row middle">
-                            <h1>
-                                {pageTitle}
-                            </h1>
-                            <Modal icon="info" data={mainHeaderMessage} />
-                            {isLoading && <Spinner />}
+                        <div className="header--wrapper">
+                            <div className="row middle">
+                                <h1>{pageTitle}</h1>
+                                <Modal icon="info" data={mainHeaderMessage} />
+                                {isLoading && <Spinner />}
+                            </div>
+                            <BlockTangleState
+                                network={network}
+                                status={blockTangleStatus}
+                                milestoneIndex={metadata?.referencedByMilestoneIndex}
+                                hasConflicts={isLinksDisabled}
+                                conflictReason={conflictReason}
+                                onClick={metadata?.referencedByMilestoneIndex
+                                    ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
+                                    : undefined}
+                            />
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
@@ -427,20 +421,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             />
                         )}
                     </div>
-                    <BlockTangleState
-                        network={network}
-                        status={blockTangleStatus}
-                        milestoneIndex={metadata?.referencedByMilestoneIndex}
-                        hasConflicts={isLinksDisabled}
-                        conflictReason={conflictReason}
-                        onClick={metadata?.referencedByMilestoneIndex
-                            ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
-                            : undefined}
-                    />
                     <div className="section">{blockContent}</div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

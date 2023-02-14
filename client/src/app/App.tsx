@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { isShimmerNetwork } from "../helpers/networkHelper";
+import { scrollToTop } from "../helpers/pageUtils";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
 import { OG, STARDUST } from "../models/config/protocolVersion";
@@ -11,7 +12,7 @@ import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
 import {
-    buildMetaLabel, buildUtilities, copyrightInner, getFooterItems,
+    buildMetaLabel, buildUtilities, getFooterItems,
     getPages, getFaviconHelmet, networkContextWrapper
 } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
@@ -45,19 +46,13 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 
     const networkConfig = networks.find(n => n.network === network);
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
-
-    window.scrollTo({
-        left: 0,
-        top: 0,
-        behavior: "smooth"
-    });
-
     const currentNetwork = networkConfig?.network;
     const isShimmer = isShimmerNetwork(networkConfig?.network);
     const isStardust = networkConfig?.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetwork, nodeInfo);
+    scrollToTop();
 
     if (isShimmer) {
         const body = document.querySelector("body");
@@ -108,9 +103,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                             </div>
                         )}
                         {networkConfig && routes}
-                        <div className={classNames("copyright", { "shimmer-copyright": isShimmer })}>
-                            <div className="copyright-inner">{copyrightInner}</div>
-                        </div>
                     </React.Fragment> : (
                         <div className="maintenance">
                             <div className="maintenance-inner">

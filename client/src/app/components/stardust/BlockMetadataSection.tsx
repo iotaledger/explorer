@@ -3,6 +3,7 @@ import * as H from "history";
 import React from "react";
 import Spinner from "../Spinner";
 import InclusionState from "./InclusionState";
+import TruncatedId from "./TruncatedId";
 
 interface BlockMetadataSectionProps {
     network: string;
@@ -57,18 +58,10 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                                     style={{ marginTop: "8px" }}
                                     className="value code link"
                                 >
-                                    {isLinksDisabled ? (
-                                        <span className="margin-r-t">
-                                            {parent}
-                                        </span>
-                                    ) : (
-                                        <div
-                                            className="pointer"
-                                            onClick={() => history.replace(`/${network}/block/${parent}`)}
-                                        >
-                                            {parent}
-                                        </div>
-                                    )}
+                                    <TruncatedId
+                                        id={parent}
+                                        link={isLinksDisabled ? undefined : `/${network}/block/${parent}`}
+                                    />
                                 </div>
                             ))}
                         </div>

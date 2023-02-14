@@ -23,6 +23,7 @@ import Feature from "./Feature";
 import NativeToken from "./NativeToken";
 import { OutputProps } from "./OutputProps";
 import { OutputState } from "./OutputState";
+import TruncatedId from "./TruncatedId";
 import UnlockCondition from "./UnlockCondition";
 import "./Output.scss";
 
@@ -65,7 +66,7 @@ class Output extends Component<OutputProps, OutputState> {
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
-        const foundryId = this.buildFoundyId();
+        const foundryId = this.buildFoundryId();
 
         const outputIdTransactionPart = displayFullOutputId ?
             `${outputId.slice(0, -4)}` :
@@ -77,7 +78,7 @@ class Output extends Component<OutputProps, OutputState> {
             output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
                 output.unlockConditions.map((unlockCondition, idx) => (
                     <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
-                        <span className="material-icons unlock-condiiton-icon">
+                        <span className="material-icons unlock-condition-icon">
                             {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && "arrow_back"}
                             {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && "hourglass_bottom"}
                             {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE && "schedule"}
@@ -91,13 +92,13 @@ class Output extends Component<OutputProps, OutputState> {
                 onClick={() => this.setState({ isExpanded: !isExpanded })}
                 className="card--value card-header--wrapper"
             >
-                <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
+                <div className={classNames("card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
                 <div className="output-header">
                     <button
                         type="button"
-                        className="output-type--name margin-r-t color"
+                        className="output-type--name color"
                     >
                         {NameHelper.getOutputTypeName(output.type)}
                     </button>
@@ -120,7 +121,7 @@ class Output extends Component<OutputProps, OutputState> {
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
                         <span
-                            className="pointer margin-r-t"
+                            className="pointer"
                             onClick={e => {
                                 this.setState({ isFormattedBalance: !isFormattedBalance });
                                 e.stopPropagation();
@@ -142,13 +143,12 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type === ALIAS_OUTPUT_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">Alias address:</div>
-                                <div className="card--value row middle">
-                                    {isLinksDisabled ?
-                                        <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                        <Link to={`/${network}/alias/${aliasOrNftBech32}`} className="margin-r-t">
-                                            {aliasOrNftBech32}
-                                        </Link>}
-                                    <CopyButton copy={aliasOrNftBech32} />
+                                <div className="card--value">
+                                    <TruncatedId
+                                        id={aliasOrNftBech32}
+                                        link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                                        showCopyButton
+                                    />
                                 </div>
                                 <div className="card--label">State index:</div>
                                 <div className="card--value row">{output.stateIndex}</div>
@@ -171,13 +171,12 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type === NFT_OUTPUT_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">Nft address:</div>
-                                <div className="card--value row middle">
-                                    {isLinksDisabled ?
-                                        <span className="margin-r-t">{aliasOrNftBech32}</span> :
-                                        <Link to={`/${network}/nft/${aliasOrNftBech32}`} className="margin-r-t">
-                                            {aliasOrNftBech32}
-                                        </Link>}
-                                    <CopyButton copy={aliasOrNftBech32} />
+                                <div className="card--value">
+                                    <TruncatedId
+                                        id={aliasOrNftBech32}
+                                        link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                                        showCopyButton
+                                    />
                                 </div>
                             </React.Fragment>
                         )}
@@ -185,16 +184,14 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type === FOUNDRY_OUTPUT_TYPE && (
                             <React.Fragment>
                                 <div className="card--label">Foundry id:</div>
-                                <div className="card--value row middle">
-                                    {isLinksDisabled ?
-                                        <span className="margin-r-t">{foundryId}</span> :
-                                        <Link
-                                            to={`/${network}/foundry/${foundryId}`}
-                                            className="margin-r-t"
-                                        >
-                                            {foundryId}
-                                        </Link>}
-                                    <CopyButton copy={foundryId} />
+                                <div className="card--value">
+                                    {foundryId && (
+                                        <TruncatedId
+                                            id={foundryId}
+                                            link={isLinksDisabled ? undefined : `/${network}/foundry/${foundryId}`}
+                                            showCopyButton
+                                        />
+                                    )}
                                 </div>
                                 <div className="card--label">Serial number:</div>
                                 <div className="card--value row">{output.serialNumber}</div>
@@ -295,7 +292,7 @@ class Output extends Component<OutputProps, OutputState> {
      * Build a FoundryId from aliasAddres, serialNumber and tokenSchemeType
      * @returns The FoundryId string.
      */
-    private buildFoundyId(): string | undefined {
+    private buildFoundryId(): string | undefined {
         const output = this.props.output;
         if (output.type === FOUNDRY_OUTPUT_TYPE) {
             const immutableAliasUnlockCondition = output.unlockConditions[0] as IImmutableAliasUnlockCondition;

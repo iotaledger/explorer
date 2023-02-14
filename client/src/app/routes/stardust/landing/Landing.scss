@@ -64,11 +64,12 @@
                     @include desktop-down {
                         margin: 0;
                         margin-bottom: 28px;
-                        margin-left: 60px;
+                        margin-left: 160px;
                     }
 
                     @include tablet-down {
-                        margin-bottom: 66px;
+                        margin-bottom: 172px;
+                        margin-left: 0px;
                     }
 
                     h1 {
@@ -98,6 +99,10 @@
 
                 .switcher {
                     margin: 0 20px 20px 20px;
+                }
+
+                @include phone-down {
+                    width: 100%;
                 }
             }
         }
@@ -161,6 +166,10 @@
                             margin-right: 0;
                         }
 
+                        @include phone-down {
+                            margin-top: 0px;
+                        }
+
                         h2 {
                             margin-bottom: 0;
                             padding-top: 0;
@@ -173,12 +182,34 @@
             .description {
                 display: flex;
                 justify-content: center;
-                padding: 20px;
-
                 @include font-size(14px);
-
                 color: $gray;
                 font-family: $metropolis;
+                padding-top: 20px;
+            }
+
+            .faucet {
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+                @include font-size(14px);
+                color: $gray;
+                font-family: $metropolis;
+
+                .data-link {
+                    @include phone-down {
+                        margin-left: 0px;
+                        margin-top: 10px;
+                    }
+                }
+
+                @include phone-down {
+                    padding: 10px;
+                    flex-direction: column;
+                }
+            }
+            @include phone-down {
+                margin-top: 0px;
             }
         }
 

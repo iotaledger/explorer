@@ -115,26 +115,21 @@ class BlockTangleState extends AsyncComponent<BlockTangleStateProps, BlockTangle
                                     <span style={{ color: "#ca493d" }}>Conflicting</span>
                                 </Tooltip>}
                         </div>
-                        {status === "referenced" && (
+                        {status === "referenced" && milestoneIndex !== undefined && milestoneIndex > 1 ? (
                             <div className="block-tangle-reference">
-                                {milestoneIndex !== undefined && milestoneIndex > 1
-                                    ? (
-                                        <div>
-                                            Referenced by {" "}
-                                            <span
-                                                className="block-tangle-reference__link"
-                                                onClick={() => {
-                                                    if (onClick) {
-                                                        onClick(blockId);
-                                                    }
-                                                }}
-                                            >Milestone {milestoneIndex}
-                                            </span>
-                                            {" "} {ago}
-                                        </div>
-                                    ) : ""}
+                                <span>Referenced by </span>
+                                <span
+                                    className="block-tangle-reference__link"
+                                    onClick={() => {
+                                        if (onClick) {
+                                            onClick(blockId);
+                                        }
+                                    }}
+                                >Milestone {milestoneIndex}
+                                </span>
+                                <span> {ago}</span>
                             </div>
-                        )}
+                        ) : ""}
                     </React.Fragment>}
             </div>
         );

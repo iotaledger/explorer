@@ -2,6 +2,7 @@ import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, TransactionHelper } from "@iota/i
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -60,7 +61,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
      */
     public componentDidMount(): void {
         super.componentDidMount();
-        window.scrollTo(0, 0);
+        scrollToTop();
 
         this.updateState();
     }
@@ -251,20 +252,26 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.transactionBlock) {
                                     route = "transaction";
                                 } else if (response.aliasId) {
-                                    route = "alias";
+                                    route = "addr";
                                     const aliasAddress = this.buildAddressFromIdAndType(
                                         response.aliasId, ALIAS_ADDRESS_TYPE
                                     );
+                                    redirectState = {
+                                        addressDetails: aliasAddress
+                                    };
                                     routeParam = aliasAddress.bech32;
                                 } else if (response.foundryId) {
                                     route = "foundry";
                                     routeParam = response.foundryId;
                                 } else if (response.nftId) {
-                                    route = "nft";
+                                    route = "addr";
                                     const nftAddress = this.buildAddressFromIdAndType(
                                         response.nftId,
                                         NFT_ADDRESS_TYPE
                                     );
+                                    redirectState = {
+                                        addressDetails: nftAddress
+                                    };
                                     routeParam = nftAddress.bech32;
                                 } else if (response.milestone?.blockId) {
                                     route = "block";

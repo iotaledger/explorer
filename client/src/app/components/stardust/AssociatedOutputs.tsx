@@ -1,19 +1,13 @@
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { AsyncProps } from "../../../helpers/promise/AsyncProps";
-import PromiseMonitor from "../../../helpers/promise/promiseMonitor";
+import React, { useEffect, useState } from "react";
+import { useAssociatedOutputs } from "../../../helpers/hooks/useAssociatedOutputs";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { AssociationType, IAssociation } from "../../../models/api/stardust/IAssociationsResponse";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import Modal from "../Modal";
-import associatedOuputsMessage from "./../../../assets/modals/stardust/address/associated-outputs.json";
 import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
 import "./AssociatedOutputs.scss";
 
-interface AssociatedOutputsTableProps {
+interface AssociatedOutputsProps {
     /**
      * The network in context.
      */
@@ -26,48 +20,24 @@ interface AssociatedOutputsTableProps {
      * Callback setter to report the associated outputs count.
      */
     setOutputCount?: React.Dispatch<React.SetStateAction<number>>;
+    /**
+     * Callback setter to report if the component is loading outputs.
+     */
+    setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps> = (
-    { network, addressDetails, onAsyncStatusChange, setOutputCount }
+const AssociatedOutputs: React.FC<AssociatedOutputsProps> = (
+    { network, addressDetails, setOutputCount, setIsLoading }
 ) => {
-    const mounted = useRef(false);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
     const [currentTab, setCurrentTab] = useState<AssociatedOutputTab>("Basic");
-    const [associations, setAssociations] = useState<IAssociation[]>([]);
+    const [associations, isLoading] = useAssociatedOutputs(network, addressDetails, setOutputCount);
     const [tabsToRender, setTabsToRender] = useState<AssociatedOutputTab[]>([]);
 
-    const unmount = () => {
-        mounted.current = false;
-    };
-
     useEffect(() => {
-        mounted.current = true;
-
-        const loadAssociatedOutputIdsMonitor = new PromiseMonitor(status => {
-            onAsyncStatusChange(status);
-        });
-
-        // eslint-disable-next-line no-void
-        void loadAssociatedOutputIdsMonitor.enqueue(
-            async () => tangleCacheService.associatedOutputs(network, addressDetails).then(response => {
-                if (response?.associations && mounted.current) {
-                    setAssociations(response.associations);
-
-                    if (setOutputCount) {
-                        const outputsCount = response.associations.flatMap(
-                            association => association.outputIds.length
-                        ).reduce((acc, next) => acc + next, 0);
-                        setOutputCount(outputsCount);
-                    }
-                }
-            })
-        );
-
-        return unmount;
-    }, [network, addressDetails]);
+        if (setIsLoading) {
+            setIsLoading(isLoading);
+        }
+    }, [isLoading]);
 
     useEffect(() => {
         const tabs = buildAssociatedOutputsTabs(associations);
@@ -83,10 +53,6 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
         associations.length === 0 ? null : (
             <div className="section associated-outputs">
                 <div className="section--header">
-                    <div className="row middle">
-                        <h2 className="associated-heading">Associated Outputs</h2>
-                        <Modal icon="info" data={associatedOuputsMessage} />
-                    </div>
                     <div className="tabs-wrapper">
                         {tabsToRender.map((tab, idx) => (
                             <button
@@ -117,9 +83,10 @@ const AssociatedOutputsTable: React.FC<AssociatedOutputsTableProps & AsyncProps>
     );
 };
 
-AssociatedOutputsTable.defaultProps = {
+AssociatedOutputs.defaultProps = {
+    setIsLoading: undefined,
     setOutputCount: undefined
 };
 
-export default AssociatedOutputsTable;
+export default AssociatedOutputs;
 

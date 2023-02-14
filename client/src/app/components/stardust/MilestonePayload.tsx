@@ -10,6 +10,7 @@ import ReceiptPayload from "../stardust/ReceiptPayload";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
 import "./MilestonePayload.scss";
+import TruncatedId from "./TruncatedId";
 
 /**
  * Component which will display a milestone payload.
@@ -69,15 +70,21 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
                     </div>
                     <div className="section--data">
                         <div className="label">Previous milestone Id</div>
-                        <div className="value">{previousMilestoneId}</div>
+                        <div className="value">
+                            <TruncatedId id={previousMilestoneId} />
+                        </div>
                     </div>
                     <div className="section--data">
                         <div className="label">Inclusion Merkle Root</div>
-                        <div className="value code">{inclusionMerkleRoot}</div>
+                        <div className="value code">
+                            <TruncatedId id={inclusionMerkleRoot} />
+                        </div>
                     </div>
                     <div className="section--data">
                         <div className="label">Applied Merkle Root</div>
-                        <div className="value code">{appliedMerkleRoot}</div>
+                        <div className="value code">
+                            <TruncatedId id={appliedMerkleRoot} />
+                        </div>
                     </div>
                     {metadata && (
                         <div className="section--data">

@@ -45,11 +45,10 @@
                     max-width: 200px;
                 }
             }
+            &.truncate {
+                max-width: 150px;
+            }
         }
-    }
-
-    .token__name {
-        align-items: center;        
     }
 }
 
@@ -80,7 +79,7 @@
                     font-family: $metropolis;
                     font-weight: 700;
 
-                    &.highlight {
+                    .highlight {
                         color: var(--link-color);
                         @include font-size(14px);
 
@@ -96,10 +95,8 @@
     }
 }
 
-.token__name {
-    display: flex;
-}
 .token__logo {
+    vertical-align: middle;
     height: 16px;
     width: 16px;
 }

@@ -1,31 +1,48 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, Bech32Helper, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
+import associatedOuputsMessage from "../../../assets/modals/stardust/address/associated-outputs.json";
+import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";
+import addressNftsMessage from "../../../assets/modals/stardust/address/nfts-in-wallet.json";
+import transactionHistoryMessage from "../../../assets/modals/stardust/address/transaction-history.json";
+import foundriesMessage from "../../../assets/modals/stardust/alias/foundries.json";
+import aliasMainHeaderInfo from "../../../assets/modals/stardust/alias/main-header.json";
+import stateMessage from "../../../assets/modals/stardust/alias/state.json";
+import nftMainHeaderInfo from "../../../assets/modals/stardust/nft/main-header.json";
+import nftMetadataMessage from "../../../assets/modals/stardust/nft/metadata.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
+import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
+import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
+import { useAliasControlledFoundries } from "../../../helpers/hooks/useAliasControlledFoundries";
+import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
+import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
+import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import QR from "../../components/chrysalis/QR";
-import CopyButton from "../../components/CopyButton";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
+import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
+import AliasFoundriesSection from "../../components/stardust/AliasFoundriesSection";
+import AliasStateSection from "../../components/stardust/AliasStateSection";
 import AssetsTable from "../../components/stardust/AssetsTable";
 import AssociatedOutputs from "../../components/stardust/AssociatedOutputs";
 import Bech32Address from "../../components/stardust/Bech32Address";
+import CollectionNFTs from "../../components/stardust/CollectionNFTs";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
+import NftMetadataSection from "../../components/stardust/NftMetadataSection";
 import NftSection from "../../components/stardust/NftSection";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import mainHeaderInfo from "./../../../assets/modals/stardust/address/main-header.json";
 import "./AddressPage.scss";
-import CollectionNFTs from "../../components/stardust/CollectionNFTs";
 
 interface IAddressPageLocationProps {
     /**
@@ -34,7 +51,7 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
-enum ADDRESS_PAGE_TABS {
+enum DEFAULT_TABS {
     Transactions = "Transactions",
     NativeTokens = "Native Tokens",
     NFTs = "NFTs",
@@ -42,26 +59,39 @@ enum ADDRESS_PAGE_TABS {
     AssocOutputs = "Associated Outputs"
 }
 
-const TX_HISTORY_JOB = "tx-history";
-const ADDR_OUTPUTS_JOB = "addr-outputs";
-const ASSOC_OUTPUTS_JOB = "assoc-outputs";
+enum ALIAS_TABS {
+    State = "State",
+    Foundries = "Foundries",
+}
+
+enum NFT_TABS {
+    NftMetadata = "Metadata",
+}
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { location, match: { params: { network, address } } }
 ) => {
-    const isMounted = useRef(false);
-    const { tokenInfo, bech32Hrp, rentStructure } = useContext(NetworkContext);
+    const isMounted = useIsMounted();
+    const { bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
-    const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
-    const [balance, setBalance] = useState<number | undefined>();
-    const [sigLockedBalance, setSigLockedBalance] = useState<number | undefined>();
-    const [storageRentBalance, setStorageRentBalance] = useState<number | undefined>();
-    const [outputResponse, setOutputResponse] = useState<IOutputResponse[] | undefined>();
-    const [isFormatStorageRentFull, setIsFormatStorageRentFull] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | null>(null);
+    const [balance, setBalance] = useState<number | null>(null);
+    const [sigLockedBalance, setSigLockedBalance] = useState<number | null>(null);
+    const [storageRentBalance, setStorageRentBalance] = useState<number | null>(null);
+    const [addressOutputs, setAddressOutputs] = useState<IOutputResponse[] | undefined>();
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
+    const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
+    const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
+    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, bech32AddressDetails?.hex);
+    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
+        network, bech32AddressDetails ?? undefined
+    );
+    const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
+    const [isAddressHistoryDisabled, setIsAddressHistoryDisabled] = useState(false);
+    const [isAssociatedOutputsLoading, setIsAssociatedOutputsLoading] = useState(true);
 
     const [tokensCount, setTokenCount] = useState<number>(0);
     const [nftCount, setNftCount] = useState<number>(0);
@@ -69,54 +99,43 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
 
     useEffect(() => {
-        isMounted.current = true;
+        const locationState = location.state as IAddressPageLocationProps;
+        const { addressDetails } = locationState?.addressDetails ? locationState :
+            { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
 
-        if (!location.state) {
-            location.state = {
-                addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address)
-            };
+        const isBech32 = Bech32Helper.matches(address, bech32Hrp);
+
+        if (isBech32) {
+            scrollToTop();
+            // reset balances
+            setBalance(null);
+            setSigLockedBalance(null);
+            setStorageRentBalance(null);
+            setBech32AddressDetails(addressDetails);
+        } else {
+            setBech32AddressDetails(null);
         }
-
-        const { addressDetails } = location.state as IAddressPageLocationProps;
-
-        if (addressDetails?.hex) {
-            window.scrollTo({
-                left: 0,
-                top: 0,
-                behavior: "smooth"
-            });
-
-            if (isMounted.current) {
-                setBech32AddressDetails(addressDetails);
-            }
-        }
-
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
+    }, [address]);
 
     useEffect(() => {
         if (bech32AddressDetails) {
             // eslint-disable-next-line no-void
-            void loadAddressData();
+            void getAddressBalance();
         }
     }, [bech32AddressDetails]);
 
     useEffect(() => {
-        const loading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-        setIsLoading(loading);
-    }, [jobToStatus.values()]);
-
-    /**
-     * Load the Address balance and UTXOs.
-     */
-    async function loadAddressData() {
-        // eslint-disable-next-line no-void
-        void getAddressBalance();
-        // eslint-disable-next-line no-void
-        void getAddressOutputs();
-    }
+        if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
+            const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
+            const outputs = outputResponses.map<OutputTypes>(or => or.output);
+            const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
+                outputs,
+                rentStructure
+            );
+            setAddressOutputs(outputResponses);
+            setStorageRentBalance(storageRentBalanceUpdate);
+        }
+    }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
 
     /**
      * Fetch the address balance details.
@@ -129,9 +148,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
             });
 
             if (response?.totalBalance !== undefined) {
-                if (isMounted.current) {
+                if (isMounted) {
                     setBalance(response.totalBalance);
-                    setSigLockedBalance(response.sigLockedBalance);
+                    setSigLockedBalance(response.sigLockedBalance ?? null);
                 }
             } else {
                 // Fallback balance from iotajs (node)
@@ -139,85 +158,181 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                     { network, address: addr }
                 );
 
-                if (addressDetailsWithBalance && isMounted.current) {
+                if (addressDetailsWithBalance && isMounted) {
                     setBalance(Number(addressDetailsWithBalance.balance));
+                    setSigLockedBalance(null);
                 }
             }
         });
     }
 
-    /**
-     * Fetch the address relevant outputs (basic, alias and nft)
-     */
-    async function getAddressOutputs(): Promise<void> {
-        const addressBech32 = bech32AddressDetails?.bech32;
-        if (!addressBech32) {
-            return;
-        }
+    const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+    const addressType = bech32AddressDetails?.type ?? undefined;
+    const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
+    const isPageLoading = isAddressOutputsLoading ||
+        isNftDetailsLoading ||
+        isAddressHistoryLoading ||
+        isAssociatedOutputsLoading;
 
-        const outputIdsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-            buildOnAsyncStatusJobHandler(ADDR_OUTPUTS_JOB)(status);
-        });
-
-        // eslint-disable-next-line no-void
-        void outputIdsMonitor.enqueue(
-            async () => tangleCacheService.addressOutputs(network, addressBech32).then(idsResponse => {
-                if (idsResponse?.outputIds && idsResponse.outputIds.length > 0) {
-                    const outputResponsesUpdate: IOutputResponse[] = [];
-                    const addressOutputIds = idsResponse.outputIds;
-                    let storageRentBalanceUpdate: number | undefined;
-
-                    const outputDetailsMonitor = new PromiseMonitor((status: PromiseStatus) => {
-                        buildOnAsyncStatusJobHandler("outputDetails")(status);
-                        if (status === PromiseStatus.DONE && isMounted.current) {
-                            storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
-                                outputResponsesUpdate.map(or => or.output),
-                                rentStructure
-                            );
-                            if (isMounted.current) {
-                                setOutputResponse(outputResponsesUpdate);
-                                setStorageRentBalance(storageRentBalanceUpdate);
-                            }
-                        }
-                    });
-
-                    for (const outputId of addressOutputIds) {
-                        // eslint-disable-next-line no-void
-                        void outputDetailsMonitor.enqueue(
-                            async () => tangleCacheService.outputDetails(network, outputId).then(
-                                response => {
-                                    if (!response.error && response.output && response.metadata) {
-                                        const outputDetails = {
-                                            output: response.output,
-                                            metadata: response.metadata
-                                        };
-
-                                        outputResponsesUpdate.push(outputDetails);
-                                    }
-                                })
-                        );
-                    }
-                } else {
-                    setOutputResponse([]);
-                }
-            })
+    if (!bech32AddressDetails) {
+        return (
+            <div className="address-page">
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="addr--header">
+                            <div className="row middle">
+                                <h1>Address</h1>
+                                <Modal icon="info" data={addressMainHeaderInfo} />
+                            </div>
+                        </div>
+                        <NotFound
+                            searchTarget="address"
+                            query={address}
+                        />
+                    </div>
+                </div>
+            </div>
         );
     }
 
     /**
-     * Helper function to build a asyncJobHandler.
-     * @param jobName The job name.
-     * @returns Function than can be used to update job PromiseStatus.
+     * Tab header options.
      */
-    function buildOnAsyncStatusJobHandler(jobName: string): (status: PromiseStatus) => void {
-        return (status: PromiseStatus) => {
-            if (isMounted.current) {
-                setJobToStatus(jobToStatus.set(jobName, status));
-            }
-        };
-    }
+    const defaultTabsOptions = {
+        [DEFAULT_TABS.Transactions]: {
+            disabled: false,
+            isLoading: isAddressHistoryLoading,
+            infoContent: transactionHistoryMessage
+        },
+        [DEFAULT_TABS.NativeTokens]: {
+            disabled: tokensCount === 0,
+            counter: tokensCount,
+            isLoading: isAddressOutputsLoading,
+            infoContent: nativeTokensMessage
+        },
+        [DEFAULT_TABS.NFTs]: {
+            disabled: nftCount === 0,
+            counter: nftCount,
+            isLoading: isNftOutputsLoading,
+            infoContent: addressNftsMessage
+        },
+        [DEFAULT_TABS.CampaignXZY]: {
+            disabled: collNFTCount === 0,
+            counter: collNFTCount,
+            isLoading: isNftOutputsLoading,
+            infoContent: addressNftsMessage
+        },
+        [DEFAULT_TABS.AssocOutputs]: {
+            disabled: associatedOutputCount === 0,
+            counter: associatedOutputCount,
+            isLoading: isAssociatedOutputsLoading,
+            infoContent: associatedOuputsMessage
+        }
+    };
 
-    const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
+    const aliasTabsOptions = {
+        [ALIAS_TABS.State]: {
+            disabled: !aliasOutput,
+            isLoading: isAliasDetailsLoading,
+            infoContent: stateMessage
+        },
+        [ALIAS_TABS.Foundries]: {
+            disabled: !aliasFoundries,
+            isLoading: isAliasFoundriesLoading,
+            infoContent: foundriesMessage
+        }
+    };
+
+    const nftTabsOptions = {
+        [NFT_TABS.NftMetadata]: {
+            disabled: !nftMetadata,
+            isLoading: isNftDetailsLoading,
+            infoContent: nftMetadataMessage
+        }
+    };
+
+    /**
+     * Tabbed sections.
+     */
+    const defaultSections = [
+        <TransactionHistory
+            key={`txs-history-${address}`}
+            network={network}
+            address={addressBech32}
+            setLoading={setIsAddressHistoryLoading}
+            setDisabled={setIsAddressHistoryDisabled}
+        />,
+        <AssetsTable
+            key={`assets-table-${address}`}
+            networkId={network}
+            outputs={addressOutputs?.map(output => output.output)}
+            setTokenCount={setTokenCount}
+        />,
+        <NftSection
+            key={`nft-section-${address}`}
+            network={network}
+            bech32Address={addressBech32}
+            outputs={addressNftOutputs}
+            setNftCount={setNftCount}
+        />,
+        <CollectionNFTs
+            key={`coll-nft-section-${address}`}
+            network={network}
+            bech32Address={addressBech32}
+            outputs={addressNftOutputs}
+            setCount={setCollNFTCount}
+        />,
+        <AssociatedOutputs
+            key={`assoc-outputs-${address}`}
+            network={network}
+            addressDetails={bech32AddressDetails ?? {} as IBech32AddressDetails}
+            setOutputCount={setAssociatedOutputCount}
+            setIsLoading={setIsAssociatedOutputsLoading}
+        />
+    ];
+
+    const aliasSections = [
+        <AliasStateSection
+            key={`alias-state-${address}`}
+            output={aliasOutput}
+        />,
+        <AliasFoundriesSection
+            key={`alias-foundry-${address}`}
+            network={network}
+            foundries={aliasFoundries}
+        />
+    ];
+
+    const nftSections = [
+        <NftMetadataSection
+            key={`nft-meta-${address}`}
+            metadata={nftMetadata}
+        />
+    ];
+
+    let addressMessage = addressMainHeaderInfo;
+    let tabEnums = DEFAULT_TABS;
+    let tabOptions = defaultTabsOptions;
+    let tabbedSections = defaultSections;
+
+    switch (addressType) {
+        case ALIAS_ADDRESS_TYPE:
+            defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            addressMessage = aliasMainHeaderInfo;
+            tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
+            tabOptions = { ...aliasTabsOptions, ...defaultTabsOptions };
+            tabbedSections = [...aliasSections, ...defaultSections];
+            break;
+        case NFT_ADDRESS_TYPE:
+            defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            addressMessage = nftMainHeaderInfo;
+            tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
+            tabOptions = { ...nftTabsOptions, ...defaultTabsOptions };
+            tabbedSections = [...nftSections, ...defaultSections];
+            break;
+        default:
+            break;
+    }
 
     return (
         <div className="address-page">
@@ -227,128 +342,43 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                         <div className="addr--header">
                             <div className="row middle">
                                 <h1>
-                                    Address
+                                    {bech32AddressDetails.typeLabel?.replace("Ed25519", "Address")}
                                 </h1>
-                                <Modal icon="info" data={mainHeaderInfo} />
+                                <Modal icon="info" data={addressMessage} />
                             </div>
-                            {isLoading && <Spinner />}
+                            {isPageLoading && <Spinner />}
                         </div>
-                        <div className="top">
-                            <div className="sections">
-                                <div className="section no-border-bottom">
-                                    <div className="section--header">
-                                        <div className="row middle">
-                                            <h2>
-                                                General
-                                            </h2>
-                                        </div>
-                                    </div>
-                                    <div className="row space-between general-content">
-                                        <div className="section--data">
-                                            <Bech32Address
-                                                addressDetails={bech32AddressDetails}
-                                                advancedMode={true}
-                                                showCopyButton={true}
-                                            />
-                                            {balance !== undefined && (
-                                                <AddressBalance
-                                                    balance={balance}
-                                                    spendableBalance={sigLockedBalance}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="section--data">
-                                            {bech32AddressDetails?.bech32 && (
-                                                //  eslint-disable-next-line react/jsx-pascal-case
-                                                <QR data={bech32AddressDetails.bech32} />
-                                            )}
-                                        </div>
-                                    </div>
-                                    {storageRentBalance && (
-                                        <div className="section--data margin-t-m">
-                                            <div className="label">
-                                                Storage deposit
-                                            </div>
-                                            <div className="row middle value featured">
-                                                <span
-                                                    onClick={() => {
-                                                        if (isMounted.current) {
-                                                            setIsFormatStorageRentFull(!isFormatStorageRentFull);
-                                                        }
-                                                    }}
-                                                    className="pointer margin-r-5"
-                                                >
-                                                    {formatAmount(
-                                                        storageRentBalance,
-                                                        tokenInfo,
-                                                        isFormatStorageRentFull
-                                                    )}
-                                                </span>
-                                                <CopyButton copy={String(storageRentBalance)} />
-                                            </div>
-                                        </div>
+                        <div className="section no-border-bottom">
+                            <div className="section--header">
+                                <div className="row middle">
+                                    <h2>
+                                        General
+                                    </h2>
+                                </div>
+                            </div>
+                            <div className="general-content">
+                                <div className="section--data">
+                                    <Bech32Address
+                                        addressDetails={bech32AddressDetails}
+                                        advancedMode={true}
+                                    />
+                                    {balance !== null && (
+                                        <AddressBalance
+                                            balance={balance}
+                                            spendableBalance={sigLockedBalance}
+                                            storageRentBalance={storageRentBalance}
+                                        />
                                     )}
                                 </div>
-                                <TabbedSection
-                                    tabsEnum={ADDRESS_PAGE_TABS}
-                                    tabOptions={{
-                                        [ADDRESS_PAGE_TABS.Transactions]: {
-                                            disabled: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE,
-                                            isLoading: jobToStatus.get(TX_HISTORY_JOB) !== PromiseStatus.DONE
-                                        },
-                                        [ADDRESS_PAGE_TABS.NativeTokens]: {
-                                            disabled: tokensCount === 0,
-                                            counter: tokensCount,
-                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
-                                        },
-                                        [ADDRESS_PAGE_TABS.NFTs]: {
-                                            disabled: nftCount === 0,
-                                            counter: nftCount,
-                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
-                                        },
-                                        [ADDRESS_PAGE_TABS.CampaignXZY]: {
-                                            disabled: collNFTCount === 0,
-                                            counter: collNFTCount,
-                                            isLoading: jobToStatus.get(ADDR_OUTPUTS_JOB) !== PromiseStatus.DONE
-                                        },
-                                        [ADDRESS_PAGE_TABS.AssocOutputs]: {
-                                            disabled: associatedOutputCount === 0,
-                                            counter: associatedOutputCount,
-                                            isLoading: jobToStatus.get(ASSOC_OUTPUTS_JOB) !== PromiseStatus.DONE
-                                        }
-                                    }}
-                                >
-                                    <TransactionHistory
-                                        network={network}
-                                        address={addressBech32}
-                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler(TX_HISTORY_JOB)}
-                                    />
-                                    <AssetsTable
-                                        networkId={network}
-                                        outputs={outputResponse?.map(output => output.output)}
-                                        setTokenCount={setTokenCount}
-                                    />
-                                    <NftSection
-                                        network={network}
-                                        bech32Address={addressBech32}
-                                        outputs={outputResponse}
-                                        setNftCount={setNftCount}
-                                    />
-                                    <CollectionNFTs
-                                        network={network}
-                                        bech32Address={addressBech32}
-                                        outputs={outputResponse}
-                                        setCount={setCollNFTCount}
-                                    />
-                                    <AssociatedOutputs
-                                        network={network}
-                                        addressDetails={bech32AddressDetails}
-                                        onAsyncStatusChange={buildOnAsyncStatusJobHandler(ASSOC_OUTPUTS_JOB)}
-                                        setOutputCount={setAssociatedOutputCount}
-                                    />
-                                </TabbedSection>
                             </div>
                         </div>
+                        <TabbedSection
+                            key={address}
+                            tabsEnum={tabEnums}
+                            tabOptions={tabOptions}
+                        >
+                            {tabbedSections}
+                        </TabbedSection>
                     </div>
                 )}
             </div>

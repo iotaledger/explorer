@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import classNames from "classnames";
 import moment from "moment";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { AssociationType } from "../../../models/api/stardust/IAssociationsResponse";
@@ -32,7 +32,7 @@ interface IOutputDetails {
 const PAGE_SIZE = 10;
 
 const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputIds }) => {
-    const mounted = useRef(false);
+    const isMounted = useIsMounted();
     const { tokenInfo, name: network } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -42,13 +42,6 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     const [jobToStatus, setJobToStatus] = useState(PromiseStatus.PENDING);
     const [loadMoreCounter, setLoadMoreCounter] = useState<number | undefined>();
     const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
-
-    useEffect(() => {
-        mounted.current = true;
-        return () => {
-            mounted.current = false;
-        };
-    }, []);
 
     useEffect(() => {
         const loadedOutputDetails: IOutputDetails[] = [];
@@ -71,7 +64,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                         }
                     }
 
-                    if (mounted.current) {
+                    if (isMounted) {
                         setOutputDetails(outputDetails.concat(loadedOutputDetails));
                     }
                 }
@@ -80,14 +73,14 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
             for (const outputId of sliceToLoad) {
                 // eslint-disable-next-line no-void
                 void loadOutputDetailsMonitor.enqueue(
-                    async () => tangleCacheService.outputDetails(network, outputId).then(outputDetails => {
-                        if (outputDetails.output && outputDetails.metadata) {
-                            const timestampBooked = outputDetails.metadata.milestoneTimestampBooked * 1000;
+                    async () => tangleCacheService.outputDetails(network, outputId).then(response => {
+                        if (response.output && response.metadata) {
+                            const timestampBooked = response.metadata.milestoneTimestampBooked * 1000;
                             const dateCreated = DateHelper.formatShort(Number(timestampBooked));
                             const ago = moment(timestampBooked).fromNow();
-                            const amount = outputDetails.output.amount;
+                            const amount = response.output.amount;
                             outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
-                        } else if (outputDetails.error) {
+                        } else if (response.error) {
                             console.log(`Error while loading associated output details for ${outputId}`);
                         }
                     })
@@ -148,12 +141,11 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                     return (
                                         <tr key={idx}>
                                             <td className="association__output">
-                                                <Link
-                                                    to={`/${network}/output/${outputId}`}
-                                                    className="margin-r-t output-id"
-                                                >
-                                                    <TruncatedId id={outputId} />
-                                                </Link>
+                                                <TruncatedId
+                                                    id={outputId}
+                                                    link={`/${network}/output/${outputId}`}
+                                                    showCopyButton
+                                                />
                                             </td>
                                             <td className="date-created">{dateCreated} ({ago})</td>
                                             <td className="amount">

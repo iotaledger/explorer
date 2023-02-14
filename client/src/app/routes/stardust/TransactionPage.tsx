@@ -12,7 +12,6 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
@@ -20,6 +19,7 @@ import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { TransactionPageProps } from "./TransactionPageProps";
@@ -139,11 +139,11 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                     <div className="label">
                         Transaction ID
                     </div>
-                    <div className="value code row middle">
-                        <span className="margin-r-t">
-                            {transactionId}
-                        </span>
-                        <CopyButton copy={transactionId} />
+                    <div className="value code">
+                        <TruncatedId
+                            id={transactionId}
+                            showCopyButton
+                        />
                     </div>
                 </div>
                 {includedBlockId && (
@@ -151,16 +151,12 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                         <div className="label">
                             Included in block
                         </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t link">
-                                <Link
-                                    to={`/${network}/block/${includedBlockId}`}
-                                    className="margin-r-t"
-                                >
-                                    {includedBlockId}
-                                </Link>
-                            </span>
-                            <CopyButton copy={includedBlockId} />
+                        <div className="value code highlight">
+                            <TruncatedId
+                                id={includedBlockId}
+                                link={`/${network}/block/${includedBlockId}`}
+                                showCopyButton
+                            />
                         </div>
                     </div>
                 )}

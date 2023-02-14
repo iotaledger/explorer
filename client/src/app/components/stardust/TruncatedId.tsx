@@ -1,14 +1,49 @@
+import classNames from "classnames";
 import React from "react";
-import "./TruncatedId.scss";
+import { Link } from "react-router-dom";
+import CopyButton from "../CopyButton";
 
 interface TruncatedIdProps {
     id: string;
+    link?: string;
+    showCopyButton?: boolean;
 }
 
-const TruncatedId: React.FC<TruncatedIdProps> = ({ id }) => (
-    <div className="truncated-id">
-        <span>{id}</span>
-    </div>
-);
+const TruncatedId: React.FC<TruncatedIdProps> = ({ id, link, showCopyButton }) => {
+    const content = link && link.length > 0 ? (
+        <Link
+            to={link}
+            className={classNames(
+                "truncate",
+                "highlight",
+                { "margin-r-t": showCopyButton }
+            )}
+        >
+            {id}
+        </Link>
+    ) : (
+        <span
+            className={classNames(
+                "truncate",
+                { "margin-r-t": showCopyButton }
+            )}
+        >
+            {id}
+        </span>
+    );
+
+    return (
+        <div className="row middle truncate">
+            {content}
+            {showCopyButton && <CopyButton copy={id} />}
+        </div>
+    );
+};
+
+TruncatedId.defaultProps = {
+    link: undefined,
+    showCopyButton: undefined
+};
 
 export default TruncatedId;
+

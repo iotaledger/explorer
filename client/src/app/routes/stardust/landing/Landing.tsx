@@ -134,7 +134,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             <div className="card margin-t-m">
                                 <div className="card--content description">{networkConfig.description}</div>
                                 {networkConfig.faucet && (
-                                    <div className="card--content description">
+                                    <div className="card--content faucet">
                                         <span>Get tokens from the Faucet:</span>
                                         <a
                                             className="data-link margin-l-t"
@@ -205,21 +205,25 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             const milestones = [...this.state.milestones];
             let milestonesUpdated = false;
 
-            for (const milestoneFeedItem of milestoneFeedItems) {
-                if (!milestones.some(ms => ms.index === milestoneFeedItem.properties?.index)) {
-                    milestones.unshift({
-                        blockId: milestoneFeedItem.id,
-                        milestoneId: milestoneFeedItem.properties?.milestoneId as string,
-                        index: milestoneFeedItem.properties?.index as number,
-                        timestamp: milestoneFeedItem.properties?.timestamp as number
-                    });
+            if (milestones.length > 0) {
+                const highestMilesoneIndex = milestones[0].index;
+                for (const milestoneFeedItem of milestoneFeedItems) {
+                    const milestoneFeedItemIndex = milestoneFeedItem.properties?.index as number;
+                    if (milestoneFeedItemIndex > highestMilesoneIndex) {
+                        milestones.unshift({
+                            blockId: milestoneFeedItem.id,
+                            milestoneId: milestoneFeedItem.properties?.milestoneId as string,
+                            index: milestoneFeedItem.properties?.index as number,
+                            timestamp: milestoneFeedItem.properties?.timestamp as number
+                        });
 
-                    if (milestones.length > MAX_MILESTONE_ITEMS) {
-                        milestones.pop();
+                        if (milestones.length > MAX_MILESTONE_ITEMS) {
+                            milestones.pop();
+                        }
+
+                        milestonesUpdated = true;
+                        break;
                     }
-
-                    milestonesUpdated = true;
-                    break;
                 }
             }
 
