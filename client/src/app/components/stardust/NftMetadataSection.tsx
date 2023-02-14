@@ -31,128 +31,121 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ metadata }) => 
 
     const renderContent = (
         nftMetadata ? (
-            <div className="section">
-                <div className="section--data nft-metadata">
-                    {(isSupportedImageFormat(nftMetadata?.type) ? (
-                        <img
-                            className="nft-metadata__image"
-                            src={nftMetadata?.uri}
-                            alt="bundle"
-                        />
-                    ) : (
-                        <img
-                            className="nft-metadata__image"
-                            src={unsupportedFormatPlaceholder}
-                        />
-                    ))}
-                    <div className="nft-metadata__info col w100">
-                        <ul>
-                            <li className="row middle margin-t-t">
-                                <span className="label">Name:</span>
-                                <span className="value truncate">
-                                    {nftMetadata.name}
-                                </span>
-                            </li>
-                            <li className="row margin-t-t">
-                                <span className="label">Token Standard:</span>
-                                <span className="value truncate">
-                                    {nftMetadata.standard}
-                                </span>
-                            </li>
-                            <li className="row margin-t-t">
-                                <span className="label">Version:</span>
-                                <span className="value truncate">
-                                    {nftMetadata.version}
-                                </span>
-                            </li>
-                            <li className="row margin-t-t">
-                                <span className="label">Type:</span>
-                                <span className="value truncate">
-                                    {nftMetadata.type}
-                                </span>
-                            </li>
-                            {
-                                nftMetadata.collectionName &&
-                                <li className="row margin-t-t">
-                                    <span className="label">Collection Name:</span>
-                                    <span className="value truncate">
-                                        {nftMetadata.collectionName}
-                                    </span>
-                                </li>
-                            }
-                            {
-                                nftMetadata.issuerName &&
-                                <li className="row margin-t-t">
-                                    <span className="label">Issuer Name:</span>
-                                    <span className="value truncate">
-                                        {nftMetadata.issuerName}
-                                    </span>
-                                </li>
-                            }
-                        </ul>
+            <div className="section--data nft-metadata">
+                {(isSupportedImageFormat(nftMetadata?.type) ? (
+                    <img
+                        className="nft-metadata__image"
+                        src={nftMetadata?.uri}
+                        alt="bundle"
+                    />
+                ) : (
+                    <img
+                        className="nft-metadata__image"
+                        src={unsupportedFormatPlaceholder}
+                    />
+                ))}
+                <div className="nft-metadata__info col w100">
+                    <ul>
+                        <li className="row middle margin-t-t">
+                            <span className="label">Name:</span>
+                            <span className="value truncate">
+                                {nftMetadata.name}
+                            </span>
+                        </li>
+                        <li className="row margin-t-t">
+                            <span className="label">Token Standard:</span>
+                            <span className="value truncate">
+                                {nftMetadata.standard}
+                            </span>
+                        </li>
+                        <li className="row margin-t-t">
+                            <span className="label">Version:</span>
+                            <span className="value truncate">
+                                {nftMetadata.version}
+                            </span>
+                        </li>
+                        <li className="row margin-t-t">
+                            <span className="label">Type:</span>
+                            <span className="value truncate">
+                                {nftMetadata.type}
+                            </span>
+                        </li>
                         {
-                            nftMetadata.royalties &&
-                            <React.Fragment>
-                                <h3 className="label margin-t-s">Royalties</h3>
-                                <div className="data-toggle margin-t-s">
-                                    <div className="data-toggle--content">
-                                        <JsonViewer
-                                            json={JSON.stringify(nftMetadata.royalties, undefined, "  ")}
-                                        />
-                                    </div>
+                            nftMetadata.collectionName &&
+                            <li className="row margin-t-t">
+                                <span className="label">Collection Name:</span>
+                                <span className="value truncate">
+                                    {nftMetadata.collectionName}
+                                </span>
+                            </li>
+                        }
+                        {
+                            nftMetadata.issuerName &&
+                            <li className="row margin-t-t">
+                                <span className="label">Issuer Name:</span>
+                                <span className="value truncate">
+                                    {nftMetadata.issuerName}
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                    {
+                        nftMetadata.royalties &&
+                        <React.Fragment>
+                            <h3 className="label margin-t-s">Royalties</h3>
+                            <div className="data-toggle margin-t-s">
+                                <div className="data-toggle--content">
+                                    <JsonViewer
+                                        json={JSON.stringify(nftMetadata.royalties, undefined, "  ")}
+                                    />
                                 </div>
-                            </React.Fragment>
-                        }
-                        {
-                            nftMetadata.attributes &&
-                            <React.Fragment>
-                                <h3 className="label margin-t-s">Attributes</h3>
-                                <div className="data-toggle margin-t-s">
-                                    <div className="data-toggle--content">
-                                        <JsonViewer
-                                            json={JSON.stringify(nftMetadata.attributes, undefined, "  ")}
-                                        />
-                                    </div>
+                            </div>
+                        </React.Fragment>
+                    }
+                    {
+                        nftMetadata.attributes &&
+                        <React.Fragment>
+                            <h3 className="label margin-t-s">Attributes</h3>
+                            <div className="data-toggle margin-t-s">
+                                <div className="data-toggle--content">
+                                    <JsonViewer
+                                        json={JSON.stringify(nftMetadata.attributes, undefined, "  ")}
+                                    />
                                 </div>
-                            </React.Fragment>
-                        }
-                        {
-                            nftMetadata.description &&
-                            <React.Fragment>
-                                <h2 className="label margin-t-s">Description</h2>
-                                <span className="value margin-t-t">
-                                    {nftMetadata.description}
-                                </span>
-                            </React.Fragment>
-                        }
-                    </div>
+                            </div>
+                        </React.Fragment>
+                    }
+                    {
+                        nftMetadata.description &&
+                        <React.Fragment>
+                            <h2 className="label margin-t-s">Description</h2>
+                            <span className="value margin-t-t">
+                                {nftMetadata.description}
+                            </span>
+                        </React.Fragment>
+                    }
                 </div>
             </div>
             ) : (
                 <div className="section--data">
-                    <div className="label">Metadata</div>
-                    <div className="value">
-                        <DataToggle sourceData={metadata ?? ""} withSpacedHex={true} />
-                    </div>
+                    <DataToggle sourceData={metadata ?? ""} withSpacedHex={true} />
                 </div>
             )
         );
 
     return (
-        metadata ? (
-            renderContent
-        ) :
-        (
-            <div className="section transaction-history--section">
-                <div className="section">
+        <div className="section">
+            {metadata ? (
+                    renderContent
+                ) :
+                (
                     <div className="section--data">
                         <p>
                             There is no metadata for this Nft.
                         </p>
                     </div>
-                </div>
-            </div>
-        )
+                )}
+        </div>
     );
 };
 
