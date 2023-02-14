@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { ModalData } from "../ModalProps";
 import Spinner from "../Spinner";
@@ -59,6 +59,10 @@ interface TabbedSectionProps {
 const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOptions }) => {
     const [selectedTab, setSelectedTab] = useState<number>(0);
     const TABS: string[] = [...Object.values(tabsEnum)];
+
+    useEffect(() => {
+        setSelectedTab(0);
+    }, [children]);
 
     const tabsView = (
         <div className="tabbed-section--tabs-wrapper">
