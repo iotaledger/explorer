@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, Bech32Helper, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
 import { optional } from "@ruffy/ts-optional/dist/Optional";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -28,6 +28,7 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
+import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import AddressBalance from "../../components/stardust/AddressBalance";
 import AliasFoundriesSection from "../../components/stardust/AliasFoundriesSection";
@@ -74,7 +75,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | undefined>();
+    const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | null>(null);
     const [balance, setBalance] = useState<number | null>(null);
     const [sigLockedBalance, setSigLockedBalance] = useState<number | null>(null);
     const [storageRentBalance, setStorageRentBalance] = useState<number | null>(null);
@@ -84,7 +85,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
     const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, bech32AddressDetails?.hex);
-    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(network, bech32AddressDetails);
+    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
+        network, bech32AddressDetails ?? undefined
+    );
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [isAddressHistoryDisabled, setIsAddressHistoryDisabled] = useState(false);
     const [isAssociatedOutputsLoading, setIsAssociatedOutputsLoading] = useState(true);
@@ -98,13 +101,17 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         const { addressDetails } = locationState?.addressDetails ? locationState :
             { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
 
-        if (addressDetails?.hex) {
+        const isBech32 = Bech32Helper.matches(address, bech32Hrp);
+
+        if (isBech32) {
             scrollToTop();
             // reset balances
             setBalance(null);
             setSigLockedBalance(null);
             setStorageRentBalance(null);
             setBech32AddressDetails(addressDetails);
+        } else {
+            setBech32AddressDetails(null);
         }
     }, [address]);
 
@@ -164,6 +171,27 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         isNftDetailsLoading ||
         isAddressHistoryLoading ||
         isAssociatedOutputsLoading;
+
+    if (!bech32AddressDetails) {
+        return (
+            <div className="address-page">
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="addr--header">
+                            <div className="row middle">
+                                <h1>Address</h1>
+                                <Modal icon="info" data={addressMainHeaderInfo} />
+                            </div>
+                        </div>
+                        <NotFound
+                            searchTarget="address"
+                            query={address}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     /**
      * Tab header options.
