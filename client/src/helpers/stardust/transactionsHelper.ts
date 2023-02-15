@@ -12,7 +12,7 @@ import {
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
     TransactionHelper, IReferenceUnlock, Ed25519Address, OutputTypes,
     STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-    IRent
+    IRent, UnlockTypes
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
@@ -24,7 +24,7 @@ import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];
-    unlocks: ISignatureUnlock[];
+    unlocks: UnlockTypes[];
     outputs: IOutput[];
     unlockAddresses: IBech32AddressDetails[];
     transferTotal: number;
@@ -36,7 +36,7 @@ export class TransactionsHelper {
     ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: IInput[] = [];
-        const unlocks: ISignatureUnlock[] = [];
+        let unlocks: UnlockTypes[] = [];
         const outputs: IOutput[] = [];
         const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
@@ -46,14 +46,18 @@ export class TransactionsHelper {
             const payload: ITransactionPayload = block.payload;
             const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(payload);
 
-            // Signatures
-            for (let i = 0; i < payload.unlocks.length; i++) {
+            // Unlocks
+            unlocks = payload.unlocks;
+
+            // unlock Addresses computed from public keys in unlocks
+            for (let i = 0; i < unlocks.length; i++) {
                 const unlock = payload.unlocks[i];
+                let signatureUnlock: ISignatureUnlock;
+
                 if (unlock.type === SIGNATURE_UNLOCK_TYPE) {
-                    unlocks.push(unlock);
+                    signatureUnlock = unlock;
                 } else {
                     let refUnlockIdx = i;
-                    let signatureUnlock: ISignatureUnlock;
                     // unlock references can be transitive,
                     // so we need to follow the path until we find the signature
                     do {
@@ -61,15 +65,10 @@ export class TransactionsHelper {
                         signatureUnlock = payload.unlocks[referenceUnlock.reference] as ISignatureUnlock;
                         refUnlockIdx = referenceUnlock.reference;
                     } while (!signatureUnlock.signature);
-
-                    unlocks.push(signatureUnlock);
                 }
-            }
 
-            // unlock Addresses computed from public keys in unlocks
-            for (let i = 0; i < unlocks.length; i++) {
                 const hex = Converter.bytesToHex(
-                    new Ed25519Address(Converter.hexToBytes(unlocks[i].signature.publicKey)).toAddress()
+                    new Ed25519Address(Converter.hexToBytes(signatureUnlock.signature.publicKey)).toAddress()
                 );
                 unlockAddresses.push(
                     Bech32AddressHelper.buildAddress(_bechHrp, hex)
