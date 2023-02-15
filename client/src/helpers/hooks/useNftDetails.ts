@@ -53,24 +53,25 @@ export function useNftDetails(network: string, nftId?: string):
                             feature => feature.type === ISSUER_FEATURE_TYPE
                         ) as IIssuerFeature;
 
-                        let issuerId;
-                        switch (issuerFeature.address.type) {
-                            case ED25519_ADDRESS_TYPE:
-                                issuerId = issuerFeature.address.pubKeyHash;
+                        let issuerId = null;
+                        if (issuerFeature) {
+                            switch (issuerFeature.address.type) {
+                                case ED25519_ADDRESS_TYPE:
+                                    issuerId = issuerFeature.address.pubKeyHash;
                                 break;
-                            case ALIAS_ADDRESS_TYPE:
-                                issuerId = issuerFeature.address.aliasId;
+                                case ALIAS_ADDRESS_TYPE:
+                                    issuerId = issuerFeature.address.aliasId;
                                 break;
-                            case NFT_ADDRESS_TYPE:
-                                issuerId = issuerFeature.address.nftId;
+                                case NFT_ADDRESS_TYPE:
+                                    issuerId = issuerFeature.address.nftId;
                                 break;
-                            default:
-                                issuerId = null;
+                                default:
                                 break;
+                            }
                         }
 
+                        setNftMetadata(metadataFeature?.data ?? null);
                         setNftOutput(output);
-                        setNftMetadata(metadataFeature.data);
                         setNftIssuerId(issuerId);
                     }
                 }).finally(() => {
