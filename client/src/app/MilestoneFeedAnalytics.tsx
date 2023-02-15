@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { IMilestoneAnalyticStats } from "../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../models/config/protocolVersion";
@@ -8,9 +9,10 @@ import Spinner from "./components/Spinner";
 interface MilestoneFeedAnalyicsProps {
     network: string;
     milestoneIndex: number;
+    blockId: string;
 }
 
-const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, milestoneIndex }) => {
+const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, milestoneIndex, blockId }) => {
     const [tangleCacheService] = useState(ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`));
     const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | undefined>();
     const [fetching, setFetching] = useState<boolean>(true);
@@ -44,7 +46,14 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
                 <span className="feed-item--value ms-blocks">
                     {fetching ?
                         <Spinner compact /> :
-                        <div className="feed-item__ms-stat">{includedBlocks ?? "--"}</div>}
+                        <div className="feed-item__ms-stat">
+                            <Link
+                                className="feed-item--hash ms-id"
+                                to={`/${network}/block/${blockId}?tab=RefBlocks`}
+                            >
+                                {includedBlocks ?? "--"}
+                            </Link>
+                        </div>}
                 </span>
             </div>
             <div className="feed-item__content">
@@ -52,7 +61,14 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
                 <span className="feed-item--value ms-txs">
                     {fetching ?
                         <Spinner compact /> :
-                        <div className="feed-item__ms-stat">{txs ?? "--"}</div>}
+                        <div className="feed-item__ms-stat">
+                            <Link
+                                className="feed-item--hash ms-id"
+                                to={`/${network}/block/${blockId}?tab=RefBlocks`}
+                            >
+                                {txs ?? "--"}
+                            </Link>
+                        </div>}
                 </span>
             </div>
         </React.Fragment>
