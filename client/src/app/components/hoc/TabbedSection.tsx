@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
 import Modal from "../Modal";
 import { ModalData } from "../ModalProps";
 import Spinner from "../Spinner";
@@ -57,8 +58,25 @@ interface TabbedSectionProps {
  * @returns The React component TSX.
  */
 const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOptions }) => {
+    const history = useHistory();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
     const [selectedTab, setSelectedTab] = useState<number>(0);
     const TABS: string[] = [...Object.values(tabsEnum)];
+
+    useEffect(() => {
+        const tab = searchParams.get("tab");
+        const id = Object.keys(tabsEnum).indexOf(tab ?? "");
+        if (id !== -1) {
+            setSelectedTab(id);
+        }
+      }, [searchParams]);
+
+    const onTabSelected = (id: number) => {
+        const tabParam = new URLSearchParams();
+        tabParam.append("tab", Object.keys(tabsEnum)[id]);
+        history.push({ search: tabParam.toString() });
+    };
 
     const tabsView = (
         <div className="tabbed-section--tabs-wrapper">
@@ -85,7 +103,7 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                         className={classNames("tab-wrapper",
                             { "active": idx === selectedTab },
                             { "disabled": isDisabled })}
-                        onClick={() => setSelectedTab(idx)}
+                        onClick={() => onTabSelected(idx)}
                     >
                         <button
                             className="tab"
