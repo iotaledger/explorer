@@ -86,6 +86,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                             <MilestoneFeedAnalyics
                                 network={network}
                                 milestoneIndex={milestone.index}
+                                blockId={blockId}
                             />
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Timestamp</span>
