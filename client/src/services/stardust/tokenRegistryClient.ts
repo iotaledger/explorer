@@ -30,5 +30,22 @@ export class TokenRegistryClient {
 
         return response?.success ?? false;
     }
+
+    public async checkNativeToken(network: string, id: string): Promise<boolean> {
+        const checkNativeTokensPath = `api/network/${network}/native-tokens/${id}`;
+        let response;
+
+        try {
+            response = await FetchHelper.json<unknown, IWhitelistedResponse>(
+                this._endpoint,
+                checkNativeTokensPath,
+                "get"
+            );
+        } catch (e) {
+            console.log("Failed to check token registry", e);
+        }
+
+        return response?.success ?? false;
+    }
 }
 

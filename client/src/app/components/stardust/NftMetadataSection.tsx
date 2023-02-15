@@ -2,6 +2,7 @@ import { HexEncodedString } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import * as jsonschema from "jsonschema";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import nftSchemeIRC27 from "../../../assets/schemas/nft-schema-IRC27.json";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
@@ -45,8 +46,8 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId,
         }
     }, [metadata]);
 
-    const renderContent = (
-        nftMetadata ? (
+    const whitelistedContent = (
+        nftMetadata && isWhitelisted ? (
             <div className="section--data nft-metadata">
                 {(isSupportedImageFormat(nftMetadata?.type) ? (
                     <img
@@ -142,27 +143,60 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId,
                     }
                 </div>
             </div>
-        ) : (
+        ) : null
+    );
+
+    const notWhitelistedIRC27 = (
+        nftMetadata && !isWhitelisted ? (
+            <div className="section">
+                <div className="section--data">
+                    <p className="value margin-b-t">
+                        NFT Schema Standard is IRC27. Please consider submitting Collection Nft to the&nbsp;
+                        <Link
+                            className="value highlight"
+                            to={{ pathname: "https://github.com/iota-community/token-whitelist" }}
+                            target="_blank"
+                        >
+                            whitelist registry.
+                        </Link>
+                    </p>
+                    <DataToggle sourceData={metadata ?? ""} withSpacedHex={true} />
+                </div>
+            </div>
+        ) : null
+    );
+
+    const notIRC27Metadata = (
+        <div className="section">
             <div className="section--data">
                 <DataToggle sourceData={metadata ?? ""} withSpacedHex={true} />
             </div>
-        )
-    );
-
-    return (
-        <div className="section">
-            {metadata ? (
-                renderContent
-            ) :
-                (
-                    <div className="section--data">
-                        <p>
-                            There is no metadata for this Nft.
-                        </p>
-                    </div>
-                )}
         </div>
     );
+
+    const noMetadata = (
+        <div className="section">
+            <div className="section--data">
+                <p>
+                    There is no metadata for this Nft.
+                </p>
+            </div>
+        </div>
+    );
+
+
+    if (metadata) {
+        if (whitelistedContent) {
+            return whitelistedContent;
+        }
+        if (notWhitelistedIRC27) {
+            return notWhitelistedIRC27;
+        }
+        if (notIRC27Metadata) {
+            return notIRC27Metadata;
+        }
+    }
+    return noMetadata;
 };
 
 

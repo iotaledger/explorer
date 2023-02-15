@@ -3,13 +3,12 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient";
 
 /**
- * Use Token Registry NFT check hook
+ * Use Token Registry Native Tokens check hook
  * @param network The Network in context
- * @param issuerId The issuer id to check
- * @param nftId The nft id to check
+ * @param tokenId The token id to check
  * @returns The whitelisted boolean.
  */
-export function useTokenRegistryNftCheck(network: string, issuerId: string | null, nftId?: string): [
+export function useTokenRegistryNativeTokenCheck(network: string, tokenId: string | null): [
     boolean
 ] {
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
@@ -22,12 +21,12 @@ export function useTokenRegistryNftCheck(network: string, issuerId: string | nul
         // eslint-disable-next-line no-void
         void (async () => {
             if (client) {
-                const isNftWhitelisted = nftId ? await client.checkNft(network, nftId) : false;
-                const isCollectionWhitelisted = issuerId ? await client.checkNft(network, issuerId) : false;
-                setIsWhitelisted(isNftWhitelisted || isCollectionWhitelisted);
+                const isTokenWhitelisted = tokenId ? await client.checkNativeToken(network, tokenId) : false;
+
+                setIsWhitelisted(isTokenWhitelisted);
             }
         })();
-    }, [network, nftId, issuerId]);
+    }, [network, tokenId]);
 
     return [isWhitelisted];
 }
