@@ -3,13 +3,13 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient";
 
 /**
- * Use Token Registry hook
+ * Use Token Registry NFT check hook
  * @param network The Network in context
  * @param issuerId The issuer id to check
  * @param nftId The nft id to check
  * @returns The whitelisted boolean.
  */
-export function useTokenRegistry(network: string, issuerId: string | null, nftId?: string): [
+export function useTokenRegistryNftCheck(network: string, issuerId: string | null, nftId?: string): [
     boolean
 ] {
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);

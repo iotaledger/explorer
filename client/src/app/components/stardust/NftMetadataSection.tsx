@@ -4,7 +4,7 @@ import * as jsonschema from "jsonschema";
 import React, { useEffect, useState } from "react";
 import nftSchemeIRC27 from "../../../assets/schemas/nft-schema-IRC27.json";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
-import { useTokenRegistry } from "../../../helpers/hooks/useTokenRegistry";
+import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
@@ -36,7 +36,7 @@ interface NftMetadataSectionProps {
 
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId, issuerId, metadata }) => {
     const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
-    const [isWhitelisted] = useTokenRegistry(network, issuerId, nftId);
+    const [isWhitelisted] = useTokenRegistryNftCheck(network, issuerId, nftId);
     console.log("Nft is whitelisted:", isWhitelisted);
 
     useEffect(() => {
