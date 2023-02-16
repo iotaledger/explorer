@@ -113,16 +113,11 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         if (isBech32) {
             scrollToTop();
             setState({
-                // reset balances
-                balance: null,
-                sigLockedBalance: null,
-                storageRentBalance: null,
+                ...initialState,
                 bech32AddressDetails: addressDetails
             });
         } else {
-            setState({
-                bech32AddressDetails: null
-            });
+            setState(initialState);
         }
     }, [addressFromPath]);
 
@@ -169,15 +164,15 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
 
     useEffect(() => {
         if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
-            const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
-            const outputs = outputResponses.map<OutputTypes>(or => or.output);
+            const mergedOutputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
+            const outputs = mergedOutputResponses.map<OutputTypes>(or => or.output);
             const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
                 outputs,
                 rentStructure
             );
 
             setState({
-                addressOutputs: outputResponses,
+                addressOutputs: mergedOutputResponses,
                 storageRentBalance: storageRentBalanceUpdate
             });
         }
