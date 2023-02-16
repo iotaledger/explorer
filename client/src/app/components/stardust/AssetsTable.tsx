@@ -1,6 +1,6 @@
 import {
     ALIAS_OUTPUT_TYPE, BASIC_OUTPUT_TYPE,
-    FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE, OutputTypes
+    FOUNDRY_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE
 } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { IToken } from "../../../models/api/stardust/foundry/IToken";
@@ -10,7 +10,7 @@ import "./AssetsTable.scss";
 
 interface AssetsTableProps {
     networkId: string;
-    outputs: OutputTypes[] | undefined;
+    outputs: IOutputResponse[] | null;
     setTokenCount?: (count: number) => void;
 }
 
@@ -22,9 +22,14 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
     const [pageNumber, setPageNumber] = useState(1);
 
     useEffect(() => {
+        if (setTokenCount) {
+            setTokenCount(0);
+        }
+
         if (outputs) {
             const theTokens: IToken[] = [];
-            for (const output of outputs) {
+            for (const outputResponse of outputs) {
+                const output = outputResponse.output;
                 if (output.type === BASIC_OUTPUT_TYPE || output.type === ALIAS_OUTPUT_TYPE ||
                     output.type === FOUNDRY_OUTPUT_TYPE || output.type === NFT_OUTPUT_TYPE) {
                     for (const token of output.nativeTokens ?? []) {

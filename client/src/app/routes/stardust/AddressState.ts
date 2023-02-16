@@ -23,7 +23,7 @@ export interface IAddressState {
     balance: number | null;
     sigLockedBalance: number | null;
     storageRentBalance: number | null;
-    addressOutputs: IOutputResponse[] | undefined;
+    addressOutputs: IOutputResponse[] | null;
     addressBasicOutputs: IOutputResponse[] | null;
     isBasicOutputsLoading: boolean;
     addressAliasOutputs: IOutputResponse[] | null;
@@ -49,7 +49,7 @@ const initialState = {
     balance: null,
     sigLockedBalance: null,
     storageRentBalance: null,
-    addressOutputs: undefined,
+    addressOutputs: null,
     addressBasicOutputs: null,
     isBasicOutputsLoading: true,
     addressAliasOutputs: null,
@@ -111,16 +111,11 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         if (isBech32) {
             scrollToTop();
             setState({
-                // reset balances
-                balance: null,
-                sigLockedBalance: null,
-                storageRentBalance: null,
+                ...initialState,
                 bech32AddressDetails: addressDetails
             });
         } else {
-            setState({
-                bech32AddressDetails: null
-            });
+            setState(initialState);
         }
     }, [addressFromPath]);
 
@@ -167,15 +162,15 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
 
     useEffect(() => {
         if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
-            const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
-            const outputs = outputResponses.map<OutputTypes>(or => or.output);
+            const mergedOutputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
+            const outputs = mergedOutputResponses.map<OutputTypes>(or => or.output);
             const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
                 outputs,
                 rentStructure
             );
 
             setState({
-                addressOutputs: outputResponses,
+                addressOutputs: mergedOutputResponses,
                 storageRentBalance: storageRentBalanceUpdate
             });
         }

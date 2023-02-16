@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -32,7 +32,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [jobToStatus, setJobToStatus] = useState(
         new Map<string, PromiseStatus>().set("loadFoundryDetails", PromiseStatus.PENDING)
     );
-    const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
+    const [foundryOutput, setFoundryOutput] = useState<IOutputResponse>();
     const [foundryError, setFoundryError] = useState<string | undefined>();
     const [controllerAlias, setControllerAlias] = useState<string>();
 
@@ -53,7 +53,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
                             if (isMounted) {
-                                setFoundryOutput(theFoundryOutput);
+                                setFoundryOutput(response.foundryDetails);
                                 setControllerAlias(aliasId);
                             }
                         } else if (isMounted) {
@@ -92,13 +92,14 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 
     let foundryContent = null;
     if (foundryOutput) {
+        const output = foundryOutput.output as IFoundryOutput;
         const isMarketed = isMarketedNetwork(network);
-        const serialNumber = foundryOutput.serialNumber;
-        const balance = Number(foundryOutput.amount);
-        const tokenScheme = foundryOutput.tokenScheme.type;
-        const maximumSupply = Number(foundryOutput.tokenScheme.maximumSupply);
-        const mintedTokens = Number(foundryOutput.tokenScheme.mintedTokens);
-        const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
+        const serialNumber = output.serialNumber;
+        const balance = Number(output.amount);
+        const tokenScheme = output.tokenScheme.type;
+        const maximumSupply = Number(output.tokenScheme.maximumSupply);
+        const mintedTokens = Number(output.tokenScheme.mintedTokens);
+        const meltedTokens = Number(output.tokenScheme.meltedTokens);
 
         const controllerAliasBech32 = controllerAlias ?
             Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
@@ -217,7 +218,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                         <AssetsTable networkId={network} outputs={[foundryOutput]} />
                     )}
                 </div>
-                <FeaturesSection output={foundryOutput} />
+                <FeaturesSection output={output} />
             </React.Fragment>
         );
     }
