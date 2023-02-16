@@ -90,16 +90,15 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         (currentState, newState) => ({ ...currentState, ...newState }), initialState
     );
 
-    const [internalAddressDetails, setInternalAddressDetails] = useState<IBech32AddressDetails | null>(null);
-    const addressBech32: string | undefined = internalAddressDetails?.bech32;
-    const addressHex: string | undefined = internalAddressDetails?.hex;
+    const addressBech32: string | null = state.bech32AddressDetails?.bech32 ?? null;
+    const addressHex: string | null = state.bech32AddressDetails?.hex ?? null;
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
     const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, addressHex);
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressHex);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
-        network, internalAddressDetails ?? undefined
+        network, state.bech32AddressDetails
     );
 
     useEffect(() => {
@@ -118,12 +117,10 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
                 storageRentBalance: null,
                 bech32AddressDetails: addressDetails
             });
-            setInternalAddressDetails(addressDetails);
         } else {
             setState({
                 bech32AddressDetails: null
             });
-            setInternalAddressDetails(null);
         }
     }, [addressFromPath]);
 
