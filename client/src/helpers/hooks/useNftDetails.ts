@@ -15,7 +15,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * @param nftId The nft id
  * @returns The output responses and loading bool.
  */
-export function useNftDetails(network: string, nftId?: string):
+export function useNftDetails(network: string, nftId: string | null):
     [
         INftOutput | null,
         HexEncodedString | null,

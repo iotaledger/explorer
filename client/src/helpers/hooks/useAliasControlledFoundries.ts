@@ -11,7 +11,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * @param aliasAddress The alias address
  * @returns The alias foundries and loading bool.
  */
-export function useAliasControlledFoundries(network: string, aliasAddress?: IBech32AddressDetails):
+export function useAliasControlledFoundries(network: string, aliasAddress: IBech32AddressDetails | null):
     [
         string[] | null,
         boolean

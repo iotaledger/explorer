@@ -11,7 +11,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * @param aliasId The alias id
  * @returns The output response and loading bool.
  */
-export function useAliasDetails(network: string, aliasId?: string):
+export function useAliasDetails(network: string, aliasId: string | null):
     [
         IAliasOutput | null,
         boolean
