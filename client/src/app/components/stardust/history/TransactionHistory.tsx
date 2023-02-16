@@ -9,8 +9,8 @@ import "./TransactionHistory.scss";
 interface TransactionHistoryProps {
     network: string;
     address?: string;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    setDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
+    setLoading: (isLoadin: boolean) => void;
+    setDisabled?: (isDisabled: boolean) => void;
 }
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (

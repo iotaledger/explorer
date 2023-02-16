@@ -16,7 +16,7 @@ import { useIsMounted } from "./useIsMounted";
 export function useAssociatedOutputs(
     network: string,
     addressDetails: IBech32AddressDetails,
-    setOutputCount?: React.Dispatch<React.SetStateAction<number>>
+    setOutputCount?: (count: number) => void
 ): [IAssociation[], boolean] {
     const isMounted = useIsMounted();
     const [tangleCacheService] = useState(

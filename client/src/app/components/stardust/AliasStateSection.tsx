@@ -6,7 +6,7 @@ interface AliasStateSectionProps {
     /**
      * The Alias Output
      */
-    output?: IAliasOutput;
+    output: IAliasOutput | null;
 }
 
 const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => (
@@ -33,8 +33,5 @@ const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => (
     </div>
 );
 
-AliasStateSection.defaultProps = {
-    output: undefined
-};
-
 export default AliasStateSection;
+

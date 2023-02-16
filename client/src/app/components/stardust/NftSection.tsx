@@ -17,7 +17,7 @@ interface NftSectionProps {
     network: string;
     bech32Address?: string;
     outputs: IOutputResponse[] | null;
-    setNftCount?: React.Dispatch<React.SetStateAction<number>>;
+    setNftCount?: (count: number) => void;
 }
 
 export interface INftBase {

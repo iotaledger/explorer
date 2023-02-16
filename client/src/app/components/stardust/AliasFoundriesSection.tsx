@@ -6,12 +6,12 @@ import "./AliasFoundriesSection.scss";
 
 interface AliasFoundriesSectionProps {
     network: string;
-    foundries?: string[];
+    foundries: string[] | null;
 }
 
 const PAGE_SIZE = 10;
 
-const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, foundries = [] }) => {
+const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, foundries }) => {
     const isMounted = useIsMounted();
     const [page, setPage] = useState<string[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
@@ -20,7 +20,7 @@ const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, 
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        if (isMounted) {
+        if (isMounted && foundries) {
             setPage(foundries.slice(from, to));
         }
     }, [foundries, pageNumber]);
@@ -52,8 +52,5 @@ const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, 
     );
 };
 
-AliasFoundriesSection.defaultProps = {
-    foundries: []
-};
-
 export default AliasFoundriesSection;
+

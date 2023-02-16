@@ -11,7 +11,7 @@ import "./AssetsTable.scss";
 interface AssetsTableProps {
     networkId: string;
     outputs: OutputTypes[] | undefined;
-    setTokenCount?: React.Dispatch<React.SetStateAction<number>>;
+    setTokenCount?: (count: number) => void;
 }
 
 const TOKEN_PAGE_SIZE: number = 10;

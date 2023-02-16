@@ -21,7 +21,7 @@ interface IOutputDetailsMap {
 export function useAddressHistory(
     network: string,
     address?: string,
-    setDisabled?: React.Dispatch<React.SetStateAction<boolean>> | undefined
+    setDisabled?: (isDisabled: boolean) => void
 ): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
     const tangleService = useCallback(
