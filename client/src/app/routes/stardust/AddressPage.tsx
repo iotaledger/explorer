@@ -1,6 +1,5 @@
-import { ALIAS_ADDRESS_TYPE, Bech32Helper, IOutputResponse, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
-import { optional } from "@ruffy/ts-optional/dist/Optional";
-import React, { useContext, useEffect, useState } from "react";
+import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
 import associatedOuputsMessage from "../../../assets/modals/stardust/address/associated-outputs.json";
@@ -12,20 +11,7 @@ import aliasMainHeaderInfo from "../../../assets/modals/stardust/alias/main-head
 import stateMessage from "../../../assets/modals/stardust/alias/state.json";
 import nftMainHeaderInfo from "../../../assets/modals/stardust/nft/main-header.json";
 import nftMetadataMessage from "../../../assets/modals/stardust/nft/metadata.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
-import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
-import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
-import { useAliasControlledFoundries } from "../../../helpers/hooks/useAliasControlledFoundries";
-import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
-import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
-import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
-import { scrollToTop } from "../../../helpers/pageUtils";
-import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
@@ -39,17 +25,9 @@ import Bech32Address from "../../components/stardust/Bech32Address";
 import TransactionHistory from "../../components/stardust/history/TransactionHistory";
 import NftMetadataSection from "../../components/stardust/NftMetadataSection";
 import NftSection from "../../components/stardust/NftSection";
-import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
+import { useAddressPageState } from "./AddressState";
 import "./AddressPage.scss";
-
-
-interface IAddressPageLocationProps {
-    /**
-     * address details from location props
-     */
-    addressDetails: IBech32AddressDetails;
-}
 
 enum DEFAULT_TABS {
     Transactions = "Transactions",
@@ -68,101 +46,22 @@ enum NFT_TABS {
 }
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
-    { location, match: { params: { network, address } } }
+    { match: { params: { network, address } } }
 ) => {
-    const isMounted = useIsMounted();
-    const { bech32Hrp, rentStructure } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
-    const [bech32AddressDetails, setBech32AddressDetails] = useState<IBech32AddressDetails | null>(null);
-    const [balance, setBalance] = useState<number | null>(null);
-    const [sigLockedBalance, setSigLockedBalance] = useState<number | null>(null);
-    const [storageRentBalance, setStorageRentBalance] = useState<number | null>(null);
-    const [addressOutputs, setAddressOutputs] = useState<IOutputResponse[] | undefined>();
-    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, bech32AddressDetails?.bech32);
-    const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, bech32AddressDetails?.bech32);
-    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, bech32AddressDetails?.bech32);
-    const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, bech32AddressDetails?.hex);
-    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, bech32AddressDetails?.hex);
-    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
-        network, bech32AddressDetails ?? undefined
-    );
-    const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
-    const [isAddressHistoryDisabled, setIsAddressHistoryDisabled] = useState(false);
-    const [isAssociatedOutputsLoading, setIsAssociatedOutputsLoading] = useState(true);
-
-    const [tokensCount, setTokenCount] = useState<number>(0);
-    const [nftCount, setNftCount] = useState<number>(0);
-    const [associatedOutputCount, setAssociatedOutputCount] = useState<number>(0);
-
-    useEffect(() => {
-        const locationState = location.state as IAddressPageLocationProps;
-        const { addressDetails } = locationState?.addressDetails ? locationState :
-            { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
-
-        const isBech32 = Bech32Helper.matches(address, bech32Hrp);
-
-        if (isBech32) {
-            scrollToTop();
-            // reset balances
-            setBalance(null);
-            setSigLockedBalance(null);
-            setStorageRentBalance(null);
-            setBech32AddressDetails(addressDetails);
-        } else {
-            setBech32AddressDetails(null);
-        }
-    }, [address]);
-
-    useEffect(() => {
-        if (bech32AddressDetails) {
-            // eslint-disable-next-line no-void
-            void getAddressBalance();
-        }
-    }, [bech32AddressDetails]);
-
-    useEffect(() => {
-        if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
-            const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
-            const outputs = outputResponses.map<OutputTypes>(or => or.output);
-            const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
-                outputs,
-                rentStructure
-            );
-            setAddressOutputs(outputResponses);
-            setStorageRentBalance(storageRentBalanceUpdate);
-        }
-    }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
-
-    /**
-     * Fetch the address balance details.
-     */
-    async function getAddressBalance(): Promise<void> {
-        optional(bech32AddressDetails?.bech32).foreach(async addr => {
-            const response = await tangleCacheService.addressBalanceFromChronicle({
-                network,
-                address: addr
-            });
-
-            if (response?.totalBalance !== undefined) {
-                if (isMounted) {
-                    setBalance(response.totalBalance);
-                    setSigLockedBalance(response.sigLockedBalance ?? null);
-                }
-            } else {
-                // Fallback balance from iotajs (node)
-                const addressDetailsWithBalance = await tangleCacheService.addressBalance(
-                    { network, address: addr }
-                );
-
-                if (addressDetailsWithBalance && isMounted) {
-                    setBalance(Number(addressDetailsWithBalance.balance));
-                    setSigLockedBalance(null);
-                }
-            }
-        });
-    }
+    const [state, setState] = useAddressPageState(network, address);
+    const {
+        bech32AddressDetails, balance, sigLockedBalance, storageRentBalance,
+        addressOutputs, isBasicOutputsLoading,
+        isAliasOutputsLoading,
+        addressNftOutputs, isNftOutputsLoading,
+        nftMetadata, isNftDetailsLoading,
+        aliasOutput,
+        isAliasDetailsLoading,
+        aliasFoundries, isAliasFoundriesLoading,
+        isAddressHistoryLoading, isAddressHistoryDisabled,
+        isAssociatedOutputsLoading,
+        tokensCount, nftCount, associatedOutputCount
+    } = state;
 
     const addressBech32 = bech32AddressDetails?.bech32 ?? undefined;
     const addressType = bech32AddressDetails?.type ?? undefined;
@@ -243,36 +142,33 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
         }
     };
 
-    /**
-     * Tabbed sections.
-     */
     const defaultSections = [
         <TransactionHistory
             key={`txs-history-${address}`}
             network={network}
             address={addressBech32}
-            setLoading={setIsAddressHistoryLoading}
-            setDisabled={setIsAddressHistoryDisabled}
+            setLoading={isLoading => setState({ isAddressHistoryLoading: isLoading })}
+            setDisabled={isDisabled => setState({ isAddressHistoryDisabled: isDisabled })}
         />,
         <AssetsTable
             key={`assets-table-${address}`}
             networkId={network}
             outputs={addressOutputs?.map(output => output.output)}
-            setTokenCount={setTokenCount}
+            setTokenCount={count => setState({ tokensCount: count })}
         />,
         <NftSection
             key={`nft-section-${address}`}
             network={network}
             bech32Address={addressBech32}
             outputs={addressNftOutputs}
-            setNftCount={setNftCount}
+            setNftCount={count => setState({ nftCount: count })}
         />,
         <AssociatedOutputs
             key={`assoc-outputs-${address}`}
             network={network}
             addressDetails={bech32AddressDetails ?? {} as IBech32AddressDetails}
-            setOutputCount={setAssociatedOutputCount}
-            setIsLoading={setIsAssociatedOutputsLoading}
+            setOutputCount={count => setState({ associatedOutputCount: count })}
+            setIsLoading={isLoading => setState({ isAssociatedOutputsLoading: isLoading })}
         />
     ];
 

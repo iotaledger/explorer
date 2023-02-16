@@ -19,11 +19,11 @@ interface AssociatedOutputsProps {
     /**
      * Callback setter to report the associated outputs count.
      */
-    setOutputCount?: React.Dispatch<React.SetStateAction<number>>;
+    setOutputCount?: (count: number) => void;
     /**
      * Callback setter to report if the component is loading outputs.
      */
-    setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsLoading?: (isLoading: boolean) => void;
 }
 
 const AssociatedOutputs: React.FC<AssociatedOutputsProps> = (
