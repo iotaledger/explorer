@@ -1,4 +1,6 @@
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { FetchHelper } from "../../helpers/fetchHelper";
+import { NetworkService } from "../networkService";
 
 interface IWhitelistedResponse {
     success: boolean;
@@ -8,44 +10,54 @@ interface IWhitelistedResponse {
  * Class to handle requests to Token registry.
  */
 export class TokenRegistryClient {
-    private readonly _endpoint: string;
+    protected _networkService: NetworkService;
 
-    constructor(endpoint: string) {
-        this._endpoint = endpoint;
+
+    constructor() {
+        this._networkService = ServiceFactory.get<NetworkService>("network");
     }
 
     public async checkNft(network: string, id: string): Promise<boolean> {
+        const networkConfig = this._networkService.get(network);
+        const endpoint = networkConfig?.tokenRegistry;
         const checkNftPath = `api/network/${network}/nfts/${id}`;
         let response;
 
-        try {
-            response = await FetchHelper.json<unknown, IWhitelistedResponse>(
-                this._endpoint,
-                checkNftPath,
-                "get"
-            );
-        } catch (e) {
-            console.log("Failed to check token registry", e);
-        }
+        if (endpoint) {
+            try {
+                response = await FetchHelper.json<unknown, IWhitelistedResponse>(
+                    endpoint,
+                    checkNftPath,
+                    "get"
+                );
+            } catch (e) {
+                console.log("Failed to check token registry", e);
+            }
 
-        return response?.success ?? false;
+            return response?.success ?? false;
+        }
+        return true;
     }
 
     public async checkNativeToken(network: string, id: string): Promise<boolean> {
+        const networkConfig = this._networkService.get(network);
+        const endpoint = networkConfig?.tokenRegistry;
         const checkNativeTokensPath = `api/network/${network}/native-tokens/${id}`;
         let response;
 
-        try {
-            response = await FetchHelper.json<unknown, IWhitelistedResponse>(
-                this._endpoint,
-                checkNativeTokensPath,
-                "get"
-            );
-        } catch (e) {
-            console.log("Failed to check token registry", e);
+        if (endpoint) {
+            try {
+                response = await FetchHelper.json<unknown, IWhitelistedResponse>(
+                    endpoint,
+                    checkNativeTokensPath,
+                    "get"
+                );
+            } catch (e) {
+                console.log("Failed to check token registry", e);
+            }
+            return response?.success ?? false;
         }
-
-        return response?.success ?? false;
+        return true;
     }
 }
 

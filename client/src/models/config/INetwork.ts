@@ -65,4 +65,8 @@ export interface INetwork {
      * If Identity Resolver tool should be supported.
      */
     identityResolverEnabled?: boolean;
+    /**
+     * Url for token registry.
+     */
+    tokenRegistry?: string;
 }

@@ -27,8 +27,6 @@ import { TokenRegistryClient } from "./services/stardust/tokenRegistryClient";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const tokenRegistryEndpoint = (window as any).env.TOKEN_REGISTRY_ENDPOINT;
 
 initialiseServices().then(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -57,9 +55,7 @@ async function initialiseServices(): Promise<void> {
 
     ServiceFactory.register("identity", () => new IdentityService());
 
-    if (tokenRegistryEndpoint) {
-        ServiceFactory.register("token-registry", () => new TokenRegistryClient(tokenRegistryEndpoint));
-    }
+    ServiceFactory.register("token-registry", () => new TokenRegistryClient());
 
     const networkService = new NetworkService();
     await networkService.buildCache();
