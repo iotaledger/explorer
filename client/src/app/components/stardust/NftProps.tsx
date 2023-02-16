@@ -1,16 +1,12 @@
-import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
+import { INftBase } from "./NftSection";
 
 export interface NftProps {
     /**
      * ID of a NFT
      */
-    id: string;
+    nft: INftBase;
     /**
      * The context networkId
      */
     network: string;
-    /**
-     * NFT Metadata
-     */
-    metadata?: INftImmutableMetadata;
 }

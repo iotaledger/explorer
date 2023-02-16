@@ -1,8 +1,9 @@
 import { INftAddress, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
+import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
 import { NftProps } from "./NftProps";
@@ -14,19 +15,32 @@ import "./Nft.scss";
  */
 const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
-const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
+const Nft: React.FC<NftProps> = ({ network, nft }) => {
+    const id = nft.id;
+    const metadata = nft.metadata;
     const { bech32Hrp } = useContext(NetworkContext);
     const address: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: id };
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
+    const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, id);
+    const [name, setName] = useState<string | undefined>();
+    const [uri, setUri] = useState<string | undefined>();
+
+    useEffect(() => {
+        if (metadata && isWhitelisted) {
+            setName(metadata.name);
+            setUri(metadata.uri);
+        }
+    }, [isWhitelisted]);
+
     const nftImage = !metadata ? (
         <img
             className="nft-card__image"
             src={metadataMissingPlaceholder}
         />
-    ) : (isSupportedImageFormat(metadata.type) ? (
+    ) : (uri && isSupportedImageFormat(metadata.type) ? (
         <img
             className="nft-card__image"
-            src={metadata?.uri}
+            src={uri}
             alt="bundle"
         />
     ) : (
@@ -44,7 +58,7 @@ const Nft: React.FC<NftProps> = ({ id, network, metadata }) => {
                 >
                     {nftImage}
                 </Link>
-                {metadata?.name && <span className="nft-card__name truncate">{metadata.name}</span>}
+                {name && <span className="nft-card__name truncate">{name}</span>}
             </div>
             <span className="nft-card__id">
                 <TruncatedId

@@ -27,7 +27,7 @@ export class Bech32AddressHelper {
                 if (result) {
                     bech32 = address;
                     type = result.addressType;
-                    hex = Converter.bytesToHex(result.addressBytes);
+                    hex = Converter.bytesToHex(result.addressBytes, true);
                 }
             } catch {
             }

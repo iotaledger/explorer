@@ -1,7 +1,10 @@
-import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
+import { HexEncodedString, INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
+import * as jsonschema from "jsonschema";
 import React from "react";
 import Tooltip from "../../app/components/Tooltip";
-
+import nftSchemeIRC27 from "../../assets/schemas/nft-schema-IRC27.json";
+import { INftImmutableMetadata } from "../../models/api/stardust/nft/INftImmutableMetadata";
 /**
  * The id of the Genesis block.
  */
@@ -60,4 +63,22 @@ export function formatSpecialBlockId(id: string): React.ReactNode {
         );
     }
     return id;
+}
+
+
+/**
+ * Tries to parse hex data into NFT immutable metadata (tip-27).
+ * @param metadataHex The encoded data.
+ * @returns The parsed INftImmutableMetadata or undefined.
+ */
+export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
+    const validator = new jsonschema.Validator();
+    try {
+        const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
+        const result = validator.validate(json, nftSchemeIRC27);
+
+        if (result.valid) {
+            return json as INftImmutableMetadata;
+        }
+    } catch { }
 }
