@@ -39,7 +39,7 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
                 milestoneInterval: n.milestoneInterval,
                 circulatingSupply: n.circulatingSupply,
                 identityResolverEnabled: n.identityResolverEnabled,
-                tokenRegistry: n.tokenRegistry
+                tokenRegistryEndpoint: n.tokenRegistryEndpoint
             }))
     };
 }

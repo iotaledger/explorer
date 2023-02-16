@@ -96,6 +96,11 @@ export interface INetwork {
     feedEndpoint?: string;
 
     /**
+     * Url endpoint for token registry.
+     */
+    tokenRegistryEndpoint?: string;
+
+    /**
      * The address of the coordinator.
      */
     coordinatorAddress?: string;
@@ -156,9 +161,4 @@ export interface INetwork {
      * If Identity Resolver tool should be supported.
      */
     identityResolverEnabled?: boolean;
-
-    /**
-     * Url for token registry.
-     */
-    tokenRegistry?: boolean;
 }

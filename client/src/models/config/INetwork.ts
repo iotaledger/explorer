@@ -66,7 +66,7 @@ export interface INetwork {
      */
     identityResolverEnabled?: boolean;
     /**
-     * Url for token registry.
+     * Url endpoint for token registry.
      */
-    tokenRegistry?: string;
+    tokenRegistryEndpoint?: string;
 }
