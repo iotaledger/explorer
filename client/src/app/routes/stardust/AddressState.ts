@@ -1,6 +1,6 @@
 import { Bech32Helper, IAliasOutput, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
 import { Reducer, useContext, useEffect, useReducer, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
@@ -16,6 +16,7 @@ import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import NetworkContext from "../../context/NetworkContext";
+import { AddressRouteProps } from "../AddressRouteProps";
 
 export interface IAddressState {
     bech32AddressDetails: IBech32AddressDetails | null;
@@ -76,31 +77,10 @@ interface IAddressPageLocationProps {
     addressDetails: IBech32AddressDetails;
 }
 
-const useAddressData = (network: string, addressDetails: IBech32AddressDetails | null) => {
-    const addressBech32: string | undefined = addressDetails?.bech32;
-    const addressHex: string | undefined = addressDetails?.hex;
-    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
-    const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
-    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
-    const [nftOutput, nftMetadata, isNftDetailsLoading] = useNftDetails(network, addressHex);
-    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressHex);
-    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(network, addressDetails ?? undefined);
-    return {
-        addressBasicOutputs, isBasicOutputsLoading,
-        addressAliasOutputs, isAliasOutputsLoading,
-        addressNftOutputs, isNftOutputsLoading,
-        nftOutput, nftMetadata, isNftDetailsLoading,
-        aliasOutput, isAliasDetailsLoading,
-        aliasFoundries, isAliasFoundriesLoading
-    };
-};
-
-export const useAddressPageState = (
-    network: string,
-    addressFromPath: string
-): [IAddressState, React.Dispatch<Partial<IAddressState>>] => {
+export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IAddressState>>] => {
     const isMounted = useIsMounted();
     const location = useLocation();
+    const { network, address: addressFromPath } = useParams<AddressRouteProps>();
     const { bech32Hrp, rentStructure } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
@@ -110,7 +90,17 @@ export const useAddressPageState = (
         (currentState, newState) => ({ ...currentState, ...newState }), initialState
     );
 
-    const addressData = useAddressData(network, state.bech32AddressDetails);
+    const [internalAddressDetails, setInternalAddressDetails] = useState<IBech32AddressDetails | null>(null);
+    const addressBech32: string | undefined = internalAddressDetails?.bech32;
+    const addressHex: string | undefined = internalAddressDetails?.hex;
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
+    const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
+    const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, addressHex);
+    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressHex);
+    const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
+        network, internalAddressDetails ?? undefined
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -128,10 +118,12 @@ export const useAddressPageState = (
                 storageRentBalance: null,
                 bech32AddressDetails: addressDetails
             });
+            setInternalAddressDetails(addressDetails);
         } else {
             setState({
                 bech32AddressDetails: null
             });
+            setInternalAddressDetails(null);
         }
     }, [addressFromPath]);
 
@@ -166,12 +158,17 @@ export const useAddressPageState = (
 
     useEffect(() => {
         setState({
-            ...addressData
+            addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
+            addressNftOutputs, isNftOutputsLoading, nftMetadata, isNftDetailsLoading,
+            aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading
         });
-    }, [addressData]);
+    }, [
+        addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
+        addressNftOutputs, isNftOutputsLoading, nftMetadata, isNftDetailsLoading,
+        aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading
+    ]);
 
     useEffect(() => {
-        const { addressBasicOutputs, addressAliasOutputs, addressNftOutputs } = state;
         if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
             const outputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
             const outputs = outputResponses.map<OutputTypes>(or => or.output);
@@ -185,7 +182,7 @@ export const useAddressPageState = (
                 storageRentBalance: storageRentBalanceUpdate
             });
         }
-    }, [state.addressBasicOutputs, state.addressAliasOutputs, state.addressNftOutputs]);
+    }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
 
     return [state, setState];
 };

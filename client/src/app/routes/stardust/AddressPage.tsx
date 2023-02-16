@@ -48,7 +48,7 @@ enum NFT_TABS {
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     { match: { params: { network, address } } }
 ) => {
-    const [state, setState] = useAddressPageState(network, address);
+    const [state, setState] = useAddressPageState();
     const {
         bech32AddressDetails, balance, sigLockedBalance, storageRentBalance,
         addressOutputs, isBasicOutputsLoading,
