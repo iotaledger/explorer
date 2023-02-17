@@ -58,7 +58,7 @@ class Header extends Component<HeaderProps, HeaderState> {
      */
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
-        const isShimmer = isShimmerNetwork(currentNetwork?.network);
+        const isShimmer = isShimmerNetwork(currentNetwork?.protocolVersion);
         const isMarketed = isMarketedNetwork(currentNetwork?.network);
 
         return (
