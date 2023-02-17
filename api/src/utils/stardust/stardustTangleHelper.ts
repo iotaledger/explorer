@@ -11,6 +11,7 @@ import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResp
 import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
+import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
@@ -109,6 +110,25 @@ export class StardustTangleHelper {
             return {
                 metadata
             };
+        }
+    }
+
+    /**
+     * Get the block details.
+     * @param network The network to find the items on.
+     * @param blockId The block id to get the details.
+     * @returns The item details.
+     */
+    public static async blockChildren(network: INetwork, blockId: string): Promise<IBlockChildrenResponse> {
+        blockId = HexHelper.addPrefix(blockId);
+        const blockChildrenResponse = await this.tryFetchPermanodeThenNode<string, IBlockChildrenResponse>(
+            blockId,
+            "blockMetadata",
+            network
+        );
+
+        if (blockChildrenResponse) {
+            return blockChildrenResponse;
         }
     }
 
