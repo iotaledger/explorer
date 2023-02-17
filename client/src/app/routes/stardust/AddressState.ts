@@ -30,11 +30,12 @@ export interface IAddressState {
     isAliasOutputsLoading: boolean;
     addressNftOutputs: IOutputResponse[] | null;
     isNftOutputsLoading: boolean;
-    nftMetadata: string | undefined;
+    nftMetadata: string | null;
+    nftIssuerId: string | null;
     isNftDetailsLoading: boolean;
-    aliasOutput: IAliasOutput | undefined;
+    aliasOutput: IAliasOutput | null;
     isAliasDetailsLoading: boolean;
-    aliasFoundries: string[] | undefined;
+    aliasFoundries: string[] | null;
     isAliasFoundriesLoading: boolean;
     isAddressHistoryLoading: boolean;
     isAddressHistoryDisabled: boolean;
@@ -56,11 +57,12 @@ const initialState = {
     isAliasOutputsLoading: true,
     addressNftOutputs: null,
     isNftOutputsLoading: true,
-    nftMetadata: undefined,
+    nftMetadata: null,
+    nftIssuerId: null,
     isNftDetailsLoading: true,
-    aliasOutput: undefined,
+    aliasOutput: null,
     isAliasDetailsLoading: true,
-    aliasFoundries: undefined,
+    aliasFoundries: null,
     isAliasFoundriesLoading: true,
     isAddressHistoryLoading: true,
     isAddressHistoryDisabled: false,
@@ -70,10 +72,10 @@ const initialState = {
     associatedOutputCount: 0
 };
 
+/**
+ * Route Location Props
+ */
 interface IAddressPageLocationProps {
-    /**
-     * address details from location props
-     */
     addressDetails: IBech32AddressDetails;
 }
 
@@ -95,7 +97,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
-    const [, nftMetadata, isNftDetailsLoading] = useNftDetails(network, addressHex);
+    const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(network, addressHex);
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressHex);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
         network, state.bech32AddressDetails
@@ -151,12 +153,12 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     useEffect(() => {
         setState({
             addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
-            addressNftOutputs, isNftOutputsLoading, nftMetadata, isNftDetailsLoading,
+            addressNftOutputs, isNftOutputsLoading, nftMetadata, nftIssuerId: issuerId, isNftDetailsLoading,
             aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading
         });
     }, [
         addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
-        addressNftOutputs, isNftOutputsLoading, nftMetadata, isNftDetailsLoading,
+        addressNftOutputs, isNftOutputsLoading, nftMetadata, issuerId, isNftDetailsLoading,
         aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading
     ]);
 

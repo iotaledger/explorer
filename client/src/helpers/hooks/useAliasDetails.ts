@@ -13,13 +13,13 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  */
 export function useAliasDetails(network: string, aliasId: string | null):
     [
-        IAliasOutput | undefined,
+        IAliasOutput | null,
         boolean
     ] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [aliasOutput, setAliasOutput] = useState<IAliasOutput | undefined>();
+    const [aliasOutput, setAliasOutput] = useState<IAliasOutput | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

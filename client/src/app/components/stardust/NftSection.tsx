@@ -1,15 +1,17 @@
 import {
-    HexEncodedString, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_OUTPUT_TYPE, TransactionHelper
+    ALIAS_ADDRESS_TYPE,
+    ED25519_ADDRESS_TYPE,
+    IIssuerFeature, IMetadataFeature, IOutputResponse,
+    ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_ADDRESS_TYPE, NFT_OUTPUT_TYPE, TransactionHelper
 } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
-import * as jsonschema from "jsonschema";
+
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
+import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
-import nftSchemeIRC27 from "./../../../assets/schemas/nft-schema-IRC27.json";
 
 interface NftSectionProps {
     network: string;
@@ -18,8 +20,9 @@ interface NftSectionProps {
     setNftCount?: (count: number) => void;
 }
 
-interface INftBase {
+export interface INftBase {
     id: string;
+    issuerId: string | null;
     metadata?: INftImmutableMetadata;
 }
 
@@ -55,8 +58,30 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                         feature => feature.type === METADATA_FEATURE_TYPE
                     ) as IMetadataFeature;
 
+                    const issuerFeature = nftOutput.immutableFeatures?.find(
+                        feature => feature.type === ISSUER_FEATURE_TYPE
+                    ) as IIssuerFeature;
+
+                    let issuerId = null;
+                    if (issuerFeature) {
+                        switch (issuerFeature.address.type) {
+                            case ED25519_ADDRESS_TYPE:
+                                issuerId = issuerFeature.address.pubKeyHash;
+                            break;
+                            case ALIAS_ADDRESS_TYPE:
+                                issuerId = issuerFeature.address.aliasId;
+                            break;
+                            case NFT_ADDRESS_TYPE:
+                                issuerId = issuerFeature.address.nftId;
+                            break;
+                            default:
+                            break;
+                        }
+                    }
+
                     theNfts.push({
                         id: nftId,
+                        issuerId,
                         metadata: metadataFeature ? tryParseNftMetadata(metadataFeature.data) : undefined
                     });
                 }
@@ -88,9 +113,8 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     {page?.map((nft, idx) => (
                         <Nft
                             key={idx}
-                            id={nft.id}
+                            nft={nft}
                             network={network}
-                            metadata={nft.metadata}
                         />
                     ))}
                 </div>
@@ -106,23 +130,6 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
         ) : null
     );
 };
-
-/**
- * Tries to parse hex data into NFT immutable metadata (tip-27).
- * @param metadataHex The encoded data.
- * @returns The parsed INftImmutableMetadata or undefined.
- */
-function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
-    const validator = new jsonschema.Validator();
-    try {
-        const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
-        const result = validator.validate(json, nftSchemeIRC27);
-
-        if (result.valid) {
-            return json as INftImmutableMetadata;
-        }
-    } catch { }
-}
 
 NftSection.defaultProps = {
     bech32Address: undefined,

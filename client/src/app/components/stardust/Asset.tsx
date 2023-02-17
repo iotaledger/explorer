@@ -5,6 +5,7 @@ import { Converter } from "@iota/util.js-stardust";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useTokenRegistryNativeTokenCheck } from "../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
 import { ITokenMetadata } from "../../../models/api/stardust/foundry/ITokenMetadata";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
@@ -20,15 +21,18 @@ const Asset: React.FC<AssetProps> = (
     { network, tableFormat, token }
 ) => {
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>(null);
+    const [isWhitelisted] = useTokenRegistryNativeTokenCheck(network, token.id);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
 
     useEffect(() => {
-        // eslint-disable-next-line no-void
-        void loadTokenDetails(token.id);
-    }, []);
+        if (isWhitelisted) {
+            // eslint-disable-next-line no-void
+            void loadTokenDetails(token.id);
+        }
+    }, [isWhitelisted]);
 
     const loadTokenDetails = async (foundryId: string): Promise<void> => {
         if (!isLoading) {

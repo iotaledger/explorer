@@ -13,13 +13,13 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  */
 export function useAliasControlledFoundries(network: string, aliasAddress: IBech32AddressDetails | null):
     [
-        string[] | undefined,
+        string[] | null,
         boolean
     ] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [aliasFoundries, setAliasFoundries] = useState<string[] | undefined>();
+    const [aliasFoundries, setAliasFoundries] = useState<string[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

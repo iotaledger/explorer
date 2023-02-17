@@ -1,4 +1,7 @@
-import { HexEncodedString, IMetadataFeature, INftOutput, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import {
+    ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, HexEncodedString, IIssuerFeature,
+    IMetadataFeature, INftOutput, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_ADDRESS_TYPE
+} from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -14,19 +17,24 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  */
 export function useNftDetails(network: string, nftId: string | null):
     [
-        INftOutput | undefined,
-        HexEncodedString |undefined,
+        INftOutput | null,
+        HexEncodedString | null,
+        string | null,
         boolean
     ] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [nftOutput, setNftOutput] = useState<INftOutput | undefined>();
-    const [nftMetadata, setNftMetadata] = useState<HexEncodedString | undefined>();
+    const [nftOutput, setNftOutput] = useState<INftOutput | null>(null);
+    const [nftMetadata, setNftMetadata] = useState<HexEncodedString | null>(null);
+    const [nftIssuerId, setNftIssuerId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
+        setNftMetadata(null);
+        setNftOutput(null);
+        setNftIssuerId(null);
         if (nftId) {
             // eslint-disable-next-line no-void
             void (async () => {
@@ -41,8 +49,30 @@ export function useNftDetails(network: string, nftId: string | null):
                             feature => feature.type === METADATA_FEATURE_TYPE
                         ) as IMetadataFeature;
 
+                        const issuerFeature = output.immutableFeatures?.find(
+                            feature => feature.type === ISSUER_FEATURE_TYPE
+                        ) as IIssuerFeature;
+
+                        let issuerId = null;
+                        if (issuerFeature) {
+                            switch (issuerFeature.address.type) {
+                                case ED25519_ADDRESS_TYPE:
+                                    issuerId = issuerFeature.address.pubKeyHash;
+                                break;
+                                case ALIAS_ADDRESS_TYPE:
+                                    issuerId = issuerFeature.address.aliasId;
+                                break;
+                                case NFT_ADDRESS_TYPE:
+                                    issuerId = issuerFeature.address.nftId;
+                                break;
+                                default:
+                                break;
+                            }
+                        }
+
+                        setNftMetadata(metadataFeature?.data ?? null);
                         setNftOutput(output);
-                        setNftMetadata(metadataFeature.data);
+                        setNftIssuerId(issuerId);
                     }
                 }).finally(() => {
                     setIsLoading(false);
@@ -53,6 +83,6 @@ export function useNftDetails(network: string, nftId: string | null):
         }
     }, [network, nftId]);
 
-    return [nftOutput, nftMetadata, isLoading];
+    return [nftOutput, nftMetadata, nftIssuerId, isLoading];
 }
 

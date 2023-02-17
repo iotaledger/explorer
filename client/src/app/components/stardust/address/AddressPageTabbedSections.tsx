@@ -124,7 +124,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         addressOutputs, isBasicOutputsLoading,
         isAliasOutputsLoading,
         addressNftOutputs, isNftOutputsLoading,
-        nftMetadata, isNftDetailsLoading,
+        nftMetadata, nftIssuerId, isNftDetailsLoading,
         aliasOutput, isAliasDetailsLoading,
         aliasFoundries, isAliasFoundriesLoading,
         isAddressHistoryLoading, isAddressHistoryDisabled,
@@ -137,6 +137,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     }
 
     const addressBech32 = bech32AddressDetails.bech32;
+    const addressHex = bech32AddressDetails.hex;
     const addressType = bech32AddressDetails.type;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
 
@@ -185,6 +186,9 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const nftAddressSections = addressType !== NFT_ADDRESS_TYPE ? null : [
         <NftMetadataSection
             key={`nft-meta-${addressBech32}`}
+            network={network}
+            nftId={addressHex}
+            issuerId={nftIssuerId}
             metadata={nftMetadata}
         />
     ];
