@@ -158,6 +158,17 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get the block details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async blockChildren(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
+        return this.callApi<unknown, IBlockDetailsResponse>(
+            `stardust/block/metadata/${request.network}/${request.blockId}`, "get"
+        );
+    }
+
+    /**
      * Get the transaction included block.
      * @param request The request to send.
      * @returns The response from the request.
