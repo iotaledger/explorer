@@ -47,7 +47,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     const networkConfig = networks.find(n => n.network === network);
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
     const currentNetwork = networkConfig?.network;
-    const isShimmer = isShimmerNetwork(networkConfig?.network);
+    const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
     const isStardust = networkConfig?.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;

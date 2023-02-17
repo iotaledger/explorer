@@ -91,9 +91,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             latestMilestoneIndex, networkAnalytics
         } = this.state;
 
-        const { network } = this.props.match.params;
         const { tokenInfo } = this.context;
-        const isShimmer = isShimmerNetwork(network);
+        const isShimmer = isShimmerNetwork(networkConfig.protocolVersion);
 
         return (
             <div className="landing-stardust">
