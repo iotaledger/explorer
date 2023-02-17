@@ -1,4 +1,4 @@
-import { Bech32Helper, IAliasOutput, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
+import { Bech32Helper, HexEncodedString, IAliasOutput, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
 import { Reducer, useContext, useEffect, useReducer, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -30,7 +30,7 @@ export interface IAddressState {
     isAliasOutputsLoading: boolean;
     addressNftOutputs: IOutputResponse[] | null;
     isNftOutputsLoading: boolean;
-    nftMetadata: string | null;
+    nftMetadata: HexEncodedString | null;
     nftIssuerId: string | null;
     isNftDetailsLoading: boolean;
     aliasOutput: IAliasOutput | null;

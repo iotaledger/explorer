@@ -1,9 +1,9 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
+import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
@@ -19,29 +19,22 @@ interface NftMetadataSectionProps {
      * The network in context.
      */
     network: string;
+
     /**
-     * The hex NftId of this NFT
+     * The nft.
      */
-    nftId?: string;
-    /**
-     * The hex id of the immutable issuer.
-     */
-    issuerId: string | null;
-    /**
-     * NFT Metadata
-     */
-    metadata: HexEncodedString | null;
+    nft: INftBase;
 }
 
-const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId, issuerId, metadata }) => {
+const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft }) => {
     const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
-    const [isWhitelisted] = useTokenRegistryNftCheck(network, issuerId, nftId);
+    const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
 
     useEffect(() => {
-        if (metadata) {
-            setNftMetadata(tryParseNftMetadata(metadata));
+        if (nft.metadata) {
+            setNftMetadata(tryParseNftMetadata(nft.metadata));
         }
-    }, [metadata]);
+    }, [nft.metadata]);
 
     const whitelistedNft = (
         nftMetadata && isWhitelisted ? (
@@ -159,7 +152,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId,
                             whitelist registry.
                         </Link>
                     </p>
-                    <DataToggle sourceData={metadata ?? ""} withSpacedHex={true} />
+                    <DataToggle sourceData={nft.metadata ?? ""} withSpacedHex={true} />
                 </div>
             </div>
         ) : null
@@ -168,7 +161,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId,
     const notIRC27Metadata = (
         <div className="section">
             <div className="section--data">
-                <DataToggle sourceData={metadata ?? ""} withSpacedHex={true} />
+                <DataToggle sourceData={nft.metadata ?? ""} withSpacedHex={true} />
             </div>
         </div>
     );
@@ -183,7 +176,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nftId,
         </div>
     );
 
-    if (metadata) {
+    if (nft.metadata) {
         if (whitelistedNft) {
             return whitelistedNft;
         }
@@ -209,9 +202,5 @@ function isSupportedImageFormat(nftType: string | undefined): boolean {
 
     return SUPPORTED_IMAGE_FORMATS.has(nftType);
 }
-
-NftMetadataSection.defaultProps = {
-    nftId: undefined
-};
 
 export default NftMetadataSection;

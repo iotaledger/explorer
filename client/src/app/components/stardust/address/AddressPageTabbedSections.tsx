@@ -137,9 +137,10 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     }
 
     const addressBech32 = bech32AddressDetails.bech32;
-    const addressHex = bech32AddressDetails.hex;
+    const addressHex = bech32AddressDetails.hex ?? "";
     const addressType = bech32AddressDetails.type;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
+    const nft = { nftId: addressHex, issuerId: nftIssuerId, metadata: nftMetadata };
 
     const defaultSections = [
         <TransactionHistory
@@ -187,9 +188,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         <NftMetadataSection
             key={`nft-meta-${addressBech32}`}
             network={network}
-            nftId={addressHex}
-            issuerId={nftIssuerId}
-            metadata={nftMetadata}
+            nft={nft}
         />
     ];
 

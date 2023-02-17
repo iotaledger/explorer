@@ -5,6 +5,7 @@ import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-met
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
@@ -16,8 +17,8 @@ import "./Nft.scss";
 const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
 const Nft: React.FC<NftProps> = ({ network, nft }) => {
-    const id = nft.id;
-    const metadata = nft.metadata;
+    const id = nft.nftId;
+    const metadata = nft.metadata ? tryParseNftMetadata(nft.metadata) : undefined;
     const { bech32Hrp } = useContext(NetworkContext);
     const address: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: id };
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);

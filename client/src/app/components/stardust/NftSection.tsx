@@ -8,8 +8,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
-import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
-import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
+import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import Pagination from "../../components/Pagination";
 import Nft from "../../components/stardust/Nft";
 
@@ -18,12 +17,6 @@ interface NftSectionProps {
     bech32Address?: string;
     outputs: IOutputResponse[] | null;
     setNftCount?: (count: number) => void;
-}
-
-export interface INftBase {
-    id: string;
-    issuerId: string | null;
-    metadata?: INftImmutableMetadata;
 }
 
 const PAGE_SIZE = 10;
@@ -80,9 +73,9 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     }
 
                     theNfts.push({
-                        id: nftId,
+                        nftId,
                         issuerId,
-                        metadata: metadataFeature ? tryParseNftMetadata(metadataFeature.data) : undefined
+                        metadata: metadataFeature.data ?? undefined
                     });
                 }
             }
