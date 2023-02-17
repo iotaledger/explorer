@@ -165,7 +165,6 @@ export class TransactionsHelper {
     /**
      * Sort inputs and outputs in assending order by index.
      * @param items Inputs or Outputs.
-     * @returns Sorted inputs or outputs.
      */
     public static sortInputsAndOuputsByIndex(items: IInput[] | IOutput[]) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -187,6 +186,12 @@ export class TransactionsHelper {
     public static convertToBigEndian(index: string) {
         const bigEndian = [];
         let hexLength = index.length;
+
+        if (hexLength % 2 !== 0) {
+            index = "0".concat(index);
+            hexLength = index.length;
+        }
+
         while (hexLength >= 0) {
             const slicedBits = index.slice(hexLength - 2, hexLength);
             bigEndian.push(slicedBits);
