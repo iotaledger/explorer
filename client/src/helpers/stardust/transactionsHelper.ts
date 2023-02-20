@@ -41,6 +41,7 @@ export class TransactionsHelper {
         const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
         let transferTotal = 0;
+        let sortedOutputs: IOutput[] = [];
 
         if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             const payload: ITransactionPayload = block.payload;
@@ -152,9 +153,52 @@ export class TransactionsHelper {
                     }
                 }
             }
+
+            sortedOutputs = [...outputs, ...remainderOutputs];
+            this.sortInputsAndOuputsByIndex(sortedOutputs);
+            this.sortInputsAndOuputsByIndex(inputs);
         }
 
-        return { inputs, unlocks, outputs: [...outputs, ...remainderOutputs], unlockAddresses, transferTotal };
+        return { inputs, unlocks, outputs: sortedOutputs, unlockAddresses, transferTotal };
+    }
+
+    /**
+     * Sort inputs and outputs in assending order by index.
+     * @param items Inputs or Outputs.
+     */
+    public static sortInputsAndOuputsByIndex(items: IInput[] | IOutput[]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items.sort((a: any, b: any) => {
+            const firstIndex: string = a.id ? a.id.slice(-4) : a.outputId.slice(-4);
+            const secondIndex: string = b.id ? b.id.slice(-4) : b.outputId.slice(-4);
+            const firstFormattedIndex = this.convertToBigEndian(firstIndex);
+            const secondFormattedIndex = this.convertToBigEndian(secondIndex);
+
+            return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
+        });
+    }
+
+    /**
+     * Convert little endian to big endian.
+     * @param index Output index in little endian format.
+     * @returns Output index in big endian format.
+     */
+    public static convertToBigEndian(index: string) {
+        const bigEndian = [];
+        let hexLength = index.length;
+
+        if (hexLength % 2 !== 0) {
+            index = "0".concat(index);
+            hexLength = index.length;
+        }
+
+        while (hexLength >= 0) {
+            const slicedBits = index.slice(hexLength - 2, hexLength);
+            bigEndian.push(slicedBits);
+            hexLength -= 2;
+        }
+
+        return bigEndian.join("");
     }
 
     public static computeTransactionIdFromTransactionPayload(payload: ITransactionPayload) {
