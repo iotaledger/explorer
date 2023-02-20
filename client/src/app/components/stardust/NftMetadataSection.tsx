@@ -14,6 +14,8 @@ import "./NftMetadataSection.scss";
  */
 const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
+const MESSAGE_NFT_SCHEMA_STANDARD = "NFT Schema Standard is IRC27. Please consider submitting an entry to the";
+
 interface NftMetadataSectionProps {
     /**
      * The network in context.
@@ -143,13 +145,13 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
             <div className="section">
                 <div className="section--data">
                     <p className="value margin-b-t">
-                        NFT Schema Standard is IRC27. Please consider submitting Collection Nft to the&nbsp;
+                        {MESSAGE_NFT_SCHEMA_STANDARD}&nbsp;
                         <Link
                             className="value highlight"
                             to={{ pathname: "https://github.com/iota-community/token-whitelist" }}
                             target="_blank"
                         >
-                            whitelist registry.
+                            Token Registry.
                         </Link>
                     </p>
                     <DataToggle sourceData={nft.metadata ?? ""} withSpacedHex={true} />

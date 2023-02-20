@@ -42,7 +42,10 @@
             "description": "name of the artist"
         },
         "attributes": {
-            "type": "array",
+            "oneOf": [
+                { "type": "object" },
+                { "type": "array"}
+            ],
             "description": "array containing any additional data as objects."
         }
     },
