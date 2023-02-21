@@ -5,7 +5,7 @@ import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-met
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
+import { getIPFSHash, getIpfsLink, tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
@@ -14,7 +14,7 @@ import "./Nft.scss";
 /**
  * Supported image MIME formats.
  */
-const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
+const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
 
 const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const id = nft.nftId;
@@ -29,9 +29,33 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     useEffect(() => {
         if (metadata && isWhitelisted) {
             setName(metadata.name);
-            setUri(metadata.uri);
+            const ipfsHash = getIPFSHash(metadata.uri);
+            if (ipfsHash) {
+                // eslint-disable-next-line no-void
+                void (async () => {
+                    const link = await getIpfsLink(ipfsHash);
+                    setUri(link);
+                })();
+            } else {
+                setUri(metadata.uri);
+            }
         }
     }, [isWhitelisted]);
+
+    const image = metadata?.type === "video/mp4" ? (
+        <video
+            className="nft-card__image"
+            src={uri}
+            controls
+            autoPlay
+        />
+    ) : (
+        <img
+            className="nft-card__image"
+            src={uri}
+            alt="nft image"
+        />
+    );
 
     const nftImage = !metadata ? (
         <img
@@ -39,11 +63,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
             src={metadataMissingPlaceholder}
         />
     ) : (uri && isSupportedImageFormat(metadata.type) ? (
-        <img
-            className="nft-card__image"
-            src={uri}
-            alt="bundle"
-        />
+        image
     ) : (
         <img
             className="nft-card__image"

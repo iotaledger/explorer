@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
-import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
+import { getIPFSHash, getIpfsLink, tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
@@ -12,7 +12,7 @@ import "./NftMetadataSection.scss";
 /**
  * Supported image MIME formats.
  */
-const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
+const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
 
 const MESSAGE_NFT_SCHEMA_STANDARD = "NFT Schema Standard is IRC27. Please consider submitting an entry to the";
 
@@ -31,6 +31,7 @@ interface NftMetadataSectionProps {
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft }) => {
     const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
+    const [uri, setUri] = useState<string | undefined>();
 
     useEffect(() => {
         if (nft.metadata) {
@@ -38,16 +39,40 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
         }
     }, [nft.metadata]);
 
+    useEffect(() => {
+        const ipfsHash = getIPFSHash(nftMetadata?.uri);
+        if (ipfsHash) {
+            // eslint-disable-next-line no-void
+            void (async () => {
+                const link = await getIpfsLink(ipfsHash);
+                setUri(link);
+            })();
+        } else {
+            setUri(nftMetadata?.uri);
+        }
+    }, [nftMetadata]);
+
+    const nftImage = nftMetadata?.type === "video/mp4" ? (
+        <video
+            className="nft-metadata__image"
+            src={uri}
+            controls
+            autoPlay
+        />
+    ) : (
+        <img
+            className="nft-metadata__image"
+            src={uri}
+            alt="nft image"
+        />
+    );
+
     const whitelistedNft = (
         nftMetadata && isWhitelisted ? (
             <div className="section">
                 <div className="section--data nft-metadata">
                     {(isSupportedImageFormat(nftMetadata?.type) ? (
-                        <img
-                            className="nft-metadata__image"
-                            src={nftMetadata?.uri}
-                            alt="bundle"
-                        />
+                        nftImage
                     ) : (
                         <img
                             className="nft-metadata__image"
