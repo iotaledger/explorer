@@ -58,6 +58,8 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
             src={uri}
             controls
             autoPlay
+            muted
+            loop
         />
     ) : (
         <img
