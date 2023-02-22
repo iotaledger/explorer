@@ -3,9 +3,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
+import { useNftMetadataUri } from "../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { getIPFSHash, getIpfsLink, tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
+import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
@@ -24,21 +25,11 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, id);
     const [name, setName] = useState<string | undefined>();
-    const [uri, setUri] = useState<string | undefined>();
+    const uri = useNftMetadataUri(metadata?.uri);
 
     useEffect(() => {
         if (metadata && isWhitelisted) {
             setName(metadata.name);
-            const ipfsHash = getIPFSHash(metadata.uri);
-            if (ipfsHash) {
-                // eslint-disable-next-line no-void
-                void (async () => {
-                    const link = await getIpfsLink(ipfsHash);
-                    setUri(link);
-                })();
-            } else {
-                setUri(metadata.uri);
-            }
         }
     }, [isWhitelisted]);
 

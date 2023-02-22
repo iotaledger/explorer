@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
+import { useNftMetadataUri } from "../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
-import { getIPFSHash, getIpfsLink, tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
+import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
@@ -31,26 +32,13 @@ interface NftMetadataSectionProps {
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft }) => {
     const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
-    const [uri, setUri] = useState<string | undefined>();
+    const uri = useNftMetadataUri(nftMetadata?.uri);
 
     useEffect(() => {
         if (nft.metadata) {
             setNftMetadata(tryParseNftMetadata(nft.metadata));
         }
     }, [nft.metadata]);
-
-    useEffect(() => {
-        const ipfsHash = getIPFSHash(nftMetadata?.uri);
-        if (ipfsHash) {
-            // eslint-disable-next-line no-void
-            void (async () => {
-                const link = await getIpfsLink(ipfsHash);
-                setUri(link);
-            })();
-        } else {
-            setUri(nftMetadata?.uri);
-        }
-    }, [nftMetadata]);
 
     const nftImage = nftMetadata?.type === "video/mp4" ? (
         <video
