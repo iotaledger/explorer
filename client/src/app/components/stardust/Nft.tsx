@@ -48,6 +48,8 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
             src={uri}
             controls
             autoPlay
+            muted
+            loop
         />
     ) : (
         <img
