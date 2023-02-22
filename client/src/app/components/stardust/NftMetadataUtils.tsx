@@ -19,7 +19,7 @@ export const unregisteredMetadataPlaceholder = <ImagePlaceholder message="Unregi
  * @param metadataHex The encoded data.
  * @returns The parsed INftImmutableMetadata or undefined.
  */
-export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
+export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | null {
     const validator = new jsonschema.Validator();
     try {
         const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
@@ -29,6 +29,8 @@ export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutabl
             return json as INftImmutableMetadata;
         }
     } catch { }
+
+    return null;
 }
 
 /**
