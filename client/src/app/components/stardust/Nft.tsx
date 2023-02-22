@@ -3,17 +3,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
-import { ImagePlaceholder } from "./address/ImagePlaceholder";
+import {
+    isSupportedImageFormat, tryParseNftMetadata, noMetadataPlaceholder,
+    nonStandardMetadataPlaceholder, unregisteredMetadataPlaceholder, unsupportedImageFormatPlaceholder
+} from "./NftMetadataUtils";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
 import "./Nft.scss";
-
-/**
- * Supported image MIME formats.
- */
-const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
 const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const id = nft.nftId;
@@ -33,7 +30,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     }, [standardMetadata]);
 
     const standardMetadataImageContent = !isWhitelisted ? (
-        <ImagePlaceholder message="Unregistered NFT metadata" compact />
+        unregisteredMetadataPlaceholder
     ) : (standardMetadata && uri && isSupportedImageFormat(standardMetadata.type) ? (
         <img
             className="nft-card__image"
@@ -41,13 +38,13 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
             alt="bundle"
         />
     ) : (
-        <ImagePlaceholder message="Unsupported image format" compact />
+        unsupportedImageFormatPlaceholder
     ));
 
     const nftImageContent = !nft.metadata ? (
-        <ImagePlaceholder message="No metadata" compact />
+        noMetadataPlaceholder
     ) : (!standardMetadata ? (
-        <ImagePlaceholder message="Unsupported metadata format" compact />
+        nonStandardMetadataPlaceholder
     ) : (standardMetadataImageContent));
 
     return (
@@ -70,17 +67,5 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     );
 };
 
-/**
- * Validate NFT image MIME type.
- * @param nftType The NFT image MIME type.
- * @returns A bool.
- */
-function isSupportedImageFormat(nftType: string | undefined): boolean {
-    if (nftType === undefined) {
-        return false;
-    }
-
-    return SUPPORTED_IMAGE_FORMATS.has(nftType);
-}
-
 export default Nft;
+
