@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useNftMetadataUri } from "../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
-import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
+import {
+    getNftImageContent,
+    isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD, tryParseNftMetadata, unsupportedImageFormatPlaceholder
+} from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
 import TruncatedId from "./TruncatedId";
-
-/**
- * Supported image MIME formats.
- */
-const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
-
-const MESSAGE_NFT_SCHEMA_STANDARD = "NFT Schema Standard is IRC27. Please consider submitting an entry to the";
 
 interface NftMetadataSectionProps {
     /**
@@ -41,34 +36,14 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
         }
     }, [nft.metadata]);
 
-    const nftImage = nftMetadata?.type === "video/mp4" ? (
-        <video
-            className="nft-metadata__image"
-            src={uri}
-            controls
-            autoPlay
-            muted
-            loop
-        />
-    ) : (
-        <img
-            className="nft-metadata__image"
-            src={uri}
-            alt="nft image"
-        />
-    );
-
     const whitelistedNft = (
         nftMetadata && isWhitelisted ? (
             <div className="section">
                 <div className="section--data nft-metadata">
-                    {(isSupportedImageFormat(nftMetadata?.type) ? (
-                        nftImage
+                    {(uri && isSupportedImageFormat(nftMetadata?.type) ? (
+                        getNftImageContent(nftMetadata.type, uri, "nft-metadata__image")
                     ) : (
-                        <img
-                            className="nft-metadata__image"
-                            src={unsupportedFormatPlaceholder}
-                        />
+                        unsupportedImageFormatPlaceholder
                     ))}
                     <div className="nft-metadata__info col w100">
                         <ul>
@@ -220,18 +195,5 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
     }
     return noMetadata;
 };
-
-/**
- * Validate NFT image MIME type.
- * @param nftType The NFT image MIME type.
- * @returns A bool.
- */
-function isSupportedImageFormat(nftType: string | undefined): boolean {
-    if (nftType === undefined) {
-        return false;
-    }
-
-    return SUPPORTED_IMAGE_FORMATS.has(nftType);
-}
 
 export default NftMetadataSection;
