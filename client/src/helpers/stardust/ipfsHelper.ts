@@ -34,7 +34,7 @@ export async function getIpfsLink(hash: string): Promise<string | undefined> {
             // Content is a folder, get the first file
             for await (const file of ipfs.ls(`/ipfs/${hash}`)) {
                 if (file.type === "file") {
-                    return `${IPFS_ENDPOINT}/${file.path}`;
+                    return `${IPFS_ENDPOINT}${file.path}`;
                 }
             }
         } else {
