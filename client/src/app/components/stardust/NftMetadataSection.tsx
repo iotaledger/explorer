@@ -14,7 +14,8 @@ import "./NftMetadataSection.scss";
  */
 const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
 
-const MESSAGE_NFT_SCHEMA_STANDARD = "NFT Schema Standard is IRC27. Please consider submitting an entry to the";
+const MESSAGE_NFT_SCHEMA_STANDARD =
+    "The metadata conforms to the IRC27 standard schema! Please consider submitting an entry to the";
 
 interface NftMetadataSectionProps {
     /**

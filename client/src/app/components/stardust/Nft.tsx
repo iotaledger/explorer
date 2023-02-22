@@ -17,24 +17,24 @@ const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]
 
 const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const id = nft.nftId;
-    const metadata = nft.metadata ? tryParseNftMetadata(nft.metadata) : undefined;
+    const standardMetadata = nft.metadata ? tryParseNftMetadata(nft.metadata) : null;
     const { bech32Hrp } = useContext(NetworkContext);
     const address: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: id };
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, id);
-    const [name, setName] = useState<string | undefined>();
-    const [uri, setUri] = useState<string | undefined>();
+    const [name, setName] = useState<string | null>();
+    const [uri, setUri] = useState<string | null>();
 
     useEffect(() => {
-        if (metadata && isWhitelisted) {
-            setName(metadata.name);
-            setUri(metadata.uri);
+        if (standardMetadata) {
+            setName(standardMetadata.name);
+            setUri(standardMetadata.uri);
         }
-    }, [isWhitelisted]);
+    }, [standardMetadata]);
 
-    const nftImage = !metadata ? (
-        <ImagePlaceholder message="No metadata" compact />
-    ) : (uri && isSupportedImageFormat(metadata.type) ? (
+    const standardMetadataImageContent = !isWhitelisted ? (
+        <ImagePlaceholder message="Unregistered NFT metadata" compact />
+    ) : (standardMetadata && uri && isSupportedImageFormat(standardMetadata.type) ? (
         <img
             className="nft-card__image"
             src={uri}
@@ -44,13 +44,19 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
         <ImagePlaceholder message="Unsupported image format" compact />
     ));
 
+    const nftImageContent = !nft.metadata ? (
+        <ImagePlaceholder message="No metadata" compact />
+    ) : (!standardMetadata ? (
+        <ImagePlaceholder message="Unsupported metadata format" compact />
+    ) : (standardMetadataImageContent));
+
     return (
         <div className="nft-card">
             <div className="nft-card__metadata">
                 <Link
                     to={`/${network}/addr/${nftAddress.bech32}`}
                 >
-                    {nftImage}
+                    {nftImageContent}
                 </Link>
                 <span className="nft-card__id">
                     <TruncatedId
