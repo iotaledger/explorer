@@ -8,6 +8,7 @@ import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmu
 import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
 import "./NftMetadataSection.scss";
+import TruncatedId from "./TruncatedId";
 
 /**
  * Supported image MIME formats.
@@ -111,6 +112,19 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
                                     <span className="label">Collection Name:</span>
                                     <span className="value truncate">
                                         {nftMetadata.collectionName}
+                                    </span>
+                                </li>
+                            }
+                            {
+                                nft.issuerId &&
+                                <li className="row margin-t-t">
+                                    <span className="label">Issuer Id:</span>
+                                    <span className="value truncate">
+                                        <TruncatedId
+                                            id={nft.issuerId}
+                                            link={`/${network}/search/${nft.issuerId}`}
+                                            showCopyButton
+                                        />
                                     </span>
                                 </li>
                             }
