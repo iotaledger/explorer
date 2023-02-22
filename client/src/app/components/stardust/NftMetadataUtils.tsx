@@ -19,7 +19,7 @@ export const unregisteredMetadataPlaceholder = <ImagePlaceholder message="Unregi
  * @param metadataHex The encoded data.
  * @returns The parsed INftImmutableMetadata or undefined.
  */
-export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | undefined {
+export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutableMetadata | null {
     const validator = new jsonschema.Validator();
     try {
         const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
@@ -29,12 +29,14 @@ export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutabl
             return json as INftImmutableMetadata;
         }
     } catch { }
+
+    return null;
 }
 
 /**
  * Supported image MIME formats.
  */
-export const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif"]);
+export const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
 
 /**
  * Validate NFT image MIME type.
@@ -47,5 +49,31 @@ export function isSupportedImageFormat(nftType: string | undefined): boolean {
     }
 
     return SUPPORTED_IMAGE_FORMATS.has(nftType);
+}
+
+/**
+ * Builds the NFT image element depending on content type.
+ * @param contentType The NFT image MIME type.
+ * @param uri The NFT image URI.
+ * @param className The class to use.
+ * @returns JSX.
+ */
+export function getNftImageContent(contentType: string, uri: string, className: string): JSX.Element {
+    return contentType === "video/mp4" ? (
+        <video
+            className={className}
+            src={uri}
+            controls
+            autoPlay
+            muted
+            loop
+        />
+    ) : (
+        <img
+            className={className}
+            src={uri}
+            alt="nft image"
+        />
+    );
 }
 

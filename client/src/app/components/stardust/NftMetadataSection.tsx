@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNftMetadataUri } from "../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
 import {
+    getNftImageContent,
     isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD, tryParseNftMetadata, unsupportedImageFormatPlaceholder
 } from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
+import TruncatedId from "./TruncatedId";
 
 interface NftMetadataSectionProps {
     /**
@@ -23,25 +26,22 @@ interface NftMetadataSectionProps {
 }
 
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft }) => {
-    const [nftMetadata, setNftMetadata] = useState<INftImmutableMetadata | undefined>();
+    const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
+    const uri = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
         if (nft.metadata) {
-            setNftMetadata(tryParseNftMetadata(nft.metadata));
+            setStandardMetadata(tryParseNftMetadata(nft.metadata));
         }
     }, [nft.metadata]);
 
     const whitelistedNft = (
-        nftMetadata && isWhitelisted ? (
+        standardMetadata && isWhitelisted ? (
             <div className="section">
                 <div className="section--data nft-metadata">
-                    {(isSupportedImageFormat(nftMetadata?.type) ? (
-                        <img
-                            className="nft-metadata__image"
-                            src={nftMetadata?.uri}
-                            alt="bundle"
-                        />
+                    {(uri && isSupportedImageFormat(standardMetadata?.type) ? (
+                        getNftImageContent(standardMetadata.type, uri, "nft-metadata__image")
                     ) : (
                         unsupportedImageFormatPlaceholder
                     ))}
@@ -50,78 +50,91 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
                             <li className="row middle margin-t-t">
                                 <span className="label">Name:</span>
                                 <span className="value truncate">
-                                    {nftMetadata.name}
+                                    {standardMetadata.name}
                                 </span>
                             </li>
                             <li className="row margin-t-t">
                                 <span className="label">Token Standard:</span>
                                 <span className="value truncate">
-                                    {nftMetadata.standard}
+                                    {standardMetadata.standard}
                                 </span>
                             </li>
                             <li className="row margin-t-t">
                                 <span className="label">Version:</span>
                                 <span className="value truncate">
-                                    {nftMetadata.version}
+                                    {standardMetadata.version}
                                 </span>
                             </li>
                             <li className="row margin-t-t">
                                 <span className="label">Type:</span>
                                 <span className="value truncate">
-                                    {nftMetadata.type}
+                                    {standardMetadata.type}
                                 </span>
                             </li>
                             {
-                                nftMetadata.collectionName &&
+                                standardMetadata.collectionName &&
                                 <li className="row margin-t-t">
                                     <span className="label">Collection Name:</span>
                                     <span className="value truncate">
-                                        {nftMetadata.collectionName}
+                                        {standardMetadata.collectionName}
                                     </span>
                                 </li>
                             }
                             {
-                                nftMetadata.issuerName &&
+                                nft.issuerId &&
+                                <li className="row margin-t-t">
+                                    <span className="label">Issuer Id:</span>
+                                    <span className="value truncate">
+                                        <TruncatedId
+                                            id={nft.issuerId}
+                                            link={`/${network}/search/${nft.issuerId}`}
+                                            showCopyButton
+                                        />
+                                    </span>
+                                </li>
+                            }
+                            {
+                                standardMetadata.issuerName &&
                                 <li className="row margin-t-t">
                                     <span className="label">Issuer Name:</span>
                                     <span className="value truncate">
-                                        {nftMetadata.issuerName}
+                                        {standardMetadata.issuerName}
                                     </span>
                                 </li>
                             }
                         </ul>
                         {
-                            nftMetadata.royalties &&
+                            standardMetadata.royalties &&
                             <React.Fragment>
                                 <h3 className="label margin-t-s">Royalties</h3>
                                 <div className="data-toggle margin-t-s">
                                     <div className="data-toggle--content">
                                         <JsonViewer
-                                            json={JSON.stringify(nftMetadata.royalties, undefined, "  ")}
+                                            json={JSON.stringify(standardMetadata.royalties, undefined, "  ")}
                                         />
                                     </div>
                                 </div>
                             </React.Fragment>
                         }
                         {
-                            nftMetadata.attributes &&
+                            standardMetadata.attributes &&
                             <React.Fragment>
                                 <h3 className="label margin-t-s">Attributes</h3>
                                 <div className="data-toggle margin-t-s">
                                     <div className="data-toggle--content">
                                         <JsonViewer
-                                            json={JSON.stringify(nftMetadata.attributes, undefined, "  ")}
+                                            json={JSON.stringify(standardMetadata.attributes, undefined, "  ")}
                                         />
                                     </div>
                                 </div>
                             </React.Fragment>
                         }
                         {
-                            nftMetadata.description &&
+                            standardMetadata.description &&
                             <React.Fragment>
                                 <h2 className="label margin-t-s">Description</h2>
                                 <span className="value margin-t-t">
-                                    {nftMetadata.description}
+                                    {standardMetadata.description}
                                 </span>
                             </React.Fragment>
                         }
@@ -132,7 +145,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
     );
 
     const notWhitelistedIRC27 = (
-        nftMetadata && !isWhitelisted ? (
+        standardMetadata && !isWhitelisted ? (
             <div className="section">
                 <div className="section--data">
                     <p className="value margin-b-t">
@@ -184,4 +197,3 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
 };
 
 export default NftMetadataSection;
-

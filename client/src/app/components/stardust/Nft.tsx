@@ -1,12 +1,14 @@
 import { INftAddress, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNftMetadataUri } from "../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
 import {
     isSupportedImageFormat, tryParseNftMetadata, noMetadataPlaceholder,
-    nonStandardMetadataPlaceholder, unregisteredMetadataPlaceholder, unsupportedImageFormatPlaceholder
+    nonStandardMetadataPlaceholder, unregisteredMetadataPlaceholder,
+    unsupportedImageFormatPlaceholder, getNftImageContent
 } from "./NftMetadataUtils";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
@@ -20,23 +22,18 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, id);
     const [name, setName] = useState<string | null>();
-    const [uri, setUri] = useState<string | null>();
+    const uri = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
         if (standardMetadata) {
             setName(standardMetadata.name);
-            setUri(standardMetadata.uri);
         }
     }, [standardMetadata]);
 
     const standardMetadataImageContent = !isWhitelisted ? (
         unregisteredMetadataPlaceholder
     ) : (standardMetadata && uri && isSupportedImageFormat(standardMetadata.type) ? (
-        <img
-            className="nft-card__image"
-            src={uri}
-            alt="bundle"
-        />
+        getNftImageContent(standardMetadata.type, uri, "nft-card__image")
     ) : (
         unsupportedImageFormatPlaceholder
     ));
@@ -62,10 +59,9 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
                     />
                 </span>
             </div>
-            {name && <span className="nft-card__name truncate">{name}</span>}
+            {name && isWhitelisted && <span className="nft-card__name truncate">{name}</span>}
         </div>
     );
 };
 
 export default Nft;
-

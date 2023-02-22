@@ -44,7 +44,6 @@ function toFixedNoRound(value: number, precision: number = 2) {
     return Math.floor(value * factor) / factor;
 }
 
-
 /**
  * Add tooltip content for special block id i.e Genesis block.
  * @param id The id of the block.
