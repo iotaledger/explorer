@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import { INftBase } from "../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
+import { ImagePlaceholder } from "./address/ImagePlaceholder";
 import "./NftMetadataSection.scss";
 
 /**
@@ -49,10 +49,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
                             alt="bundle"
                         />
                     ) : (
-                        <img
-                            className="nft-metadata__image"
-                            src={unsupportedFormatPlaceholder}
-                        />
+                        <ImagePlaceholder message="Unsupported image format" />
                     ))}
                     <div className="nft-metadata__info col w100">
                         <ul>

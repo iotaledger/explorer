@@ -1,12 +1,11 @@
 import { INftAddress, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import metadataMissingPlaceholder from "../../../assets/stardust/missing-nft-metadata.png";
-import unsupportedFormatPlaceholder from "../../../assets/stardust/unsupported-format.png";
 import { useTokenRegistryNftCheck } from "../../../helpers/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { tryParseNftMetadata } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
+import { ImagePlaceholder } from "./address/ImagePlaceholder";
 import { NftProps } from "./NftProps";
 import TruncatedId from "./TruncatedId";
 import "./Nft.scss";
@@ -34,10 +33,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     }, [isWhitelisted]);
 
     const nftImage = !metadata ? (
-        <img
-            className="nft-card__image"
-            src={metadataMissingPlaceholder}
-        />
+        <ImagePlaceholder message="No metadata" compact />
     ) : (uri && isSupportedImageFormat(metadata.type) ? (
         <img
             className="nft-card__image"
@@ -45,10 +41,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
             alt="bundle"
         />
     ) : (
-        <img
-            className="nft-card__image"
-            src={unsupportedFormatPlaceholder}
-        />
+        <ImagePlaceholder message="Unsupported image format" compact />
     ));
 
     return (
