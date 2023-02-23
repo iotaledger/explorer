@@ -15,12 +15,12 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
     const displayUnlocksTypeAndIndex = (type: number, index: number) => (
         <div>
             <div className="unlocks-card--row">
-                <span className="label">Type:</span>
-                <span className="value">{NameHelper.getUnlockTypeName(type)}</span>
-            </div>
-            <div className="unlocks-card--row">
                 <span className="label">Index:</span>
                 <span className="value">{index}</span>
+            </div>
+            <div className="unlocks-card--row">
+                <span className="label">Type:</span>
+                <span className="value">{NameHelper.getUnlockTypeName(type)}</span>
             </div>
         </div>
     );
