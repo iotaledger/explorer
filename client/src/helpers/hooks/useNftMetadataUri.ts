@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { getIPFSHash, getIpfsLink } from "../stardust/ipfsHelper";
+import { getIPFSHash, getIpfsUri } from "../stardust/ipfsHelper";
 
-export const useNftMetadataUri = (uri?: string) => {
-    const [link, setLink] = useState<string | undefined>();
+export const useNftMetadataUri = (link?: string) => {
+    const [uri, setUri] = useState<string | undefined>();
 
     useEffect(() => {
-        const ipfsHash = getIPFSHash(uri);
+        const ipfsHash = getIPFSHash(link);
         if (ipfsHash) {
             // eslint-disable-next-line no-void
             void (async () => {
-                const ipfsLink = await getIpfsLink(ipfsHash);
-                setLink(ipfsLink);
+                const ipfsUri = await getIpfsUri({ hash: ipfsHash });
+                setUri(ipfsUri);
             })();
         } else {
-            setLink(uri);
+            setUri(link);
         }
-    }, [uri]);
+    }, [link]);
 
-    return link;
+    return uri;
 };
