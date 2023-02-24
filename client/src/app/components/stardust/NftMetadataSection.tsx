@@ -133,7 +133,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
                             standardMetadata.description &&
                             <React.Fragment>
                                 <h2 className="label margin-t-s">Description</h2>
-                                <span className="value margin-t-t">
+                                <span className="value margin-t-t nft-metadata__info__description">
                                     {standardMetadata.description}
                                 </span>
                             </React.Fragment>
