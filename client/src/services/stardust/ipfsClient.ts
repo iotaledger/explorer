@@ -48,30 +48,24 @@ const IPFS_PREFIX = "/ipfs/";
  */
 export class IpfsClient {
     public async ls(path: string): Promise<IIPfsEntry | undefined> {
-        let response;
+        let ipfsEntry;
         try {
-            response = await FetchHelper.raw(
+            const response = await FetchHelper.raw(
                 IPFS_ENDPOINT,
                 `${IPFS_PATH}?arg=${path}`,
                 "get"
             );
             const lsResponse = await response.json() as ILSResponse;
-            if (!lsResponse.Objects) {
-                throw new Error("no Objects in results");
-            }
             const result = lsResponse.Objects[0];
 
-            if (!result) {
-                throw new Error("expected one array in results.Objects");
+            if (result) {
+                const links = result.Links;
+                if (links.length > 0) {
+                    ipfsEntry = this.mapLinkToIpfsEntry(links[0], path);
+                }
             }
-
-            const links = result.Links;
-            if (links.length > 0) {
-                return this.mapLinkToIpfsEntry(links[0], path);
-            }
-        } catch (e) {
-            console.log("Failed to fetch ipfs", e);
-        }
+        } catch { }
+        return ipfsEntry;
     }
 
     public mapLinkToIpfsEntry(link: IIpfsLink, path: string): IIPfsEntry {
