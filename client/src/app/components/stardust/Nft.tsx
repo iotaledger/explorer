@@ -25,6 +25,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const uri = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
+        setName(null);
         if (standardMetadata) {
             setName(standardMetadata.name);
         }
