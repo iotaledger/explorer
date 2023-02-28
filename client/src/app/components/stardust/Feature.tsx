@@ -5,7 +5,7 @@ import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.s
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
 import DataToggle from "../DataToggle";
-import Address from "./Address";
+import Address from "./address/Address";
 import { FeatureProps } from "./FeatureProps";
 import { FeatureState } from "./FeatureState";
 /**

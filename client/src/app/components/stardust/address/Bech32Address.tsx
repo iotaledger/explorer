@@ -1,7 +1,6 @@
-/* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
-import CopyButton from "../CopyButton";
-import { Bech32AddressProps } from "../stardust/address/Bech32AddressProps";
+import TruncatedId from "../TruncatedId";
+import { Bech32AddressProps } from "./Bech32AddressProps";
 
 /**
  * Component which will display an Bech32Address.
@@ -18,7 +17,7 @@ class Bech32Address extends Component<Bech32AddressProps> {
                     <div className="section--data">
                         {!this.props.hideLabel && (
                             <div className="label">
-                                Address
+                                {this.props.addressDetails.typeLabel} Address
                             </div>
                         )}
                         <div className="value row middle code">
@@ -27,25 +26,22 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                     type="button"
                                     className="margin-r-t"
                                     onClick={() => this.props.history?.push(
-                                        `/${this.props.network
-                                        }/addr/${this.props.addressDetails?.bech32}`)}
+                                        `/${this.props.network}/addr/${this.props.addressDetails?.bech32}`
+                                    )}
                                 >
-                                    {this.props.truncateAddress
-                                        ? `${this.props.addressDetails.bech32.slice(0, 7)}...${this.props.addressDetails.bech32.slice(-7)} `
-                                        : this.props.addressDetails.bech32}
+                                    <TruncatedId id={this.props.addressDetails.bech32} showCopyButton />
                                 </button>
                             )}
                             {!this.props.history && (
-                                <span className="margin-r-t">{this.props.addressDetails.bech32}</span>
+                                <TruncatedId id={this.props.addressDetails.bech32} showCopyButton />
                             )}
-                            {this.props.showCopyButton && <CopyButton copy={this.props.addressDetails?.bech32} />}
                         </div>
                     </div>
                 )}
                 {this.props.advancedMode && this.props.addressDetails?.typeLabel && this.props.addressDetails?.hex && (
                     <div className="section--data">
                         <div className="label">
-                            {this.props.addressDetails.typeLabel} Address
+                            {this.props.addressDetails.typeLabel} Id
                         </div>
                         <div className="value row middle code">
                             {this.props.history && (
@@ -53,16 +49,15 @@ class Bech32Address extends Component<Bech32AddressProps> {
                                     type="button"
                                     className="margin-r-t"
                                     onClick={() => this.props.history?.push(
-                                        `/${this.props.network
-                                        }/addr/${this.props.addressDetails?.hex}`)}
+                                        `/${this.props.network}/addr/${this.props.addressDetails?.bech32}`
+                                    )}
                                 >
-                                    {this.props.addressDetails?.hex}
+                                    <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />
                                 </button>
                             )}
                             {!this.props.history && (
-                                <span className="margin-r-t">{this.props.addressDetails?.hex}</span>
+                                <TruncatedId id={this.props.addressDetails?.hex} showCopyButton />
                             )}
-                            <CopyButton copy={this.props.addressDetails?.hex} />
                         </div>
                     </div>
                 )}
