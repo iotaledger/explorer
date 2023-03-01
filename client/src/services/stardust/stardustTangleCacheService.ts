@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import {
+    HexEncodedString,
     IBlock, IBlockMetadata, IMilestonePayload, IOutputMetadataResponse,
     IOutputResponse, IOutputsResponse, OutputTypes
 } from "@iota/iota.js-stardust";
@@ -171,12 +172,16 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async blockDetails(
         networkId: string,
         blockId: string
-    ): Promise<{ metadata?: IBlockMetadata; error?: string }> {
-        const response = await this._api.blockDetails({ network: networkId, blockId });
+    ): Promise<{ metadata?: IBlockMetadata; children?: HexEncodedString[]; error?: string }> {
+        const responseDetails = await this._api.blockDetails({ network: networkId, blockId });
+        const responseChildren = await this._api.blockChildren({ network: networkId, blockId });
 
-        return !response.error ?
-            { metadata: response.metadata } :
-            { error: response.error };
+        return !responseDetails.error ?
+            {
+                metadata: responseDetails.metadata,
+                children: responseChildren?.children
+            } :
+            { error: responseDetails.error };
     }
 
     /**

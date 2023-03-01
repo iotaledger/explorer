@@ -5,20 +5,20 @@ export interface IBlockChildrenResponse extends IResponse {
     /**
      * The block id.
      */
-    blockId?: HexEncodedString;
+    blockId: HexEncodedString;
 
     /**
      * The children block ids.
      */
-    children?: HexEncodedString[];
+    children: HexEncodedString[];
 
     /**
      * The max number of results.
      */
-    maxResults?: number;
+    maxResults: number;
 
     /**
      * The count.
      */
-    count?: number;
+    count: number;
 }

@@ -1,4 +1,4 @@
-import { IBlockMetadata } from "@iota/iota.js-stardust";
+import { HexEncodedString, IBlockMetadata } from "@iota/iota.js-stardust";
 import * as H from "history";
 import React from "react";
 import Spinner from "../Spinner";
@@ -8,13 +8,14 @@ interface BlockMetadataSectionProps {
     network: string;
     metadata?: IBlockMetadata;
     metadataError?: string;
+    blockChildren?: HexEncodedString[];
     conflictReason?: string;
     isLinksDisabled: boolean;
     history: H.History;
 }
 
 const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
-    { network, metadata, metadataError, conflictReason, isLinksDisabled, history }
+    { network, metadata, metadataError, blockChildren, conflictReason, isLinksDisabled, history }
 ) => (
     <div className="section metadata-section">
         <div className="section--data">
@@ -73,6 +74,33 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                             ))}
                         </div>
                     )}
+                    {blockChildren && (
+                        <div className="section--data">
+                            <div className="label">
+                                Children
+                            </div>
+                            {blockChildren.map((child, idx) => (
+                                <div
+                                    key={idx}
+                                    style={{ marginTop: "8px" }}
+                                    className="value code link"
+                                >
+                                    {isLinksDisabled ? (
+                                        <span className="margin-r-t">
+                                            {child}
+                                        </span>
+                                    ) : (
+                                        <div
+                                            className="pointer"
+                                            onClick={() => history.replace(`/${network}/block/${child}`)}
+                                        >
+                                            {child}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </React.Fragment>
             )}
         </div>
@@ -80,6 +108,7 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
 );
 
 BlockMetadataSection.defaultProps = {
+    blockChildren: undefined,
     conflictReason: undefined,
     metadata: undefined,
     metadataError: undefined

@@ -18,6 +18,8 @@ import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociationsRequest } from "../../models/api/stardust/IAssociationsRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
+import { IBlockChildrenRequest } from "../../models/api/stardust/IBlockChildrenRequest";
+import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
 import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
@@ -158,13 +160,13 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the block details.
+     * Get the block children.
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async blockChildren(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
-        return this.callApi<unknown, IBlockDetailsResponse>(
-            `stardust/block/metadata/${request.network}/${request.blockId}`, "get"
+    public async blockChildren(request: IBlockChildrenRequest): Promise<IBlockChildrenResponse> {
+        return this.callApi<unknown, IBlockChildrenResponse>(
+            `stardust/block/children/${request.network}/${request.blockId}`, "get"
         );
     }
 

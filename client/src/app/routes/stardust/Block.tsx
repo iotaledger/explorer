@@ -146,6 +146,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         setBlockMetadata({
                             metadata: details?.metadata,
                             metadataError: details?.error,
+                            blockChildren: details?.children,
                             conflictReason: calculateConflictReason(details?.metadata),
                             blockTangleStatus: calculateStatus(details?.metadata)
                         });
@@ -186,7 +187,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     };
 
     const { block, blockError, transactionId, inputs, unlocks, outputs, transferTotal } = blockData;
-    const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
+    const { metadata, metadataError, blockChildren, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
     const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
@@ -262,6 +263,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 network={network}
                 metadata={metadata}
                 metadataError={metadataError}
+                blockChildren={blockChildren}
                 conflictReason={conflictReason}
                 isLinksDisabled={isLinksDisabled}
                 history={history}

@@ -1,5 +1,6 @@
 import moment from "moment";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
@@ -9,7 +10,8 @@ import { FetchHelper } from "../../utils/fetchHelper";
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
     balance: "/api/explorer/v2/balance/",
-    milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"]
+    milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"],
+    blockChildren: ["/api/explorer/v2/blocks/", "/children"]
 };
 
 export class ChronicleService {
@@ -74,6 +76,29 @@ export class ChronicleService {
         } while (cursor);
 
         return { milestoneId, blocks };
+    }
+
+    /**
+     * Get the block children.
+     * @param blockId The block id.
+     * @returns The blocks children response.
+     */
+    public async blockChildren(
+        blockId: string
+    ): Promise<IBlockChildrenResponse| undefined> {
+        const path = `${CHRONICLE_ENDPOINTS.blockChildren[0]}${blockId}${CHRONICLE_ENDPOINTS.blockChildren[1]}`;
+
+        try {
+            const response = await FetchHelper.json<never, IBlockChildrenResponse>(
+                this._endpoint,
+                `${path}`,
+                "get"
+            );
+
+            return response;
+        } catch (error) {
+            return { error };
+        }
     }
 
     /**

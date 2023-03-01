@@ -1,4 +1,4 @@
-import { IBlock, IBlockMetadata, ISignatureUnlock, IUTXOInput } from "@iota/iota.js-stardust";
+import { HexEncodedString, IBlock, IBlockMetadata, ISignatureUnlock, IUTXOInput } from "@iota/iota.js-stardust";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { TangleStatus } from "../../../models/tangleStatus";
@@ -60,5 +60,10 @@ export interface BlockMetadata {
      * The state of the block on the tangle.
      */
     blockTangleStatus: TangleStatus;
+
+    /**
+     * The block children.
+     */
+    blockChildren?: HexEncodedString[];
 }
 

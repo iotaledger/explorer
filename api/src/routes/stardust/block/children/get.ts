@@ -4,7 +4,7 @@ import { IBlockRequest } from "../../../../models/api/stardust/IBlockRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
-import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
+import { ChronicleService } from "../../../../services/stardust/chronicleService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -25,8 +25,15 @@ export async function get(
     const networkConfig = networkService.get(request.network);
 
     if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
+        return { error: "Endpoint available only on Stardust networks." };
     }
 
-    return StardustTangleHelper.blockChildren(networkConfig, request.blockId);
+    const chronicleService = ServiceFactory.get<ChronicleService>(
+        `chronicle-${networkConfig.network}`
+    );
+
+    if (chronicleService) {
+        const blockChildrenResponse = await chronicleService.blockChildren(request.blockId);
+        return blockChildrenResponse;
+    }
 }
