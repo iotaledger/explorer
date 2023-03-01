@@ -6,7 +6,7 @@ import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
 import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
-import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
+import { CHRYSALIS, LEGACY } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { getFilterFieldDefaults } from "../../../models/services/filterField";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
@@ -32,7 +32,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || {
             label: "Custom network",
             network: CUSTOM,
-            protocolVersion: OG,
+            protocolVersion: LEGACY,
             hasStatisticsSupport: false,
             isEnabled: false
         };
@@ -112,7 +112,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                 <div className="row space-between info-boxes">
                                     <div className="info-box">
                                         <span className="info-box--title">{
-                                            this.state.networkConfig.protocolVersion === OG
+                                            this.state.networkConfig.protocolVersion === LEGACY
                                                 ? "Transactions"
                                                 : "Messages"
                                         } per sec
@@ -228,7 +228,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                     </label>
                                                                     {((this.state
                                                                         .networkConfig
-                                                                        .protocolVersion === OG &&
+                                                                        .protocolVersion === LEGACY &&
                                                                         payload.label === "Non-zero only" &&
                                                                         payload.isEnabled) ||
                                                                         (this.state.networkConfig.protocolVersion ===
@@ -265,11 +265,11 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="label">
-                                                {this.state.networkConfig.protocolVersion === OG
+                                                {this.state.networkConfig.protocolVersion === LEGACY
                                                     ? "Transaction" : "Message id"}
                                             </span>
                                             <span className="label">
-                                                {this.state.networkConfig.protocolVersion === OG
+                                                {this.state.networkConfig.protocolVersion === LEGACY
                                                     ? "Amount" : "Payload Type"}
                                             </span>
                                         </div>
@@ -280,7 +280,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
-                                                        {this.state.networkConfig.protocolVersion === OG
+                                                        {this.state.networkConfig.protocolVersion === LEGACY
                                                             ? "Transaction" : "Message id"}
                                                     </span>
                                                     <Link
@@ -292,7 +292,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 </div>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
-                                                        {this.state.networkConfig.protocolVersion === OG
+                                                        {this.state.networkConfig.protocolVersion === LEGACY
                                                             ? "Amount" : "Payload Type"}
                                                     </span>
                                                     <span className="feed-item--value">

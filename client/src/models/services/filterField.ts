@@ -1,4 +1,4 @@
-import { OG, ProtocolVersion, STARDUST } from "../config/protocolVersion";
+import { LEGACY, ProtocolVersion, STARDUST } from "../config/protocolVersion";
 
 export interface FilterField {
     label: "Zero only" | "Non-zero only" | "Transaction" | "Milestone" | "Indexed" | "Data" | "No payload";
@@ -14,7 +14,7 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
     let filterFields: FilterField[];
 
     switch (protocolVersion) {
-        case OG:
+        case LEGACY:
             filterFields = [
                 { label: "Zero only", isEnabled: true },
                 { label: "Non-zero only", isEnabled: true }

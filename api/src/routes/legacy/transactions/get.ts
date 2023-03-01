@@ -1,11 +1,11 @@
 import { isEmpty } from "@iota/validators";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionsCursor } from "../../../models/api/og/ITransactionsCursor";
-import { ITransactionsGetRequest } from "../../../models/api/og/ITransactionsGetRequest";
-import { ITransactionsGetResponse } from "../../../models/api/og/ITransactionsGetResponse";
-import { TransactionsGetMode } from "../../../models/api/og/transactionsGetMode";
+import { ITransactionsCursor } from "../../../models/api/legacy/ITransactionsCursor";
+import { ITransactionsGetRequest } from "../../../models/api/legacy/ITransactionsGetRequest";
+import { ITransactionsGetResponse } from "../../../models/api/legacy/ITransactionsGetResponse";
+import { TransactionsGetMode } from "../../../models/api/legacy/transactionsGetMode";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { OG } from "../../../models/db/protocolVersion";
+import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -27,7 +27,7 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== OG) {
+    if (networkConfig.protocolVersion !== LEGACY) {
         return {};
     }
 
