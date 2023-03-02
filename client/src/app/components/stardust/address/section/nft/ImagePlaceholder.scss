@@ -23,7 +23,10 @@
     }
 
     &__content {
+        display: flex;
+
         @include font-size(28px);
+        padding: 10px;
         letter-spacing: 0.16em;
         font-family: $metropolis-light;
         line-height: 1.5em;

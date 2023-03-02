@@ -9,7 +9,7 @@ import TruncatedId from "../../../TruncatedId";
 import {
     isSupportedImageFormat, tryParseNftMetadata, noMetadataPlaceholder,
     nonStandardMetadataPlaceholder, unregisteredMetadataPlaceholder,
-    unsupportedImageFormatPlaceholder, getNftImageContent
+    unsupportedImageFormatPlaceholder, getNftImageContent, loadingImagePlaceholder
 } from "./NftMetadataUtils";
 import { NftProps } from "./NftProps";
 import "./Nft.scss";
@@ -22,20 +22,27 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, id);
     const [name, setName] = useState<string | null>();
-    const uri = useNftMetadataUri(standardMetadata?.uri);
+    const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
+        setName(null);
         if (standardMetadata) {
             setName(standardMetadata.name);
         }
     }, [standardMetadata]);
+
+    const unsupportedFormatOrLoading = isNftUriLoading ? (
+        loadingImagePlaceholder
+    ) : (
+        unsupportedImageFormatPlaceholder
+    );
 
     const standardMetadataImageContent = !isWhitelisted ? (
         unregisteredMetadataPlaceholder
     ) : (standardMetadata && uri && isSupportedImageFormat(standardMetadata.type) ? (
         getNftImageContent(standardMetadata.type, uri, "nft-card__image")
     ) : (
-        unsupportedImageFormatPlaceholder
+        unsupportedFormatOrLoading
     ));
 
     const nftImageContent = !nft.metadata ? (

@@ -75,7 +75,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     theNfts.push({
                         nftId,
                         issuerId,
-                        metadata: metadataFeature.data ?? undefined
+                        metadata: metadataFeature?.data ?? undefined
                     });
                 }
             }

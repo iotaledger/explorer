@@ -32,6 +32,11 @@
             margin-top: 20px;
         }
 
+        &__description {
+            word-break: break-word !important;
+            text-align: justify;
+        }
+
         li {
             align-items: center;
             justify-content: space-between;
