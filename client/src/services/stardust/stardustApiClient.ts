@@ -39,8 +39,6 @@ import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsReq
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
-import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
-import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
@@ -304,18 +302,6 @@ export class StardustApiClient extends ApiClient {
     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
         return this.callApi<unknown, INftDetailsResponse>(
             `stardust/nft/${request.network}/${request.nftId}`,
-            "get"
-        );
-    }
-
-    /**
-     * Get the nft details (mock).
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
-        return this.callApi<unknown, INftRegistryDetailsResponse>(
-            `stardust/nft/mock/${request.network}/${request.nftId}`,
             "get"
         );
     }

@@ -8,7 +8,6 @@ import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
-import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -85,11 +84,6 @@ export interface ISearchResponse extends IResponse {
      * Nft details.
      */
     nftDetails?: IOutputResponse;
-
-    /**
-     * Nft registry details (mock).
-     */
-    nftRegistryDetails?: INftRegistryDetailsResponse;
 
     /**
      * Foundry outputs.
