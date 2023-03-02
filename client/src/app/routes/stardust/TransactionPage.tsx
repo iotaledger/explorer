@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* eslint-disable react/jsx-no-useless-fragment */
 import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -14,6 +15,7 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import AsyncComponent from "../../components/AsyncComponent";
 import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
+import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
@@ -27,6 +29,11 @@ import { TransactionPageState } from "./TransactionPageState";
 import "./TransactionPage.scss";
 
 type State = TransactionPageState & AsyncState;
+
+enum TRANSACTION_PAGE_TABS {
+    Payload = "Payload",
+    BlockMetadata = "Block Metadata"
+}
 
 /**
  * Component which will show the Transaction page for stardust.
@@ -224,95 +231,108 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                         </div>
                     </div>
                 )}
-                {inputs &&
-                    unlocks &&
-                    outputs &&
-                    transferTotal !== undefined &&
-                    (
-                        <div className="section">
-                            <TransactionPayload
-                                network={network}
-                                inputs={inputs}
-                                unlocks={unlocks}
-                                outputs={outputs}
-                                header="Payload"
-                            />
+                <TabbedSection
+                    tabsEnum={TRANSACTION_PAGE_TABS}
+                    tabOptions={{
+                        [TRANSACTION_PAGE_TABS.Payload]: {
+                            disabled: !inputs || !unlocks || !outputs || transferTotal === undefined,
+                            isLoading: jobToStatus.get("loadBlock") !== PromiseStatus.DONE
+                        },
+                        [TRANSACTION_PAGE_TABS.BlockMetadata]: {
+                            isLoading: jobToStatus.get("loadBlockDetails") !== PromiseStatus.DONE
+                        }
+                    }}
+                >
+                    {inputs &&
+                        unlocks &&
+                        outputs &&
+                        transferTotal !== undefined ?
+                        (
+                            <div className="section">
+                                <TransactionPayload
+                                    network={network}
+                                    inputs={inputs}
+                                    unlocks={unlocks}
+                                    outputs={outputs}
+                                    header="Payload"
+                                />
+                            </div>
+                        ) : <></>}
+                    <div className="section metadata-section">
+                        <div className="section--header section--header__space-between">
+                            <div className="row middle">
+                                <h2>
+                                    Block Metadata
+                                </h2>
+                            </div>
                         </div>
-                    )}
-                <div className="section metadata-section">
-                    <div className="section--header section--header__space-between">
-                        <div className="row middle">
-                            <h2>
-                                Block Metadata
-                            </h2>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        {!metadata && !metadataError && (
-                            <Spinner />
-                        )}
-                        {metadataError && (
-                            <p className="danger">
-                                Failed to retrieve metadata. {metadataError}
-                            </p>
-                        )}
-                        {metadata && !metadataError && (
-                            <React.Fragment>
-                                <div className="section--data">
-                                    <div className="label">
-                                        Is Solid
-                                    </div>
-                                    <div className="value row middle">
-                                        <span className="margin-r-t">
-                                            {metadata?.isSolid ? "Yes" : "No"}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">
-                                        Ledger Inclusion
-                                    </div>
-                                    <div className="value row middle">
-                                        <InclusionState
-                                            state={metadata?.ledgerInclusionState}
-                                        />
-                                    </div>
-                                </div>
-                                {conflictReason && (
+                        <div className="section--data">
+                            {!metadata && !metadataError && (
+                                <Spinner />
+                            )}
+                            {metadataError && (
+                                <p className="danger">
+                                    Failed to retrieve metadata. {metadataError}
+                                </p>
+                            )}
+                            {metadata && !metadataError && (
+                                <React.Fragment>
                                     <div className="section--data">
                                         <div className="label">
-                                            Conflict Reason
+                                            Is Solid
                                         </div>
-                                        <div className="value">
-                                            {conflictReason}
+                                        <div className="value row middle">
+                                            <span className="margin-r-t">
+                                                {metadata?.isSolid ? "Yes" : "No"}
+                                            </span>
                                         </div>
                                     </div>
-                                )}
-                                {metadata?.parents && (
                                     <div className="section--data">
                                         <div className="label">
-                                            Parents
+                                            Ledger Inclusion
                                         </div>
-                                        {metadata.parents.map((parent, idx) => (
-                                            <div
-                                                key={idx}
-                                                style={{ marginTop: "8px" }}
-                                                className="value code link"
-                                            >
-                                                <Link
-                                                    to={`/${network}/block/${parent}`}
-                                                    className="margin-r-t"
-                                                >
-                                                    {parent}
-                                                </Link>
+                                        <div className="value row middle">
+                                            <InclusionState
+                                                state={metadata?.ledgerInclusionState}
+                                            />
+                                        </div>
+                                    </div>
+                                    {conflictReason && (
+                                        <div className="section--data">
+                                            <div className="label">
+                                                Conflict Reason
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </React.Fragment>
-                        )}
+                                            <div className="value">
+                                                {conflictReason}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {metadata?.parents && (
+                                        <div className="section--data">
+                                            <div className="label">
+                                                Parents
+                                            </div>
+                                            {metadata.parents.map((parent, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    style={{ marginTop: "8px" }}
+                                                    className="value code link"
+                                                >
+                                                    <Link
+                                                        to={`/${network}/block/${parent}`}
+                                                        className="margin-r-t"
+                                                    >
+                                                        {parent}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </React.Fragment>
+                            )}
+                        </div>
                     </div>
-                </div>
+                </TabbedSection>
             </React.Fragment>
         );
 
