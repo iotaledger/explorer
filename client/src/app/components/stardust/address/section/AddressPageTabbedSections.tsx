@@ -17,23 +17,23 @@ import AssociatedOutputs from "./association/AssociatedOutputs";
 import NftMetadataSection from "./nft/NftMetadataSection";
 import NftSection from "./nft/NftSection";
 
-export enum DEFAULT_TABS {
+enum DEFAULT_TABS {
     Transactions = "Transactions",
     NativeTokens = "Native Tokens",
     Nfts = "NFTs",
     AssocOutputs = "Associated Outputs"
 }
 
-export enum ALIAS_TABS {
+enum ALIAS_TABS {
     State = "State",
     Foundries = "Foundries",
 }
 
-export enum NFT_TABS {
+enum NFT_TABS {
     NftMetadata = "Metadata",
 }
 
-export const buildDefaultTabsOptions = (
+const buildDefaultTabsOptions = (
     isAddressHistoryLoading: boolean,
     tokensCount: number,
     isAddressOutputsLoading: boolean,
@@ -67,7 +67,7 @@ export const buildDefaultTabsOptions = (
     }
 });
 
-export const buildAliasAddressTabsOptions = (
+const buildAliasAddressTabsOptions = (
     isAliasStateTabDisabled: boolean,
     isAliasDetailsLoading: boolean,
     isAliasFoundriesTabDisabled: boolean,
@@ -85,7 +85,7 @@ export const buildAliasAddressTabsOptions = (
     }
 });
 
-export const buildNftAddressTabsOptions = (
+const buildNftAddressTabsOptions = (
     isNftMetadataTabDisabled: boolean,
     isNftDetailsLoading: boolean
 ) => ({

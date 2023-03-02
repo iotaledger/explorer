@@ -37,7 +37,7 @@ export function tryParseNftMetadata(metadataHex: HexEncodedString): INftImmutabl
 /**
  * Supported image MIME formats.
  */
-export const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
+const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
 
 /**
  * Validate NFT image MIME type.

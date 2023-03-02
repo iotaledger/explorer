@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-import Spinner from "../../Spinner";
+import Spinner from "../../../../Spinner";
 import "./ImagePlaceholder.scss";
 
 interface ImagePlaceholderProps {
