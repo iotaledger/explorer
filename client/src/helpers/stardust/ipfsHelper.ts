@@ -6,7 +6,7 @@ const IPFS_ENDPOINT = "https://ipfs.io";
 
 const IPFS_PATH = "/ipfs/";
 
-export interface IpfsLink {
+interface IpfsLink {
   path?: string;
   hash: string;
 }

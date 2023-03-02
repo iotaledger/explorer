@@ -6,11 +6,11 @@ import {
 import moment from "moment";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
+import { IAddressBalanceRequest } from "../../models/api/stardust/address/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../models/api/stardust/address/IAddressBalanceResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/address/IAddressDetailsWithBalance";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
-import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";

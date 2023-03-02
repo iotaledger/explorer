@@ -7,9 +7,9 @@ import nftMainHeaderInfo from "../../../assets/modals/stardust/nft/main-header.j
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
-import { AddressPageTabbedSections } from "../../components/stardust/address/AddressPageTabbedSections";
-import AddressBalance from "../../components/stardust/AddressBalance";
-import Bech32Address from "../../components/stardust/Bech32Address";
+import AddressBalance from "../../components/stardust/address/AddressBalance";
+import Bech32Address from "../../components/stardust/address/Bech32Address";
+import { AddressPageTabbedSections } from "../../components/stardust/address/section/AddressPageTabbedSections";
 import { AddressRouteProps } from "../AddressRouteProps";
 import { useAddressPageState } from "./AddressState";
 import "./AddressPage.scss";
