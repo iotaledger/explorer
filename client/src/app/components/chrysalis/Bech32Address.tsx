@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
+import { Bech32AddressProps } from "../Bech32AddressProps";
 import CopyButton from "../CopyButton";
-import { Bech32AddressProps } from "../stardust/address/Bech32AddressProps";
 
 /**
  * Component which will display an Bech32Address.

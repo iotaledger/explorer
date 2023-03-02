@@ -1,6 +1,6 @@
 import React, { Component, ReactNode } from "react";
+import { Bech32AddressProps } from "../../Bech32AddressProps";
 import TruncatedId from "../TruncatedId";
-import { Bech32AddressProps } from "./Bech32AddressProps";
 
 /**
  * Component which will display an Bech32Address.
