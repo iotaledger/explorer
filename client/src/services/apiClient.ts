@@ -72,9 +72,11 @@ export class ApiClient {
         timeout?: number
     ): Promise<IRawResponse> {
         let result: IRawResponse;
+        const headers = { "Content-Type": "application/json" };
+
         try {
             result = {
-                raw: await FetchHelper.raw(this._endpoint, path, method, request, undefined, timeout)
+                raw: await FetchHelper.raw(this._endpoint, path, method, request, headers, timeout)
             };
         } catch (err) {
             result = {

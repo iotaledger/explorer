@@ -8,7 +8,8 @@ import DataToggle from "../DataToggle";
 import JsonViewer from "../JsonViewer";
 import {
     getNftImageContent,
-    isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD, tryParseNftMetadata, unsupportedImageFormatPlaceholder
+    isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD, tryParseNftMetadata,
+    unsupportedImageFormatPlaceholder, loadingImagePlaceholder
 } from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
 import TruncatedId from "./TruncatedId";
@@ -28,13 +29,19 @@ interface NftMetadataSectionProps {
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft }) => {
     const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
     const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
-    const uri = useNftMetadataUri(standardMetadata?.uri);
+    const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
         if (nft.metadata) {
             setStandardMetadata(tryParseNftMetadata(nft.metadata));
         }
     }, [nft.metadata]);
+
+    const unsupportedFormatOrLoading = isNftUriLoading ? (
+        loadingImagePlaceholder
+    ) : (
+        unsupportedImageFormatPlaceholder
+    );
 
     const whitelistedNft = (
         standardMetadata && isWhitelisted ? (
@@ -43,7 +50,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
                     {(uri && isSupportedImageFormat(standardMetadata?.type) ? (
                         getNftImageContent(standardMetadata.type, uri, "nft-metadata__image")
                     ) : (
-                        unsupportedImageFormatPlaceholder
+                        unsupportedFormatOrLoading
                     ))}
                     <div className="nft-metadata__info col w100">
                         <ul>

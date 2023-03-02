@@ -1,6 +1,4 @@
-// eslint-disable-next-line import/no-unresolved
-import { create } from "ipfs-http-client";
-
+import { IpfsClient } from "../../services/stardust/ipfsClient";
 /**
  * The ipfs endpoint.
  */
@@ -31,22 +29,20 @@ export function getIPFSHash(url?: string): string | undefined {
  * @returns Path to a file.
  */
 export async function getIpfsUri(link: IpfsLink): Promise<string> {
-    const ipfsClient = create({ url: IPFS_ENDPOINT });
     let ipfsLink = `${IPFS_PATH}${link.hash}${link.path ?? ""}`;
 
     try {
-        const ipfsContent = ipfsClient.ls(ipfsLink);
-        const iterator = ipfsContent[Symbol.asyncIterator]();
-        const ipfsEntry = await iterator.next();
+        const ipfsEntry = await IpfsClient.ls(ipfsLink);
 
-        if (!ipfsEntry.done) {
-            if (ipfsEntry.value.type === "dir") {
-                const path = `${link.path ?? ""}/${ipfsEntry.value.name}`;
+        if (ipfsEntry) {
+            if (ipfsEntry.type === "dir") {
+                const path = `${link.path ?? ""}/${ipfsEntry.name}`;
                 return await getIpfsUri({ hash: link.hash, path });
             }
-            ipfsLink = `${ipfsLink}/${encodeURIComponent(ipfsEntry.value.name)}`;
+            ipfsLink = `${ipfsLink}/${encodeURIComponent(ipfsEntry.name)}`;
         }
     } catch { }
 
     return `${IPFS_ENDPOINT}${ipfsLink}`;
 }
+
