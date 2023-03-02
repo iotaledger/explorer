@@ -1,4 +1,4 @@
-import { ISignatureUnlock } from "@iota/iota.js-stardust";
+import { UnlockTypes } from "@iota/iota.js-stardust";
 import { IInput } from "../../../../../models/api/stardust/IInput";
 import { IOutput } from "../../../../../models/api/stardust/IOutput";
 
@@ -16,7 +16,7 @@ export interface TransactionPayloadProps {
     /**
      * The unlocks of the transaction.
      */
-    unlocks: ISignatureUnlock[];
+    unlocks: UnlockTypes[];
 
     /**
      * The outputs.
@@ -31,6 +31,6 @@ export interface TransactionPayloadProps {
     /**
      * Disable links if block is conflicting.
      */
-     isLinksDisabled?: boolean;
+    isLinksDisabled?: boolean;
 }
 

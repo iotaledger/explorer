@@ -3,12 +3,12 @@ import transactionPayloadMessage from "../../../../../assets/modals/stardust/blo
 import NetworkContext from "../../../../context/NetworkContext";
 import AsyncComponent from "../../../AsyncComponent";
 import Modal from "../../../Modal";
-import "./TransactionPayload.scss";
 import Input from "../../Input";
 import Output from "../../Output";
 import Unlocks from "../../Unlocks";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
+import "./TransactionPayload.scss";
 
 /**
  * Component which will display a transaction payload.

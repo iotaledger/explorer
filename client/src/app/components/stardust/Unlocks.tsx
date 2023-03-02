@@ -1,14 +1,29 @@
-import { ISignatureUnlock } from "@iota/iota.js-stardust";
+import { SIGNATURE_UNLOCK_TYPE, UnlockTypes } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useState } from "react";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import TruncatedId from "./TruncatedId";
 
 interface IUnlocksProps {
-    unlocks: ISignatureUnlock[];
+    unlocks: UnlockTypes[];
 }
 
 const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+
+    const displayUnlocksTypeAndIndex = (type: number, index: number) => (
+        <div>
+            <div className="unlocks-card--row">
+                <span className="label">Index:</span>
+                <span className="value">{index}</span>
+            </div>
+            <div className="unlocks-card--row">
+                <span className="label">Type:</span>
+                <span className="value">{NameHelper.getUnlockTypeName(type)}</span>
+            </div>
+        </div>
+    );
 
     return (
         <div className="card--content__output unlocks">
@@ -27,15 +42,32 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
             </div>
             {
                 isExpanded && (
-                    <div className="left-border">
+                    <div>
                         {
                             unlocks.map((unlock, idx) => (
-                                <div key={idx} className="padding-l-t">
-                                    <div className="card--label"> Public Key</div>
-                                    <div className="card--value">{unlock.signature.publicKey}</div>
-                                    <div className="card--label"> Signature</div>
-                                    <div className="card--value">{unlock.signature.signature}</div>
-                                </div>
+                                unlock.type === SIGNATURE_UNLOCK_TYPE ?
+                                    <div key={idx} className="unlocks-card margin-l-t">
+                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                        <div className="unlocks-card--row">
+                                            <span className="label">Public Key:</span>
+                                            <div className="value public-key">
+                                                <TruncatedId id={unlock.signature.publicKey} />
+                                            </div>
+                                        </div>
+                                        <div className="unlocks-card--row">
+                                            <span className="label">Signature:</span>
+                                            <div className="value signature">
+                                                <TruncatedId id={unlock.signature.signature} />
+                                            </div>
+                                        </div>
+                                    </div> :
+                                    <div key={idx} className="unlocks-card margin-l-t">
+                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                        <div className="unlocks-card--row">
+                                            <span className="label">References unlock at index:</span>
+                                            <span className="value">{unlock.reference}</span>
+                                        </div>
+                                    </div>
                             ))
                         }
                     </div>

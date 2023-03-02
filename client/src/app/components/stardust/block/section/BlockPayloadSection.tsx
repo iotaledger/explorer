@@ -1,6 +1,6 @@
 import {
-    IBlock, ISignatureUnlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE
+    IBlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE,
+    TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes
 } from "@iota/iota.js-stardust";
 import * as H from "history";
 import React from "react";
@@ -15,7 +15,7 @@ interface BlockPayloadSectionProps {
     protocolVersion: number;
     block: IBlock;
     inputs?: (IUTXOInput & IInput)[];
-    unlocks?: ISignatureUnlock[];
+    unlocks?: UnlockTypes[];
     outputs?: IOutput[];
     transferTotal?: number;
     history: H.History;
