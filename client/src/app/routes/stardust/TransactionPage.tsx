@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 import transactionPayloadMessage from "../../../assets/modals/stardust/transaction/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -13,7 +13,6 @@ import { STARDUST } from "../../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
@@ -22,6 +21,7 @@ import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/BlockTangleState";
 import InclusionState from "../../components/stardust/InclusionState";
 import TransactionPayload from "../../components/stardust/TransactionPayload";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { TransactionPageProps } from "./TransactionPageProps";
@@ -147,10 +147,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                         Transaction ID
                     </div>
                     <div className="value code row middle">
-                        <span className="margin-r-t">
-                            {transactionId}
-                        </span>
-                        <CopyButton copy={transactionId} />
+                        <TruncatedId id={transactionId} showCopyButton />
                     </div>
                 </div>
                 {includedBlockId && (
@@ -160,14 +157,12 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                         </div>
                         <div className="value code row middle">
                             <span className="margin-r-t link">
-                                <Link
-                                    to={`/${network}/block/${includedBlockId}`}
-                                    className="margin-r-t"
-                                >
-                                    {includedBlockId}
-                                </Link>
+                                <TruncatedId
+                                    id={includedBlockId}
+                                    showCopyButton
+                                    link={`/${network}/block/${includedBlockId}`}
+                                />
                             </span>
-                            <CopyButton copy={includedBlockId} />
                         </div>
                     </div>
                 )}
@@ -189,9 +184,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                             Input commitment
                         </div>
                         <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {inputsCommitment}
-                            </span>
+                            <TruncatedId id={inputsCommitment} showCopyButton />
                         </div>
                     </div>
                 )}
@@ -236,10 +229,11 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                     tabOptions={{
                         [TRANSACTION_PAGE_TABS.Payload]: {
                             disabled: !inputs || !unlocks || !outputs || transferTotal === undefined,
-                            isLoading: jobToStatus.get("loadBlock") !== PromiseStatus.DONE
+                            isLoading: jobToStatus.get("loadBlock") !== PromiseStatus.DONE,
+                            infoContent: transactionPayloadMessage
                         },
                         [TRANSACTION_PAGE_TABS.BlockMetadata]: {
-                            isLoading: jobToStatus.get("loadBlockDetails") !== PromiseStatus.DONE
+                            isLoading: !metadata && !metadataError
                         }
                     }}
                 >
@@ -254,22 +248,11 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                     inputs={inputs}
                                     unlocks={unlocks}
                                     outputs={outputs}
-                                    header="Payload"
                                 />
                             </div>
                         ) : <></>}
                     <div className="section metadata-section">
-                        <div className="section--header section--header__space-between">
-                            <div className="row middle">
-                                <h2>
-                                    Block Metadata
-                                </h2>
-                            </div>
-                        </div>
                         <div className="section--data">
-                            {!metadata && !metadataError && (
-                                <Spinner />
-                            )}
                             {metadataError && (
                                 <p className="danger">
                                     Failed to retrieve metadata. {metadataError}
@@ -318,12 +301,10 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                                     style={{ marginTop: "8px" }}
                                                     className="value code link"
                                                 >
-                                                    <Link
-                                                        to={`/${network}/block/${parent}`}
-                                                        className="margin-r-t"
-                                                    >
-                                                        {parent}
-                                                    </Link>
+                                                    <TruncatedId
+                                                        id={parent}
+                                                        link={`/${network}/block/${parent}`}
+                                                    />
                                                 </div>
                                             ))}
                                         </div>
