@@ -18,7 +18,6 @@ import { MilestonesClient } from "./services/milestonesClient";
 import { NetworkService } from "./services/networkService";
 import { NodeInfoService } from "./services/nodeInfoService";
 import { SettingsService } from "./services/settingsService";
-import { IpfsClient } from "./services/stardust/ipfsClient";
 import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
@@ -57,8 +56,6 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("identity", () => new IdentityService());
 
     ServiceFactory.register("token-registry", () => new TokenRegistryClient());
-
-    ServiceFactory.register("ipfs-registry", () => new IpfsClient());
 
     const networkService = new NetworkService();
     await networkService.buildCache();

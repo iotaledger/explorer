@@ -1,4 +1,3 @@
-import { ServiceFactory } from "../../factories/serviceFactory";
 import { IpfsClient } from "../../services/stardust/ipfsClient";
 /**
  * The ipfs endpoint.
@@ -30,11 +29,10 @@ export function getIPFSHash(url?: string): string | undefined {
  * @returns Path to a file.
  */
 export async function getIpfsUri(link: IpfsLink): Promise<string> {
-    const ipfsClient = ServiceFactory.get<IpfsClient>("ipfs-registry");
     let ipfsLink = `${IPFS_PATH}${link.hash}${link.path ?? ""}`;
 
     try {
-        const ipfsEntry = await ipfsClient.ls(ipfsLink);
+        const ipfsEntry = await IpfsClient.ls(ipfsLink);
 
         if (ipfsEntry) {
             if (ipfsEntry.type === "dir") {
@@ -47,3 +45,4 @@ export async function getIpfsUri(link: IpfsLink): Promise<string> {
 
     return `${IPFS_ENDPOINT}${ipfsLink}`;
 }
+

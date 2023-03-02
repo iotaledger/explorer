@@ -33,7 +33,7 @@ interface IIPfsEntry {
     mode?: number;
     mtime?: Mtime;
     size: number;
-  }
+}
 /**
  * The ipfs endpoint.
  */
@@ -47,7 +47,7 @@ const IPFS_PREFIX = "/ipfs/";
  * Class to handle requests to ipfs.io.
  */
 export class IpfsClient {
-    public async ls(path: string): Promise<IIPfsEntry | undefined> {
+    public static async ls(path: string): Promise<IIPfsEntry | undefined> {
         let ipfsEntry;
         try {
             const response = await FetchHelper.raw(
@@ -61,26 +61,27 @@ export class IpfsClient {
             if (result) {
                 const links = result.Links;
                 if (links.length > 0) {
-                    ipfsEntry = this.mapLinkToIpfsEntry(links[0], path);
+                    ipfsEntry = IpfsClient.mapLinkToIpfsEntry(links[0], path);
                 }
             }
         } catch { }
+
         return ipfsEntry;
     }
 
-    public mapLinkToIpfsEntry(link: IIpfsLink, path: string): IIPfsEntry {
+    private static mapLinkToIpfsEntry(link: IIpfsLink, path: string): IIPfsEntry {
         const hash = link.Hash.startsWith(IPFS_PREFIX) ? link.Hash.slice(IPFS_PREFIX.length) : link.Hash;
 
         const entry: IIPfsEntry = {
-          name: link.Name,
-          path: path + (link.Name ? `/${link.Name}` : ""),
-          size: link.Size,
-          cid: hash,
-          type: this.typeOf(link)
+            name: link.Name,
+            path: path + (link.Name ? `/${link.Name}` : ""),
+            size: link.Size,
+            cid: hash,
+            type: IpfsClient.typeOf(link)
         };
 
         if (link.Mode) {
-           entry.mode = Number.parseInt(link.Mode, 8);
+            entry.mode = Number.parseInt(link.Mode, 8);
         }
 
         if (link.Mtime !== undefined && link.Mtime !== null) {
@@ -92,18 +93,19 @@ export class IpfsClient {
                 entry.mtime.nsecs = link.MtimeNsecs;
             }
         }
+
         return entry;
     }
 
-    public typeOf(link: IIpfsLink) {
+    private static typeOf(link: IIpfsLink) {
         switch (link.Type) {
-          case 1:
-          case 5:
-            return "dir";
-          case 2:
-            return "file";
-          default:
-            return "file";
+            case 1:
+            case 5:
+                return "dir";
+            case 2:
+                return "file";
+            default:
+                return "file";
         }
     }
 }
