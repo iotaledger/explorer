@@ -210,3 +210,9 @@
   margin: 0 6px;
   color: $gray-6;
 }
+
+.truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

@@ -6,6 +6,7 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import { buildNodeShader } from "../../../helpers/nodeShader";
+import { scrollToTop } from "../../../helpers/pageUtils";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
@@ -179,12 +180,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         await super.componentDidMount();
 
         window.addEventListener("resize", this._resize);
-
-        window.scrollTo({
-            left: 0,
-            top: 0,
-            behavior: "smooth"
-        });
+        scrollToTop();
     }
 
     /**

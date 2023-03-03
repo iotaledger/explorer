@@ -70,7 +70,7 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
         if (id !== -1) {
             setSelectedTab(id);
         }
-      }, [searchParams]);
+    }, [searchParams]);
 
     const onTabSelected = (id: number) => {
         const tabParam = new URLSearchParams();
@@ -103,7 +103,11 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                         className={classNames("tab-wrapper",
                             { "active": idx === selectedTab },
                             { "disabled": isDisabled })}
-                        onClick={() => onTabSelected(idx)}
+                        onClick={() => {
+                            if (!isDisabled) {
+                                onTabSelected(idx);
+                            }
+                        }}
                     >
                         <button
                             className="tab"

@@ -11,7 +11,7 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import Address from "./Address";
+import Address from "./address/Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
 import { UnlockConditionState } from "./UnlockConditionState";
 

@@ -72,6 +72,7 @@
             }
 
             .modal button {
+                pointer-events: auto;
                 padding-left: 0;
             }
 
@@ -85,7 +86,7 @@
                 font-weight: 500;
                 padding: 4px;
                 border-radius: 16px;
-                background: $gray-1;
+                background: var(--header-svg-bg);
                 color: $gray-6;
 
                 @include tablet-down {

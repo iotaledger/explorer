@@ -6,11 +6,11 @@ import {
 import moment from "moment";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
+import { IAddressBalanceRequest } from "../../models/api/stardust/address/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../models/api/stardust/address/IAddressBalanceResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/address/IAddressDetailsWithBalance";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
-import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
@@ -20,8 +20,6 @@ import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransacti
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
-import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
-import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
@@ -636,32 +634,6 @@ export class StardustTangleCacheService extends TangleCacheService {
             nftDetails: this._stardustSearchCache[request.network][cacheKey]
                 ?.data?.nftDetails
         };
-    }
-
-    /**
-     * Get the NFT registry details (mock impl).
-     * @param request The request.
-     * @param skipCache Skip looking in the cache.
-     * @returns The NFT outputs response.
-     */
-    public async nftRegistryDetails(
-        request: INftRegistryDetailsRequest,
-        skipCache: boolean = false
-    ): Promise<INftRegistryDetailsResponse | undefined> {
-        const cacheEntry = this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`];
-
-        if (!cacheEntry?.data?.nftRegistryDetails || skipCache) {
-            const nftRegistryDetails = await this._api.nftRegistryDetails(request);
-            this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`] = {
-                data: {
-                    nftRegistryDetails
-                },
-                cached: Date.now()
-            };
-        }
-
-        return this._stardustSearchCache[request.network][`${request.nftId}--nft-mock-details`]
-            ?.data?.nftRegistryDetails;
     }
 
     /**

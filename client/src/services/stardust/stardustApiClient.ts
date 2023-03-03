@@ -5,23 +5,23 @@ import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequ
 import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { IRawResponse } from "../../models/api/IRawResponse";
+import { IAddressBalanceRequest } from "../../models/api/stardust/address/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../models/api/stardust/address/IAddressBalanceResponse";
+import { IAddressDetailsRequest } from "../../models/api/stardust/address/IAddressDetailsRequest";
+import { IAddressDetailsResponse } from "../../models/api/stardust/address/IAddressDetailsResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/address/IAddressDetailsWithBalance";
+import { IBlockDetailsRequest } from "../../models/api/stardust/block/IBlockDetailsRequest";
+import { IBlockDetailsResponse } from "../../models/api/stardust/block/IBlockDetailsResponse";
+import { IBlockRequest } from "../../models/api/stardust/block/IBlockRequest";
+import { IBlockResponse } from "../../models/api/stardust/block/IBlockResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
-import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import { IAddressDetailsRequest } from "../../models/api/stardust/IAddressDetailsRequest";
-import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
-import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociationsRequest } from "../../models/api/stardust/IAssociationsRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
-import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
-import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
-import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
@@ -39,8 +39,6 @@ import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsReq
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
-import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
-import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
@@ -304,18 +302,6 @@ export class StardustApiClient extends ApiClient {
     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
         return this.callApi<unknown, INftDetailsResponse>(
             `stardust/nft/${request.network}/${request.nftId}`,
-            "get"
-        );
-    }
-
-    /**
-     * Get the nft details (mock).
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
-        return this.callApi<unknown, INftRegistryDetailsResponse>(
-            `stardust/nft/mock/${request.network}/${request.nftId}`,
             "get"
         );
     }

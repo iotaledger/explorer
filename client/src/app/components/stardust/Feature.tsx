@@ -5,13 +5,13 @@ import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.s
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import AsyncComponent from "../AsyncComponent";
 import DataToggle from "../DataToggle";
-import Address from "./Address";
+import Address from "./address/Address";
 import { FeatureProps } from "./FeatureProps";
 import { FeatureState } from "./FeatureState";
 /**
  * Component which will display an Feature Block.
  */
-class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
+class Feature extends AsyncComponent<FeatureProps, FeatureState> {
     constructor(props: FeatureProps) {
         super(props);
 
@@ -87,4 +87,4 @@ class FeatureBlock extends AsyncComponent<FeatureProps, FeatureState> {
     }
 }
 
-export default FeatureBlock;
+export default Feature;

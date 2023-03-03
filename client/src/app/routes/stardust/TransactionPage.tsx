@@ -19,9 +19,9 @@ import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
-import BlockTangleState from "../../components/stardust/BlockTangleState";
+import BlockTangleState from "../../components/stardust/block/BlockTangleState";
+import TransactionPayload from "../../components/stardust/block/payload/TransactionPayload";
 import InclusionState from "../../components/stardust/InclusionState";
-import TransactionPayload from "../../components/stardust/TransactionPayload";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
@@ -147,8 +147,11 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                     <div className="label">
                         Transaction ID
                     </div>
-                    <div className="value code row middle">
-                        <TruncatedId id={transactionId} showCopyButton />
+                    <div className="value code">
+                        <TruncatedId
+                            id={transactionId}
+                            showCopyButton
+                        />
                     </div>
                 </div>
                 {includedBlockId && (
@@ -156,14 +159,12 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                         <div className="label">
                             Included in block
                         </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t link">
-                                <TruncatedId
-                                    id={includedBlockId}
-                                    showCopyButton
-                                    link={`/${network}/block/${includedBlockId}`}
-                                />
-                            </span>
+                        <div className="value code highlight">
+                            <TruncatedId
+                                id={includedBlockId}
+                                link={`/${network}/block/${includedBlockId}`}
+                                showCopyButton
+                            />
                         </div>
                     </div>
                 )}
