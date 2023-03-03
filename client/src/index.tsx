@@ -23,6 +23,7 @@ import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
 import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
+import { TokenRegistryClient } from "./services/stardust/tokenRegistryClient";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
@@ -53,6 +54,8 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("local-storage", () => new LocalStorageService());
 
     ServiceFactory.register("identity", () => new IdentityService());
+
+    ServiceFactory.register("token-registry", () => new TokenRegistryClient());
 
     const networkService = new NetworkService();
     await networkService.buildCache();

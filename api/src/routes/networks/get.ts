@@ -38,7 +38,8 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
                 faucet: n.faucet,
                 milestoneInterval: n.milestoneInterval,
                 circulatingSupply: n.circulatingSupply,
-                identityResolverEnabled: n.identityResolverEnabled
+                identityResolverEnabled: n.identityResolverEnabled,
+                tokenRegistryEndpoint: n.tokenRegistryEndpoint
             }))
     };
 }

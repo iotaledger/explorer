@@ -23,12 +23,9 @@ import Transaction from "./routes/og/Transaction";
 import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
-import Alias from "./routes/stardust/Alias";
 import StardustBlock from "./routes/stardust/Block";
 import Foundry from "./routes/stardust/Foundry";
 import StardustLanding from "./routes/stardust/landing/Landing";
-import Nft from "./routes/stardust/Nft";
-import NftRegistryDetails from "./routes/stardust/NftRegistryDetails";
 import OutputList from "./routes/stardust/OutputList";
 import OutputPage from "./routes/stardust/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
@@ -174,18 +171,6 @@ const buildAppRoutes = (
         <Route path="/:network/foundry/:foundryId"
             key={keys.next().value}
             component={Foundry}
-        />,
-        <Route path="/:network/nft-registry/:nftId"
-            key={keys.next().value}
-            component={NftRegistryDetails}
-        />,
-        <Route path="/:network/alias/:aliasAddress"
-            key={keys.next().value}
-            component={Alias}
-        />,
-        <Route path="/:network/nft/:nftAddress"
-            key={keys.next().value}
-            component={Nft}
         />,
         <Route path="/:network/statistics"
             key={keys.next().value}

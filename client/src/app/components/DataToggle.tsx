@@ -88,30 +88,30 @@ class DataToggle extends Component<DataToggleProps, DataToggleState> {
     /**
      * Converts hex data to UTF-8 and Json, if possible.
      */
-     private populateFormats() {
-         let utf8View;
-         let jsonView;
-         let hexView = this.state.hexView;
-         const checkValidUtf8 = true;
+    private populateFormats() {
+        let utf8View;
+        let jsonView;
+        let hexView = this.state.hexView;
+        const checkValidUtf8 = true;
 
-         const isSpacesBetweenBytes = this.props.withSpacedHex ?? false;
+        const isSpacesBetweenBytes = this.props.withSpacedHex ?? false;
 
-         if (!checkValidUtf8 || (checkValidUtf8 && TextHelper.isUTF8(Converter.hexToBytes(hexView)))) {
-             utf8View = Converter.hexToUtf8(hexView);
-         }
+        if (!checkValidUtf8 || (checkValidUtf8 && TextHelper.isUTF8(Converter.hexToBytes(hexView)))) {
+            utf8View = Converter.hexToUtf8(hexView);
+        }
 
-         if (isSpacesBetweenBytes) {
-             const canBeSpacedMatch = hexView.match(/.{1,2}/g);
-             hexView = canBeSpacedMatch ? canBeSpacedMatch.join(" ") : hexView;
-         }
+        if (isSpacesBetweenBytes) {
+            const canBeSpacedMatch = hexView.match(/.{1,2}/g);
+            hexView = canBeSpacedMatch ? canBeSpacedMatch.join(" ") : hexView;
+        }
 
-         try {
-             if (utf8View) {
-                 jsonView = JSON.stringify(JSON.parse(utf8View), undefined, "  ");
-             }
-         } catch { }
+        try {
+            if (utf8View) {
+                jsonView = JSON.stringify(JSON.parse(utf8View), undefined, "  ");
+            }
+        } catch { }
 
-         this.setState({ hexView, utf8View, jsonView });
+        this.setState({ hexView, utf8View, jsonView });
     }
 }
 

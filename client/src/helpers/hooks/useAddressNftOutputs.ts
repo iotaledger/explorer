@@ -10,7 +10,9 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * @param addressBech32 The address in bech32 format
  * @returns The output responses and loading bool.
  */
-export function useAddressNftOutputs(network: string, addressBech32?: string): [IOutputResponse[] | null, boolean] {
+export function useAddressNftOutputs(
+    network: string, addressBech32: string | null
+): [IOutputResponse[] | null, boolean] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -19,6 +21,7 @@ export function useAddressNftOutputs(network: string, addressBech32?: string): [
 
     useEffect(() => {
         setIsLoading(true);
+        setOutputs(null);
         if (addressBech32) {
             // eslint-disable-next-line no-void
             void (async () => {

@@ -80,7 +80,6 @@ export class FetchHelper {
         timeout?: number
     ): Promise<Response> {
         headers = headers ?? {};
-        headers["Content-Type"] = "application/json";
 
         let controller: AbortController | undefined;
         let timerId: NodeJS.Timeout | undefined;

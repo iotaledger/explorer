@@ -96,6 +96,11 @@ export interface INetwork {
     feedEndpoint?: string;
 
     /**
+     * Url endpoint for token registry.
+     */
+    tokenRegistryEndpoint?: string;
+
+    /**
      * The address of the coordinator.
      */
     coordinatorAddress?: string;

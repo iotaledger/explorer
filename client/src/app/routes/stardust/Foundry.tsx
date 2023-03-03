@@ -1,23 +1,22 @@
-import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
-import { optional } from "@ruffy/ts-optional";
+import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import CopyButton from "../../components/CopyButton";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Icon from "../../components/Icon";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
-import AssetsTable from "../../components/stardust/AssetsTable";
-import Feature from "../../components/stardust/Feature";
+import AssetsTable from "../../components/stardust/address/section/association/AssetsTable";
+import FeaturesSection from "../../components/stardust/address/section/FeaturesSection";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
@@ -31,7 +30,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     { match: { params: { network, foundryId } } }
 ) => {
     const isMounted = useIsMounted();
-    const { tokenInfo } = useContext(NetworkContext);
+    const { tokenInfo, bech32Hrp } = useContext(NetworkContext);
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -39,7 +38,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [jobToStatus, setJobToStatus] = useState(
         new Map<string, PromiseStatus>().set("loadFoundryDetails", PromiseStatus.PENDING)
     );
-    const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
+    const [foundryOutput, setFoundryOutput] = useState<IOutputResponse>();
     const [foundryError, setFoundryError] = useState<string | undefined>();
     const [controllerAlias, setControllerAlias] = useState<string>();
 
@@ -60,7 +59,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
                             if (isMounted) {
-                                setFoundryOutput(theFoundryOutput);
+                                setFoundryOutput(response.foundryDetails);
                                 setControllerAlias(aliasId);
                             }
                         } else if (isMounted) {
@@ -99,14 +98,18 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 
     let foundryContent = null;
     if (foundryOutput) {
+        const output = foundryOutput.output as IFoundryOutput;
         const isMarketed = isMarketedNetwork(network);
-        const serialNumber = foundryOutput.serialNumber;
-        const balance = Number(foundryOutput.amount);
-        const tokenScheme = foundryOutput.tokenScheme.type;
-        const maximumSupply = Number(foundryOutput.tokenScheme.maximumSupply);
-        const mintedTokens = Number(foundryOutput.tokenScheme.mintedTokens);
-        const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
-        const immutableFeaturesExists = optional(foundryOutput.immutableFeatures).nonEmpty();
+        const serialNumber = output.serialNumber;
+        const balance = Number(output.amount);
+        const tokenScheme = output.tokenScheme.type;
+        const maximumSupply = Number(output.tokenScheme.maximumSupply);
+        const mintedTokens = Number(output.tokenScheme.mintedTokens);
+        const meltedTokens = Number(output.tokenScheme.meltedTokens);
+
+        const controllerAliasBech32 = controllerAlias ?
+            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
+            undefined;
 
         foundryContent = (
             <React.Fragment>
@@ -126,17 +129,20 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             </span>
                         </div>
                     </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Controller Alias
+                    {controllerAlias && controllerAliasBech32 && (
+                        <div className="section--data">
+                            <div className="label">
+                                Controller Alias
+                            </div>
+                            <div className="value code highlight">
+                                <TruncatedId
+                                    id={controllerAlias}
+                                    link={`/${network}/addr/${controllerAliasBech32.bech32}`}
+                                    showCopyButton
+                                />
+                            </div>
                         </div>
-                        <div className="value code row middle highlight">
-                            <Link to={`/${network}/alias/${controllerAlias}`} className="margin-r-t">
-                                {controllerAlias}
-                            </Link>
-                            <CopyButton copy={controllerAlias} />
-                        </div>
-                    </div>
+                    )}
                     <div className="section--data">
                         <div className="row middle">
                             <Icon icon="wallet" boxed />
@@ -172,8 +178,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                     tabsEnum={FOUNDRY_PAGE_TABS}
                     tabOptions={{
                         [FOUNDRY_PAGE_TABS.Features]: {
-                            disabled: optional(foundryOutput.features).isEmpty() &&
-                                optional(foundryOutput.immutableFeatures).isEmpty()
+                            disabled: !output.features && !output.immutableFeatures
                         }
                     }}
                 >
@@ -218,23 +223,15 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 </span>
                             </div>
                         </div>
-                        {foundryOutput && (
-                            <AssetsTable networkId={network} outputs={[foundryOutput]} />
-                        )}
-                    </div>
-                    {immutableFeaturesExists ?
-                        <div className="section">
-                            {foundryOutput.immutableFeatures?.map((feature, idx) => (
-                                <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={true} />
-                            ))}
-                        </div> :
-                        <div className="section">
-                            {foundryOutput.features?.map((feature, idx) => (
-                                <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
-                            ))}
-                        </div>}
+                        {
+                            foundryOutput && (
+                                <AssetsTable networkId={network} outputs={[foundryOutput]} />
+                            )
+                        }
+                    </div >
+                    <FeaturesSection output={output} />
                 </TabbedSection>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 

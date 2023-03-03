@@ -76,13 +76,12 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                 </span>
                             </div>
                             <div className="feed-item__content desktop-only">
-                                <span className="feed-item--label">Milestone id</span>
-                                <Link
-                                    className="feed-item--hash ms-id"
-                                    to={`/${network}/block/${blockId}`}
-                                >
-                                    <TruncatedId id={milestoneId} />
-                                </Link>
+                                <div className="feed-item--hash ms-id">
+                                    <TruncatedId
+                                        id={milestoneId}
+                                        link={`/${network}/block/${blockId}`}
+                                    />
+                                </div>
                             </div>
                             <MilestoneFeedAnalyics
                                 network={network}
