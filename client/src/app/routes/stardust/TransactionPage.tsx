@@ -3,6 +3,7 @@
 import { TRANSACTION_PAYLOAD_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
 import transactionPayloadMessage from "../../../assets/modals/stardust/transaction/main-header.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -233,7 +234,8 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                             infoContent: transactionPayloadMessage
                         },
                         [TRANSACTION_PAGE_TABS.BlockMetadata]: {
-                            isLoading: !metadata && !metadataError
+                            isLoading: !metadata && !metadataError,
+                            infoContent: metadataInfo
                         }
                     }}
                 >
