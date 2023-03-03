@@ -1,6 +1,7 @@
 import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
+import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -23,6 +24,7 @@ import "./Foundry.scss";
 
 enum FOUNDRY_PAGE_TABS {
     TokenInfo = "Token Info",
+    NativeTokens = "Native Tokens",
     Features = "Features"
 }
 
@@ -41,6 +43,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [foundryOutput, setFoundryOutput] = useState<IOutputResponse>();
     const [foundryError, setFoundryError] = useState<string | undefined>();
     const [controllerAlias, setControllerAlias] = useState<string>();
+    const [tokenCount, setTokenCount] = useState<number>(0);
 
     useEffect(() => {
         const foundryLoadMonitor = new PromiseMonitor(status => {
@@ -177,6 +180,11 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                 <TabbedSection
                     tabsEnum={FOUNDRY_PAGE_TABS}
                     tabOptions={{
+                        [FOUNDRY_PAGE_TABS.NativeTokens]: {
+                            disabled: tokenCount === 0,
+                            counter: tokenCount,
+                            infoContent: nativeTokensMessage
+                        },
                         [FOUNDRY_PAGE_TABS.Features]: {
                             disabled: !output.features && !output.immutableFeatures
                         }
@@ -223,12 +231,12 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                                 </span>
                             </div>
                         </div>
-                        {
-                            foundryOutput && (
-                                <AssetsTable networkId={network} outputs={[foundryOutput]} />
-                            )
-                        }
                     </div >
+                    <AssetsTable
+                        networkId={network}
+                        outputs={[foundryOutput]}
+                        setTokenCount={setTokenCount}
+                    />
                     <FeaturesSection output={output} />
                 </TabbedSection>
             </React.Fragment >
