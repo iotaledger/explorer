@@ -52,6 +52,7 @@
             .link {
                 @include font-size(14px);
 
+                max-width: 100%;
                 color: var(--link-color);
                 font-family: $ibm-plex-mono;
                 font-weight: normal;
