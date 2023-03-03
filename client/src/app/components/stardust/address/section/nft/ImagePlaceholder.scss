@@ -7,7 +7,7 @@
     align-items: center;
     justify-content: center;
     min-width: 398px;
-    height: 390px;
+    height: 398px;
     border-radius: 1em;
 
     @include desktop-down {
@@ -31,7 +31,7 @@
         font-family: $metropolis-light;
         line-height: 1.5em;
         text-align: center;
-        color: white;
+        color: var(--body-color);
     }
 
     &.compact {
@@ -45,7 +45,7 @@
             font-family: $metropolis-light;
             line-height: 1.5em;
             text-align: center;
-            color: white;
+            color: var(--body-color);
         }
     }
 }

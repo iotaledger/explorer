@@ -13,6 +13,7 @@
     &__metadata {
         height: 208px;
     }
+
     &__image {
         border-radius: 8px;
         object-fit: cover;
@@ -25,6 +26,7 @@
         font-weight: 400;
         width: 100%;
         text-align: center;
+        color: var(--body-color);
     }
 
     &__id {

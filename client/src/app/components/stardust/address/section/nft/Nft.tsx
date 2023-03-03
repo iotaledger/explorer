@@ -9,7 +9,7 @@ import TruncatedId from "../../../TruncatedId";
 import {
     isSupportedImageFormat, tryParseNftMetadata, noMetadataPlaceholder,
     nonStandardMetadataPlaceholder, unregisteredMetadataPlaceholder,
-    unsupportedImageFormatPlaceholder, getNftImageContent, loadingImagePlaceholder
+    unsupportedImageFormatPlaceholderCompact, getNftImageContent, loadingImagePlaceholder
 } from "./NftMetadataUtils";
 import { NftProps } from "./NftProps";
 import "./Nft.scss";
@@ -34,7 +34,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
     const unsupportedFormatOrLoading = isNftUriLoading ? (
         loadingImagePlaceholder
     ) : (
-        unsupportedImageFormatPlaceholder
+        unsupportedImageFormatPlaceholderCompact
     );
 
     const standardMetadataImageContent = !isWhitelisted ? (

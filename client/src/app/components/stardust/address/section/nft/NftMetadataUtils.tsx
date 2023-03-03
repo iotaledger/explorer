@@ -11,9 +11,17 @@ export const MESSAGE_NFT_SCHEMA_STANDARD =
 
 export const noMetadataPlaceholder = <ImagePlaceholder message="No metadata" compact />;
 export const nonStandardMetadataPlaceholder = <ImagePlaceholder message="Unsupported metadata format" compact />;
+export const unsupportedImageFormatPlaceholderCompact = <ImagePlaceholder message="Unsupported image format" compact />;
 export const unsupportedImageFormatPlaceholder = <ImagePlaceholder message="Unsupported image format" />;
 export const unregisteredMetadataPlaceholder = <ImagePlaceholder message="Unregistered NFT metadata" compact />;
-export const loadingImagePlaceholder = <ImagePlaceholder message="Loading image..." isLoading />;
+export const loadingImagePlaceholder = (
+    <ImagePlaceholder
+        message="Loading image..."
+        color="inherit"
+        isLoading
+        compact
+    />
+);
 
 /**
  * Tries to parse hex data into NFT immutable metadata (tip-27).

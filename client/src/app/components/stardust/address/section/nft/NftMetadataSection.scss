@@ -10,7 +10,9 @@
 
     .nft-metadata__image {
         width: 398px;
-        height: 390px;
+        height: fit-content;
+        object-fit: contain;
+        margin-top: 16px;
 
         @include desktop-down {
             width: 300px;

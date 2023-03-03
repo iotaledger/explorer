@@ -6,11 +6,11 @@ import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../../../../DataToggle";
 import JsonViewer from "../../../../JsonViewer";
+import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
 import {
-    getNftImageContent,
-    isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD, tryParseNftMetadata,
-    unsupportedImageFormatPlaceholder, loadingImagePlaceholder
+    getNftImageContent, isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD,
+    tryParseNftMetadata, unsupportedImageFormatPlaceholder
 } from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
 
@@ -38,7 +38,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
     }, [nft.metadata]);
 
     const unsupportedFormatOrLoading = isNftUriLoading ? (
-        loadingImagePlaceholder
+        <Spinner />
     ) : (
         unsupportedImageFormatPlaceholder
     );
