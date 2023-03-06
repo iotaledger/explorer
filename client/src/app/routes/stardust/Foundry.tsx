@@ -1,6 +1,7 @@
 import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IOutputResponse } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
+import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
@@ -10,6 +11,7 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { STARDUST } from "../../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import FiatValue from "../../components/FiatValue";
+import TabbedSection from "../../components/hoc/TabbedSection";
 import Icon from "../../components/Icon";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
@@ -19,6 +21,12 @@ import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
+
+enum FOUNDRY_PAGE_TABS {
+    TokenInfo = "Token Info",
+    Features = "Features",
+    NativeTokens = "Native Tokens"
+}
 
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     { match: { params: { network, foundryId } } }
@@ -35,6 +43,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [foundryOutput, setFoundryOutput] = useState<IOutputResponse>();
     const [foundryError, setFoundryError] = useState<string | undefined>();
     const [controllerAlias, setControllerAlias] = useState<string>();
+    const [tokenCount, setTokenCount] = useState<number>(0);
 
     useEffect(() => {
         const foundryLoadMonitor = new PromiseMonitor(status => {
@@ -107,7 +116,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 
         foundryContent = (
             <React.Fragment>
-                <div className="section">
+                <div className="section no-border-bottom">
                     <div className="section--header row row--tablet-responsive middle space-between">
                         <div className="row middle">
                             <h2>General</h2>
@@ -168,58 +177,69 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                         </div>
                     </div>
                 </div>
-                <div className="section">
-                    <div className="section--header row row--tablet-responsive middle space-between">
-                        <div className="row middle">
-                            <h2>Token Info</h2>
+                <TabbedSection
+                    tabsEnum={FOUNDRY_PAGE_TABS}
+                    tabOptions={{
+                        [FOUNDRY_PAGE_TABS.NativeTokens]: {
+                            disabled: tokenCount === 0,
+                            counter: tokenCount,
+                            infoContent: nativeTokensMessage
+                        },
+                        [FOUNDRY_PAGE_TABS.Features]: {
+                            disabled: !output.features && !output.immutableFeatures
+                        }
+                    }}
+                >
+                    <div className="section">
+                        <div className="section--data">
+                            <div className="label">
+                                Token scheme
+                            </div>
+                            <div className="value code row middle">
+                                <span className="margin-r-t">
+                                    {tokenScheme}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Token scheme
+                        <div className="section--data">
+                            <div className="label">
+                                Maximum supply
+                            </div>
+                            <div className="value code row middle">
+                                <span className="margin-r-t">
+                                    {maximumSupply}
+                                </span>
+                            </div>
                         </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {tokenScheme}
-                            </span>
+                        <div className="section--data">
+                            <div className="label">
+                                Minted tokens
+                            </div>
+                            <div className="value code row middle">
+                                <span className="margin-r-t">
+                                    {mintedTokens}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Maximum supply
+                        <div className="section--data">
+                            <div className="label">
+                                Melted tokens
+                            </div>
+                            <div className="value code row middle">
+                                <span className="margin-r-t">
+                                    {meltedTokens}
+                                </span>
+                            </div>
                         </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {maximumSupply}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Minted tokens
-                        </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {mintedTokens}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Melted tokens
-                        </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {meltedTokens}
-                            </span>
-                        </div>
-                    </div>
-                    {foundryOutput && (
-                        <AssetsTable networkId={network} outputs={[foundryOutput]} />
-                    )}
-                </div>
-                <FeaturesSection output={output} />
-            </React.Fragment>
+                    </div >
+                    <FeaturesSection output={output} />
+                    <AssetsTable
+                        networkId={network}
+                        outputs={[foundryOutput]}
+                        setTokenCount={setTokenCount}
+                    />
+                </TabbedSection>
+            </React.Fragment >
         );
     }
 
