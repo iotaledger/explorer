@@ -3,6 +3,7 @@ import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalan
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
+import { IMilestoneBlockInfo } from "../../models/api/stardust/milestone/IMilestoneBlocksResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
@@ -51,13 +52,13 @@ export class ChronicleService {
     ): Promise<{ milestoneId?: string; blocks?: string[]; error?: string } | undefined> {
         const path = `${CHRONICLE_ENDPOINTS.milestoneBlocks[0]}${milestoneId}${CHRONICLE_ENDPOINTS.milestoneBlocks[1]}`;
         let cursor: string | undefined;
-        const blocks: string[] = [];
+        const blocks: IMilestoneBlockInfo[] = [];
 
         do {
             const params = FetchHelper.urlParams({ pageSize: 10, sort: "newest", cursor });
 
             try {
-                const response = await FetchHelper.json<never, { blocks?: string[]; cursor?: string }>(
+                const response = await FetchHelper.json<never, { blocks?: IMilestoneBlockInfo[]; cursor?: string }>(
                     this._endpoint,
                     `${path}${params}`,
                     "get"
@@ -73,7 +74,11 @@ export class ChronicleService {
             }
         } while (cursor);
 
-        return { milestoneId, blocks };
+        const blockIds = blocks
+            .sort((a, b) => b.payloadType - a.payloadType)
+            .map(block => block.blockId);
+
+        return { milestoneId, blocks: blockIds };
     }
 
     /**
