@@ -24,8 +24,8 @@ import "./Foundry.scss";
 
 enum FOUNDRY_PAGE_TABS {
     TokenInfo = "Token Info",
-    NativeTokens = "Native Tokens",
-    Features = "Features"
+    Features = "Features",
+    NativeTokens = "Native Tokens"
 }
 
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
@@ -232,12 +232,12 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             </div>
                         </div>
                     </div >
+                    <FeaturesSection output={output} />
                     <AssetsTable
                         networkId={network}
                         outputs={[foundryOutput]}
                         setTokenCount={setTokenCount}
                     />
-                    <FeaturesSection output={output} />
                 </TabbedSection>
             </React.Fragment >
         );
