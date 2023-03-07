@@ -7,7 +7,7 @@ import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 /**
  * Class to handle api communications to api for mam.
  */
-export class OgApiStreamsV0Client {
+export class LegacyApiStreamsV0Client {
     /**
      * The base api client.
      */

@@ -1,24 +1,26 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetwork } from "../../models/db/INetwork";
 import { BaseStatsService } from "../chrysalis/baseStatsService";
-import { OgItemsService } from "./ogItemsService";
+import { LegacyItemsService } from "./legacyItemsService";
 
 /**
  * Class to handle stats service.
  */
-export class OgStatsService extends BaseStatsService {
+export class LegacyStatsService extends BaseStatsService {
     /**
      * The items service.
      */
-    private readonly _ogItemsService: OgItemsService;
+    private readonly _legacyItemsService: LegacyItemsService;
 
     /**
-     * Create a new instance of OgStatsService.
+     * Create a new instance of LegacyStatsService.
      * @param networkConfiguration The network configuration.
      */
     constructor(networkConfiguration: INetwork) {
         super(networkConfiguration);
-        this._ogItemsService = ServiceFactory.get<OgItemsService>(`items-${this._networkConfiguration.network}`);
+        this._legacyItemsService = ServiceFactory.get<LegacyItemsService>(
+            `items-${this._networkConfiguration.network}`
+        );
     }
 
     /**
@@ -26,7 +28,7 @@ export class OgStatsService extends BaseStatsService {
      */
     protected async updateStatistics(): Promise<void> {
         try {
-            const stats = this._ogItemsService.getStats();
+            const stats = this._legacyItemsService.getStats();
 
             this._statistics.push({
                 itemsPerSecond: stats.itemsPerSecond,

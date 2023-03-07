@@ -13,14 +13,14 @@ import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
 import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
-import Address from "./routes/og/Address";
-import { AddressRouteProps as OgAddressRouteProps } from "./routes/og/AddressRouteProps";
-import Bundle from "./routes/og/Bundle";
-import { BundleRouteProps } from "./routes/og/BundleRouteProps";
-import Tag from "./routes/og/Tag";
-import { TagRouteProps } from "./routes/og/TagRouteProps";
-import Transaction from "./routes/og/Transaction";
-import { TransactionRouteProps } from "./routes/og/TransactionRouteProps";
+import Address from "./routes/legacy/Address";
+import { AddressRouteProps as LegacyAddressRouteProps } from "./routes/legacy/AddressRouteProps";
+import Bundle from "./routes/legacy/Bundle";
+import { BundleRouteProps } from "./routes/legacy/BundleRouteProps";
+import Tag from "./routes/legacy/Tag";
+import { TagRouteProps } from "./routes/legacy/TagRouteProps";
+import Transaction from "./routes/legacy/Transaction";
+import { TransactionRouteProps } from "./routes/legacy/TransactionRouteProps";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
@@ -72,7 +72,7 @@ const buildAppRoutes = (
         />
     ];
 
-    const ogAndChrysalisRoutes = [
+    const legacyAndChrysalisRoutes = [
         <Route exact path="/:network"
             key={keys.next().value}
             component={(props: RouteComponentProps<LandingRouteProps>) => (
@@ -99,7 +99,7 @@ const buildAppRoutes = (
         />,
         <Route path="/:network/address/:hash"
             key={keys.next().value}
-            component={(props: RouteComponentProps<OgAddressRouteProps>) => (
+            component={(props: RouteComponentProps<LegacyAddressRouteProps>) => (
                 <Address {...props} />
             )}
         />,
@@ -184,7 +184,7 @@ const buildAppRoutes = (
             {
                 isStardust ?
                     withNetworkContext(stardustRoutes) :
-                    ogAndChrysalisRoutes
+                    legacyAndChrysalisRoutes
             }
         </Switch>
     );

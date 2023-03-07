@@ -3,9 +3,9 @@ import { IFeedService } from "../../models/services/IFeedService";
 import { ZmqService } from "./zmqService";
 
 /**
- * Class to handle Original Protocol Feed service.
+ * Class to handle legacy Protocol Feed service.
  */
-export class OgFeedService implements IFeedService {
+export class LegacyFeedService implements IFeedService {
     /**
      * Zmq service for data.
      */
@@ -17,7 +17,7 @@ export class OgFeedService implements IFeedService {
     private readonly _coordinatorAddress: string;
 
     /**
-     * Create a new instance of OgFeedService.
+     * Create a new instance of LegacyFeedService.
      * @param networkId The network id.
      * @param coordinatorAddress The coordinator address.
      */

@@ -11,7 +11,7 @@ import { ZmqService } from "./zmqService";
 /**
  * Class to handle transactions service.
  */
-export class OgItemsService implements IItemsService {
+export class LegacyItemsService implements IItemsService {
     /**
      * The network configuration.
      */
@@ -103,7 +103,7 @@ export class OgItemsService implements IItemsService {
     private _confirmedSubscriptionId: string;
 
     /**
-     * Create a new instance of OgItemsService.
+     * Create a new instance of LegacyItemsService.
      * @param networkId The network configuration.
      */
     constructor(networkId: string) {

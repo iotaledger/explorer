@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
-import { CHRYSALIS, OG, ProtocolVersion } from "../../../models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, ProtocolVersion } from "../../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -29,7 +29,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const protocolVersion: ProtocolVersion =
-            (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || OG;
+            (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || LEGACY;
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
         this.state = {
@@ -148,7 +148,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                                 <p>Please perform another search with a valid hash.</p>
                                             </React.Fragment>
                                         )}
-                                        {this.state.protocolVersion === OG && (
+                                        {this.state.protocolVersion === LEGACY && (
                                             <React.Fragment>
                                                 <p>
                                                     We could not find any transactions, bundles, addresses or tags
@@ -169,7 +169,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         <h2>Incorrect query format</h2>
                                     </div>
                                     <div className="card--content">
-                                        {this.state.protocolVersion === OG && (
+                                        {this.state.protocolVersion === LEGACY && (
                                             <React.Fragment>
                                                 <p className="danger">
                                                     The supplied hash does not appear to be valid, {
@@ -228,7 +228,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         let invalidError = "";
 
         if (query.length > 0) {
-            if (this.state.protocolVersion === OG) {
+            if (this.state.protocolVersion === LEGACY) {
                 if (TrytesHelper.isTrytes(query)) {
                     if (query.length <= 27) {
                         redirect = `/${this.props.match.params.network}/tag/${query}`;

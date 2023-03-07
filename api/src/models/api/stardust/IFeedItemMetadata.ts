@@ -12,7 +12,7 @@ export interface IFeedItemMetadata {
     timestamp?: number;
 
     /**
-     * Is the item confirmed, only applies to OG.
+     * Is the item confirmed, only applies to Legacy.
      */
     confirmed?: number;
 
