@@ -7,7 +7,7 @@ import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse"
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
 import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
-import { CHRYSALIS, OG } from "../../models/config/protocolVersion";
+import { CHRYSALIS, LEGACY } from "../../models/config/protocolVersion";
 import { IFeedItem } from "../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
@@ -60,7 +60,7 @@ export class ChrysalisFeedClient extends FeedClient {
 
                             let removeItems: IFeedItem[] = [];
 
-                            if (this._networkConfig?.protocolVersion === OG) {
+                            if (this._networkConfig?.protocolVersion === LEGACY) {
                                 const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
                                 const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                                 if (zeroToRemoveCount > 0) {

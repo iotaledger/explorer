@@ -2,7 +2,7 @@
 import React, { Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { CHRYSALIS, OG, STARDUST } from "../../models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, STARDUST } from "../../models/config/protocolVersion";
 import { NetworkService } from "../../services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityChrysalisResolver from "../components/identity/IdentityChrysalisResolver";
@@ -46,7 +46,7 @@ class IdentityResolver extends AsyncComponent<
                             <div className="cards">
                                 {!this.props.match.params.did && (
                                     <Fragment>
-                                        {this.props.protocolVersion === OG && (
+                                        {this.props.protocolVersion === LEGACY && (
                                             <div className="unsupported-network">
                                                 This network is not supported!
                                             </div>
@@ -67,7 +67,7 @@ class IdentityResolver extends AsyncComponent<
                                                     the information from an IOTA or Shimmer network.
                                                 </p>
                                             </div>
-                                            {this.props.protocolVersion !== OG && (
+                                            {this.props.protocolVersion !== LEGACY && (
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     <IdentitySearchInput
                                                         compact={false}
@@ -105,7 +105,7 @@ class IdentityResolver extends AsyncComponent<
                                         {this.props.protocolVersion === STARDUST && (
                                             <IdentityStardustResolver {...this.props} />
                                         )}
-                                        {this.props.protocolVersion === OG && (
+                                        {this.props.protocolVersion === LEGACY && (
                                             <div>
                                                 <div className="unsupported-network">
                                                     This network is not supported!

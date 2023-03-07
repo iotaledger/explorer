@@ -1,8 +1,8 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IAddressGetRequest } from "../../../models/api/og/IAddressGetRequest";
-import { IAddressGetResponse } from "../../../models/api/og/IAddressGetResponse";
+import { IAddressGetRequest } from "../../../models/api/legacy/IAddressGetRequest";
+import { IAddressGetResponse } from "../../../models/api/legacy/IAddressGetResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { OG } from "../../../models/db/protocolVersion";
+import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -24,7 +24,7 @@ export async function get(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== OG) {
+    if (networkConfig.protocolVersion !== LEGACY) {
         return {};
     }
 

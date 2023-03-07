@@ -8,8 +8,8 @@ import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDeta
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
 import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
-import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
-import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
+import { ITransactionsCursor } from "../../models/api/legacy/ITransactionsCursor";
+import { TransactionsGetMode } from "../../models/api/legacy/transactionsGetMode";
 import { INetwork } from "../../models/db/INetwork";
 import { ExtendedSingleNodeClient } from "../extendedSingleNodeClient";
 
@@ -131,7 +131,7 @@ export class ChrysalisTangleHelper {
         > {
         const allTrytes: {
             /**
-             * The original index.
+             * The legacy index.
              */
             index: number;
             /**
