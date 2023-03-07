@@ -19,7 +19,7 @@ export interface IMilestoneBlocksResponse extends IResponse {
     milestoneId?: string;
 
     /**
-     * The block info this milestone confirms.
+     * The block ids this milestone confirms.
      */
     blocks?: string[];
 }
