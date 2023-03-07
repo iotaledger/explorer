@@ -12,6 +12,7 @@ import referencedBlocksInfo from "../../../assets/modals/stardust/block/mileston
 import taggedDataPayloadInfo from "../../../assets/modals/stardust/block/tagged-data-payload.json";
 import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useBlockChildren } from "../../../helpers/hooks/useBlockChildren";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
@@ -53,6 +54,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const [milestoneReferencedBlocks, setMilestoneReferencedBlocks] = useState<
         { milestoneId?: string; blocks?: string[]; error?: string } | undefined
     >();
+    const [blockChildren] = useBlockChildren(network, blockId);
+
 
     useEffect(() => {
         setBlockData({});
@@ -146,7 +149,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         setBlockMetadata({
                             metadata: details?.metadata,
                             metadataError: details?.error,
-                            blockChildren: details?.children,
                             conflictReason: calculateConflictReason(details?.metadata),
                             blockTangleStatus: calculateStatus(details?.metadata)
                         });
@@ -187,7 +189,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     };
 
     const { block, blockError, transactionId, inputs, unlocks, outputs, transferTotal } = blockData;
-    const { metadata, metadataError, blockChildren, conflictReason, blockTangleStatus } = blockMetadata;
+    const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
     const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
@@ -261,7 +263,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 blockChildren={blockChildren}
                 conflictReason={conflictReason}
                 isLinksDisabled={isLinksDisabled}
-                history={history}
             />
         );
     }

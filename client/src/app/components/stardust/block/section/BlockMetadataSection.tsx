@@ -1,5 +1,4 @@
 import { HexEncodedString, IBlockMetadata } from "@iota/iota.js-stardust";
-import * as H from "history";
 import React from "react";
 import Spinner from "../../../Spinner";
 import InclusionState from "../../InclusionState";
@@ -9,14 +8,13 @@ interface BlockMetadataSectionProps {
     network: string;
     metadata?: IBlockMetadata;
     metadataError?: string;
-    blockChildren?: HexEncodedString[];
+    blockChildren?: HexEncodedString[] | null;
     conflictReason?: string;
     isLinksDisabled: boolean;
-    history: H.History;
 }
 
 const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
-    { network, metadata, metadataError, blockChildren, conflictReason, isLinksDisabled, history }
+    { network, metadata, metadataError, blockChildren, conflictReason, isLinksDisabled }
 ) => (
     <div className="section metadata-section">
         <div className="section--data">
@@ -48,9 +46,9 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                             <div className="value">{conflictReason}</div>
                         </div>
                     )}
-                    <div className="section--data">
+                    <div className="section--data row row--tablet-responsive">
                         {metadata?.parents && (
-                            <div className="margin-r-m">
+                            <div className="truncate margin-b-s margin-r-m">
                                 <div className="label">
                                     Parents
                                 </div>
@@ -69,7 +67,7 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                             </div>
                         )}
                         {blockChildren && (
-                            <div>
+                            <div className="truncate">
                                 <div className="label">
                                     Children
                                 </div>
@@ -79,18 +77,10 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                                         style={{ marginTop: "8px" }}
                                         className="value code link"
                                     >
-                                        {isLinksDisabled ? (
-                                            <span className="margin-r-t">
-                                                {child}
-                                            </span>
-                                        ) : (
-                                            <div
-                                                className="pointer"
-                                                onClick={() => history.replace(`/${network}/block/${child}`)}
-                                            >
-                                                {child}
-                                            </div>
-                                        )}
+                                        <TruncatedId
+                                            id={child}
+                                            link={isLinksDisabled ? undefined : `/${network}/block/${child}`}
+                                        />
                                     </div>
                                 ))}
                             </div>

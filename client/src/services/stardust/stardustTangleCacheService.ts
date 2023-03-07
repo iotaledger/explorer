@@ -170,16 +170,33 @@ export class StardustTangleCacheService extends TangleCacheService {
     public async blockDetails(
         networkId: string,
         blockId: string
-    ): Promise<{ metadata?: IBlockMetadata; children?: HexEncodedString[]; error?: string }> {
-        const responseDetails = await this._api.blockDetails({ network: networkId, blockId });
-        const responseChildren = await this._api.blockChildren({ network: networkId, blockId });
+    ): Promise<{ metadata?: IBlockMetadata; error?: string }> {
+        const response = await this._api.blockDetails({ network: networkId, blockId });
 
-        return !responseDetails.error ?
+        return !response.error ?
             {
-                metadata: responseDetails.metadata,
-                children: responseChildren?.children
+                metadata: response.metadata
             } :
-            { error: responseDetails.error };
+            { error: response.error };
+    }
+
+    /**
+     * Get the block metadata.
+     * @param networkId The network to search
+     * @param blockId The block if to get the metadata for.
+     * @returns The details response.
+     */
+    public async blockChildren(
+        networkId: string,
+        blockId: string
+    ): Promise<{ children?: HexEncodedString[]; error?: string }> {
+        const response = await this._api.blockChildren({ network: networkId, blockId });
+
+        return !response.error ?
+            {
+                children: response?.children
+            } :
+            { error: response.error };
     }
 
     /**
