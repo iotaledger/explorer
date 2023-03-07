@@ -52,13 +52,15 @@
                     margin-top: 20px;
                 }
             }
-
-
-
         }
     }
 
     .tooltip {
+        .children {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
         .tooltip__special {
             background-color: #FFF4DF;
             border-radius: 4px;

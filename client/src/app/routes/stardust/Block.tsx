@@ -25,11 +25,11 @@ import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
-import BlockMetadataSection from "../../components/stardust/BlockMetadataSection";
-import BlockPayloadSection from "../../components/stardust/BlockPayloadSection";
-import BlockTangleState from "../../components/stardust/BlockTangleState";
-import MilestoneControls from "../../components/stardust/MilestoneControls";
-import ReferencedBlocksSection from "../../components/stardust/section/referenced-blocks/ReferencedBlocksSection";
+import BlockTangleState from "../../components/stardust/block/BlockTangleState";
+import MilestoneControls from "../../components/stardust/block/MilestoneControls";
+import BlockMetadataSection from "../../components/stardust/block/section/BlockMetadataSection";
+import BlockPayloadSection from "../../components/stardust/block/section/BlockPayloadSection";
+import ReferencedBlocksSection from "../../components/stardust/block/section/referenced-blocks/ReferencedBlocksSection";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
@@ -237,11 +237,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     const tabbedSections = [];
     let idx = 0;
-    if (isMilestoneBlock) {
-        tabbedSections.push(
-            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
-        );
-    }
     if (block) {
         tabbedSections.push(
             <BlockPayloadSection
@@ -268,6 +263,11 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 isLinksDisabled={isLinksDisabled}
                 history={history}
             />
+        );
+    }
+    if (isMilestoneBlock) {
+        tabbedSections.push(
+            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
         );
     }
 
@@ -356,9 +356,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 )}
             <TabbedSection
+                key={blockId}
                 tabsEnum={
                     isMilestoneBlock ?
-                        { RefBlocks: "Referenced Blocks", Payload: "Milestone Payload", Metadata: "Metadata" } :
+                        { Payload: "Milestone Payload", Metadata: "Metadata", RefBlocks: "Referenced Blocks" } :
                         (isTransactionBlock ?
                             { Payload: "Transaction Payload", Metadata: "Metadata" } :
                             { Payload: "Tagged Data Payload", Metadata: "Metadata" })
@@ -366,13 +367,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 tabOptions={
                     isMilestoneBlock ?
                         {
+                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
+                            "Metadata": { infoContent: metadataInfo },
                             "Referenced Blocks": {
                                 disabled: !milestoneReferencedBlocks,
                                 counter: milestoneReferencedBlocks?.blocks?.length ?? undefined,
                                 infoContent: referencedBlocksInfo
-                            },
-                            "Milestone Payload": { disabled: !block?.payload, infoContent: milestonePayloadInfo },
-                            "Metadata": { infoContent: metadataInfo }
+                            }
                         } : (isTransactionBlock ? {
                             "Transaction Payload": {
                                 disabled: !block?.payload,

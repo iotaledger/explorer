@@ -5,7 +5,7 @@ import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
-import { CHRYSALIS, OG, STARDUST } from "./models/db/protocolVersion";
+import { CHRYSALIS, LEGACY, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
 import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
@@ -14,13 +14,13 @@ import { ChrysalisFeedService } from "./services/chrysalis/chrysalisFeedService"
 import { ChrysalisItemsService } from "./services/chrysalis/chrysalisItemsService";
 import { ChrysalisStatsService } from "./services/chrysalis/chrysalisStatsService";
 import { CurrencyService } from "./services/currencyService";
+import { LegacyFeedService } from "./services/legacy/legacyFeedService";
+import { LegacyItemsService } from "./services/legacy/legacyItemsService";
+import { LegacyStatsService } from "./services/legacy/legacyStatsService";
+import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
-import { OgFeedService } from "./services/og/ogFeedService";
-import { OgItemsService } from "./services/og/ogItemsService";
-import { OgStatsService } from "./services/og/ogStatsService";
-import { ZmqService } from "./services/og/zmqService";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
@@ -29,7 +29,7 @@ import { StardustItemsService } from "./services/stardust/stardustItemsService";
 import { StardustStatsService } from "./services/stardust/stardustStatsService";
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
-    networkConfig.protocolVersion === OG ||
+    networkConfig.protocolVersion === LEGACY ||
          networkConfig.protocolVersion === CHRYSALIS ||
              networkConfig.protocolVersion === STARDUST;
 
@@ -47,8 +47,8 @@ export async function initServices(config: IConfiguration) {
     const enabledNetworks = networks.filter(v => v.isEnabled);
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.protocolVersion === OG) {
-            initOgServices(networkConfig);
+        if (networkConfig.protocolVersion === LEGACY) {
+            initLegacyServices(networkConfig);
         } else if (networkConfig.protocolVersion === CHRYSALIS && networkConfig.feedEndpoint) {
             initChrysalisServices(networkConfig);
         } else if (networkConfig.protocolVersion === STARDUST && networkConfig.feedEndpoint) {
@@ -63,7 +63,7 @@ export async function initServices(config: IConfiguration) {
     }
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.protocolVersion === OG) {
+        if (networkConfig.protocolVersion === LEGACY) {
             const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
             if (zmqService) {
                 zmqService.connect();
@@ -110,7 +110,7 @@ export async function initServices(config: IConfiguration) {
  * Register services for legacy network
  * @param networkConfig The Network Config.
  */
-function initOgServices(networkConfig: INetwork): void {
+function initLegacyServices(networkConfig: INetwork): void {
     if (networkConfig.feedEndpoint) {
         ServiceFactory.register(
             `zmq-${networkConfig.network}`, () => new ZmqService(
@@ -121,16 +121,16 @@ function initOgServices(networkConfig: INetwork): void {
                 ])
         );
         ServiceFactory.register(
-            `feed-${networkConfig.network}`, () => new OgFeedService(
+            `feed-${networkConfig.network}`, () => new LegacyFeedService(
                 networkConfig.network, networkConfig.coordinatorAddress)
         );
         ServiceFactory.register(
             `items-${networkConfig.network}`,
-            () => new OgItemsService(networkConfig.network));
+            () => new LegacyItemsService(networkConfig.network));
 
         ServiceFactory.register(
             `stats-${networkConfig.network}`,
-            () => new OgStatsService(networkConfig));
+            () => new LegacyStatsService(networkConfig));
     }
 }
 

@@ -1,4 +1,5 @@
 import { ALPHANET, CUSTOM, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
+import { ProtocolVersion, STARDUST } from "../models/config/protocolVersion";
 
 /**
  * Helper function to determine network order based on network type.
@@ -24,8 +25,8 @@ export const getNetworkOrder = (networkType: NetworkType) => {
     }
 };
 
-export const isShimmerNetwork = (networkType: NetworkType | string | undefined) => {
-    if (networkType === ALPHANET || networkType === TESTNET || networkType === SHIMMER) {
+export const isShimmerNetwork = (protocol: ProtocolVersion | string | undefined) => {
+    if (protocol === STARDUST) {
         return true;
     }
 

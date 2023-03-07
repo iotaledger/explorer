@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "repository": {
         "type": "git",
@@ -38,6 +38,7 @@
         "d3-shape": "^3.1.0",
         "d3-time-format": "^4.1.0",
         "express": "^4.18.1",
+        "jsonschema": "^1.4.1",
         "moment": "^2.29.4",
         "qr.js": "0.0.0",
         "react": "^18.2.0",

@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../factories/serviceFactory";
 import { ICachedTransaction } from "../models/api/ICachedTransaction";
-import { ITransactionsCursor } from "../models/api/og/ITransactionsCursor";
-import { TransactionsGetMode } from "../models/api/og/transactionsGetMode";
+import { ITransactionsCursor } from "../models/api/legacy/ITransactionsCursor";
+import { TransactionsGetMode } from "../models/api/legacy/transactionsGetMode";
 import { ProtocolVersion } from "../models/config/protocolVersion";
 import { NetworkService } from "./networkService";
 
@@ -37,7 +37,7 @@ export class TangleCacheService {
     /**
      * Find transaction results.
      */
-    protected readonly _ogCache: {
+    protected readonly _legacyCache: {
         /**
          * Network.
          */
@@ -134,7 +134,7 @@ export class TangleCacheService {
      */
     constructor() {
         this._transactionCache = {};
-        this._ogCache = {};
+        this._legacyCache = {};
         this._addressBalances = {};
         this._streamsV0 = {};
         this._networkProtocols = {};
@@ -146,7 +146,7 @@ export class TangleCacheService {
             this._transactionCache[networkConfig.network] = {};
             this._networkProtocols[networkConfig.network] = networkConfig.protocolVersion;
 
-            this._ogCache[networkConfig.network] = {
+            this._legacyCache[networkConfig.network] = {
                 tags: {},
                 addresses: {},
                 bundles: {},
@@ -178,8 +178,8 @@ export class TangleCacheService {
             }
         }
 
-        for (const net in this._ogCache) {
-            const findCache = this._ogCache[net];
+        for (const net in this._legacyCache) {
+            const findCache = this._legacyCache[net];
             if (findCache) {
                 for (const hashType in findCache) {
                     const hashCache = findCache[hashType as TransactionsGetMode];

@@ -1,7 +1,6 @@
 import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
 import React from "react";
 import Tooltip from "../../app/components/Tooltip";
-
 /**
  * The id of the Genesis block.
  */
@@ -45,7 +44,6 @@ function toFixedNoRound(value: number, precision: number = 2) {
     return Math.floor(value * factor) / factor;
 }
 
-
 /**
  * Add tooltip content for special block id i.e Genesis block.
  * @param id The id of the block.
@@ -61,3 +59,4 @@ export function formatSpecialBlockId(id: string): React.ReactNode {
     }
     return id;
 }
+

@@ -21,6 +21,7 @@ import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsRe
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
+import { SearchExecutor } from "./searchExecutor";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
@@ -135,7 +136,7 @@ export class StardustTangleHelper {
 
         try {
             const block = deserializeBlock(new ReadStream(blockRaw));
-            if (block) {
+            if (block && Object.keys(block).length > 0) {
                 return {
                     block
                 };
@@ -465,157 +466,16 @@ export class StardustTangleHelper {
     /**
      * Find item on the stardust network.
      * @param network The network config.
-     * @param bechHrp The bech32 human readable part of the network.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     public static async search(
         network: INetwork,
-        bechHrp: string,
         query: string
     ): Promise<ISearchResponse> {
-        const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
+        const searchQuery: SearchQuery = new SearchQueryBuilder(query, network.bechHrp).build();
 
-        if (searchQuery.did) {
-            return {
-                did: searchQuery.did
-            };
-        }
-
-        if (searchQuery.milestoneIndex) {
-            const milestoneDetails = await this.milestoneDetailsByIndex(network, searchQuery.milestoneIndex);
-            return {
-                milestone: milestoneDetails
-            };
-        }
-
-        if (searchQuery.milestoneId) {
-            const milestoneDetails = await this.milestoneDetailsById(network, searchQuery.milestoneId);
-            if (milestoneDetails) {
-                return {
-                    milestone: milestoneDetails
-                };
-            }
-        }
-
-        if (searchQuery.blockId) {
-            const response = await StardustTangleHelper.block(network, searchQuery.blockId);
-            if (response && !response.error) {
-                return response;
-            }
-        }
-
-        if (searchQuery.transactionId) {
-            const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
-                searchQuery.transactionId,
-                "transactionIncludedBlockRaw",
-                network
-            );
-
-            if (blockRaw) {
-                try {
-                    const block = deserializeBlock(new ReadStream(blockRaw));
-                    if (block && Object.keys(block).length > 0) {
-                        return {
-                            transactionBlock: block
-                        };
-                    }
-                } catch (e) {
-                    console.log(
-                        `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
-                        e
-                    );
-                }
-            }
-        }
-
-        if (searchQuery.output) {
-            const output = await this.tryFetchPermanodeThenNode<string, IOutputResponse>(
-                searchQuery.output,
-                "output",
-                network
-            );
-
-            if (output) {
-                return { output };
-            }
-        }
-
-        if (searchQuery.aliasId) {
-            try {
-                const aliasOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
-                    searchQuery.aliasId,
-                    "alias",
-                    network,
-                    true
-                );
-
-                if (aliasOutputs.items.length > 0) {
-                    return {
-                        aliasId: searchQuery.aliasId
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.nftId) {
-            try {
-                const nftOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
-                    searchQuery.nftId,
-                    "nft",
-                    network,
-                    true
-                );
-
-                if (nftOutputs.items.length > 0) {
-                    return {
-                        nftId: searchQuery.nftId
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.foundryId) {
-            try {
-                const foundryOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
-                    searchQuery.foundryId,
-                    "foundry",
-                    network,
-                    true
-                );
-
-                if (foundryOutputs.items.length > 0) {
-                    return {
-                        foundryId: searchQuery.foundryId
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.tag) {
-            try {
-                const taggedOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                    { tagHex: searchQuery.tag },
-                    "basicOutputs",
-                    network,
-                    true
-                );
-
-                if (taggedOutputs.items.length > 0) {
-                    return {
-                        taggedOutputs
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.address?.bech32) {
-            return {
-                addressDetails: searchQuery.address
-            };
-        }
-
-        return {};
+        return new SearchExecutor(network, searchQuery).run();
     }
 
     /**
@@ -627,7 +487,7 @@ export class StardustTangleHelper {
      * @param isIndexerCall The boolean flag for indexer api instead of core api.
      * @returns The results or null if call(s) failed.
      */
-    private static async tryFetchPermanodeThenNode<A, R>(
+    public static async tryFetchPermanodeThenNode<A, R>(
         args: A,
         methodName: string,
         network: INetwork,

@@ -1,4 +1,5 @@
-import { Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
+import { Blake2b } from "@iota/crypto.js";
+import { Ed25519Address, ED25519_ADDRESS_TYPE, IMessage, IReferenceUnlockBlock, ISignatureUnlockBlock, IUTXOInput, REFERENCE_UNLOCK_BLOCK_TYPE, SIGNATURE_UNLOCK_BLOCK_TYPE, SIG_LOCKED_DUST_ALLOWANCE_OUTPUT_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE, serializeTransactionPayload, ITransactionPayload } from "@iota/iota.js";
 import { Converter, WriteStream } from "@iota/util.js";
 import { DateHelper } from "../../helpers/dateHelper";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
@@ -77,7 +78,7 @@ export class TransactionsHelper {
                 let amount = 0;
                 if (transactionResult?.message && transactionResult?.message.payload?.type ===
                     TRANSACTION_PAYLOAD_TYPE) {
-                   amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
+                    amount = transactionResult.message.payload?.essence.outputs[transactionOutputIndex].amount;
                 }
                 inputs.push({
                     ...input,
@@ -132,6 +133,13 @@ export class TransactionsHelper {
             outputs.sort((a, b) => a.index - b.index);
         }
         return { inputs, outputs, unlockAddresses, transferTotal };
+    }
+
+    public static computeTransactionIdFromTransactionPayload(payload: ITransactionPayload) {
+        const tpWriteStream = new WriteStream();
+        serializeTransactionPayload(tpWriteStream, payload);
+
+        return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()));
     }
 
     public static async getMessageStatus(

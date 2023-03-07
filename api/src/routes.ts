@@ -20,11 +20,14 @@ export const routes: IRoute[] = [
     { path: "/networks", method: "get", folder: "networks", func: "get" },
     { path: "/node-info/:network", method: "get", folder: "node", func: "info" },
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
-    // OG
-    { path: "/transactions/:network/:hash", method: "get", folder: "og/transactions", func: "get" },
-    { path: "/transactions/:network/:hash/action/:action", method: "get", folder: "og/transactions", func: "action" },
-    { path: "/trytes/:network", method: "post", folder: "og/trytes", func: "post" },
-    { path: "/address/:network/:hash", method: "get", folder: "og/address", func: "get" },
+    // Legacy
+    { path: "/transactions/:network/:hash", method: "get", folder: "legacy/transactions", func: "get" },
+    {
+        path: "/transactions/:network/:hash/action/:action", method: "get",
+        folder: "legacy/transactions", func: "action"
+    },
+    { path: "/trytes/:network", method: "post", folder: "legacy/trytes", func: "post" },
+    { path: "/address/:network/:hash", method: "get", folder: "legacy/address", func: "get" },
     // Chrysalis
     { path: "/search/:network/:query", method: "get", folder: "chrysalis", func: "search" },
     { path: "/message/:network/:messageId", method: "get", folder: "chrysalis/message", func: "get" },
