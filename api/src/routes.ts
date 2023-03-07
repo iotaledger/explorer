@@ -22,7 +22,10 @@ export const routes: IRoute[] = [
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
     // Legacy
     { path: "/transactions/:network/:hash", method: "get", folder: "legacy/transactions", func: "get" },
-    { path: "/transactions/:network/:hash/action/:action", method: "get", folder: "legacy/transactions", func: "action" },
+    {
+        path: "/transactions/:network/:hash/action/:action", method: "get",
+        folder: "legacy/transactions", func: "action"
+    },
     { path: "/trytes/:network", method: "post", folder: "legacy/trytes", func: "post" },
     { path: "/address/:network/:hash", method: "get", folder: "legacy/address", func: "get" },
     // Chrysalis

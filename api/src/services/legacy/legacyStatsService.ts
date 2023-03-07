@@ -18,7 +18,9 @@ export class LegacyStatsService extends BaseStatsService {
      */
     constructor(networkConfiguration: INetwork) {
         super(networkConfiguration);
-        this._legacyItemsService = ServiceFactory.get<LegacyItemsService>(`items-${this._networkConfiguration.network}`);
+        this._legacyItemsService = ServiceFactory.get<LegacyItemsService>(
+            `items-${this._networkConfiguration.network}`
+        );
     }
 
     /**
