@@ -1,8 +1,8 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionActionRequest } from "../../../models/api/og/ITransactionActionRequest";
-import { ITransactionActionResponse } from "../../../models/api/og/ITransactionActionResponse";
+import { ITransactionActionRequest } from "../../../models/api/legacy/ITransactionActionRequest";
+import { ITransactionActionResponse } from "../../../models/api/legacy/ITransactionActionResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
-import { OG } from "../../../models/db/protocolVersion";
+import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
@@ -24,7 +24,7 @@ export async function action(
 
     const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== OG) {
+    if (networkConfig.protocolVersion !== LEGACY) {
         return {};
     }
 

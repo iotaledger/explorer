@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
-import { mamFetch as mamFetchOg, MamMode } from "@iota/mam-legacy";
+import { mamFetch as mamFetchLegacy, MamMode } from "@iota/mam-legacy";
 import { mamFetch as mamFetchChrysalis } from "@iota/mam.js";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -10,12 +10,12 @@ import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
 import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICachedTransaction } from "../../models/api/ICachedTransaction";
-import { ITransactionsCursor } from "../../models/api/og/ITransactionsCursor";
-import { TransactionsGetMode } from "../../models/api/og/transactionsGetMode";
-import { CHRYSALIS, OG } from "../../models/config/protocolVersion";
+import { ITransactionsCursor } from "../../models/api/legacy/ITransactionsCursor";
+import { TransactionsGetMode } from "../../models/api/legacy/transactionsGetMode";
+import { CHRYSALIS, LEGACY } from "../../models/config/protocolVersion";
 import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 import { ChrysalisApiStreamsV0Client } from "../chrysalis/chrysalisApiStreamsV0Client";
-import { OgApiStreamsV0Client } from "../og/ogApiStreamsV0Client";
+import { LegacyApiStreamsV0Client } from "../legacy/legacyApiStreamsV0Client";
 import { TangleCacheService } from "../tangleCacheService";
 
 /**
@@ -92,7 +92,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
         let doLookup = true;
         let cursor: ITransactionsCursor = {};
 
-        const findCache = this._ogCache[networkId];
+        const findCache = this._legacyCache[networkId];
         const tranCache = this._transactionCache[networkId];
 
         if (findCache && nextCursor === undefined) {
@@ -464,11 +464,11 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
         if (streamsV0Cache) {
             if (!streamsV0Cache[root]) {
                 try {
-                    if (this._networkProtocols[network] === OG) {
-                        const api = new OgApiStreamsV0Client(network);
+                    if (this._networkProtocols[network] === LEGACY) {
+                        const api = new LegacyApiStreamsV0Client(network);
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const result = await mamFetchOg(api as any, root, mode, key);
+                        const result = await mamFetchLegacy(api as any, root, mode, key);
 
                         if (result) {
                             streamsV0Cache[root] = {

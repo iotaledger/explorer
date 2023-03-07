@@ -7,7 +7,7 @@ import { isShimmerNetwork } from "../helpers/networkHelper";
 import { scrollToTop } from "../helpers/pageUtils";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
-import { OG, STARDUST } from "../models/config/protocolVersion";
+import { LEGACY, STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
@@ -86,7 +86,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                 search={
                     <SearchInput
                         onSearch={query => history.push(`/${currentNetwork}/search/${query}`)}
-                        protocolVersion={networkConfig?.protocolVersion ?? OG}
+                        protocolVersion={networkConfig?.protocolVersion ?? LEGACY}
                     />
                 }
                 pages={getPages(networkConfig, networks)}

@@ -6,7 +6,7 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
+import { CHRYSALIS, LEGACY } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
@@ -221,12 +221,12 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 value={filter}
                                 onChange={e => this.setState(
                                     {
-                                        filter: this._networkConfig?.protocolVersion === OG
+                                        filter: this._networkConfig?.protocolVersion === LEGACY
                                             ? e.target.value.toUpperCase()
                                             : e.target.value
                                     },
                                     () => this.restyleNodes())}
-                                maxLength={this._networkConfig?.protocolVersion === OG ? 90 : 2000}
+                                maxLength={this._networkConfig?.protocolVersion === LEGACY ? 90 : 2000}
                             />
                         </div>
                     </div>
@@ -238,7 +238,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         </div>
                         <div className="card--content">
                             <div className="card--label">
-                                {this._networkConfig?.protocolVersion === OG ? "Transactions" : "Messages"}
+                                {this._networkConfig?.protocolVersion === LEGACY ? "Transactions" : "Messages"}
                             </div>
                             <div className="card--value">
                                 {itemCount}
@@ -265,7 +265,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 <div className="card--content">
                                     <>
                                         <div className="card--label">
-                                            {this._networkConfig?.protocolVersion === OG ? "Transaction" : "Message"}
+                                            {this._networkConfig?.protocolVersion === LEGACY ? "Transaction" : "Message"}
                                         </div>
                                         <div className="card--value overflow-ellipsis">
                                             <a
@@ -280,7 +280,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                 {selectedFeedItem.id}
                                             </a>
                                         </div>
-                                        {this._networkConfig?.protocolVersion === OG &&
+                                        {this._networkConfig?.protocolVersion === LEGACY &&
                                                 selectedFeedItem?.properties?.Address && (
                                                     <>
                                                         <div className="card--label">
@@ -303,7 +303,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         </div>
                                                     </>
                                                 )}
-                                        {this._networkConfig?.protocolVersion === OG &&
+                                        {this._networkConfig?.protocolVersion === LEGACY &&
                                                 selectedFeedItem?.properties?.Bundle && (
                                                     <>
                                                         <div className="card--label">
@@ -463,7 +463,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     </div>
                                 </>
                             )}
-                            {this._networkConfig?.protocolVersion === OG && (
+                            {this._networkConfig?.protocolVersion === LEGACY && (
                                 <>
                                     <div
                                         className="visualizer--key visualizer--key__value confirmed-value"

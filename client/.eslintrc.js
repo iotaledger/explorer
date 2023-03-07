@@ -568,7 +568,7 @@ module.exports = {
             "error",
             {
                 "ignorePattern": "^import",
-                "code": 120
+                "code": 140
             }
         ],
         "max-lines": [
