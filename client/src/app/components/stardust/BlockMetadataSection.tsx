@@ -47,60 +47,62 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                             <div className="value">{conflictReason}</div>
                         </div>
                     )}
-                    {metadata?.parents && (
-                        <div className="section--data">
-                            <div className="label">
-                                Parents
-                            </div>
-                            {metadata.parents.map((parent, idx) => (
-                                <div
-                                    key={idx}
-                                    style={{ marginTop: "8px" }}
-                                    className="value code link"
-                                >
-                                    {isLinksDisabled ? (
-                                        <span className="margin-r-t">
-                                            {parent}
-                                        </span>
-                                    ) : (
-                                        <div
-                                            className="pointer"
-                                            onClick={() => history.replace(`/${network}/block/${parent}`)}
-                                        >
-                                            {parent}
-                                        </div>
-                                    )}
+                    <div className="section--data row">
+                        {metadata?.parents && (
+                            <div className="margin-r-m">
+                                <div className="label">
+                                    Parents
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                    {blockChildren && (
-                        <div className="section--data">
-                            <div className="label">
-                                Children
+                                {metadata.parents.map((parent, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{ marginTop: "8px" }}
+                                        className="value code link"
+                                    >
+                                        {isLinksDisabled ? (
+                                            <span className="margin-r-t">
+                                                {parent}
+                                            </span>
+                                        ) : (
+                                            <div
+                                                className="pointer"
+                                                onClick={() => history.replace(`/${network}/block/${parent}`)}
+                                            >
+                                                {parent}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                            {blockChildren.map((child, idx) => (
-                                <div
-                                    key={idx}
-                                    style={{ marginTop: "8px" }}
-                                    className="value code link"
-                                >
-                                    {isLinksDisabled ? (
-                                        <span className="margin-r-t">
-                                            {child}
-                                        </span>
-                                    ) : (
-                                        <div
-                                            className="pointer"
-                                            onClick={() => history.replace(`/${network}/block/${child}`)}
-                                        >
-                                            {child}
-                                        </div>
-                                    )}
+                        )}
+                        {blockChildren && (
+                            <div>
+                                <div className="label">
+                                    Children
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                {blockChildren.map((child, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{ marginTop: "8px" }}
+                                        className="value code link"
+                                    >
+                                        {isLinksDisabled ? (
+                                            <span className="margin-r-t">
+                                                {child}
+                                            </span>
+                                        ) : (
+                                            <div
+                                                className="pointer"
+                                                onClick={() => history.replace(`/${network}/block/${child}`)}
+                                            >
+                                                {child}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </React.Fragment>
             )}
         </div>
