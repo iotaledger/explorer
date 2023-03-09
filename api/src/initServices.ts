@@ -8,6 +8,7 @@ import { INetwork } from "./models/db/INetwork";
 import { CHRYSALIS, LEGACY, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
+import { IItemsService as IItemsServiceLegacy } from "./models/services/legacy/IItemsService";
 import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalis/chrysalisFeedService";
@@ -30,8 +31,8 @@ import { StardustStatsService } from "./services/stardust/stardustStatsService";
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === LEGACY ||
-         networkConfig.protocolVersion === CHRYSALIS ||
-             networkConfig.protocolVersion === STARDUST;
+    networkConfig.protocolVersion === CHRYSALIS ||
+    networkConfig.protocolVersion === STARDUST;
 
 /**
  * Initialise all the services for the workers.
@@ -47,15 +48,25 @@ export async function initServices(config: IConfiguration) {
     const enabledNetworks = networks.filter(v => v.isEnabled);
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.protocolVersion === LEGACY) {
-            initLegacyServices(networkConfig);
-        } else if (networkConfig.protocolVersion === CHRYSALIS && networkConfig.feedEndpoint) {
-            initChrysalisServices(networkConfig);
-        } else if (networkConfig.protocolVersion === STARDUST && networkConfig.feedEndpoint) {
-            initStardustServices(networkConfig);
-        }
+        if (networkConfig.feedEndpoint) {
+            switch (networkConfig.protocolVersion) {
+                case LEGACY:
+                    initLegacyServices(networkConfig);
+                    break;
 
-        if (isKnownProtocolVersion(networkConfig) && networkConfig.feedEndpoint) {
+                case CHRYSALIS:
+                    initChrysalisServices(networkConfig);
+                    break;
+
+                case STARDUST:
+                    initStardustServices(networkConfig);
+                    break;
+
+                default:
+                    // do not add the MilestonesClient for unknown protocol versions
+                    continue; // eslint-disable-line no-continue
+            }
+
             ServiceFactory.register(
                 `milestones-${networkConfig.network}`,
                 () => new MilestonesService(networkConfig.network));
@@ -63,31 +74,29 @@ export async function initServices(config: IConfiguration) {
     }
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.protocolVersion === LEGACY) {
-            const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-            if (zmqService) {
-                zmqService.connect();
-            }
-        }
-
         if (isKnownProtocolVersion(networkConfig)) {
+            if (networkConfig.protocolVersion === LEGACY) {
+                const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
+                if (zmqService) {
+                    zmqService.connect();
+                }
+            }
+
             const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
             if (milestonesService) {
                 await milestonesService.init();
             }
-        }
 
-        if (isKnownProtocolVersion(networkConfig)) {
-            const itemsService = ServiceFactory.get<IItemsServiceChrysalis | IItemsServiceStardust>(
-                `items-${networkConfig.network}`
-            );
+            const itemsService = ServiceFactory.get<IItemsServiceLegacy |
+                IItemsServiceChrysalis |
+                IItemsServiceStardust>(
+                    `items-${networkConfig.network}`
+                );
 
             if (itemsService) {
                 itemsService.init();
             }
-        }
 
-        if (isKnownProtocolVersion(networkConfig)) {
             const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
             if (feedService) {
                 feedService.connect();
@@ -115,10 +124,10 @@ function initLegacyServices(networkConfig: INetwork): void {
         ServiceFactory.register(
             `zmq-${networkConfig.network}`, () => new ZmqService(
                 networkConfig.feedEndpoint, [
-                    "trytes",
-                    "sn",
-                    networkConfig.coordinatorAddress
-                ])
+                "trytes",
+                "sn",
+                networkConfig.coordinatorAddress
+            ])
         );
         ServiceFactory.register(
             `feed-${networkConfig.network}`, () => new LegacyFeedService(

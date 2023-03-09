@@ -1,8 +1,8 @@
 import { Transaction, Transfer } from "@iota/core";
 import { asTransactionObject } from "@iota/transaction-converter";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { CHRYSALIS } from "../../models/config/protocolVersion";
-import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
+import { LEGACY } from "../../models/config/protocolVersion";
+import { LegacyApiClient } from "../legacy/legacyApiClient";
 
 /**
  * Class to handle api communications to api for mam.
@@ -11,7 +11,7 @@ export class LegacyApiStreamsV0Client {
     /**
      * The base api client.
      */
-    private readonly _apiClient: ChrysalisApiClient;
+    private readonly _apiClient: LegacyApiClient;
 
     /**
      * The network.
@@ -23,7 +23,7 @@ export class LegacyApiStreamsV0Client {
      * @param network The network to use.
      */
     constructor(network: string) {
-        this._apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
+        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
         this._network = network;
     }
 

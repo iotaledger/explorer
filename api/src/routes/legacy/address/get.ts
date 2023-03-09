@@ -4,7 +4,7 @@ import { IAddressGetResponse } from "../../../models/api/legacy/IAddressGetRespo
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
+import { LegacyTangleHelper } from "../../../utils/legacy/legacyTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -28,7 +28,7 @@ export async function get(
         return {};
     }
 
-    const balance = await ChrysalisTangleHelper.getAddressBalance(networkConfig, request.hash);
+    const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.hash);
 
     return {
         balance

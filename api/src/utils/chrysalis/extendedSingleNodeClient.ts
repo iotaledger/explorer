@@ -1,8 +1,8 @@
 // Remove when supported by SingleNodeClient
 import { SingleNodeClient } from "@iota/iota.js-chrysalis";
-import { ITransactionsDetailsRequest } from "../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "./../models/api/chrysalis/ITransactionsDetailsResponse";
-import { FetchHelper } from "./fetchHelper";
+import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
+import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { FetchHelper } from "../fetchHelper";
 
 export class ExtendedSingleNodeClient extends SingleNodeClient {
     public async transactionHistory(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {

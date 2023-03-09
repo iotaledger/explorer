@@ -7,14 +7,14 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
-import { CHRYSALIS } from "../../../models/config/protocolVersion";
-import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
+import { LEGACY } from "../../../models/config/protocolVersion";
+import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
-import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
+import SidePanel from "../../components/legacy/SidePanel";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
 import "./Address.scss";
@@ -28,7 +28,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: ChrysalisTangleCacheService;
+    private readonly _tangleCacheService: LegacyTangleCacheService;
 
     /**
      * The settings service.
@@ -42,7 +42,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
     constructor(props: RouteComponentProps<AddressRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
+        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         let address;

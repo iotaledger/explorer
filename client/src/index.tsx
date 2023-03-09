@@ -7,12 +7,15 @@ import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
 import "./index.scss";
-import { CHRYSALIS, STARDUST } from "./models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, STARDUST } from "./models/config/protocolVersion";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";
 import { ChrysalisTangleCacheService } from "./services/chrysalis/chrysalisTangleCacheService";
 import { CurrencyService } from "./services/currencyService";
 import { IdentityService } from "./services/identityService";
+import { LegacyApiClient } from "./services/legacy/legacyApiClient";
+import { LegacyFeedClient } from "./services/legacy/legacyFeedClient";
+import { LegacyTangleCacheService } from "./services/legacy/legacyTangleCacheService";
 import { LocalStorageService } from "./services/localStorageService";
 import { MilestonesClient } from "./services/milestonesClient";
 import { NetworkService } from "./services/networkService";
@@ -48,6 +51,7 @@ initialiseServices().then(() => {
  * Register all the services.
  */
 async function initialiseServices(): Promise<void> {
+    ServiceFactory.register(`api-client-${LEGACY}`, () => new LegacyApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(apiEndpoint));
     ServiceFactory.register("settings", () => new SettingsService());
@@ -66,6 +70,7 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("node-info", () => nodeInfoService);
 
     ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
+    ServiceFactory.register(`tangle-cache-${LEGACY}`, () => new LegacyTangleCacheService());
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
     ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
 
@@ -73,16 +78,28 @@ async function initialiseServices(): Promise<void> {
 
     if (networks.length > 0) {
         for (const netConfig of networks) {
-            if (netConfig.protocolVersion === STARDUST) {
-                ServiceFactory.register(
-                    `feed-${netConfig.network}`,
-                    serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
-                );
-            } else {
-                ServiceFactory.register(
-                    `feed-${netConfig.network}`,
-                    serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
-                );
+            switch (netConfig.protocolVersion) {
+                case LEGACY:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new LegacyFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                case CHRYSALIS:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                case STARDUST:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                default:
+                    // do not add the MilestonesClient for unknown protocol versions
+                    continue; // eslint-disable-line no-continue
             }
 
             ServiceFactory.register(
