@@ -275,7 +275,7 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                     </div>
                                     <div className="section--data">
                                         <div className="label">
-                                            Ledger Inclusion
+                                            Inclusion Status
                                         </div>
                                         <div className="value row middle">
                                             <InclusionState
