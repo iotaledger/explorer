@@ -14,12 +14,19 @@ export const nonStandardMetadataPlaceholder = <ImagePlaceholder message="Unsuppo
 export const unsupportedImageFormatPlaceholderCompact = <ImagePlaceholder message="Unsupported image format" compact />;
 export const unsupportedImageFormatPlaceholder = <ImagePlaceholder message="Unsupported image format" />;
 export const unregisteredMetadataPlaceholder = <ImagePlaceholder message="Unregistered NFT metadata" compact />;
-export const loadingImagePlaceholder = (
+export const loadingImagePlaceholderCompact = (
     <ImagePlaceholder
         message="Loading image..."
         color="inherit"
         isLoading
         compact
+    />
+);
+export const loadingImagePlaceholder = (
+    <ImagePlaceholder
+        message=""
+        color="inherit"
+        isLoading
     />
 );
 
