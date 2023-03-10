@@ -1,4 +1,4 @@
-import { IBlock, IBlockMetadata, IUTXOInput, UnlockTypes } from "@iota/iota.js-stardust";
+import { HexEncodedString, IBlock, IBlockMetadata, IUTXOInput, UnlockTypes } from "@iota/iota.js-stardust";
 import { IInput } from "../../../models/api/stardust/IInput";
 import { IOutput } from "../../../models/api/stardust/IOutput";
 import { TangleStatus } from "../../../models/tangleStatus";
@@ -18,6 +18,11 @@ export interface TransactionPageState {
      * transaction included block.
      */
     block?: IBlock;
+
+    /**
+     * The block's children.
+     */
+    blockChildren?: HexEncodedString[];
 
     /**
      * The block fetching failed.

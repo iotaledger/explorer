@@ -3,12 +3,7 @@ import { IResponse } from "../../IResponse";
 
 export interface IBlockDetailsResponse extends IResponse {
     /**
-     * Message metadata.
+     * Block metadata.
      */
     metadata?: IBlockMetadata;
-
-    /**
-     * Message ids for the children.
-     */
-    childrenBlockIds?: string[];
 }

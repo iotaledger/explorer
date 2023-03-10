@@ -1,5 +1,4 @@
-import { IBlockMetadata } from "@iota/iota.js-stardust";
-import * as H from "history";
+import { HexEncodedString, IBlockMetadata } from "@iota/iota.js-stardust";
 import React from "react";
 import Spinner from "../../../Spinner";
 import InclusionState from "../../InclusionState";
@@ -9,13 +8,13 @@ interface BlockMetadataSectionProps {
     network: string;
     metadata?: IBlockMetadata;
     metadataError?: string;
+    blockChildren?: HexEncodedString[] | null;
     conflictReason?: string;
     isLinksDisabled: boolean;
-    history: H.History;
 }
 
 const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
-    { network, metadata, metadataError, conflictReason, isLinksDisabled, history }
+    { network, metadata, metadataError, blockChildren, conflictReason, isLinksDisabled }
 ) => (
     <div className="section metadata-section">
         <div className="section--data">
@@ -47,25 +46,46 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                             <div className="value">{conflictReason}</div>
                         </div>
                     )}
-                    {metadata?.parents && (
-                        <div className="section--data">
-                            <div className="label">
-                                Parents
-                            </div>
-                            {metadata.parents.map((parent, idx) => (
-                                <div
-                                    key={idx}
-                                    style={{ marginTop: "8px" }}
-                                    className="value code link"
-                                >
-                                    <TruncatedId
-                                        id={parent}
-                                        link={isLinksDisabled ? undefined : `/${network}/block/${parent}`}
-                                    />
+                    <div className="section--data row row--tablet-responsive">
+                        {metadata?.parents && (
+                            <div className="truncate margin-b-s margin-r-m">
+                                <div className="label">
+                                    Parents
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                                {metadata.parents.map((parent, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{ marginTop: "8px" }}
+                                        className="value code link"
+                                    >
+                                        <TruncatedId
+                                            id={parent}
+                                            link={isLinksDisabled ? undefined : `/${network}/block/${parent}`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {blockChildren && (
+                            <div className="truncate">
+                                <div className="label">
+                                    Children
+                                </div>
+                                {blockChildren.map((child, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{ marginTop: "8px" }}
+                                        className="value code link"
+                                    >
+                                        <TruncatedId
+                                            id={child}
+                                            link={isLinksDisabled ? undefined : `/${network}/block/${child}`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </React.Fragment>
             )}
         </div>
@@ -73,6 +93,7 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
 );
 
 BlockMetadataSection.defaultProps = {
+    blockChildren: undefined,
     conflictReason: undefined,
     metadata: undefined,
     metadataError: undefined

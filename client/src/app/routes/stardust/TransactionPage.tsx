@@ -21,6 +21,7 @@ import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
 import BlockTangleState from "../../components/stardust/block/BlockTangleState";
 import TransactionPayload from "../../components/stardust/block/payload/TransactionPayload";
+import BlockMetadataSection from "../../components/stardust/block/section/BlockMetadataSection";
 import InclusionState from "../../components/stardust/InclusionState";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
@@ -105,12 +106,13 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
     public render(): ReactNode {
         const { network, transactionId } = this.props.match.params;
         const {
-            inputs, unlocks, outputs, transferTotal, block, blockError,
+            inputs, unlocks, outputs, transferTotal, block, blockChildren, blockError,
             tangleNetworkId, inputsCommitment, includedBlockId,
             blockTangleStatus, metadata, metadataError, conflictReason, jobToStatus, isFormattedBalance
         } = this.state;
         const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
         const isMarketed = isMarketedNetwork(network);
+        const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
 
         if (blockError) {
             return (
@@ -254,6 +256,14 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                                 />
                             </div>
                         ) : <></>}
+                    <BlockMetadataSection
+                        network={network}
+                        metadata={metadata}
+                        metadataError={metadataError}
+                        blockChildren={blockChildren}
+                        conflictReason={conflictReason}
+                        isLinksDisabled={isLinksDisabled}
+                    />
                     <div className="section metadata-section">
                         <div className="section--data">
                             {metadataError && (
@@ -391,9 +401,43 @@ class TransactionPage extends AsyncComponent<RouteComponentProps<TransactionPage
                             includedBlockId
                         });
 
+                        // eslint-disable-next-line no-void
+                        void this.loadBlockChildren(includedBlockId);
+
                         await this.updateInclusionState(network, includedBlockId);
                     } else {
                         this.setState({ blockError: response.error ?? "Couldn't load transaction block" });
+                    }
+                }
+            )
+        );
+    }
+
+    /**
+     * Load block children
+     * @param blockId The block id to fetch the children
+     */
+    private async loadBlockChildren(blockId: string): Promise<void> {
+        const { network } = this.props.match.params;
+        const blockChildrenLoadMonitor = new PromiseMonitor(status => {
+            this.setState(prevState => ({
+                ...prevState,
+                jobToStatus: this.state.jobToStatus.set("loadBlockChildren", status)
+            }));
+        });
+
+        // eslint-disable-next-line no-void
+        void blockChildrenLoadMonitor.enqueue(
+            async () => this._tangleCacheService.blockChildren(network, blockId).then(
+                details => {
+                    this.setState({
+                        blockChildren: details?.children
+                    });
+
+                    if (!details?.children) {
+                        this._timerId = setTimeout(async () => {
+                            await this.loadBlockChildren(blockId);
+                        }, 10000);
                     }
                 }
             )
