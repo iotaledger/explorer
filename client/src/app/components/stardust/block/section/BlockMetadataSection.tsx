@@ -35,7 +35,7 @@ const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (
                     </div>
                     <div className="section--data">
                         <div className="label">
-                            Ledger Inclusion
+                            Inclusion Status
                         </div>
                         <div className="value row middle">
                             <InclusionState state={metadata?.ledgerInclusionState} />
