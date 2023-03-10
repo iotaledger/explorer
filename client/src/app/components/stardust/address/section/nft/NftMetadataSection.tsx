@@ -6,10 +6,9 @@ import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../../../../DataToggle";
 import JsonViewer from "../../../../JsonViewer";
-import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
 import {
-    getNftImageContent, isSupportedImageFormat, MESSAGE_NFT_SCHEMA_STANDARD,
+    getNftImageContent, isSupportedImageFormat, loadingImagePlaceholder, MESSAGE_NFT_SCHEMA_STANDARD,
     tryParseNftMetadata, unsupportedImageFormatPlaceholder
 } from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
@@ -24,11 +23,16 @@ interface NftMetadataSectionProps {
      * The nft.
      */
     nft: INftBase;
+
+    /**
+     * Is nft output loading.
+     */
+    isLoading: boolean;
 }
 
-const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft }) => {
+const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, isLoading }) => {
     const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
-    const [isWhitelisted] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
+    const [isWhitelisted, isChecking] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
     const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
@@ -38,7 +42,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
     }, [nft.metadata]);
 
     const unsupportedFormatOrLoading = isNftUriLoading ? (
-        <Spinner />
+        loadingImagePlaceholder
     ) : (
         unsupportedImageFormatPlaceholder
     );
@@ -189,7 +193,11 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft })
         </div>
     );
 
-    if (nft.metadata) {
+    if (isLoading) {
+        return null;
+    }
+
+    if (nft.metadata && !isChecking) {
         if (whitelistedNft) {
             return whitelistedNft;
         }
