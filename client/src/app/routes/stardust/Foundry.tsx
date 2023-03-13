@@ -1,15 +1,12 @@
-import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IOutputResponse } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useFoundryDetails } from "../../../helpers/hooks/useFoundryDetails";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
-import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Icon from "../../components/Icon";
@@ -33,48 +30,27 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 ) => {
     const isMounted = useIsMounted();
     const { tokenInfo, bech32Hrp } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
-    const [jobToStatus, setJobToStatus] = useState(
-        new Map<string, PromiseStatus>().set("loadFoundryDetails", PromiseStatus.PENDING)
-    );
-    const [foundryOutput, setFoundryOutput] = useState<IOutputResponse>();
-    const [foundryError, setFoundryError] = useState<string | undefined>();
+
+    const [foundryDetails, isFoundryDetailsLoading, foundryError] = useFoundryDetails(network, foundryId);
+    const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
     const [controllerAlias, setControllerAlias] = useState<string>();
     const [tokenCount, setTokenCount] = useState<number>(0);
 
     useEffect(() => {
-        const foundryLoadMonitor = new PromiseMonitor(status => {
-            setJobToStatus(jobToStatus.set("loadFoundryDetails", status));
-        });
+        if (foundryDetails) {
+            const output = foundryDetails?.output as IFoundryOutput;
+            const immutableAliasUnlockCondition =
+                output.unlockConditions[0] as IImmutableAliasUnlockCondition;
+            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
-        const loadFoundryDetails = async (): Promise<void> => {
-            // eslint-disable-next-line no-void
-            void foundryLoadMonitor.enqueue(
-                async () => tangleCacheService.foundryDetails({ network, foundryId }).then(
-                    response => {
-                        if (!response.error) {
-                            const theFoundryOutput = response.foundryDetails?.output as IFoundryOutput;
-                            const immutableAliasUnlockCondition =
-                                theFoundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
-                            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
-
-                            if (isMounted) {
-                                setFoundryOutput(response.foundryDetails);
-                                setControllerAlias(aliasId);
-                            }
-                        } else if (isMounted) {
-                            setFoundryError(response.error);
-                        }
-                    }).catch(_ => { })
-            );
-        };
-
-        // eslint-disable-next-line no-void
-        void loadFoundryDetails();
-    }, []);
+            if (isMounted) {
+                setFoundryOutput(output);
+                setControllerAlias(aliasId);
+            }
+        }
+    }, [foundryDetails]);
 
 
     if (foundryError) {
@@ -100,15 +76,14 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     }
 
     let foundryContent = null;
-    if (foundryOutput) {
-        const output = foundryOutput.output as IFoundryOutput;
+    if (foundryDetails && foundryOutput) {
         const isMarketed = isMarketedNetwork(network);
-        const serialNumber = output.serialNumber;
-        const balance = Number(output.amount);
-        const tokenScheme = output.tokenScheme.type;
-        const maximumSupply = Number(output.tokenScheme.maximumSupply);
-        const mintedTokens = Number(output.tokenScheme.mintedTokens);
-        const meltedTokens = Number(output.tokenScheme.meltedTokens);
+        const serialNumber = foundryOutput.serialNumber;
+        const balance = Number(foundryOutput.amount);
+        const tokenScheme = foundryOutput.tokenScheme.type;
+        const maximumSupply = Number(foundryOutput.tokenScheme.maximumSupply);
+        const mintedTokens = Number(foundryOutput.tokenScheme.mintedTokens);
+        const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
 
         const controllerAliasBech32 = controllerAlias ?
             Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
@@ -186,7 +161,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             infoContent: nativeTokensMessage
                         },
                         [FOUNDRY_PAGE_TABS.Features]: {
-                            disabled: !output.features && !output.immutableFeatures
+                            disabled: !foundryOutput.features && !foundryOutput.immutableFeatures
                         }
                     }}
                 >
@@ -232,18 +207,16 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             </div>
                         </div>
                     </div >
-                    <FeaturesSection output={output} />
+                    <FeaturesSection output={foundryOutput} />
                     <AssetsTable
                         networkId={network}
-                        outputs={[foundryOutput]}
+                        outputs={[foundryDetails]}
                         setTokenCount={setTokenCount}
                     />
                 </TabbedSection>
             </React.Fragment >
         );
     }
-
-    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
     return (
         <div className="foundry">
@@ -254,7 +227,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             <h1>
                                 Foundry
                             </h1>
-                            {isLoading && <Spinner />}
+                            {isFoundryDetailsLoading && <Spinner />}
                         </div>
                     </div>
                     {foundryContent}
