@@ -10,9 +10,9 @@ import { StardustTangleCacheService } from "../../../services/stardust/stardustT
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
 import NetworkContext from "../../context/NetworkContext";
-import "../Search.scss";
 import { SearchRouteProps } from "../SearchRouteProps";
 import { SearchState } from "../SearchState";
+import "../Search.scss";
 
 /**
  * Component which will show the search page.
@@ -245,7 +245,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.taggedOutputs) {
                                     route = "outputs";
                                     redirectState = {
-                                        outputIds: response.taggedOutputs.items,
+                                        outputIds: response.taggedOutputs,
                                         tag: query
                                     };
                                     routeParam = "";

@@ -2,10 +2,11 @@
 import {
     addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock
+    IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString
 } from "@iota/iota.js-stardust";
-import { HexHelper, ReadStream } from "@iota/util.js-stardust";
+import { Converter, HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
 import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
@@ -15,6 +16,7 @@ import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsRe
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITaggedOutputsResponse } from "../../models/api/stardust/ITaggedOutputsResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
@@ -461,6 +463,82 @@ export class StardustTangleHelper {
 
             return { error: "Nft output not found" };
         } catch { }
+    }
+
+    /**
+     * Get the basic output Ids with specific tag feature.
+     * @param network The network to find the items on.
+     * @param tag The tag hex.
+     * @param pageSize The page size.
+     * @param cursor The cursor for pagination.
+     * @returns The basic outputs response.
+     */
+    public static async taggedBasicOutputs(
+        network: INetwork,
+        tag: string,
+        pageSize: number,
+        cursor?: string
+    ): Promise<IBasicOutputsResponse | undefined> {
+        try {
+            const tagHex: HexEncodedString = Converter.utf8ToHex(tag, true);
+            const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchPermanodeThenNode<
+                Record<string, unknown>,
+                IOutputsResponse
+            >({ tagHex, pageSize, cursor }, "basicOutputs", network, true);
+
+            if (basicOutputIdsResponse?.items.length > 0) {
+                return { outputs: basicOutputIdsResponse };
+            }
+        } catch { }
+
+        return { error: `Basic outputs not found with given tag ${tag}` };
+    }
+
+    /**
+     * Get the nft output Ids with specific tag feature.
+     * @param network The network to find the items on.
+     * @param tag The tag hex.
+     * @param pageSize The page size.
+     * @param cursor The cursor for pagination.
+     * @returns The nft outputs response.
+     */
+    public static async taggedNftOutputs(
+        network: INetwork,
+        tag: HexEncodedString,
+        pageSize: number,
+        cursor?: string
+    ): Promise<INftOutputsResponse | undefined> {
+        try {
+            const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchPermanodeThenNode<
+                Record<string, unknown>,
+                IOutputsResponse
+            >({ tagHex: tag, pageSize, cursor }, "nfts", network, true);
+
+            if (nftOutputIdsResponse?.items.length > 0) {
+                return { outputs: nftOutputIdsResponse };
+            }
+        } catch { }
+
+        return { error: `Nft outputs not found with given tag ${tag}` };
+    }
+
+    /**
+     * Get the output Ids (basic/nft) with specific tag feature.
+     * @param network The network to find the items on.
+     * @param tag The tag hex.
+     * @returns .
+     */
+    public static async taggedOutputs(
+        network: INetwork,
+        tag: HexEncodedString
+    ): Promise<ITaggedOutputsResponse | undefined> {
+        const basicOutputs = await this.taggedBasicOutputs(network, tag, 10);
+        const nftOutputs = await this.taggedNftOutputs(network, tag, 10);
+
+        return {
+            basicOutputs,
+            nftOutputs
+        };
     }
 
     /**
