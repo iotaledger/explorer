@@ -11,16 +11,14 @@ import milestonePayloadInfo from "../../../assets/modals/stardust/block/mileston
 import referencedBlocksInfo from "../../../assets/modals/stardust/block/milestone-referenced-blocks.json";
 import taggedDataPayloadInfo from "../../../assets/modals/stardust/block/tagged-data-payload.json";
 import transactionPayloadInfo from "../../../assets/modals/stardust/block/transaction-payload.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
+import { useBlock } from "../../../helpers/hooks/useBlock";
 import { useBlockChildren } from "../../../helpers/hooks/useBlockChildren";
-import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
+import { useBlockMetadata } from "../../../helpers/hooks/useBlockMetadata";
+import { useInputsAndOutputs } from "../../../helpers/hooks/useInputsAndOutputs";
+import { useMilestoneReferencedBlocks } from "../../../helpers/hooks/useMilestoneReferencedBlock";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
-import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { calculateConflictReason, calculateStatus } from "../../../models/tangleStatus";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Modal from "../../components/Modal";
@@ -35,169 +33,41 @@ import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
-import { BlockData, BlockMetadata } from "./BlockState";
 import "./Block.scss";
 
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
-    const isMounted = useIsMounted();
-    const { tokenInfo, bech32Hrp, protocolVersion } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const { tokenInfo, protocolVersion } = useContext(NetworkContext);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const [jobToStatus, setJobToStatus] = useState(new Map<string, PromiseStatus>());
-    const [updateMetadataTimerId, setUpdateMetadataTimerId] = useState<NodeJS.Timer | undefined>();
-    const [blockData, setBlockData] = useState<BlockData>({});
-    const [blockMetadata, setBlockMetadata] = useState<BlockMetadata>({ blockTangleStatus: "pending" });
-    const [milestoneReferencedBlocks, setMilestoneReferencedBlocks] = useState<
-        { milestoneId?: string; blocks?: string[]; error?: string } | undefined
-    >();
+    const [transactionId, setTransactionId] = useState<string>();
+    const [milestoneId, setMilestoneId] = useState<string | null>(null);
+    const [block, isBlockLoading, blockError] = useBlock(network, blockId);
     const [blockChildren] = useBlockChildren(network, blockId);
-
-
-    useEffect(() => {
-        setBlockData({});
-        setBlockMetadata({ blockTangleStatus: "pending" });
-        // eslint-disable-next-line no-void
-        void loadBlock(blockId);
-        return () => {
-            if (updateMetadataTimerId) {
-                clearTimeout(updateMetadataTimerId);
-            }
-        };
-    }, [blockId]);
+    const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, blockId);
+    const [inputs, unlocks, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
+    const [milestoneReferencedBlocks, isMilestoneReferencedBlockLoading] = useMilestoneReferencedBlocks(network, milestoneId);
 
     useEffect(() => {
-        if (!blockData.blockError) {
-            // eslint-disable-next-line no-void
-            void updateBlockDetails();
+        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            const tsxId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
+                block.payload
+            );
+            setTransactionId(tsxId);
         }
-
-        if (blockData.block?.payload?.type === MILESTONE_PAYLOAD_TYPE) {
-            const milestonePayload = blockData.block?.payload;
-            const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
-            // eslint-disable-next-line no-void
-            void loadMilestoneReferencedBlocks(milestoneId);
+        if (block?.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+            const mId = milestoneIdFromMilestonePayload(block.payload);
+            setMilestoneId(mId);
         }
-    }, [blockData]);
+    }, [block]);
 
-    /**
-     * Load the block with the given id.
-     * @param blockId The index to load.
-     */
-    const loadBlock = async (blockId: string): Promise<void> => {
-        const blockLoadMonitor = new PromiseMonitor(status => {
-            setJobToStatus(jobToStatus.set("loadBlock", status));
-        });
-
-        // eslint-disable-next-line no-void
-        void blockLoadMonitor.enqueue(
-            async () => tangleCacheService.block(network, blockId).then(
-                async response => {
-                    if (response.block) {
-                        let transactionId;
-                        const block = response.block;
-                        const { inputs, unlocks, outputs, transferTotal } =
-                            await TransactionsHelper.getInputsAndOutputs(
-                                block,
-                                network,
-                                bech32Hrp,
-                                tangleCacheService
-                            );
-
-                        if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                            transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
-                                block.payload
-                            );
-                        }
-
-                        if (isMounted) {
-                            setBlockData(
-                                {
-                                    block,
-                                    inputs,
-                                    unlocks,
-                                    outputs,
-                                    transferTotal,
-                                    transactionId
-                                }
-                            );
-                        }
-                    } else if (isMounted) {
-                        setBlockData({ blockError: response.error ?? "Couldn't load block" });
-                    }
-                }
-            )
-        );
-    };
-
-    /**
-     * Update the block details.
-     */
-    const updateBlockDetails = async (): Promise<void> => {
-        const blockDetailsLoadMonitor = new PromiseMonitor(status => {
-            setJobToStatus(jobToStatus.set("loadBlockDetails", status));
-        });
-
-        // eslint-disable-next-line no-void
-        void blockDetailsLoadMonitor.enqueue(
-            async () => tangleCacheService.blockDetails(network, blockId).then(
-                details => {
-                    if (isMounted) {
-                        setBlockMetadata({
-                            metadata: details?.metadata,
-                            metadataError: details?.error,
-                            conflictReason: calculateConflictReason(details?.metadata),
-                            blockTangleStatus: calculateStatus(details?.metadata)
-                        });
-
-                        // requeue job until block is referenced
-                        if (!details?.metadata?.referencedByMilestoneIndex) {
-                            setUpdateMetadataTimerId(
-                                setTimeout(async () => {
-                                    await updateBlockDetails();
-                                }, 10000)
-                            );
-                        }
-                    }
-                }
-            )
-        );
-    };
-
-    /**
-     * Load milestone referenced blocks.
-     * @param milestoneId The computed milestone id.
-     */
-    const loadMilestoneReferencedBlocks = async (milestoneId: string): Promise<void> => {
-        const referencedBlocksPromiseMonitor = new PromiseMonitor(status => {
-            setJobToStatus(jobToStatus.set("loadMilestoneRefBlocks", status));
-        });
-
-        // eslint-disable-next-line no-void
-        void referencedBlocksPromiseMonitor.enqueue(
-            async () => tangleCacheService.milestoneReferencedBlocks(network, milestoneId).then(
-                milestoneBlocksResponse => {
-                    if (isMounted) {
-                        setMilestoneReferencedBlocks(milestoneBlocksResponse);
-                    }
-                }
-            )
-        );
-    };
-
-    const { block, blockError, transactionId, inputs, unlocks, outputs, transferTotal } = blockData;
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
     const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
     const isTransactionBlock = block?.payload?.type === TRANSACTION_PAYLOAD_TYPE;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
-    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
-    const milestoneId = isMilestoneBlock ?
-        milestoneIdFromMilestonePayload(block.payload as IMilestonePayload) : undefined;
+    const isLoading = isBlockLoading || isInputsAndOutputsLoading || isBlockMetadataLoading || isMilestoneReferencedBlockLoading;
     const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {
@@ -246,10 +116,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 network={network}
                 protocolVersion={protocolVersion}
                 block={block}
-                inputs={inputs}
-                unlocks={unlocks}
-                outputs={outputs}
-                transferTotal={transferTotal}
+                inputs={inputs ?? undefined}
+                unlocks={unlocks ?? undefined}
+                outputs={outputs ?? undefined}
+                transferTotal={transferTotal ?? undefined}
                 history={history}
                 isLinksDisabled={isLinksDisabled}
             />
@@ -268,7 +138,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     }
     if (isMilestoneBlock) {
         tabbedSections.push(
-            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks?.blocks} />
+            <ReferencedBlocksSection key={++idx} blockIds={milestoneReferencedBlocks ?? undefined} />
         );
     }
 
@@ -330,7 +200,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 </div>
             )}
             {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                transferTotal !== undefined && (
+                transferTotal && (
                     <div className="section--data">
                         <div className="label">
                             Amount transacted
@@ -372,7 +242,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                             "Metadata": { infoContent: metadataInfo },
                             "Referenced Blocks": {
                                 disabled: !milestoneReferencedBlocks,
-                                counter: milestoneReferencedBlocks?.blocks?.length ?? undefined,
+                                counter: milestoneReferencedBlocks?.length ?? undefined,
                                 infoContent: referencedBlocksInfo
                             }
                         } : (isTransactionBlock ? {
