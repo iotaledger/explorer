@@ -7,7 +7,7 @@ import { isShimmerNetwork } from "../helpers/networkHelper";
 import { scrollToTop } from "../helpers/pageUtils";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
-import { LEGACY, STARDUST } from "../models/config/protocolVersion";
+import { STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
@@ -48,7 +48,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
     const currentNetwork = networkConfig?.network;
     const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
-    const isStardust = networkConfig?.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetwork, nodeInfo);
@@ -60,7 +59,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     }
 
     const routes = buildAppRoutes(
-        isStardust,
         networkConfig?.protocolVersion ?? "",
         withNetworkContext
     );
@@ -86,7 +84,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                 search={
                     <SearchInput
                         onSearch={query => history.push(`/${currentNetwork}/search/${query}`)}
-                        protocolVersion={networkConfig?.protocolVersion ?? LEGACY}
+                        protocolVersion={networkConfig?.protocolVersion ?? STARDUST}
                     />
                 }
                 pages={getPages(networkConfig, networks)}

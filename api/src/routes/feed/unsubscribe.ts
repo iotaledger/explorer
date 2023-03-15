@@ -4,6 +4,7 @@ import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeReques
 import { IResponse } from "../../models/api/IResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
+import { IItemsService as IItemsServiceLegacy } from "../../models/services/legacy/IItemsService";
 import { IItemsService as IItemsServiceStardust } from "../../models/services/stardust/IItemsService";
 import { NetworkService } from "../../services/networkService";
 import { ValidationHelper } from "../../utils/validationHelper";
@@ -24,9 +25,11 @@ export async function unsubscribe(
         const networks = networkService.networkNames();
         ValidationHelper.oneOf(request.network, networks, "network");
 
-        const itemsService = ServiceFactory.get<IItemsServiceChrysalis | IItemsServiceStardust>(
-            `items-${request.network}`
-        );
+        const itemsService = ServiceFactory.get<IItemsServiceLegacy |
+            IItemsServiceChrysalis |
+            IItemsServiceStardust>(
+                `items-${request.network}`
+            );
 
         if (itemsService) {
             itemsService.unsubscribe(request.subscriptionId);

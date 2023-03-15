@@ -1,20 +1,20 @@
-import { IFindTransactionsRequest } from "../models/clients/chronicle/IFindTransactionsRequest";
-import { IFindTransactionsResponse } from "../models/clients/chronicle/IFindTransactionsResponse";
-import { IGetTrytesRequest } from "../models/clients/chronicle/IGetTrytesRequest";
-import { IGetTrytesResponse } from "../models/clients/chronicle/IGetTrytesResponse";
-import { FetchHelper } from "../utils/fetchHelper";
+import { IFindTransactionsRequest } from "../../models/clients/chronicle/legacy/IFindTransactionsRequest";
+import { IFindTransactionsResponse } from "../../models/clients/chronicle/legacy/IFindTransactionsResponse";
+import { IGetTrytesRequest } from "../../models/clients/chronicle/legacy/IGetTrytesRequest";
+import { IGetTrytesResponse } from "../../models/clients/chronicle/legacy/IGetTrytesResponse";
+import { FetchHelper } from "../../utils/fetchHelper";
 
 /**
  * Class to handle api communications with Chronicle.
  */
-export class ChronicleClient {
+export class LegacyChronicleClient {
     /**
      * The endpoint for performing communications.
      */
     private readonly _endpoint: string;
 
     /**
-     * Create a new instance of ChronicleClient.
+     * Create a new instance of LegacyChronicleClient.
      * @param endpoint The endpoint for the api.
      */
     constructor(endpoint: string) {

@@ -1,13 +1,13 @@
-import { IFindTransactionsRequest } from "../models/clients/hornet/IFindTransactionsRequest";
-import { IFindTransactionsResponse } from "../models/clients/hornet/IFindTransactionsResponse";
-import { IGetTrytesRequest } from "../models/clients/hornet/IGetTrytesRequest";
-import { IGetTrytesResponse } from "../models/clients/hornet/IGetTrytesResponse";
-import { FetchHelper } from "../utils/fetchHelper";
+import { IFindTransactionsRequest } from "../../models/clients/hornet/legacy/IFindTransactionsRequest";
+import { IFindTransactionsResponse } from "../../models/clients/hornet/legacy/IFindTransactionsResponse";
+import { IGetTrytesRequest } from "../../models/clients/hornet/legacy/IGetTrytesRequest";
+import { IGetTrytesResponse } from "../../models/clients/hornet/legacy/IGetTrytesResponse";
+import { FetchHelper } from "../../utils/fetchHelper";
 
 /**
  * Class to handle api communications with Hornet.
  */
-export class HornetClient {
+export class LegacyHornetClient {
     /**
      * The endpoint for performing communications.
      */
@@ -24,7 +24,7 @@ export class HornetClient {
     private readonly _password?: string;
 
     /**
-     * Create a new instance of HornetClient.
+     * Create a new instance of LegacyHornetClient.
      * @param endpoint The endpoint for the api.
      * @param user The user for the api.
      * @param password The password for the api.

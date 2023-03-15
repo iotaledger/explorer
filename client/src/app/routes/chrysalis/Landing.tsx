@@ -5,8 +5,8 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
-import { CHRYSALIS, LEGACY } from "../../../models/config/protocolVersion";
+import { CUSTOM } from "../../../models/config/networkType";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { getFilterFieldDefaults } from "../../../models/services/filterField";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
@@ -32,7 +32,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || {
             label: "Custom network",
             network: CUSTOM,
-            protocolVersion: LEGACY,
+            protocolVersion: CHRYSALIS,
             hasStatisticsSupport: false,
             isEnabled: false
         };
@@ -83,7 +83,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
             valuesFilter: filterSettings?.valuesFilter ??
-                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? "chrysalis"),
+                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? CHRYSALIS),
             formatFull: settings.formatFull
         });
     }
@@ -94,7 +94,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
-            this._networkConfig.network !== LEGACY_MAINNET &&
             this._networkConfig.network !== CUSTOM;
 
         return (
@@ -111,11 +110,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             {this.state.networkConfig.isEnabled && (
                                 <div className="row space-between info-boxes">
                                     <div className="info-box">
-                                        <span className="info-box--title">{
-                                            this.state.networkConfig.protocolVersion === LEGACY
-                                                ? "Transactions"
-                                                : "Messages"
-                                        } per sec
+                                        <span className="info-box--title">Messages per sec
                                         </span>
                                         <div className="info-box--value">
                                             <span className="download-rate">
@@ -226,15 +221,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                         />
                                                                         {payload.label}
                                                                     </label>
-                                                                    {((this.state
-                                                                        .networkConfig
-                                                                        .protocolVersion === LEGACY &&
-                                                                        payload.label === "Non-zero only" &&
-                                                                        payload.isEnabled) ||
-                                                                        (this.state.networkConfig.protocolVersion ===
-                                                                            CHRYSALIS &&
-                                                                            payload.label === "Transaction" &&
-                                                                            payload.isEnabled)) && (
+                                                                    {((this.state.networkConfig.protocolVersion ===
+                                                                        CHRYSALIS &&
+                                                                        payload.label === "Transaction" &&
+                                                                        payload.isEnabled)) && (
                                                                             <div className="row">
                                                                                 {this.transactionDropdown("minimum")}
                                                                                 {this.transactionDropdown("maximum")}
@@ -265,12 +255,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="label">
-                                                {this.state.networkConfig.protocolVersion === LEGACY
-                                                    ? "Transaction" : "Message id"}
+                                                Message id
                                             </span>
                                             <span className="label">
-                                                {this.state.networkConfig.protocolVersion === LEGACY
-                                                    ? "Amount" : "Payload Type"}
+                                                Payload Type
                                             </span>
                                         </div>
                                         {this.state.filteredItems.length === 0 && (
@@ -280,8 +268,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
-                                                        {this.state.networkConfig.protocolVersion === LEGACY
-                                                            ? "Transaction" : "Message id"}
+                                                        Message id
                                                     </span>
                                                     <Link
                                                         className="feed-item--hash"
@@ -292,8 +279,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 </div>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
-                                                        {this.state.networkConfig.protocolVersion === LEGACY
-                                                            ? "Amount" : "Payload Type"}
+                                                        Payload Type
                                                     </span>
                                                     <span className="feed-item--value">
                                                         <button

@@ -99,18 +99,18 @@ class IdentityResolver extends AsyncComponent<
                                 )}
                                 {this.props.match.params.did && (
                                     <div>
-                                        {this.props.protocolVersion === CHRYSALIS && (
-                                            <IdentityChrysalisResolver {...this.props} />
-                                        )}
-                                        {this.props.protocolVersion === STARDUST && (
-                                            <IdentityStardustResolver {...this.props} />
-                                        )}
                                         {this.props.protocolVersion === LEGACY && (
                                             <div>
                                                 <div className="unsupported-network">
                                                     This network is not supported!
                                                 </div>
                                             </div>
+                                        )}
+                                        {this.props.protocolVersion === CHRYSALIS && (
+                                            <IdentityChrysalisResolver {...this.props} />
+                                        )}
+                                        {this.props.protocolVersion === STARDUST && (
+                                            <IdentityStardustResolver {...this.props} />
                                         )}
                                     </div>
                                 )}

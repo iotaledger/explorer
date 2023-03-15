@@ -2,7 +2,6 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { LEGACY } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import "./SidePanel.scss";
 import { SidePanelRouteProps } from "../SidePanelRouteProps";
@@ -44,7 +43,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
                 <div className="card--sections">
                     <div className="card--section card--section__highlight">
                         <div className="card--label card--label__highlight padding-t-s">
-                            {this._networkConfig?.protocolVersion === LEGACY ? "Transactions" : "Messages"} Per Second
+                            Messages Per Second
                         </div>
                         <div className="card--value card--value__large padding-t-s">
                             {this.state.itemsPerSecond} / {this.state.confirmedItemsPerSecond}
@@ -69,7 +68,7 @@ class SidePanel extends Feeds<RouteComponentProps<SidePanelRouteProps>, SidePane
                     </div>
                     <div className="card--section feed">
                         <div className="card--label card--label__underline">
-                            {this._networkConfig?.protocolVersion === LEGACY ? "Transactions" : "Messages"}
+                            Messages
                         </div>
                         {this.state.items.map(item => (
                             <div className="row feed-item" key={item.id}>

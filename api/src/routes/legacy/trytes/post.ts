@@ -4,7 +4,7 @@ import { ITrytesRetrieveResponse } from "../../../models/api/legacy/ITrytesRetri
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
+import { LegacyTangleHelper } from "../../../utils/legacy/legacyTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -27,7 +27,7 @@ export async function post(
         return {};
     }
 
-    const { trytes, milestoneIndexes } = await ChrysalisTangleHelper.getTrytes(networkConfig, request.hashes);
+    const { trytes, milestoneIndexes } = await LegacyTangleHelper.getTrytes(networkConfig, request.hashes);
 
     return {
         trytes,
