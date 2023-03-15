@@ -3,14 +3,10 @@ import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as DropdownIcon } from "../../../../../../assets/dropdown-arrow.svg";
-import { ServiceFactory } from "../../../../../../factories/serviceFactory";
 import { DateHelper } from "../../../../../../helpers/dateHelper";
-import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
-import PromiseMonitor, { PromiseStatus } from "../../../../../../helpers/promise/promiseMonitor";
+import { useOutputsDetails } from "../../../../../../helpers/hooks/useOutputsDetails";
 import { formatAmount } from "../../../../../../helpers/stardust/valueFormatHelper";
 import { AssociationType } from "../../../../../../models/api/stardust/IAssociationsResponse";
-import { STARDUST } from "../../../../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../../../../services/stardust/stardustTangleCacheService";
 import NetworkContext from "../../../../../context/NetworkContext";
 import Spinner from "../../../../Spinner";
 import "./AssociationSection.scss";
@@ -22,7 +18,7 @@ interface IAssociatedSectionProps {
     outputIds: string[] | undefined;
 }
 
-interface IOutputDetails {
+interface IOutputTableItem {
     outputId: string;
     dateCreated: string;
     ago: string;
@@ -32,60 +28,37 @@ interface IOutputDetails {
 const PAGE_SIZE = 10;
 
 const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, outputIds }) => {
-    const isMounted = useIsMounted();
     const { tokenInfo, name: network } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormatBalance, setIsFormatBalance] = useState(false);
-    const [jobToStatus, setJobToStatus] = useState(PromiseStatus.PENDING);
     const [loadMoreCounter, setLoadMoreCounter] = useState<number | undefined>();
-    const [outputDetails, setOutputDetails] = useState<IOutputDetails[]>([]);
+    const [sliceToLoad, setSliceToLoad] = useState<string[]>([]);
+    const [outputTableItems, setOutputTableItems] = useState<IOutputTableItem[]>([]);
+    const [outputsDetails, isLoading] = useOutputsDetails(network, sliceToLoad);
 
     useEffect(() => {
-        const loadedOutputDetails: IOutputDetails[] = [];
-        const outputIdsToDetails: Map<string, IOutputDetails> = new Map();
+        const loadedOutputItems: IOutputTableItem[] = [...outputTableItems];
 
+        for (const details of outputsDetails) {
+            const { output, metadata } = details.outputDetails;
+            const outputId = details.outputId;
+
+            if (output && metadata) {
+                const timestampBooked = metadata.milestoneTimestampBooked * 1000;
+                const dateCreated = DateHelper.formatShort(Number(timestampBooked));
+                const ago = moment(timestampBooked).fromNow();
+                const amount = output.amount;
+                loadedOutputItems.push({ outputId, dateCreated, ago, amount });
+            }
+        }
+        setOutputTableItems(loadedOutputItems);
+    }, [outputsDetails]);
+
+    useEffect(() => {
         if (outputIds && loadMoreCounter !== undefined) {
             const from = loadMoreCounter * PAGE_SIZE;
             const to = from + PAGE_SIZE;
-            const sliceToLoad = outputIds.slice(from, to);
-
-            const loadOutputDetailsMonitor = new PromiseMonitor(status => {
-                setJobToStatus(status);
-                // This actually happends after all promises are DONE
-                if (status === PromiseStatus.DONE) {
-                    for (const outputId of sliceToLoad) {
-                        const details = outputIdsToDetails.get(outputId);
-                        if (details) {
-                            const { dateCreated, ago, amount } = details;
-                            loadedOutputDetails.push({ outputId, dateCreated, ago, amount });
-                        }
-                    }
-
-                    if (isMounted) {
-                        setOutputDetails(outputDetails.concat(loadedOutputDetails));
-                    }
-                }
-            });
-
-            for (const outputId of sliceToLoad) {
-                // eslint-disable-next-line no-void
-                void loadOutputDetailsMonitor.enqueue(
-                    async () => tangleCacheService.outputDetails(network, outputId).then(response => {
-                        if (response.output && response.metadata) {
-                            const timestampBooked = response.metadata.milestoneTimestampBooked * 1000;
-                            const dateCreated = DateHelper.formatShort(Number(timestampBooked));
-                            const ago = moment(timestampBooked).fromNow();
-                            const amount = response.output.amount;
-                            outputIdsToDetails.set(outputId, { outputId, dateCreated, ago, amount });
-                        } else if (response.error) {
-                            console.log(`Error while loading associated output details for ${outputId}`);
-                        }
-                    })
-                );
-            }
+            setSliceToLoad(outputIds.slice(from, to));
         }
     }, [outputIds, loadMoreCounter]);
 
@@ -105,7 +78,6 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     };
 
     const count = outputIds?.length;
-    const isLoading = jobToStatus !== PromiseStatus.DONE;
 
     return (
         count ?
@@ -124,7 +96,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                         </div>
                     )}
                 </div>
-                {!isExpanded || outputDetails.length === 0 ? null : (
+                {!isExpanded || outputTableItems.length === 0 ? null : (
                     <React.Fragment>
                         <table className="association-section--table">
                             <thead>
@@ -135,7 +107,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                 </tr>
                             </thead>
                             <tbody>
-                                {outputDetails.map((details, idx) => {
+                                {outputTableItems.map((details, idx) => {
                                     const { outputId, dateCreated, ago, amount } = details;
 
                                     return (
@@ -163,7 +135,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                         </table>
 
                         <div className="association-section--cards">
-                            {outputDetails.map((details, idx) => {
+                            {outputTableItems.map((details, idx) => {
                                 const { outputId, dateCreated, ago, amount } = details;
 
                                 return (
@@ -196,7 +168,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                                 );
                             })}
                         </div>
-                        {outputDetails.length < count && (
+                        {outputTableItems.length < count && (
                             <div className="card load-more--button">
                                 <button onClick={onLoadMore} type="button" disabled={isLoading} >
                                     Load more...

@@ -1,10 +1,7 @@
 import moment from "moment";
 import React, { useState } from "react";
 import Datetime from "react-datetime";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
+import { useTransactionHistoryDownload } from "../../../helpers/hooks/useTransactionHistoryDownload";
 import Spinner from "../Spinner";
 import Tooltip from "../Tooltip";
 import "./DownloadModal.scss";
@@ -18,16 +15,22 @@ interface DownloadModalProps {
 const DOWNLOAD_INFO = "History will be downloaded from present date up to target date.";
 
 const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
-    const [apiClient] = useState(
-        ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
-    );
     const [showModal, setShowModal] = useState(false);
     const [targetDate, setTargetDate] = useState<string | null>(null);
-    const [jobStatus, setJobStatus] = useState(PromiseStatus.PENDING);
+    const [date, setDate] = useState<string | null>(null);
+    const [isDownloading] = useTransactionHistoryDownload(network, address, targetDate);
 
     const onDateSelect = (value: string) => {
         if (value) {
-            setTargetDate(value);
+            setDate(value);
+        } else {
+            setDate(null);
+        }
+    };
+
+    const onDownload = () => {
+        if (date) {
+            setTargetDate(date);
         } else {
             setTargetDate(null);
         }
@@ -37,42 +40,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
         setTargetDate(null);
         setShowModal(value);
     };
-
-    const triggerDownload = (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const filename = `txhistory-${address}.zip`;
-        const tempDlElement = document.createElement("a");
-
-        tempDlElement.href = url;
-        tempDlElement.download = filename;
-        document.body.append(tempDlElement);
-        tempDlElement.click();
-        tempDlElement.remove();
-    };
-
-    const onDownload = () => {
-        if (targetDate) {
-            const downloadMonitor = new PromiseMonitor(status => {
-                setJobStatus(status);
-            });
-
-            // eslint-disable-next-line no-void
-            void downloadMonitor.enqueue(
-                async () => apiClient.transactionHistoryDownload(network, address, targetDate).then(response => {
-                    if (response.raw) {
-                        // eslint-disable-next-line no-void
-                        void response.raw.blob().then(blob => {
-                            triggerDownload(blob);
-                        });
-                    } else if (response.error) {
-                        console.log("Problem fetching bytes for download", response.error);
-                    }
-                })
-            );
-        }
-    };
-
-    const isDownloading = jobStatus === PromiseStatus.WORKING;
 
     return (
         <div className="download-modal">
@@ -125,7 +92,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                 <button
                                     className="confirm-button"
                                     type="button"
-                                    disabled={targetDate === null}
+                                    disabled={date === null}
                                     onClick={onDownload}
                                 >
                                     Confirm
