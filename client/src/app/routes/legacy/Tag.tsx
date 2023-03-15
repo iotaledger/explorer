@@ -11,11 +11,10 @@ import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
-import SidePanel from "../../components/legacy/SidePanel";
 import Spinner from "../../components/Spinner";
-import "./Tag.scss";
 import { TagRouteProps } from "./TagRouteProps";
 import { TagState } from "./TagState";
+import "./Tag.scss";
 
 /**
  * Component which will show the tag page.
@@ -364,7 +363,6 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                     </div>
                                 )}
                             </div>
-                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

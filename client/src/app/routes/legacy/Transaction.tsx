@@ -18,12 +18,11 @@ import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
 import JsonViewer from "../../components/JsonViewer";
-import SidePanel from "../../components/legacy/SidePanel";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
-import "./Transaction.scss";
 import { TransactionRouteProps } from "./TransactionRouteProps";
 import { TransactionState } from "./TransactionState";
+import "./Transaction.scss";
 
 /**
  * Component which will show the transaction page.
@@ -626,7 +625,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
                                 )}
                             </div>
-                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

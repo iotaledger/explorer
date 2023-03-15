@@ -17,7 +17,6 @@ import { LegacyApiClient } from "./services/legacy/legacyApiClient";
 import { LegacyFeedClient } from "./services/legacy/legacyFeedClient";
 import { LegacyTangleCacheService } from "./services/legacy/legacyTangleCacheService";
 import { LocalStorageService } from "./services/localStorageService";
-import { MilestonesClient } from "./services/milestonesClient";
 import { NetworkService } from "./services/networkService";
 import { NodeInfoService } from "./services/nodeInfoService";
 import { SettingsService } from "./services/settingsService";
@@ -98,14 +97,7 @@ async function initialiseServices(): Promise<void> {
                     );
                     break;
                 default:
-                    // do not add the MilestonesClient for unknown protocol versions
-                    continue; // eslint-disable-line no-continue
             }
-
-            ServiceFactory.register(
-                `milestones-${netConfig.network}`,
-                serviceName => new MilestonesClient(serviceName.slice(11), netConfig.protocolVersion)
-            );
         }
     }
 }

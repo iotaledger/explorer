@@ -7,7 +7,6 @@ import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
 import { LegacyFeedClient } from "../../../services/legacy/legacyFeedClient";
-import { MilestonesClient } from "../../../services/milestonesClient";
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import Currency from "../Currency";
@@ -31,11 +30,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * Settings service.
      */
     protected _settingsService: SettingsService;
-
-    /**
-     * Milestones client.
-     */
-    protected _milestonesClient?: MilestonesClient;
 
     /**
      * The items feed subscription.
@@ -84,8 +78,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
 
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeItems();
-            this.closeMilestones();
-
             this.initNetworkServices();
         }
     }
@@ -97,7 +89,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         super.componentWillUnmount();
 
         this.closeItems();
-        this.closeMilestones();
     }
 
     /**
@@ -135,24 +126,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * The confirmed items have been updated.
      * @param metaData The updated confirmed items.
      */
-    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {
-    }
-
-    /**
-     * The milestones were updated.
-     * @param milestones The list of miletsones.
-     */
-    protected milestonesUpdated(milestones: {
-        /**
-         * The id.
-         */
-        id: string;
-        /**
-         * The milestone index.
-         */
-        milestoneIndex: number;
-    }[]): void {
-    }
+    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void { }
 
     /**
      * Build the feeds for transactions.
@@ -224,57 +198,12 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
                     itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
                 });
             })
-            .catch(err => {
-                console.error(err);
-            })
-            .finally(() => {
-                this._timerId = setTimeout(async () => this.updateTps(), 4000);
-            });
-        }
-    }
-
-    /**
-     * Build the milestones for the network.
-     */
-    private buildMilestones(): void {
-        if (this._milestonesClient) {
-            this._miSubscriptionId = this._milestonesClient.subscribe(
-                () => {
-                    if (this._isMounted) {
-                        this.updateMilestones();
-                    }
-                }
-            );
-
-            this.updateMilestones();
-        }
-    }
-
-    /**
-     * Close the feeds for milestones.
-     */
-    private closeMilestones(): void {
-        if (this._milestonesClient) {
-            if (this._miSubscriptionId) {
-                this._milestonesClient.unsubscribe(this._miSubscriptionId);
-                this._miSubscriptionId = undefined;
-            }
-            this._milestonesClient = undefined;
-        }
-    }
-
-    /**
-     * Update the milestone feeds.
-     */
-    private updateMilestones(): void {
-        if (this._milestonesClient) {
-            const milestones = this._milestonesClient.getMilestones();
-            if (this._isMounted) {
-                this.setState({
-                    milestones
+                .catch(err => {
+                    console.error(err);
+                })
+                .finally(() => {
+                    this._timerId = setTimeout(async () => this.updateTps(), 4000);
                 });
-            }
-            this.milestonesUpdated(milestones);
         }
     }
 
@@ -288,15 +217,11 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
             : undefined;
 
         this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
-        this._milestonesClient = ServiceFactory.get<MilestonesClient>(
-            `milestones-${this.props.match.params.network}`);
         this._feedClient = ServiceFactory.get<LegacyFeedClient>(
             `feed-${this.props.match.params.network}`);
 
-
         this.updateTps();
         this.buildItems();
-        this.buildMilestones();
 
         this._timerId = setTimeout(async () => this.updateTps(), 4000);
     }
