@@ -10,11 +10,9 @@ application-data
 /api/.env
 /client/build
 
-api.config.local.json
 config.dev.json
 config.local.json
 config.local.feed.json
 config.staging.json
 config.prod.json
 env.js
-local-storage/
