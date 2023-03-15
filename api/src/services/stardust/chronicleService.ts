@@ -1,15 +1,18 @@
 import moment from "moment";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
+import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
+import { IMilestoneBlockInfo } from "../../models/api/stardust/milestone/IMilestoneBlocksResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
     balance: "/api/explorer/v2/balance/",
-    milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"]
+    milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"],
+    blockChildren: ["/api/explorer/v2/blocks/", "/children"]
 };
 
 export class ChronicleService {
@@ -51,13 +54,13 @@ export class ChronicleService {
     ): Promise<{ milestoneId?: string; blocks?: string[]; error?: string } | undefined> {
         const path = `${CHRONICLE_ENDPOINTS.milestoneBlocks[0]}${milestoneId}${CHRONICLE_ENDPOINTS.milestoneBlocks[1]}`;
         let cursor: string | undefined;
-        const blocks: string[] = [];
+        const blocks: IMilestoneBlockInfo[] = [];
 
         do {
             const params = FetchHelper.urlParams({ pageSize: 10, sort: "newest", cursor });
 
             try {
-                const response = await FetchHelper.json<never, { blocks?: string[]; cursor?: string }>(
+                const response = await FetchHelper.json<never, { blocks?: IMilestoneBlockInfo[]; cursor?: string }>(
                     this._endpoint,
                     `${path}${params}`,
                     "get"
@@ -73,7 +76,34 @@ export class ChronicleService {
             }
         } while (cursor);
 
-        return { milestoneId, blocks };
+        const blockIds = blocks
+            .sort((a, b) => b.payloadType - a.payloadType)
+            .map(block => block.blockId);
+
+        return { milestoneId, blocks: blockIds };
+    }
+
+    /**
+     * Get the block children.
+     * @param blockId The block id.
+     * @returns The blocks children response.
+     */
+    public async blockChildren(
+        blockId: string
+    ): Promise<IBlockChildrenResponse| undefined> {
+        const path = `${CHRONICLE_ENDPOINTS.blockChildren[0]}${blockId}${CHRONICLE_ENDPOINTS.blockChildren[1]}`;
+
+        try {
+            const response = await FetchHelper.json<never, IBlockChildrenResponse>(
+                this._endpoint,
+                `${path}`,
+                "get"
+            );
+
+            return response;
+        } catch (error) {
+            return { error };
+        }
     }
 
     /**

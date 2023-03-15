@@ -189,6 +189,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             key={`nft-meta-${addressBech32}`}
             network={network}
             nft={nft}
+            isLoading={isNftDetailsLoading}
         />
     ];
 
