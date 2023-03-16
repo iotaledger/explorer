@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { IMilestoneAnalyticStats } from "../models/api/stats/IMilestoneAnalyticStats";
-import { STARDUST } from "../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../services/stardust/stardustTangleCacheService";
-import Spinner from "./components/Spinner";
+import { useMilestoneStats } from "../../../../helpers/hooks/useMilestoneStats";
+import Spinner from "../../../components/Spinner";
 
 interface MilestoneFeedAnalyicsProps {
     network: string;
@@ -13,38 +10,23 @@ interface MilestoneFeedAnalyicsProps {
 }
 
 const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, milestoneIndex, blockId }) => {
-    const [tangleCacheService] = useState(ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`));
-    const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | undefined>();
-    const [fetching, setFetching] = useState<boolean>(true);
+    const [milestoneStats, isLoading] = useMilestoneStats(network, milestoneIndex.toString());
+    const [includedBlocks, setIncludedBlocks] = useState<string | undefined>();
+    const [txs, setTxs] = useState<string | undefined>();
 
     useEffect(() => {
-        const refreshMilestoneStats = async () => {
-            const maybeMilestoneStats = await tangleCacheService.milestoneStats(
-                network, milestoneIndex.toString()
-            );
-            if (maybeMilestoneStats) {
-                setMilestoneStats(maybeMilestoneStats);
-            }
-            setFetching(false);
-        };
-        // eslint-disable-next-line no-void
-        void refreshMilestoneStats();
-    }, []);
-
-    let includedBlocks: string | undefined;
-    let txs: string | undefined;
-
-    if (milestoneStats) {
-        includedBlocks = milestoneStats.blockCount?.toString();
-        txs = milestoneStats.perPayloadType?.transaction?.toString();
-    }
+        if (milestoneStats) {
+            setIncludedBlocks(milestoneStats.blockCount?.toString());
+            setTxs(milestoneStats.perPayloadType?.transaction?.toString());
+        }
+    }, [milestoneStats]);
 
     return (
         <React.Fragment>
             <div className="feed-item__content">
                 <span className="feed-item--label">Blocks</span>
                 <span className="feed-item--value ms-blocks">
-                    {fetching ?
+                    {isLoading ?
                         <Spinner compact /> :
                         <div className="feed-item__ms-stat">
                             <Link
@@ -59,7 +41,7 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
             <div className="feed-item__content">
                 <span className="feed-item--label">Txs</span>
                 <span className="feed-item--value ms-txs">
-                    {fetching ?
+                    {isLoading ?
                         <Spinner compact /> :
                         <div className="feed-item__ms-stat">
                             <Link
