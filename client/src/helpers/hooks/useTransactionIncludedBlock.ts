@@ -9,7 +9,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * Fetch transaction included block details
  * @param network The Network in context
  * @param transactionId The transaction id
- * @returns The output response and loading bool.
+ * @returns The block, loading bool and an error string.
  */
 export function useTransactionIncludedBlock(network: string, transactionId: string | null):
     [
@@ -33,11 +33,8 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
                     network,
                     HexHelper.addPrefix(transactionId)
                 ).then(response => {
-                    if (!response?.error) {
-                        setBlock(response.block ?? null);
-                    } else {
-                        setError(response.error);
-                    }
+                    setBlock(response.block ?? null);
+                    setError(response.error);
                 }).finally(() => {
                     setIsLoading(false);
                 });

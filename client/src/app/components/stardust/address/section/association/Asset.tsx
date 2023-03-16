@@ -18,7 +18,7 @@ import { AssetProps } from "./AssetProps";
 const Asset: React.FC<AssetProps> = (
     { network, tableFormat, token }
 ) => {
-    const [foundryDetails, isFoundryDetailsLoading] = useFoundryDetails(network, token.id);
+    const [foundryDetails, isLoading] = useFoundryDetails(network, token.id);
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>(null);
     const [isWhitelisted] = useTokenRegistryNativeTokenCheck(network, token.id);
 
@@ -69,14 +69,14 @@ const Asset: React.FC<AssetProps> = (
         tableFormat ? (
             <tr>
                 <td className="truncate">
-                    {isFoundryDetailsLoading ? (
+                    {isLoading ? (
                         <Spinner compact />
                     ) : (
                         tokenMetadata?.name ? buildTokenName(tokenMetadata.name, tokenMetadata.logoUrl) : "-"
                     )}
                 </td>
                 <td>
-                    {isFoundryDetailsLoading ? (
+                    {isLoading ? (
                         <Spinner compact />
                     ) : (
                         tokenMetadata?.symbol ?? "-"
@@ -95,7 +95,7 @@ const Asset: React.FC<AssetProps> = (
                 <div className="field">
                     <div className="label">Name</div>
                     <div className="value truncate">
-                        {isFoundryDetailsLoading ? (
+                        {isLoading ? (
                             <Spinner compact />
                         ) : (
                             tokenMetadata?.name ? buildTokenName(tokenMetadata.name, tokenMetadata.logoUrl) : "-"
@@ -105,7 +105,7 @@ const Asset: React.FC<AssetProps> = (
                 <div className="field">
                     <div className="label">Symbol</div>
                     <div className="value">
-                        {isFoundryDetailsLoading ? (
+                        {isLoading ? (
                             <Spinner compact />
                         ) : (
                             tokenMetadata?.symbol ?? "-"

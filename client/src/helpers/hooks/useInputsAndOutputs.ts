@@ -12,7 +12,7 @@ import { TransactionsHelper } from "../stardust/transactionsHelper";
  * Fetch block inputs and outputs
  * @param network The Network in context
  * @param block The block
- * @returns The output response and loading bool.
+ * @returns The inputs, unlocks, outputs, transfer total an a loading bool.
  */
 export function useInputsAndOutputs(network: string, block: IBlock | null):
     [

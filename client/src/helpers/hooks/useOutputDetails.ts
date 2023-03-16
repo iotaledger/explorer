@@ -37,12 +37,9 @@ export function useOutputDetails(network: string, outputId: string | null):
                     network,
                     HexHelper.addPrefix(outputId)
                 ).then(response => {
-                    if (!response?.error) {
-                        setOutput(response.output ?? null);
-                        setMetadata(response.metadata ?? null);
-                    } else {
-                        setError(response.error);
-                    }
+                    setOutput(response.output ?? null);
+                    setMetadata(response.metadata ?? null);
+                    setError(response.error);
                 }).finally(() => {
                     setIsLoading(false);
                 });

@@ -15,13 +15,12 @@ export interface IMilestoneDetails {
  * Fetch the milestone details
  * @param network The Network in context
  * @param milestoneIndex The milestone index
- * @returns The blocks and loading bool.
+ * @returns The milestone details and loading bool.
  */
 export function useMilestoneDetails(network: string, milestoneIndex: number | null):
     [
         IMilestoneDetails | null,
-        boolean,
-        string?
+        boolean
     ] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)

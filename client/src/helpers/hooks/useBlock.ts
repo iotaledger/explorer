@@ -9,7 +9,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * Fetch the block
  * @param network The Network in context
  * @param blockId The block id
- * @returns The block and loading bool.
+ * @returns The block, loading bool and an error message.
  */
 export function useBlock(network: string, blockId: string | null):
     [
@@ -33,11 +33,8 @@ export function useBlock(network: string, blockId: string | null):
                     network,
                     HexHelper.addPrefix(blockId)
                 ).then(response => {
-                    if (!response?.error) {
-                        setBlock(response.block ?? null);
-                    } else {
-                        setError(response.error);
-                    }
+                    setBlock(response.block ?? null);
+                    setError(response.error);
                 }).finally(() => {
                     setIsLoading(false);
                 });

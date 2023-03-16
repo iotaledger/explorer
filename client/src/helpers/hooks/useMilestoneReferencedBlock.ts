@@ -8,7 +8,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * Fetch the milestone referenced blocks
  * @param network The Network in context
  * @param milestoneId The milestone id
- * @returns The blocks and loading bool.
+ * @returns The blocks, loading bool and an error message.
  */
 export function useMilestoneReferencedBlocks(network: string, milestoneId: string | null):
     [

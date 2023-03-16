@@ -9,7 +9,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * Fetch foundry output details
  * @param network The Network in context
  * @param foundryId The foundry id
- * @returns The output response and loading bool.
+ * @returns The output response, loading bool and an error message.
  */
 export function useFoundryDetails(network: string, foundryId: string | null):
     [
@@ -33,13 +33,8 @@ export function useFoundryDetails(network: string, foundryId: string | null):
                     network,
                     foundryId: HexHelper.addPrefix(foundryId)
                 }).then(response => {
-                    if (!response?.error) {
-                        const detials = response.foundryDetails;
-
-                        setFoundryDetails(detials ?? null);
-                    } else {
-                        setError(response.error);
-                    }
+                    setFoundryDetails(response.foundryDetails ?? null);
+                    setError(response.error);
                 }).finally(() => {
                     setIsLoading(false);
                 });

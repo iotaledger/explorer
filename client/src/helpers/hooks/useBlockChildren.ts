@@ -34,11 +34,8 @@ export function useBlockChildren(network: string, blockId: string | null):
                     network,
                     HexHelper.addPrefix(blockId)
                 ).then(response => {
-                    if (!response?.error) {
                         setBlockChildren(response.children ?? null);
-                    } else {
                         setError(response.error);
-                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });
