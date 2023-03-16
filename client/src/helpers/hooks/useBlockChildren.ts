@@ -9,17 +9,19 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
  * Fetch block children
  * @param network The Network in context
  * @param blockId The block id
- * @returns The output response and loading bool.
+ * @returns The children block ids, loading bool and an error string.
  */
 export function useBlockChildren(network: string, blockId: string | null):
     [
         HexEncodedString[] | null,
-        boolean
+        boolean,
+        string?
     ] {
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
     const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
+    const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -34,6 +36,8 @@ export function useBlockChildren(network: string, blockId: string | null):
                 ).then(response => {
                     if (!response?.error) {
                         setBlockChildren(response.children ?? null);
+                    } else {
+                        setError(response.error);
                     }
                 }).finally(() => {
                     setIsLoading(false);
@@ -44,5 +48,5 @@ export function useBlockChildren(network: string, blockId: string | null):
         }
     }, [network, blockId]);
 
-    return [blockChildren, isLoading];
+    return [blockChildren, isLoading, error];
 }
