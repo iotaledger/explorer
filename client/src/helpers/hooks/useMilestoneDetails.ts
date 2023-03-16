@@ -42,8 +42,8 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
 
                     if (!details.milestone) {
                         timerId = setTimeout(async () => {
-                        await fetchDetails();
-                        }, 10000);
+                            await fetchDetails();
+                        }, 5000);
                     }
                 } catch (error) {
                     if (error instanceof Error) {
@@ -62,7 +62,7 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
         }
         return () => {
             if (timerId) {
-              clearTimeout(timerId);
+                clearTimeout(timerId);
             }
         };
     }, [network, milestoneIndex]);
