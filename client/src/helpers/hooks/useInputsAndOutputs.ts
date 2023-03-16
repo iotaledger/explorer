@@ -1,4 +1,4 @@
-import { IBlock, IUTXOInput, UnlockTypes } from "@iota/iota.js-stardust";
+import { IBlock, IUTXOInput, TRANSACTION_PAYLOAD_TYPE, UnlockTypes } from "@iota/iota.js-stardust";
 import { useContext, useEffect, useState } from "react";
 import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -35,7 +35,7 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
 
     useEffect(() => {
         setIsLoading(true);
-        if (block) {
+        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
             // eslint-disable-next-line no-void
             void (async () => {
                 const { inputs, unlocks, outputs, transferTotal } =
