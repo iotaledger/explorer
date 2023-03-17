@@ -46,7 +46,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const [blockChildren] = useBlockChildren(network, blockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, blockId);
     const [inputs, unlocks, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
-    const [milestoneReferencedBlocks, isMilestoneReferencedBlockLoading] = useMilestoneReferencedBlocks(network, milestoneId);
+    const [milestoneReferencedBlocks, isMilestoneReferencedBlockLoading] = useMilestoneReferencedBlocks(
+        network, milestoneId
+    );
 
     useEffect(() => {
         if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
@@ -67,7 +69,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
     const isTransactionBlock = block?.payload?.type === TRANSACTION_PAYLOAD_TYPE;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
-    const isLoading = isBlockLoading || isInputsAndOutputsLoading || isBlockMetadataLoading || isMilestoneReferencedBlockLoading;
+    const isLoading = isBlockLoading ||
+        isInputsAndOutputsLoading ||
+        isBlockMetadataLoading ||
+        isMilestoneReferencedBlockLoading;
     const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {

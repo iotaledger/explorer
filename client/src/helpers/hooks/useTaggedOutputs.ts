@@ -85,7 +85,11 @@ export function useTaggedOutputs(
             promises.push(
                 tangleCacheService.outputDetails(network, outputId)
                     .then(outputDetailsResponse => {
-                        if (!outputDetailsResponse.error && outputDetailsResponse.output && outputDetailsResponse.metadata) {
+                        if (
+                            !outputDetailsResponse.error &&
+                            outputDetailsResponse.output &&
+                            outputDetailsResponse.metadata
+                        ) {
                             const item: OutputListItem = {
                                 outputDetails: {
                                     output: outputDetailsResponse.output,
