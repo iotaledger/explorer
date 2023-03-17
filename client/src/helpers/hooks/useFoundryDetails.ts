@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch foundry output details
@@ -17,6 +18,7 @@ export function useFoundryDetails(network: string, foundryId: string | null):
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -33,8 +35,10 @@ export function useFoundryDetails(network: string, foundryId: string | null):
                     network,
                     foundryId: HexHelper.addPrefix(foundryId)
                 }).then(response => {
-                    setFoundryDetails(response.foundryDetails ?? null);
-                    setError(response.error);
+                    if (isMounted) {
+                        setFoundryDetails(response.foundryDetails ?? null);
+                        setError(response.error);
+                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });

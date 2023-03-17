@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch the milestone referenced blocks
@@ -16,6 +17,7 @@ export function useMilestoneReferencedBlocks(network: string, milestoneId: strin
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -32,8 +34,10 @@ export function useMilestoneReferencedBlocks(network: string, milestoneId: strin
                     network,
                     HexHelper.addPrefix(milestoneId)
                 ).then(response => {
-                    setMilestoneReferencedBlocks(response.blocks ?? null);
-                    setError(response.error);
+                    if (isMounted) {
+                        setMilestoneReferencedBlocks(response.blocks ?? null);
+                        setError(response.error);
+                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });

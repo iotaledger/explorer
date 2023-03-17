@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 export interface IOutputDetails {
     outputDetails: IOutputResponse;
@@ -22,6 +23,7 @@ export function useOutputsDetails(network: string, outputIds: string[] | null):
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -37,31 +39,32 @@ export function useOutputsDetails(network: string, outputIds: string[] | null):
 
             for (const outputId of outputIds) {
                 const promise = tangleCacheService.outputDetails(
-                        network,
-                        HexHelper.addPrefix(outputId)
-                    ).then(response => {
-                        if (!response?.error && response.output && response.metadata) {
-                            const fetchedOutputDetails = {
-                                output: response.output,
-                                metadata: response.metadata
-                            };
-                            const item: IOutputDetails = {
-                                outputDetails: fetchedOutputDetails,
-                                outputId
-                            };
-                            items.push(item);
-                        } else {
-                            setError(response.error);
-                        }
-                    })
-                    .catch(e => console.log(e));
+                    network,
+                    HexHelper.addPrefix(outputId)
+                ).then(response => {
+                    if (!response?.error && response.output && response.metadata) {
+                        const fetchedOutputDetails = {
+                            output: response.output,
+                            metadata: response.metadata
+                        };
+                        const item: IOutputDetails = {
+                            outputDetails: fetchedOutputDetails,
+                            outputId
+                        };
+                        items.push(item);
+                    } else {
+                        setError(response.error);
+                    }
+                }).catch(e => console.log(e));
 
                 promises.push(promise);
             }
 
             Promise.allSettled(promises)
                 .then(_ => {
-                    setOutputs(items);
+                    if (isMounted) {
+                        setOutputs(items);
+                    }
                 }).catch(_ => {
                     setError("Failed loading output details!");
                 })

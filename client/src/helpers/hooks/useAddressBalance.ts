@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch the address balance
@@ -15,6 +16,7 @@ export function useAddressBalance(network: string, address: string | null):
         number | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -29,14 +31,14 @@ export function useAddressBalance(network: string, address: string | null):
             void (async () => {
                 const response = await tangleCacheService.addressBalanceFromChronicle({ network, address });
 
-                if (response?.totalBalance !== undefined) {
+                if (response?.totalBalance !== undefined && isMounted) {
                     setBalance(response.totalBalance);
                     setSigLockedBalance(response.sigLockedBalance ?? null);
-                } else {
+                } else if (isMounted) {
                     // Fallback balance from iotajs (node)
                     const addressDetailsWithBalance = await tangleCacheService.addressBalance({ network, address });
 
-                    if (addressDetailsWithBalance) {
+                    if (addressDetailsWithBalance && isMounted) {
                         setBalance(Number(addressDetailsWithBalance.balance));
                         setSigLockedBalance(null);
                     }

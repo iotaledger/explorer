@@ -7,6 +7,7 @@ import { IOutput } from "../../models/api/stardust/IOutput";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { TransactionsHelper } from "../stardust/transactionsHelper";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch block inputs and outputs
@@ -22,11 +23,12 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
         number | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
     const { bech32Hrp } = useContext(NetworkContext);
-    const [tsxInputs, setInputs] = useState<(IUTXOInput & IInput)[] | null >(null);
+    const [tsxInputs, setInputs] = useState<(IUTXOInput & IInput)[] | null>(null);
     const [tsxUnlocks, setUnlocks] = useState<UnlockTypes[] | null>(null);
     const [tsxOutputs, setOutputs] = useState<IOutput[] | null>(null);
     const [tsxTransferTotal, setTransferTotal] = useState<number | null>(null);
@@ -45,11 +47,13 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
                         bech32Hrp,
                         tangleCacheService
                     );
-                setInputs(inputs);
-                setUnlocks(unlocks);
-                setOutputs(outputs);
-                setTransferTotal(transferTotal);
-                setIsLoading(false);
+                if (isMounted) {
+                    setInputs(inputs);
+                    setUnlocks(unlocks);
+                    setOutputs(outputs);
+                    setTransferTotal(transferTotal);
+                    setIsLoading(false);
+                }
             })();
         } else {
             setIsLoading(false);

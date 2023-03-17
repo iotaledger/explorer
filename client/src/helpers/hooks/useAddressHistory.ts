@@ -58,7 +58,7 @@ export function useAddressHistory(
                     if (items.length > 0 && isMounted) {
                         setHistory([...history, ...items]);
                         setCursor(response?.cursor);
-                    } else if (setDisabled) {
+                    } else if (setDisabled && isMounted) {
                         setDisabled(true);
                     }
                 })
@@ -93,18 +93,20 @@ export function useAddressHistory(
 
             Promise.allSettled(promises)
                 .then(_ => {
-                    setOutputDetailsMap(detailsPage);
-                    setIsAddressHistoryLoading(false);
-                    const updatedHistoryView = [...history].sort((a, b) => {
-                        // Ensure that entries with equal timestamp, but different isSpent,
-                        // have the spending before the depositing
-                        if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                            return !a.isSpent ? -1 : 1;
-                        }
-                        return 1;
-                    });
+                    if (isMounted) {
+                        setOutputDetailsMap(detailsPage);
+                        setIsAddressHistoryLoading(false);
+                        const updatedHistoryView = [...history].sort((a, b) => {
+                            // Ensure that entries with equal timestamp, but different isSpent,
+                            // have the spending before the depositing
+                            if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                                return !a.isSpent ? -1 : 1;
+                            }
+                            return 1;
+                        });
 
-                    setHistoryView(updatedHistoryView);
+                        setHistoryView(updatedHistoryView);
+                    }
                 }).catch(_ => {
                     console.log("Failed loading transaction history details!");
                 })

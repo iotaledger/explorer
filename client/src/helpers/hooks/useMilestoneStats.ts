@@ -3,6 +3,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch the milestone stats
@@ -15,6 +16,7 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
         IMilestoneAnalyticStats | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -30,7 +32,9 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
                     network,
                     milestoneIndex
                 ).then(response => {
-                    setMilestoneStats(response ?? null);
+                    if (isMounted) {
+                        setMilestoneStats(response ?? null);
+                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });

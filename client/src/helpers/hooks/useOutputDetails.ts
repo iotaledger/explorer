@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch output details
@@ -18,6 +19,7 @@ export function useOutputDetails(network: string, outputId: string | null):
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -37,9 +39,11 @@ export function useOutputDetails(network: string, outputId: string | null):
                     network,
                     HexHelper.addPrefix(outputId)
                 ).then(response => {
-                    setOutput(response.output ?? null);
-                    setMetadata(response.metadata ?? null);
-                    setError(response.error);
+                    if (isMounted) {
+                        setOutput(response.output ?? null);
+                        setMetadata(response.metadata ?? null);
+                        setError(response.error);
+                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });

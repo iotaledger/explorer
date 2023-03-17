@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getIPFSHash, getIpfsUri } from "../stardust/ipfsHelper";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Get the correct nft metadata image uri
@@ -11,6 +12,7 @@ export function useNftMetadataUri(link?: string):
         string | undefined,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [uri, setUri] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -21,8 +23,10 @@ export function useNftMetadataUri(link?: string):
             // eslint-disable-next-line no-void
             void (async () => {
                 const ipfsUri = await getIpfsUri({ hash: ipfsHash });
-                setUri(ipfsUri);
-                setIsLoading(false);
+                if (isMounted) {
+                    setUri(ipfsUri);
+                    setIsLoading(false);
+                }
             })();
         } else {
             setUri(link);

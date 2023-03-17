@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Use Token Registry Native Tokens check hook
@@ -11,6 +12,7 @@ import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient
 export function useTokenRegistryNativeTokenCheck(network: string, tokenId: string | null): [
     boolean
 ] {
+    const isMounted = useIsMounted();
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
     const [client] = useState(
         ServiceFactory.get<TokenRegistryClient | undefined>("token-registry")
@@ -23,7 +25,9 @@ export function useTokenRegistryNativeTokenCheck(network: string, tokenId: strin
             if (client) {
                 const isTokenWhitelisted = tokenId ? await client.checkNativeToken(network, tokenId) : false;
 
-                setIsWhitelisted(isTokenWhitelisted);
+                if (isMounted) {
+                    setIsWhitelisted(isTokenWhitelisted);
+                }
             }
         })();
     }, [network, tokenId]);

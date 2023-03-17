@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 export interface IMilestoneDetails {
     blockId?: string;
@@ -22,6 +23,7 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
         IMilestoneDetails | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -38,15 +40,17 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
                         network,
                         milestoneIndex
                     );
-                    setMilestoneDetails(details);
+                    if (isMounted) {
+                        setMilestoneDetails(details);
 
-                    if (!details.milestone) {
-                        timerId = setTimeout(async () => {
-                            await fetchDetails();
-                        }, 5000);
+                        if (!details.milestone) {
+                            timerId = setTimeout(async () => {
+                                await fetchDetails();
+                            }, 5000);
+                        }
                     }
                 } catch (error) {
-                    if (error instanceof Error) {
+                    if (error instanceof Error && isMounted) {
                         setMilestoneDetails({
                             error: error.message
                         });

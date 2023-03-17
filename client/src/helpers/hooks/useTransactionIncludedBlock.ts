@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch transaction included block details
@@ -17,6 +18,7 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -33,8 +35,10 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
                     network,
                     HexHelper.addPrefix(transactionId)
                 ).then(response => {
-                    setBlock(response.block ?? null);
-                    setError(response.error);
+                    if (isMounted) {
+                        setBlock(response.block ?? null);
+                        setError(response.error);
+                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });

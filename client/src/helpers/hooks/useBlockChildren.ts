@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch block children
@@ -17,6 +18,7 @@ export function useBlockChildren(network: string, blockId: string | null):
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -34,8 +36,10 @@ export function useBlockChildren(network: string, blockId: string | null):
                     network,
                     HexHelper.addPrefix(blockId)
                 ).then(response => {
+                    if (isMounted) {
                         setBlockChildren(response.children ?? null);
                         setError(response.error);
+                    }
                 }).finally(() => {
                     setIsLoading(false);
                 });

@@ -5,6 +5,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../models/tangleStatus";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch the block metadata
@@ -17,6 +18,7 @@ export function useBlockMetadata(network: string, blockId: string | null):
         BlockMetadata,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -34,21 +36,23 @@ export function useBlockMetadata(network: string, blockId: string | null):
                         network,
                         HexHelper.addPrefix(blockId)
                     );
-                    setBlockMetadata({
-                        metadata: details?.metadata,
-                        metadataError: details?.error,
-                        conflictReason: calculateConflictReason(details?.metadata),
-                        blockTangleStatus: calculateStatus(details?.metadata)
-                    });
 
+                    if (isMounted) {
+                        setBlockMetadata({
+                            metadata: details?.metadata,
+                            metadataError: details?.error,
+                            conflictReason: calculateConflictReason(details?.metadata),
+                            blockTangleStatus: calculateStatus(details?.metadata)
+                        });
 
-                    if (!details?.metadata?.referencedByMilestoneIndex) {
-                        timerId = setTimeout(async () => {
-                        await fetchMetadata();
-                        }, 10000);
+                        if (!details?.metadata?.referencedByMilestoneIndex) {
+                            timerId = setTimeout(async () => {
+                                await fetchMetadata();
+                            }, 10000);
+                        }
                     }
                 } catch (error) {
-                    if (error instanceof Error) {
+                    if (error instanceof Error && isMounted) {
                         setBlockMetadata({
                             metadataError: error.message,
                             blockTangleStatus: "pending"
@@ -66,7 +70,7 @@ export function useBlockMetadata(network: string, blockId: string | null):
 
         return () => {
             if (timerId) {
-              clearTimeout(timerId);
+                clearTimeout(timerId);
             }
         };
     }, [network, blockId]);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Download transaction history for an address up to target date
@@ -15,6 +16,7 @@ export function useTransactionHistoryDownload(network: string, address: string, 
         boolean,
         string?
     ] {
+    const isMounted = useIsMounted();
     const [apiClient] = useState(
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
@@ -34,9 +36,11 @@ export function useTransactionHistoryDownload(network: string, address: string, 
                     if (response.raw) {
                         // eslint-disable-next-line no-void
                         void response.raw.blob().then(blob => {
-                            triggerDownload(blob, address);
+                            if (isMounted) {
+                                triggerDownload(blob, address);
+                            }
                         });
-                    } else if (response.error) {
+                    } else if (response.error && isMounted) {
                         setError(response.error);
                     }
                 }).finally(() => {
