@@ -1,10 +1,7 @@
 /* eslint-disable react/jsx-first-prop-new-line */
-import { NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
-import React, { useContext } from "react";
-import { Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
-import { Bech32AddressHelper } from "../helpers/stardust/bech32AddressHelper";
+import React from "react";
+import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { CHRYSALIS, LEGACY, STARDUST } from "../models/config/protocolVersion";
-import NetworkContext from "./context/NetworkContext";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import ChrysalisIndexed from "./routes/chrysalis/Indexed";
@@ -33,6 +30,7 @@ import StardustAddressPage from "./routes/stardust/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
 import StardustFoundry from "./routes/stardust/Foundry";
 import StardustLanding from "./routes/stardust/landing/Landing";
+import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
@@ -54,26 +52,6 @@ function *keyGenerator(count: number): IterableIterator<number> {
         yield count++;
     }
 }
-
-const NftRoute: React.FC<RouteComponentProps<AddressRouteProps>> = (
-    { match: { params: { network, address } } }
-) => {
-    const { bech32Hrp } = useContext(NetworkContext);
-    const route = "addr";
-    const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address, NFT_ADDRESS_TYPE);
-    const redirectState = {
-        addressDetails: nftAddress
-    };
-    const routeParam = nftAddress.bech32;
-    const redirect = `/${network}/${route}/${routeParam}`;
-    return (
-        <Redirect to={{
-            pathname: redirect,
-            state: redirectState
-        }}
-        />
-    );
-};
 
 const buildAppRoutes = (
     protocolVersion: string,
@@ -201,7 +179,7 @@ const buildAppRoutes = (
         />,
         <Route path="/:network/nft/:address"
             key={keys.next().value}
-            component={NftRoute}
+            component={NftRedirectRoute}
         />,
         <Route path="/:network/block/:blockId"
             key={keys.next().value}
