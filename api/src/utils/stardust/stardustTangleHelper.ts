@@ -4,7 +4,7 @@ import {
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
     IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, ReadStream } from "@iota/util.js-stardust";
+import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
@@ -468,43 +468,42 @@ export class StardustTangleHelper {
     /**
      * Get the basic output Ids with specific tag feature.
      * @param network The network to find the items on.
-     * @param tag The tag hex.
+     * @param encodedTag The tag hex.
      * @param pageSize The page size.
      * @param cursor The cursor for pagination.
      * @returns The basic outputs response.
      */
     public static async taggedBasicOutputs(
         network: INetwork,
-        tag: string,
+        encodedTag: HexEncodedString,
         pageSize: number,
         cursor?: string
     ): Promise<IBasicOutputsResponse | undefined> {
         try {
-            const tagHex: HexEncodedString = Converter.utf8ToHex(tag, true);
             const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchPermanodeThenNode<
                 Record<string, unknown>,
                 IOutputsResponse
-            >({ tagHex, pageSize, cursor }, "basicOutputs", network, true);
+            >({ tagHex: encodedTag, pageSize, cursor }, "basicOutputs", network, true);
 
             if (basicOutputIdsResponse?.items.length > 0) {
                 return { outputs: basicOutputIdsResponse };
             }
         } catch { }
 
-        return { error: `Basic outputs not found with given tag ${tag}` };
+        return { error: `Basic outputs not found with given tag ${encodedTag}` };
     }
 
     /**
      * Get the nft output Ids with specific tag feature.
      * @param network The network to find the items on.
-     * @param tag The tag hex.
+     * @param encodedTag The tag hex.
      * @param pageSize The page size.
      * @param cursor The cursor for pagination.
      * @returns The nft outputs response.
      */
     public static async taggedNftOutputs(
         network: INetwork,
-        tag: HexEncodedString,
+        encodedTag: HexEncodedString,
         pageSize: number,
         cursor?: string
     ): Promise<INftOutputsResponse | undefined> {
@@ -512,14 +511,14 @@ export class StardustTangleHelper {
             const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchPermanodeThenNode<
                 Record<string, unknown>,
                 IOutputsResponse
-            >({ tagHex: tag, pageSize, cursor }, "nfts", network, true);
+            >({ tagHex: encodedTag, pageSize, cursor }, "nfts", network, true);
 
             if (nftOutputIdsResponse?.items.length > 0) {
                 return { outputs: nftOutputIdsResponse };
             }
         } catch { }
 
-        return { error: `Nft outputs not found with given tag ${tag}` };
+        return { error: `Nft outputs not found with given tag ${encodedTag}` };
     }
 
     /**
