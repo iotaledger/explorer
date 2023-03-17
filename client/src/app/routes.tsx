@@ -177,7 +177,7 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={StardustAddressPage}
         />,
-        <Route path="/:network/nft/:address"
+        <Route path="/:network/nft/:nftId"
             key={keys.next().value}
             component={NftRedirectRoute}
         />,
