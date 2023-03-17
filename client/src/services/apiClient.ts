@@ -1,6 +1,4 @@
 import { FetchHelper } from "../helpers/fetchHelper";
-import { IMilestonesGetResponse } from "../models/api/IMilestonesGetResponse";
-import { INetworkBoundGetRequest } from "../models/api/INetworkBoundGetRequest";
 import { IRawResponse } from "../models/api/IRawResponse";
 import { IResponse } from "../models/api/IResponse";
 
@@ -19,15 +17,6 @@ export class ApiClient {
      */
     constructor(endpoint: string) {
         this._endpoint = endpoint;
-    }
-
-    /**
-     * Get milestones from the tangle.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async milestonesGet(request: INetworkBoundGetRequest): Promise<IMilestonesGetResponse> {
-        return this.callApi<unknown, IMilestonesGetResponse>(`milestones/${request.network}`, "get");
     }
 
     /**

@@ -14,12 +14,11 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
-import SidePanel from "../../components/legacy/SidePanel";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
-import "./Address.scss";
 import { AddressRouteProps } from "./AddressRouteProps";
 import { AddressState } from "./AddressState";
+import "./Address.scss";
 
 /**
  * Component which will show the address page.
@@ -394,7 +393,6 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                     </div>
                                 )}
                             </div>
-                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>
