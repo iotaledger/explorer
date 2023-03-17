@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, HexEncodedString, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 
 interface MaybeAddress {
@@ -73,7 +73,7 @@ export interface SearchQuery {
     /**
      * The tag of an output.
      */
-    tag?: string;
+    tag?: HexEncodedString;
 }
 
 /**
@@ -169,7 +169,7 @@ export class SearchQueryBuilder {
             address = undefined;
         }
 
-        const tag = Converter.utf8ToHex(this.query, true);
+        const tag: HexEncodedString = Converter.utf8ToHex(this.query, true);
 
         return {
             queryLower: this.queryLower,

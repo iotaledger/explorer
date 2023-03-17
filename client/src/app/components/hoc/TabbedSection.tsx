@@ -75,7 +75,7 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
     const onTabSelected = (id: number) => {
         const tabParam = new URLSearchParams();
         tabParam.append("tab", Object.keys(tabsEnum)[id]);
-        history.push({ search: tabParam.toString() });
+        history.push({ ...location, search: tabParam.toString() });
     };
 
     const tabsView = (

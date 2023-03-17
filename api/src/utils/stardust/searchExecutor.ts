@@ -226,30 +226,26 @@ export class SearchExecutor {
         if (searchQuery.tag) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                        { tagHex: searchQuery.tag },
-                        "basicOutputs",
-                        network,
-                        true
-                    ).then(
-                        taggedOutputs => {
-                            if (taggedOutputs.items.length > 0) {
-                                promisesResult = {
-                                    taggedOutputs
-                                };
-                                resolve();
-                            } else {
-                                reject(new Error("Output (tagHex) not present"));
+                    StardustTangleHelper.taggedOutputs(network, searchQuery.tag)
+                        .then(
+                            response => {
+                                if (!response.basicOutputs.error || !response.nftOutputs.error) {
+                                    promisesResult = {
+                                        taggedOutputs: response
+                                    };
+                                    resolve();
+                                } else {
+                                    reject(new Error("Tagged outputs not present"));
+                                }
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Output (tagHex) fetch failed"));
-                    });
+                        ).catch(_ => {
+                            reject(new Error("Tagged outputs not present"));
+                        });
                 })
             );
         }
 
-        await Promise.any(promises).catch(_ => {});
+        await Promise.any(promises).catch(_ => { });
 
         if (promisesResult !== null) {
             return promisesResult;

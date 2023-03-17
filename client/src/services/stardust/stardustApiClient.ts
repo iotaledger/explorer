@@ -1,3 +1,4 @@
+import { IOutputsResponse } from "@iota/iota.js-stardust";
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
@@ -33,6 +34,7 @@ import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITaggedOutputsRequest } from "../../models/api/stardust/ITaggedOutputsRequest";
 import { ITransactionDetailsRequest } from "../../models/api/stardust/ITransactionDetailsRequest";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
@@ -189,6 +191,20 @@ export class StardustApiClient extends ApiClient {
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(
             `stardust/output/${request.network}/${request.outputId}`, "get"
+        );
+    }
+
+    /**
+     * Get the output ids by tag feature (basic or nft).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async outputsByTag(request: ITaggedOutputsRequest): Promise<{ error?: string; outputs?: IOutputsResponse }> {
+        const params = FetchHelper.urlParams({ cursor: request.cursor });
+
+        return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
+            `stardust/output/tagged/${request.network}/${request.tag}/${request.outputType}${params}`,
+            "get"
         );
     }
 

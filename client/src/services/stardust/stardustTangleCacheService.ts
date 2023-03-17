@@ -17,6 +17,7 @@ import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsRe
 import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITaggedOutputsRequest } from "../../models/api/stardust/ITaggedOutputsRequest";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
@@ -656,6 +657,19 @@ export class StardustTangleCacheService extends TangleCacheService {
             nftDetails: this._stardustSearchCache[request.network][cacheKey]
                 ?.data?.nftDetails
         };
+    }
+
+    /**
+     * Get the output ids by tag feature (basic or nft).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async outputsByTag(request: ITaggedOutputsRequest): Promise<{ error?: string; outputs?: IOutputsResponse }> {
+        const response = await this._api.outputsByTag(request);
+
+        return !response.error ?
+            { outputs: response.outputs } :
+            { error: response.error };
     }
 
     /**

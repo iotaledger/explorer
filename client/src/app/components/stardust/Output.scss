@@ -5,11 +5,16 @@
     padding: 0 30px;
     margin-bottom: 20px;
 
+    @include phone-down {
+        padding: 0 4px;
+    }
+
     .card--value.card-header--wrapper {
         width: 100%;
         display: flex;
         margin-bottom: 0px;
         height: 32px;
+        align-items: center;
 
         .output-header {
             display: flex;
@@ -43,8 +48,11 @@
         .amount-size {
             width: min-content;
             text-align: end;
+            word-break: normal;
+            white-space: nowrap;
             cursor: pointer;
-            margin-right: 2px;
+            margin-bottom: 0;
+            margin-right: 4px;
 
             span {
                 word-break: keep-all;
@@ -71,7 +79,7 @@
 }
 
 .card--content--dropdown {
-    margin-right: 4px;
+    margin-right: 8px;
     cursor: pointer;
 
     svg {
