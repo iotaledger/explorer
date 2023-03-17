@@ -146,7 +146,7 @@ export function useTaggedOutputs(
     }, [network]);
 
     useEffect(() => {
-        if (!isNftLoading && !isNftLoading && !searchParams.get("tab")) {
+        if (!isBasicLoading && !isNftLoading && !searchParams.get("tab")) {
             const hasBasicOutputs = (basicOutputItems ?? []).length > 0;
             const hasNftOutputs = (nftOutputItems ?? []).length > 0;
             if (!hasBasicOutputs && hasNftOutputs) {
