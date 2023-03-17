@@ -30,6 +30,7 @@ import StardustAddressPage from "./routes/stardust/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
 import StardustFoundry from "./routes/stardust/Foundry";
 import StardustLanding from "./routes/stardust/landing/Landing";
+import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
@@ -175,6 +176,10 @@ const buildAppRoutes = (
         <Route path="/:network/addr/:address"
             key={keys.next().value}
             component={StardustAddressPage}
+        />,
+        <Route path="/:network/nft/:nftId"
+            key={keys.next().value}
+            component={NftRedirectRoute}
         />,
         <Route path="/:network/block/:blockId"
             key={keys.next().value}
