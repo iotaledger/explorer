@@ -4,7 +4,7 @@ import { ITransactionActionResponse } from "../../../models/api/legacy/ITransact
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { ChrysalisTangleHelper } from "../../../utils/chrysalis/chrysalisTangleHelper";
+import { LegacyTangleHelper } from "../../../utils/legacy/legacyTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -31,12 +31,12 @@ export async function action(
     let result;
 
     if (request.action === "isPromotable") {
-        const canPromote = await ChrysalisTangleHelper.canPromoteTransaction(networkConfig, request.hash);
+        const canPromote = await LegacyTangleHelper.canPromoteTransaction(networkConfig, request.hash);
         result = canPromote ? "yes" : "no";
     } else if (request.action === "promote") {
-        result = await ChrysalisTangleHelper.promoteTransaction(networkConfig, request.hash);
+        result = await LegacyTangleHelper.promoteTransaction(networkConfig, request.hash);
     } else if (request.action === "replay") {
-        result = await ChrysalisTangleHelper.replayBundle(networkConfig, request.hash);
+        result = await LegacyTangleHelper.replayBundle(networkConfig, request.hash);
     }
 
     return {

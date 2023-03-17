@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetwork } from "../../models/db/INetwork";
-import { BaseStatsService } from "../chrysalis/baseStatsService";
+import { BaseStatsService } from "../legacy/baseStatsService";
 import { LegacyItemsService } from "./legacyItemsService";
 
 /**

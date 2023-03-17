@@ -1,9 +1,9 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedItemMetadata } from "../../models/api/chrysalis/IFeedItemMetadata";
-import { IFeedSubscriptionItem } from "../../models/api/chrysalis/IFeedSubscriptionItem";
-import { IItemsService } from "../../models/services/chrysalis/IItemsService";
+import { IFeedItemMetadata } from "../../models/api/legacy/IFeedItemMetadata";
+import { IFeedSubscriptionItem } from "../../models/api/legacy/IFeedSubscriptionItem";
 import { IFeedService } from "../../models/services/IFeedService";
 import { IStatistics } from "../../models/services/IStatistics";
+import { IItemsService } from "../../models/services/legacy/IItemsService";
 import { ISn } from "../../models/zmq/ISn";
 import { ITxTrytes } from "../../models/zmq/ITxTrytes";
 import { ZmqService } from "./zmqService";

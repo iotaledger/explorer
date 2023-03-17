@@ -1,0 +1,4 @@
+{
+    "title": "Search Criteria",
+    "description": "<p>All searches must be either valid Trytes (letters A-Z + the number 9) or numeric.<br>The following formats are supported:</p> <ol><li><b>Tags</b> &lt;= 27 Trytes</li><li><b>Transactions</b> 81 Trytes</li><li><b>Bundles</b> 81 or 90 Trytes (Checksum)</li><li><b>Milestone Index</b> Numeric</li></ol>"
+}

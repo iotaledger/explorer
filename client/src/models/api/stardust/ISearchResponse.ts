@@ -7,6 +7,7 @@ import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
+import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
 
 export interface ISearchResponse extends IResponse {
@@ -36,9 +37,9 @@ export interface ISearchResponse extends IResponse {
     addressOutputs?: IOutputResponse[];
 
     /**
-     * Outputs response.
+     * Basic and/or Nft tagged output ids.
      */
-    taggedOutputs?: IOutputsResponse;
+    taggedOutputs?: ITaggedOutputsResponse;
 
     /**
      * The outputIds of transaction history request.

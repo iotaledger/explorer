@@ -6,7 +6,6 @@ import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
 import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
-import { CHRYSALIS, LEGACY } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
 import { INodeData } from "../../../models/graph/INodeData";
@@ -157,7 +156,6 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             confirmedItemsPerSecond: "--",
             confirmedItemsPerSecondPercent: "--",
             itemsPerSecondHistory: [],
-            milestones: [],
             currency: "USD",
             itemCount: 0,
             selectedFeedItem: undefined,
@@ -221,12 +219,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 value={filter}
                                 onChange={e => this.setState(
                                     {
-                                        filter: this._networkConfig?.protocolVersion === LEGACY
-                                            ? e.target.value.toUpperCase()
-                                            : e.target.value
+                                        filter: e.target.value
                                     },
                                     () => this.restyleNodes())}
-                                maxLength={this._networkConfig?.protocolVersion === LEGACY ? 90 : 2000}
+                                maxLength={2000}
                             />
                         </div>
                     </div>
@@ -238,20 +234,19 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                         </div>
                         <div className="card--content">
                             <div className="card--label">
-                                {this._networkConfig?.protocolVersion === LEGACY ? "Transactions" : "Messages"}
+                                Messages
                             </div>
                             <div className="card--value">
                                 {itemCount}
                             </div>
                             <div className="card--label">
-                                {this._networkConfig?.protocolVersion === CHRYSALIS ? "MPS / CMPS" : "TPS / CTPS"}
+                                MPS / CMPS
                             </div>
                             <div className="card--value">
                                 {itemsPerSecond} / {confirmedItemsPerSecond}
                             </div>
                             <div className="card--label">
-                                {this._networkConfig?.protocolVersion === CHRYSALIS
-                                    ? "Referenced Rate" : "Confirmation Rate"}
+                                Referenced Rate
                             </div>
                             <div className="card--value">
                                 {confirmedItemsPerSecondPercent}
@@ -265,7 +260,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 <div className="card--content">
                                     <>
                                         <div className="card--label">
-                                            {this._networkConfig?.protocolVersion === LEGACY ? "Transaction" : "Message"}
+                                            Message
                                         </div>
                                         <div className="card--value overflow-ellipsis">
                                             <a
@@ -280,72 +275,26 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                 {selectedFeedItem.id}
                                             </a>
                                         </div>
-                                        {this._networkConfig?.protocolVersion === LEGACY &&
-                                                selectedFeedItem?.properties?.Address && (
-                                                    <>
-                                                        <div className="card--label">
-                                                            Address
-                                                        </div>
-                                                        <div className="card--value overflow-ellipsis">
-                                                            <a
-                                                                className="button"
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                href={
-                                                                    `${window.location.origin
-                                                        }/${this.props.match.params.network
-                                                        }/address/${selectedFeedItem?.properties
-                                                        .Address as string}`
-                                                                }
-                                                            >
-                                                                {selectedFeedItem?.properties.Address as string}
-                                                            </a>
-                                                        </div>
-                                                    </>
-                                                )}
-                                        {this._networkConfig?.protocolVersion === LEGACY &&
-                                                selectedFeedItem?.properties?.Bundle && (
-                                                    <>
-                                                        <div className="card--label">
-                                                            Bundle
-                                                        </div>
-                                                        <div className="card--value overflow-ellipsis">
-                                                            <a
-                                                                className="button"
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                href={
-                                                                    `${window.location.origin
-                                                        }/${this.props.match.params.network
-                                                        }/bundle/${selectedFeedItem?.properties
-                                                        .Bundle as string}`
-                                                                }
-                                                            >
-                                                                {selectedFeedItem?.properties.Bundle as string}
-                                                            </a>
-                                                        </div>
-                                                    </>
-                                                )}
                                         {selectedFeedItem?.properties?.Tag &&
-                                                selectedFeedItem.metaData?.milestone === undefined && (
-                                                    <>
-                                                        <div className="card--label">
-                                                            Tag
-                                                        </div>
-                                                        <div className="card--value overflow-ellipsis">
-                                                            <a
-                                                                className="button"
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                href={`${window.location.origin}/
+                                            selectedFeedItem.metaData?.milestone === undefined && (
+                                                <>
+                                                    <div className="card--label">
+                                                        Tag
+                                                    </div>
+                                                    <div className="card--value overflow-ellipsis">
+                                                        <a
+                                                            className="button"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={`${window.location.origin}/
                                                                 ${this.props.match.params.network
                                                                 }/tag/${selectedFeedItem?.properties.Tag as string}`}
-                                                            >
-                                                                {selectedFeedItem?.properties.Tag as string}
-                                                            </a>
-                                                        </div>
-                                                    </>
-                                                )}
+                                                        >
+                                                            {selectedFeedItem?.properties.Tag as string}
+                                                        </a>
+                                                    </div>
+                                                </>
+                                            )}
                                         {selectedFeedItem?.properties?.Index && (
                                             <>
                                                 <div className="card--label">
@@ -358,7 +307,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         rel="noopener noreferrer"
                                                         href={
                                                             `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${selectedFeedItem?.properties.Index as string}`
+                                                            }/indexed/${selectedFeedItem?.properties.Index as string}`
                                                         }
                                                     >
                                                         {Converter.hexToUtf8(
@@ -376,7 +325,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                                         rel="noopener noreferrer"
                                                         href={
                                                             `${window.location.origin}/${this.props.match.params.network
-                                                        }/indexed/${selectedFeedItem?.properties.Index as string}`
+                                                            }/indexed/${selectedFeedItem?.properties.Index as string}`
                                                         }
                                                     >
                                                         {selectedFeedItem?.properties.Index as string}
@@ -395,16 +344,16 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                             </>
                                         )}
                                         {selectedFeedItem?.value !== undefined &&
-                                                selectedFeedItem.metaData?.milestone === undefined && (
-                                                    <>
-                                                        <div className="card--label">
-                                                            Value
-                                                        </div>
-                                                        <div className="card--value">
-                                                            {UnitsHelper.formatBest(selectedFeedItem?.value)}
-                                                        </div>
-                                                    </>
-                                                )}
+                                            selectedFeedItem.metaData?.milestone === undefined && (
+                                                <>
+                                                    <div className="card--label">
+                                                        Value
+                                                    </div>
+                                                    <div className="card--value">
+                                                        {UnitsHelper.formatBest(selectedFeedItem?.value)}
+                                                    </div>
+                                                </>
+                                            )}
                                     </>
                                 </div>
                             </>
@@ -444,39 +393,23 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <div className="visualizer--key visualizer--key__value pending">
                                 Pending
                             </div>
-                            {this._networkConfig?.protocolVersion === CHRYSALIS && (
-                                <>
-                                    <div
-                                        className="visualizer--key visualizer--key__value referenced"
-                                    >
-                                        Referenced
-                                    </div>
-                                    <div
-                                        className="visualizer--key visualizer--key__value included"
-                                    >
-                                        Included
-                                    </div>
-                                    <div
-                                        className="visualizer--key visualizer--key__value conflicting"
-                                    >
-                                        Conflicting
-                                    </div>
-                                </>
-                            )}
-                            {this._networkConfig?.protocolVersion === LEGACY && (
-                                <>
-                                    <div
-                                        className="visualizer--key visualizer--key__value confirmed-value"
-                                    >
-                                        Value Confirmed
-                                    </div>
-                                    <div
-                                        className="visualizer--key visualizer--key__value confirmed-zero"
-                                    >
-                                        Zero Confirmed
-                                    </div>
-                                </>
-                            )}
+                            <>
+                                <div
+                                    className="visualizer--key visualizer--key__value referenced"
+                                >
+                                    Referenced
+                                </div>
+                                <div
+                                    className="visualizer--key visualizer--key__value included"
+                                >
+                                    Included
+                                </div>
+                                <div
+                                    className="visualizer--key visualizer--key__value conflicting"
+                                >
+                                    Conflicting
+                                </div>
+                            </>
                             <div className="visualizer--key visualizer--key__value milestone">
                                 Milestone
                             </div>

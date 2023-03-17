@@ -10,20 +10,19 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
-import { CHRYSALIS } from "../../../models/config/protocolVersion";
-import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
+import { LEGACY } from "../../../models/config/protocolVersion";
+import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
-import SidePanel from "../../components/chrysalis/SidePanel";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
 import JsonViewer from "../../components/JsonViewer";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
-import "./Transaction.scss";
 import { TransactionRouteProps } from "./TransactionRouteProps";
 import { TransactionState } from "./TransactionState";
+import "./Transaction.scss";
 
 /**
  * Component which will show the transaction page.
@@ -32,7 +31,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: ChrysalisTangleCacheService;
+    private readonly _tangleCacheService: LegacyTangleCacheService;
 
     /**
      * Timer to check to state update.
@@ -46,8 +45,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     constructor(props: RouteComponentProps<TransactionRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
-            `tangle-cache-${CHRYSALIS}`
+        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(
+            `tangle-cache-${LEGACY}`
         );
 
         let hash;
@@ -626,7 +625,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
 
                                 )}
                             </div>
-                            <SidePanel {...this.props} />
                         </div>
                     </div>
                 </div>

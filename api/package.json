@@ -13,6 +13,7 @@
         "build-clean": "rimraf ./dist/*",
         "build-compile": "tsc",
         "build-watch": "tsc --watch",
+        "lint": "eslint src --ext .tsx,.ts",
         "build-lint": "eslint src --ext .tsx,.ts",
         "build-config": "copyfiles -u 2 ./src/data/config*.json ./dist/data/",
         "build": "npm-run-all build-clean build-compile build-lint build-config",

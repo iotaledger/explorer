@@ -5,9 +5,9 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
-import { CHRYSALIS } from "../../../models/config/protocolVersion";
+import { LEGACY } from "../../../models/config/protocolVersion";
 import { ConfirmationState } from "../../../models/confirmationState";
-import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
+import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import Currency from "../../components/Currency";
@@ -23,7 +23,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: ChrysalisTangleCacheService;
+    private readonly _tangleCacheService: LegacyTangleCacheService;
 
     /**
      * Create a new instance of Bundle.
@@ -32,8 +32,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     constructor(props: RouteComponentProps<BundleRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
-            `tangle-cache-${CHRYSALIS}`
+        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(
+            `tangle-cache-${LEGACY}`
         );
 
         let bundle;

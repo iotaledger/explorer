@@ -1,79 +1,154 @@
-/* eslint-disable react/no-unescaped-entities */
-import React, { useEffect, useState } from "react";
-import { RouteComponentProps, useLocation } from "react-router-dom";
-import { IOutputDetails, useOutputsDetails } from "../../../helpers/hooks/useOutputsDetails";
+import React from "react";
+import { RouteComponentProps } from "react-router-dom";
+import { useTaggedOutputs } from "../../../helpers/hooks/useTaggedOutputs";
+import TabbedSection from "../../components/hoc/TabbedSection";
 import Pagination from "../../components/Pagination";
-import Spinner from "../../components/Spinner";
 import Output from "../../components/stardust/Output";
-import "./OutputList.scss";
 import OutputListProps from "./OutputListProps";
+import "./OutputList.scss";
 
-interface OutputListLocationProps {
-    outputIds: string[];
-    tag: string;
+const OUTPUTS_OVER_LIMIT_MESSAGE = "There are more than 100 outputs with this tag, only the first 100 are shown.";
+
+export enum OUTPUT_LIST_TABS {
+    Basic = "Basic outputs",
+    Nft = "Nft outputs"
 }
-
-const TOKEN_PAGE_SIZE: number = 5;
 
 const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
     { match: { params: { network } } }
 ) => {
-    const { outputIds, tag } = useLocation<OutputListLocationProps>().state ?? {
-        outputIds: [],
-        tag: ""
-    };
-    const [outputDetails, isLoading] = useOutputsDetails(network, outputIds);
-    const [currentPage, setCurrentPage] = useState<IOutputDetails[]>([]);
-    const [pageNumber, setPageNumber] = useState(1);
+    const [
+        tag,
+        currentPageBasic,
+        currentPageNft,
+        totalBasicItems,
+        totalNftItems,
+        pageNumberBasic,
+        pageNumberNft,
+        setPageNumberBasic,
+        setPageNumberNft,
+        pageSize,
+        isBasicLoading,
+        isNftLoading,
+        basicOutputLimitReached,
+        nftOutputLimitReached,
+        hasMoreBasicOutputs,
+        hasMoreNftOutputs,
+        loadMoreCallback
+    ] = useTaggedOutputs(network);
 
-    useEffect(() => {
-        const from = (pageNumber - 1) * TOKEN_PAGE_SIZE;
-        const to = from + TOKEN_PAGE_SIZE;
-        setCurrentPage(outputDetails.slice(from, to));
-    }, [outputDetails, pageNumber]);
-
-    return outputDetails && outputDetails.length > 0 ?
+    return (
         <div className="output-list">
             <div className="wrapper">
                 <div className="inner">
                     <div className="output-list--header">
                         <div className="row middle">
-                            <h1>
-                                Outputs with tag "{tag}"
-                            </h1>
+                            <h1>{`Outputs with tag "${tag}"`}</h1>
                         </div>
                     </div>
-                    {currentPage.length > 0 &&
-                        <div className="section margin-b-s">
-                            {currentPage.map((item, index) => (
-                                <div key={index} className="card margin-b-s">
-                                    <Output
-                                        network={network}
-                                        outputId={item.outputId}
-                                        output={item.outputDetails.output}
-                                        amount={Number(item.outputDetails.output.amount)}
-                                        showCopyAmount={true}
-                                        isPreExpanded={false}
-                                    />
+                    <TabbedSection
+                        tabsEnum={OUTPUT_LIST_TABS}
+                        tabOptions={{
+                            [OUTPUT_LIST_TABS.Basic]: {
+                                disabled: isBasicLoading || totalBasicItems === 0,
+                                isLoading: isBasicLoading
+                            },
+                            [OUTPUT_LIST_TABS.Nft]: {
+                                disabled: isNftLoading || totalNftItems === 0,
+                                isLoading: isNftLoading
+                            }
+                        }}
+                    >
+                        <div className="output-list__basic">
+                            {currentPageBasic.length > 0 && (
+                                <div className="section margin-b-s">
+                                    {currentPageBasic.map((item, index) => (
+                                        <div key={index} className="card margin-b-t">
+                                            <Output
+                                                network={network}
+                                                outputId={item.outputId}
+                                                output={item.outputDetails.output}
+                                                amount={Number(item.outputDetails.output.amount)}
+                                                showCopyAmount={true}
+                                                isPreExpanded={false}
+                                            />
+                                        </div>
+                                    ))}
+                                    {totalBasicItems > pageSize && (
+                                        <Pagination
+                                            currentPage={pageNumberBasic}
+                                            totalCount={totalBasicItems}
+                                            pageSize={pageSize}
+                                            siblingsCount={1}
+                                            onPageChange={page => setPageNumberBasic(page)}
+                                        />
+                                    )}
+                                    {!basicOutputLimitReached ? (
+                                        <div className="card load-more--button">
+                                            <button
+                                                type="button"
+                                                onClick={async () => loadMoreCallback("basic")}
+                                                disabled={isBasicLoading}
+                                            >
+                                                Load more...
+                                            </button>
+                                        </div>
+                                    ) : hasMoreBasicOutputs && (
+                                        <div className="card outputs-over-limit">
+                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-                        </div>}
-                    <Pagination
-                        currentPage={pageNumber}
-                        totalCount={outputDetails.length}
-                        pageSize={TOKEN_PAGE_SIZE}
-                        siblingsCount={1}
-                        onPageChange={number => setPageNumber(number)}
-                    />
+                            )}
+                        </div>
+                        <div className="output-list__nft">
+                            {currentPageNft.length > 0 && (
+                                <div className="section margin-b-s">
+                                    {currentPageNft.map((item, index) => (
+                                        <div key={index} className="card margin-b-t">
+                                            <Output
+                                                network={network}
+                                                outputId={item.outputId}
+                                                output={item.outputDetails.output}
+                                                amount={Number(item.outputDetails.output.amount)}
+                                                showCopyAmount={true}
+                                                isPreExpanded={false}
+                                            />
+                                        </div>
+                                    ))}
+                                    {totalNftItems > pageSize && (
+                                        <Pagination
+                                            currentPage={pageNumberNft}
+                                            totalCount={totalNftItems}
+                                            pageSize={pageSize}
+                                            siblingsCount={1}
+                                            onPageChange={page => setPageNumberNft(page)}
+                                        />
+                                    )}
+                                    {!nftOutputLimitReached ? (
+                                        <div className="card load-more--button">
+                                            <button
+                                                type="button"
+                                                onClick={async () => loadMoreCallback("nft")}
+                                                disabled={isNftLoading}
+                                            >
+                                                Load more...
+                                            </button>
+                                        </div>
+                                    ) : hasMoreNftOutputs && (
+                                        <div className="card outputs-over-limit">
+                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </TabbedSection>
                 </div>
             </div>
-        </div> :
-        <div className="content row center card">
-            {isLoading ?
-                <Spinner /> :
-                <h2>No data available</h2>}
-        </div>;
+        </div>
+    );
 };
 
-
 export default OutputList;
+

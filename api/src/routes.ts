@@ -20,6 +20,7 @@ export const routes: IRoute[] = [
     { path: "/networks", method: "get", folder: "networks", func: "get" },
     { path: "/node-info/:network", method: "get", folder: "node", func: "info" },
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
+    { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     // Legacy
     { path: "/transactions/:network/:hash", method: "get", folder: "legacy/transactions", func: "get" },
     {
@@ -103,6 +104,10 @@ export const routes: IRoute[] = [
         folder: "stardust/output/associated", func: "post", dataBody: true
     },
     {
+        path: "/stardust/output/tagged/:network/:tag/:outputType", method: "get",
+        folder: "stardust/output/tagged", func: "get"
+    },
+    {
         path: "/stardust/transactionhistory/:network/:address", method: "get",
         folder: "stardust/transactionhistory", func: "get"
     },
@@ -119,8 +124,6 @@ export const routes: IRoute[] = [
         folder: "stardust/alias/foundries", func: "get"
     },
     { path: "/stardust/foundry/:network/:foundryId", method: "get", folder: "stardust/foundry", func: "get" },
-    { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
-    { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
     {
         path: "/stardust/analytics/:network", method: "get",
         folder: "stardust/analytics/influx/stats", func: "get", sign: true
