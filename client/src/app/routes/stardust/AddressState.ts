@@ -1,20 +1,17 @@
 import { Bech32Helper, HexEncodedString, IAliasOutput, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
-import { Reducer, useContext, useEffect, useReducer, useState } from "react";
+import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
+import { useAddressBalance } from "../../../helpers/hooks/useAddressBalance";
 import { useAddressBasicOutputs } from "../../../helpers/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutputs";
 import { useAliasControlledFoundries } from "../../../helpers/hooks/useAliasControlledFoundries";
 import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
-import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 
@@ -80,13 +77,9 @@ interface IAddressPageLocationProps {
 }
 
 export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IAddressState>>] => {
-    const isMounted = useIsMounted();
     const location = useLocation();
     const { network, address: addressFromPath } = useParams<AddressRouteProps>();
     const { bech32Hrp, rentStructure } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
 
     const [state, setState] = useReducer<Reducer<IAddressState, Partial<IAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }), initialState
@@ -101,6 +94,9 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressHex);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
         network, state.bech32AddressDetails
+    );
+    const [balance, sigLockedBalance] = useAddressBalance(
+        network, state.bech32AddressDetails?.bech32 ?? null
     );
 
     useEffect(() => {
@@ -122,44 +118,17 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     }, [addressFromPath]);
 
     useEffect(() => {
-        if (state.bech32AddressDetails?.bech32) {
-            const address = state.bech32AddressDetails.bech32;
-            // eslint-disable-next-line no-void
-            void (async () => {
-                const response = await tangleCacheService.addressBalanceFromChronicle({ network, address });
-
-                if (response?.totalBalance !== undefined) {
-                    if (isMounted) {
-                        setState({
-                            balance: response.totalBalance,
-                            sigLockedBalance: response.sigLockedBalance ?? null
-                        });
-                    }
-                } else {
-                    // Fallback balance from iotajs (node)
-                    const addressDetailsWithBalance = await tangleCacheService.addressBalance({ network, address });
-
-                    if (addressDetailsWithBalance && isMounted) {
-                        setState({
-                            balance: Number(addressDetailsWithBalance.balance),
-                            sigLockedBalance: null
-                        });
-                    }
-                }
-            })();
-        }
-    }, [state.bech32AddressDetails]);
-
-    useEffect(() => {
         setState({
             addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
             addressNftOutputs, isNftOutputsLoading, nftMetadata, nftIssuerId: issuerId, isNftDetailsLoading,
-            aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading
+            aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading,
+            balance, sigLockedBalance
         });
     }, [
         addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
         addressNftOutputs, isNftOutputsLoading, nftMetadata, issuerId, isNftDetailsLoading,
-        aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading
+        aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading,
+        balance, sigLockedBalance
     ]);
 
     useEffect(() => {

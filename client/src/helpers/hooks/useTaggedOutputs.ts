@@ -6,6 +6,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITaggedOutputsResponse } from "../../models/api/stardust/ITaggedOutputsResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 interface OutputListLocationProps {
     outputIds: ITaggedOutputsResponse;
@@ -46,6 +47,7 @@ export function useTaggedOutputs(
         boolean,
         (outputType: "basic" | "nft") => Promise<void>
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -85,7 +87,11 @@ export function useTaggedOutputs(
             promises.push(
                 tangleCacheService.outputDetails(network, outputId)
                     .then(outputDetailsResponse => {
-                        if (!outputDetailsResponse.error && outputDetailsResponse.output && outputDetailsResponse.metadata) {
+                        if (
+                            !outputDetailsResponse.error &&
+                            outputDetailsResponse.output &&
+                            outputDetailsResponse.metadata
+                        ) {
                             const item: OutputListItem = {
                                 outputDetails: {
                                     output: outputDetailsResponse.output,
@@ -102,7 +108,9 @@ export function useTaggedOutputs(
         try {
             await Promise.all(promises);
 
-            setState(prevState => ([...(prevState ?? []), ...itemsUpdate]));
+            if (isMounted) {
+                setState(prevState => ([...(prevState ?? []), ...itemsUpdate]));
+            }
         } finally {
             setLoading(false);
         }
@@ -116,13 +124,17 @@ export function useTaggedOutputs(
                 if (outputType === "basic") {
                     // eslint-disable-next-line no-void
                     void loadOutputDetails(response.outputs.items, setBasicOutputItems, setIsBasicLoading);
-                    setBasicOutputsCursor(response.outputs.cursor);
+                    if (isMounted) {
+                        setBasicOutputsCursor(response.outputs.cursor);
+                    }
                 }
 
                 if (outputType === "nft") {
                     // eslint-disable-next-line no-void
                     void loadOutputDetails(response.outputs.items, setNftOutputItems, setIsNftLoading);
-                    setNftOutputsCursor(response.outputs.cursor);
+                    if (isMounted) {
+                        setNftOutputsCursor(response.outputs.cursor);
+                    }
                 }
             }
         }).catch(_ => { });

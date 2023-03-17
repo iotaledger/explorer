@@ -1,12 +1,9 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
+import { useOutputDetails } from "../../../helpers/hooks/useOutputDetails";
 import { formatSpecialBlockId } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
@@ -18,28 +15,7 @@ import "./OutputPage.scss";
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
     { match: { params: { network, outputId } } }
 ) => {
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
-    const [outputDetails, setOutputDetails] = useState<IOutputResponse | undefined>();
-    const [outputError, setOutputError] = useState<string | undefined>();
-
-    useEffect(() => {
-        tangleCacheService.outputDetails(network, outputId).then(response => {
-            if (!response.error) {
-                if (response.output && response.metadata) {
-                    const fetchedOutputDetails = {
-                        output: response.output,
-                        metadata: response.metadata
-                    };
-
-                    setOutputDetails(fetchedOutputDetails);
-                }
-            } else {
-                setOutputError(response.error);
-            }
-        }).catch(() => { });
-    }, []);
+    const [output, outputMetadata, , outputError] = useOutputDetails(network, outputId);
 
     if (outputError) {
         return (
@@ -66,9 +42,9 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
     const {
         blockId, transactionId, outputIndex, isSpent, milestoneIndexSpent, milestoneTimestampSpent,
         transactionIdSpent, milestoneIndexBooked, milestoneTimestampBooked
-    } = outputDetails?.metadata ?? {};
+    } = outputMetadata ?? {};
 
-    return (outputDetails &&
+    return (output &&
         <div className="output-page">
             <div className="wrapper">
                 <div className="inner">
@@ -85,8 +61,8 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             <Output
                                 network={network}
                                 outputId={outputId}
-                                output={outputDetails.output}
-                                amount={Number(outputDetails.output.amount)}
+                                output={output}
+                                amount={Number(output.amount)}
                                 showCopyAmount={true}
                                 isPreExpanded={true}
                             />

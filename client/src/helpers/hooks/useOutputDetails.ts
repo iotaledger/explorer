@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
+import { OutputTypes, IOutputMetadataResponse } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -7,14 +7,15 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * Fetch block children
+ * Fetch output details
  * @param network The Network in context
- * @param blockId The block id
- * @returns The children block ids, loading bool and an error string.
+ * @param outputId The output id
+ * @returns The output, metadata, loading bool and error message.
  */
-export function useBlockChildren(network: string, blockId: string | null):
+export function useOutputDetails(network: string, outputId: string | null):
     [
-        HexEncodedString[] | null,
+        OutputTypes | null,
+        IOutputMetadataResponse | null,
         boolean,
         string?
     ] {
@@ -22,22 +23,25 @@ export function useBlockChildren(network: string, blockId: string | null):
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
-    const [error, setError] = useState<string | undefined>();
+    const [output, setOutput] = useState<OutputTypes | null>(null);
+    const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(null);
+    const [error, setError] = useState<string>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        setBlockChildren(null);
-        if (blockId) {
+        setOutput(null);
+        setMetadata(null);
+        if (outputId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.blockChildren(
+                tangleCacheService.outputDetails(
                     network,
-                    HexHelper.addPrefix(blockId)
+                    HexHelper.addPrefix(outputId)
                 ).then(response => {
                     if (isMounted) {
-                        setBlockChildren(response.children ?? null);
+                        setOutput(response.output ?? null);
+                        setMetadata(response.metadata ?? null);
                         setError(response.error);
                     }
                 }).finally(() => {
@@ -47,7 +51,8 @@ export function useBlockChildren(network: string, blockId: string | null):
         } else {
             setIsLoading(false);
         }
-    }, [network, blockId]);
+    }, [network, outputId]);
 
-    return [blockChildren, isLoading, error];
+    return [output, metadata, isLoading, error];
 }
+

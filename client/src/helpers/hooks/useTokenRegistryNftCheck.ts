@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Use Token Registry NFT check hook
@@ -13,6 +14,7 @@ export function useTokenRegistryNftCheck(network: string, issuerId: string | nul
     boolean,
     boolean
 ] {
+    const isMounted = useIsMounted();
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
     const [isChecking, setIsChecking] = useState<boolean>(true);
     const [client] = useState(
@@ -27,7 +29,9 @@ export function useTokenRegistryNftCheck(network: string, issuerId: string | nul
             if (client) {
                 const isNftWhitelisted = nftId ? await client.checkNft(network, nftId) : false;
                 const isCollectionWhitelisted = issuerId ? await client.checkNft(network, issuerId) : false;
-                setIsWhitelisted(isNftWhitelisted || isCollectionWhitelisted);
+                if (isMounted) {
+                    setIsWhitelisted(isNftWhitelisted || isCollectionWhitelisted);
+                }
             }
             setIsChecking(false);
         })();

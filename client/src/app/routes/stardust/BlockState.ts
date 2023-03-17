@@ -1,44 +1,5 @@
-import { IBlock, IBlockMetadata, IUTXOInput, UnlockTypes } from "@iota/iota.js-stardust";
-import { IInput } from "../../../models/api/stardust/IInput";
-import { IOutput } from "../../../models/api/stardust/IOutput";
+import { IBlockMetadata } from "@iota/iota.js-stardust";
 import { TangleStatus } from "../../../models/tangleStatus";
-
-export interface BlockData {
-    /**
-     * Block.
-     */
-    block?: IBlock;
-
-    /**
-     * The block fetching failed.
-     */
-    blockError?: string;
-
-    /**
-     * The transaction id.
-     */
-    transactionId?: string;
-
-    /**
-     * The inputs of the transaction
-     */
-    inputs?: (IUTXOInput & IInput)[];
-
-    /**
-     * The unlocks of the transaction.
-     */
-    unlocks?: UnlockTypes[];
-
-    /**
-     * The outputs.
-     */
-    outputs?: IOutput[];
-
-    /**
-     * The total of the transfer excluding remainders.
-     */
-    transferTotal?: number;
-}
 
 export interface BlockMetadata {
     /**

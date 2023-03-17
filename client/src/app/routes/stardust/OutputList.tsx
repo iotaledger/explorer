@@ -4,8 +4,8 @@ import { useTaggedOutputs } from "../../../helpers/hooks/useTaggedOutputs";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Pagination from "../../components/Pagination";
 import Output from "../../components/stardust/Output";
-import "./OutputList.scss";
 import OutputListProps from "./OutputListProps";
+import "./OutputList.scss";
 
 const OUTPUTS_OVER_LIMIT_MESSAGE = "There are more than 100 outputs with this tag, only the first 100 are shown.";
 

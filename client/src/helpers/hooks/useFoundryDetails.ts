@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
+import { IOutputResponse } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -7,14 +7,14 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * Fetch block children
+ * Fetch foundry output details
  * @param network The Network in context
- * @param blockId The block id
- * @returns The children block ids, loading bool and an error string.
+ * @param foundryId The foundry id
+ * @returns The output response, loading bool and an error message.
  */
-export function useBlockChildren(network: string, blockId: string | null):
+export function useFoundryDetails(network: string, foundryId: string | null):
     [
-        HexEncodedString[] | null,
+        IOutputResponse | null,
         boolean,
         string?
     ] {
@@ -22,22 +22,21 @@ export function useBlockChildren(network: string, blockId: string | null):
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
+    const [foundryDetails, setFoundryDetails] = useState<IOutputResponse | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        setBlockChildren(null);
-        if (blockId) {
+        if (foundryId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.blockChildren(
+                tangleCacheService.foundryDetails({
                     network,
-                    HexHelper.addPrefix(blockId)
-                ).then(response => {
+                    foundryId: HexHelper.addPrefix(foundryId)
+                }).then(response => {
                     if (isMounted) {
-                        setBlockChildren(response.children ?? null);
+                        setFoundryDetails(response.foundryDetails ?? null);
                         setError(response.error);
                     }
                 }).finally(() => {
@@ -47,7 +46,7 @@ export function useBlockChildren(network: string, blockId: string | null):
         } else {
             setIsLoading(false);
         }
-    }, [network, blockId]);
+    }, [network, foundryId]);
 
-    return [blockChildren, isLoading, error];
+    return [foundryDetails, isLoading, error];
 }

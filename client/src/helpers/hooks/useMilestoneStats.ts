@@ -1,44 +1,39 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * Fetch block children
+ * Fetch the milestone stats
  * @param network The Network in context
- * @param blockId The block id
- * @returns The children block ids, loading bool and an error string.
+ * @param milestoneIndex The milestone index
+ * @returns The milestone stats and a loading bool.
  */
-export function useBlockChildren(network: string, blockId: string | null):
+export function useMilestoneStats(network: string, milestoneIndex: string | null):
     [
-        HexEncodedString[] | null,
-        boolean,
-        string?
+        IMilestoneAnalyticStats | null,
+        boolean
     ] {
     const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
-    const [error, setError] = useState<string | undefined>();
+    const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        setBlockChildren(null);
-        if (blockId) {
+        if (milestoneIndex) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.blockChildren(
+                tangleCacheService.milestoneStats(
                     network,
-                    HexHelper.addPrefix(blockId)
+                    milestoneIndex
                 ).then(response => {
                     if (isMounted) {
-                        setBlockChildren(response.children ?? null);
-                        setError(response.error);
+                        setMilestoneStats(response ?? null);
                     }
                 }).finally(() => {
                     setIsLoading(false);
@@ -47,7 +42,7 @@ export function useBlockChildren(network: string, blockId: string | null):
         } else {
             setIsLoading(false);
         }
-    }, [network, blockId]);
+    }, [network, milestoneIndex]);
 
-    return [blockChildren, isLoading, error];
+    return [milestoneStats, isLoading];
 }

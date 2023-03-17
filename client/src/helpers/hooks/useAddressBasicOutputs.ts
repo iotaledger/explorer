@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch Address basic UTXOs
@@ -13,6 +14,7 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 export function useAddressBasicOutputs(
     network: string, addressBech32: string | null
 ): [IOutputResponse[] | null, boolean] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -26,7 +28,7 @@ export function useAddressBasicOutputs(
             // eslint-disable-next-line no-void
             void (async () => {
                 tangleCacheService.addressBasicOutputs(network, addressBech32).then(response => {
-                    if (!response?.error && response.outputs) {
+                    if (!response?.error && response.outputs && isMounted) {
                         setOutputs(response.outputs);
                     }
                 }).finally(() => {

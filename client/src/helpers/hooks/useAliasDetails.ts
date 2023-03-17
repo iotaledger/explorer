@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch alias output details
@@ -16,6 +17,7 @@ export function useAliasDetails(network: string, aliasId: string | null):
         IAliasOutput | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -31,7 +33,7 @@ export function useAliasDetails(network: string, aliasId: string | null):
                     network,
                     aliasId: HexHelper.addPrefix(aliasId)
                 }).then(response => {
-                    if (!response?.error) {
+                    if (!response?.error && isMounted) {
                         const output = response.aliasDetails?.output as IAliasOutput;
 
                         setAliasOutput(output);

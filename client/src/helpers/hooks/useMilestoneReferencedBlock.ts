@@ -1,4 +1,3 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -7,14 +6,14 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * Fetch block children
+ * Fetch the milestone referenced blocks
  * @param network The Network in context
- * @param blockId The block id
- * @returns The children block ids, loading bool and an error string.
+ * @param milestoneId The milestone id
+ * @returns The blocks, loading bool and an error message.
  */
-export function useBlockChildren(network: string, blockId: string | null):
+export function useMilestoneReferencedBlocks(network: string, milestoneId: string | null):
     [
-        HexEncodedString[] | null,
+        string[] | null,
         boolean,
         string?
     ] {
@@ -22,22 +21,21 @@ export function useBlockChildren(network: string, blockId: string | null):
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
+    const [milestoneReferencedBlocks, setMilestoneReferencedBlocks] = useState<string[] | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        setBlockChildren(null);
-        if (blockId) {
+        if (milestoneId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.blockChildren(
+                tangleCacheService.milestoneReferencedBlocks(
                     network,
-                    HexHelper.addPrefix(blockId)
+                    HexHelper.addPrefix(milestoneId)
                 ).then(response => {
                     if (isMounted) {
-                        setBlockChildren(response.children ?? null);
+                        setMilestoneReferencedBlocks(response.blocks ?? null);
                         setError(response.error);
                     }
                 }).finally(() => {
@@ -47,7 +45,7 @@ export function useBlockChildren(network: string, blockId: string | null):
         } else {
             setIsLoading(false);
         }
-    }, [network, blockId]);
+    }, [network, milestoneId]);
 
-    return [blockChildren, isLoading, error];
+    return [milestoneReferencedBlocks, isLoading, error];
 }

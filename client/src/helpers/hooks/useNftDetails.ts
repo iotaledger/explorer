@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 
 /**
@@ -22,6 +23,7 @@ export function useNftDetails(network: string, nftId: string | null):
         string | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -58,21 +60,23 @@ export function useNftDetails(network: string, nftId: string | null):
                             switch (issuerFeature.address.type) {
                                 case ED25519_ADDRESS_TYPE:
                                     issuerId = issuerFeature.address.pubKeyHash;
-                                break;
+                                    break;
                                 case ALIAS_ADDRESS_TYPE:
                                     issuerId = issuerFeature.address.aliasId;
-                                break;
+                                    break;
                                 case NFT_ADDRESS_TYPE:
                                     issuerId = issuerFeature.address.nftId;
-                                break;
+                                    break;
                                 default:
-                                break;
+                                    break;
                             }
                         }
 
-                        setNftMetadata(metadataFeature?.data ?? null);
-                        setNftOutput(output);
-                        setNftIssuerId(issuerId);
+                        if (isMounted) {
+                            setNftMetadata(metadataFeature?.data ?? null);
+                            setNftOutput(output);
+                            setNftIssuerId(issuerId);
+                        }
                     }
                 }).finally(() => {
                     setIsLoading(false);

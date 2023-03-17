@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
+import { IBlock } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -7,14 +7,14 @@ import { StardustTangleCacheService } from "../../services/stardust/stardustTang
 import { useIsMounted } from "./useIsMounted";
 
 /**
- * Fetch block children
+ * Fetch the block
  * @param network The Network in context
  * @param blockId The block id
- * @returns The children block ids, loading bool and an error string.
+ * @returns The block, loading bool and an error message.
  */
-export function useBlockChildren(network: string, blockId: string | null):
+export function useBlock(network: string, blockId: string | null):
     [
-        HexEncodedString[] | null,
+        IBlock | null,
         boolean,
         string?
     ] {
@@ -22,22 +22,21 @@ export function useBlockChildren(network: string, blockId: string | null):
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
-    const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
+    const [block, setBlock] = useState<IBlock | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        setBlockChildren(null);
         if (blockId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.blockChildren(
+                tangleCacheService.block(
                     network,
                     HexHelper.addPrefix(blockId)
                 ).then(response => {
                     if (isMounted) {
-                        setBlockChildren(response.children ?? null);
+                        setBlock(response.block ?? null);
                         setError(response.error);
                     }
                 }).finally(() => {
@@ -49,5 +48,5 @@ export function useBlockChildren(network: string, blockId: string | null):
         }
     }, [network, blockId]);
 
-    return [blockChildren, isLoading, error];
+    return [block, isLoading, error];
 }

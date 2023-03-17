@@ -8,7 +8,7 @@ import { INetwork } from "../../../../models/config/INetwork";
 import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
 import TruncatedId from "../../../components/stardust/TruncatedId";
 import Tooltip from "../../../components/Tooltip";
-import MilestoneFeedAnalyics from "../../../MilestoneFeedAnalytics";
+import MilestoneFeedAnalyics from "./MilestoneFeedAnalytics";
 import "./MilestoneFeed.scss";
 
 const FEED_ITEMS_MAX = 10;

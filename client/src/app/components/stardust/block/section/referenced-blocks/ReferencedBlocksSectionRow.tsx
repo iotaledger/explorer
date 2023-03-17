@@ -1,13 +1,9 @@
-import { IBlock, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
 import classNames from "classnames";
-import React, { useContext, useEffect, useState } from "react";
-import { ServiceFactory } from "../../../../../../factories/serviceFactory";
-import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
+import React, { useContext, useState } from "react";
+import { useBlock } from "../../../../../../helpers/hooks/useBlock";
+import { useInputsAndOutputs } from "../../../../../../helpers/hooks/useInputsAndOutputs";
 import { NameHelper } from "../../../../../../helpers/stardust/nameHelper";
-import { TransactionsHelper } from "../../../../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../../../../services/stardust/stardustTangleCacheService";
 import NetworkContext from "../../../../../context/NetworkContext";
 import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
@@ -17,54 +13,16 @@ interface Props {
     isTable?: boolean;
 }
 
-interface BlockData {
-    block?: IBlock;
-    value?: number;
-}
-
 const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
-    const isMounted = useIsMounted();
-    const { name: network, bech32Hrp, tokenInfo } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
-    const [blockData, setBlockData] = useState<BlockData | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { name: network, tokenInfo } = useContext(NetworkContext);
+    const [block, isLoading] = useBlock(network, blockId);
+    // eslint-disable-next-line unicorn/no-unreadable-array-destructuring
+    const [, , , transferTotal] = useInputsAndOutputs(network, block);
     const [isFormattedValue, setIsFormattedValue] = useState<boolean>(true);
 
-    useEffect(() => {
-        setIsLoading(true);
-        // eslint-disable-next-line no-void
-        void tangleCacheService.block(network, blockId).then(async response => {
-            if (!response.error && response.block) {
-                if (response.block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                    const { transferTotal } = await TransactionsHelper.getInputsAndOutputs(
-                        response.block,
-                        network,
-                        bech32Hrp,
-                        tangleCacheService
-                    );
-
-                    if (isMounted) {
-                        setBlockData({
-                            block: response.block,
-                            value: transferTotal
-                        });
-                    }
-                } else if (isMounted) {
-                    setBlockData({
-                        block: response.block
-                    });
-                }
-            }
-
-            setIsLoading(false);
-        });
-    }, [blockId]);
-
-    const payloadType = NameHelper.getPayloadType(blockData?.block);
-    const transactionValue = blockData?.value && blockData.value !== undefined ?
-        formatAmount(Number(blockData.value), tokenInfo, !isFormattedValue) :
+    const payloadType = NameHelper.getPayloadType(block ?? undefined);
+    const transactionValue = transferTotal ?
+        formatAmount(Number(transferTotal), tokenInfo, !isFormattedValue) :
         "--";
 
     return (

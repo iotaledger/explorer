@@ -5,11 +5,9 @@ import { Converter } from "@iota/util.js-stardust";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import tokenSchemeIRC30 from "../../../../../../assets/schemas/token-schema-IRC30.json";
-import { ServiceFactory } from "../../../../../../factories/serviceFactory";
+import { useFoundryDetails } from "../../../../../../helpers/hooks/useFoundryDetails";
 import { useTokenRegistryNativeTokenCheck } from "../../../../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
 import { ITokenMetadata } from "../../../../../../models/api/stardust/foundry/ITokenMetadata";
-import { STARDUST } from "../../../../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../../../../services/stardust/stardustTangleCacheService";
 import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
 import { AssetProps } from "./AssetProps";
@@ -20,43 +18,23 @@ import { AssetProps } from "./AssetProps";
 const Asset: React.FC<AssetProps> = (
     { network, tableFormat, token }
 ) => {
+    const [foundryDetails, isLoading] = useFoundryDetails(network, token.id);
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>(null);
     const [isWhitelisted] = useTokenRegistryNativeTokenCheck(network, token.id);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
 
     useEffect(() => {
-        if (isWhitelisted) {
-            // eslint-disable-next-line no-void
-            void loadTokenDetails(token.id);
+        if (isWhitelisted && foundryDetails) {
+            const immutableFeatures = (foundryDetails?.output as IFoundryOutput).immutableFeatures;
+
+            const metadata = immutableFeatures?.find(
+                feature => feature.type === METADATA_FEATURE_TYPE
+            ) as IMetadataFeature;
+
+            if (metadata) {
+                updateTokenInfo(metadata);
+            }
         }
-    }, [isWhitelisted]);
-
-    const loadTokenDetails = async (foundryId: string): Promise<void> => {
-        if (!isLoading) {
-            setIsLoading(true);
-            // eslint-disable-next-line no-void
-            void tangleCacheService.foundryDetails({ network, foundryId }).then(response => {
-                if (!response.error) {
-                    const immutableFeatures = (response.foundryDetails?.output as IFoundryOutput).immutableFeatures;
-
-                    const metadata = immutableFeatures?.find(
-                        feature => feature.type === METADATA_FEATURE_TYPE
-                    ) as IMetadataFeature;
-
-                    if (metadata) {
-                        updateTokenInfo(metadata);
-                    }
-                }
-
-                setIsLoading(false);
-            }).catch(_ => {
-                setIsLoading(false);
-            });
-        }
-    };
+    }, [isWhitelisted, foundryDetails]);
 
     const updateTokenInfo = (metadata: IMetadataFeature): void => {
         const validator = new JsonSchemaValidator();

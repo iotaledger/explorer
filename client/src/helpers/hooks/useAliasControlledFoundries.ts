@@ -4,6 +4,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch Foundries controlled by Alias address
@@ -16,6 +17,7 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
         string[] | null,
         boolean
     ] {
+    const isMounted = useIsMounted();
     const [tangleCacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );
@@ -42,7 +44,9 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
                                 foundries.push(foundryId);
                             }
                         }
-                        setAliasFoundries(foundries);
+                        if (isMounted) {
+                            setAliasFoundries(foundries);
+                        }
                     }
                 }).finally(() => {
                     setIsLoading(false);
