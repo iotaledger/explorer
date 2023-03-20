@@ -6,6 +6,7 @@ import {
 } from "@iota/iota.js-stardust";
 import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
@@ -89,7 +90,7 @@ export class StardustTangleHelper {
                 };
             }
         } catch (e) {
-            console.log(`Block deserialization failed for block with block id ${blockId}.`, e);
+            logger.error(`Block deserialization failed for block with block id ${blockId}. Cause: ${e}`);
             return { error: "Block deserialization failed." };
         }
     }
@@ -144,7 +145,7 @@ export class StardustTangleHelper {
                 };
             }
         } catch (e) {
-            console.log(`Block deserialization failed for block with transaction id ${transactionId}.`, e);
+            logger.error(`Block deserialization failed for block with transaction id ${transactionId}. Cause: ${e}`);
         }
     }
 

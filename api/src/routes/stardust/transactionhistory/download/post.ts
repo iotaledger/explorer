@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import logger from "../../../../logger";
 import { IDataResponse } from "../../../../models/api/IDataResponse";
 import { ITransactionHistoryDownloadBody } from "../../../../models/api/stardust/ITransactionHistoryDownloadBody";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
@@ -53,7 +54,7 @@ export async function post(
             contentType: "application/octet-stream"
         };
     } catch (e) {
-        console.log("Failed to zip transaction history for download", e);
+        logger.error(`Failed to zip transaction history for download. Cause: ${e}`);
     }
 
     return response;

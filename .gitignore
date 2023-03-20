@@ -8,6 +8,7 @@ application-data
 .idea/
 /api/dist
 /api/.env
+/api/logs/
 /client/build
 
 config.dev.json

@@ -1,6 +1,7 @@
 import { blockIdFromMilestonePayload, SingleNodeClient, milestoneIdFromMilestonePayload } from "@iota/iota.js-stardust";
 import type { IMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
 import { IFeedService } from "../../models/services/IFeedService";
 
 /**
@@ -40,14 +41,13 @@ export class StardustFeedService implements IFeedService {
         this._user = user;
         this._password = password;
 
-        this._mqttClient.statusChanged(data => console.log("Stardust Mqtt Status", data));
+        this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
     }
 
     /**
      * Connect the service.
      */
-    public connect(): void {
-    }
+    public connect(): void { }
 
     /**
      * Get milestones from the feed.

@@ -1,6 +1,7 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
+import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { INetwork } from "./models/db/INetwork";
@@ -93,8 +94,8 @@ export async function initServices(config: IConfiguration) {
 
     const currencyService = new CurrencyService(config);
     const update = async () => {
-        const log = await currencyService.update();
-        console.log(log);
+        // eslint-disable-next-line no-void
+        void currencyService.update();
     };
 
     setInterval(update, 60000);
@@ -194,14 +195,14 @@ function initStardustServices(networkConfig: INetwork): void {
 
     const influxDBService = new InfluxDBService(networkConfig);
     influxDBService.buildClient().then(hasClient => {
-        console.log("Registering client with name:", `influxdb-${networkConfig.network}`, "hasClient", hasClient);
+        logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
         if (hasClient) {
             ServiceFactory.register(
                 `influxdb-${networkConfig.network}`,
                 () => influxDBService
             );
         }
-    }).catch(e => console.log("Failed to build influxDb client for", networkConfig.network, e));
+    }).catch(e => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
 }
 
 /**

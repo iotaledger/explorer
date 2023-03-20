@@ -44,7 +44,7 @@
         "aws-sdk": "^2.1205.0",
         "big-integer": "^1.6.51",
         "compression": "^1.7.4",
-        "dotenv": "^16.0.1",
+        "dotenv": "^16.0.3",
         "express": "^4.18.1",
         "influx": "^5.9.3",
         "jszip": "^3.10.1",
@@ -53,6 +53,8 @@
         "node-fetch": "^2.6.7",
         "socket.io": "^4.5.0",
         "uuid": "^8.3.2",
+        "winston": "^3.8.2",
+        "winston-daily-rotate-file": "^4.7.1",
         "zeromq": "^5.2.8"
     },
     "devDependencies": {
@@ -62,6 +64,7 @@
         "@types/jszip": "^3.4.1",
         "@types/node": "^16.10.3",
         "@types/uuid": "^8.3.1",
+        "@types/winston": "^2.4.4",
         "@typescript-eslint/eslint-plugin": "^5.36.0",
         "@typescript-eslint/parser": "^5.36.0",
         "copyfiles": "^2.4.1",

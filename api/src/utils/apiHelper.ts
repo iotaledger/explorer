@@ -3,6 +3,7 @@ import { Ed25519 } from "@iota/crypto.js";
 import { Converter } from "@iota/util.js";
 import path from "path";
 import { inspect } from "util";
+import logger from "../logger";
 import { IDataResponse } from "../models/api/IDataResponse";
 import { IResponse } from "../models/api/IResponse";
 import { ISignedResponse } from "../models/api/ISignedResponse";
@@ -88,8 +89,8 @@ export async function executeRoute(
         filteredParams = logParams(params);
 
         if (verboseLogging) {
-            console.log(`===> ${route.method.toUpperCase()} ${route.path}`);
-            console.log(inspect(filteredParams, false, undefined, false));
+            logger.debug(`===> ${route.method.toUpperCase()} ${route.path}`);
+            logger.debug(inspect(filteredParams, false, undefined, false));
         }
 
         if (route.func) {
@@ -101,7 +102,7 @@ export async function executeRoute(
                 // eslint-disable-next-line @typescript-eslint/no-require-imports
                 mod = require(modulePath);
             } catch (err) {
-                console.error(err);
+                logger.error(err);
             }
             if (mod) {
                 if (mod[route.func]) {
@@ -131,8 +132,8 @@ export async function executeRoute(
     }
 
     if (verboseLogging || (response?.error)) {
-        console.log(`<=== duration: ${Date.now() - start}ms`);
-        console.log(inspect(response, false, undefined, false));
+        logger.debug(`<=== duration: ${Date.now() - start}ms`);
+        logger.debug(inspect(response, false, undefined, false));
     }
 
     if (route.sign && config.privateKeyEd25519 && config.privateKeyEd25519.length === 128) {

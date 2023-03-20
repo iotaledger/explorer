@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import compression from "compression";
+import * as dotenv from "dotenv";
+dotenv.config();
 import express, { Application } from "express";
 import { Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { NetworkConfigurationError } from "./errors/networkConfigurationError";
 import { initServices } from "./initServices";
+import logger from "./logger";
 import { IFeedUnsubscribeRequest } from "./models/api/IFeedUnsubscribeRequest";
 import { INetworkBoundGetRequest } from "./models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -89,18 +92,18 @@ const sockets: {
 } = {};
 
 socketServer.on("connection", socket => {
-    console.log("Socket::Connection", socket.id);
+    logger.debug(`Socket::Connection [${socket.id}]`);
     socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
         const response = await subscribe(config, socket, data);
         if (!response.error) {
             sockets[socket.id] = data.network;
         }
-        console.log("Socket::Subscribe", socket.id);
+        logger.debug(`Socket::Subscribe [${socket.id}]`);
         socket.emit("subscribe", response);
     });
 
     socket.on("unsubscribe", (data: IFeedUnsubscribeRequest) => {
-        console.log("Socket::Unsubscribe", socket.id);
+        logger.debug(`Socket::Unsubscribe [${socket.id}]`);
         const response = unsubscribe(config, socket, data);
         if (sockets[socket.id]) {
             delete sockets[socket.id];
@@ -109,7 +112,7 @@ socketServer.on("connection", socket => {
     });
 
     socket.on("disconnect", async () => {
-        console.log("Socket::Disconnect", socket.id);
+        logger.debug(`Socket::Disconnect [${socket.id}]`);
         if (sockets[socket.id]) {
             await unsubscribe(config, socket, {
                 subscriptionId: sockets[socket.id],
@@ -121,19 +124,19 @@ socketServer.on("connection", socket => {
 });
 
 server.listen(port, async () => {
-    console.log(`Running Config '${configId}'`);
-    console.log(`API port ${port}`);
+    const version = process.env.npm_package_version ? `(v${process.env.npm_package_version})` : "";
+    const env = process.env.NODE_ENV ? `Env: ${process.env.NODE_ENV}` : "";
+    logger.info(`Running Explorer API ${version} on port: ${port}. ${env}`);
+    logger.verbose(`Config: "${configId}", Logger level: "${logger.level}"`);
 
     try {
-        console.log("Initializing Services");
+        logger.verbose("Initializing services...");
         await initServices(config);
-        console.log("Services Initialized");
+        logger.info("Services Initialized");
     } catch (err) {
         if (err instanceof NetworkConfigurationError) {
             throw err;
         }
-
-        console.error(err);
     }
 });
 

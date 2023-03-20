@@ -1,6 +1,7 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";
+import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
 import { SHIMMER } from "../../../models/db/networkType";
 import {
@@ -112,7 +113,7 @@ export abstract class InfluxDbClient {
         const password = this._network.analyticsInfluxDbPassword;
 
         if (host && database && username && password) {
-            console.info("[InfluxDbClient(", network, ")] configuration found.");
+            logger.verbose(`[InfluxDb] Found configuration for (${network})]`);
             const token = Buffer.from(`${username}:${password}`, "utf8").toString("base64");
             const options = {
                 headers: {
@@ -127,7 +128,7 @@ export abstract class InfluxDbClient {
                     const anyHostIsOnline = pingResults.some(ping => ping.online);
 
                     if (anyHostIsOnline) {
-                        console.info("[InfluxDbClient(", network, ")] started!");
+                        logger.info(`[InfluxDb] Client started for "${network}"...`);
                         this._client = influxDbClient;
                         this.setupDataCollection();
                     }
@@ -137,12 +138,12 @@ export abstract class InfluxDbClient {
 
                 return false;
             }).catch(e => {
-                console.log("[InfluxDbClient(", network, ")] ping failed:", e);
+                logger.verbose(`[InfluxDb] Ping failed for "${network}". ${e}`);
                 return false;
             });
         }
 
-        console.info("[InfluxDbClient(", network, ")] configuration not found.");
+        logger.warn(`[InfluxDb] Configuration not found for "${network}".`);
         return false;
     }
 
@@ -162,7 +163,7 @@ export abstract class InfluxDbClient {
      */
     private setupDataCollection() {
         const network = this._network.network;
-        console.info("[InfluxDbClient(", network, ")] data collection setup...");
+        logger.verbose(`[InfluxDb] Setting up data collection for (${network})]`);
 
         // eslint-disable-next-line no-void
         void this.collectGraphsDaily();
@@ -198,7 +199,7 @@ export abstract class InfluxDbClient {
                 });
             }
         } else {
-            console.log("[InfluxDbClient(", network, ")] client isn't configured for this network");
+            logger.debug(`[InfluxDb] Client not configured for this network "${network}"`);
         }
     }
 
@@ -207,7 +208,7 @@ export abstract class InfluxDbClient {
      * Populates the dailyCache.
      */
     private async collectGraphsDaily() {
-        console.info("[InfluxDbClient(", this._network.network, ")] collecting daily...");
+        logger.verbose(`[InfluxDb] Collecting daily stats for "${this._network.network}"`);
         this.updateCacheEntry<IBlocksDailyInflux>(
             BLOCK_DAILY_QUERY,
             this._dailyCache.blocksDaily,
@@ -290,7 +291,7 @@ export abstract class InfluxDbClient {
      * Populates the analyticsCache.
      */
     private async collectAnalytics() {
-        console.info("[InfluxDbClient(", this._network.network, ")] collecting analytics...");
+        logger.verbose(`[InfluxDb] Collecting analytic stats for "${this._network.network}"`);
         try {
             for (const update of await
                 this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
@@ -324,15 +325,13 @@ export abstract class InfluxDbClient {
                 this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
             }
         } catch (err) {
-            console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing analytics", err);
+            logger.warn(`[InfluxDb] Failed refreshing analytics for "${this._network.network}"! Cause: ${err}`);
         }
     }
 
     private async collectShimmerUnclaimed() {
-        const debug = false;
-        if (debug) {
-            console.info("[InfluxDbClient(", this._network.network, ")] collecting shimmer...");
-        }
+        logger.verbose(`[InfluxDb] Collecting shimmer stats for "${this._network.network}"`);
+
         try {
             for (const update of await
                 this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
@@ -342,15 +341,12 @@ export abstract class InfluxDbClient {
                 this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
             }
         } catch (err) {
-            console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing analytics", err);
+            logger.warn(`[InfluxDb] Failed refreshing shimmer stats for "${this._network.network}"! Cause: ${err}`);
         }
     }
 
     private async collectMilestoneStats() {
-        const debug = false;
-        if (debug) {
-            console.info("[InfluxDbClient(", this._network.network, ")] collecting milestone stats...");
-        }
+        logger.verbose(`[InfluxDb] Collecting milestone stats for "${this._network.network}"`);
         try {
             for (const update of await
                 this.queryInflux<ITimedEntry & {
@@ -381,12 +377,9 @@ export abstract class InfluxDbClient {
                         }
                     });
 
-                    if (debug) {
-                        console.info(
-                            "[InfluxDbClient(", this._network.network, ")] milestone cache added",
-                            this._milestoneCache.get(milestoneIndex)
-                        );
-                    }
+                    logger.debug(
+                        `[InfluxDb] Added milestone index "${milestoneIndex}" to cache for "${this._network.network}"`
+                    );
 
                     if (this._milestoneCache.size > MILESTONE_CACHE_MAX) {
                         let lowestIndex: number;
@@ -400,18 +393,16 @@ export abstract class InfluxDbClient {
                             }
                         }
 
-                        if (debug) {
-                            console.info(
-                                "[InfluxDbClient(", this._network.network, ")] milestone cache deleting",
-                                this._milestoneCache.get(lowestIndex)
-                            );
-                        }
+                        logger.debug(
+                            `[InfluxDb] Deleting milestone index "${lowestIndex}" ("${this._network.network}")`
+                        );
+
                         this._milestoneCache.delete(lowestIndex);
                     }
                 }
             }
         } catch (err) {
-            console.warn("[InfluxDbClient(", this._network.network, ")] failed refreshing milestone stats", err);
+            logger.warn(`[InfluxDb] Failed refreshing milestone stats for "${this._network.network}". Cause: ${err}`);
         }
     }
 
@@ -435,9 +426,9 @@ export abstract class InfluxDbClient {
         const fromNanoDate: INanoDate | null = this.getFromNanoDate(cacheEntryToFetch);
 
         if (debug) {
-            console.debug(
-                `[InfluxDbClient(${network})]Refreshing ${description} from date`,
-                fromNanoDate ? fromNanoDate.toISOString() : null
+            logger.debug(
+                `[InfluxDb] Refreshing ${description} from date
+                ${fromNanoDate ? fromNanoDate.toISOString() : null} (${this._network.network})`
             );
         }
 
@@ -457,14 +448,14 @@ export abstract class InfluxDbClient {
 
                     cacheEntryToFetch.set(moment(update.time).format(DAY_KEY_FORMAT), update);
                 } else if (debug) {
-                    console.warn(
-                        `[InfluxDbClient(${network})] found empty result entry while populating cache:`,
-                        update
+                    logger.warn(
+                        `[InfluxDb] Found empty result entry while populating cache (${network}).
+                            ${JSON.stringify(update)}`
                     );
                 }
             }
         }).catch(e => {
-            console.warn(`[InfluxDbClient(${network})] query ${description} failed:`, e);
+            logger.warn(`[InfluxDb]] Query ${description} failed for (${network}). Cause ${e}`);
         });
     }
 
