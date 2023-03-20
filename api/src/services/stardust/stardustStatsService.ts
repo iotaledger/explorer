@@ -1,5 +1,6 @@
 /* eslint-disable no-void */
 import { SingleNodeClient } from "@iota/iota.js-stardust";
+import logger from "../../logger";
 import { BaseStatsService } from "./baseStatsService";
 
 
@@ -23,6 +24,10 @@ export class StardustStatsService extends BaseStatsService {
                     latestMilestoneIndex: info.status.latestMilestone.index,
                     latestMilestoneIndexTime: info.status.latestMilestone.timestamp * 1000
                 });
+
+                logger.debug(
+                    `[StardustStatsService] Updating network statistics for ${this._networkConfiguration.network}`
+                );
 
                 if (this._statistics.length > 30) {
                     this._statistics = this._statistics.slice(-30);

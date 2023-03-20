@@ -94,6 +94,7 @@ export async function initServices(config: IConfiguration) {
 
     const currencyService = new CurrencyService(config);
     const update = async () => {
+        logger.verbose("[CurrencyService] Updateing currency data");
         // eslint-disable-next-line no-void
         void currencyService.update();
     };
@@ -109,6 +110,7 @@ export async function initServices(config: IConfiguration) {
  */
 function initLegacyServices(networkConfig: INetwork): void {
     if (networkConfig.feedEndpoint) {
+        logger.verbose(`Initializing Legacy services for ${networkConfig.network}`);
         ServiceFactory.register(
             `zmq-${networkConfig.network}`, () => new ZmqService(
                 networkConfig.feedEndpoint, [
@@ -136,6 +138,7 @@ function initLegacyServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initChrysalisServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Chrysalis services for ${networkConfig.network}`);
     ServiceFactory.register(
         `mqtt-${networkConfig.network}`, () => new ChrysalisMqttClient(
             networkConfig.feedEndpoint.split(";"))
@@ -158,6 +161,7 @@ function initChrysalisServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initStardustServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
     const nodeInfoService = new NodeInfoService(networkConfig);
 
     ServiceFactory.register(
@@ -211,12 +215,14 @@ function initStardustServices(networkConfig: INetwork): void {
  */
 async function registerStorageServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
+        logger.info("Registering 'local' persistence services...");
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
 
         ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
             config.rootStorageFolder, "currency", "id"));
     } else if (config.dynamoDbConnection) {
+        logger.info("Registering 'dynamoDB' persistence services...");
         ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
             config.dynamoDbConnection, "network", "network"));
 
