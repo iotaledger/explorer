@@ -20,7 +20,7 @@ interface DataToggleOption {
 }
 
 const DataToggle: React.FC<DataToggleProps> = (
-    { sourceData, link, withSpacedHex }
+    { sourceData, link, withSpacedHex, isParticipationEventMetadata }
 ) => {
     const [options, setOptions] = useState<DataToggleOption[]>([]);
     const [isJson, setIsJson] = useState<boolean>(false);
@@ -56,10 +56,12 @@ const DataToggle: React.FC<DataToggleProps> = (
     }, [sourceData]);
 
     useEffect(() => {
-        const activeOption = options[activeTab];
-        setIsJson(activeOption.label === "JSON");
-        setActiveContent(activeOption.content);
-    }, [activeTab]);
+            const activeOption = options[activeTab];
+            if (activeOption) {
+                setIsJson(activeOption.label === "JSON");
+                setActiveContent(activeOption.content);
+            }
+    }, [activeTab, options]);
 
     return (
         <div className="data-toggle">
