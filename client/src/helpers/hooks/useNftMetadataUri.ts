@@ -9,15 +9,16 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useNftMetadataUri(link?: string):
     [
-        string | undefined,
+        string | null,
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [uri, setUri] = useState<string | undefined>();
+    const [uri, setUri] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
+        setUri(null);
         const ipfsHash = getIPFSHash(link);
         if (ipfsHash) {
             // eslint-disable-next-line no-void
@@ -29,7 +30,7 @@ export function useNftMetadataUri(link?: string):
                 }
             })();
         } else {
-            setUri(link);
+            setUri(link ?? null);
             setIsLoading(false);
         }
     }, [link]);
