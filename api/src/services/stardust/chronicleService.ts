@@ -1,4 +1,5 @@
 import moment from "moment";
+import logger from "../../logger";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
@@ -90,7 +91,7 @@ export class ChronicleService {
      */
     public async blockChildren(
         blockId: string
-    ): Promise<IBlockChildrenResponse| undefined> {
+    ): Promise<IBlockChildrenResponse | undefined> {
         const path = `${CHRONICLE_ENDPOINTS.blockChildren[0]}${blockId}${CHRONICLE_ENDPOINTS.blockChildren[1]}`;
 
         try {
@@ -184,7 +185,7 @@ export class ChronicleService {
 
             return result;
         } catch (error) {
-            console.log("Problem while building Transaction History download", error);
+            logger.error(`Problem while building Transaction History download. Cause: ${error}`);
         }
     }
 }

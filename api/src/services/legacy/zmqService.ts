@@ -1,5 +1,6 @@
 import { v4 } from "uuid";
 import zmq from "zeromq";
+import logger from "../../logger";
 import { IAddress } from "../../models/zmq/IAddress";
 import { IAntn } from "../../models/zmq/IAntn";
 import { IDnscc } from "../../models/zmq/IDnscc";
@@ -81,7 +82,7 @@ export class ZmqService {
     public connect(): void {
         try {
             if (!this._socket) {
-                console.log("ZMQ::Connect", this._endpoint);
+                logger.verbose("[Zmq] Connect Legacy");
                 this._socket = zmq.socket("sub");
                 this._socket.connect(this._endpoint);
 
@@ -94,7 +95,7 @@ export class ZmqService {
                 this._lastMessageTime = Date.now();
             }
         } catch (err) {
-            console.error("ZMQ::Connect Error", err);
+            logger.error(`[Zmq] Connect Error. Cause: ${err}`);
             this.disconnect();
         }
     }
@@ -107,7 +108,7 @@ export class ZmqService {
         this._socket = undefined;
         if (localSocket) {
             try {
-                console.log("ZMQ::Disconnect", this._endpoint);
+                logger.debug("[Zmq] Disconnect Legacy");
 
                 for (const event of this._events) {
                     localSocket.unsubscribe(event);
@@ -458,7 +459,7 @@ export class ZmqService {
                     try {
                         await this._subscriptions[event][i].callback(event, data);
                     } catch (err) {
-                        console.error("ZMQ::Callback Error", event, data, err);
+                        logger.error(`[Zmq] Callback error! Event: ${event}. Data: ${data} Err: ${err}`);
                     }
                 }
             }
@@ -491,7 +492,7 @@ export class ZmqService {
      */
     private keepAlive(): void {
         if (Date.now() - this._lastMessageTime > 30000) {
-            console.log("ZMQ::KeepAlive");
+            logger.debug("[Zmq] Legacy keepalive");
             this.disconnect();
             this.connect();
         }

@@ -1,6 +1,7 @@
 import { composeAPI, Transaction } from "@iota/core";
 import { LegacyChronicleClient } from "../../clients/legacy/chronicleClient";
 import { LegacyHornetClient } from "../../clients/legacy/hornetClient";
+import logger from "../../logger";
 import { ITransactionsCursor } from "../../models/api/legacy/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/legacy/transactionsGetMode";
 import { INetwork } from "../../models/db/INetwork";
@@ -40,7 +41,7 @@ export class LegacyTangleHelper {
         };
 
         try {
-           const legacyHornetClient = new LegacyHornetClient(network.provider, network.user, network.password);
+            const legacyHornetClient = new LegacyHornetClient(network.provider, network.user, network.password);
 
             const response = await legacyHornetClient.findTransactions({
                 ...findReq,
@@ -256,7 +257,7 @@ export class LegacyTangleHelper {
                 return txs.length > 0 ? txs[0].hash : undefined;
             }
         } catch (err) {
-            console.log(err);
+            logger.error(`Promote transaction failed. Cause: ${err}`);
         }
     }
 
@@ -285,7 +286,7 @@ export class LegacyTangleHelper {
                 return response[0].hash as string;
             }
         } catch (err) {
-            console.log(err);
+            logger.error(`Replay bundle failed. Cause: ${err}`);
         }
     }
 

@@ -26,7 +26,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
 
         const currencyService = new CurrencyService(config);
         if (currencyService) {
-            log += await currencyService.update(true);
+            await currencyService.update(true);
         }
     } catch (err) {
         log += `Failed\n${err.toString()}\n`;

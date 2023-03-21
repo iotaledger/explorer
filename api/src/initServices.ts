@@ -1,6 +1,7 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
+import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { INetwork } from "./models/db/INetwork";
@@ -93,8 +94,9 @@ export async function initServices(config: IConfiguration) {
 
     const currencyService = new CurrencyService(config);
     const update = async () => {
-        const log = await currencyService.update();
-        console.log(log);
+        logger.verbose("[CurrencyService] Updating currency data");
+        // eslint-disable-next-line no-void
+        void currencyService.update();
     };
 
     setInterval(update, 60000);
@@ -108,6 +110,7 @@ export async function initServices(config: IConfiguration) {
  */
 function initLegacyServices(networkConfig: INetwork): void {
     if (networkConfig.feedEndpoint) {
+        logger.verbose(`Initializing Legacy services for ${networkConfig.network}`);
         ServiceFactory.register(
             `zmq-${networkConfig.network}`, () => new ZmqService(
                 networkConfig.feedEndpoint, [
@@ -135,6 +138,7 @@ function initLegacyServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initChrysalisServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Chrysalis services for ${networkConfig.network}`);
     ServiceFactory.register(
         `mqtt-${networkConfig.network}`, () => new ChrysalisMqttClient(
             networkConfig.feedEndpoint.split(";"))
@@ -157,6 +161,7 @@ function initChrysalisServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initStardustServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
     const nodeInfoService = new NodeInfoService(networkConfig);
 
     ServiceFactory.register(
@@ -194,14 +199,14 @@ function initStardustServices(networkConfig: INetwork): void {
 
     const influxDBService = new InfluxDBService(networkConfig);
     influxDBService.buildClient().then(hasClient => {
-        console.log("Registering client with name:", `influxdb-${networkConfig.network}`, "hasClient", hasClient);
+        logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
         if (hasClient) {
             ServiceFactory.register(
                 `influxdb-${networkConfig.network}`,
                 () => influxDBService
             );
         }
-    }).catch(e => console.log("Failed to build influxDb client for", networkConfig.network, e));
+    }).catch(e => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
 }
 
 /**
@@ -210,12 +215,14 @@ function initStardustServices(networkConfig: INetwork): void {
  */
 async function registerStorageServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
+        logger.info("Registering 'local' persistence services...");
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
 
         ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
             config.rootStorageFolder, "currency", "id"));
     } else if (config.dynamoDbConnection) {
+        logger.info("Registering 'dynamoDB' persistence services...");
         ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
             config.dynamoDbConnection, "network", "network"));
 

@@ -1,6 +1,7 @@
 import { CoinGeckoClient } from "../clients/coinGeckoClient";
 import { FixerClient } from "../clients/fixerClient";
 import { ServiceFactory } from "../factories/serviceFactory";
+import logger from "../logger";
 import { IConfiguration } from "../models/configuration/IConfiguration";
 import { ICoinStats, ICurrencyState } from "../models/db/ICurrencyState";
 import { IStorageService } from "../models/services/IStorageService";
@@ -58,7 +59,7 @@ export class CurrencyService {
      * @param force Force the update.
      * @returns Log of operations.
      */
-    public async update(force: boolean = false): Promise<string> {
+    public async update(force: boolean = false): Promise<void> {
         const now = new Date();
         const nowMs = now.getTime();
         const date = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
@@ -66,11 +67,11 @@ export class CurrencyService {
         const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
         const day = `0${date.getDate().toString()}`.slice(-2);
         const fullDate = `${year}-${month}-${day}`;
-        let log = `Currencies Updating ${new Date().toUTCString()}\n`;
+        logger.info(`Updating Currencies (${new Date().toUTCString()})`);
 
         try {
             if (this._isUpdating) {
-                log += "Already updating\n";
+                logger.debug("Currencies already updating...");
             } else {
                 this._isUpdating = true;
 
@@ -91,7 +92,7 @@ export class CurrencyService {
 
                 // Update Fixer rates every 4 hours so we dont hit rate limit
                 if (nowMs - lastFixerUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
-                    log += await this.updateFixerDxyRates(currentState, fullDate);
+                    await this.updateFixerDxyRates(currentState, fullDate);
                 }
 
                 for (const coin of CurrencyService.SUPPORTED_CURRENCIES) {
@@ -109,23 +110,22 @@ export class CurrencyService {
                         (lastCurrencyUpdate.getDate() !== now.getDate()) ||
                         force
                     ) {
-                        log += await this.updateCoinStats(coin, currentState, fullDate);
+                        await this.updateCoinStats(coin, currentState, fullDate);
 
                         if (currencyStorageService) {
                             await currencyStorageService.set(currentState);
                         }
                     } else {
-                        log += "No update required\n";
+                        logger.info("No currencies update required");
                     }
                 }
 
                 this._isUpdating = false;
             }
         } catch (err) {
-            log += `Error updating currencies ${err.toString()}\n`;
+            logger.error(`Error updating currencies ${err.toString()}`);
             this._isUpdating = false;
         }
-        return log;
     }
 
     /**
@@ -136,26 +136,23 @@ export class CurrencyService {
     private async updateFixerDxyRates(
         currentState: ICurrencyState,
         date: string
-    ): Promise<string> {
-        let log = `Fixer API ${date}\n`;
+    ): Promise<void> {
         if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
-            log += "Updating FX Rates\n";
+            logger.verbose(`[Fixer API] Updating Currency Rates (${date})...`);
 
             const fixerClient = new FixerClient(this._config.fixerApiKey);
             const data = await fixerClient.latest("EUR");
 
             if (data?.rates && data?.base) {
-                log += `Rates ${JSON.stringify(data?.rates)}\n`;
+                logger.debug(`[Fixer API] Currency Rates: ${JSON.stringify(data?.rates)}`);
                 data.rates[data.base] = 1;
 
                 currentState.fiatExchangeRatesEur = data.rates;
                 currentState.lastFixerUpdate = Date.now();
             }
         } else {
-            log += "Fixer Api key NOT FOUND!\n";
+            logger.warn("Fixer Api key NOT FOUND!");
         }
-
-        return log;
     }
 
     /**
@@ -168,8 +165,8 @@ export class CurrencyService {
         coin: string,
         currentState: ICurrencyState,
         date: string
-    ): Promise<string> {
-        let log = `Coin Gecko ${date}\n`;
+    ): Promise<void> {
+        logger.verbose(`[Coin Gecko] Updating Coin stats (${date})...`);
 
         const coinGeckoClient = new CoinGeckoClient();
         const coinMarkets = await coinGeckoClient.coinMarkets(coin, "eur");
@@ -191,10 +188,7 @@ export class CurrencyService {
             };
 
             currentState.coinStats[coin] = coinStats;
-            log += `Markets ${JSON.stringify(coinMarkets)}\n`;
+            logger.debug(`Markets ${JSON.stringify(coinMarkets)}`);
         }
-
-
-        return log;
     }
 }

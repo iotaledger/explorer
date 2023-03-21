@@ -1,3 +1,4 @@
+import logger from "../logger";
 import { ILatestResponse } from "../models/clients/fixer/ILatestResponse";
 import { FetchHelper } from "../utils/fetchHelper";
 
@@ -41,7 +42,7 @@ export class FixerClient {
                 { apiKey: this._apiKey }
             );
         } catch (e) {
-            console.log("Failed fetching latest from fixerAPI", e);
+            logger.error(`Failed fetching latest from fixerAPI. Cause: ${e}`);
         }
 
         return response;
