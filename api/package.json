@@ -18,7 +18,7 @@
         "build-config": "copyfiles -u 2 ./src/data/config*.json ./dist/data/",
         "build": "npm-run-all build-clean build-compile build-lint build-config",
         "serve-mon": "nodemon ./dist/index",
-        "start-dev": "run-p serve-mon build-watch",
+        "start-dev": "NODE_ENV=development run-p serve-mon build-watch",
         "start": "node ./dist/index"
     },
     "engines": {

@@ -14,6 +14,8 @@ const theFormat = combine(
     printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`)
 );
 
+const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
+
 const logger = createLogger({
     level: logLevel,
     format: format.json(),
@@ -21,10 +23,7 @@ const logger = createLogger({
     transports: [
         new transports.Console({
             level: logLevel,
-            format: combine(
-                format.colorize(),
-                theFormat
-            )
+            format: loggerFormat
         })
     ]
 });
