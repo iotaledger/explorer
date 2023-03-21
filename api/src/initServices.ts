@@ -94,7 +94,7 @@ export async function initServices(config: IConfiguration) {
 
     const currencyService = new CurrencyService(config);
     const update = async () => {
-        logger.verbose("[CurrencyService] Updateing currency data");
+        logger.verbose("[CurrencyService] Updating currency data");
         // eslint-disable-next-line no-void
         void currencyService.update();
     };

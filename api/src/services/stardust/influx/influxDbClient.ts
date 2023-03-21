@@ -440,8 +440,8 @@ export abstract class InfluxDbClient {
             for (const update of results) {
                 if (this.isAnyFieldNotNull<T>(update)) {
                     if (debug) {
-                        console.debug(
-                            `[InfluxDbClient(${network})] setting ${description} cache entry:`,
+                        logger.debug(
+                            `[InfluxDb] Setting ${description} cache entry (${network}):`,
                             moment(update.time).format(DAY_KEY_FORMAT)
                         );
                     }

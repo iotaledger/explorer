@@ -71,7 +71,7 @@ export class CurrencyService {
 
         try {
             if (this._isUpdating) {
-                logger.debug("Currencies already updateing...");
+                logger.debug("Currencies already updating...");
             } else {
                 this._isUpdating = true;
 
@@ -138,7 +138,7 @@ export class CurrencyService {
         date: string
     ): Promise<void> {
         if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
-            logger.verbose(`[Fixer API] Updateing Currency Rates (${date})...`);
+            logger.verbose(`[Fixer API] Updating Currency Rates (${date})...`);
 
             const fixerClient = new FixerClient(this._config.fixerApiKey);
             const data = await fixerClient.latest("EUR");
@@ -166,7 +166,7 @@ export class CurrencyService {
         currentState: ICurrencyState,
         date: string
     ): Promise<void> {
-        logger.verbose(`[Coin Gecko] Updateing Coin stats (${date})...`);
+        logger.verbose(`[Coin Gecko] Updating Coin stats (${date})...`);
 
         const coinGeckoClient = new CoinGeckoClient();
         const coinMarkets = await coinGeckoClient.coinMarkets(coin, "eur");
