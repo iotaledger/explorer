@@ -1,6 +1,5 @@
 import moment from "moment";
 import { createLogger, format, transports } from "winston";
-import "winston-daily-rotate-file";
 
 // error < warn < info < verbose < debug
 const logLevel: string = process.env.LOG_LEVEL ?? "info";
@@ -20,24 +19,15 @@ const logger = createLogger({
     format: format.json(),
     defaultMeta: { service: `Explorer ${version}` },
     transports: [
-        new transports.DailyRotateFile({
-            filename: "logs/app-%DATE%.log",
-            zippedArchive: true,
-            maxSize: "20m",
-            maxFiles: "14d"
+        new transports.Console({
+            level: logLevel,
+            format: combine(
+                format.colorize(),
+                theFormat
+            )
         })
     ]
 });
-
-if (process.env.NODE_ENV !== "production") {
-    logger.add(new transports.Console({
-        level: logLevel,
-        format: combine(
-            format.colorize(),
-            theFormat
-        )
-    }));
-}
 
 export default logger;
 
