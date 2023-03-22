@@ -1,7 +1,8 @@
 import { HexEncodedString } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { Converter, ReadStream } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { deserializeParticipationEventMetadata } from "../../helpers/stardust/valueFormatHelper";
 import { TextHelper } from "../../helpers/textHelper";
 import "./DataToggle.scss";
 import { DataToggleProps } from "./DataToggleProps";
@@ -38,6 +39,13 @@ const DataToggle: React.FC<DataToggleProps> = (
             utf8View = Converter.hexToUtf8(sourceData);
             try {
                 jsonView = JSON.stringify(JSON.parse(utf8View), undefined, "  ");
+            } catch { }
+        }
+        if (isParticipationEventMetadata) {
+            const readStream = new ReadStream(Converter.hexToBytes(sourceData));
+            const participations = deserializeParticipationEventMetadata(readStream);
+            try {
+                jsonView = JSON.stringify(participations, undefined, "  ");
             } catch { }
         }
 

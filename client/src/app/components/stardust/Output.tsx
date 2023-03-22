@@ -3,8 +3,7 @@ import {
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
     UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
-    TIMELOCK_UNLOCK_CONDITION_TYPE,
-    TransactionHelper
+    TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper, TAG_FEATURE_TYPE, ITagFeature
 } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
@@ -35,6 +34,11 @@ class Output extends Component<OutputProps, OutputState> {
      * The component context type.
      */
     public static contextType = NetworkContext;
+
+    /**
+     * The hex encoded word PARTICIPATE.
+     */
+    public static HEX_PARTICIPATE = "0x5041525449434950415445";
 
     /**
      * The component context.
@@ -73,6 +77,7 @@ class Output extends Component<OutputProps, OutputState> {
             `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
         const isSpecialCondition = this.hasSpecialCondition();
+        const isParticipationEventOutput = this.isParticipationEventOutput();
 
         const specialUnlockCondition = (
             output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
@@ -232,6 +237,7 @@ class Output extends Component<OutputProps, OutputState> {
                                         feature={feature}
                                         isPreExpanded={isPreExpanded}
                                         isImmutable={false}
+                                        isParticipationEventMetadata={isParticipationEventOutput}
                                     />
                                 ))}
                                 {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (
@@ -351,6 +357,24 @@ class Output extends Component<OutputProps, OutputState> {
             );
         }
         return specialUnlockConditionExists;
+    }
+
+    /**
+     * Check if output is used for participation event
+     * @returns true if participation event output.
+     */
+    private isParticipationEventOutput(): boolean {
+        const output = this.props.output;
+        if (output.type === BASIC_OUTPUT_TYPE) {
+            const tagFeature = output.features?.find(
+                feature => feature.type === TAG_FEATURE_TYPE
+            ) as ITagFeature;
+
+            if (tagFeature) {
+                return tagFeature.tag === Output.HEX_PARTICIPATE;
+            }
+        }
+        return false;
     }
 }
 
