@@ -23,6 +23,10 @@ interface TabOption {
      * Content for info icon modal that will be rendered on the tab.
      */
     infoContent?: ModalData;
+    /**
+     * Is the tab hidden (it will hide the tab if true).
+     */
+    hidden?: boolean;
 }
 
 interface TabOptions {
@@ -97,11 +101,16 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
                     (tabOptions[tab]?.infoContent !== undefined ? tabOptions[tab].infoContent : undefined)
                     : undefined;
 
+                const hidden = tabOptions ?
+                    (tabOptions[tab]?.hidden !== undefined ? tabOptions[tab].hidden : false)
+                    : false;
+
                 return (
                     <div
                         key={`tab-btn-${idx}`}
                         className={classNames("tab-wrapper",
                             { "active": idx === selectedTab },
+                            { hidden },
                             { "disabled": isDisabled })}
                         onClick={() => {
                             if (!isDisabled) {

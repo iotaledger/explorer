@@ -22,6 +22,8 @@ import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransacti
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
+import { IParticipationEventRequest } from "../../models/api/stardust/participation/IParticipationEventRequest";
+import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
@@ -670,6 +672,17 @@ export class StardustTangleCacheService extends TangleCacheService {
         return !response.error ?
             { outputs: response.outputs } :
             { error: response.error };
+    }
+
+    /**
+     * Get the participation events details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async participationEventDetails(request: IParticipationEventRequest): Promise<IParticipationEventResponse> {
+        const response = await this._api.participationEventDetails(request);
+
+        return response;
     }
 
     /**

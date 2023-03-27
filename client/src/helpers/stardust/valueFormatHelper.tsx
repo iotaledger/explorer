@@ -124,4 +124,3 @@ export function deserializeParticipation(readStream: ReadStream): Participation 
         answers
     };
 }
-

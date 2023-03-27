@@ -43,6 +43,8 @@ import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsReq
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { IParticipationEventRequest } from "../../models/api/stardust/participation/IParticipationEventRequest";
+import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
@@ -410,6 +412,18 @@ export class StardustApiClient extends ApiClient {
     public async didDocument(request: IIdentityStardustResolveRequest): Promise<IIdentityStardustResolveResponse> {
         return this.callApi<unknown, IIdentityStardustResolveResponse>(
             `stardust/did/${request.network}/${request.did}/document`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the participation events details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async participationEventDetails(request: IParticipationEventRequest): Promise<IParticipationEventResponse> {
+        return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
+            `stardust/participation/events/${request.network}/${request.eventId}`,
             "get"
         );
     }
