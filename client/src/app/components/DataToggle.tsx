@@ -4,6 +4,7 @@ import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { deserializeParticipationEventMetadata } from "../../helpers/stardust/valueFormatHelper";
 import { TextHelper } from "../../helpers/textHelper";
+import CopyButton from "./CopyButton";
 import "./DataToggle.scss";
 import { DataToggleProps } from "./DataToggleProps";
 import JsonViewer from "./JsonViewer";
@@ -25,7 +26,7 @@ const DataToggle: React.FC<DataToggleProps> = (
 ) => {
     const [options, setOptions] = useState<DataToggleOption[]>([]);
     const [isJson, setIsJson] = useState<boolean>(false);
-    const [activeContent, setActiveContent] = useState<string>();
+    const [activeOption, setActiveOption] = useState<DataToggleOption>();
     const [activeTab, setActiveTab] = useState<number>(0);
 
     useEffect(() => {
@@ -64,20 +65,21 @@ const DataToggle: React.FC<DataToggleProps> = (
     }, [sourceData]);
 
     useEffect(() => {
-            const activeOption = options[activeTab];
-            if (activeOption) {
-                setIsJson(activeOption.label === "JSON");
-                setActiveContent(activeOption.content);
+            const option = options[activeTab];
+            if (option) {
+                setIsJson(option.label === "JSON");
+                setActiveOption(option);
             }
     }, [activeTab, options]);
 
+    const content = activeOption?.content;
     return (
         <div className="data-toggle">
             {link ?
-                <a className="data-toggle--content" href={link}>{activeContent}</a> :
+                <a className="data-toggle--content" href={link}>{content}</a> :
                 (isJson ?
-                    <div className="data-toggle--content"><JsonViewer json={activeContent} /></div> :
-                    <div className="data-toggle--content">{activeContent}</div>)}
+                    <div className="data-toggle--content"><JsonViewer json={content} /></div> :
+                    <div className="data-toggle--content">{content}</div>)}
             <div className="data-toggle--tabs">
                 {options.map((option, index) => (
                     option.content ? (
@@ -91,6 +93,12 @@ const DataToggle: React.FC<DataToggleProps> = (
                             {option.label}
                         </div>) : null
                 ))}
+                <div className="data-toggle--tab margin-t-2">
+                    <CopyButton copy={(content && activeOption?.label === "HEX") ?
+                        content.replace(/\s+/g, "") :
+                        content}
+                    />
+                </div>
             </div>
         </div>
     );
