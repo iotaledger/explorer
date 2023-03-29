@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import nftSchemeIRC27 from "../../../../../../assets/schemas/nft-schema-IRC27.json";
 import { useNftMetadataUri } from "../../../../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../../../../helpers/hooks/useTokenRegistryNftCheck";
+import { tryParseMetadata } from "../../../../../../helpers/stardust/valueFormatHelper";
 import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "../../../../../../models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../../../../DataToggle";
@@ -9,7 +11,7 @@ import JsonViewer from "../../../../JsonViewer";
 import TruncatedId from "../../../TruncatedId";
 import {
     getNftImageContent, isSupportedImageFormat, loadingImagePlaceholder, MESSAGE_NFT_SCHEMA_STANDARD,
-    tryParseNftMetadata, unsupportedImageFormatPlaceholder
+    unsupportedImageFormatPlaceholder
 } from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
 
@@ -32,12 +34,12 @@ interface NftMetadataSectionProps {
 
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, isLoading }) => {
     const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
-    const [isWhitelisted, isChecking] = useTokenRegistryNftCheck(network, nft.issuerId, nft.nftId);
+    const [isWhitelisted, isChecking] = useTokenRegistryNftCheck(nft.issuerId, nft.nftId);
     const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
         if (nft.metadata) {
-            setStandardMetadata(tryParseNftMetadata(nft.metadata));
+            setStandardMetadata(tryParseMetadata<INftImmutableMetadata>(nft.metadata, nftSchemeIRC27));
         }
     }, [nft.metadata]);
 
