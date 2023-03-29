@@ -22,11 +22,10 @@ import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
-import { StardustFeedService } from "./services/stardust/stardustFeedService";
-import { StardustItemsService } from "./services/stardust/stardustItemsService";
-import { StardustStatsService } from "./services/stardust/stardustStatsService";
+import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === LEGACY ||
@@ -174,14 +173,9 @@ function initStardustServices(networkConfig: INetwork): void {
             networkConfig.feedEndpoint.split(";"))
     );
 
+    const feedClient = new StardustFeed(networkConfig.network);
     ServiceFactory.register(
-        `feed-${networkConfig.network}`, () => new StardustFeedService(
-            networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
-    );
-
-    ServiceFactory.register(
-        `items-${networkConfig.network}`,
-        () => new StardustItemsService(networkConfig.network)
+        `feed-${networkConfig.network}`, () => feedClient
     );
 
     const stardustStatsService = new StardustStatsService(networkConfig);

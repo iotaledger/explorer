@@ -3,7 +3,7 @@ import { ILatestMilestonesReponse } from "../../../../models/api/stardust/milest
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
-import { StardustItemsService } from "../../../../services/stardust/stardustItemsService";
+import { StardustFeed } from "../../../../services/stardust/feed/stardustFeed";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -26,8 +26,8 @@ export async function get(
         return { error: "Endpoint available only on Stardust networks.", milestones: [] };
     }
 
-    const itemsService = ServiceFactory.get<StardustItemsService>(`items-${request.network}`);
-    const milestones = itemsService.getLatestMilestones();
+    const feedService = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
+    const milestones = feedService.getLatestMilestones;
 
     return { milestones };
 }

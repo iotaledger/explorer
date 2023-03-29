@@ -12,22 +12,17 @@ export interface IFeedItemMetadata {
     timestamp?: number;
 
     /**
-     * Is the item confirmed, only applies to Legacy.
-     */
-    confirmed?: number;
-
-    /**
-     * Is the item referenced, only applies to Stardust.
+     * Is the item referenced.
      */
     referenced?: number;
 
     /**
-     * Is the item solid, only applies to Stardust.
+     * Is the item solid.
      */
     solid?: boolean;
 
     /**
-     * Is the item conflicting, only applies to Stardust.
+     * Is the item conflicting.
      */
     conflicting?: boolean;
 
@@ -37,7 +32,7 @@ export interface IFeedItemMetadata {
     conflictReason?: ConflictReason;
 
     /**
-     * Is the item included, only applies to Stardust.
+     * Is the item included.
      */
     included?: boolean;
 }

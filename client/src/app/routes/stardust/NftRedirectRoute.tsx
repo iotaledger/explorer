@@ -4,7 +4,7 @@ import { Redirect, RouteComponentProps } from "react-router-dom";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import NetworkContext from "../../context/NetworkContext";
 
-export interface NftRedirectRouteProps {
+interface NftRedirectRouteProps {
     /**
      * The network.
      */

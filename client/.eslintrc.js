@@ -602,7 +602,7 @@ module.exports = {
             "error"
         ],
         "newline-per-chained-call": [
-            "error", { "ignoreChainWithDepth": 3 }
+            "off"
         ],
         "no-alert": [
             "error"
