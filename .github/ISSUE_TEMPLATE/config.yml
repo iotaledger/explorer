@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Request a feature
-    url: https://github.com/iotaledger/explorer/discussions/categories/features-enhancements
-    about: Propose a feature or enhancement in GitHub discussions
   - name: Security vulnerabilities
     url: security@iota.org
     about: Please report security vulnerabilities here.
