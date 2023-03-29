@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
@@ -9,6 +9,7 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { useIsMounted } from "./useIsMounted";
 
 const MAX_MILESTONE_ITEMS = 15;
+const FEER_PROBE_THRESHOLD: number = 750;
 
 /**
  * Hook into feed service for data
@@ -21,32 +22,50 @@ export function useBlockFeed(network: string): [
 ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [latestMilestonIndex, setLatestMilestoneIndex] = useState<number | null>(null);
+    const feedProbe = useRef<NodeJS.Timer | null>(null);
+    const lastUpdateTime = useRef<number>(0);
+    const resetCounter = useRef<number>(0);
     const [milestones, setMilestones] = useState<IMilestoneFeedItem[]>([]);
+    const [latestMilestonIndex, setLatestMilestoneIndex] = useState<number | null>(null);
 
     const fetchLatestCachedMilestones = useCallback(async () => {
-        const latestMilestones: ILatestMilestonesReponse = await apiClient.latestMilestones(network);
-
-        if (isMounted) {
-            setMilestones(
-                latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
-            );
+        if (apiClient) {
+            const latestMilestones: ILatestMilestonesReponse = await apiClient.latestMilestones(network);
+            if (isMounted) {
+                setMilestones(
+                    latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
+                );
+            }
         }
     }, [network]);
 
     useEffect(() => {
-        setMilestones([]);
-        setLatestMilestoneIndex(null);
+        feedProbe.current = setInterval(() => {
+            if (!lastUpdateTime.current) {
+                lastUpdateTime.current = Date.now();
+            }
+            const msSinceLast = Date.now() - lastUpdateTime.current;
 
-        if (apiClient) {
-            // eslint-disable-next-line no-void
-            void fetchLatestCachedMilestones();
-        }
+            if (msSinceLast > FEER_PROBE_THRESHOLD) {
+                resetCounter.current += 1;
+            }
+        }, FEER_PROBE_THRESHOLD);
 
+        return () => {
+            feedProbe.current = null;
+            lastUpdateTime.current = 0;
+        };
+    }, [network, feedProbe]);
+
+    useEffect(() => {
+        // eslint-disable-next-line no-void
+        void fetchLatestCachedMilestones();
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
 
         if (feedService) {
             const onNewBlockData = (newBlockData: IFeedBlockData) => {
+                lastUpdateTime.current = Date.now();
+
                 if (isMounted && newBlockData.payloadType === "Milestone") {
                     if (isMounted && (latestMilestonIndex ?? 0) < (newBlockData.properties?.index as number)) {
                         setLatestMilestoneIndex(newBlockData.properties?.index as number);
@@ -78,8 +97,10 @@ export function useBlockFeed(network: string): [
 
         return () => {
             feedService.unsubscribe();
+            setMilestones([]);
+            setLatestMilestoneIndex(null);
         };
-    }, [network]);
+    }, [network, resetCounter.current]);
 
     return [milestones, latestMilestonIndex];
 }
