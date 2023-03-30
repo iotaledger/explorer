@@ -6,6 +6,7 @@ import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
 import { IFeedUpdate } from "../../../models/api/stardust/feed/IFeedUpdate";
 import { ILatestMilestone } from "../../../models/api/stardust/milestone/ILatestMilestonesResponse";
+import { NodeInfoService } from "../nodeInfoService";
 
 const CACHE_TRIM_INTERVAL_MS = 60000;
 const MAX_BLOCKS_CACHE_SIZE = 500;
@@ -45,6 +46,11 @@ export class StardustFeed {
     private blockMetadataCacheTrimTimer: NodeJS.Timer | null = null;
 
     /**
+     * The protocol.version for the network in context (from NodeInfo).
+     */
+    private readonly networkProtocolVersion: number;
+
+    /**
      * Creates a new instance of StardustFeed.
      * @param networkId The network id.
      */
@@ -52,10 +58,19 @@ export class StardustFeed {
         this.subscribers = {};
         this.blockMetadataCache = new Map();
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
-        this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
+        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
-        this.setupCacheTrimJob();
-        this.connect();
+        console.log(this._mqttClient, nodeInfoService);
+        if (this._mqttClient && nodeInfoService) {
+            this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
+            const nodeInfo = nodeInfoService.getNodeInfo();
+            this.networkProtocolVersion = nodeInfo.protocolVersion;
+
+            this.setupCacheTrimJob();
+            this.connect();
+        } else {
+            throw new Error(`Failed to build stardustFeed instance for ${networkId}`);
+        }
     }
 
 
@@ -137,7 +152,7 @@ export class StardustFeed {
         this._mqttClient.milestone(async (_, milestonePayload) => {
             try {
                 const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
-                const blockId = blockIdFromMilestonePayload(2, milestonePayload);
+                const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
                 const timestamp = milestonePayload.timestamp * 1000;
 

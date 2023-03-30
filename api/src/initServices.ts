@@ -171,9 +171,9 @@ function initStardustServices(networkConfig: INetwork): void {
             networkConfig.feedEndpoint.split(";"))
     );
 
-    const feedClient = new StardustFeed(networkConfig.network);
     ServiceFactory.register(
-        `feed-${networkConfig.network}`, () => feedClient
+        `feed-${networkConfig.network}`,
+        () => new StardustFeed(networkConfig.network)
     );
 
     const stardustStatsService = new StardustStatsService(networkConfig);
