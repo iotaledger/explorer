@@ -20,6 +20,10 @@ import { IFeedUpdate } from "../../models/api/stardust/feed/IFeedUpdate";
 import { INetwork } from "../../models/config/INetwork";
 import { NetworkService } from "../networkService";
 
+const CACHE_TRIM_INTERVAL_MS = 10000;
+const MAX_BLOCKS_CACHE_SIZE = 100;
+const MAX_MILESTONES_CACHE_SIZE = 25;
+
 export class StardustFeedClient {
     /**
      * Network configuration.
@@ -51,7 +55,10 @@ export class StardustFeedClient {
      */
     private readonly latestMilestones: Map<string, IFeedBlockData>;
 
-    // ADD JOB TO TRIM THE CACHE
+    /**
+     * The cache maps trim job timer.
+     */
+    private cacheTrimTimer: NodeJS.Timer | null = null;
 
     /**
      * Create a new instance of TransactionsClient.
@@ -70,6 +77,8 @@ export class StardustFeedClient {
         } else {
             this._networkConfig = theNetworkConfig;
         }
+
+        this.setupCacheTrimJob();
     }
 
     public subscribe(
@@ -219,4 +228,31 @@ export class StardustFeedClient {
             payloadType
         };
     }
+
+    private setupCacheTrimJob() {
+        if (this.cacheTrimTimer) {
+            clearInterval(this.cacheTrimTimer);
+            this.cacheTrimTimer = null;
+        }
+
+        this.cacheTrimTimer = setInterval(() => {
+            let blocksSize = this.latestBlocks.size;
+            let milestonesSize = this.latestMilestones.size;
+
+            while (blocksSize > MAX_BLOCKS_CACHE_SIZE) {
+                const keyIterator = this.latestBlocks.keys();
+                const oldestKey = keyIterator.next().value as string;
+                this.latestBlocks.delete(oldestKey); // remove the oldest key-value pair from the Map
+                blocksSize--;
+            }
+
+            while (milestonesSize > MAX_MILESTONES_CACHE_SIZE) {
+                const keyIterator = this.latestMilestones.keys();
+                const oldestKey = keyIterator.next().value as string;
+                this.latestMilestones.delete(oldestKey); // remove the oldest key-value pair from the Map
+                milestonesSize--;
+            }
+        }, CACHE_TRIM_INTERVAL_MS);
+    }
 }
+
