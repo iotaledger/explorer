@@ -119,13 +119,13 @@ export class StardustFeedClient {
                         if (update.blockMetadata) {
                             const existingBlockData = this.latestBlocks.get(update.blockMetadata?.blockId) ?? null;
                             if (existingBlockData) {
-                                existingBlockData.metaData = {
-                                    ...existingBlockData.metaData,
+                                existingBlockData.metadata = {
+                                    ...existingBlockData.metadata,
                                     ...update.blockMetadata.metadata
                                 };
 
                                 onMetadataUpdatedCallback?.(
-                                    { [existingBlockData.blockId]: existingBlockData.metaData }
+                                    { [existingBlockData.blockId]: existingBlockData.metadata }
                                 );
                             }
                         }

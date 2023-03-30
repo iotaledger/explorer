@@ -119,7 +119,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                         </a>
                                     </div>
                                     {selectedFeedItem?.properties?.Tag &&
-                                        selectedFeedItem.metaData?.milestone === undefined && (
+                                        selectedFeedItem.metadata?.milestone === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">Tag</div>
                                                 <div className="card--value overflow-ellipsis">
@@ -153,18 +153,18 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                             </div>
                                         </React.Fragment>
                                     )}
-                                    {selectedFeedItem.metaData?.milestone !== undefined && (
+                                    {selectedFeedItem.metadata?.milestone !== undefined && (
                                         <React.Fragment>
                                             <div className="card--label">
                                                 Milestone
                                             </div>
                                             <div className="card--value">
-                                                {selectedFeedItem.metaData.milestone}
+                                                {selectedFeedItem.metadata.milestone}
                                             </div>
                                         </React.Fragment>
                                     )}
                                     {selectedFeedItem?.value !== undefined &&
-                                        selectedFeedItem.metaData?.milestone === undefined && (
+                                        selectedFeedItem.metadata?.milestone === undefined && (
                                             <React.Fragment>
                                                 <div className="card--label">Value</div>
                                                 <div className="card--value">

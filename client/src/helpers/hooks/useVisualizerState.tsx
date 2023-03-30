@@ -121,8 +121,8 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                         const node = graph.current.getNode(noPrefixId);
                         if (node) {
                             if (node.data) {
-                                node.data.feedItem.metaData = {
-                                    ...node.data.feedItem.metaData,
+                                node.data.feedItem.metadata = {
+                                    ...node.data.feedItem.metadata,
                                     ...updatedMetadata[blockId]
                                 };
                             }
@@ -283,15 +283,15 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             size = 20;
             if (highlight) {
                 color = COLOR_SEARCH_RESULT;
-            } else if (node.data.feedItem.metaData?.milestone) {
+            } else if (node.data.feedItem.metadata?.milestone) {
                 color = COLOR_MILESTONE;
                 size = 30;
-            } else if (node.data.feedItem.metaData?.conflicting) {
+            } else if (node.data.feedItem.metadata?.conflicting) {
                 color = COLOR_CONFLICTING;
-            } else if (node.data.feedItem.metaData?.included) {
+            } else if (node.data.feedItem.metadata?.included) {
                 color = COLOR_INCLUDED;
                 size = 30;
-            } else if (node.data.feedItem.metaData?.referenced) {
+            } else if (node.data.feedItem.metadata?.referenced) {
                 color = COLOR_REFERENCED;
             } else {
                 color = COLOR_PENDING;

@@ -29,5 +29,5 @@ export interface IFeedBlockData {
     /**
      * Metadata for the item.
      */
-    metaData?: IFeedBlockMetadata;
+    metadata?: IFeedBlockMetadata;
 }
