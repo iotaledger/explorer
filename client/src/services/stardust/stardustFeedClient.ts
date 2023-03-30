@@ -229,6 +229,9 @@ export class StardustFeedClient {
         };
     }
 
+    /**
+     * Setup a periodic interval to trim if the cache map is over the max limit.
+     */
     private setupCacheTrimJob() {
         if (this.cacheTrimTimer) {
             clearInterval(this.cacheTrimTimer);

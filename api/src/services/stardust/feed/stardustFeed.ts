@@ -7,6 +7,9 @@ import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMe
 import { IFeedUpdate } from "../../../models/api/stardust/feed/IFeedUpdate";
 import { ILatestMilestone } from "../../../models/api/stardust/milestone/ILatestMilestonesResponse";
 
+const CACHE_TRIM_INTERVAL_MS = 60000;
+const MAX_BLOCKS_CACHE_SIZE = 500;
+
 const MAX_MILESTONE_LATEST = 30;
 
 /**
@@ -34,7 +37,12 @@ export class StardustFeed {
     /**
      * The most recent block metadata.
      */
-    private readonly blockMetadataCache: { [blockId: string]: IFeedItemMetadata };
+    private readonly blockMetadataCache: Map<string, IFeedItemMetadata>;
+
+    /**
+     * The cache maps trim job timer.
+     */
+    private blockMetadataCacheTrimTimer: NodeJS.Timer | null = null;
 
     /**
      * Creates a new instance of StardustFeed.
@@ -42,10 +50,11 @@ export class StardustFeed {
      */
     constructor(networkId: string) {
         this.subscribers = {};
-        this.blockMetadataCache = {};
+        this.blockMetadataCache = new Map();
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
         this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
 
+        this.setupCacheTrimJob();
         this.connect();
     }
 
@@ -94,8 +103,16 @@ export class StardustFeed {
         this._mqttClient.blocksReferenced(
             (_: string, metadata: IBlockMetadata) => {
                 // update cache
-                this.blockMetadataCache[metadata.blockId] = {
-                    ...this.blockMetadataCache[metadata.blockId],
+                let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
+                currentEntry = !currentEntry ? {
+                    milestone: metadata.milestoneIndex,
+                    referenced: metadata.referencedByMilestoneIndex,
+                    solid: metadata.isSolid,
+                    conflicting: metadata.ledgerInclusionState === "conflicting",
+                    conflictReason: metadata.conflictReason,
+                    included: metadata.ledgerInclusionState === "included"
+                } : {
+                    ...currentEntry,
                     milestone: metadata.milestoneIndex,
                     referenced: metadata.referencedByMilestoneIndex,
                     solid: metadata.isSolid,
@@ -104,11 +121,12 @@ export class StardustFeed {
                     included: metadata.ledgerInclusionState === "included"
                 };
 
+                this.blockMetadataCache.set(metadata.blockId, currentEntry);
 
                 const update: Partial<IFeedUpdate> = {
                     blockMetadata: {
                         blockId: metadata.blockId,
-                        metadata: this.blockMetadataCache[metadata.blockId]
+                        metadata: currentEntry
                     }
                 };
 
@@ -122,12 +140,6 @@ export class StardustFeed {
                 const blockId = blockIdFromMilestonePayload(2, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
                 const timestamp = milestonePayload.timestamp * 1000;
-
-                this.blockMetadataCache[blockId] = {
-                    ...this.blockMetadataCache[blockId],
-                    milestone: milestoneIndex,
-                    timestamp
-                };
 
                 // eslint-disable-next-line no-void
                 void this.updateLatestMilestoneCache(blockId, milestoneIndex, milestoneId, timestamp);
@@ -177,6 +189,27 @@ export class StardustFeed {
                 this.latestMilestonesCache.pop();
             }
         }
+    }
+
+    /**
+     * Setup a periodic interval to trim if the cache map is over the max limit.
+     */
+    private setupCacheTrimJob() {
+        if (this.blockMetadataCacheTrimTimer) {
+            clearInterval(this.blockMetadataCacheTrimTimer);
+            this.blockMetadataCacheTrimTimer = null;
+        }
+
+        this.blockMetadataCacheTrimTimer = setInterval(() => {
+            let cacheSize = this.blockMetadataCache.size;
+
+            while (cacheSize > MAX_BLOCKS_CACHE_SIZE) {
+                const keyIterator = this.blockMetadataCache.keys();
+                const oldestKey = keyIterator.next().value as string;
+                this.blockMetadataCache.delete(oldestKey); // remove the oldest key-value pair from the Map
+                cacheSize--;
+            }
+        }, CACHE_TRIM_INTERVAL_MS);
     }
 }
 
