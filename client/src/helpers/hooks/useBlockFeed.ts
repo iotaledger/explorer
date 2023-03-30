@@ -9,7 +9,7 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { useIsMounted } from "./useIsMounted";
 
 const MAX_MILESTONE_ITEMS = 15;
-const FEER_PROBE_THRESHOLD: number = 750;
+const FEED_PROBE_THRESHOLD: number = 750;
 
 /**
  * Hook into feed service for data
@@ -46,10 +46,10 @@ export function useBlockFeed(network: string): [
             }
             const msSinceLast = Date.now() - lastUpdateTime.current;
 
-            if (msSinceLast > FEER_PROBE_THRESHOLD) {
+            if (msSinceLast > FEED_PROBE_THRESHOLD) {
                 resetCounter.current += 1;
             }
-        }, FEER_PROBE_THRESHOLD);
+        }, FEED_PROBE_THRESHOLD);
 
         return () => {
             if (feedProbe.current) {

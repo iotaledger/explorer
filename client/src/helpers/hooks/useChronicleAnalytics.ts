@@ -13,7 +13,7 @@ const CHRONICLE_ANALYTICS_REFRESH_MINUTES = 5;
 /**
  * Periodicaly refresh chronicle analytic stats.
  * @param network The network in context.
- * @returns The Chronicle analytic stats stats.
+ * @returns The Chronicle analytic stats.
  */
 export function useChronicleAnalytics(network: string): [
     (IAnalyticStats | null)
