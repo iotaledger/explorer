@@ -52,6 +52,9 @@ export function useBlockFeed(network: string): [
         }, FEER_PROBE_THRESHOLD);
 
         return () => {
+            if (feedProbe.current) {
+                clearInterval(feedProbe.current);
+            }
             feedProbe.current = null;
             lastUpdateTime.current = 0;
         };
