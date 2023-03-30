@@ -9,7 +9,6 @@ import { CHRYSALIS, LEGACY, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
 import { IItemsService as IItemsServiceLegacy } from "./models/services/legacy/IItemsService";
-import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalis/chrysalisFeedService";
 import { ChrysalisItemsService } from "./services/chrysalis/chrysalisItemsService";
@@ -74,19 +73,18 @@ export async function initServices(config: IConfiguration) {
                 }
             }
 
-            const itemsService = ServiceFactory.get<IItemsServiceLegacy |
-                IItemsServiceChrysalis |
-                IItemsServiceStardust>(
+            if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
+                const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
                     `items-${networkConfig.network}`
                 );
+                if (itemsService) {
+                    itemsService.init();
+                }
 
-            if (itemsService) {
-                itemsService.init();
-            }
-
-            const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
-            if (feedService) {
-                feedService.connect();
+                const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
+                if (feedService) {
+                    feedService.connect();
+                }
             }
         }
     }

@@ -6,7 +6,6 @@ import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { CHRYSALIS, LEGACY, STARDUST } from "../../models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
 import { IItemsService as IItemsServiceLegacy } from "../../models/services/legacy/IItemsService";
-import { IItemsService as IItemsServiceStardust } from "../../models/services/stardust/IItemsService";
 import { NetworkService } from "../../services/networkService";
 import { StardustFeed } from "../../services/stardust/feed/stardustFeed";
 import { ValidationHelper } from "../../utils/validationHelper";
@@ -34,8 +33,7 @@ export async function unsubscribe(
 
         if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
             const itemsService = ServiceFactory.get<IItemsServiceLegacy |
-                IItemsServiceChrysalis |
-                IItemsServiceStardust>(
+                IItemsServiceChrysalis>(
                     `items-${request.network}`
                 );
 
