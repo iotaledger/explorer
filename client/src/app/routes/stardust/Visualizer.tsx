@@ -3,7 +3,7 @@ import { Converter } from "@iota/util.js-stardust";
 import React, { useContext, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
-import { useNetworkConfig } from "../../../helpers/hooks/useLandingState";
+import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";
 import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
