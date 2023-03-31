@@ -60,7 +60,6 @@ export class StardustFeed {
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
         const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
-        console.log(this._mqttClient, nodeInfoService);
         if (this._mqttClient && nodeInfoService) {
             this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
             const nodeInfo = nodeInfoService.getNodeInfo();
