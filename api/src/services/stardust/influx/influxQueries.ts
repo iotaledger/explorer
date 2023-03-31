@@ -215,13 +215,13 @@ export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
 export const UNCLAIMED_TOKENS_DAILY_QUERY = {
     full: `
         SELECT
-            last("unclaimed_value") / 1000000 AS "unclaimed"
+            last("unclaimed_amount") / 1000000 AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
         SELECT
-            last("unclaimed_value") / 1000000 AS "unclaimed"
+            last("unclaimed_amount") / 1000000 AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -306,7 +306,7 @@ export const STORAGE_DEPOSIT_TOTAL_QUERY = `
 
 export const SHIMMER_CLAIMED_TOTAL_QUERY = `
     SELECT
-        last("unclaimed_value") AS "totalUnclaimedShimmer"
+        last("unclaimed_amount") AS "totalUnclaimedShimmer"
     FROM "stardust_unclaimed_rewards";
 `;
 
