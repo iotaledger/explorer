@@ -20,7 +20,7 @@ const Asset: React.FC<AssetProps> = (
 ) => {
     const [foundryDetails, isLoading] = useFoundryDetails(network, token.id);
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>(null);
-    const [isWhitelisted] = useTokenRegistryNativeTokenCheck(network, token.id);
+    const [isWhitelisted] = useTokenRegistryNativeTokenCheck(token.id);
 
     useEffect(() => {
         if (isWhitelisted && foundryDetails) {
