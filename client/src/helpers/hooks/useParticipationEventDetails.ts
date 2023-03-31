@@ -4,7 +4,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IParticipationEventInfo } from "../../models/api/stardust/participation/IParticipationEventInfo";
 import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -20,8 +20,8 @@ export function useParticipationEventDetails(eventId: string):
     ] {
     const { name: network } = useContext(NetworkContext);
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
+    const [apiClient] = useState(
+        ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
     const [eventInfo, setEventInfo] = useState<IParticipationEventInfo | null>(null);
     const [eventStatus, setEventStatus] = useState<IParticipationEventStatus | null>(null);
@@ -32,7 +32,7 @@ export function useParticipationEventDetails(eventId: string):
         if (eventId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.participationEventDetails({
+                apiClient.participationEventDetails({
                     network,
                     eventId
                 }).then(response => {

@@ -44,7 +44,6 @@ export interface IAddressState {
     tokensCount: number;
     nftCount: number;
     associatedOutputCount: number;
-    participationsCount: number;
 }
 
 const initialState = {
@@ -72,8 +71,7 @@ const initialState = {
     participations: null,
     tokensCount: 0,
     nftCount: 0,
-    associatedOutputCount: 0,
-    participationsCount: 0
+    associatedOutputCount: 0
 };
 
 /**
@@ -156,7 +154,8 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             let foundParticipations: IParticipation[] = [];
             for (const output of addressBasicOutputs) {
                 if (output.output.type === BASIC_OUTPUT_TYPE &&
-                    TransactionsHelper.isParticipationEventOutput(output.output)) {
+                    TransactionsHelper.isParticipationEventOutput(output.output)
+                ) {
                     const metadataFeature = output.output.features?.find(
                         feature => feature.type === METADATA_FEATURE_TYPE
                     ) as IMetadataFeature;
@@ -170,8 +169,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             }
             if (foundParticipations.length > 0) {
                 setState({
-                    participations: foundParticipations,
-                    participationsCount: foundParticipations.length
+                    participations: foundParticipations
                 });
             }
         }

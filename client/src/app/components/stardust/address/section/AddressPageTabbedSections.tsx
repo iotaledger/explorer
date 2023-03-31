@@ -44,8 +44,7 @@ const buildDefaultTabsOptions = (
     isNftOutputsLoading: boolean,
     associatedOutputCount: number,
     isAssociatedOutputsLoading: boolean,
-    participationsCount: number,
-    hasParticipationOutputs: boolean
+    participationsCount?: number
 ) => ({
     [DEFAULT_TABS.Transactions]: {
         disabled: false,
@@ -74,7 +73,7 @@ const buildDefaultTabsOptions = (
         disabled: false,
         counter: participationsCount,
         infoContent: votingMessage,
-        hidden: !hasParticipationOutputs
+        hidden: !participationsCount
     }
 });
 
@@ -141,7 +140,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         isAddressHistoryLoading, isAddressHistoryDisabled,
         isAssociatedOutputsLoading,
         tokensCount, nftCount, associatedOutputCount,
-        participationsCount, participations
+        participations
     } = addressPageState;
 
     if (!bech32AddressDetails) {
@@ -153,7 +152,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const addressType = bech32AddressDetails.type;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
     const nft = { nftId: addressHex, issuerId: nftIssuerId, metadata: nftMetadata };
-    const hasParticipationOutputs = participationsCount > 0;
+    const participationsCount = participations?.length;
 
     const defaultSections = [
         <TransactionHistory
@@ -214,7 +213,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const defaultTabsOptions = buildDefaultTabsOptions(
         isAddressHistoryLoading, tokensCount, isAddressOutputsLoading,
         nftCount, isNftOutputsLoading, associatedOutputCount, isAssociatedOutputsLoading,
-        participationsCount, hasParticipationOutputs
+        participationsCount
     );
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;
