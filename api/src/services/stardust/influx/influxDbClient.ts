@@ -346,7 +346,7 @@ export abstract class InfluxDbClient {
     }
 
     private async collectMilestoneStats() {
-        logger.verbose(`[InfluxDb] Collecting milestone stats for "${this._network.network}"`);
+        logger.debug(`[InfluxDb] Collecting milestone stats for "${this._network.network}"`);
         try {
             for (const update of await
                 this.queryInflux<ITimedEntry & {

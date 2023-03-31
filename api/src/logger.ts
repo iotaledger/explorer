@@ -7,7 +7,7 @@ const version = process.env.npm_package_version ? ` ${process.env.npm_package_ve
 
 const { combine, timestamp: timestampFunc, label: labelFunc, printf } = format;
 const theFormat = combine(
-    labelFunc({ label: `Explorer ${version}` }),
+    labelFunc({ label: `Explorer${version}` }),
     timestampFunc({
         format: () => (moment().format("DD-MM-YYYY HH:mm:ss.SSSZ"))
     }),

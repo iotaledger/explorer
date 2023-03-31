@@ -65,7 +65,7 @@ export class ChrysalisFeedService implements IFeedService {
                 const ms = await apiClient.milestone(message.index);
                 callback(message.index, ms.messageId, message.timestamp * 1000);
             } catch (err) {
-                console.error(err);
+                logger.error(`[ChrysalisFeedService] Subscribe Milestones failed: ${err}`);
             }
         });
     }

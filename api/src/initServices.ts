@@ -9,7 +9,6 @@ import { CHRYSALIS, LEGACY, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
 import { IItemsService as IItemsServiceLegacy } from "./models/services/legacy/IItemsService";
-import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalis/chrysalisFeedService";
 import { ChrysalisItemsService } from "./services/chrysalis/chrysalisItemsService";
@@ -22,11 +21,10 @@ import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
-import { StardustFeedService } from "./services/stardust/stardustFeedService";
-import { StardustItemsService } from "./services/stardust/stardustItemsService";
-import { StardustStatsService } from "./services/stardust/stardustStatsService";
+import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === LEGACY ||
@@ -75,19 +73,18 @@ export async function initServices(config: IConfiguration) {
                 }
             }
 
-            const itemsService = ServiceFactory.get<IItemsServiceLegacy |
-                IItemsServiceChrysalis |
-                IItemsServiceStardust>(
+            if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
+                const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
                     `items-${networkConfig.network}`
                 );
+                if (itemsService) {
+                    itemsService.init();
+                }
 
-            if (itemsService) {
-                itemsService.init();
-            }
-
-            const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
-            if (feedService) {
-                feedService.connect();
+                const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
+                if (feedService) {
+                    feedService.connect();
+                }
             }
         }
     }
@@ -175,13 +172,8 @@ function initStardustServices(networkConfig: INetwork): void {
     );
 
     ServiceFactory.register(
-        `feed-${networkConfig.network}`, () => new StardustFeedService(
-            networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
-    );
-
-    ServiceFactory.register(
-        `items-${networkConfig.network}`,
-        () => new StardustItemsService(networkConfig.network)
+        `feed-${networkConfig.network}`,
+        () => new StardustFeed(networkConfig.network)
     );
 
     const stardustStatsService = new StardustStatsService(networkConfig);

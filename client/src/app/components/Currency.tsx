@@ -99,10 +99,9 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
                 this._currencyData = currencyData;
 
                 this.setState(
-                    {
-                        currency: this._currencyData.fiatCode
-                    },
-                    () => this.updateCurrency());
+                    { currency: this._currencyData.fiatCode },
+                    () => this.updateCurrency()
+                );
             }
         });
     }

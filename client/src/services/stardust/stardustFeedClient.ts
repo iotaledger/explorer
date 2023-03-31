@@ -1,148 +1,195 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    BASIC_OUTPUT_TYPE, deserializeBlock, milestoneIdFromMilestonePayload,
-    MILESTONE_PAYLOAD_TYPE, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE
+    BASIC_OUTPUT_TYPE,
+    deserializeBlock,
+    IBlock,
+    milestoneIdFromMilestonePayload,
+    MILESTONE_PAYLOAD_TYPE,
+    TAGGED_DATA_PAYLOAD_TYPE,
+    TRANSACTION_PAYLOAD_TYPE
 } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
-import { TrytesHelper } from "../../helpers/trytesHelper";
+import { io, Socket } from "socket.io-client";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
-import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
 import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
-import { IFeedItem } from "../../models/feed/IFeedItem";
-import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
-import { FeedClient } from "../feedClient";
+import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMetadata";
+import { IFeedUpdate } from "../../models/api/stardust/feed/IFeedUpdate";
+import { INetwork } from "../../models/config/INetwork";
+import { NetworkService } from "../networkService";
 
-/**
- * Class to handle api communications.
- */
-export class StardustFeedClient extends FeedClient {
+const CACHE_TRIM_INTERVAL_MS = 10000;
+const MAX_BLOCKS_CACHE_SIZE = 100;
+const MAX_MILESTONES_CACHE_SIZE = 25;
+
+export class StardustFeedClient {
     /**
-     * Perform a request to subscribe to transactions events.
-     * @param callback Callback called with transactions data.
-     * @returns The subscription id.
+     * Network configuration.
      */
-    public subscribe(callback: (newItems: IFeedItem[], metaData: { [id: string]: IFeedItemMetadata }) => void): string {
-        const subscriptionId = TrytesHelper.generateHash(27);
-        this._subscribers[subscriptionId] = callback;
+    protected readonly _networkConfig?: INetwork;
 
-        try {
-            if (!this._subscriptionId) {
-                const subscribeRequest: INetworkBoundGetRequest = {
-                    network: this._networkId
-                };
+    /**
+     * Socket endpoint
+     */
+    protected readonly endpoint: string;
 
-                this._socket.emit("subscribe", subscribeRequest);
-                this._socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this._subscriptionId = subscribeResponse.subscriptionId;
-                    }
-                });
-                this._socket.on("transactions", async (subscriptionMessage: IFeedSubscriptionMessage) => {
-                    if (subscriptionMessage.subscriptionId === this._subscriptionId) {
-                        if (subscriptionMessage.itemsMetadata) {
-                            for (const metadataId in subscriptionMessage.itemsMetadata) {
-                                const existing = this._items.find(c => c.id === metadataId);
-                                if (existing) {
-                                    existing.metaData = {
-                                        ...existing.metaData,
-                                        ...subscriptionMessage.itemsMetadata[metadataId]
-                                    };
-                                }
-                            }
-                        }
+    /**
+     * The web socket to communicate on.
+     */
+    private socket: Socket | null = null;
 
-                        const filteredNewItems = subscriptionMessage.items
-                            .map(item => this.convertItem(item))
-                            .filter(nh => !this._existingIds.includes(nh.id));
+    /**
+     * The subscription id.
+     */
+    private subscriptionId?: string;
 
-                        if (filteredNewItems.length > 0) {
-                            this._items = filteredNewItems.slice().concat(this._items);
+    /**
+     * The latest blocks data map.
+     */
+    private readonly latestBlocks: Map<string, IFeedBlockData>;
 
-                            let removeItems: IFeedItem[] = [];
+    /**
+     * The latest milestones data map.
+     */
+    private readonly latestMilestones: Map<string, IFeedBlockData>;
 
-                            const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
-                            const transactionPayloadToRemoveCount =
-                                transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (transactionPayloadToRemoveCount > 0) {
-                                removeItems =
-                                    removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
-                            }
-                            const dataPayload = this._items.filter(t => t.payloadType === "Data");
-                            const dataPayloadToRemoveCount = dataPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (dataPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(dataPayload.slice(-dataPayloadToRemoveCount));
-                            }
-                            const msPayload = this._items.filter(t => t.payloadType === "MS");
-                            const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (msPayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
-                            }
-                            const nonePayload = this._items.filter(t => t.payloadType === "None");
-                            const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                            if (nonePayloadToRemoveCount > 0) {
-                                removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
-                            }
+    /**
+     * The cache maps trim job timer.
+     */
+    private cacheTrimTimer: NodeJS.Timer | null = null;
 
-                            this._items = this._items.filter(t => !removeItems.includes(t));
+    /**
+     * Create a new instance of TransactionsClient.
+     * @param endpoint The endpoint for the api.
+     * @param networkId The network configurations.
+     */
+    constructor(endpoint: string, networkId: string) {
+        this.latestBlocks = new Map();
+        this.latestMilestones = new Map();
+        this.endpoint = endpoint;
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const theNetworkConfig = networkService.get(networkId);
 
-                            this._existingIds = this._items.map(t => t.id);
-                        }
+        if (!theNetworkConfig) {
+            console.error("[FeedClient] Couldn't initialize client for network", networkId);
+        } else {
+            this._networkConfig = theNetworkConfig;
+        }
 
-                        for (const sub in this._subscribers) {
-                            this._subscribers[sub](filteredNewItems, subscriptionMessage.itemsMetadata);
-                        }
-                    }
-                });
-            }
-        } catch { }
-
-        return subscriptionId;
+        this.setupCacheTrimJob();
     }
 
-    /**
-     * Perform a request to unsubscribe to transactions events.
-     * @param subscriptionId The subscription id.
-     */
-    public unsubscribe(subscriptionId: string): void {
-        try {
-            delete this._subscribers[subscriptionId];
+    public subscribe(
+        onBlockDataCallback?: (blockData: IFeedBlockData) => void,
+        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
+    ) {
+        this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 
-            if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
-                const unsubscribeRequest: IFeedUnsubscribeRequest = {
-                    network: this._networkId,
-                    subscriptionId: this._subscriptionId
-                };
-                this._socket.emit("unsubscribe", unsubscribeRequest);
-                this._socket.on("unsubscribe", () => { });
+        // If reconnect fails then also try polling mode.
+        this.socket.on("reconnect_attempt", () => {
+            if (this.socket) {
+                this.socket.io.opts.transports = ["polling", "websocket"];
             }
-        } catch {
-        } finally {
-            this._subscriptionId = undefined;
+        });
+
+        try {
+            if (!this.subscriptionId && this._networkConfig?.network && this.socket) {
+                const subscribeRequest: INetworkBoundGetRequest = {
+                    network: this._networkConfig.network
+                };
+
+                this.socket.emit("subscribe", subscribeRequest);
+
+                this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
+                    if (!subscribeResponse.error) {
+                        this.subscriptionId = subscribeResponse.subscriptionId;
+                    } else {
+                        console.log(
+                            "Failed subscribing to feed",
+                            this._networkConfig?.network,
+                            subscribeResponse.error
+                        );
+                    }
+                });
+
+                this.socket.on("block", async (update: IFeedUpdate) => {
+                    if (update.subscriptionId === this.subscriptionId) {
+                        if (update.blockMetadata) {
+                            const existingBlockData = this.latestBlocks.get(update.blockMetadata?.blockId) ?? null;
+                            if (existingBlockData) {
+                                existingBlockData.metadata = {
+                                    ...existingBlockData.metadata,
+                                    ...update.blockMetadata.metadata
+                                };
+
+                                onMetadataUpdatedCallback?.(
+                                    { [existingBlockData.blockId]: existingBlockData.metadata }
+                                );
+                            }
+                        }
+
+                        if (update.block) {
+                            const block: IFeedBlockData = this.unmarshalBlock(update.block);
+
+                            if (!this.latestBlocks.has(block.blockId)) {
+                                this.latestBlocks.set(block.blockId, block);
+
+                                onBlockDataCallback?.(block);
+                            }
+
+                            if (
+                                block.payloadType === "Milestone" &&
+                                !this.latestMilestones.has(block.blockId)
+                            ) {
+                                this.latestMilestones.set(block.blockId, block);
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.log("Failed subscribing to feed", this._networkConfig?.network, error);
         }
     }
 
     /**
-     * Get the items.
-     * @returns The item details.
+     * Perform a request to unsubscribe to block feed events.
      */
-    public getItems(): IFeedItem[] {
-        return this._items.slice();
+    public unsubscribe(): void {
+        try {
+            if (this.subscriptionId && this._networkConfig?.network && this.socket) {
+                const unsubscribeRequest: IFeedUnsubscribeRequest = {
+                    network: this._networkConfig.network,
+                    subscriptionId: this.subscriptionId
+                };
+
+                this.socket.emit("unsubscribe", unsubscribeRequest);
+                this.socket.on("unsubscribe", () => { });
+            }
+        } catch {
+            console.error("[FeedClient2] Could not unsubscribe");
+        } finally {
+            this.socket?.disconnect();
+            this.subscriptionId = undefined;
+            this.socket = null;
+        }
     }
 
     /**
-     * Convert the feed item into real data.
-     * @param item The item source.
+     * Deserialize the block into block data object.
+     * @param serializedBlock The item source.
      * @returns The feed item.
      */
-    private convertItem(item: string): IFeedItem {
-        const bytes = Converter.hexToBytes(item);
-        const blockId = Converter.bytesToHex(Blake2b.sum256(bytes));
+    private unmarshalBlock(serializedBlock: string): IFeedBlockData {
+        const bytes = Converter.hexToBytes(serializedBlock);
+        const blockId = Converter.bytesToHex(Blake2b.sum256(bytes), true);
 
         let value;
-        let payloadType: "Transaction" | "Data" | "MS" | "None" = "None";
+        let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
-        let block;
+        let block: IBlock | null = null;
 
         try {
             block = deserializeBlock(new ReadStream(bytes));
@@ -161,12 +208,12 @@ export class StardustFeedClient extends FeedClient {
                     properties.Index = block.payload.essence.payload.tag;
                 }
             } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
-                payloadType = "MS";
+                payloadType = "Milestone";
                 properties.index = block.payload.index;
                 properties.timestamp = block.payload.timestamp;
                 properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
-                payloadType = "Data";
+                payloadType = "TaggedData";
                 properties.Index = block.payload.tag;
             }
         } catch (err) {
@@ -174,12 +221,41 @@ export class StardustFeedClient extends FeedClient {
         }
 
         return {
-            id: blockId,
+            blockId,
             value,
             parents: block?.parents ?? [],
             properties,
             payloadType
         };
+    }
+
+    /**
+     * Setup a periodic interval to trim if the cache map is over the max limit.
+     */
+    private setupCacheTrimJob() {
+        if (this.cacheTrimTimer) {
+            clearInterval(this.cacheTrimTimer);
+            this.cacheTrimTimer = null;
+        }
+
+        this.cacheTrimTimer = setInterval(() => {
+            let blocksSize = this.latestBlocks.size;
+            let milestonesSize = this.latestMilestones.size;
+
+            while (blocksSize > MAX_BLOCKS_CACHE_SIZE) {
+                const keyIterator = this.latestBlocks.keys();
+                const oldestKey = keyIterator.next().value as string;
+                this.latestBlocks.delete(oldestKey); // remove the oldest key-value pair from the Map
+                blocksSize--;
+            }
+
+            while (milestonesSize > MAX_MILESTONES_CACHE_SIZE) {
+                const keyIterator = this.latestMilestones.keys();
+                const oldestKey = keyIterator.next().value as string;
+                this.latestMilestones.delete(oldestKey); // remove the oldest key-value pair from the Map
+                milestonesSize--;
+            }
+        }, CACHE_TRIM_INTERVAL_MS);
     }
 }
 

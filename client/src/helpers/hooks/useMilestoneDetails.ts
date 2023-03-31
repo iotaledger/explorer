@@ -5,7 +5,7 @@ import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
 import { useIsMounted } from "./useIsMounted";
 
-export interface IMilestoneDetails {
+interface IMilestoneDetails {
     blockId?: string;
     milestoneId?: string;
     milestone?: IMilestonePayload;

@@ -1,4 +1,5 @@
 import { SingleNodeClient } from "@iota/iota.js-chrysalis";
+import logger from "../../logger";
 import { BaseStatsService } from "./baseStatsService";
 
 /**
@@ -27,7 +28,7 @@ export class ChrysalisStatsService extends BaseStatsService {
                 }
             }
         } catch (err) {
-            console.error(err);
+            logger.debug(`[ChrysalisStatsService] Update statistics failed: ${err}`);
         }
     }
 }
