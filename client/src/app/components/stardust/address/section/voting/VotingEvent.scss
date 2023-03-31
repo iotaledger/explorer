@@ -58,12 +58,13 @@
         @include phone-down {
             height: 32px;
         }
+
         &.voting-event__status--commencing {
             background-color: var(--message-confirmed-bg);
             color: $mint-green-7;
         }
 
-        .voting-event__status--holding {
+        &.voting-event__status--holding {
             background-color: var(--light-bg);
             color: $gray;
         }
