@@ -1,37 +1,10 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
 import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
-import { ReadStream } from "@iota/util.js-stardust";
 import React from "react";
 import Tooltip from "../../app/components/Tooltip";
 /**
  * The id of the Genesis block.
  */
 const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
-
-/**
- * The length of the participation event id.
- */
-const EVENT_ID_SIZE: number = Blake2b.SIZE_256;
-
-/**
- * The participation event.
- */
-interface Participation {
-    /**
-     * The event id.
-     */
-    eventId: string;
-
-    /**
-     * The number of answers.
-     */
-    answersCount?: number;
-
-    /**
-     * The list of answer values.
-     */
-    answers?: number[];
-}
 
 /**
  * Format amount using passed base token info.
@@ -85,42 +58,4 @@ export function formatSpecialBlockId(id: string): React.ReactNode {
         );
     }
     return id;
-}
-
-/**
- * Deserialize the participation event metadata from binary.
- * @param readStream The stream to read the data from.
- * @returns The deserialized object.
- */
-export function deserializeParticipationEventMetadata(readStream: ReadStream): Participation[] {
-    const participationsCount = readStream.readUInt8("participation.count");
-
-    const participations: Participation[] = [];
-    for (let i = 0; i < participationsCount; i++) {
-        participations.push(deserializeParticipation(readStream));
-    }
-
-    return participations;
-}
-
-/**
- * Deserialize the participation event.
- * @param readStream The stream to read the data from.
- * @returns The deserialized object.
- */
-export function deserializeParticipation(readStream: ReadStream): Participation {
-    const eventId = readStream.readFixedHex("participation.eventId", EVENT_ID_SIZE);
-
-    const answersCount = readStream.readUInt8("participation.answersCount");
-
-    const answers: number[] = [];
-    for (let i = 0; i < answersCount; i++) {
-        answers.push(readStream.readUInt8(`participation.answers${i}`));
-    }
-
-    return {
-        eventId,
-        answersCount,
-        answers
-    };
 }
