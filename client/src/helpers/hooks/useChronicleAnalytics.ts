@@ -40,6 +40,13 @@ export function useChronicleAnalytics(network: string): [
                 }, CHRONICLE_ANALYTICS_REFRESH_MINUTES * 60 * 1000)
             );
         }
+
+        return () => {
+            if (updateTimerId) {
+                clearInterval(updateTimerId);
+                setUpdateTimerId(null);
+            }
+        };
     }, [network]);
 
     const fetchAnalytics = async () => {
