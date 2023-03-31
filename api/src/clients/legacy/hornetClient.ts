@@ -1,3 +1,4 @@
+import logger from "../../logger";
 import { IFindTransactionsRequest } from "../../models/clients/hornet/legacy/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../../models/clients/hornet/legacy/IFindTransactionsResponse";
 import { IGetTrytesRequest } from "../../models/clients/hornet/legacy/IGetTrytesRequest";
@@ -68,13 +69,14 @@ export class LegacyHornetClient {
             );
 
             if (response.error) {
-                console.error("Hornet Error", response.error);
-                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                logger.error(`[HornetClientLegacy] Find transaction failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint, "post", headers, req)}
+                             `);
             }
 
             return response;
         } catch (err) {
-            console.error("Hornet Error", (err.response?.data?.error) ?? err);
+            logger.error(`[HornetClientLegacy] Find transactions error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 
@@ -107,13 +109,14 @@ export class LegacyHornetClient {
             );
 
             if (response.error) {
-                console.error("Hornet Error", response.error);
-                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                logger.error(`[HornetClientLegacy] Get Trytes failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint, "post", headers, req)}
+                             `);
             }
 
             return response;
         } catch (err) {
-            console.error("Hornet Error", (err.response?.data?.error) ?? err);
+            logger.error(`[HornetClientLegacy] Get Trytes error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 }

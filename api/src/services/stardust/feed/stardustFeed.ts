@@ -158,7 +158,7 @@ export class StardustFeed {
                 // eslint-disable-next-line no-void
                 void this.updateLatestMilestoneCache(blockId, milestoneIndex, milestoneId, timestamp);
             } catch (err) {
-                console.error(err);
+                logger.error(`[FeedClient] Mqtt milestone callback failed: ${err}`);
             }
         });
     }
