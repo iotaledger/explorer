@@ -2,7 +2,7 @@ import { HexEncodedString } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { deserializeParticipationEventMetadata } from "../../helpers/stardust/participationHelper";
+import { deserializeParticipationEventMetadata } from "../../helpers/stardust/participationUtils";
 import { TextHelper } from "../../helpers/textHelper";
 import CopyButton from "./CopyButton";
 import "./DataToggle.scss";

@@ -11,7 +11,7 @@ import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { deserializeParticipationEventMetadata } from "../../../helpers/stardust/participationHelper";
+import { deserializeParticipationEventMetadata } from "../../../helpers/stardust/participationUtils";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IParticipation } from "../../../models/api/stardust/participation/IParticipation";
