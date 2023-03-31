@@ -8,7 +8,8 @@ import { useFoundryDetails } from "../../../helpers/hooks/useFoundryDetails";
 import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { formatAmount, tryParseMetadata } from "../../../helpers/stardust/valueFormatHelper";
+import { tryParseMetadata } from "../../../helpers/stardust/metadataUtils";
+import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { ITokenMetadata } from "../../../models/api/stardust/foundry/ITokenMetadata";
 import FiatValue from "../../components/FiatValue";
 import TabbedSection from "../../components/hoc/TabbedSection";
@@ -55,11 +56,14 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
             const metadataFeature = immutableFeatures?.find(
                 feature => feature.type === METADATA_FEATURE_TYPE
             ) as IMetadataFeature;
-            const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.data, tokenSchemeIRC30);
+
+            if (isMounted && metadataFeature) {
+                const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.data, tokenSchemeIRC30);
+                setTokenMetadata(parsedMetadata);
+            }
             if (isMounted) {
                 setFoundryOutput(output);
                 setControllerAlias(aliasId);
-                setTokenMetadata(parsedMetadata);
             }
         }
     }, [foundryDetails]);
