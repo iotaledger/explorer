@@ -142,7 +142,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
                     </div>
                 </div>
             )}
-            {transferTotal && (
+            {transferTotal !== null && (
                 <div className="section--data">
                     <div className="label">
                         Amount transacted

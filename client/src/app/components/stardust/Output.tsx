@@ -3,8 +3,7 @@ import {
     TREASURY_OUTPUT_TYPE, SIMPLE_TOKEN_SCHEME_TYPE, ALIAS_ADDRESS_TYPE,
     NFT_ADDRESS_TYPE, IImmutableAliasUnlockCondition, IAliasAddress, INodeInfoBaseToken,
     UnlockConditionTypes, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE,
-    TIMELOCK_UNLOCK_CONDITION_TYPE,
-    TransactionHelper
+    TIMELOCK_UNLOCK_CONDITION_TYPE, TransactionHelper
 } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
@@ -73,6 +72,7 @@ class Output extends Component<OutputProps, OutputState> {
             `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
         const isSpecialCondition = this.hasSpecialCondition();
+        const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
 
         const specialUnlockCondition = (
             output.type !== TREASURY_OUTPUT_TYPE && isSpecialCondition) && (
@@ -232,6 +232,7 @@ class Output extends Component<OutputProps, OutputState> {
                                         feature={feature}
                                         isPreExpanded={isPreExpanded}
                                         isImmutable={false}
+                                        isParticipationEventMetadata={isParticipationOutput}
                                     />
                                 ))}
                                 {output.type !== BASIC_OUTPUT_TYPE && output.immutableFeatures && (

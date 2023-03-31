@@ -22,6 +22,9 @@ import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransact
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { IParticipationEventInfo } from "../../models/api/stardust/participation/IParticipationEventInfo";
+import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
+import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { SearchExecutor } from "./searchExecutor";
@@ -542,6 +545,37 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the relevant nft output details for an address.
+     * @param network The network to find the items on.
+     * @param eventId The id of the event.
+     * @returns The participation event details.
+     */
+    public static async participationEventDetails(
+        network: INetwork, eventId: string
+    ): Promise<IParticipationEventResponse | undefined> {
+        const basePluginPath: string = "participation/v1/";
+        const method = "get";
+        const methodPath: string = `events/${eventId}`;
+        const info = await this.nodePluginFetch<unknown, IParticipationEventInfo>(
+            network,
+            basePluginPath,
+            method,
+            methodPath
+        );
+        const status = await this.nodePluginFetch<unknown, IParticipationEventStatus>(
+            network,
+            basePluginPath,
+            method,
+            `${methodPath}/status`
+        );
+
+        return {
+            info,
+            status
+        };
+    }
+
+    /**
      * Find item on the stardust network.
      * @param network The network config.
      * @param query The query to use for finding items.
@@ -613,5 +647,39 @@ export class StardustTangleHelper {
 
         return null;
     }
-}
 
+    /**
+     * Extension method which provides request methods for plugins.
+     * @param network The network config in context.
+     * @param basePluginPath The base path for the plugin eg indexer/v1/ .
+     * @param method The http method.
+     * @param methodPath The path for the plugin request.
+     * @param queryParams Additional query params for the request.
+     * @param request The request object.
+     * @returns The response object.
+     */
+    public static async nodePluginFetch<T, S>(
+        network: INetwork,
+        basePluginPath: string,
+        method: "get" | "post" | "delete",
+        methodPath: string,
+        queryParams?: string[],
+        request?: T
+    ): Promise<S> | null {
+        const { provider, user, password } = network;
+
+        const client = new SingleNodeClient(provider, { userName: user, password });
+        try {
+            const result: S = await client.pluginFetch<T, S>(
+                basePluginPath,
+                method,
+                methodPath,
+                queryParams,
+                request
+            );
+            return result;
+        } catch { }
+
+        return null;
+    }
+}

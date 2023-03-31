@@ -12,7 +12,7 @@ import {
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
     TransactionHelper, IReferenceUnlock, Ed25519Address, OutputTypes,
     STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-    IRent, UnlockTypes
+    IRent, UnlockTypes, TAG_FEATURE_TYPE, ITagFeature
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
@@ -29,6 +29,11 @@ interface TransactionInputsAndOutputsResponse {
     unlockAddresses: IBech32AddressDetails[];
     transferTotal: number;
 }
+
+/**
+ * The hex encoded word PARTICIPATE.
+ */
+const HEX_PARTICIPATE = "0x5041525449434950415445";
 
 export class TransactionsHelper {
     public static async getInputsAndOutputs(block: IBlock | undefined, network: string,
@@ -233,9 +238,26 @@ export class TransactionsHelper {
         const rentBalance = outputsWithoutSdruc.reduce(
             (acc, output) => acc + TransactionHelper.getStorageDeposit(output, rentStructure),
             0
-        );
-
+            );
         return rentBalance;
+    }
+
+    /**
+     * Check if output is used for participation event
+     * @param output The output to check.
+     * @returns true if participation event output.
+     */
+    public static isParticipationEventOutput(output: OutputTypes): boolean {
+        if (output.type === BASIC_OUTPUT_TYPE) {
+            const tagFeature = output.features?.find(
+                feature => feature.type === TAG_FEATURE_TYPE
+            ) as ITagFeature;
+
+            if (tagFeature) {
+                return tagFeature.tag === HEX_PARTICIPATE;
+            }
+        }
+        return false;
     }
 
     private static bechAddressFromAddressUnlockCondition(

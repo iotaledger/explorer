@@ -7,6 +7,7 @@ import transactionHistoryMessage from "../../../../../assets/modals/stardust/add
 import foundriesMessage from "../../../../../assets/modals/stardust/alias/foundries.json";
 import stateMessage from "../../../../../assets/modals/stardust/alias/state.json";
 import nftMetadataMessage from "../../../../../assets/modals/stardust/nft/metadata.json";
+import votingMessage from "../../../../../assets/modals/stardust/participation/main-header.json";
 import { IAddressState } from "../../../../routes/stardust/AddressState";
 import TabbedSection from "../../../hoc/TabbedSection";
 import TransactionHistory from "../../history/TransactionHistory";
@@ -16,12 +17,14 @@ import AssetsTable from "./association/AssetsTable";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import NftMetadataSection from "./nft/NftMetadataSection";
 import NftSection from "./nft/NftSection";
+import VotingSection from "./voting/VotingSection";
 
 enum DEFAULT_TABS {
     Transactions = "Transactions",
     NativeTokens = "Native Tokens",
     Nfts = "NFTs",
-    AssocOutputs = "Associated Outputs"
+    AssocOutputs = "Associated Outputs",
+    Voting = "Voting"
 }
 
 enum ALIAS_TABS {
@@ -40,7 +43,8 @@ const buildDefaultTabsOptions = (
     nftCount: number,
     isNftOutputsLoading: boolean,
     associatedOutputCount: number,
-    isAssociatedOutputsLoading: boolean
+    isAssociatedOutputsLoading: boolean,
+    participationsCount?: number
 ) => ({
     [DEFAULT_TABS.Transactions]: {
         disabled: false,
@@ -64,6 +68,12 @@ const buildDefaultTabsOptions = (
         counter: associatedOutputCount,
         isLoading: isAssociatedOutputsLoading,
         infoContent: associatedOuputsMessage
+    },
+    [DEFAULT_TABS.Voting]: {
+        disabled: false,
+        counter: participationsCount,
+        infoContent: votingMessage,
+        hidden: !participationsCount
     }
 });
 
@@ -129,7 +139,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         aliasFoundries, isAliasFoundriesLoading,
         isAddressHistoryLoading, isAddressHistoryDisabled,
         isAssociatedOutputsLoading,
-        tokensCount, nftCount, associatedOutputCount
+        tokensCount, nftCount, associatedOutputCount,
+        participations
     } = addressPageState;
 
     if (!bech32AddressDetails) {
@@ -141,6 +152,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const addressType = bech32AddressDetails.type;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
     const nft = { nftId: addressHex, issuerId: nftIssuerId, metadata: nftMetadata };
+    const participationsCount = participations?.length;
 
     const defaultSections = [
         <TransactionHistory
@@ -169,6 +181,10 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             addressDetails={bech32AddressDetails}
             setOutputCount={setAssociatedOutputsCount}
             setIsLoading={setAssociatedOutputsLoading}
+        />,
+        <VotingSection
+            key={`voting-${addressBech32}`}
+            participations={participations ?? []}
         />
     ];
 
@@ -196,7 +212,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     let tabEnums = DEFAULT_TABS;
     const defaultTabsOptions = buildDefaultTabsOptions(
         isAddressHistoryLoading, tokensCount, isAddressOutputsLoading,
-        nftCount, isNftOutputsLoading, associatedOutputCount, isAssociatedOutputsLoading
+        nftCount, isNftOutputsLoading, associatedOutputCount, isAssociatedOutputsLoading,
+        participationsCount
     );
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;

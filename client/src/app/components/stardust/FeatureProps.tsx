@@ -15,4 +15,9 @@ export interface FeatureProps {
      * Is the feature immutable.
      */
     isImmutable: boolean;
+
+    /**
+     * Is the metadata feature for participation event.
+     */
+    isParticipationEventMetadata?: boolean;
 }

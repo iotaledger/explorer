@@ -1,4 +1,5 @@
-import { Bech32Helper, HexEncodedString, IAliasOutput, IOutputResponse, OutputTypes } from "@iota/iota.js-stardust";
+import { BASIC_OUTPUT_TYPE, Bech32Helper, HexEncodedString, IAliasOutput, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, OutputTypes } from "@iota/iota.js-stardust";
+import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
@@ -10,8 +11,10 @@ import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { deserializeParticipationEventMetadata } from "../../../helpers/stardust/participationUtils";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
+import { IParticipation } from "../../../models/api/stardust/participation/IParticipation";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 
@@ -37,6 +40,7 @@ export interface IAddressState {
     isAddressHistoryLoading: boolean;
     isAddressHistoryDisabled: boolean;
     isAssociatedOutputsLoading: boolean;
+    participations: IParticipation[] | null;
     tokensCount: number;
     nftCount: number;
     associatedOutputCount: number;
@@ -64,6 +68,7 @@ const initialState = {
     isAddressHistoryLoading: true,
     isAddressHistoryDisabled: false,
     isAssociatedOutputsLoading: true,
+    participations: null,
     tokensCount: 0,
     nftCount: 0,
     associatedOutputCount: 0
@@ -144,6 +149,29 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
                 addressOutputs: mergedOutputResponses,
                 storageRentBalance: storageRentBalanceUpdate
             });
+        }
+        if (addressBasicOutputs && !state.participations) {
+            let foundParticipations: IParticipation[] = [];
+            for (const output of addressBasicOutputs) {
+                if (output.output.type === BASIC_OUTPUT_TYPE &&
+                    TransactionsHelper.isParticipationEventOutput(output.output)
+                ) {
+                    const metadataFeature = output.output.features?.find(
+                        feature => feature.type === METADATA_FEATURE_TYPE
+                    ) as IMetadataFeature;
+
+                    if (metadataFeature) {
+                        const readStream = new ReadStream(Converter.hexToBytes(metadataFeature.data));
+                        const newParticipations = deserializeParticipationEventMetadata(readStream);
+                        foundParticipations = [...foundParticipations, ...newParticipations];
+                    }
+                }
+            }
+            if (foundParticipations.length > 0) {
+                setState({
+                    participations: foundParticipations
+                });
+            }
         }
     }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
 
