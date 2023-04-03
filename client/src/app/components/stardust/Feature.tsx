@@ -11,7 +11,6 @@ const Feature: React.FC<FeatureProps> = (
     { feature, isImmutable, isPreExpanded, isParticipationEventMetadata }
 ) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(isPreExpanded ?? false);
-
     return (
         <div className="feature-block">
             <div
@@ -44,7 +43,7 @@ const Feature: React.FC<FeatureProps> = (
                             <DataToggle
                                 sourceData={feature.data}
                                 withSpacedHex={true}
-                                isParticipationEventMetadata
+                                isParticipationEventMetadata={isParticipationEventMetadata}
                             />
                         </div>
                     )}
