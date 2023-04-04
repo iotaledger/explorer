@@ -7,7 +7,7 @@ interface IDistributionEntry {
 }
 
 export interface ITokenDistributionResponse extends IResponse {
-    distribution: IDistributionEntry[];
+    distribution?: IDistributionEntry[];
     ledgerIndex?: number;
 }
 
