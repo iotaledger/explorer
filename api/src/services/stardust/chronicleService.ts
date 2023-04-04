@@ -1,12 +1,12 @@
 import moment from "moment";
 import logger from "../../logger";
+import { IAddressBalanceResponse } from "../../models/api/stardust/chronicle/IAddressBalanceResponse";
+import { IBlockChildrenResponse } from "../../models/api/stardust/chronicle/IBlockChildrenResponse";
 import { IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
 import { ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
-import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
-import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
-import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
-import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
+import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/chronicle/ITransactionHistoryDownloadResponse";
+import { ITransactionHistoryRequest } from "../../models/api/stardust/chronicle/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../models/api/stardust/chronicle/ITransactionHistoryResponse";
 import { IMilestoneBlockInfo } from "../../models/api/stardust/milestone/IMilestoneBlocksResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";

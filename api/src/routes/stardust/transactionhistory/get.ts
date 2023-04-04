@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionHistoryRequest } from "../../../models/api/stardust/ITransactionHistoryRequest";
-import { ITransactionHistoryResponse } from "../../../models/api/stardust/ITransactionHistoryResponse";
+import { ITransactionHistoryRequest } from "../../../models/api/stardust/chronicle/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../../models/api/stardust/chronicle/ITransactionHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
