@@ -1,5 +1,7 @@
 import moment from "moment";
 import logger from "../../logger";
+import { IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
+import { ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
 import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/ITransactionHistoryDownloadResponse";
@@ -11,6 +13,8 @@ import { FetchHelper } from "../../utils/fetchHelper";
 
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
+    richestAddresses: "/api/explorer/v2/ledger/richest-addresses",
+    tokenDistribution: "/api/explorer/v2/ledger/token-distribution",
     balance: "/api/explorer/v2/balance/",
     milestoneBlocks: ["/api/explorer/v2/milestones/", "/blocks"],
     blockChildren: ["/api/explorer/v2/blocks/", "/children"]
@@ -20,10 +24,16 @@ export class ChronicleService {
     /**
      * The endpoint for performing communications.
      */
-    private readonly _endpoint: string;
+    private readonly chronicleEndpoint: string;
+
+    /**
+     * The network config in context.
+     */
+    private readonly networkConfig: INetwork;
 
     constructor(config: INetwork) {
-        this._endpoint = config.permaNodeEndpoint;
+        this.networkConfig = config;
+        this.chronicleEndpoint = config.permaNodeEndpoint;
     }
 
     /**
@@ -36,12 +46,15 @@ export class ChronicleService {
     ): Promise<IAddressBalanceResponse | undefined> {
         try {
             return await FetchHelper.json<never, IAddressBalanceResponse>(
-                this._endpoint,
+                this.chronicleEndpoint,
                 `${CHRONICLE_ENDPOINTS.balance}${address}`,
                 "get"
             );
         } catch (error) {
-            return { error };
+            const network = this.networkConfig.network;
+            logger.warn(
+                `[ChronicleService] Failed fetching address balance for ${address} on ${network}. Cause: ${error}`
+            );
         }
     }
 
@@ -62,7 +75,7 @@ export class ChronicleService {
 
             try {
                 const response = await FetchHelper.json<never, { blocks?: IMilestoneBlockInfo[]; cursor?: string }>(
-                    this._endpoint,
+                    this.chronicleEndpoint,
                     `${path}${params}`,
                     "get"
                 );
@@ -73,7 +86,10 @@ export class ChronicleService {
                     blocks.push(...response.blocks);
                 }
             } catch (error) {
-                return { error };
+                const network = this.networkConfig.network;
+                logger.warn(
+                    `[ChronicleService] Failed fetching milestone blocks for ${milestoneId} on ${network}. ${error}`
+                );
             }
         } while (cursor);
 
@@ -96,13 +112,17 @@ export class ChronicleService {
 
         try {
             const response = await FetchHelper.json<never, IBlockChildrenResponse>(
-                this._endpoint,
+                this.chronicleEndpoint,
                 `${path}`,
                 "get"
             );
 
             return response;
         } catch (error) {
+            const network = this.networkConfig.network;
+            logger.warn(
+                `[ChronicleService] Failed fetching block children for ${blockId} on ${network}. Cause: ${error}`
+            );
             return { error };
         }
     }
@@ -124,14 +144,17 @@ export class ChronicleService {
             };
 
             return await FetchHelper.json<never, ITransactionHistoryResponse>(
-                this._endpoint,
+                this.chronicleEndpoint,
                 `${CHRONICLE_ENDPOINTS.updatedByAddress}${request.address}${params ?
                     `${FetchHelper.urlParams(params)}` :
                     ""}`,
                 "get"
             );
         } catch (error) {
-            return { error };
+            const network = this.networkConfig.network;
+            logger.warn(
+                `[ChronicleService] Failed fetching tx history for ${request.address} on ${network}. Cause: ${error}`
+            );
         }
     }
 
@@ -158,7 +181,7 @@ export class ChronicleService {
                 const params = FetchHelper.urlParams({ pageSize: 20, sort: "newest", cursor });
 
                 response = await FetchHelper.json<never, ITransactionHistoryResponse>(
-                    this._endpoint,
+                    this.chronicleEndpoint,
                     `${CHRONICLE_ENDPOINTS.updatedByAddress}${address}${params}`,
                     "get"
                 );
@@ -186,6 +209,51 @@ export class ChronicleService {
             return result;
         } catch (error) {
             logger.error(`Problem while building Transaction History download. Cause: ${error}`);
+        }
+    }
+
+    /**
+     * Fetch the richest addresses list
+     * @param top The number of top addresses to return.
+     * @returns The richest addresses reponse.
+     */
+    public async richestAddresses(
+        top: number | null
+    ): Promise<IRichestAddressesResponse | undefined> {
+        try {
+            const params = {
+                top: top ?? 100
+            };
+
+            return await FetchHelper.json<never, IRichestAddressesResponse>(
+                this.chronicleEndpoint,
+                `${CHRONICLE_ENDPOINTS.richestAddresses}${FetchHelper.urlParams(params)}`,
+                "get"
+            );
+        } catch (error) {
+            const network = this.networkConfig.network;
+            logger.warn(
+                `[ChronicleService] Failed fetching rich addresses on ${network}. Cause: ${error}`
+            );
+        }
+    }
+
+    /**
+     * Fetch the token distribution of the network.
+     * @returns The token distribution reponse.
+     */
+    public async tokenDistribution(): Promise<ITokenDistributionResponse | undefined> {
+        try {
+            return await FetchHelper.json<never, ITokenDistributionResponse>(
+                this.chronicleEndpoint,
+                `${CHRONICLE_ENDPOINTS.tokenDistribution}`,
+                "get"
+            );
+        } catch (error) {
+            const network = this.networkConfig.network;
+            logger.warn(
+                `[ChronicleService] Failed fetching token distribution data on ${network}. Cause: ${error}`
+            );
         }
     }
 }
