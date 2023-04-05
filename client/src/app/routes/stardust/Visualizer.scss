@@ -155,12 +155,14 @@
       top: 100px;
       left: 20px;
       width: 320px;
+      overflow: visible;
 
       @include phone-down {
           top: 10px;
           left: 10px;
           width: 90%;
       }
+
 
       button {
           position: absolute;
@@ -172,6 +174,12 @@
           padding: 20px 30px;
       }
 
+      .tooltip {
+
+        .wrap {
+          width: 250px;
+        }
+      }
   }
 
   .key-panel-container {

@@ -6,7 +6,8 @@ import {
     milestoneIdFromMilestonePayload,
     MILESTONE_PAYLOAD_TYPE,
     TAGGED_DATA_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE
+    TRANSACTION_PAYLOAD_TYPE,
+    TransactionHelper
 } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { io, Socket } from "socket.io-client";
@@ -187,14 +188,18 @@ export class StardustFeedClient {
         const blockId = Converter.bytesToHex(Blake2b.sum256(bytes), true);
 
         let value;
+        let transactionId;
         let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
         let block: IBlock | null = null;
 
         try {
             block = deserializeBlock(new ReadStream(bytes));
-
             if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                transactionId = Converter.bytesToHex(
+                    TransactionHelper.getTransactionPayloadHash(block.payload),
+                    true
+                );
                 payloadType = "Transaction";
                 value = 0;
 
@@ -225,6 +230,7 @@ export class StardustFeedClient {
             value,
             parents: block?.parents ?? [],
             properties,
+            transactionId,
             payloadType
         };
     }
