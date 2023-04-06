@@ -12,6 +12,7 @@ import LineChart from "../../../components/stardust/statistics/charts/LineChart"
 import StackedBarChart from "../../../components/stardust/statistics/charts/StackedBarChart";
 import StackedLineChart from "../../../components/stardust/statistics/charts/StackedLineChart";
 import { RichestAddresses } from "../../../components/stardust/statistics/RichestAddresses";
+import { TokenDistribution as TokenDistributionSection } from "../../../components/stardust/statistics/TokenDistribution";
 import NetworkContext from "../../../context/NetworkContext";
 import { COMMAS_REGEX } from "../landing/ShimmerClaimedUtils";
 import "./StatisticsPage.scss";
@@ -257,6 +258,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                             </div>
                         </div>
                         <div className="statistics-page__token-dist">
+                            <TokenDistributionSection data={tokenDistribution} />
                             <RichestAddresses network={network} data={richestAddresses} />
                         </div>
                     </TabbedSection>
