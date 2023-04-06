@@ -1,6 +1,6 @@
 import { IResponse } from "../../IResponse";
 
-interface IDistributionEntry {
+export interface IDistributionEntry {
     addressCount: string;
     totalBalance: string;
     range: { start: number; end: number }[];

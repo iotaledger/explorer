@@ -1,0 +1,29 @@
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
+
+.richest-addr-section {
+    ul.richest-addr__list {
+        padding: 1rem;
+
+        li.richest-addr__entry {
+            @include font-size(14px);
+            font-family: $ibm-plex-mono;
+            font-weight: normal;
+            letter-spacing: 0.02em;
+            line-height: 20px;
+
+            .entry__idx {
+                text-align: center;
+                width:16px;
+                margin-right: 1rem;
+            }
+            .entry__address {
+                max-width: 70%;
+                margin-right: 1rem;
+            }
+        }
+    }
+}
+

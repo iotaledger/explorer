@@ -1,7 +1,8 @@
 import { IResponse } from "../../IResponse";
 
-interface IRichAddress {
-    address: { type: number; pubKeyHash: string }[];
+export interface IRichAddress {
+    address: string;
+    balance: string;
 }
 
 export interface IRichestAddressesResponse extends IResponse {
