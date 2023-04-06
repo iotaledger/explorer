@@ -454,10 +454,11 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         if (regEx.test(nodeId)) {
             return true;
         }
-
-        if (data.feedItem) {
-            for (const key in data.feedItem.properties) {
-                const val = data.feedItem.properties[key] as string;
+        const properties = data.feedItem.properties;
+        if (properties) {
+            let key: keyof typeof properties;
+            for (key in properties) {
+                const val = properties[key] as string;
                 if (typeof val === "string" && Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val))) {
                     return true;
                 }

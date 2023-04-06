@@ -1,16 +1,17 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { CONFLICT_REASON_STRINGS } from "@iota/iota.js-stardust";
+import { CONFLICT_REASON_STRINGS, ConflictReason } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import React, { useContext, useRef } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
+import { DateHelper } from "../../../helpers/dateHelper";
 import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";
 import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
-import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import Modal from "../../components/Modal";
 import BlockTangleState from "../../components/stardust/block/BlockTangleState";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
@@ -37,12 +38,13 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         lastClick
     ] = useVisualizerState(network, graphElement);
 
-    const status = selectedFeedItem?.metadata?.referenced ?
-            "referenced" :
-            undefined;
-    const conflictReason = selectedFeedItem?.metadata?.conflictReason ?
-        CONFLICT_REASON_STRINGS[selectedFeedItem.metadata.conflictReason] :
-        undefined;
+    const getStatus = (referenced?: number) => (referenced ? "referenced" : undefined);
+    const getConflictReasonMessage = (conflictReason?: ConflictReason) => (
+        conflictReason ?
+            CONFLICT_REASON_STRINGS[conflictReason] :
+            undefined
+    );
+    const properties = selectedFeedItem?.properties;
 
     return (
         <div className="visualizer-stardust">
@@ -124,87 +126,96 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                         <span className="margin-l-t">
                                             <BlockTangleState
                                                 network={network}
-                                                status={status}
+                                                status={getStatus(selectedFeedItem?.metadata?.referenced)}
                                                 hasConflicts={selectedFeedItem.metadata?.conflicting}
-                                                conflictReason={conflictReason}
+                                                conflictReason={getConflictReasonMessage(
+                                                    selectedFeedItem?.metadata?.conflictReason
+                                                )}
                                             />
                                         </span>
                                     )}
                                 </div>
                                 <div className="card--value overflow-ellipsis">
-                                    <a
-                                        className="button"
+                                    <Link
+                                        to={`/${networkConfig.network
+                                            }/block/${selectedFeedItem?.blockId}`}
                                         target="_blank"
-                                        rel="noopener noreferrer"
-                                        href={
-                                            `${window.location.origin}${RouteBuilder
-                                                .buildItem(networkConfig, selectedFeedItem.blockId)}`
-                                        }
                                     >
-                                        {selectedFeedItem.blockId}
-                                    </a>
+                                        <TruncatedId id={selectedFeedItem.blockId} />
+                                    </Link>
                                 </div>
                                 {selectedFeedItem?.transactionId && (
                                     <React.Fragment>
                                         <div className="card--label">Transaction id</div>
-                                        <div className="card--value overflow-ellipsis">
-                                            <a
-                                                className="button"
+                                        <div className="card--value">
+                                            <Link
+                                                to={`/${networkConfig.network
+                                                    }/transaction/${selectedFeedItem?.transactionId}`}
                                                 target="_blank"
-                                                rel="noopener noreferrer"
-                                                href={
-                                                    `/${networkConfig.network
-                                                    }/transaction/${selectedFeedItem?.transactionId}`
-                                                }
                                             >
-                                                {selectedFeedItem?.transactionId}
-                                            </a>
+                                                <TruncatedId id={selectedFeedItem?.transactionId} />
+                                            </Link>
                                         </div>
                                     </React.Fragment>
                                 )}
-                                {selectedFeedItem?.properties?.Tag &&
-                                    selectedFeedItem.metadata?.milestone === undefined && (
-                                        <React.Fragment>
-                                            <div className="card--label">Tag</div>
-                                            <div className="card--value overflow-ellipsis">
-                                                <a
-                                                    className="button"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    {selectedFeedItem?.properties.Tag as string}
-                                                </a>
-                                            </div>
-                                        </React.Fragment>
-                                    )}
-                                {selectedFeedItem?.properties?.Index && (
+                                {properties?.tag && (
                                     <React.Fragment>
                                         <div className="card--label">Tag</div>
-                                        <div className="card--value overflow-ellipsis">
-                                            <a className="button" target="_blank" rel="noopener noreferrer">
-                                                {Converter.hexToUtf8(
-                                                    selectedFeedItem?.properties.Index as string
-                                                )}
-                                            </a>
+                                        <div className="card--value truncate">
+                                            {Converter.hexToUtf8(
+                                                properties.tag
+                                            )}
                                         </div>
-                                        <div className="card--label">
-                                            Index Hex
-                                        </div>
-                                        <div className="card--value overflow-ellipsis">
-                                            <a className="button" target="_blank" rel="noopener noreferrer">
-                                                {selectedFeedItem?.properties.Index as string}
-                                            </a>
+                                        <div className="card--label">Hex</div>
+                                        <div className="card--value truncate">
+                                            {properties.tag}
                                         </div>
                                     </React.Fragment>
                                 )}
                                 {selectedFeedItem.metadata?.milestone !== undefined && (
                                     <React.Fragment>
+                                        {properties?.milestoneId && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Milestone id
+                                                </div>
+                                                <div className="card--value">
+                                                    <Link
+                                                        to={`/${networkConfig.network
+                                                            }/block/${selectedFeedItem?.blockId}`}
+                                                        target="_blank"
+                                                    >
+                                                        <TruncatedId id={properties.milestoneId} />
+                                                    </Link>
+                                                </div>
+                                            </React.Fragment>
+                                        )}
                                         <div className="card--label">
-                                            Milestone
+                                            Milestone index
                                         </div>
                                         <div className="card--value">
-                                            {selectedFeedItem.metadata.milestone}
+                                            <Link
+                                                to={`/${networkConfig.network
+                                                    }/block/${selectedFeedItem?.blockId}`}
+                                                target="_blank"
+                                            >
+                                                {selectedFeedItem.metadata.milestone}
+                                            </Link>
                                         </div>
+                                        {properties?.timestamp && (
+                                            <React.Fragment>
+                                                <div className="card--label">
+                                                    Timestamp
+                                                </div>
+                                                <div className="card--value">
+                                                    {DateHelper.formatShort(
+                                                        DateHelper.milliseconds(
+                                                            properties.timestamp
+                                                        )
+                                                    )}
+                                                </div>
+                                            </React.Fragment>
+                                        )}
                                     </React.Fragment>
                                 )}
                                 {selectedFeedItem?.value !== undefined &&
@@ -233,28 +244,23 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                         <div className="card--label">Reattachments</div>
                                         {selectedFeedItem.reattachments.map((item, index) => (
                                             <div key={index} className="card--value row">
-                                                <a
-                                                    className="button truncate"
+                                                <Link
+                                                    to={`/${networkConfig.network
+                                                        }/block/${item.blockId}`}
+                                                    className="truncate"
                                                     target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={
-                                                        `${window.location.origin}${RouteBuilder
-                                                            .buildItem(networkConfig, item.blockId)}`
-                                                    }
                                                 >
-                                                    {item?.blockId}
-                                                </a>
+                                                    <TruncatedId id={item.blockId} />
+                                                </Link>
                                                 {item?.metadata && (
                                                     <span className="margin-l-t">
                                                         <BlockTangleState
                                                             network={network}
-                                                            status={item.metadata?.referenced ?
-                                                                "referenced" :
-                                                                undefined}
+                                                            status={getStatus(item.metadata?.referenced)}
                                                             hasConflicts={item.metadata?.conflicting}
-                                                            conflictReason={item.metadata?.conflictReason ?
-                                                                CONFLICT_REASON_STRINGS[item.metadata?.conflictReason] :
-                                                                undefined}
+                                                            conflictReason={getConflictReasonMessage(
+                                                                item.metadata?.conflictReason
+                                                            )}
                                                         />
                                                     </span>
                                                 )}

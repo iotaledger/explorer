@@ -1,6 +1,13 @@
 import { HexEncodedString } from "@iota/iota.js-stardust";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
+export interface IFeedBlockProperties {
+    index?: number;
+    tag?: HexEncodedString;
+    timestamp?: number;
+    milestoneId?: string;
+}
+
 export interface IFeedBlockData {
     /**
      * The block id.
@@ -20,7 +27,7 @@ export interface IFeedBlockData {
     /**
      * Metadata for the item.
      */
-    properties?: { [key: string]: unknown };
+    properties?: IFeedBlockProperties;
 
     /**
      * The transaction id.

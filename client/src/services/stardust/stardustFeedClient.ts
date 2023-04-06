@@ -210,7 +210,7 @@ export class StardustFeedClient {
                 }
 
                 if (block.payload.essence.payload) {
-                    properties.Index = block.payload.essence.payload.tag;
+                    properties.tag = block.payload.essence.payload.tag;
                 }
             } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                 payloadType = "Milestone";
@@ -219,7 +219,7 @@ export class StardustFeedClient {
                 properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "TaggedData";
-                properties.Index = block.payload.tag;
+                properties.tag = block.payload.tag;
             }
         } catch (err) {
             console.error(err);
