@@ -6,6 +6,7 @@ export interface IFeedBlockProperties {
     tag?: HexEncodedString;
     timestamp?: number;
     milestoneId?: string;
+    transactionId?: HexEncodedString;
 }
 
 export interface IFeedBlockData {
@@ -28,11 +29,6 @@ export interface IFeedBlockData {
      * Metadata for the item.
      */
     properties?: IFeedBlockProperties;
-
-    /**
-     * The transaction id.
-     */
-    transactionId?: HexEncodedString;
 
     /**
      * The blocks with same transaction id (reattached transaction).

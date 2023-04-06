@@ -1,4 +1,4 @@
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -80,7 +80,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 if (graph.current) {
                     const now = Date.now();
 
-                    const blockId = HexHelper.stripPrefix(newBlock.blockId);
+                    const blockId = newBlock.blockId;
                     const existingNode = graph.current.getNode(blockId);
 
                     if (!existingNode) {
@@ -94,7 +94,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                         if (newBlock.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < newBlock.parents.length; i++) {
-                                const parentId = HexHelper.stripPrefix(newBlock.parents[i]);
+                                const parentId = newBlock.parents[i];
                                 if (!addedParents.includes(parentId)) {
                                     addedParents.push(parentId);
                                     if (!graph.current.getNode(parentId)) {
@@ -119,8 +119,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                     const highlightRegEx = highlightNodesRegEx();
 
                     for (const blockId in updatedMetadata) {
-                        const noPrefixId = HexHelper.stripPrefix(blockId);
-                        const node = graph.current.getNode(noPrefixId);
+                        const node = graph.current.getNode(blockId);
                         if (node) {
                             if (node.data) {
                                 node.data.feedItem.metadata = {
@@ -356,8 +355,8 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             graph.current?.forEachNode((n: Viva.Graph.INode<INodeData, unknown>) => {
                 const reattached = n.data?.feedItem;
                 if (reattached?.blockId !== feedItem?.blockId &&
-                    reattached?.transactionId &&
-                    reattached?.transactionId === feedItem.transactionId) {
+                    reattached?.properties?.transactionId &&
+                    reattached?.properties.transactionId === feedItem?.properties?.transactionId) {
                     feedItem.reattachments?.push(reattached);
                 }
             });
@@ -458,8 +457,10 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         if (properties) {
             let key: keyof typeof properties;
             for (key in properties) {
-                const val = properties[key] as string;
-                if (typeof val === "string" && Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val))) {
+                const val = String(properties[key]);
+                if (regEx.test(val) ||
+                    (Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val)))
+                ) {
                     return true;
                 }
             }

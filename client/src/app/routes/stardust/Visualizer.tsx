@@ -144,16 +144,16 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                         <TruncatedId id={selectedFeedItem.blockId} />
                                     </Link>
                                 </div>
-                                {selectedFeedItem?.transactionId && (
+                                {properties?.transactionId && (
                                     <React.Fragment>
                                         <div className="card--label">Transaction id</div>
                                         <div className="card--value">
                                             <Link
                                                 to={`/${networkConfig.network
-                                                    }/transaction/${selectedFeedItem?.transactionId}`}
+                                                    }/transaction/${properties?.transactionId}`}
                                                 target="_blank"
                                             >
-                                                <TruncatedId id={selectedFeedItem?.transactionId} />
+                                                <TruncatedId id={properties?.transactionId} />
                                             </Link>
                                         </div>
                                     </React.Fragment>

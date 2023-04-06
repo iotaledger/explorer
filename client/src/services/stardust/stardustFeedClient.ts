@@ -200,6 +200,7 @@ export class StardustFeedClient {
                     TransactionHelper.getTransactionPayloadHash(block.payload),
                     true
                 );
+                properties.transactionId = transactionId;
                 payloadType = "Transaction";
                 value = 0;
 
@@ -230,7 +231,6 @@ export class StardustFeedClient {
             value,
             parents: block?.parents ?? [],
             properties,
-            transactionId,
             payloadType
         };
     }
