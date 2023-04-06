@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router";
 import graphMessages from "../../../../assets/modals/stardust/statistics/graphs.json";
 import { useChartsState } from "../../../../helpers/hooks/useChartsState";
+import { useTokenDistributionState } from "../../../../helpers/hooks/useTokenDistributionState";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import Modal from "../../../components/Modal";
 import ChartInfoPanel from "../../../components/stardust/statistics/ChartInfoPanel";
@@ -37,6 +38,7 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
         storageDeposit,
         analyticStats
     ] = useChartsState(network);
+    useTokenDistributionState(network);
 
     const lockedStorageDepositValue = formatAmount(
         Number(analyticStats?.lockedStorageDeposit),
