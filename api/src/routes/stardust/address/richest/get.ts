@@ -35,6 +35,6 @@ export async function get(
         `chronicle-${networkConfig.network}`
     );
 
-    return chronicleService.richestAddresses(100);
+    return chronicleService.richestAddressesLatest ?? { error: { code: "404", message: "no chronicle data" } };
 }
 

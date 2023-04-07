@@ -2,8 +2,8 @@ import moment from "moment";
 import logger from "../../logger";
 import { IAddressBalanceResponse } from "../../models/api/stardust/chronicle/IAddressBalanceResponse";
 import { IBlockChildrenResponse } from "../../models/api/stardust/chronicle/IBlockChildrenResponse";
-import { IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
-import { ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
+import { IRichAddress, IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
+import { IDistributionEntry, ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import { ITransactionHistoryDownloadResponse } from "../../models/api/stardust/chronicle/ITransactionHistoryDownloadResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/chronicle/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/chronicle/ITransactionHistoryResponse";
@@ -31,9 +31,24 @@ export class ChronicleService {
      */
     private readonly networkConfig: INetwork;
 
+    private richestAddressesCache: { top: IRichAddress[]; ledgerIndex: number } | null = null;
+
+    private tokenDistributionCache: { distribution: IDistributionEntry[]; ledgerIndex: number } | null = null;
+
+    private cacheTimer: NodeJS.Timer | null = null;
+
     constructor(config: INetwork) {
         this.networkConfig = config;
         this.chronicleEndpoint = config.permaNodeEndpoint;
+        this.setupCachePopulation();
+    }
+
+    public get richestAddressesLatest() {
+        return this.richestAddressesCache;
+    }
+
+    public get tokenDistributionLatest() {
+        return this.tokenDistributionCache;
     }
 
     /**
@@ -217,7 +232,7 @@ export class ChronicleService {
      * @param top The number of top addresses to return.
      * @returns The richest addresses reponse.
      */
-    public async richestAddresses(
+    private async richestAddresses(
         top: number | null
     ): Promise<IRichestAddressesResponse | undefined> {
         try {
@@ -242,7 +257,7 @@ export class ChronicleService {
      * Fetch the token distribution of the network.
      * @returns The token distribution reponse.
      */
-    public async tokenDistribution(): Promise<ITokenDistributionResponse | undefined> {
+    private async tokenDistribution(): Promise<ITokenDistributionResponse | undefined> {
         try {
             return await FetchHelper.json<never, ITokenDistributionResponse>(
                 this.chronicleEndpoint,
@@ -256,5 +271,44 @@ export class ChronicleService {
             );
         }
     }
+
+    private setupCachePopulation() {
+        logger.verbose("[ChronicleService] Cache population setup...");
+        if (this.cacheTimer) {
+            clearInterval(this.cacheTimer);
+            this.cacheTimer = null;
+        }
+
+        const popuate = () => {
+            logger.verbose("Fetching token distribution data...");
+            this.richestAddresses(100).then(resp => {
+                if (!resp.error && resp.top) {
+                    this.richestAddressesCache = {
+                        top: resp.top,
+                        ledgerIndex: resp.ledgerIndex
+                    };
+                }
+            }).catch(() => {
+                logger.warn(`Failed population of richest addresses cache on ${this.networkConfig.network}`);
+            });
+
+            this.tokenDistribution().then(resp => {
+                if (!resp.error && resp.distribution) {
+                    this.tokenDistributionCache = {
+                        distribution: resp.distribution,
+                        ledgerIndex: resp.ledgerIndex
+                    };
+                }
+            }).catch(() => {
+                logger.warn(`Failed population of token distribution cache on ${this.networkConfig.network}`);
+            });
+        };
+
+        popuate();
+        this.cacheTimer = setInterval(() => {
+            popuate();
+        }, 60000);
+    }
 }
+
 

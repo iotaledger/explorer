@@ -183,9 +183,10 @@ function initStardustServices(networkConfig: INetwork): void {
     );
 
     if (networkConfig.permaNodeEndpoint) {
+        const chronicleService = new ChronicleService(networkConfig);
         ServiceFactory.register(
             `chronicle-${networkConfig.network}`,
-            () => new ChronicleService(networkConfig)
+            () => chronicleService
         );
     }
 

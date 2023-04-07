@@ -1,6 +1,6 @@
 import { IResponse } from "@iota/iota.js-stardust";
 
-interface IRichAddress {
+export interface IRichAddress {
     address: string;
     balance: string;
 }

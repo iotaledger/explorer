@@ -35,6 +35,6 @@ export async function get(
         `chronicle-${networkConfig.network}`
     );
 
-    return chronicleService.tokenDistribution();
+    return chronicleService.tokenDistributionLatest ?? { error: { code: "404", message: "no chronicle data" } };
 }
 

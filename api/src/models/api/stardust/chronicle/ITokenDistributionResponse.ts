@@ -1,6 +1,6 @@
 import { IResponse } from "@iota/iota.js-stardust";
 
-interface IDistributionEntry {
+export interface IDistributionEntry {
     addressCount: string;
     totalBalance: string;
     range: { start: number; end: number }[];
