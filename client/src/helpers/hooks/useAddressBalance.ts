@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -17,9 +17,7 @@ export function useAddressBalance(network: string, address: string | null):
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [balance, setBalance] = useState<number | null>(null);
     const [sigLockedBalance, setSigLockedBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,14 +27,14 @@ export function useAddressBalance(network: string, address: string | null):
         if (address) {
             // eslint-disable-next-line no-void
             void (async () => {
-                const response = await tangleCacheService.addressBalanceFromChronicle({ network, address });
+                const response = await apiClient.addressBalanceChronicle({ network, address });
 
                 if (response?.totalBalance !== undefined && isMounted) {
                     setBalance(response.totalBalance);
                     setSigLockedBalance(response.sigLockedBalance ?? null);
                 } else if (isMounted) {
                     // Fallback balance from iotajs (node)
-                    const addressDetailsWithBalance = await tangleCacheService.addressBalance({ network, address });
+                    const addressDetailsWithBalance = await apiClient.addressBalance({ network, address });
 
                     if (addressDetailsWithBalance && isMounted) {
                         setBalance(Number(addressDetailsWithBalance.balance));

@@ -1,10 +1,10 @@
 import { IOutputResponse } from "@iota/iota.js-stardust";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 interface IOutputDetailsMap {
@@ -24,10 +24,7 @@ export function useAddressHistory(
     setDisabled?: (isDisabled: boolean) => void
 ): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
-    const tangleService = useCallback(
-        () => ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`),
-        [network, address]
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
     const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
     const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
@@ -51,10 +48,9 @@ export function useAddressHistory(
                 cursor
             };
 
-            tangleService().transactionHistory(request)
+            apiClient.transactionHistory(request)
                 .then((response: ITransactionHistoryResponse | undefined) => {
                     const items = response?.items ?? [];
-
                     if (items.length > 0 && isMounted) {
                         setHistory([...history, ...items]);
                         setCursor(response?.cursor);
@@ -75,12 +71,13 @@ export function useAddressHistory(
             const detailsPage: IOutputDetailsMap = {};
 
             for (const item of history) {
-                const promise = tangleService().outputDetails(network, item.outputId)
+                const promise = apiClient.outputDetails({ network, outputId: item.outputId })
                     .then(response => {
-                        if (!response.error && response.output && response.metadata) {
+                        const details = response.output;
+                        if (!response.error && details?.output && details?.metadata) {
                             const outputDetails = {
-                                output: response.output,
-                                metadata: response.metadata
+                                output: details.output,
+                                metadata: details.metadata
                             };
 
                             detailsPage[item.outputId] = outputDetails;

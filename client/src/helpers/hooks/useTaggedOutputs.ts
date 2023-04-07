@@ -5,7 +5,7 @@ import { OUTPUT_LIST_TABS } from "../../app/routes/stardust/OutputList";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITaggedOutputsResponse } from "../../models/api/stardust/ITaggedOutputsResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 interface OutputListLocationProps {
@@ -48,9 +48,7 @@ export function useTaggedOutputs(
         (outputType: "basic" | "nft") => Promise<void>
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const location = useLocation<OutputListLocationProps>();
     const searchParams = new URLSearchParams(location.search);
     const history = useHistory();
@@ -85,17 +83,18 @@ export function useTaggedOutputs(
 
         for (const outputId of outputs) {
             promises.push(
-                tangleCacheService.outputDetails(network, outputId)
-                    .then(outputDetailsResponse => {
+                apiClient.outputDetails({ network, outputId })
+                    .then(response => {
+                        const details = response.output;
                         if (
-                            !outputDetailsResponse.error &&
-                            outputDetailsResponse.output &&
-                            outputDetailsResponse.metadata
+                            !response.error &&
+                            details?.output &&
+                            details?.metadata
                         ) {
                             const item: OutputListItem = {
                                 outputDetails: {
-                                    output: outputDetailsResponse.output,
-                                    metadata: outputDetailsResponse.metadata
+                                    output: details.output,
+                                    metadata: details.metadata
                                 },
                                 outputId
                             };
@@ -117,7 +116,7 @@ export function useTaggedOutputs(
     };
 
     const loadMore = async (outputType: "basic" | "nft") => {
-        tangleCacheService.outputsByTag({
+        apiClient.outputsByTag({
             network, tag, outputType, cursor: outputType === "basic" ? basicOutputsCursor : nftOutputsCursor
         }).then(response => {
             if (!response.error && response.outputs) {

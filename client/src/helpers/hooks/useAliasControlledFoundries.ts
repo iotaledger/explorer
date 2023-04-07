@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -18,9 +18,7 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [aliasFoundries, setAliasFoundries] = useState<string[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -30,7 +28,7 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
             const foundries: string[] = [];
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.foundriesByAliasAddress({
+                apiClient.aliasFoundries({
                     network,
                     aliasAddress: aliasAddress.bech32
                 }).then(async foundryOutputs => {
@@ -58,10 +56,11 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
     }, [network, aliasAddress]);
 
     const fetchFoundryId = async (outputId: HexEncodedString) => {
-        const foundryId = tangleCacheService.outputDetails(network, outputId).then(
+        const foundryId = apiClient.outputDetails({ network, outputId }).then(
             response => {
-                if (aliasAddress?.hex && !response.error && response.output?.type === FOUNDRY_OUTPUT_TYPE) {
-                    const output = response.output;
+                const details = response.output;
+                if (aliasAddress?.hex && !response.error && details?.output?.type === FOUNDRY_OUTPUT_TYPE) {
+                    const output = details.output;
                     const serialNumber = output.serialNumber;
                     const tokenSchemeType = output.tokenScheme.type;
                     const tokenId = TransactionHelper.constructTokenId(

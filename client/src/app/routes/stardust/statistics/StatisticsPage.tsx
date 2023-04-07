@@ -8,7 +8,7 @@ import {
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../../../services/stardust/stardustApiClient";
 import Modal from "../../../components/Modal";
 import ChartInfoPanel from "../../../components/stardust/statistics/ChartInfoPanel";
 import BarChart from "../../../components/stardust/statistics/charts/BarChart";
@@ -25,9 +25,7 @@ interface StatisticsPageProps {
 
 const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ match: { params: { network } } }) => {
     const { tokenInfo } = useContext(NetworkContext);
-    const [cacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [transactions, setTransactions] = useState<DataPoint[]>([]);
     const [dailyBlocks, setDailyBlocks] = useState<DataPoint[]>([]);
     const [outputs, setOutputs] = useState<DataPoint[]>([]);
@@ -47,9 +45,9 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
     const [analyticStats, setAnalyticStats] = useState<IAnalyticStats | null>(null);
 
     useEffect(() => {
-        cacheService.influxStatisticsData(network).then(response => {
-            if (!response.error && response.influxStats) {
-                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(response.influxStats);
+        apiClient.influxAnalytics({ network }).then(influxStats => {
+            if (!influxStats.error) {
+                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(influxStats);
 
                 setDailyBlocks(graphsData.blocksDaily);
                 setTransactions(graphsData.transactionsDaily);
@@ -67,13 +65,13 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = ({ ma
                 setLedgerSize(graphsData.ledgerSizeDaily);
                 setStorageDeposit(graphsData.storageDepositDaily);
             } else {
-                console.log("Fetching influx stats failed", response.error);
+                console.log("Fetching influx stats failed", influxStats.error);
             }
         }).catch(e => console.log("Influx analytics fetch failed", e));
 
-        cacheService.chronicleAnalytics(network).then(response => {
-            if (!response.error && response.analyticStats) {
-                setAnalyticStats(response.analyticStats);
+        apiClient.chronicleAnalytics({ network }).then(response => {
+            if (!response.error && Object.getOwnPropertyNames(response).length > 0) {
+                setAnalyticStats(response);
             } else {
                 console.log("Fetching chronicle stats failed", response.error);
             }

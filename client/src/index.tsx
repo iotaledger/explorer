@@ -22,7 +22,6 @@ import { NodeInfoService } from "./services/nodeInfoService";
 import { SettingsService } from "./services/settingsService";
 import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
-import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
 import { TokenRegistryClient } from "./services/stardust/tokenRegistryClient";
@@ -71,7 +70,6 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
     ServiceFactory.register(`tangle-cache-${LEGACY}`, () => new LegacyTangleCacheService());
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
-    ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
 
     const networks = networkService.networks();
 

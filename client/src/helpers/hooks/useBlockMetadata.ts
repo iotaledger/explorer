@@ -4,7 +4,7 @@ import { BlockMetadata } from "../../app/routes/stardust/BlockState";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { calculateConflictReason, calculateStatus } from "../../models/tangleStatus";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -19,9 +19,7 @@ export function useBlockMetadata(network: string, blockId: string | null):
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [blockMetadata, setBlockMetadata] = useState<BlockMetadata>({ blockTangleStatus: "pending" });
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -32,10 +30,10 @@ export function useBlockMetadata(network: string, blockId: string | null):
         if (blockId) {
             const fetchMetadata = async () => {
                 try {
-                    const details = await tangleCacheService.blockDetails(
+                    const details = await apiClient.blockDetails({
                         network,
-                        HexHelper.addPrefix(blockId)
-                    );
+                        blockId: HexHelper.addPrefix(blockId)
+                    });
 
                     if (isMounted) {
                         setBlockMetadata({

@@ -3,7 +3,7 @@ import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -19,9 +19,7 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
         string?
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [block, setBlock] = useState<IBlock | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -31,10 +29,10 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
         if (transactionId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.transactionIncludedBlockDetails(
+                apiClient.transactionIncludedBlockDetails({
                     network,
-                    HexHelper.addPrefix(transactionId)
-                ).then(response => {
+                    transactionId: HexHelper.addPrefix(transactionId)
+                }).then(response => {
                     if (isMounted) {
                         setBlock(response.block ?? null);
                         setError(response.error);

@@ -2,7 +2,7 @@ import { IOutputResponse } from "@iota/iota.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -15,9 +15,7 @@ export function useAddressBasicOutputs(
     network: string, addressBech32: string | null
 ): [IOutputResponse[] | null, boolean] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [outputs, setOutputs] = useState<IOutputResponse[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -27,7 +25,7 @@ export function useAddressBasicOutputs(
         if (addressBech32) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.addressBasicOutputs(network, addressBech32).then(response => {
+                apiClient.basicOutputsDetails({ network, address: addressBech32 }).then(response => {
                     if (!response?.error && response.outputs && isMounted) {
                         setOutputs(response.outputs);
                     }

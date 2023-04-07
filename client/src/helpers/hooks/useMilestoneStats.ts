@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -17,9 +17,7 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -28,10 +26,10 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
         if (milestoneIndex) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.milestoneStats(
+                apiClient.milestoneStats({
                     network,
                     milestoneIndex
-                ).then(response => {
+                }).then(response => {
                     if (isMounted) {
                         setMilestoneStats(response ?? null);
                     }
