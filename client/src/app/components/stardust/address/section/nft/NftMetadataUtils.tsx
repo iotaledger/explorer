@@ -28,7 +28,7 @@ export const loadingImagePlaceholder = (
 /**
  * Supported image MIME formats.
  */
-const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "video/mp4"]);
+const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif", "image/webp", "video/mp4"]);
 
 /**
  * Validate NFT image MIME type.
