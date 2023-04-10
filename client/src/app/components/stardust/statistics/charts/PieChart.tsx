@@ -6,6 +6,7 @@ import { arc, pie } from "d3-shape";
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { IDistributionEntry } from "../../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import { noDataView, useChartWrapperSize } from "../ChartUtils";
+import "./PieChart.scss";
 
 interface IPieChartProps {
     data: IDistributionEntry[] | null;
@@ -22,8 +23,7 @@ export const PieChart: React.FC<IPieChartProps> = ({ data }) => {
 
     useLayoutEffect(() => {
         if (data && data.length > 0 && wrapperWidth && wrapperHeight) {
-            console.log(wrapperWidth);
-            console.log(wrapperHeight);
+            console.log(data);
             const width = wrapperWidth;
             const height = wrapperHeight;
             const margin = 4;
@@ -42,7 +42,7 @@ export const PieChart: React.FC<IPieChartProps> = ({ data }) => {
             // set the color scale
             const theColor = scaleOrdinal().range(schemeSet1);
 
-            const thePie = pie<{ value: number }>().value(d => d.value);
+            const thePie = pie<{ value: number }>().sort(null).value(d => d.value);
             const dataReady = thePie(theData);
 
             const theArc = arc<{ value: number }>()
@@ -59,7 +59,7 @@ export const PieChart: React.FC<IPieChartProps> = ({ data }) => {
                 .join("path")
                 .attr("d", theArc)
                 .attr("fill", d => theColor(d.value.toString(10)) as string)
-                .attr("stroke", "black")
+                .attr("stroke", "white")
                 .style("stroke-width", "2px")
                 .style("opacity", 0.7);
 
@@ -100,11 +100,11 @@ export const PieChart: React.FC<IPieChartProps> = ({ data }) => {
     }, [data, wrapperWidth, wrapperHeight]);
 
     return (
-        <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data?.length === 0 })}>
+        <div className={classNames("pie-chart-wrapper", { "chart-wrapper--no-data": data?.length === 0 })}>
             {data?.length === 0 ? (
                 noDataView()
             ) : (
-                <div className="chart-wrapper__content" ref={chartWrapperRef}>
+                <div className="pie-chart-wrapper__content" ref={chartWrapperRef}>
                     <svg className="hook" ref={theSvg} />
                 </div>
             )}

@@ -3,7 +3,7 @@ import { IResponse } from "../../IResponse";
 export interface IDistributionEntry {
     addressCount: string;
     totalBalance: string;
-    range: { start: number; end: number }[];
+    range: { start: number; end: number };
 }
 
 export interface ITokenDistributionResponse extends IResponse {
