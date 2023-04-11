@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IRichAddress } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
 import { IDistributionEntry } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
@@ -7,13 +8,13 @@ import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 
 /**
  * State holder for Statistics page token distribution section.
- * @param network The Network in context
  * @returns The token distribution state.
  */
-export function useTokenDistributionState(network: string): [
+export function useTokenDistributionState(): [
     (IRichAddress[] | null),
     (IDistributionEntry[] | null)
 ] {
+    const { name: network } = useContext(NetworkContext);
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [richestAddresses, setRichestAddresses] = useState<IRichAddress[] | null>(null);
     const [tokenDistribution, setTokenDistribution] = useState<IDistributionEntry[] | null>(null);

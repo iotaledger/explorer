@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
@@ -7,10 +8,9 @@ import { DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData } from "../
 
 /**
  * State holder for Statistics page chart section.
- * @param network The Network in context
  * @returns The charts state.
  */
-export function useChartsState(network: string): [
+export function useChartsState(): [
     DataPoint[],
     DataPoint[],
     DataPoint[],
@@ -28,6 +28,7 @@ export function useChartsState(network: string): [
     DataPoint[],
     (IAnalyticStats | null),
 ] {
+    const { name: network } = useContext(NetworkContext);
     const [cacheService] = useState(
         ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
     );

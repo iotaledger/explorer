@@ -21,6 +21,7 @@ export const LollipopChart: React.FC<ILollipopChartProps> = ({ data }) => {
             setTheRef(chartWrapper);
         }
     }, []);
+
     const theSvg = useRef<SVGSVGElement>(null);
 
     useLayoutEffect(() => {
@@ -95,6 +96,7 @@ export const LollipopChart: React.FC<ILollipopChartProps> = ({ data }) => {
                 .text(d => d.addressCount);
         }
     }, [data, wrapperWidth, wrapperHeight]);
+
     return (
         <div className={classNames("lollipop-chart-wrapper", { "chart-wrapper--no-data": data?.length === 0 })}>
             {data?.length === 0 ? (

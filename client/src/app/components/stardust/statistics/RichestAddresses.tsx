@@ -6,12 +6,11 @@ import TruncatedId from "../TruncatedId";
 import "./RichestAddresses.scss";
 
 interface IRichestAddressesProps {
-    network: string;
     data: IRichAddress[] | null;
 }
 
-export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ network, data }) => {
-    const { tokenInfo } = useContext(NetworkContext);
+export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => {
+    const { tokenInfo, name: network } = useContext(NetworkContext);
 
     return (
         <div className="section richest-addr-section">

@@ -62,9 +62,26 @@ export const useChartWrapperSize: () => [
     }), [chartWrapper]);
 
     useEffect(() => {
-        window.addEventListener("resize", handleResize);
         handleResize();
-        return () => window.removeEventListener("resize", handleResize);
+
+        let observer: ResizeObserver | null = null;
+        if (chartWrapper) {
+            observer = new ResizeObserver(resizeEntry => {
+                if (
+                    resizeEntry?.length > 0 &&
+                    resizeEntry[0].contentRect?.width !== wrapperSize.wrapperWidth &&
+                    resizeEntry[0].contentRect?.height !== wrapperSize.wrapperHeight
+                ) {
+                    handleResize();
+                }
+            });
+
+            observer.observe(chartWrapper);
+        }
+
+        return () => {
+            observer?.disconnect();
+        };
     }, [chartWrapper]);
 
     return [wrapperSize, setChartWrapper];
