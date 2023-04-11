@@ -5,7 +5,7 @@ export interface IFeedBlockProperties {
     index?: number;
     tag?: HexEncodedString;
     timestamp?: number;
-    milestoneId?: string;
+    milestoneId?: HexEncodedString;
     transactionId?: HexEncodedString;
 }
 
@@ -26,7 +26,7 @@ export interface IFeedBlockData {
     parents?: string[];
 
     /**
-     * Metadata for the item.
+     * The feed block properties.
      */
     properties?: IFeedBlockProperties;
 

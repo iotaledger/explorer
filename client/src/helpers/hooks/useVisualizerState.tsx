@@ -19,7 +19,7 @@ const COLOR_REFERENCED: string = "0x61e884";
 const COLOR_CONFLICTING: string = "0xff8b5c";
 const COLOR_INCLUDED: string = "0x4caaff";
 const COLOR_MILESTONE: string = "0x666af6";
-const COLOR_SEARCH_RESULT: string = "0xe79c18";
+const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
 /**
  * Setup the Visualizer state and ook into feed service for visalizer data.
@@ -58,6 +58,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
 
     useEffect(() => {
         window.addEventListener("resize", resize);
+        window.addEventListener("theme-change", toggleDarkMode);
         setupGraph();
 
         return () => {
@@ -69,6 +70,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             renderer.current = null;
             existingIds.current = [];
             window.removeEventListener("resize", resize);
+            window.removeEventListener("theme-change", toggleDarkMode);
         };
     }, [graphElement, network]);
 
@@ -146,6 +148,10 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         restyleNodes();
         selectedFeedItemBlockId.current = selectedFeedItem?.blockId ?? null;
     }, [filter, selectedFeedItem]);
+
+    useEffect(() => {
+        styleConnections();
+    }, [darkMode]);
 
     /**
      * Setup the graph.
@@ -495,9 +501,13 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         setIsActive(!isActive);
     }
 
-    if (darkMode !== settingsService.get().darkMode) {
-        setDarkMode(settingsService.get().darkMode ?? null);
-        styleConnections();
+    /**
+     * Toggle dark mode
+     * @param event The theme-change event.
+     */
+    function toggleDarkMode(event: Event): void {
+        const dMode = (event as CustomEvent).detail.darkMode as boolean;
+        setDarkMode(dMode);
     }
 
     return [
