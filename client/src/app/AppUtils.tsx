@@ -65,9 +65,7 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
         const footerArray = networks.filter(network => network.isEnabled)
             .map(n => ({ label: n.label, url: n.network.toString() }))
             .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
-            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` })
-            .concat({ label: "Markets", url: `${currentNetwork}/markets/` })
-            .concat({ label: "Currency Converter", url: `${currentNetwork}/currency-converter/` });
+            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
 
         if (identityResolverEnabled) {
             footerArray.push({ label: "Identity Resolver", url: `${currentNetwork}/identity-resolver/` });
