@@ -136,11 +136,11 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 }
             };
 
-            feedService.subscribe(onNewBlockData, onMetaDataUpdated);
+            feedService.subscribeBlocks(onNewBlockData, onMetaDataUpdated);
         }
 
         return () => {
-            feedService?.unsubscribe();
+            feedService?.unsubscribeBlocks();
         };
     }, [network, graph]);
 

@@ -14,5 +14,5 @@ export interface IFeedUnsubscribeRequest {
     /**
      * The specific feed to subscribe too (expected only on stardust feed).
      */
-    feedSelect?: IFeedSelect;
+    feedSelect: IFeedSelect;
 }
