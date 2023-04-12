@@ -1,5 +1,61 @@
+@import "../../../../../scss/mixins";
+@import "../../../../../scss/variables";
+@import "../../../../../scss/fonts";
+@import "../../../../../scss/themes";
+@import "../../../../../scss/media-queries";
+
 .lollipop-chart-wrapper {
     .lollipop-chart-wrapper__content {
         height: 480px;
+    }
+
+    svg.hook {
+        .data-line, .data-circle, .data-text {
+            stroke: var(--card-color);
+            @include font-size(14px);
+            font-family: $metropolis;
+        }
+
+        .axis {
+            color: var(--statistics-charts-axis);
+
+            .tick text {
+                @include font-size(14px);
+                color: $gray-6;
+                fill: $gray-6;
+            }
+
+            @include tablet-down {
+                .tick text {
+                    @include font-size(10px);
+                }
+            }
+
+            @include phone-down {
+                .tick text {
+                    @include font-size(9px);
+                }
+            }
+
+            &.axis--x {
+                path {
+                    stroke: $gray-6;
+                }
+
+                g.tick line {
+                    stroke: $gray-6;
+                }
+            }
+
+            &.axis--y {
+                path {
+                    stroke: none;
+                }
+
+                tick {
+                    align: left;
+                }
+            }
+        }
     }
 }

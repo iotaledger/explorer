@@ -32,7 +32,7 @@ export const LollipopChart: React.FC<ILollipopChartProps> = ({ data }) => {
             select(theSvg.current).select("*").remove();
             const dataMaxX = Math.max(...data.map(d => Number(d.addressCount)));
 
-            const MARGIN = { top: 30, right: 20, bottom: 50, left: 200 };
+            const MARGIN = { top: 30, right: 20, bottom: 60, left: 200 };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
@@ -47,6 +47,7 @@ export const LollipopChart: React.FC<ILollipopChartProps> = ({ data }) => {
                 .range([0, INNER_WIDTH]);
 
             svg.append("g")
+                .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(axisBottom(x))
                 .selectAll("text")
@@ -54,8 +55,14 @@ export const LollipopChart: React.FC<ILollipopChartProps> = ({ data }) => {
                 .style("text-anchor", "end");
 
             const buildYLabel = (range: { start: number; end: number }) => {
-                const start = formatAmount(range.start, tokenInfo);
-                const end = formatAmount(range.end, tokenInfo);
+                let start = formatAmount(range.start, tokenInfo);
+                let end = formatAmount(range.end, tokenInfo);
+                if (range.start > 100) {
+                    start = start.replace(/000 SMR/g, "k SMR");
+                }
+                if (range.end > 100) {
+                    end = end.replace(/000 SMR/g, "k SMR");
+                }
                 return `${start} to ${end}`;
             };
 
@@ -65,32 +72,34 @@ export const LollipopChart: React.FC<ILollipopChartProps> = ({ data }) => {
                 .padding(1);
 
             svg.append("g")
+                .attr("class", "axis axis--y")
                 .call(axisLeft(y));
 
             svg.selectAll("lines")
                 .data(data)
                 .enter()
                 .append("line")
+                .attr("class", "data-line")
                 .attr("x1", d => x(Number(d.addressCount)))
                 .attr("x2", x(0))
                 .attr("y1", d => y(buildYLabel(d.range)) ?? null)
-                .attr("y2", d => y(buildYLabel(d.range)) ?? null)
-                .attr("stroke", "black");
+                .attr("y2", d => y(buildYLabel(d.range)) ?? null);
 
             svg.selectAll("circles")
                 .data(data)
                 .enter()
                 .append("circle")
+                .attr("class", "data-circle")
                 .attr("cx", d => x(Number(d.addressCount)))
                 .attr("cy", d => y(buildYLabel(d.range)) ?? null)
                 .attr("r", "4")
-                .style("fill", "#00e0ca")
-                .attr("stroke", "black");
+                .style("fill", "#00e0ca");
 
             svg.selectAll("address-counts")
                 .data(data)
                 .enter()
                 .append("text")
+                .attr("class", "data-text")
                 .attr("x", d => Math.max(x(Number(d.addressCount)) - 30, 7))
                 .attr("y", d => (y(buildYLabel(d.range)) ?? 0) - 10)
                 .text(d => d.addressCount);

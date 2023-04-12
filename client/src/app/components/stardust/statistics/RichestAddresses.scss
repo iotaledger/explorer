@@ -12,16 +12,55 @@
             font-family: $ibm-plex-mono;
             font-weight: normal;
             letter-spacing: 0.02em;
-            line-height: 20px;
+            line-height: 26px;
 
-            .entry__idx {
-                text-align: center;
-                width:16px;
-                margin-right: 1rem;
+            @include tablet-down {
+                // flex-direction: column;
+                justify-content: space-between;
             }
-            .entry__address {
-                max-width: 70%;
-                margin-right: 1rem;
+
+            .entry__left {
+                flex-grow: 1;
+
+                .entry__idx {
+                    text-align: center;
+                    width:16px;
+                    margin-right: 1rem;
+                }
+
+                .entry__address {
+                    max-width: 99%;
+                    margin-right: 1rem;
+                    color: var(--link-color);
+                }
+
+                @include tablet-down {
+                    max-width: 60%;
+                }
+
+                @include phone-down {
+                    max-width: 50%;
+                }
+            }
+
+            .entry__right {
+                .entry__balance {
+                    white-space: nowrap;
+                    @include font-size(14px);
+                    color: var(--card-color);
+                }
+
+                @include tablet-down {
+                    .entry__balance {
+                        @include font-size(10px);
+                    }
+                }
+
+                @include phone-down {
+                    .entry__balance {
+                        @include font-size(9px);
+                    }
+                }
             }
         }
     }
