@@ -134,6 +134,7 @@
     }
 
     @include phone-down {
+      left: 10px;
       .stats-panel {
         .card--value,
         .card--label {
@@ -157,12 +158,16 @@
       width: 320px;
       overflow: visible;
 
-      @include phone-down {
-          top: 10px;
-          left: 10px;
-          width: 90%;
+      @include tablet-down {
+          top: 140px;
+          width: 46%;
       }
 
+      @include phone-down {
+          top: 200px;
+          left: 10px;
+          width: 60%;
+      }
 
       button {
           position: absolute;
