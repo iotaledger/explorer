@@ -1,4 +1,13 @@
+import { HexEncodedString } from "@iota/iota.js-stardust";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
+
+export interface IFeedBlockProperties {
+    index?: number;
+    tag?: HexEncodedString;
+    timestamp?: number;
+    milestoneId?: HexEncodedString;
+    transactionId?: HexEncodedString;
+}
 
 export interface IFeedBlockData {
     /**
@@ -17,9 +26,14 @@ export interface IFeedBlockData {
     parents?: string[];
 
     /**
-     * Metadata for the item.
+     * The feed block properties.
      */
-    properties?: { [key: string]: unknown };
+    properties?: IFeedBlockProperties;
+
+    /**
+     * The blocks with same transaction id (reattached transaction).
+     */
+    reattachments?: IFeedBlockData[];
 
     /**
      * The payload type for Stardust.

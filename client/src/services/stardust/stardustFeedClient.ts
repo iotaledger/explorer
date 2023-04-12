@@ -6,7 +6,8 @@ import {
     milestoneIdFromMilestonePayload,
     MILESTONE_PAYLOAD_TYPE,
     TAGGED_DATA_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE
+    TRANSACTION_PAYLOAD_TYPE,
+    TransactionHelper
 } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { io, Socket } from "socket.io-client";
@@ -187,14 +188,19 @@ export class StardustFeedClient {
         const blockId = Converter.bytesToHex(Blake2b.sum256(bytes), true);
 
         let value;
+        let transactionId;
         let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
         let block: IBlock | null = null;
 
         try {
             block = deserializeBlock(new ReadStream(bytes));
-
             if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                transactionId = Converter.bytesToHex(
+                    TransactionHelper.getTransactionPayloadHash(block.payload),
+                    true
+                );
+                properties.transactionId = transactionId;
                 payloadType = "Transaction";
                 value = 0;
 
@@ -205,7 +211,7 @@ export class StardustFeedClient {
                 }
 
                 if (block.payload.essence.payload) {
-                    properties.Index = block.payload.essence.payload.tag;
+                    properties.tag = block.payload.essence.payload.tag;
                 }
             } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                 payloadType = "Milestone";
@@ -214,7 +220,7 @@ export class StardustFeedClient {
                 properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "TaggedData";
-                properties.Index = block.payload.tag;
+                properties.tag = block.payload.tag;
             }
         } catch (err) {
             console.error(err);
