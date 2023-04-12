@@ -1,4 +1,4 @@
-import { IResponse } from "../IResponse";
+import { IResponse } from "../stardust/IResponse";
 
 export interface IMilestoneAnalyticStats extends IResponse {
     milestoneIndex?: number;
