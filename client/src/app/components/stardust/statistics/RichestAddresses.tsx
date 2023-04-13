@@ -1,9 +1,7 @@
 import React, { useContext } from "react";
-import graphMessages from "../../../../assets/modals/stardust/statistics/graphs.json";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IRichAddress } from "../../../../models/api/stardust/chronicle/IRichestAddressesResponse";
 import NetworkContext from "../../../context/NetworkContext";
-import Modal from "../../Modal";
 import TruncatedId from "../TruncatedId";
 import "./RichestAddresses.scss";
 
@@ -18,7 +16,6 @@ export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => 
         <div className="section richest-addr-section">
             <div className="section--header">
                 <h2>Richest addresses</h2>
-                <Modal icon="info" data={graphMessages.richestAddresses} />
             </div>
             <ul className="column richest-addr__list">
                 {data?.map((entry, idx) => (
@@ -38,7 +35,8 @@ export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => 
                                 {formatAmount(
                                     Number(entry.balance),
                                     tokenInfo,
-                                    false
+                                    false,
+                                    0
                                 )}
                             </div>
                         </div>

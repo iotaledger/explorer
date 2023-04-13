@@ -1,5 +1,8 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
+import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
 
 export const noDataView = () => (
     <div className="no-data--wrapper">
@@ -40,6 +43,26 @@ export const useMultiValueTooltip = (
                 </p>
         `)).join("")}`
     ), [data, subgroups, groupLabels, colors]);
+
+    return buildTooltip;
+};
+
+export const useTokenDistributionTooltip = (
+    data: IDistributionEntry[] | null,
+    tokenInfo: INodeInfoBaseToken
+) => {
+    const buildTooltip = useCallback((dataPoint: IDistributionEntry): string => (
+        `
+            <p>
+                <span class="label">${"Number of addresses"}: </span>
+                <span class="value">${dataPoint.addressCount}</span>
+            </p>
+            <p>
+                <span class="label">${`Total ${tokenInfo.unit} held`}: </span>
+                <span class="value">~${formatAmount(Number(dataPoint.totalBalance), tokenInfo, false, 0)}</span>
+            </p>
+        `
+    ), [data]);
 
     return buildTooltip;
 };
@@ -115,4 +138,7 @@ export const determineGraphLeftPadding = (dataMaxY: number) => {
 };
 
 export const d3FormatSpecifier = (dataMaxY: number) => (dataMaxY < 1 ? "~g" : "~s");
+
+export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => Math.pow(10, tokenInfo.decimals);
+
 

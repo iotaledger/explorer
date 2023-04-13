@@ -244,15 +244,5 @@
               "isExternal": true
             }
         ]
-    },
-    "tokenDistribution": {
-        "title": "Token distribution",
-        "description": "<p>The number of address grouped by tokens held ranges.</p>",
-        "links": []
-    },
-    "richestAddresses": {
-        "title": "Richest addresses",
-        "description": "<p>The list of top 100 addresses with most base tokens held.</p>",
-        "links": []
     }
 }
