@@ -10,6 +10,7 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
 
 const MAX_ITEMS: number = 5000;
+const FEED_PROBE_THRESHOLD: number = 1000;
 const EDGE_COLOR_LIGHT: number = 0x00000055;
 const EDGE_COLOR_DARK: number = 0xFFFFFF33;
 const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
@@ -46,7 +47,9 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
     const [filter, setFilter] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(true);
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
-
+    const feedProbe = useRef<NodeJS.Timer | null>(null);
+    const lastUpdateTime = useRef<number>(0);
+    const resetCounter = useRef<number>(0);
     const [selectedFeedItem, setSelectedFeedItem] = useState<IFeedBlockData | null>(null);
     const existingIds = useRef<string[]>([]);
     const selectedFeedItemBlockId = useRef<string | null>(null);
@@ -55,6 +58,28 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
     const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
     const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
     const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
+
+    // Feed probe (reconnect)
+    useEffect(() => {
+        feedProbe.current = setInterval(() => {
+            if (!lastUpdateTime.current) {
+                lastUpdateTime.current = Date.now();
+            }
+            const msSinceLast = Date.now() - lastUpdateTime.current;
+
+            if (msSinceLast > FEED_PROBE_THRESHOLD) {
+                resetCounter.current += 1;
+            }
+        }, FEED_PROBE_THRESHOLD);
+
+        return () => {
+            if (feedProbe.current) {
+                clearInterval(feedProbe.current);
+            }
+            feedProbe.current = null;
+            lastUpdateTime.current = 0;
+        };
+    }, [network, feedProbe]);
 
     useEffect(() => {
         window.addEventListener("resize", resize);
@@ -72,7 +97,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             window.removeEventListener("resize", resize);
             window.removeEventListener("theme-change", toggleDarkMode);
         };
-    }, [graphElement, network]);
+    }, [graphElement, network, resetCounter.current]);
 
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
@@ -81,6 +106,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             const onNewBlockData = (newBlock: IFeedBlockData) => {
                 if (graph.current) {
                     const now = Date.now();
+                    lastUpdateTime.current = now;
 
                     const blockId = newBlock.blockId;
                     const existingNode = graph.current.getNode(blockId);
@@ -117,6 +143,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             };
 
             const onMetaDataUpdated = (updatedMetadata: { [id: string]: IFeedBlockMetadata }) => {
+                lastUpdateTime.current = Date.now();
                 if (graph.current) {
                     const highlightRegEx = highlightNodesRegEx();
 
@@ -143,7 +170,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             // eslint-disable-next-line no-void
             void feedService?.unsubscribeBlocks();
         };
-    }, [network, graph]);
+    }, [network, graph, resetCounter.current]);
 
     useEffect(() => {
         restyleNodes();
