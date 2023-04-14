@@ -11,6 +11,9 @@ import { IMilestoneBlockInfo } from "../../models/api/stardust/milestone/IMilest
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
+const RICH_ADDRESSES_N = 100;
+const RICH_ADDR_TOKEN_DIST_REFRESH_INTERVAL_MS = 60000;
+
 const CHRONICLE_ENDPOINTS = {
     updatedByAddress: "/api/explorer/v2/ledger/updates/by-address/",
     richestAddresses: "/api/explorer/v2/ledger/richest-addresses",
@@ -299,9 +302,9 @@ export class ChronicleService {
             this.cacheTimer = null;
         }
 
-        const popuate = () => {
+        const populateCache = () => {
             logger.verbose("Fetching token distribution data...");
-            this.richestAddresses(100).then(resp => {
+            this.richestAddresses(RICH_ADDRESSES_N).then(resp => {
                 if (!resp.error && resp.top) {
                     this.richestAddressesCache = {
                         top: resp.top,
@@ -324,10 +327,10 @@ export class ChronicleService {
             });
         };
 
-        popuate();
+        populateCache();
         this.cacheTimer = setInterval(() => {
-            popuate();
-        }, 60000);
+            populateCache();
+        }, RICH_ADDR_TOKEN_DIST_REFRESH_INTERVAL_MS);
     }
 }
 

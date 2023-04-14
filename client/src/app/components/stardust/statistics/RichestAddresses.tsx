@@ -21,7 +21,7 @@ export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => 
                 {data?.map((entry, idx) => (
                     <li key={`radd-${entry.address}`} className="row middle richest-addr__entry" >
                         <div className="entry__left row">
-                            <span className="entry__idx">{idx + 1}</span>
+                            <span className="entry__idx">{idx + 1}.</span>
                             <div className="entry__address">
                                 <TruncatedId
                                     id={entry.address}
