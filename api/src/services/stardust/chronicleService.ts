@@ -31,10 +31,19 @@ export class ChronicleService {
      */
     private readonly networkConfig: INetwork;
 
+    /**
+     * The richest addresses cached data.
+     */
     private richestAddressesCache: { top: IRichAddress[]; ledgerIndex: number } | null = null;
 
+    /**
+     * The token distribution cached data.
+     */
     private tokenDistributionCache: { distribution: IDistributionEntry[]; ledgerIndex: number } | null = null;
 
+    /**
+     * The nodeJS timer for data refresh.
+     */
     private cacheTimer: NodeJS.Timer | null = null;
 
     constructor(config: INetwork) {
@@ -43,10 +52,18 @@ export class ChronicleService {
         this.setupCachePopulation();
     }
 
+    /**
+     * Get the current richest addresses data.
+     * @returns The current richest addresses data.
+     */
     public get richestAddressesLatest() {
         return this.richestAddressesCache;
     }
 
+    /**
+     * Get the current token distribution data.
+     * @returns The current token distribution data.
+     */
     public get tokenDistributionLatest() {
         return this.tokenDistributionCache;
     }
@@ -272,6 +289,9 @@ export class ChronicleService {
         }
     }
 
+    /**
+     * Sets up the interval for richest address/token distribution data refresh.
+     */
     private setupCachePopulation() {
         logger.verbose("[ChronicleService] Cache population setup...");
         if (this.cacheTimer) {
