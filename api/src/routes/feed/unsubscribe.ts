@@ -1,5 +1,6 @@
 import SocketIO from "socket.io";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
 import { IResponse } from "../../models/api/IResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
@@ -23,6 +24,7 @@ export async function unsubscribe(
     request: IFeedUnsubscribeRequest
 ): Promise<IResponse> {
     let response: IResponse;
+    logger.verbose(`[unsubscribe] req = ${JSON.stringify(request)}`);
 
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -41,9 +43,13 @@ export async function unsubscribe(
                 itemsService.unsubscribe(request.subscriptionId);
             }
         } else if (networkConfig.protocolVersion === STARDUST) {
+            ValidationHelper.string(request.feedSelect, "feedSelect");
+            ValidationHelper.oneOf(request.feedSelect, ["block", "milestone"], "feedSelect");
             const service = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
-            if (service) {
-                service.unsubscribe(request.subscriptionId);
+            if (request.feedSelect === "block") {
+                service?.unsubscribeBlocks(request.subscriptionId);
+            } else {
+                service?.unsubscribeMilestones(request.subscriptionId);
             }
         } else {
             return {

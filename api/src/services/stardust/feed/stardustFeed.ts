@@ -19,9 +19,16 @@ const MAX_MILESTONE_LATEST = 30;
  */
 export class StardustFeed {
     /**
-     * The feed subscribers (downstream).
+     * The block feed subscribers (downstream).
      */
-    protected readonly subscribers: {
+    protected readonly blockSubscribers: {
+        [id: string]: (data: IFeedUpdate) => Promise<void>;
+    };
+
+    /**
+     * The milestone feed subscribers (downstream).
+     */
+    protected readonly milestoneSubscribers: {
         [id: string]: (data: IFeedUpdate) => Promise<void>;
     };
 
@@ -55,7 +62,8 @@ export class StardustFeed {
      * @param networkId The network id.
      */
     constructor(networkId: string) {
-        this.subscribers = {};
+        this.blockSubscribers = {};
+        this.milestoneSubscribers = {};
         this.blockMetadataCache = new Map();
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
         const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
@@ -82,20 +90,37 @@ export class StardustFeed {
     }
 
     /**
-     * Subscribe to the stardust feed.
+     * Subscribe to the blocks stardust feed.
      * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
      */
-    public async subscribe(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
-        this.subscribers[id] = callback;
+    public async subscribeBlocks(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+        this.blockSubscribers[id] = callback;
     }
 
     /**
-     * Unsubscribe from the feed.
+     * Subscribe to the blocks stardust feed.
+     * @param id The id of the subscriber.
+     * @param callback The callback to call with data for the event.
+     */
+    public async subscribeMilestones(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+        this.milestoneSubscribers[id] = callback;
+    }
+
+    /**
+     * Unsubscribe from the blocks feed.
      * @param subscriptionId The id to unsubscribe.
      */
-    public unsubscribe(subscriptionId: string): void {
-        delete this.subscribers[subscriptionId];
+    public unsubscribeBlocks(subscriptionId: string): void {
+        delete this.blockSubscribers[subscriptionId];
+    }
+
+    /**
+     * Unsubscribe from the milestones feed.
+     * @param subscriptionId The id to unsubscribe.
+     */
+    public unsubscribeMilestones(subscriptionId: string): void {
+        delete this.milestoneSubscribers[subscriptionId];
     }
 
     /**
@@ -111,7 +136,7 @@ export class StardustFeed {
                 };
 
                 // eslint-disable-next-line no-void
-                void this.broadcast(update);
+                void this.broadcastBlock(update);
             });
 
         this._mqttClient.blocksReferenced(
@@ -145,7 +170,7 @@ export class StardustFeed {
                 };
 
                 // eslint-disable-next-line no-void
-                void this.broadcast(update);
+                void this.broadcastBlock(update);
             });
 
         this._mqttClient.milestone(async (_, milestonePayload) => {
@@ -153,10 +178,23 @@ export class StardustFeed {
                 const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
-                const timestamp = milestonePayload.timestamp * 1000;
+                const timestamp = milestonePayload.timestamp;
 
                 // eslint-disable-next-line no-void
                 void this.updateLatestMilestoneCache(blockId, milestoneIndex, milestoneId, timestamp);
+
+                const update: Partial<IFeedUpdate> = {
+                    milestone: {
+                        blockId,
+                        milestoneId,
+                        milestoneIndex,
+                        timestamp,
+                        payload: milestonePayload
+                    }
+                };
+
+                // eslint-disable-next-line no-void
+                void this.broadcastMilestone(update);
             } catch (err) {
                 logger.error(`[FeedClient] Mqtt milestone callback failed: ${err}`);
             }
@@ -164,19 +202,39 @@ export class StardustFeed {
     }
 
     /**
-     * Pushes data to subscribers (downstream).
+     * Pushes block data to subscribers (downstream).
      * @param payload The data payload (without subscriptionId).
      */
-    private async broadcast(payload: Partial<IFeedUpdate>) {
-        for (const subscriptionId in this.subscribers) {
+    private async broadcastBlock(payload: Partial<IFeedUpdate>) {
+        for (const subscriptionId in this.blockSubscribers) {
             try {
-                logger.debug(`Broadcasting to subscriber ${subscriptionId}`);
-                await this.subscribers[subscriptionId]({
+                logger.debug(`Broadcasting block to subscriber ${subscriptionId}`);
+                // push data through callback
+                await this.blockSubscribers[subscriptionId]({
                     ...payload,
                     subscriptionId
                 });
             } catch (error) {
-                logger.warn(`[FeedClient] Failed to send callback to subscribers for ${subscriptionId}. Cause: ${error}`);
+                logger.warn(`[FeedClient] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
+            }
+        }
+    }
+
+    /**
+     * Pushes milestone data to subscribers (downstream).
+     * @param payload The data payload (without subscriptionId).
+     */
+    private async broadcastMilestone(payload: Partial<IFeedUpdate>) {
+        for (const subscriptionId in this.milestoneSubscribers) {
+            try {
+                logger.debug(`Broadcasting milestone to subscriber ${subscriptionId}`);
+                // push data through callback
+                await this.milestoneSubscribers[subscriptionId]({
+                    ...payload,
+                    subscriptionId
+                });
+            } catch (error) {
+                logger.warn(`[FeedClient] Failed to send callback to milestone subscribers for ${subscriptionId}. Cause: ${error}`);
             }
         }
     }
@@ -196,7 +254,7 @@ export class StardustFeed {
                 blockId,
                 milestoneId,
                 index: milestoneIndex,
-                timestamp: timestamp / 1000
+                timestamp
             });
 
             if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
