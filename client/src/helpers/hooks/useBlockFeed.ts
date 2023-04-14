@@ -94,7 +94,8 @@ export function useBlockFeed(network: string): [
         }
 
         return () => {
-            feedService.unsubscribeMilestones();
+            // eslint-disable-next-line no-void
+            void feedService.unsubscribeMilestones();
             setMilestones([]);
             setLatestMilestoneIndex(null);
         };

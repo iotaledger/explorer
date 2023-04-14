@@ -234,7 +234,7 @@ export class StardustFeed {
                     subscriptionId
                 });
             } catch (error) {
-                logger.warn(`[FeedClient] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
+                logger.warn(`[FeedClient] Failed to send callback to milestone subscribers for ${subscriptionId}. Cause: ${error}`);
             }
         }
     }

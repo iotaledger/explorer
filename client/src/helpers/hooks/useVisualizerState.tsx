@@ -140,7 +140,8 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         }
 
         return () => {
-            feedService?.unsubscribeBlocks();
+            // eslint-disable-next-line no-void
+            void feedService?.unsubscribeBlocks();
         };
     }, [network, graph]);
 
