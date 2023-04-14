@@ -134,6 +134,7 @@
     }
 
     @include phone-down {
+      left: 10px;
       .stats-panel {
         .card--value,
         .card--label {
@@ -155,11 +156,17 @@
       top: 100px;
       left: 20px;
       width: 320px;
+      overflow: visible;
+
+      @include tablet-down {
+          top: 140px;
+          width: 46%;
+      }
 
       @include phone-down {
-          top: 10px;
+          top: 200px;
           left: 10px;
-          width: 90%;
+          width: 60%;
       }
 
       button {
@@ -172,6 +179,12 @@
           padding: 20px 30px;
       }
 
+      .tooltip {
+
+        .wrap {
+          width: 180px;
+        }
+      }
   }
 
   .key-panel-container {
@@ -229,7 +242,7 @@
                   }
 
                   &.vertex-state--search-result {
-                      background-color: #e79c18;
+                      background-color: #C061E8;
                   }
               }
 

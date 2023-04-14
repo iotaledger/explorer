@@ -6,16 +6,17 @@ import {
     milestoneIdFromMilestonePayload,
     MILESTONE_PAYLOAD_TYPE,
     TAGGED_DATA_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE
+    TRANSACTION_PAYLOAD_TYPE,
+    TransactionHelper
 } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
-import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
-import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { IFeedBlockData, IFeedMilestoneData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMetadata";
+import { IFeedSubscribeRequest } from "../../models/api/stardust/feed/IFeedSubscribeRequest";
+import { IFeedUnsubscribeRequest } from "../../models/api/stardust/feed/IFeedUnsubscribeRequest";
 import { IFeedUpdate } from "../../models/api/stardust/feed/IFeedUpdate";
 import { INetwork } from "../../models/config/INetwork";
 import { NetworkService } from "../networkService";
@@ -41,9 +42,14 @@ export class StardustFeedClient {
     private socket: Socket | null = null;
 
     /**
-     * The subscription id.
+     * The subscription id for blocks feed.
      */
-    private subscriptionId?: string;
+    private blockSubscriptionId?: string;
+
+    /**
+     * The subscription id for milestones feed.
+     */
+    private milestoneSubscriptionId?: string;
 
     /**
      * The latest blocks data map.
@@ -81,7 +87,12 @@ export class StardustFeedClient {
         this.setupCacheTrimJob();
     }
 
-    public subscribe(
+    /**
+     * Subscribe to the feed of blocks.
+     * @param onBlockDataCallback the callback for block data updates.
+     * @param onMetadataUpdatedCallback the callback for block metadata udpates.
+     */
+    public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
         onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
     ) {
@@ -95,16 +106,15 @@ export class StardustFeedClient {
         });
 
         try {
-            if (!this.subscriptionId && this._networkConfig?.network && this.socket) {
-                const subscribeRequest: INetworkBoundGetRequest = {
-                    network: this._networkConfig.network
+            if (!this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
+                const subscribeRequest: IFeedSubscribeRequest = {
+                    network: this._networkConfig.network,
+                    feedSelect: "block"
                 };
-
-                this.socket.emit("subscribe", subscribeRequest);
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (!subscribeResponse.error) {
-                        this.subscriptionId = subscribeResponse.subscriptionId;
+                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     } else {
                         console.log(
                             "Failed subscribing to feed",
@@ -113,9 +123,8 @@ export class StardustFeedClient {
                         );
                     }
                 });
-
                 this.socket.on("block", async (update: IFeedUpdate) => {
-                    if (update.subscriptionId === this.subscriptionId) {
+                    if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.blockMetadata) {
                             const existingBlockData = this.latestBlocks.get(update.blockMetadata?.blockId) ?? null;
                             if (existingBlockData) {
@@ -148,33 +157,118 @@ export class StardustFeedClient {
                         }
                     }
                 });
+
+                this.socket.emit("subscribe", subscribeRequest);
             }
         } catch (error) {
-            console.log("Failed subscribing to feed", this._networkConfig?.network, error);
+            console.log("Failed subscribing to block feed", this._networkConfig?.network, error);
+        }
+    }
+
+    /**
+     * Subscribe to the feed of milestones.
+     * @param onMilestoneCallback the callback for block data updates.
+     */
+    public subscribeMilestones(
+        onMilestoneCallback?: (milestoneData: IFeedMilestoneData) => void
+    ) {
+        this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
+
+        // If reconnect fails then also try polling mode.
+        this.socket.on("reconnect_attempt", () => {
+            if (this.socket) {
+                this.socket.io.opts.transports = ["polling", "websocket"];
+            }
+        });
+
+        try {
+            if (!this.milestoneSubscriptionId && this._networkConfig?.network && this.socket) {
+                const subscribeRequest: IFeedSubscribeRequest = {
+                    network: this._networkConfig.network,
+                    feedSelect: "milestone"
+                };
+
+                this.socket.emit("subscribe", subscribeRequest);
+
+                this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
+                    if (!subscribeResponse.error) {
+                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
+                    } else {
+                        console.log(
+                            "Failed subscribing to feed",
+                            this._networkConfig?.network,
+                            subscribeResponse.error
+                        );
+                    }
+                });
+
+                this.socket.on("milestone", async (update: IFeedUpdate) => {
+                    if (update.subscriptionId === this.milestoneSubscriptionId && update.milestone) {
+                        onMilestoneCallback?.(update.milestone);
+                    }
+                });
+            }
+        } catch (error) {
+            console.log("Failed subscribing to milestone feed", this._networkConfig?.network, error);
         }
     }
 
     /**
      * Perform a request to unsubscribe to block feed events.
      */
-    public unsubscribe(): void {
+    public async unsubscribeBlocks(): Promise<boolean> {
+        let success = false;
         try {
-            if (this.subscriptionId && this._networkConfig?.network && this.socket) {
+            if (this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkConfig.network,
-                    subscriptionId: this.subscriptionId
+                    subscriptionId: this.blockSubscriptionId,
+                    feedSelect: "block"
                 };
 
-                this.socket.emit("unsubscribe", unsubscribeRequest);
                 this.socket.on("unsubscribe", () => { });
+                this.socket.emit("unsubscribe", unsubscribeRequest);
+                success = true;
             }
         } catch {
-            console.error("[FeedClient2] Could not unsubscribe");
+            success = false;
+            console.error("[FeedClient] Could not unsubscribe blocks");
         } finally {
             this.socket?.disconnect();
-            this.subscriptionId = undefined;
+            this.blockSubscriptionId = undefined;
             this.socket = null;
         }
+
+        return success;
+    }
+
+    /**
+     * Perform a request to unsubscribe to block feed events.
+     */
+    public async unsubscribeMilestones(): Promise<boolean> {
+        let success = false;
+        try {
+            if (this.milestoneSubscriptionId && this._networkConfig?.network && this.socket) {
+                const unsubscribeRequest: IFeedUnsubscribeRequest = {
+                    network: this._networkConfig.network,
+                    subscriptionId: this.milestoneSubscriptionId,
+                    feedSelect: "milestone"
+                };
+
+                this.socket.on("unsubscribe", () => { });
+                this.socket.emit("unsubscribe", unsubscribeRequest);
+                success = true;
+            }
+        } catch {
+            success = false;
+            console.error("[FeedClient] Could not unsubscribe milestones");
+        } finally {
+            this.socket?.disconnect();
+            this.milestoneSubscriptionId = undefined;
+            this.socket = null;
+        }
+
+        return success;
     }
 
     /**
@@ -187,14 +281,19 @@ export class StardustFeedClient {
         const blockId = Converter.bytesToHex(Blake2b.sum256(bytes), true);
 
         let value;
+        let transactionId;
         let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
         let block: IBlock | null = null;
 
         try {
             block = deserializeBlock(new ReadStream(bytes));
-
             if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                transactionId = Converter.bytesToHex(
+                    TransactionHelper.getTransactionPayloadHash(block.payload),
+                    true
+                );
+                properties.transactionId = transactionId;
                 payloadType = "Transaction";
                 value = 0;
 
@@ -205,7 +304,7 @@ export class StardustFeedClient {
                 }
 
                 if (block.payload.essence.payload) {
-                    properties.Index = block.payload.essence.payload.tag;
+                    properties.tag = block.payload.essence.payload.tag;
                 }
             } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
                 payloadType = "Milestone";
@@ -214,7 +313,7 @@ export class StardustFeedClient {
                 properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "TaggedData";
-                properties.Index = block.payload.tag;
+                properties.tag = block.payload.tag;
             }
         } catch (err) {
             console.error(err);

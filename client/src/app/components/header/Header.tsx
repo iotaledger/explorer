@@ -328,6 +328,8 @@ class Header extends Component<HeaderProps, HeaderState> {
             darkMode: !this.state.darkMode
         }, () => {
             this._settingsService.saveSingle("darkMode", this.state.darkMode);
+            const event = new CustomEvent("theme-change", { detail: { darkMode: this.state.darkMode } });
+            window.dispatchEvent(event);
         });
         this.toggleModeClass();
     }

@@ -1,7 +1,8 @@
 import SocketIO from "socket.io";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
+import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
-import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { CHRYSALIS, LEGACY, STARDUST } from "../../models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
@@ -20,9 +21,10 @@ import { ValidationHelper } from "../../utils/validationHelper";
 export async function subscribe(
     _: IConfiguration,
     socket: SocketIO.Socket,
-    request: INetworkBoundGetRequest
+    request: IFeedSubscribeRequest
 ): Promise<IFeedSubscribeResponse> {
     let response: IFeedSubscribeResponse;
+    logger.verbose(`[subscribe] req = ${JSON.stringify(request)}`);
 
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -43,12 +45,27 @@ export async function subscribe(
                 });
             }
         } else if (networkConfig.protocolVersion === STARDUST) {
+            ValidationHelper.string(request.feedSelect, "feedSelect");
+            ValidationHelper.oneOf(request.feedSelect, ["block", "milestone"], "feedSelect");
+
             const service = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
 
             if (service) {
-                await service.subscribe(socket.id, async data => {
-                    socket.emit("block", data);
-                });
+                await (
+                    request.feedSelect === "block" ?
+                        service.subscribeBlocks(
+                            socket.id,
+                            async data => {
+                                socket.emit("block", data);
+                            }
+                        ) :
+                        service.subscribeMilestones(
+                            socket.id,
+                            async data => {
+                                socket.emit("milestone", data);
+                            }
+                        )
+                );
             }
         } else {
             return {
