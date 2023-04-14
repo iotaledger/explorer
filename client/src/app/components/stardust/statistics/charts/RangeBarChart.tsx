@@ -13,9 +13,11 @@ import "./RangeBarChart.scss";
 
 interface IRangeBarChartProps {
     data: IDistributionEntry[] | null;
+    yField: "addressCount" | "totalBalance";
+    yLabel: string;
 }
 
-export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data }) => {
+export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLabel }) => {
     const { tokenInfo } = useContext(NetworkContext);
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
@@ -25,17 +27,21 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data }) => {
     }, []);
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
-    const subunitThreshold = getSubunitThreshold(tokenInfo);
+    const subunitThreshold = getSubunitThreshold(tokenInfo) ?? null;
     const buildTooltip = useTokenDistributionTooltip(data, tokenInfo);
 
     useLayoutEffect(() => {
-        if (data && data.length > 0 && wrapperWidth && wrapperHeight) {
-            const width = wrapperWidth;
-            const height = wrapperHeight;
+        if (data && data.length > 0 && wrapperWidth && wrapperHeight && subunitThreshold) {
             // reset
             select(theSvg.current).select("*").remove();
 
-            const dataMaxY = Math.max(...data.map(d => Number(d.addressCount)));
+            const width = wrapperWidth;
+            const height = wrapperHeight;
+            // data dependent vars
+            const dataY = yField === "addressCount" ?
+                data.map(d => Number(d[yField])) :
+                data.map(d => Number(d[yField]) / subunitThreshold);
+            const dataMaxY = Math.max(...dataY);
             const leftMargin = width < 600 ? 40 : 60;
             const rangeLabel = (range: { start: number; end: number }) => {
                 const start = format(d3FormatSpecifier(range.start / subunitThreshold))(range.start / subunitThreshold);
@@ -54,7 +60,6 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data }) => {
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-
             const x = scaleBand().domain(ranges)
                 .range([0, INNER_WIDTH])
                 .paddingInner(0.1);
@@ -63,42 +68,56 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data }) => {
                 .domain([0, dataMaxY])
                 .range([INNER_HEIGHT, 0]);
 
+            // x axis
             svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .call(axisLabelRotate(axisBottom(x)));
 
+            // x axis label
             svg.append("text")
                 .attr("class", "axis-x-label")
-                .attr("text-anchor", "start")
+                .attr("text-anchor", "middle")
                 .attr("x", INNER_WIDTH / 2)
                 .attr("y", INNER_HEIGHT + (width < 350 ? 12 : 50))
-                .text(tokenInfo.unit);
+                .text(`${tokenInfo.unit} HELD RANGE`);
 
+            // y axis
             svg.append("g")
                 .attr("class", "axis axis--y")
                 .call(axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY))));
 
+            // y axis label
             svg.append("text")
                 .attr("class", "axis-y-label")
                 .attr("text-anchor", "middle")
                 .attr("transform", "rotate(-90)")
                 .attr("x", -(INNER_HEIGHT / 2))
                 .attr("y", width < 600 ? -30 : -46)
-                .text("ADDRESSES");
+                .text(yLabel);
 
+            // bars
             svg.selectAll("rect")
                 .data(data)
                 .join("rect")
                 .attr("class", "bar")
                 .attr("x", d => x(rangeLabel(d.range)) ?? 0)
                 .attr("width", x.bandwidth())
-                .attr("y", d => y(Number(d.addressCount)))
+                .attr("y", d => y(
+                    yField === "addressCount" ?
+                        Number(d[yField]) :
+                        Number(d[yField]) / subunitThreshold
+                ))
                 .attr("rx", 2)
-                .attr("height", d => INNER_HEIGHT - y(Number(d.addressCount)))
+                .attr("height", d => INNER_HEIGHT - y(
+                    yField === "addressCount" ?
+                        Number(d[yField]) :
+                        Number(d[yField]) / subunitThreshold
+                ))
                 .style("fill", "#14CABF");
 
+            // hidden hover areas
             svg.append("g")
                 .attr("class", "hover-lines")
                 .selectAll("g")

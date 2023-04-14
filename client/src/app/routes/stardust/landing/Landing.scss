@@ -208,6 +208,11 @@
                     flex-direction: column;
                 }
             }
+
+            .card--content {
+                padding:px 0px;
+            }
+
             @include phone-down {
                 margin-top: 0px;
             }

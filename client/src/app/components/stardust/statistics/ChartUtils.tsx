@@ -139,6 +139,8 @@ export const determineGraphLeftPadding = (dataMaxY: number) => {
 
 export const d3FormatSpecifier = (dataMaxY: number) => (dataMaxY < 1 ? "~g" : "~s");
 
-export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => Math.pow(10, tokenInfo.decimals);
-
+export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => (
+    tokenInfo?.decimals && tokenInfo.decimals > 0 ?
+        Math.pow(10, tokenInfo.decimals) : null
+);
 
