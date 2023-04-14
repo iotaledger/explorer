@@ -167,7 +167,7 @@ export class StardustTangleHelper {
 
         return outputResponse ?
             { output: outputResponse } :
-            { error: "Output not found" };
+            { message: "Output not found" };
     }
 
     /**
@@ -350,13 +350,15 @@ export class StardustTangleHelper {
             true
         );
 
-        if (aliasOutput.items.length > 0) {
+        if (aliasOutput?.items.length > 0) {
             const outputResponse = await this.outputDetails(network, aliasOutput.items[0]);
 
             return !outputResponse.error ?
                 { aliasDetails: outputResponse.output } :
                 { error: outputResponse.error };
         }
+
+        return { message: "Alias output not found" };
     }
 
     /**
@@ -383,7 +385,7 @@ export class StardustTangleHelper {
                 };
             }
 
-            return { error: "Foundry output not found" };
+            return { message: "Foundries output not found" };
         } catch { }
     }
 
@@ -404,13 +406,15 @@ export class StardustTangleHelper {
             true
         );
 
-        if (foundryOutput.items.length > 0) {
+        if (foundryOutput?.items.length > 0) {
             const outputResponse = await this.outputDetails(network, foundryOutput.items[0]);
 
             return !outputResponse.error ?
                 { foundryDetails: outputResponse.output } :
                 { error: outputResponse.error };
         }
+
+        return { message: "Foundry output not found" };
     }
 
     /**
@@ -465,7 +469,7 @@ export class StardustTangleHelper {
                     { error: outputResponse.error };
             }
 
-            return { error: "Nft output not found" };
+            return { message: "Nft output not found" };
         } catch { }
     }
 

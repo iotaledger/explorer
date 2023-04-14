@@ -240,13 +240,13 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (!this._stardustSearchCache[networkId][outputId]?.data?.output) {
             const response = await this._api.outputDetails({ network: networkId, outputId });
 
-            if (!response.error) {
+            if (!response.error && !response.message) {
                 this._stardustSearchCache[networkId][outputId] = {
                     data: { output: response.output },
                     cached: Date.now()
                 };
             } else {
-                return { error: response.error };
+                return { error: response.error ?? response.message };
             }
         }
 
@@ -425,7 +425,7 @@ export class StardustTangleCacheService extends TangleCacheService {
                 milestoneIndex
             });
 
-            if (!response.error) {
+            if (!response.error && !response.message) {
                 this._stardustSearchCache[networkId][key] = {
                     data: {
                         milestoneStats: response
@@ -519,13 +519,13 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (!cacheEntry?.data?.aliasDetails || skipCache) {
             const response = await this._api.aliasDetails(request);
 
-            if (!response.error) {
+            if (!response.error && !response.message) {
                 this._stardustSearchCache[request.network][cacheKey] = {
                     data: { aliasDetails: response.aliasDetails },
                     cached: Date.now()
                 };
             } else {
-                return { error: response.error };
+                return { error: response.error ?? response.message };
             }
         }
 
@@ -550,13 +550,13 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (!cacheEntry?.data?.foundryDetails || skipCache) {
             const response = await this._api.foundryDetails(request);
 
-            if (!response.error) {
+            if (!response.error && !response.message) {
                 this._stardustSearchCache[request.network][cacheKey] = {
                     data: { foundryDetails: response.foundryDetails },
                     cached: Date.now()
                 };
             } else {
-                return { error: response.error };
+                return { error: response.error ?? response.message };
             }
         }
 
@@ -581,13 +581,13 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (!cacheEntry?.data?.foundryOutputs || skipCache) {
             const response = await this._api.aliasFoundries(request);
 
-            if (!response.error) {
+            if (!response.error && !response.message) {
                 this._stardustSearchCache[request.network][cacheKey] = {
                     data: { foundryOutputs: response.foundryOutputsResponse },
                     cached: Date.now()
                 };
             } else {
-                return { error: response.error };
+                return { error: response.error ?? response.message };
             }
         }
 
@@ -643,13 +643,13 @@ export class StardustTangleCacheService extends TangleCacheService {
         if (!cacheEntry?.data?.nftDetails || skipCache) {
             const response = await this._api.nftDetails(request);
 
-            if (!response.error) {
+            if (!response.error && !response.message) {
                 this._stardustSearchCache[request.network][cacheKey] = {
                     data: { nftDetails: response.nftDetails },
                     cached: Date.now()
                 };
             } else {
-                return { error: response.error };
+                return { error: response.error ?? response.message };
             }
         }
 
