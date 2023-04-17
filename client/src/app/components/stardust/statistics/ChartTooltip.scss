@@ -1,5 +1,8 @@
+@import "../../../../scss/mixins";
 @import "../../../../scss/fonts";
 @import "../../../../scss/themes";
+@import "../../../../scss/fonts";
+@import "../../../../scss/media-queries";
 
 #tooltip {
     display: none;
@@ -28,6 +31,12 @@
             margin-right: 4px;
             border-radius: 50%;
             display: inline-block;
+        }
+
+        @include phone-down {
+            p, span {
+                @include font-size(10px);
+            }
         }
     }
 }

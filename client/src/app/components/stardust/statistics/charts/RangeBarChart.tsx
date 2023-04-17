@@ -42,7 +42,7 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                 data.map(d => Number(d[yField])) :
                 data.map(d => Number(d[yField]) / subunitThreshold);
             const dataMaxY = Math.max(...dataY);
-            const leftMargin = width < 600 ? 40 : 60;
+            const leftMargin = width < 600 ? 50 : 60;
             const rangeLabel = (range: { start: number; end: number }) => {
                 const start = format(d3FormatSpecifier(range.start / subunitThreshold))(range.start / subunitThreshold);
                 const end = format(d3FormatSpecifier(range.end / subunitThreshold))(range.end / subunitThreshold);
@@ -62,7 +62,7 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
 
             const x = scaleBand().domain(ranges)
                 .range([0, INNER_WIDTH])
-                .paddingInner(0.1);
+                .paddingInner(0.2);
 
             const y = scaleLinear()
                 .domain([0, dataMaxY])
@@ -94,7 +94,7 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                 .attr("text-anchor", "middle")
                 .attr("transform", "rotate(-90)")
                 .attr("x", -(INNER_HEIGHT / 2))
-                .attr("y", width < 600 ? -30 : -46)
+                .attr("y", width < 600 ? -36 : -46)
                 .text(yLabel);
 
             // bars

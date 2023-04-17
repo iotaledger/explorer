@@ -73,7 +73,7 @@
                 @include font-size(12px);
             }
             @include phone-down {
-                @include font-size(10px);
+                @include font-size(8px);
             }
         }
     }
