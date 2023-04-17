@@ -10,7 +10,7 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
 
 const MAX_ITEMS: number = 5000;
-const FEED_PROBE_THRESHOLD: number = 1000;
+const FEED_PROBE_THRESHOLD: number = 3000;
 const EDGE_COLOR_LIGHT: number = 0x00000055;
 const EDGE_COLOR_DARK: number = 0xFFFFFF33;
 const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
