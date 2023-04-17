@@ -15,6 +15,8 @@ import { IBlockDetailsRequest } from "../../models/api/stardust/block/IBlockDeta
 import { IBlockDetailsResponse } from "../../models/api/stardust/block/IBlockDetailsResponse";
 import { IBlockRequest } from "../../models/api/stardust/block/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/block/IBlockResponse";
+import { IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
+import { ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
@@ -424,6 +426,30 @@ export class StardustApiClient extends ApiClient {
     public async participationEventDetails(request: IParticipationEventRequest): Promise<IParticipationEventResponse> {
         return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
             `stardust/participation/events/${request.network}/${request.eventId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the richest addresses stats for a network.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async richestAddresses(request: INetworkBoundGetRequest): Promise<IRichestAddressesResponse> {
+        return this.callApi<unknown, IRichestAddressesResponse>(
+            `stardust/address/rich/${request.network}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the token distribution stats for a network.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async tokenDistribution(request: INetworkBoundGetRequest): Promise<ITokenDistributionResponse> {
+        return this.callApi<unknown, ITokenDistributionResponse>(
+            `stardust/token/distribution/${request.network}/`,
             "get"
         );
     }

@@ -1,4 +1,4 @@
-import { IResponse } from "../IResponse";
+import { IResponse } from "../../IResponse";
 
 /**
  * A transaction history item.

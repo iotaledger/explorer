@@ -1,5 +1,8 @@
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
+import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
 
 export const noDataView = () => (
     <div className="no-data--wrapper">
@@ -44,6 +47,26 @@ export const useMultiValueTooltip = (
     return buildTooltip;
 };
 
+export const useTokenDistributionTooltip = (
+    data: IDistributionEntry[] | null,
+    tokenInfo: INodeInfoBaseToken
+) => {
+    const buildTooltip = useCallback((dataPoint: IDistributionEntry): string => (
+        `
+            <p>
+                <span class="label">${"Number of addresses"}: </span>
+                <span class="value">${dataPoint.addressCount}</span>
+            </p>
+            <p>
+                <span class="label">${`Total ${tokenInfo.unit} held`}: </span>
+                <span class="value">~${formatAmount(Number(dataPoint.totalBalance), tokenInfo, false, 0)}</span>
+            </p>
+        `
+    ), [data]);
+
+    return buildTooltip;
+};
+
 export const useChartWrapperSize: () => [
     { wrapperWidth?: number; wrapperHeight?: number },
     React.Dispatch<React.SetStateAction<HTMLDivElement | null>>
@@ -62,9 +85,26 @@ export const useChartWrapperSize: () => [
     }), [chartWrapper]);
 
     useEffect(() => {
-        window.addEventListener("resize", handleResize);
         handleResize();
-        return () => window.removeEventListener("resize", handleResize);
+
+        let observer: ResizeObserver | null = null;
+        if (chartWrapper) {
+            observer = new ResizeObserver(resizeEntry => {
+                if (
+                    resizeEntry?.length > 0 &&
+                    resizeEntry[0].contentRect?.width !== wrapperSize.wrapperWidth &&
+                    resizeEntry[0].contentRect?.height !== wrapperSize.wrapperHeight
+                ) {
+                    handleResize();
+                }
+            });
+
+            observer.observe(chartWrapper);
+        }
+
+        return () => {
+            observer?.disconnect();
+        };
     }, [chartWrapper]);
 
     return [wrapperSize, setChartWrapper];
@@ -98,4 +138,9 @@ export const determineGraphLeftPadding = (dataMaxY: number) => {
 };
 
 export const d3FormatSpecifier = (dataMaxY: number) => (dataMaxY < 1 ? "~g" : "~s");
+
+export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => (
+    tokenInfo?.decimals && tokenInfo.decimals > 0 ?
+        Math.pow(10, tokenInfo.decimals) : null
+);
 

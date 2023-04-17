@@ -132,7 +132,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneIndexSpent && (
+                        {milestoneIndexSpent !== undefined && (
                             <div className="section--data">
                                 <div className="label">
                                     Spent at milestone
@@ -145,7 +145,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneTimestampSpent && (
+                        {milestoneTimestampSpent !== undefined && (
                             <div className="section--data">
                                 <div className="label">
                                     Spent at milestone timestamp
@@ -175,7 +175,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneIndexBooked && (
+                        {milestoneIndexBooked !== undefined && (
                             <div className="section--data">
                                 <div className="label">
                                     Booked at milestone
@@ -188,7 +188,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneTimestampBooked && (
+                        {milestoneTimestampBooked !== undefined && milestoneTimestampBooked !== 0 && (
                             <div className="section--data">
                                 <div className="label">
                                     Booked on
