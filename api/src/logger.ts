@@ -18,16 +18,18 @@ const theFormat = combine(
 const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
 
 // transports
-const transportList: unknown[] = [
-    new transports.Console({
-        level: logLevel,
-        format: loggerFormat
-    })
-];
+const transportList: unknown[] = [];
 
-if (process.env.GAE_ENV) {
+if (process.env.GAE_APPLICATION) {
     const gCloudLogger = new LoggingWinston();
     transportList.push(gCloudLogger);
+} else {
+    transportList.push(
+        new transports.Console({
+            level: logLevel,
+            format: loggerFormat
+        })
+    );
 }
 
 const logger = createLogger({
