@@ -5,7 +5,6 @@ import { createLogger, format, transports } from "winston";
 // error < warn < info < verbose < debug
 const logLevel: string = process.env.LOG_LEVEL ?? "info";
 const version = process.env.npm_package_version ? ` ${process.env.npm_package_version}` : "";
-const gCloudLogger = new LoggingWinston();
 
 const { combine, timestamp: timestampFunc, label: labelFunc, printf } = format;
 const theFormat = combine(
@@ -18,22 +17,27 @@ const theFormat = combine(
 
 const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
 
+// transports
+const transportList: unknown[] = [
+    new transports.Console({
+        level: logLevel,
+        format: loggerFormat
+    })
+];
+
+if (process.env.GAE_ENV) {
+    const gCloudLogger = new LoggingWinston();
+    transportList.push(gCloudLogger);
+}
+
 const logger = createLogger({
     level: logLevel,
     format: format.json(),
     defaultMeta: { service: `Explorer${version}` },
-    transports: [
-        new transports.Console({
-            level: logLevel,
-            format: loggerFormat
-        }),
-        gCloudLogger
-    ]
+    // @ts-expect-error Can't find a common type between Console and gCloud winston transport to make ts happy
+    transports: transportList
 });
 
-// if (process.env.GOOGLE_PROJECT_ID) {
-// logger.transports.push(gcouldLogger);
-// }
 
 export default logger;
 
