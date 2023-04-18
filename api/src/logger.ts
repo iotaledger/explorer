@@ -23,6 +23,7 @@ const transportList: unknown[] = [];
 if (process.env.GAE_APPLICATION) {
     const gCloudLogger = new LoggingWinston();
     transportList.push(gCloudLogger);
+    console.log("LoggingWinston transport added for Google App Engine");
 } else {
     transportList.push(
         new transports.Console({
@@ -30,6 +31,7 @@ if (process.env.GAE_APPLICATION) {
             format: loggerFormat
         })
     );
+    console.log("Console transport added for local development");
 }
 
 const logger = createLogger({
