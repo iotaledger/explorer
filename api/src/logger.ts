@@ -20,7 +20,7 @@ const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.col
 // transports
 const transportList: unknown[] = [];
 
-if (process.env.GAE_APPLICATION) {
+if (process.env.GCLOUD_PROJECT) {
     const gCloudLogger = new LoggingWinston();
     transportList.push(gCloudLogger);
     console.log("LoggingWinston transport added for Google App Engine");

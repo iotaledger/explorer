@@ -48,5 +48,5 @@ jobs:
       - name: Deploy
         run: |
           cd api
-          gcloud app deploy app.yaml dispatch.yaml --set-env-vars GAE_APPLICATION=shimmer-staging --quiet
+          gcloud app deploy app.yaml dispatch.yaml --quiet
 
