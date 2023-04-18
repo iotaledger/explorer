@@ -85,7 +85,7 @@ for (const route of routes) {
 }
 
 const server = new Server(app);
-const socketServer = new SocketIOServer(server);
+const socketServer = new SocketIOServer(server, { pingInterval: 5000, pingTimeout: 2000 });
 
 const sockets: {
     [socketId: string]: string;
@@ -115,7 +115,7 @@ socketServer.on("connection", socket => {
         logger.debug(`Socket::Disconnect [${socket.id}]`);
         if (sockets[socket.id]) {
             await unsubscribe(config, socket, {
-                subscriptionId: sockets[socket.id],
+                subscriptionId: socket.id,
                 network: sockets[socket.id]
             });
             delete sockets[socket.id];

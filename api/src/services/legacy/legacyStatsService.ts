@@ -1,4 +1,5 @@
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
 import { INetwork } from "../../models/db/INetwork";
 import { BaseStatsService } from "../legacy/baseStatsService";
 import { LegacyItemsService } from "./legacyItemsService";
@@ -42,7 +43,7 @@ export class LegacyStatsService extends BaseStatsService {
                 this._statistics = this._statistics.slice(-30);
             }
         } catch (err) {
-            console.error(err);
+            logger.error(`[LegacyStatsService] Error: ${err}`);
         }
     }
 }

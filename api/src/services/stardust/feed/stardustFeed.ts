@@ -6,6 +6,10 @@ import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
 import { IFeedUpdate } from "../../../models/api/stardust/feed/IFeedUpdate";
 import { ILatestMilestone } from "../../../models/api/stardust/milestone/ILatestMilestonesResponse";
+import { NodeInfoService } from "../nodeInfoService";
+
+const CACHE_TRIM_INTERVAL_MS = 60000;
+const MAX_BLOCKS_CACHE_SIZE = 500;
 
 const MAX_MILESTONE_LATEST = 30;
 
@@ -15,9 +19,16 @@ const MAX_MILESTONE_LATEST = 30;
  */
 export class StardustFeed {
     /**
-     * The feed subscribers (downstream).
+     * The block feed subscribers (downstream).
      */
-    protected readonly subscribers: {
+    protected readonly blockSubscribers: {
+        [id: string]: (data: IFeedUpdate) => Promise<void>;
+    };
+
+    /**
+     * The milestone feed subscribers (downstream).
+     */
+    protected readonly milestoneSubscribers: {
         [id: string]: (data: IFeedUpdate) => Promise<void>;
     };
 
@@ -34,19 +45,39 @@ export class StardustFeed {
     /**
      * The most recent block metadata.
      */
-    private readonly blockMetadataCache: { [blockId: string]: IFeedItemMetadata };
+    private readonly blockMetadataCache: Map<string, IFeedItemMetadata>;
+
+    /**
+     * The cache maps trim job timer.
+     */
+    private blockMetadataCacheTrimTimer: NodeJS.Timer | null = null;
+
+    /**
+     * The protocol.version for the network in context (from NodeInfo).
+     */
+    private readonly networkProtocolVersion: number;
 
     /**
      * Creates a new instance of StardustFeed.
      * @param networkId The network id.
      */
     constructor(networkId: string) {
-        this.subscribers = {};
-        this.blockMetadataCache = {};
+        this.blockSubscribers = {};
+        this.milestoneSubscribers = {};
+        this.blockMetadataCache = new Map();
         this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
-        this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
+        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
-        this.connect();
+        if (this._mqttClient && nodeInfoService) {
+            this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
+            const nodeInfo = nodeInfoService.getNodeInfo();
+            this.networkProtocolVersion = nodeInfo.protocolVersion;
+
+            this.setupCacheTrimJob();
+            this.connect();
+        } else {
+            throw new Error(`Failed to build stardustFeed instance for ${networkId}`);
+        }
     }
 
 
@@ -59,20 +90,37 @@ export class StardustFeed {
     }
 
     /**
-     * Subscribe to the stardust feed.
+     * Subscribe to the blocks stardust feed.
      * @param id The id of the subscriber.
      * @param callback The callback to call with data for the event.
      */
-    public async subscribe(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
-        this.subscribers[id] = callback;
+    public async subscribeBlocks(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+        this.blockSubscribers[id] = callback;
     }
 
     /**
-     * Unsubscribe from the feed.
+     * Subscribe to the blocks stardust feed.
+     * @param id The id of the subscriber.
+     * @param callback The callback to call with data for the event.
+     */
+    public async subscribeMilestones(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+        this.milestoneSubscribers[id] = callback;
+    }
+
+    /**
+     * Unsubscribe from the blocks feed.
      * @param subscriptionId The id to unsubscribe.
      */
-    public unsubscribe(subscriptionId: string): void {
-        delete this.subscribers[subscriptionId];
+    public unsubscribeBlocks(subscriptionId: string): void {
+        delete this.blockSubscribers[subscriptionId];
+    }
+
+    /**
+     * Unsubscribe from the milestones feed.
+     * @param subscriptionId The id to unsubscribe.
+     */
+    public unsubscribeMilestones(subscriptionId: string): void {
+        delete this.milestoneSubscribers[subscriptionId];
     }
 
     /**
@@ -88,14 +136,22 @@ export class StardustFeed {
                 };
 
                 // eslint-disable-next-line no-void
-                void this.broadcast(update);
+                void this.broadcastBlock(update);
             });
 
         this._mqttClient.blocksReferenced(
             (_: string, metadata: IBlockMetadata) => {
                 // update cache
-                this.blockMetadataCache[metadata.blockId] = {
-                    ...this.blockMetadataCache[metadata.blockId],
+                let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
+                currentEntry = !currentEntry ? {
+                    milestone: metadata.milestoneIndex,
+                    referenced: metadata.referencedByMilestoneIndex,
+                    solid: metadata.isSolid,
+                    conflicting: metadata.ledgerInclusionState === "conflicting",
+                    conflictReason: metadata.conflictReason,
+                    included: metadata.ledgerInclusionState === "included"
+                } : {
+                    ...currentEntry,
                     milestone: metadata.milestoneIndex,
                     referenced: metadata.referencedByMilestoneIndex,
                     solid: metadata.isSolid,
@@ -104,53 +160,81 @@ export class StardustFeed {
                     included: metadata.ledgerInclusionState === "included"
                 };
 
+                this.blockMetadataCache.set(metadata.blockId, currentEntry);
 
                 const update: Partial<IFeedUpdate> = {
                     blockMetadata: {
                         blockId: metadata.blockId,
-                        metadata: this.blockMetadataCache[metadata.blockId]
+                        metadata: currentEntry
                     }
                 };
 
                 // eslint-disable-next-line no-void
-                void this.broadcast(update);
+                void this.broadcastBlock(update);
             });
 
         this._mqttClient.milestone(async (_, milestonePayload) => {
             try {
                 const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
-                const blockId = blockIdFromMilestonePayload(2, milestonePayload);
+                const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
-                const timestamp = milestonePayload.timestamp * 1000;
-
-                this.blockMetadataCache[blockId] = {
-                    ...this.blockMetadataCache[blockId],
-                    milestone: milestoneIndex,
-                    timestamp
-                };
+                const timestamp = milestonePayload.timestamp;
 
                 // eslint-disable-next-line no-void
                 void this.updateLatestMilestoneCache(blockId, milestoneIndex, milestoneId, timestamp);
+
+                const update: Partial<IFeedUpdate> = {
+                    milestone: {
+                        blockId,
+                        milestoneId,
+                        milestoneIndex,
+                        timestamp,
+                        payload: milestonePayload
+                    }
+                };
+
+                // eslint-disable-next-line no-void
+                void this.broadcastMilestone(update);
             } catch (err) {
-                console.error(err);
+                logger.error(`[FeedClient] Mqtt milestone callback failed: ${err}`);
             }
         });
     }
 
     /**
-     * Pushes data to subscribers (downstream).
+     * Pushes block data to subscribers (downstream).
      * @param payload The data payload (without subscriptionId).
      */
-    private async broadcast(payload: Partial<IFeedUpdate>) {
-        for (const subscriptionId in this.subscribers) {
+    private async broadcastBlock(payload: Partial<IFeedUpdate>) {
+        for (const subscriptionId in this.blockSubscribers) {
             try {
-                logger.debug(`Broadcasting to subscriber ${subscriptionId}`);
-                await this.subscribers[subscriptionId]({
+                logger.debug(`Broadcasting block to subscriber ${subscriptionId}`);
+                // push data through callback
+                await this.blockSubscribers[subscriptionId]({
                     ...payload,
                     subscriptionId
                 });
             } catch (error) {
-                logger.warn(`[FeedClient] Failed to send callback to subscribers for ${subscriptionId}. Cause: ${error}`);
+                logger.warn(`[FeedClient] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
+            }
+        }
+    }
+
+    /**
+     * Pushes milestone data to subscribers (downstream).
+     * @param payload The data payload (without subscriptionId).
+     */
+    private async broadcastMilestone(payload: Partial<IFeedUpdate>) {
+        for (const subscriptionId in this.milestoneSubscribers) {
+            try {
+                logger.debug(`Broadcasting milestone to subscriber ${subscriptionId}`);
+                // push data through callback
+                await this.milestoneSubscribers[subscriptionId]({
+                    ...payload,
+                    subscriptionId
+                });
+            } catch (error) {
+                logger.warn(`[FeedClient] Failed to send callback to milestone subscribers for ${subscriptionId}. Cause: ${error}`);
             }
         }
     }
@@ -170,13 +254,34 @@ export class StardustFeed {
                 blockId,
                 milestoneId,
                 index: milestoneIndex,
-                timestamp: timestamp / 1000
+                timestamp
             });
 
             if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
                 this.latestMilestonesCache.pop();
             }
         }
+    }
+
+    /**
+     * Setup a periodic interval to trim if the cache map is over the max limit.
+     */
+    private setupCacheTrimJob() {
+        if (this.blockMetadataCacheTrimTimer) {
+            clearInterval(this.blockMetadataCacheTrimTimer);
+            this.blockMetadataCacheTrimTimer = null;
+        }
+
+        this.blockMetadataCacheTrimTimer = setInterval(() => {
+            let cacheSize = this.blockMetadataCache.size;
+
+            while (cacheSize > MAX_BLOCKS_CACHE_SIZE) {
+                const keyIterator = this.blockMetadataCache.keys();
+                const oldestKey = keyIterator.next().value as string;
+                this.blockMetadataCache.delete(oldestKey); // remove the oldest key-value pair from the Map
+                cacheSize--;
+            }
+        }, CACHE_TRIM_INTERVAL_MS);
     }
 }
 

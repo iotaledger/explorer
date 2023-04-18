@@ -205,7 +205,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 </div>
             )}
             {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-                transferTotal && (
+                transferTotal !== null && (
                     <div className="section--data">
                         <div className="label">
                             Amount transacted

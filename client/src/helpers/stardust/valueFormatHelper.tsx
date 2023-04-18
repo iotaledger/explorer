@@ -59,4 +59,3 @@ export function formatSpecialBlockId(id: string): React.ReactNode {
     }
     return id;
 }
-

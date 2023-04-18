@@ -74,7 +74,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>
-                        <div className="section no-border-bottom">
+                        <div className="section no-border-bottom padding-b-0">
                             <div className="section--header">
                                 <div className="row middle">
                                     <h2>

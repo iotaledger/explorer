@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
  * Use Token Registry NFT check hook
- * @param network The Network in context
  * @param issuerId The issuer id to check
  * @param nftId The nft id to check
  * @returns The whitelisted boolean.
  */
-export function useTokenRegistryNftCheck(network: string, issuerId: string | null, nftId?: string): [
+export function useTokenRegistryNftCheck(issuerId: string | null, nftId?: string): [
     boolean,
     boolean
 ] {
+    const { name: network } = useContext(NetworkContext);
     const isMounted = useIsMounted();
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
     const [isChecking, setIsChecking] = useState<boolean>(true);

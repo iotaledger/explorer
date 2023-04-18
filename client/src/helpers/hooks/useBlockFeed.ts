@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { IFeedMilestoneData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { IMilestoneFeedItem } from "../../models/IMilestoneFeedItem";
@@ -8,8 +8,8 @@ import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { useIsMounted } from "./useIsMounted";
 
-const MAX_MILESTONE_ITEMS = 15;
-const FEER_PROBE_THRESHOLD: number = 750;
+const MAX_MILESTONE_ITEMS = 20;
+const FEED_PROBE_THRESHOLD: number = 6000;
 
 /**
  * Hook into feed service for data
@@ -46,12 +46,15 @@ export function useBlockFeed(network: string): [
             }
             const msSinceLast = Date.now() - lastUpdateTime.current;
 
-            if (msSinceLast > FEER_PROBE_THRESHOLD) {
+            if (msSinceLast > FEED_PROBE_THRESHOLD) {
                 resetCounter.current += 1;
             }
-        }, FEER_PROBE_THRESHOLD);
+        }, FEED_PROBE_THRESHOLD);
 
         return () => {
+            if (feedProbe.current) {
+                clearInterval(feedProbe.current);
+            }
             feedProbe.current = null;
             lastUpdateTime.current = 0;
         };
@@ -63,40 +66,36 @@ export function useBlockFeed(network: string): [
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
 
         if (feedService) {
-            const onNewBlockData = (newBlockData: IFeedBlockData) => {
+            const onMilestoneUpdate = (newMilestone: IFeedMilestoneData) => {
                 lastUpdateTime.current = Date.now();
-
-                if (isMounted && newBlockData.payloadType === "Milestone") {
-                    if (isMounted && (latestMilestonIndex ?? 0) < (newBlockData.properties?.index as number)) {
-                        setLatestMilestoneIndex(newBlockData.properties?.index as number);
+                if (isMounted) {
+                    if (isMounted && (latestMilestonIndex ?? 0) < newMilestone.milestoneIndex) {
+                        setLatestMilestoneIndex(newMilestone.milestoneIndex);
                     }
-
                     if (isMounted) {
                         setMilestones(prevMilestones => {
                             const milestonesUpdate = [...prevMilestones];
-
                             milestonesUpdate.unshift({
-                                blockId: newBlockData.blockId,
-                                milestoneId: newBlockData.properties?.milestoneId as string,
-                                index: newBlockData.properties?.index as number,
-                                timestamp: newBlockData.properties?.timestamp as number
+                                blockId: newMilestone.blockId,
+                                milestoneId: newMilestone.milestoneId,
+                                index: newMilestone.milestoneIndex,
+                                timestamp: newMilestone.timestamp
                             });
-
                             if (milestonesUpdate.length > MAX_MILESTONE_ITEMS) {
                                 milestonesUpdate.pop();
                             }
-
                             return milestonesUpdate;
                         });
                     }
                 }
             };
 
-            feedService.subscribe(onNewBlockData);
+            feedService.subscribeMilestones(onMilestoneUpdate);
         }
 
         return () => {
-            feedService.unsubscribe();
+            // eslint-disable-next-line no-void
+            void feedService.unsubscribeMilestones();
             setMilestones([]);
             setLatestMilestoneIndex(null);
         };

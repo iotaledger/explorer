@@ -6,7 +6,7 @@ import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
-    analytics: IAnalyticStats | undefined | null;
+    analytics: IAnalyticStats | null;
     circulatingSupply: number | undefined;
     tokenInfo: INodeInfoBaseToken;
 }

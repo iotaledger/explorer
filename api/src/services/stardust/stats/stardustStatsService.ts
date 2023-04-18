@@ -34,7 +34,7 @@ export class StardustStatsService extends BaseStatsService {
                 }
             }
         } catch (err) {
-            console.error(err);
+            logger.debug(`[StardustStatsService] Update statistics failed: ${err}`);
         }
     }
 }

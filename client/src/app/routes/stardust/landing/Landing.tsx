@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { useBlockFeed } from "../../../../helpers/hooks/useBlockFeed";
 import { useChronicleAnalytics } from "../../../../helpers/hooks/useChronicleAnalytics";
 import { useCurrencyService } from "../../../../helpers/hooks/useCurrencyService";
-import { useNetworkConfig } from "../../../../helpers/hooks/useLandingState";
+import { useNetworkConfig } from "../../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../../helpers/hooks/useNetworkStats";
 import { isShimmerNetwork } from "../../../../helpers/networkHelper";
 import NetworkContext from "../../../context/NetworkContext";

@@ -63,7 +63,7 @@ export class LegacyTangleHelper {
                 }
             }
         } catch (err) {
-            console.error("API Error", err);
+            logger.error(`[LegacyTangleHelper] API error (${network.network}): ${err}`);
         }
 
         // Also request more from chronicle if permanode is configured
@@ -175,7 +175,7 @@ export class LegacyTangleHelper {
                 }
             }
         } catch (err) {
-            console.error(`${network.network}`, err);
+            logger.error(`[LegacyTangleHelper] Get Trytes (${network.network}) failed. Cause: ${err}`);
         }
 
         try {
@@ -196,7 +196,7 @@ export class LegacyTangleHelper {
                 }
             }
         } catch (err) {
-            console.error(`${network.network}`, err);
+            logger.error(`[LegacyTangleHelper] Get Inclusion states (${network.network}) failed. Cause: ${err}`);
         }
 
         return {
@@ -257,7 +257,7 @@ export class LegacyTangleHelper {
                 return txs.length > 0 ? txs[0].hash : undefined;
             }
         } catch (err) {
-            logger.error(`Promote transaction failed. Cause: ${err}`);
+            logger.error(`[LegacyTangleHelper] Promote transaction failed. Cause: ${err}`);
         }
     }
 
@@ -286,7 +286,7 @@ export class LegacyTangleHelper {
                 return response[0].hash as string;
             }
         } catch (err) {
-            logger.error(`Replay bundle failed. Cause: ${err}`);
+            logger.error(`[LegacyTangleHelper] Replay bundle failed. Cause: ${err}`);
         }
     }
 
@@ -311,7 +311,7 @@ export class LegacyTangleHelper {
                 return response?.balances[0] as number;
             }
         } catch (err) {
-            console.error(err);
+            logger.error(`[LegacyTangleHelper] Get Address balance failed. Cause: ${err}`);
         }
 
         return 0;

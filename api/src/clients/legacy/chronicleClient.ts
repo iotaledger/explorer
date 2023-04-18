@@ -1,3 +1,4 @@
+import logger from "../../logger";
 import { IFindTransactionsRequest } from "../../models/clients/chronicle/legacy/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../../models/clients/chronicle/legacy/IFindTransactionsResponse";
 import { IGetTrytesRequest } from "../../models/clients/chronicle/legacy/IGetTrytesRequest";
@@ -50,13 +51,14 @@ export class LegacyChronicleClient {
             );
 
             if (response.error) {
-                console.error("Chronicle Error", response.error);
-                console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                logger.error(`[ChronicleClientLegacy] Find transaction failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint, "post", headers, req)}
+                             `);
             }
 
             return response;
         } catch (err) {
-            console.error("Chronicle Error", (err.response?.data?.error) ?? err);
+            logger.error(`[ChronicleClientLegacy] Find transactions error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 
@@ -94,8 +96,8 @@ export class LegacyChronicleClient {
                 );
 
                 if (resp.error) {
-                    console.error("Chronicle Error", resp.error);
-                    console.error(FetchHelper.convertToCurl(this._endpoint, "post", headers, req));
+                    logger.error(`[ChronicleClientLegay] Get Trytes failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint, "post", headers, req)}`);
                 } else {
                     response.trytes = response.trytes.concat(resp.trytes);
                     response.milestones = response.milestones.concat(resp.milestones);
@@ -104,7 +106,7 @@ export class LegacyChronicleClient {
 
             return response;
         } catch (err) {
-            console.error("Chronicle Error", (err.response?.data?.error) ?? err);
+            logger.error(`[ChronicleClientLegacy] Get Trytes failed: ${(err.response?.data?.error) ?? err}`);
         }
     }
 }

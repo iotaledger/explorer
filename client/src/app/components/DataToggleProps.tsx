@@ -16,4 +16,9 @@ export interface DataToggleProps {
      * Does the hex data view have spaces between bytes.
      */
     withSpacedHex?: boolean;
+
+    /**
+     * Is the hex data for participation event.
+     */
+    isParticipationEventMetadata?: boolean;
 }

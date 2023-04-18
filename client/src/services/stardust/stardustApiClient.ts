@@ -15,6 +15,8 @@ import { IBlockDetailsRequest } from "../../models/api/stardust/block/IBlockDeta
 import { IBlockDetailsResponse } from "../../models/api/stardust/block/IBlockDetailsResponse";
 import { IBlockRequest } from "../../models/api/stardust/block/IBlockRequest";
 import { IBlockResponse } from "../../models/api/stardust/block/IBlockResponse";
+import { IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
+import { ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
@@ -43,6 +45,8 @@ import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsReq
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { IParticipationEventRequest } from "../../models/api/stardust/participation/IParticipationEventRequest";
+import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
@@ -410,6 +414,42 @@ export class StardustApiClient extends ApiClient {
     public async didDocument(request: IIdentityStardustResolveRequest): Promise<IIdentityStardustResolveResponse> {
         return this.callApi<unknown, IIdentityStardustResolveResponse>(
             `stardust/did/${request.network}/${request.did}/document`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the participation events details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async participationEventDetails(request: IParticipationEventRequest): Promise<IParticipationEventResponse> {
+        return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
+            `stardust/participation/events/${request.network}/${request.eventId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the richest addresses stats for a network.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async richestAddresses(request: INetworkBoundGetRequest): Promise<IRichestAddressesResponse> {
+        return this.callApi<unknown, IRichestAddressesResponse>(
+            `stardust/address/rich/${request.network}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the token distribution stats for a network.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async tokenDistribution(request: INetworkBoundGetRequest): Promise<ITokenDistributionResponse> {
+        return this.callApi<unknown, ITokenDistributionResponse>(
+            `stardust/token/distribution/${request.network}/`,
             "get"
         );
     }

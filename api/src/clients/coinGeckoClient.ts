@@ -1,3 +1,4 @@
+import logger from "../logger";
 import { ICoinsHistoryResponse } from "../models/clients/coinGecko/ICoinsHistoryResponse";
 import { ICoinsMarketChartResponse } from "../models/clients/coinGecko/ICoinsMarketChartResponse";
 import { ICoinsMarketsResponse } from "../models/clients/coinGecko/ICoinsMarketsResponse";
@@ -39,7 +40,7 @@ export class CoinGeckoClient {
                 "get"
             );
         } catch (err) {
-            console.error("Coin Gecko", err);
+            logger.error(`[CoinGecko] Fetch coin history failed. Cause: ${err}`);
         }
 
         return response;
@@ -62,7 +63,7 @@ export class CoinGeckoClient {
                 "get"
             );
         } catch (err) {
-            console.error("Coin Gecko", err);
+            logger.error(`[CoinGecko] Fetch coin markets failed. Cause: ${err}`);
         }
 
         return response;
@@ -84,7 +85,7 @@ export class CoinGeckoClient {
                 "get"
             );
         } catch (err) {
-            console.error("Coin Gecko", err);
+            logger.error(`[CoinGecko] Fetch market chart failed. Cause: ${err}`);
         }
 
         return response;
