@@ -120,6 +120,10 @@
             flex-direction: column;
             max-width: 960px;
 
+            @include phone-down {
+                margin: 0px;
+            }
+
             .feeds-section {
                 display: flex;
                 flex-direction: column;
@@ -189,23 +193,16 @@
             }
 
             .faucet {
+                @include font-size(14px);
+
                 display: flex;
                 justify-content: center;
                 padding: 20px;
-                @include font-size(14px);
                 color: $gray;
                 font-family: $metropolis;
 
                 .data-link {
-                    @include phone-down {
-                        margin-left: 0px;
-                        margin-top: 10px;
-                    }
-                }
-
-                @include phone-down {
-                    padding: 10px;
-                    flex-direction: column;
+                    color: var(--link-color);
                 }
             }
 

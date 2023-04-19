@@ -170,31 +170,16 @@
                 min-width: 120px;
                 display: flex;
                 justify-content: left;
+                color: var(--link-color);
 
-                .tooltip .children {
-                    font-weight: inherit;
-                }
-
-                &.desktop-only {
-                    @include tablet-down {
-                        display: none;
-                    }
-                }
-
-                &.mobile {
-                    display: none;
-                    font-weight: 400;
-
-                    @include tablet-down {
-                        @include font-size(14px, 20px);
-                        color: var(--link-color);
-                        font-family: $ibm-plex-mono;
-                        display: inline-block;
-                        word-break: break-word;
-                    }
-                }
                 @include tablet-down {
+                    @include font-size(14px, 20px);
+                    
                     padding-left: 8px;
+                    font-weight: 400;
+                    font-family: $ibm-plex-mono;
+                    display: inline-block;
+                    word-break: break-word;
                 }
             }
 
