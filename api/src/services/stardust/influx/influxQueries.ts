@@ -63,19 +63,19 @@ export const OUTPUTS_DAILY_QUERY = {
 export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
     full: `
         SELECT
-            last("basic_value") / 1000000 AS "basic",
-            last("alias_value") / 1000000 AS "alias",
-            last("foundry_value") / 1000000 AS "foundy",
-            last("nft_value") / 1000000 AS "nft"
+            last("basic_amount") / 1000000 AS "basic",
+            last("alias_amount") / 1000000 AS "alias",
+            last("foundry_amount") / 1000000 AS "foundy",
+            last("nft_amount") / 1000000 AS "nft"
         FROM "stardust_ledger_outputs"
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
         SELECT
-            last("basic_value") / 1000000 AS "basic",
-            last("alias_value") / 1000000 AS "alias",
-            last("foundry_value") / 1000000 AS "foundy",
-            last("nft_value") / 1000000 AS "nft"
+            last("basic_amount") / 1000000 AS "basic",
+            last("alias_amount") / 1000000 AS "alias",
+            last("foundry_amount") / 1000000 AS "foundy",
+            last("nft_amount") / 1000000 AS "nft"
         FROM "stardust_ledger_outputs"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -117,13 +117,13 @@ export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
 export const TOKENS_TRANSFERRED_DAILY_QUERY = {
     full: `
         SELECT
-            sum("transferred_value") / 1000000 AS "tokens"
+            sum("transferred_amount") / 1000000 AS "tokens"
         FROM "stardust_base_token_activity"
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
         SELECT
-            sum("transferred_value") / 1000000 AS "tokens"
+            sum("transferred_amount") / 1000000 AS "tokens"
         FROM "stardust_base_token_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -195,17 +195,17 @@ export const NFT_ACTIVITY_DAILY_QUERY = {
 export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
     full: `
         SELECT
-            last("timelock_value") / 1000000 AS "timelock",
-            last("storage_deposit_return_value") / 1000000 AS "storageDepositReturn",
-            last("expiration_value") / 1000000 AS "expiration"
+            last("timelock_amount") / 1000000 AS "timelock",
+            last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
+            last("expiration_amount") / 1000000 AS "expiration"
         FROM "stardust_unlock_conditions"
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
         SELECT
-            last("timelock_value") / 1000000 AS "timelock",
-            last("storage_deposit_return_value") / 1000000 AS "storageDepositReturn",
-            last("expiration_value") / 1000000 AS "expiration"
+            last("timelock_amount") / 1000000 AS "timelock",
+            last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
+            last("expiration_amount") / 1000000 AS "expiration"
         FROM "stardust_unlock_conditions"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -265,13 +265,13 @@ export const LEDGER_SIZE_DAILY_QUERY = {
 export const STORAGE_DEPOSIT_DAILY_QUERY = {
     full: `
         SELECT
-            last("total_storage_deposit_value") * 100 / 1000000 AS "storageDeposit"
+            last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
         SELECT
-            last("total_storage_deposit_value") * 100 / 1000000 AS "storageDeposit"
+            last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -300,7 +300,7 @@ export const NFT_STAT_TOTAL_QUERY = `
 
 export const STORAGE_DEPOSIT_TOTAL_QUERY = `
     SELECT
-        last("total_storage_deposit_value") * 100 AS "lockedStorageDeposit"
+        last("total_storage_deposit_amount") * 100 AS "lockedStorageDeposit"
     FROM "stardust_ledger_size";
 `;
 
