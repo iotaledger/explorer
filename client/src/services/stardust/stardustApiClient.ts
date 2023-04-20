@@ -43,8 +43,6 @@ import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransacti
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
-import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
-import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
 import { IParticipationEventRequest } from "../../models/api/stardust/participation/IParticipationEventRequest";
 import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
@@ -315,17 +313,6 @@ export class StardustApiClient extends ApiClient {
         );
     }
 
-    /**
-     * Get the nfts of an address.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async nftOutputs(request: INftOutputsRequest): Promise<INftOutputsResponse> {
-        return this.callApi<unknown, INftOutputsResponse>(
-            `stardust/nft/outputs/${request.network}/${request.address}`,
-            "get"
-        );
-    }
 
     /**
      * Get the nft details by NFT address.

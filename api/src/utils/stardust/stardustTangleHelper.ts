@@ -418,32 +418,6 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Get the nft outputs by address.
-     * @param network The network to find the items on.
-     * @param address The address to get the details for.
-     * @returns The nft details.
-     */
-    public static async nftOutputs(
-        network: INetwork,
-        address: string
-    ): Promise<INftOutputsResponse | undefined> {
-        try {
-            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32: address },
-                "nfts",
-                network,
-                true
-            );
-
-            if (nftOutputs) {
-                return {
-                    outputs: nftOutputs
-                };
-            }
-        } catch { }
-    }
-
-    /**
      * Get the nft details by nftId.
      * @param network The network to find the items on.
      * @param nftId The nftId to get the details for.
