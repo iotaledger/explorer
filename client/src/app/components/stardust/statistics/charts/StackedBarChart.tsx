@@ -16,7 +16,9 @@ import {
     useChartWrapperSize,
     determineGraphLeftPadding,
     d3FormatSpecifier,
-    useTouchMoveEffect
+    useTouchMoveEffect,
+    barChartsTickValues,
+    DAY_LABEL_FORMAT
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -28,8 +30,6 @@ interface StackedBarChartProps {
     colors: string[];
     data: { [name: string]: number; time: number }[];
 }
-
-const DAY_LABEL_FORMAT = "DD MMM";
 
 const StackedBarChart: React.FC<StackedBarChartProps> = ({
     title,
@@ -116,10 +116,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .attr("height", d => y(d[0]) - y(d[1]))
                 .attr("width", x.bandwidth());
 
-            const tickValues = timespan === "7" ?
-                x.domain() :
-                // every third label
-                x.domain().filter((_, i) => !(i % 3));
+            const tickValues = barChartsTickValues(timespan, x);
             const xAxis = axisLabelRotate(
                 axisBottom(x).tickValues(tickValues)
             );

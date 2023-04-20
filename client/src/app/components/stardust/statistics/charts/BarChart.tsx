@@ -11,7 +11,9 @@ import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
+    barChartsTickValues,
     d3FormatSpecifier,
+    DAY_LABEL_FORMAT,
     determineGraphLeftPadding,
     noDataView,
     useChartWrapperSize,
@@ -27,8 +29,6 @@ interface BarChartProps {
     label?: string;
     color: string;
 }
-
-const DAY_LABEL_FORMAT = "DD MMM";
 
 const BarChart: React.FC<BarChartProps> = ({ title, info, data, label, color }) => {
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
@@ -92,10 +92,8 @@ const BarChart: React.FC<BarChartProps> = ({ title, info, data, label, color }) 
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler);
 
-            const tickValues = timespan === "7" ?
-                x.domain() :
-                // every third label
-                x.domain().filter((_, i) => !(i % 3));
+            const tickValues = barChartsTickValues(timespan, x);
+
             const xAxis = axisLabelRotate(
                 axisBottom(x).tickValues(tickValues)
             );

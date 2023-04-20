@@ -1,8 +1,12 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { ScaleBand } from "d3-scale";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
+import { TimespanOption } from "./ChartHeader";
+
+export const DAY_LABEL_FORMAT = "DD MMM";
 
 export const noDataView = () => (
     <div className="no-data--wrapper">
@@ -142,5 +146,19 @@ export const d3FormatSpecifier = (dataMaxY: number) => (dataMaxY < 1 ? "~g" : "~
 export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => (
     tokenInfo?.decimals && tokenInfo.decimals > 0 ?
         Math.pow(10, tokenInfo.decimals) : null
+);
+
+export const barChartsTickValues = (
+    timespan: TimespanOption,
+    axisBand: ScaleBand<string>
+) => (
+    timespan === "all" ?
+        axisBand.domain().filter(d => d.includes("01")) :
+        (
+            timespan === "7" ?
+                axisBand.domain() :
+                // every third label
+                axisBand.domain().filter((_, i) => !(i % 3))
+        )
 );
 
