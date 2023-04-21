@@ -115,8 +115,7 @@ export const routes: IRoute[] = [
         path: "/stardust/transactionhistory/dl/:network/:address", method: "post",
         folder: "stardust/transactionhistory/download", func: "post", dataBody: true, dataResponse: true
     },
-    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nft/details", func: "get" },
-    { path: "/stardust/nft/mock/:network/:nftId", method: "get", folder: "stardust/nft/registry", func: "get" },
+    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nft", func: "get" },
     { path: "/stardust/alias/:network/:aliasId", method: "get", folder: "stardust/alias", func: "get" },
     {
         path: "/stardust/alias/foundries/:network/:aliasAddress", method: "get",

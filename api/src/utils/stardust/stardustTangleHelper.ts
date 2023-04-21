@@ -252,11 +252,7 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        const outputResponses: IOutputResponse[] = [];
-        for (const outputId of outputIds) {
-            const outputResponse = await this.outputDetails(network, outputId);
-            outputResponses.push(outputResponse.output);
-        }
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
             outputs: outputResponses
@@ -287,11 +283,7 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        const outputResponses: IOutputResponse[] = [];
-        for (const outputId of outputIds) {
-            const outputResponse = await this.outputDetails(network, outputId);
-            outputResponses.push(outputResponse.output);
-        }
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
             outputs: outputResponses
@@ -322,11 +314,7 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        const outputResponses: IOutputResponse[] = [];
-        for (const outputId of outputIds) {
-            const outputResponse = await this.outputDetails(network, outputId);
-            outputResponses.push(outputResponse.output);
-        }
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
             outputs: outputResponses
@@ -659,5 +647,38 @@ export class StardustTangleHelper {
         } catch { }
 
         return null;
+    }
+
+    /**
+     * Get the outputs details.
+     * @param network The network to find the items on.
+     * @param outputIds The output ids to get the details.
+     * @returns The item details.
+     */
+    private static async outputsDetails(network: INetwork, outputIds: string[]): Promise<IOutputResponse[]> {
+        const promises: Promise<void>[] = [];
+        const outputResponses: IOutputResponse[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.tryFetchPermanodeThenNode<string, IOutputResponse>(
+                outputId,
+                "output",
+                network
+            ).then(response => {
+                if (response.output && response.metadata) {
+                    outputResponses.push(response);
+                }
+            })
+            .catch(e => console.log(e));
+
+            promises.push(promise);
+        }
+        try {
+            await Promise.all(promises);
+
+            return outputResponses;
+        } catch (e) {
+            logger.error(`Fetching outputs details failed. Cause: ${e}`);
+        }
     }
 }
