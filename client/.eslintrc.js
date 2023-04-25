@@ -463,7 +463,7 @@ module.exports = {
             "off"
         ],
         "generator-star-spacing": [
-            "error"
+            "error", {"before": false, "after": true}
         ],
         "getter-return": [
             "off"

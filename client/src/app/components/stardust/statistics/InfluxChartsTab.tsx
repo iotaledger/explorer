@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import graphMessages from "../../../../assets/modals/stardust/statistics/graphs.json";
 import { useChartsState } from "../../../../helpers/hooks/useChartsState";
+import { idGenerator } from "../../../../helpers/stardust/statisticsUtils";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { COMMAS_REGEX } from "../../../routes/stardust/landing/ShimmerClaimedUtils";
@@ -37,6 +38,8 @@ export const InfluxChartsTab: React.FC = () => {
         tokenInfo
     ).replace(COMMAS_REGEX, ",") ?? "-";
 
+    const ids = idGenerator();
+
     return (
         <div className="statistics-page--charts">
             <div className="section">
@@ -70,6 +73,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Outputs by Type"
                         info={graphMessages.totalOutputs}
                         subgroups={["basic", "alias", "foundry", "nft"]}
@@ -78,6 +82,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={outputs}
                     />
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Tokens by Output Type"
                         info={graphMessages.totalTokens}
                         subgroups={["basic", "alias", "foundry", "nft"]}
@@ -163,6 +168,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row margin-b-s">
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Unlock Conditions"
                         info={graphMessages.totalUnlockConditions}
                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
@@ -173,6 +179,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Locked Tokens"
                         info={graphMessages.totalLockedTokens}
                         subgroups={["timelock", "storageDepositReturn", "expiration"]}

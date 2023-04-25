@@ -114,3 +114,14 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
     };
 }
 
+/**
+ * Generator function to yield incrementing string ids.
+ * @yields next id.
+ */
+export function* idGenerator(): Generator<string, string, string> {
+    let id: number = 0;
+    while (true) {
+        yield (id++).toString();
+    }
+}
+
