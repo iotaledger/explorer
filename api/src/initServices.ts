@@ -96,7 +96,7 @@ export async function initServices(config: IConfiguration) {
         void currencyService.update();
     };
 
-    setInterval(update, 60000);
+    setInterval(update, 5 * 60000);
 
     await update();
 }
