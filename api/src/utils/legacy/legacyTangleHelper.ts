@@ -1,4 +1,4 @@
-import { composeAPI, Transaction } from "@iota/core";
+import { composeAPI } from "@iota/core";
 import { LegacyChronicleClient } from "../../clients/legacy/chronicleClient";
 import { LegacyHornetClient } from "../../clients/legacy/hornetClient";
 import logger from "../../logger";
@@ -203,91 +203,6 @@ export class LegacyTangleHelper {
             trytes: allTrytes.map(t => t.trytes || "9".repeat(2673)),
             milestoneIndexes: allTrytes.map(t => t.milestoneIndex ?? 0)
         };
-    }
-
-    /**
-     * Can we promote the tranaction.
-     * @param network The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction is promotable.
-     */
-    public static async canPromoteTransaction(
-        network: INetwork,
-        tailHash: string): Promise<boolean> {
-        try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
-
-            const result = await api.isPromotable(
-                tailHash
-            );
-            return result as boolean;
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Promote the tranaction.
-     * @param network The network to use.
-     * @param tailHash The hash.
-     * @returns Hash if the transaction was promoted.
-     */
-    public static async promoteTransaction(
-        network: INetwork,
-        tailHash: string): Promise<string | undefined> {
-        try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
-
-            const response = await api.promoteTransaction(
-                tailHash,
-                network.depth,
-                network.mwm
-            );
-
-            if (Array.isArray(response) && response.length > 0) {
-                const txs = response[0] as Transaction[];
-                return txs.length > 0 ? txs[0].hash : undefined;
-            }
-        } catch (err) {
-            logger.error(`[LegacyTangleHelper] Promote transaction failed. Cause: ${err}`);
-        }
-    }
-
-    /**
-     * Replay the tranaction.
-     * @param network The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction was promoted.
-     */
-    public static async replayBundle(
-        network: INetwork,
-        tailHash: string): Promise<string | undefined> {
-        try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
-
-            const response = await api.replayBundle(
-                tailHash,
-                network.depth,
-                network.mwm
-            );
-            if (Array.isArray(response) && response.length > 0) {
-                return response[0].hash as string;
-            }
-        } catch (err) {
-            logger.error(`[LegacyTangleHelper] Replay bundle failed. Cause: ${err}`);
-        }
     }
 
     /**
