@@ -3,8 +3,6 @@ import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IAddressGetRequest } from "../../models/api/legacy/IAddressGetRequest";
 import { IAddressGetResponse } from "../../models/api/legacy/IAddressGetResponse";
-import { ITransactionActionRequest } from "../../models/api/legacy/ITransactionActionRequest";
-import { ITransactionActionResponse } from "../../models/api/legacy/ITransactionActionResponse";
 import { ITransactionsGetRequest } from "../../models/api/legacy/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/legacy/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../../models/api/legacy/ITrytesRetrieveRequest";
@@ -68,18 +66,6 @@ export class LegacyApiClient extends ApiClient {
         const { network, ...rest } = request;
 
         return this.callApi<unknown, ITransactionsGetResponse>(`trytes/${network}`, "post", rest);
-    }
-
-    /**
-     * Perform tangle operation on hash.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async transactionAction(request: ITransactionActionRequest): Promise<ITransactionActionResponse> {
-        return this.callApi<unknown, ITransactionActionResponse>(
-            `transactions/${request.network}/${request.hash}/action/${request.action}`,
-            "get"
-        );
     }
 
     /**

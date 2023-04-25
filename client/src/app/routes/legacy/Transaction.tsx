@@ -60,9 +60,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             status: "Building transaction details...",
             hash,
             showRawMessageTrytes: false,
-            childrenBusy: true,
-            actionBusy: false,
-            actionBusyMessage: ""
+            childrenBusy: true
         };
     }
 
@@ -208,61 +206,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     </Link>
                                                     <CopyButton copy={`${this.state.address}${this.state.checksum}`} />
                                                 </div>
-                                                {this.state.details.confirmationState === "pending" &&
-                                                    this.state.isBundleValid === "valid" && (
-                                                        <React.Fragment>
-                                                            <div className="card--label">
-                                                                Actions
-                                                            </div>
-                                                            <div className="row middle">
-                                                                <button
-                                                                    type="button"
-                                                                    className="card--action"
-                                                                    disabled={this.state.actionBusy}
-                                                                    onClick={() => this.reattach()}
-                                                                >
-                                                                    Reattach
-                                                                </button>
-                                                                <button
-                                                                    type="button"
-                                                                    className="card--action"
-                                                                    disabled={this.state.actionBusy}
-                                                                    onClick={() => this.promote()}
-                                                                >
-                                                                    Promote
-                                                                </button>
-                                                                <span className="card--action__busy row middle">
-                                                                    {this.state.actionBusy && (
-                                                                        <Spinner compact={true} />)}
-                                                                    <p className="margin-l-t">
-                                                                        {this.state.actionBusyMessage}
-                                                                    </p>
-                                                                </span>
-                                                            </div>
-                                                            {this.state.actionResultHash && (
-                                                                <React.Fragment>
-                                                                    <div className="card--label">
-                                                                        Action Result Hash
-                                                                    </div>
-                                                                    <div className="card--value row middle">
-                                                                        <Link
-                                                                            to={
-                                                                                `/${this.props.match.params.network
-                                                                                }/transaction/
-                                                                                ${this.state.actionResultHash}`
-                                                                            }
-                                                                            className="margin-r-t"
-                                                                        >
-                                                                            {this.state.actionResultHash}
-                                                                        </Link>
-                                                                        <CopyButton
-                                                                            copy={this.state.actionResultHash}
-                                                                        />
-                                                                    </div>
-                                                                </React.Fragment>
-                                                            )}
-                                                        </React.Fragment>
-                                                    )}
                                             </React.Fragment>
                                         )}
                                     </div>
@@ -665,7 +608,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     nextTransaction: details.tx.currentIndex < details.tx.lastIndex
                         ? details.tx.trunkTransaction : undefined,
                     rawMessageTrytes: details?.tx.signatureMessageFragment,
-                    bundleTailHash: details?.tx.currentIndex === 0 ? details.tx.hash : undefined,
                     streamsV0Root,
                     address: details?.tx.address,
                     checksum: addChecksum(details?.tx.address).slice(-9)
@@ -746,7 +688,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 messageType,
                                 messageSpan,
                                 rawMessageTrytes,
-                                bundleTailHash: thisGroup[0].tx.hash,
                                 streamsV0Root
                             }, async () => {
                                 const children = await this._tangleCacheService.getTransactionChildren(
@@ -812,80 +753,6 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 }
             });
         }
-    }
-
-    /**
-     * Reattach the transaction.
-     */
-    private reattach(): void {
-        this.setState(
-            {
-                actionBusy: true,
-                actionBusyMessage: "Reattaching bundle, please wait...",
-                actionResultHash: ""
-            },
-            async () => {
-                const newHash = await this._tangleCacheService.replayBundle(
-                    this.props.match.params.network,
-                    this.state.bundleTailHash ?? "");
-
-                this.setState(
-                    {
-                        actionBusy: false,
-                        actionBusyMessage: newHash
-                            ? "Bundle reattached."
-                            : "Unable to reattach bundle.",
-                        actionResultHash: newHash
-                    },
-                    async () => {
-                        if (newHash) {
-                            await this.checkConfirmation();
-                        }
-                    });
-            });
-    }
-
-    /**
-     * Promote the transaction.
-     */
-    private promote(): void {
-        this.setState(
-            {
-                actionBusy: true,
-                actionBusyMessage: "Promoting transaction, please wait...",
-                actionResultHash: undefined
-            },
-            async () => {
-                const isPromotable = await this._tangleCacheService.canPromoteTransaction(
-                    this.props.match.params.network,
-                    this.state.bundleTailHash ?? "");
-
-                if (isPromotable) {
-                    const newHash = await this._tangleCacheService.promoteTransaction(
-                        this.props.match.params.network,
-                        this.state.bundleTailHash ?? "");
-
-                    this.setState(
-                        {
-                            actionBusy: false,
-                            actionBusyMessage: newHash
-                                ? "Transaction promoted."
-                                : "Unable to promote transaction.",
-                            actionResultHash: newHash
-                        },
-                        async () => {
-                            if (newHash) {
-                                await this.checkConfirmation();
-                            }
-                        }
-                    );
-                } else {
-                    this.setState({
-                        actionBusy: false,
-                        actionBusyMessage: "This transaction is not promotable."
-                    });
-                }
-            });
     }
 }
 
