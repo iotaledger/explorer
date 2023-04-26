@@ -7,7 +7,7 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
 import { LEGACY } from "../../../models/config/protocolVersion";
-import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
+import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
@@ -24,7 +24,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: LegacyTangleCacheService;
+    private readonly _apiClient: LegacyApiClient;
 
     /**
      * The settings service.
@@ -38,7 +38,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
     constructor(props: RouteComponentProps<TagRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
+        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         let tag;
@@ -83,7 +83,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                     formatFull: settings.formatFull
                 },
                 async () => {
-                    const { txHashes, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { txHashes, cursor } = await this._apiClient.findTransactionHashes(
                         this.props.match.params.network,
                         "tag",
                         this.props.match.params.tag,
@@ -112,7 +112,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                         },
                         async () => {
                             if (txHashes) {
-                                const txs = await this._tangleCacheService.getTransactions(
+                                const txs = await this._apiClient.getTransactions(
                                     this.props.match.params.network,
                                     txHashes);
 

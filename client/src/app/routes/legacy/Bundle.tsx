@@ -7,7 +7,7 @@ import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
 import { LEGACY } from "../../../models/config/protocolVersion";
 import { ConfirmationState } from "../../../models/confirmationState";
-import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
+import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import Currency from "../../components/Currency";
@@ -23,7 +23,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: LegacyTangleCacheService;
+    private readonly _apiClient: LegacyApiClient;
 
     /**
      * Create a new instance of Bundle.
@@ -32,7 +32,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     constructor(props: RouteComponentProps<BundleRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
+        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
 
         let bundle;
         if (this.props.match.params.bundle.length === 81 &&
@@ -59,13 +59,13 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
         if (this.state.bundle) {
             window.scrollTo(0, 0);
 
-            const { txHashes } = await this._tangleCacheService.findTransactionHashes(
+            const { txHashes } = await this._apiClient.findTransactionHashes(
                 this.props.match.params.network,
                 "bundle",
                 this.props.match.params.bundle
             );
 
-            const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(
+            const bundleGroupsPlain = await this._apiClient.getBundleGroups(
                 this.props.match.params.network,
                 txHashes
             );

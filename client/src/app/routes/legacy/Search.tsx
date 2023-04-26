@@ -5,7 +5,6 @@ import { NumberHelper } from "../../../helpers/numberHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { LEGACY, ProtocolVersion } from "../../../models/config/protocolVersion";
 import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
-import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
@@ -20,11 +19,6 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: LegacyTangleCacheService;
-
-    /**
-     * API Client for tangle requests.
-     */
     private readonly _apiClient: LegacyApiClient;
 
     /**
@@ -34,11 +28,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     constructor(props: RouteComponentProps<SearchRouteProps>) {
         super(props);
 
+        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
+
         const networkService = ServiceFactory.get<NetworkService>("network");
         const protocolVersion: ProtocolVersion =
             (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || LEGACY;
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
-        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
 
         this.state = {
             protocolVersion,
@@ -221,7 +215,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                         setTimeout(
                             async () => {
                                 if (this._isMounted) {
-                                    const { hashType } = await this._tangleCacheService.findTransactionHashes(
+                                    const { hashType } = await this._apiClient.findTransactionHashes(
                                         this.props.match.params.network,
                                         undefined,
                                         query

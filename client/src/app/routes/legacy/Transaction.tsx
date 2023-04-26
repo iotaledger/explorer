@@ -11,7 +11,7 @@ import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
 import { LEGACY } from "../../../models/config/protocolVersion";
-import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
+import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
@@ -31,7 +31,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: LegacyTangleCacheService;
+    private readonly _apiClient: LegacyApiClient;
 
     /**
      * Timer to check to state update.
@@ -45,7 +45,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     constructor(props: RouteComponentProps<TransactionRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
+        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
 
         let hash;
         if (this.props.match.params.txHash.length === 81 &&
@@ -75,7 +75,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 behavior: "smooth"
             });
 
-            const transactions = await this._tangleCacheService.getTransactions(
+            const transactions = await this._apiClient.getTransactions(
                 this.props.match.params.network, [this.props.match.params.txHash]);
 
             let details: ICachedTransaction | undefined;
@@ -613,7 +613,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 async () => {
                     if (this.state.details) {
                         const thisGroup =
-                            await this._tangleCacheService.getTransactionBundleGroup(
+                            await this._apiClient.getTransactionBundleGroup(
                                 this.props.match.params.network,
                                 this.state.details);
 
@@ -688,7 +688,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 rawMessageTrytes,
                                 streamsV0Root
                             }, async () => {
-                                const children = await this._tangleCacheService.getTransactionChildren(
+                                const children = await this._apiClient.getTransactionChildren(
                                     this.props.match.params.network, this.props.match.params.txHash);
 
                                 this.setState({
@@ -736,8 +736,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      * Check the confirmation again.
      */
     private async checkConfirmation(): Promise<void> {
-        const transactions = await this._tangleCacheService.getTransactions(
-            this.props.match.params.network, [this.props.match.params.txHash], true);
+        const transactions = await this._apiClient.getTransactions(
+            this.props.match.params.network, [this.props.match.params.txHash]);
 
         if (transactions && transactions.length > 0 && transactions[0].confirmationState === "confirmed") {
             if (this._timerId) {

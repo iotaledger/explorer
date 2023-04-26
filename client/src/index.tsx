@@ -15,7 +15,6 @@ import { CurrencyService } from "./services/currencyService";
 import { IdentityService } from "./services/identityService";
 import { LegacyApiClient } from "./services/legacy/legacyApiClient";
 import { LegacyFeedClient } from "./services/legacy/legacyFeedClient";
-import { LegacyTangleCacheService } from "./services/legacy/legacyTangleCacheService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
 import { NodeInfoService } from "./services/nodeInfoService";
@@ -69,7 +68,6 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("node-info", () => nodeInfoService);
 
     ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
-    ServiceFactory.register(`tangle-cache-${LEGACY}`, () => new LegacyTangleCacheService());
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
     ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
 
