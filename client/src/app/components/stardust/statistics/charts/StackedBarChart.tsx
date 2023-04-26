@@ -1,8 +1,8 @@
-import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
-import { axisLeft } from "d3-axis";
+import { axisBottom, axisLeft } from "d3-axis";
+import { brushX, D3BrushEvent } from "d3-brush";
 import { format } from "d3-format";
-import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
+import { NumberValue, scaleLinear, scaleOrdinal, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
 import moment from "moment";
@@ -17,12 +17,12 @@ import {
     determineGraphLeftPadding,
     d3FormatSpecifier,
     useTouchMoveEffect,
-    barChartsTickValues,
-    DAY_LABEL_FORMAT
+    tickMultiFormat
 } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedBarChartProps {
+    chartId: string;
     title?: string;
     info?: ModalData;
     subgroups: string[];
@@ -32,6 +32,7 @@ interface StackedBarChartProps {
 }
 
 const StackedBarChart: React.FC<StackedBarChartProps> = ({
+    chartId,
     title,
     info,
     subgroups,
@@ -61,7 +62,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             data = timespan !== "all" ? data.slice(-timespan) : data;
 
-            const dataMaxY = Math.max(
+            // chart dimensions
+            const yMax = Math.max(
                 ...data.map(d => {
                     let sum = 0;
                     for (const key of subgroups) {
@@ -70,62 +72,133 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     return sum;
                 })
             );
-            const leftMargin = determineGraphLeftPadding(dataMaxY);
-
+            const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
-            const groups = data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT));
 
-            const x = scaleBand().domain(groups)
-                .range([0, INNER_WIDTH])
-                .paddingInner(0.1);
+            const timestampToDate = (timestamp: number) => moment.unix(timestamp)
+                .hours(0)
+                .minutes(0)
+                .toDate();
 
-            const y = scaleLinear().domain([0, dataMaxY])
-                .range([INNER_HEIGHT, 0]);
+            const groups = data.map(
+                d => timestampToDate(d.time)
+            );
+            const stackedData = stack().keys(subgroups)(data);
 
+            // SVG
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
+            // X
+            const x = scaleTime()
+                .domain([groups[0], groups[groups.length - 1]])
+                .range([0, INNER_WIDTH]);
 
+            const xAxis = axisBottom(x).tickFormat(tickMultiFormat);
+
+            const xAxisSelection = svg.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .call(xAxis);
+
+            // Y
+            const y = scaleLinear().domain([0, yMax])
+                .range([INNER_HEIGHT, 0]);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(yMax)));
             svg.append("g")
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);
 
-            const stackedData = stack().keys(subgroups)(data);
+            // clip path
+            svg.append("defs")
+                .append("clipPath")
+                .attr("id", `clip-${chartId}`)
+                .append("rect")
+                .attr("width", INNER_WIDTH)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
 
-            svg.append("g")
-                .selectAll("g")
-                .data(stackedData)
-                .join("g")
-                .attr("fill", d => color(d.key))
-                .selectAll("rect")
-                .data(d => d)
-                .join("rect")
-                .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
-                .attr("y", d => y(d[1]))
-                .attr("class", (_, i) => `stacked-bar rect-${i}`)
-                .on("mouseover", mouseoverHandler)
-                .on("mouseout", mouseoutHandler)
-                .attr("height", d => y(d[0]) - y(d[1]))
-                .attr("width", x.bandwidth());
+            // brushing
+            const brush = brushX()
+                .extent([[0, 0], [INNER_WIDTH, height]])
+                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            const tickValues = barChartsTickValues(timespan, x);
-            const xAxis = axisLabelRotate(
-                axisBottom(x).tickValues(tickValues)
-            );
+            const brushSelection = svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
 
-            svg.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .call(xAxis);
+            // bars
+            const barsSelection = svg.append("g")
+                .attr("class", "stacked-bars")
+                .attr("clip-path", `url(#clip-${chartId})`);
+
+            const renderBars = (datesLen: number) => {
+                barsSelection.selectAll("g")
+                    .data(stackedData)
+                    .join("g")
+                    .attr("fill", d => color(d.key))
+                    .selectAll("rect")
+                    .data(d => d)
+                    .join("rect")
+                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / datesLen) / 2))
+                    .attr("y", d => y(d[1]))
+                    .attr("class", (_, i) => `stacked-bar rect-${i}`)
+                    .on("mouseover", mouseoverHandler)
+                    .on("mouseout", mouseoutHandler)
+                    .attr("height", d => y(d[0]) - y(d[1]))
+                    .attr("width", INNER_WIDTH / datesLen);
+            };
+
+            renderBars(data.length);
+
+            const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
+                if (!event.selection) {
+                    return;
+                }
+                const extent = event.selection;
+                if (!extent) {
+                    x.domain([groups[0], groups[groups.length - 1]]);
+                } else {
+                    console.log(extent);
+                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    brushSelection.call(brush.move, null);
+                }
+
+                // compute bars count included in barsSelection
+                const from = x.domain()[0];
+                from.setHours(0, 0, 0, 0);
+                const to = x.domain()[1];
+                to.setHours(0, 0, 0, 0);
+                let barsCount = 0;
+                for (const d of data) {
+                    const target = timestampToDate(d.time);
+                    target.setHours(0, 0, 0, 0);
+                    if (from <= target && target <= to) {
+                        barsCount++;
+                    }
+                }
+
+                // Update bars
+                renderBars(barsCount);
+                // Update axis, area and lines position
+                xAxisSelection.transition().duration(1000).call(axisBottom(x).tickFormat(tickMultiFormat));
+            };
+
+            // double click reset
+            svg.on("dblclick", () => {
+                x.domain([groups[0], groups[groups.length - 1]]);
+                xAxisSelection.transition().call(axisBottom(x).tickFormat(tickMultiFormat));
+                renderBars(data.length);
+            });
         }
     }, [data, timespan, wrapperWidth, wrapperHeight]);
 

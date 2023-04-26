@@ -1,9 +1,8 @@
-// import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
-import { axisBottom, axisLeft } from "d3-axis";
+import { Axis, axisBottom, axisLeft } from "d3-axis";
 import { brushX, D3BrushEvent } from "d3-brush";
 import { format } from "d3-format";
-import { scaleTime, scaleLinear, scaleOrdinal, NumberValue } from "d3-scale";
+import { scaleTime, scaleLinear, scaleOrdinal, NumberValue, ScaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
 import moment from "moment";
@@ -15,6 +14,7 @@ import {
     d3FormatSpecifier,
     determineGraphLeftPadding,
     noDataView,
+    tickMultiFormat,
     useChartWrapperSize,
     useMultiValueTooltip,
     useTouchMoveEffect
@@ -93,13 +93,14 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const x = scaleTime()
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
-            const xAxis = axisBottom(x);
+
+            const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
+                axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
 
             const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .call(xAxis);
+                .call(buildXAxis(x));
 
             // Y
             const y = scaleLinear().domain([0, yMax])
@@ -110,7 +111,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);
 
-            // clap path
+            // clip path
             svg.append("defs")
                 .append("clipPath")
                 .attr("id", `clip-${chartId}`)
@@ -206,10 +207,9 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             // brushing
             const brush = brushX()
                 .extent([[0, 0], [INNER_WIDTH, height]])
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .on("end", e => onBrushHandler(e));
+                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            const brushSelection = theArea.append("g")
+            const brushSelection = svg.append("g")
                 .attr("class", "brush")
                 .call(brush);
 
@@ -229,16 +229,13 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     }
                     x.domain([groups[0], groups[groups.length - 1]]);
                 } else {
-                    console.log(extent);
-                    console.log(x.invert(extent[0] as NumberValue));
-                    console.log(x.invert(extent[1] as NumberValue));
                     x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     brushSelection.call(brush.move, null);
                 }
 
                 // Update axis, area and lines position
-                xAxisSelection.transition().duration(1000).call(axisBottom(x));
+                xAxisSelection.transition().duration(1000).call(buildXAxis(x));
                 areaSelection
                     .transition()
                     .duration(750)
@@ -255,7 +252,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             // double click reset
             svg.on("dblclick", () => {
                 x.domain([groups[0], groups[groups.length - 1]]);
-                xAxisSelection.transition().call(axisBottom(x));
+                xAxisSelection.transition().call(buildXAxis(x));
                 areaSelection
                     .transition()
                     .duration(500)

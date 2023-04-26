@@ -1,5 +1,7 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
-import { ScaleBand } from "d3-scale";
+import { NumberValue, ScaleBand } from "d3-scale";
+import { timeDay, timeMonth, timeWeek, timeYear } from "d3-time";
+import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
@@ -161,4 +163,26 @@ export const barChartsTickValues = (
                 axisBand.domain().filter((_, i) => !(i % 3))
         )
 );
+
+const formatHidden = timeFormat("");
+const formatDay = timeFormat("%a %d");
+const formatWeek = timeFormat("%b %d");
+const formatMonth = timeFormat("%B");
+const formatYear = timeFormat("%Y");
+
+export const tickMultiFormat = (date: Date | NumberValue) => {
+    const theDate = date as Date;
+    if (timeDay(theDate) < theDate) {
+        return formatHidden(theDate);
+    } else if (timeMonth(theDate) < theDate) {
+        if (timeWeek(theDate) < theDate) {
+            return formatDay(theDate);
+        }
+        return formatWeek(theDate);
+    } else if (timeYear(theDate) < theDate) {
+        return formatMonth(theDate);
+    }
+
+    return formatYear(theDate);
+};
 
