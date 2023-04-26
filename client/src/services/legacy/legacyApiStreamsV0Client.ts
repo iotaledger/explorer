@@ -1,7 +1,5 @@
 import { Transaction, Transfer } from "@iota/core";
 import { asTransactionObject } from "@iota/transaction-converter";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { LEGACY } from "../../models/config/protocolVersion";
 import { LegacyApiClient } from "../legacy/legacyApiClient";
 
 /**
@@ -20,10 +18,11 @@ export class LegacyApiStreamsV0Client {
 
     /**
      * Create a new instance of ApiMamClient.
+     * @param apiClient The LegacyApiClient to use.
      * @param network The network to use.
      */
-    constructor(network: string) {
-        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
+    constructor(apiClient: LegacyApiClient, network: string) {
+        this._apiClient = apiClient;
         this._network = network;
     }
 
@@ -59,54 +58,54 @@ export class LegacyApiStreamsV0Client {
     /**
      * Find the transaction objects for the given request hashes.
      * @param request The hashes to find the transaction hashes for.
-     * @param request.addresses Addresses to find.
-     * @param request.approvees Approvees to find.
-     * @param request.bundles Bundles to find.
-     * @param request.tags Tags to find.
+     * @param request.address Address to find.
+     * @param request.approvee Approvee to find.
+     * @param request.bundle Bundle to find.
+     * @param request.tag Tag to find.
      * @returns The list of found transaction hashes.
      */
     public async findTransactionObjects(request: {
         /**
          * List of address hashes.
          */
-        addresses?: readonly string[];
+        address?: string;
         /**
          * List of bundle hashes.
          */
-        approvees?: readonly string[];
+        approvee?: string;
         /**
          * List of bundle hashes.
          */
-        bundles?: readonly string[];
+        bundle?: string;
         /**
          * List of tags.
          */
-        tags?: readonly string[];
+        tag?: readonly string[];
     }): Promise<readonly Transaction[]> {
-        if (!request.addresses) {
+        if (!request.address) {
             throw new Error("This method is not supported by the API");
         }
 
         const response = await this._apiClient.transactionsGet(
             {
-                mode: "addresses",
+                mode: "address",
                 network: this._network,
-                hash: request.addresses[0]
+                hash: request.address
             }
         );
         let txs: Transaction[] = [];
 
-        if (response?.hashes && response?.hashes.length > 0) {
-            const hashes = response.hashes;
+        if (response?.txHashes && response?.txHashes.length > 0) {
+            const txHashes = response.txHashes;
 
             const trytesResponse = await this._apiClient.trytesRetrieve({
                 network: this._network,
-                hashes
+                txHashes
             });
 
             if (trytesResponse?.trytes) {
                 txs = trytesResponse.trytes.map(
-                    (t, idx) => asTransactionObject(t, hashes[idx]));
+                    (t, idx) => asTransactionObject(t, txHashes[idx]));
             }
         }
 

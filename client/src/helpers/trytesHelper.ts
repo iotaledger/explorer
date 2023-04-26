@@ -115,11 +115,11 @@ export class TrytesHelper {
 
     /**
      * Calculate the mwm or the hash.
-     * @param hash The hash to calculate the mwm for.
+     * @param txHash The hash to calculate the mwm for.
      * @returns The mwm.
      */
-    public static calculateMwm(hash: string): number {
-        const trits = trytesToTrits(hash);
+    public static calculateMwm(txHash: string): number {
+        const trits = trytesToTrits(txHash);
 
         let mwm = 0;
         for (let i = trits.length - 1; i >= 0; i--) {

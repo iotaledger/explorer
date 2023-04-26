@@ -74,6 +74,6 @@ export class LegacyApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
-        return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.hash}`, "get");
+        return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.address}`, "get");
     }
 }

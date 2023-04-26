@@ -45,14 +45,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     constructor(props: RouteComponentProps<TransactionRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(
-            `tangle-cache-${LEGACY}`
-        );
+        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
 
         let hash;
-        if (this.props.match.params.hash.length === 81 &&
-            TrytesHelper.isTrytes(this.props.match.params.hash)) {
-            hash = props.match.params.hash;
+        if (this.props.match.params.txHash.length === 81 &&
+            TrytesHelper.isTrytes(this.props.match.params.txHash)) {
+            hash = props.match.params.txHash;
         }
 
         this.state = {
@@ -78,7 +76,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             });
 
             const transactions = await this._tangleCacheService.getTransactions(
-                this.props.match.params.network, [this.props.match.params.hash]);
+                this.props.match.params.network, [this.props.match.params.txHash]);
 
             let details: ICachedTransaction | undefined;
 
@@ -100,7 +98,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 });
             }
         } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.txHash}`);
         }
     }
 
@@ -691,7 +689,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 streamsV0Root
                             }, async () => {
                                 const children = await this._tangleCacheService.getTransactionChildren(
-                                    this.props.match.params.network, this.props.match.params.hash);
+                                    this.props.match.params.network, this.props.match.params.txHash);
 
                                 this.setState({
                                     children,
@@ -739,7 +737,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      */
     private async checkConfirmation(): Promise<void> {
         const transactions = await this._tangleCacheService.getTransactions(
-            this.props.match.params.network, [this.props.match.params.hash], true);
+            this.props.match.params.network, [this.props.match.params.txHash], true);
 
         if (transactions && transactions.length > 0 && transactions[0].confirmationState === "confirmed") {
             if (this._timerId) {

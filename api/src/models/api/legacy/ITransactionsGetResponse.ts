@@ -6,7 +6,7 @@ export interface ITransactionsGetResponse extends IResponse {
     /**
      * The items for the matching transaction.
      */
-    hashes?: string[];
+    txHashes?: string[];
 
     /**
      * The mode to look for transactions.

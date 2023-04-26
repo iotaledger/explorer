@@ -20,7 +20,7 @@ export async function get(
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.hash, "hash");
+    ValidationHelper.string(request.address, "hash");
 
     const networkConfig = networkService.get(request.network);
 
@@ -28,7 +28,7 @@ export async function get(
         return {};
     }
 
-    const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.hash);
+    const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.address);
 
     return {
         balance
