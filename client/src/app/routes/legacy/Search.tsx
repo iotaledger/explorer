@@ -1,8 +1,10 @@
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { NumberHelper } from "../../../helpers/numberHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { LEGACY, ProtocolVersion } from "../../../models/config/protocolVersion";
+import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
 import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
 import { NetworkService } from "../../../services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -21,6 +23,11 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     private readonly _tangleCacheService: LegacyTangleCacheService;
 
     /**
+     * API Client for tangle requests.
+     */
+    private readonly _apiClient: LegacyApiClient;
+
+    /**
      * Create a new instance of Search.
      * @param props The props.
      */
@@ -31,6 +38,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         const protocolVersion: ProtocolVersion =
             (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || LEGACY;
         this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
+        this._apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
 
         this.state = {
             protocolVersion,
@@ -172,8 +180,35 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         let invalidError = "";
 
         if (query.length > 0) {
-            if (typeof query === "number") {
-                console.log("its a number TODOOO");
+            if (NumberHelper.isNumeric(query)) {
+                const index = Number(query);
+                status = "Searching milestone by index...";
+                statusBusy = true;
+                if (this._isMounted) {
+                    setTimeout(
+                        async () => {
+                            if (this._isMounted) {
+                                const { milestoneHash } = await this._apiClient.milestoneGet({
+                                    network: this.props.match.params.network,
+                                    milestoneIndex: index
+                                });
+
+                                if (milestoneHash) {
+                                    this.setState({
+                                        status: "",
+                                        statusBusy: false,
+                                        redirect: `/${this.props.match.params.network}/transaction/${milestoneHash}`
+                                    });
+                                } else {
+                                    this.setState({
+                                        completion: "notFound",
+                                        status: "",
+                                        statusBusy: false
+                                    });
+                                }
+                            }
+                        }, 0);
+                }
             } else if (TrytesHelper.isTrytes(query)) {
                 if (query.length <= 27) {
                     redirect = `/${this.props.match.params.network}/tag/${query}`;

@@ -3,6 +3,8 @@ import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IAddressGetRequest } from "../../models/api/legacy/IAddressGetRequest";
 import { IAddressGetResponse } from "../../models/api/legacy/IAddressGetResponse";
+import { IMilestoneGetRequest } from "../../models/api/legacy/IMilestoneGetRequest";
+import { IMilestoneGetResponse } from "../../models/api/legacy/IMilestoneGetResponse";
 import { ITransactionsGetRequest } from "../../models/api/legacy/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/legacy/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../../models/api/legacy/ITrytesRetrieveRequest";
@@ -38,9 +40,17 @@ export class LegacyApiClient extends ApiClient {
      */
     public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
         return this.callApi<unknown, IStatsGetResponse>(
-            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-            "get"
-        );
+            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`, "get");
+    }
+
+    /**
+     * Find milestones from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async milestoneGet(request: IMilestoneGetRequest): Promise<IMilestoneGetResponse> {
+        return this.callApi<unknown, IMilestoneGetResponse>(
+            `milestones/${request.network}/${request.milestoneIndex}`, "get");
     }
 
     /**

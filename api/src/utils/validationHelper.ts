@@ -14,6 +14,17 @@ export class ValidationHelper {
     }
 
     /**
+     * Does the string have some content and is a decimal number.
+     * @param str The string to validate.
+     * @param name The parameter name.
+     */
+    public static numberFromString(str: string, name: string): void {
+        if (str === undefined || str === null || str.trim().length === 0 || !(/^-?\d+$/.test(str.trim()))) {
+            throw new Error(`The parameter '${name}' has an invalid value.`);
+        }
+    }
+
+    /**
      * Does the number have a value.
      * @param num The number to validate.
      * @param name The parameter name.
