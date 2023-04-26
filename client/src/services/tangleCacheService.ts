@@ -54,7 +54,7 @@ export class TangleCacheService {
                     /**
                      * The transactions hashes found.
                      */
-                    transactionHashes: string[];
+                    txHashes: string[];
                     /**
                      * There are more transactions.
                      */
@@ -147,9 +147,9 @@ export class TangleCacheService {
             this._networkProtocols[networkConfig.network] = networkConfig.protocolVersion;
 
             this._legacyCache[networkConfig.network] = {
-                tags: {},
-                addresses: {},
-                bundles: {},
+                tag: {},
+                address: {},
+                bundle: {},
                 transaction: {}
             };
 

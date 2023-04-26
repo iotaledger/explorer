@@ -6,6 +6,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
 import { ICachedTransaction } from "../../../models/api/ICachedTransaction";
+import { LEGACY } from "../../../models/config/protocolVersion";
 import { LegacyTangleCacheService } from "../../../services/legacy/legacyTangleCacheService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
@@ -37,14 +38,14 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
     constructor(props: RouteComponentProps<TagRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>("tangle-cache");
+        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         let tag;
         let tagFill;
-        if (this.props.match.params.hash.length <= 27 &&
-            TrytesHelper.isTrytes(this.props.match.params.hash)) {
-            tag = props.match.params.hash.replace(/9*$/, "");
+        if (this.props.match.params.tag.length <= 27 &&
+            TrytesHelper.isTrytes(this.props.match.params.tag)) {
+            tag = props.match.params.tag.replace(/9*$/, "");
             tagFill = "9".repeat(27 - tag.length);
 
             if (tag.length === 0) {
@@ -82,21 +83,20 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                     formatFull: settings.formatFull
                 },
                 async () => {
-                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { txHashes, cursor } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
-                        "tags",
-                        this.props.match.params.hash,
+                        "tag",
+                        this.props.match.params.tag,
                         250
                     );
 
                     let status = "";
-
-                    if (!hashes || hashes.length === 0) {
+                    if (!txHashes || txHashes.length === 0) {
                         status = "There are no transactions for the requested tag.";
                     }
 
-                    const items = hashes ? hashes.map(h => ({
-                        hash: h
+                    const items = txHashes ? txHashes.map(h => ({
+                        txHash: h
                     })) : undefined;
 
                     const filteredItems = this.filterItems(
@@ -111,10 +111,10 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                             cursor
                         },
                         async () => {
-                            if (hashes) {
+                            if (txHashes) {
                                 const txs = await this._tangleCacheService.getTransactions(
                                     this.props.match.params.network,
-                                    hashes);
+                                    txHashes);
 
                                 const bundleConfirmations: { [id: string]: string } = {};
 
@@ -129,8 +129,8 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                     }
                                 }
 
-                                const fullItems = hashes.map((h, idx) => ({
-                                    hash: h,
+                                const fullItems = txHashes.map((h, idx) => ({
+                                    txHash: h,
                                     details: txs[idx]
                                 })).sort((itemA, itemB) =>
                                     (DateHelper.milliseconds(itemB.details.tx.timestamp === 0
@@ -153,7 +153,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                         });
                 });
         } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.tag}`);
         }
     }
 
@@ -263,7 +263,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                     </div>
                                                 )}
                                             {this.state.filteredItems?.map(item => (
-                                                <div className="item-details" key={item.hash}>
+                                                <div className="item-details" key={item.txHash}>
                                                     {item.details && (
                                                         <div
                                                             className="row row--tablet-responsive middle space-between"
@@ -327,10 +327,10 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                                         <Link
                                                             to={
                                                                 `/${this.props.match.params.network
-                                                                }/transaction/${item.hash}`
+                                                                }/transaction/${item.txHash}`
                                                             }
                                                         >
-                                                            {item.hash}
+                                                            {item.txHash}
                                                         </Link>
                                                     </div>
                                                     {item.details && (
@@ -382,7 +382,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
             /**
              * The transaction hash.
              */
-            hash: string;
+            txHash: string;
 
             /**
              * The details details.
@@ -395,7 +395,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         /**
          * The transaction hash.
          */
-        hash: string;
+        txHash: string;
 
         /**
          * The details details.

@@ -8,5 +8,5 @@ export interface IAddressGetRequest {
     /**
      * The hash to perform the action on.
      */
-    hash: string;
+    address: string;
 }

@@ -120,8 +120,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     <div className="card--content">
                                         <p className="danger">
                                             The supplied hash does not appear to be valid, {
-                                                    this.state.invalidError
-                                                }.
+                                                this.state.invalidError
+                                            }.
                                         </p>
                                         <br />
                                         <p>The following formats are supported:</p>
@@ -172,7 +172,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         let invalidError = "";
 
         if (query.length > 0) {
-            if (TrytesHelper.isTrytes(query)) {
+            if (typeof query === "number") {
+                console.log("its a number TODOOO");
+            } else if (TrytesHelper.isTrytes(query)) {
                 if (query.length <= 27) {
                     redirect = `/${this.props.match.params.network}/tag/${query}`;
                 } else if (query.length === 90) {
@@ -192,10 +194,13 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
 
                                     if (hashType) {
                                         let ht = "";
-                                        if (hashType === "addresses") {
+
+                                        if (hashType === "address") {
                                             ht = "address";
-                                        } else if (hashType === "bundles") {
+                                        } else if (hashType === "bundle") {
                                             ht = "bundle";
+                                        } else if (hashType === "tag") {
+                                            ht = "tag";
                                         } else if (hashType === "transaction") {
                                             ht = "transaction";
                                         }

@@ -46,10 +46,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
 
         let address;
         let checksum;
-        if ((this.props.match.params.hash.length === 81 || this.props.match.params.hash.length === 90) &&
-            TrytesHelper.isTrytes(this.props.match.params.hash)) {
-            address = props.match.params.hash.slice(0, 81);
-            checksum = addChecksum(this.props.match.params.hash.slice(0, 81)).slice(-9);
+        if ((this.props.match.params.address.length === 81 || this.props.match.params.address.length === 90) &&
+            TrytesHelper.isTrytes(this.props.match.params.address)) {
+            address = props.match.params.address.slice(0, 81);
+            checksum = addChecksum(this.props.match.params.address.slice(0, 81)).slice(-9);
         }
 
         this.state = {
@@ -76,7 +76,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
 
             const balance = await this._tangleCacheService.getAddressBalance(
                 this.props.match.params.network,
-                this.props.match.params.hash
+                this.props.match.params.address
             );
 
             this.setState(
@@ -87,21 +87,21 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                     balance
                 },
                 async () => {
-                    const { hashes, cursor } = await this._tangleCacheService.findTransactionHashes(
+                    const { txHashes, cursor } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
-                        "addresses",
-                        this.props.match.params.hash,
+                        "address",
+                        this.props.match.params.address,
                         250
                     );
 
                     let status = "";
 
-                    if (!hashes || hashes.length === 0) {
+                    if (!txHashes || txHashes.length === 0) {
                         status = "There are no transactions for the requested address.";
                     }
 
-                    const items = hashes ? hashes.map(h => ({
-                        hash: h
+                    const items = txHashes ? txHashes.map(h => ({
+                        txHash: h
                     })) : undefined;
 
                     const filteredItems = this.filterItems(
@@ -116,10 +116,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                             cursor
                         },
                         async () => {
-                            if (hashes) {
+                            if (txHashes) {
                                 const txs = await this._tangleCacheService.getTransactions(
                                     this.props.match.params.network,
-                                    hashes);
+                                    txHashes);
 
                                 const bundleConfirmations: { [id: string]: string } = {};
 
@@ -134,8 +134,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                     }
                                 }
 
-                                const fullItems = hashes.map((h, idx) => ({
-                                    hash: h,
+                                const fullItems = txHashes.map((h, idx) => ({
+                                    txHash: h,
                                     details: txs[idx]
                                 })).sort((itemA, itemB) =>
                                     (DateHelper.milliseconds(itemB.details.tx.timestamp === 0
@@ -158,7 +158,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                         });
                 });
         } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
     }
 
@@ -293,7 +293,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                     </div>
                                                 )}
                                             {this.state.filteredItems?.map(item => (
-                                                <div className="item-details" key={item.hash}>
+                                                <div className="item-details" key={item.txHash}>
                                                     {item.details && (
                                                         <div
                                                             className="row row--tablet-responsive middle space-between"
@@ -357,10 +357,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                         <Link
                                                             to={
                                                                 `/${this.props.match.params.network
-                                                                }/transaction/${item.hash}`
+                                                                }/transaction/${item.txHash}`
                                                             }
                                                         >
-                                                            {item.hash}
+                                                            {item.txHash}
                                                         </Link>
                                                     </div>
                                                     {item.details && (
@@ -412,7 +412,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
             /**
              * The transaction hash.
              */
-            hash: string;
+            txHash: string;
 
             /**
              * The details details.
@@ -425,7 +425,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
         /**
          * The transaction hash.
          */
-        hash: string;
+        txHash: string;
 
         /**
          * The details details.

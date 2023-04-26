@@ -95,25 +95,25 @@ const buildAppRoutes = (
                 <LegacySearch {...props} />
             )}
         />,
-        <Route path="/:network/address/:hash"
+        <Route path="/:network/address/:address"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyAddressRouteProps>) => (
                 <LegacyAddress {...props} />
             )}
         />,
-        <Route path="/:network/transaction/:hash"
+        <Route path="/:network/transaction/:txHash"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyTransactionRouteProps>) => (
                 <LegacyTransaction {...props} />
             )}
         />,
-        <Route path="/:network/tag/:hash"
+        <Route path="/:network/tag/:tag"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyTagRouteProps>) => (
                 <LegacyTag {...props} />
             )}
         />,
-        <Route path="/:network/bundle/:hash"
+        <Route path="/:network/bundle/:bundle"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyBundleRouteProps>) => (
                 <LegacyBundle {...props} />
