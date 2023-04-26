@@ -115,6 +115,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row margin-b-s">
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Addresses with Tokens"
                         info={graphMessages.totalAddressesWithTokens}
                         label="Addresses"
@@ -122,6 +123,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={addressesWithBalance}
                     />
                     <LineChart
+                        chartId={ids.next().value}
                         title="Daily Active Addresses"
                         info={graphMessages.dailyActiveAddresses}
                         label="Addresses"
@@ -131,6 +133,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <BarChart
+                        chartId={ids.next().value}
                         title="Daily Sent Tokens"
                         info={graphMessages.dailySentTokens}
                         color="#00E0CA"
@@ -200,6 +203,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Unclaimed Tokens"
                         info={graphMessages.totalUnclaimedTokens}
                         label="Unclaimed Tokens"
@@ -207,6 +211,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={unclaimedTokens}
                     />
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Unclaimed Outputs"
                         info={graphMessages.totalUnclaimedOutputs}
                         label="Outputs"
@@ -231,6 +236,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={ledgerSize}
                     />
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Storage Deposit"
                         info={graphMessages.totalStorageDeposit}
                         label="Storage Deposit"

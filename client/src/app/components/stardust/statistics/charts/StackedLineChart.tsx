@@ -5,7 +5,6 @@ import { format } from "d3-format";
 import { scaleTime, scaleLinear, scaleOrdinal, NumberValue, ScaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
-import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
@@ -15,6 +14,7 @@ import {
     determineGraphLeftPadding,
     noDataView,
     tickMultiFormat,
+    timestampToDate,
     useChartWrapperSize,
     useMultiValueTooltip,
     useTouchMoveEffect
@@ -69,18 +69,10 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-            const timestampToDate = (timestamp: number) => moment.unix(timestamp)
-                .hours(0)
-                .minutes(0)
-                .toDate();
-
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
             const stackedData = stack().keys(subgroups)(data);
-
-            const groups = data.map(
-                d => timestampToDate(d.time)
-            );
+            const groups = data.map(d => timestampToDate(d.time));
 
             // SVG
             const svg = select(theSvg.current)

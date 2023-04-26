@@ -5,7 +5,6 @@ import { format } from "d3-format";
 import { NumberValue, scaleLinear, scaleOrdinal, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
-import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
@@ -17,7 +16,8 @@ import {
     determineGraphLeftPadding,
     d3FormatSpecifier,
     useTouchMoveEffect,
-    tickMultiFormat
+    tickMultiFormat,
+    timestampToDate
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -78,11 +78,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
-
-            const timestampToDate = (timestamp: number) => moment.unix(timestamp)
-                .hours(0)
-                .minutes(0)
-                .toDate();
 
             const groups = data.map(
                 d => timestampToDate(d.time)
@@ -167,7 +162,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 if (!extent) {
                     x.domain([groups[0], groups[groups.length - 1]]);
                 } else {
-                    console.log(extent);
                     x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     brushSelection.call(brush.move, null);

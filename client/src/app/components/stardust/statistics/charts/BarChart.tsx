@@ -1,21 +1,20 @@
-import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
 import { max } from "d3-array";
-import { axisLeft } from "d3-axis";
+import { Axis, axisBottom, axisLeft } from "d3-axis";
+import { brushX, D3BrushEvent } from "d3-brush";
 import { format } from "d3-format";
-import { scaleBand, scaleLinear } from "d3-scale";
+import { NumberValue, scaleLinear, ScaleTime, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
-import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
-    barChartsTickValues,
     d3FormatSpecifier,
-    DAY_LABEL_FORMAT,
     determineGraphLeftPadding,
     noDataView,
+    tickMultiFormat,
+    timestampToDate,
     useChartWrapperSize,
     useSingleValueTooltip,
     useTouchMoveEffect
@@ -23,6 +22,7 @@ import {
 import "./Chart.scss";
 
 interface BarChartProps {
+    chartId: string;
     title?: string;
     info?: ModalData;
     data: { [name: string]: number; time: number }[];
@@ -30,7 +30,7 @@ interface BarChartProps {
     color: string;
 }
 
-const BarChart: React.FC<BarChartProps> = ({ title, info, data, label, color }) => {
+const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, color }) => {
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
         if (chartWrapper !== null) {
@@ -53,56 +53,124 @@ const BarChart: React.FC<BarChartProps> = ({ title, info, data, label, color }) 
 
             data = timespan !== "all" ? data.slice(-timespan) : data;
 
-            const dataMaxY = max(data, d => d.n) ?? 1;
-            const leftMargin = determineGraphLeftPadding(dataMaxY);
-
+            // chart dimensions
+            const yMax = max(data, d => d.n) ?? 1;
+            const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-            const x = scaleBand().domain(data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT)))
-                .range([0, INNER_WIDTH])
-                .paddingInner(0.1);
+            const dates = data.map(d => timestampToDate(d.time));
 
-            const y = scaleLinear().domain([0, dataMaxY])
-                .range([INNER_HEIGHT, 0]);
-
+            // SVG
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
+            // X
+            const x = scaleTime()
+                .domain([dates[0], dates[dates.length - 1]])
+                .range([0, INNER_WIDTH]);
+
+            const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
+                axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
+
+            const xAxisSelection = svg.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .call(buildXAxis(x));
+
+            // Y
+            const y = scaleLinear().domain([0, yMax])
+                .range([INNER_HEIGHT, 0]);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(yMax)));
 
             svg.append("g")
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);
 
-            svg.selectAll(".bar")
-                .data(data)
-                .enter()
+            // clip path
+            svg.append("defs")
+                .append("clipPath")
+                .attr("id", `clip-${chartId}`)
                 .append("rect")
-                .attr("class", "bar")
-                .attr("x", d => x(moment.unix(d.time).format(DAY_LABEL_FORMAT)) ?? 0)
-                .attr("width", x.bandwidth())
-                .attr("y", d => y(d.n))
-                .attr("height", d => INNER_HEIGHT - y(d.n))
-                .attr("fill", color)
-                .on("mouseover", mouseoverHandler)
-                .on("mouseout", mouseoutHandler);
+                .attr("width", INNER_WIDTH)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
 
-            const tickValues = barChartsTickValues(timespan, x);
+            // brushing
+            const brush = brushX()
+                .extent([[0, 0], [INNER_WIDTH, height]])
+                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            const xAxis = axisLabelRotate(
-                axisBottom(x).tickValues(tickValues)
-            );
+            const brushSelection = svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
 
-            svg.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .call(xAxis);
+            // bars
+            const renderBars = (datesLen: number) => {
+                svg.selectAll(".the-bars").remove();
+                svg.append("g")
+                    .attr("class", "the-bars")
+                    .attr("clip-path", `url(#clip-${chartId})`)
+                    .selectAll("g")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / datesLen) / 2))
+                    .attr("y", d => y(d.n))
+                    .attr("fill", color)
+                    .on("mouseover", mouseoverHandler)
+                    .on("mouseout", mouseoutHandler)
+                    .attr("width", INNER_WIDTH / datesLen)
+                    .attr("height", d => INNER_HEIGHT - y(d.n));
+            };
+
+            renderBars(data.length);
+
+            const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
+                if (!event.selection) {
+                    return;
+                }
+                const extent = event.selection;
+                if (!extent) {
+                    x.domain([dates[0], dates[dates.length - 1]]);
+                } else {
+                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    brushSelection.call(brush.move, null);
+                }
+
+                // compute bars count included in barsSelection
+                const from = x.domain()[0];
+                from.setHours(0, 0, 0, 0);
+                const to = x.domain()[1];
+                to.setHours(0, 0, 0, 0);
+                let barsCount = 0;
+                for (const d of data) {
+                    const target = timestampToDate(d.time);
+                    target.setHours(0, 0, 0, 0);
+                    if (from <= target && target <= to) {
+                        barsCount++;
+                    }
+                }
+
+                // Update bars
+                renderBars(barsCount);
+                // Update axis, area and lines position
+                xAxisSelection.transition().duration(1000).call(axisBottom(x).tickFormat(tickMultiFormat));
+            };
+
+            // double click reset
+            svg.on("dblclick", () => {
+                x.domain([dates[0], dates[dates.length - 1]]);
+                xAxisSelection.transition().call(axisBottom(x).tickFormat(tickMultiFormat));
+                renderBars(data.length);
+            });
         }
     }, [data, timespan, wrapperWidth, wrapperHeight]);
 

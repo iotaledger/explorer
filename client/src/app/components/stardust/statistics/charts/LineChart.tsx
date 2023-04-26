@@ -1,13 +1,11 @@
-import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
 import { max } from "d3-array";
-import { axisLeft } from "d3-axis";
+import { Axis, axisBottom, axisLeft } from "d3-axis";
+import { brushX, D3BrushEvent } from "d3-brush";
 import { format } from "d3-format";
-import { scaleLinear, scaleTime } from "d3-scale";
+import { NumberValue, scaleLinear, ScaleTime, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { line } from "d3-shape";
-import { timeFormat } from "d3-time-format";
-import moment from "moment";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
@@ -16,6 +14,8 @@ import {
     d3FormatSpecifier,
     determineGraphLeftPadding,
     noDataView,
+    tickMultiFormat,
+    timestampToDate,
     useChartWrapperSize,
     useSingleValueTooltip,
     useTouchMoveEffect
@@ -23,6 +23,7 @@ import {
 import "./Chart.scss";
 
 interface LineChartProps {
+    chartId: string;
     title?: string;
     info?: ModalData;
     data: { [name: string]: number; time: number }[];
@@ -30,7 +31,7 @@ interface LineChartProps {
     color: string;
 }
 
-const LineChart: React.FC<LineChartProps> = ({ title, info, data, label, color }) => {
+const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label, color }) => {
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
         if (chartWrapper !== null) {
@@ -53,102 +54,160 @@ const LineChart: React.FC<LineChartProps> = ({ title, info, data, label, color }
 
             data = timespan !== "all" ? data.slice(-timespan) : data;
 
-            const dataMaxY = max(data, d => d.n) ?? 1;
-            const leftMargin = determineGraphLeftPadding(dataMaxY);
-
+            // chart dimensions
+            const yMax = max(data, d => d.n) ?? 1;
+            const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-            const timestampToDate = (timestampInSec: number) => (
-                moment.unix(timestampInSec)
-                    .hours(0).minutes(0)
-                    .toDate()
-            );
+            const dates = data.map(d => timestampToDate(d.time));
 
-            const domain = [
-                data.length > 0 ? timestampToDate(data[0].time) : new Date(),
-                data.length > 0 ? timestampToDate(data[data.length - 1].time) : new Date()
-            ];
-
-            const x = scaleTime().domain(domain).range([0, INNER_WIDTH])
-                .nice();
-
-            const y = scaleLinear().domain([0, dataMaxY]).range([INNER_HEIGHT, 0]);
-
+            // SVG
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
+            // X
+            const x = scaleTime()
+                .domain([dates[0], dates[dates.length - 1]])
+                .range([0, INNER_WIDTH]);
 
+            const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
+                axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
+
+            const xAxisSelection = svg.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .call(buildXAxis(x));
+
+            // Y
+            const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
+            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(yMax)));
             svg.append("g")
                 .attr("class", "axis axis--y")
                 .call(yAxisGrid);
 
-            svg.append("path")
+            // clip path
+            svg.append("defs")
+                .append("clipPath")
+                .attr("id", `clip-${chartId}`)
+                .append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
+
+            // brushing
+            const brush = brushX()
+                .extent([[0, 0], [INNER_WIDTH, height]])
+                .on("end", e => {
+                    onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>);
+                });
+
+            const brushSelection = svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
+
+            // line
+            const lineGen = line<{ [name: string]: number; time: number }>()
+                .x(d => x(timestampToDate(d.time)) ?? 0)
+                .y(d => y(d.n));
+
+            const lineSelection = svg.append("g")
+                .attr("class", "the-line")
+                .attr("clip-path", `url(#clip-${chartId})`)
+                .append("path")
                 .datum(data)
                 .attr("fill", "none")
                 .attr("stroke", color)
                 .attr("stroke-width", 1.5)
-                .attr(
-                    "d",
-                    line<{ [name: string]: number; time: number }>()
-                        .x(d => x(timestampToDate(d.time)) ?? 0)
-                        .y(d => y(d.n))
-                );
+                .attr("d", lineGen);
 
-            svg.selectAll("circle")
-                .data(data)
-                .enter()
-                .append("circle")
-                .attr("r", 1)
-                .attr("fill", color)
-                .style("stroke", color)
-                .style("stroke-width", 5)
-                .style("stroke-opacity", 0)
-                .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`)
-                .attr("class", (_, i) => `circle-${i}`);
+            const attachPathAndCircles = () => {
+                svg.selectAll(".hover-circles").remove();
+                svg.selectAll(".hover-lines").remove();
+                const halfLineWidth = data.length > 1 ?
+                    ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
+                    18;
 
-            const xAxis = axisLabelRotate(
-                axisBottom(x).tickFormat(timeFormat("%d %b"))
-            );
+                svg.append("g")
+                    .attr("class", "hover-circles")
+                    .selectAll("g")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("r", 0)
+                    .attr("fill", color)
+                    .style("stroke", color)
+                    .style("stroke-width", 5)
+                    .style("stroke-opacity", 0)
+                    .attr("transform", d => `translate(${x(timestampToDate(d.time))}, ${y(d.n)})`)
+                    .attr("class", (_, i) => `circle-${i}`);
 
-            svg.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .call(xAxis);
+                svg.append("g")
+                    .attr("class", "hover-lines")
+                    .selectAll("g")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("fill", "transparent")
+                    .attr("x", (_, idx) => (
+                        idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
+                    ))
+                    .attr("y", 0)
+                    .attr("class", (_, i) => `rect-${i}`)
+                    .attr("height", INNER_HEIGHT)
+                    .attr("width", (_, idx) => {
+                        if (idx === 0) {
+                            return halfLineWidth;
+                        } else if (idx === data.length - 1) {
+                            return halfLineWidth;
+                        }
+                        return halfLineWidth * 2;
+                    })
+                    .on("mouseover", mouseoverHandler)
+                    .on("mouseout", mouseoutHandler);
+            };
 
-            const halfLineWidth = data.length > 1 ?
-                ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
-                18;
+            attachPathAndCircles();
 
-            svg.append("g")
-                .attr("class", "hover-lines")
-                .selectAll("g")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("fill", "transparent")
-                .attr("x", (_, idx) => (
-                    idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
-                ))
-                .attr("y", 0)
-                .attr("class", (_, i) => `rect-${i}`)
-                .attr("height", INNER_HEIGHT)
-                .attr("width", (_, idx) => {
-                    if (idx === 0) {
-                        return halfLineWidth;
-                    } else if (idx === data.length - 1) {
-                        return halfLineWidth;
-                    }
-                    return halfLineWidth * 2;
-                })
-                .on("mouseover", mouseoverHandler)
-                .on("mouseout", mouseoutHandler);
+            const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
+                if (!event.selection) {
+                    return;
+                }
+                const extent = event.selection;
+                if (!extent) {
+                    x.domain([dates[0], dates[dates.length - 1]]);
+                } else {
+                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    brushSelection.call(brush.move, null);
+                }
+
+                // Update axis, area and lines position
+                xAxisSelection.transition().duration(1000).call(buildXAxis(x));
+                lineSelection
+                    .transition()
+                    .duration(750)
+                    .attr("d", lineGen);
+
+                // rebuild the hover activated lines & cicles
+                attachPathAndCircles();
+            };
+
+            // double click reset
+            svg.on("dblclick", () => {
+                x.domain([dates[0], dates[dates.length - 1]]);
+                xAxisSelection.transition().call(axisBottom(x).tickFormat(tickMultiFormat));
+                lineSelection
+                    .transition()
+                    .duration(500)
+                    .attr("d", lineGen);
+                attachPathAndCircles();
+            });
         }
     }, [data, timespan, wrapperWidth, wrapperHeight]);
 
@@ -199,7 +258,7 @@ const LineChart: React.FC<LineChartProps> = ({ title, info, data, label, color }
 
             select(theSvg.current)
                 .selectAll(`.circle-${idx}`)
-                .attr("r", 1)
+                .attr("r", 0)
                 .style("stroke-opacity", 0);
 
             activeElement

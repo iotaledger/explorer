@@ -186,3 +186,8 @@ export const tickMultiFormat = (date: Date | NumberValue) => {
     return formatYear(theDate);
 };
 
+export const timestampToDate = (timestamp: number) => moment.unix(timestamp)
+    .hours(0)
+    .minutes(0)
+    .toDate();
+
