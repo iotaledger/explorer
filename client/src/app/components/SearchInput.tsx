@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { NumberHelper } from "../../helpers/numberHelper";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { LEGACY } from "../../models/config/protocolVersion";
 import AsyncComponent from "./AsyncComponent";
@@ -130,9 +131,16 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         }
 
         if (this.props.protocolVersion === LEGACY) {
+            if (query.trim().length === 0) {
+                return false;
+            }
+            if (NumberHelper.isNumeric(query)) {
+                return true;
+            }
             if (!TrytesHelper.isTrytes(query)) {
                 return false;
             }
+
             return ((query.trim().length > 0 && query.trim().length <= 27) ||
                 query.trim().length === 81 ||
                 query.trim().length === 90);

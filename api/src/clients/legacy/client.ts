@@ -1,4 +1,6 @@
 import logger from "../../logger";
+import { IMilestoneGetRequest } from "../../models/api/legacy/IMilestoneGetRequest";
+import { IMilestoneGetResponse } from "../../models/api/legacy/IMilestoneGetResponse";
 import { IFindTransactionsRequest } from "../../models/clients/legacy/IFindTransactionsRequest";
 import { IFindTransactionsResponse } from "../../models/clients/legacy/IFindTransactionsResponse";
 import { IGetBalanceRequest } from "../../models/clients/legacy/IGetBalanceRequest";
@@ -193,6 +195,40 @@ export class LegacyClient {
             return response;
         } catch (err) {
             logger.error(`[LegacyClient] getBalance error: ${(err.response?.data?.error) ?? err}`);
+        }
+    }
+
+    /**
+     * Get the milestone for the requested index.
+     * @param request The index to get the requested data for.
+     * @returns The metadata of the milestone.
+     */
+    public async milestoneByIndex(request: IMilestoneGetRequest): Promise<IMilestoneGetResponse | undefined> {
+        try {
+            const headers: { [id: string]: string } = {};
+            if (this._user && this._password) {
+                const userPass = Buffer.from(`${this._user}:${this._password}`).toString("base64");
+                headers.Authorization = `Basic ${userPass}`;
+            }
+
+            const response = await FetchHelper.json<IMilestoneGetRequest, IMilestoneGetResponse>(
+                this._endpoint,
+                `core/v0/milestones/by-index/${request.milestoneIndex}`,
+                "get",
+                null,
+                headers
+            );
+
+            if (response.error) {
+                logger.error(`[LegacyClient] milestoneByIndex failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint,
+                    `core/v0/milestones/by-index/${request.milestoneIndex}`, "get", headers, null)}
+                             `);
+            }
+
+            return response;
+        } catch (err) {
+            logger.error(`[LegacyClient] milestoneByIndex error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 }

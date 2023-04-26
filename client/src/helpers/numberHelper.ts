@@ -9,5 +9,9 @@ export class NumberHelper {
     public static roundTo(number: number, decimals: number): number {
         return Math.round(number * 10 * decimals) / (10 * decimals);
     }
+
+    public static isNumeric(value: string): boolean {
+        return /^-?\d+$/.test(value);
+    }
 }
 
