@@ -226,7 +226,7 @@ export const InfluxChartsTab: React.FC = () => {
                     <Modal icon="info" data={graphMessages.dataStorage} />
                 </div>
                 <div className="row statistics-row">
-                    <StackedBarChart
+                    <StackedLineChart
                         chartId={ids.next().value}
                         title="Total Ledger Size"
                         info={graphMessages.totalLedgerSize}
