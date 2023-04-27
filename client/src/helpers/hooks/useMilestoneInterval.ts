@@ -2,10 +2,14 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
 
-export const useMilestoneInterval = (milestoneIndex: number | undefined) => {
+export const useMilestoneInterval = (milestoneIndex?: number, timestamp?: number, precise?: boolean) => {
     const isMounted = useIsMounted();
     const [from, setFrom] = useState<moment.Moment | undefined>();
     const [seconds, setSeconds] = useState<number | undefined>();
+
+    useEffect(() => {
+        setFrom(moment(timestamp).startOf("second"));
+    }, [timestamp]);
 
     useEffect(() => {
         setFrom(moment());
@@ -14,7 +18,10 @@ export const useMilestoneInterval = (milestoneIndex: number | undefined) => {
     useEffect(() => {
         const interval = setInterval(() => {
             const to = moment();
-            const updatedSeconds = to.diff(from, "seconds", true);
+            let updatedSeconds = to.diff(from, "seconds", precise ?? true);
+            if (precise) {
+                updatedSeconds = Number(updatedSeconds.toFixed(2));
+            }
             if (isMounted) {
                 setSeconds(updatedSeconds);
             }
@@ -23,7 +30,7 @@ export const useMilestoneInterval = (milestoneIndex: number | undefined) => {
         return () => {
             clearInterval(interval);
         };
-    }, [from]);
+    }, [from, precise]);
 
     return seconds;
 };

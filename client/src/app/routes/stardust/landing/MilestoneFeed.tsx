@@ -1,13 +1,12 @@
 import { HexHelper } from "@iota/util.js-stardust";
 import React from "react";
 import { Link } from "react-router-dom";
-import { DateHelper } from "../../../../helpers/dateHelper";
-import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
 import { INetwork } from "../../../../models/config/INetwork";
 import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
 import TruncatedId from "../../../components/stardust/TruncatedId";
 import MilestoneFeedAnalyics from "./MilestoneFeedAnalytics";
 import "./MilestoneFeed.scss";
+import MilestoneFeedTimestamp from "./MilestoneFeedTimestamp";
 
 const FEED_ITEMS_MAX = 10;
 
@@ -19,10 +18,6 @@ interface MilestoneFeedProps {
 
 const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones, latestMilestoneIndex }) => {
     const network = networkConfig.network;
-    const secondsSinceLast = useMilestoneInterval(latestMilestoneIndex);
-    const secondsSinceLastView = secondsSinceLast ? (
-        <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span>
-    ) : "";
 
     let highestIndex = 0;
     const milestonesToRender: IMilestoneFeedItem[] = [];
@@ -57,8 +52,6 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     const blockId = HexHelper.addPrefix(milestone.blockId);
                     const milestoneId = milestone.milestoneId;
                     const timestamp = milestone.timestamp * 1000;
-                    const date = DateHelper.formatShort(timestamp);
-
                     return (
                         <div className="feed-item ms-feed" key={milestoneId}>
                             <div className="feed-item__content">
@@ -85,12 +78,10 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                                 milestoneIndex={milestone.index}
                                 blockId={blockId}
                             />
-                            <div className="feed-item__content">
-                                <span className="feed-item--label">Timestamp</span>
-                                <span className="feed-item--value ms-timestamp">
-                                    {milestone.index === highestIndex ? secondsSinceLastView : date}
-                                </span>
-                            </div>
+                            <MilestoneFeedTimestamp
+                                timestamp={timestamp}
+                                showMilliseconds={milestone.index === highestIndex}
+                            />
                         </div>
                     );
                 })}
