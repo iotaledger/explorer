@@ -177,7 +177,7 @@
 
       .card--content {
           padding: 20px 30px;
-          
+
           .card--value, .card--label {
             align-items: center;
 
@@ -185,16 +185,16 @@
               .block-tangle-state__confirmed {
                 text-indent: -9999px;
                 padding: 0 5px;
-  
+
                 &::before {
                   content: "\2713";
                   text-indent: 0px;
                   color: var(--mint-green-bg);
-                  font-size: 22px;
+                  font-size: 16px;
                   font-weight: bold;
                 }
               }
-  
+
               .blocks-tangle-state .block-tangle-state {
                 margin-right: 0;
                 padding: 0 5px;
@@ -203,7 +203,7 @@
                     content: "\2717";
                     padding-top: 4px;
                     color: $error;
-                    font-size: 22px;
+                    font-size: 16px;
                     font-weight: bold;
                   }
                   span {
@@ -211,7 +211,7 @@
                   }
                 }
               }
-            }  
+            }
           }
       }
 
@@ -225,7 +225,7 @@
         .card--content__input--dropdown {
           display: none;
 
-          @include phone-down { 
+          @include phone-down {
             display: block;
           }
         }
