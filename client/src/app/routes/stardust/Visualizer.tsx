@@ -125,18 +125,18 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                             <>
                                 <div className="card--label">Block
                                     {selectedFeedItem.payloadType !== "Milestone" &&
-                                    selectedFeedItem.metadata && (
-                                        <span className="margin-l-t">
-                                            <BlockTangleState
-                                                network={network}
-                                                status={getStatus(selectedFeedItem?.metadata?.referenced)}
-                                                hasConflicts={selectedFeedItem.metadata?.conflicting}
-                                                conflictReason={getConflictReasonMessage(
-                                                    selectedFeedItem?.metadata?.conflictReason
-                                                )}
-                                            />
-                                        </span>
-                                    )}
+                                        selectedFeedItem.metadata && (
+                                            <span className="margin-l-t">
+                                                <BlockTangleState
+                                                    network={network}
+                                                    status={getStatus(selectedFeedItem?.metadata?.referenced)}
+                                                    hasConflicts={selectedFeedItem.metadata?.conflicting}
+                                                    conflictReason={getConflictReasonMessage(
+                                                        selectedFeedItem?.metadata?.conflictReason
+                                                    )}
+                                                />
+                                            </span>
+                                        )}
                                 </div>
                                 <div className="card--value overflow-ellipsis">
                                     <Link
@@ -241,8 +241,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                             </div>
                                         </React.Fragment>
                                     )}
-                                {selectedFeedItem?.reattachments &&
-                                selectedFeedItem.reattachments.length > 0 && (
+                                {selectedFeedItem?.reattachments && selectedFeedItem.reattachments.length > 0 && (
                                     <React.Fragment>
                                         <div
                                             className="
@@ -257,7 +256,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                                         "margin-r-t",
                                                         "card--content__input--dropdown",
                                                         { opened: isExpanded })
-                                                    }
+                                                }
                                             >
                                                 <DropdownIcon />
                                             </div>
@@ -270,7 +269,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                                 classNames(
                                                     "info-panel__reattachments",
                                                     { "info-panel__reattachments--opened": isExpanded })
-                                                }
+                                            }
                                         >
                                             {selectedFeedItem.reattachments.map((item, index) => (
                                                 <div key={index} className="card--value row">
