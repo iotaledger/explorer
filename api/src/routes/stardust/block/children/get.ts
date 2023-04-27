@@ -1,5 +1,5 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IBlockChildrenResponse } from "../../../../models/api/stardust/IBlockChildrenResponse";
+import { IBlockChildrenResponse } from "../../../../models/api/stardust/chronicle/IBlockChildrenResponse";
 import { IBlockRequest } from "../../../../models/api/stardust/IBlockRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";

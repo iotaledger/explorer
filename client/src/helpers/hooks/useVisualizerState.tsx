@@ -1,4 +1,4 @@
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -10,6 +10,7 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
 
 const MAX_ITEMS: number = 5000;
+const FEED_PROBE_THRESHOLD: number = 3000;
 const EDGE_COLOR_LIGHT: number = 0x00000055;
 const EDGE_COLOR_DARK: number = 0xFFFFFF33;
 const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
@@ -19,7 +20,7 @@ const COLOR_REFERENCED: string = "0x61e884";
 const COLOR_CONFLICTING: string = "0xff8b5c";
 const COLOR_INCLUDED: string = "0x4caaff";
 const COLOR_MILESTONE: string = "0x666af6";
-const COLOR_SEARCH_RESULT: string = "0xe79c18";
+const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
 /**
  * Setup the Visualizer state and ook into feed service for visalizer data.
@@ -36,7 +37,8 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
     number,
     (IFeedBlockData | null),
     (boolean | null),
-    React.Dispatch<React.SetStateAction<boolean | null>>
+    React.Dispatch<React.SetStateAction<boolean | null>>,
+    number | null
 ] {
     const [settingsService] = useState<SettingsService>(ServiceFactory.get<SettingsService>("settings"));
     const [darkMode, setDarkMode] = useState<boolean | null>(
@@ -45,16 +47,43 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
     const [filter, setFilter] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(true);
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
-
+    const feedProbe = useRef<NodeJS.Timer | null>(null);
+    const lastUpdateTime = useRef<number>(0);
+    const resetCounter = useRef<number>(0);
     const [selectedFeedItem, setSelectedFeedItem] = useState<IFeedBlockData | null>(null);
     const existingIds = useRef<string[]>([]);
-    const itemCount = useRef<number>(0);
+    const selectedFeedItemBlockId = useRef<string | null>(null);
+    const lastClick = useRef<number | null>(null);
+    const [itemCount, setItemCount] = useState<number>(0);
     const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
     const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
     const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
 
+    // Feed probe (reconnect)
+    useEffect(() => {
+        feedProbe.current = setInterval(() => {
+            if (!lastUpdateTime.current) {
+                lastUpdateTime.current = Date.now();
+            }
+            const msSinceLast = Date.now() - lastUpdateTime.current;
+
+            if (msSinceLast > FEED_PROBE_THRESHOLD) {
+                resetCounter.current += 1;
+            }
+        }, FEED_PROBE_THRESHOLD);
+
+        return () => {
+            if (feedProbe.current) {
+                clearInterval(feedProbe.current);
+            }
+            feedProbe.current = null;
+            lastUpdateTime.current = 0;
+        };
+    }, [network, feedProbe]);
+
     useEffect(() => {
         window.addEventListener("resize", resize);
+        window.addEventListener("theme-change", toggleDarkMode);
         setupGraph();
 
         return () => {
@@ -65,10 +94,10 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             graphics.current = null;
             renderer.current = null;
             existingIds.current = [];
-            itemCount.current = 0;
             window.removeEventListener("resize", resize);
+            window.removeEventListener("theme-change", toggleDarkMode);
         };
-    }, [graphElement, network]);
+    }, [graphElement, network, resetCounter.current]);
 
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
@@ -77,8 +106,9 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             const onNewBlockData = (newBlock: IFeedBlockData) => {
                 if (graph.current) {
                     const now = Date.now();
+                    lastUpdateTime.current = now;
 
-                    const blockId = HexHelper.stripPrefix(newBlock.blockId);
+                    const blockId = newBlock.blockId;
                     const existingNode = graph.current.getNode(blockId);
 
                     if (!existingNode) {
@@ -92,7 +122,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                         if (newBlock.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < newBlock.parents.length; i++) {
-                                const parentId = HexHelper.stripPrefix(newBlock.parents[i]);
+                                const parentId = newBlock.parents[i];
                                 if (!addedParents.includes(parentId)) {
                                     addedParents.push(parentId);
                                     if (!graph.current.getNode(parentId)) {
@@ -105,7 +135,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                             }
                         }
 
-                        itemCount.current = existingIds.current.length;
+                        setItemCount(existingIds.current.length);
                     }
 
                     checkLimit();
@@ -113,12 +143,12 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             };
 
             const onMetaDataUpdated = (updatedMetadata: { [id: string]: IFeedBlockMetadata }) => {
+                lastUpdateTime.current = Date.now();
                 if (graph.current) {
                     const highlightRegEx = highlightNodesRegEx();
 
                     for (const blockId in updatedMetadata) {
-                        const noPrefixId = HexHelper.stripPrefix(blockId);
-                        const node = graph.current.getNode(noPrefixId);
+                        const node = graph.current.getNode(blockId);
                         if (node) {
                             if (node.data) {
                                 node.data.feedItem.metadata = {
@@ -133,17 +163,23 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 }
             };
 
-            feedService.subscribe(onNewBlockData, onMetaDataUpdated);
+            feedService.subscribeBlocks(onNewBlockData, onMetaDataUpdated);
         }
 
         return () => {
-            feedService?.unsubscribe();
+            // eslint-disable-next-line no-void
+            void feedService?.unsubscribeBlocks();
         };
-    }, [network, graph]);
+    }, [network, graph, resetCounter.current]);
 
     useEffect(() => {
         restyleNodes();
-    }, [filter]);
+        selectedFeedItemBlockId.current = selectedFeedItem?.blockId ?? null;
+    }, [filter, selectedFeedItem]);
+
+    useEffect(() => {
+        styleConnections();
+    }, [darkMode]);
 
     /**
      * Setup the graph.
@@ -178,12 +214,12 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
             });
             events.mouseEnter(node => {
-                if (!selectedFeedItem) {
+                if (!selectedFeedItemBlockId.current) {
                     highlightConnections(node.id);
                 }
             });
             events.mouseLeave(_ => {
-                if (!selectedFeedItem) {
+                if (!selectedFeedItemBlockId.current) {
                     styleConnections();
                 }
             });
@@ -224,7 +260,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 }
             }
 
-            itemCount.current = existingIds.current.length;
+            setItemCount(existingIds.current.length);
 
             while (nodesToRemove.length > 0) {
                 const nodeToRemove = nodesToRemove.shift();
@@ -283,6 +319,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             size = 20;
             if (highlight) {
                 color = COLOR_SEARCH_RESULT;
+                size = 40;
             } else if (node.data.feedItem.metadata?.milestone) {
                 color = COLOR_MILESTONE;
                 size = 30;
@@ -295,6 +332,15 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 color = COLOR_REFERENCED;
             } else {
                 color = COLOR_PENDING;
+            }
+
+            const reattached = selectedFeedItem?.reattachments?.find(
+                item => item.blockId === node.data?.feedItem.blockId
+            );
+            if (selectedFeedItem?.blockId === node.data?.feedItem.blockId ||
+                reattached
+            ) {
+                size = 50;
             }
         }
 
@@ -336,9 +382,21 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
      * @param node The node to select.
      */
     function selectNode(node?: Viva.Graph.INode<INodeData, unknown>): void {
-        const isDeselect = !node || selectedFeedItem?.blockId === node.id;
+        const feedItem = node?.data?.feedItem;
+        const isDeselect = !node || selectedFeedItemBlockId.current === feedItem?.blockId;
+        if (feedItem) {
+            feedItem.reattachments = [];
+            graph.current?.forEachNode((n: Viva.Graph.INode<INodeData, unknown>) => {
+                const reattached = n.data?.feedItem;
+                if (reattached?.blockId !== feedItem?.blockId &&
+                    reattached?.properties?.transactionId &&
+                    reattached?.properties.transactionId === feedItem?.properties?.transactionId) {
+                    feedItem.reattachments?.push(reattached);
+                }
+            });
+        }
         setSelectedFeedItem(
-            isDeselect || !node ? null : node.data?.feedItem ?? null
+            isDeselect || !node ? null : feedItem ?? null
         );
 
         styleConnections();
@@ -346,6 +404,8 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         if (!isDeselect && node) {
             highlightConnections(node.id);
         }
+
+        lastClick.current = Date.now();
     }
 
     /**
@@ -427,11 +487,14 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         if (regEx.test(nodeId)) {
             return true;
         }
-
-        if (data.feedItem) {
-            for (const key in data.feedItem.properties) {
-                const val = data.feedItem.properties[key] as string;
-                if (typeof val === "string" && Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val))) {
+        const properties = data.feedItem.properties;
+        if (properties) {
+            let key: keyof typeof properties;
+            for (key in properties) {
+                const val = String(properties[key]);
+                if (regEx.test(val) ||
+                    (Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val)))
+                ) {
                     return true;
                 }
             }
@@ -466,9 +529,13 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         setIsActive(!isActive);
     }
 
-    if (darkMode !== settingsService.get().darkMode) {
-        setDarkMode(settingsService.get().darkMode ?? null);
-        styleConnections();
+    /**
+     * Toggle dark mode
+     * @param event The theme-change event.
+     */
+    function toggleDarkMode(event: Event): void {
+        const dMode = (event as CustomEvent).detail.darkMode as boolean;
+        setDarkMode(dMode);
     }
 
     return [
@@ -477,10 +544,11 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         filter,
         setFilter,
         isActive,
-        itemCount.current,
+        itemCount,
         selectedFeedItem,
         isFormatAmountsFull,
-        setIsFormatAmountsFull
+        setIsFormatAmountsFull,
+        lastClick.current
     ];
 }
 

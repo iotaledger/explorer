@@ -45,11 +45,11 @@ export function useNftDetails(network: string, nftId: string | null):
                     if (!response?.error) {
                         const output = response.nftDetails?.output as INftOutput;
 
-                        const metadataFeature = output.immutableFeatures?.find(
+                        const metadataFeature = output?.immutableFeatures?.find(
                             feature => feature.type === METADATA_FEATURE_TYPE
                         ) as IMetadataFeature;
 
-                        const issuerFeature = output.immutableFeatures?.find(
+                        const issuerFeature = output?.immutableFeatures?.find(
                             feature => feature.type === ISSUER_FEATURE_TYPE
                         ) as IIssuerFeature;
 

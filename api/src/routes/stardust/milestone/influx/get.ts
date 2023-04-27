@@ -43,7 +43,7 @@ export async function get(
         blockCount: maybeMsStats.blockCount,
         perPayloadType: maybeMsStats.perPayloadType
     } : {
-        error: `Could not fetch milestone analytics for ${request.milestoneIndex}`
+        message: `Could not fetch milestone analytics for ${request.milestoneIndex}`
     };
 }
 

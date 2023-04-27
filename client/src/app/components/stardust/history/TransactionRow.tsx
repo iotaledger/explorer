@@ -35,7 +35,11 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                 </Link>
                 <span className="highlight">{outputIdIndex}</span>
             </td>
-            <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
+            {date !== 0 ? (
+                <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
+            ) : (
+                <td className="date">Genesis</td>
+            )}
             <td className={classNames("amount", { "negative": isSpent })}>{valueView}</td>
         </tr>
     );

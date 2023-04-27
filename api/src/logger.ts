@@ -1,3 +1,4 @@
+import { LoggingWinston } from "@google-cloud/logging-winston";
 import moment from "moment";
 import { createLogger, format, transports } from "winston";
 
@@ -16,17 +17,29 @@ const theFormat = combine(
 
 const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
 
-const logger = createLogger({
-    level: logLevel,
-    format: format.json(),
-    defaultMeta: { service: `Explorer${version}` },
-    transports: [
+// transports
+const transportList: unknown[] = [];
+
+if (process.env.GCLOUD_PROJECT) {
+    const gCloudLogger = new LoggingWinston();
+    transportList.push(gCloudLogger);
+} else {
+    transportList.push(
         new transports.Console({
             level: logLevel,
             format: loggerFormat
         })
-    ]
+    );
+}
+
+const logger = createLogger({
+    level: logLevel,
+    format: format.json(),
+    defaultMeta: { service: `Explorer${version}` },
+    // @ts-expect-error Can't find a common type between Console and gCloud winston transport to make ts happy
+    transports: transportList
 });
+
 
 export default logger;
 

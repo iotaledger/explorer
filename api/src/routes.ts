@@ -139,5 +139,13 @@ export const routes: IRoute[] = [
     {
         path: "/stardust/participation/events/:network/:eventId", method: "get",
         folder: "stardust/participation/events", func: "get"
+    },
+    {
+        path: "/stardust/address/rich/:network", method: "get",
+        folder: "stardust/address/richest", func: "get"
+    },
+    {
+        path: "/stardust/token/distribution/:network", method: "get",
+        folder: "stardust/address/distribution", func: "get"
     }
 ];

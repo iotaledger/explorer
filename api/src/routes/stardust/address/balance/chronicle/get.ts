@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { IAddressBalanceResponse } from "../../../../../models/api/stardust/chronicle/IAddressBalanceResponse";
 import { IAddressBalanceRequest } from "../../../../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../../../../models/api/stardust/IAddressBalanceResponse";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
