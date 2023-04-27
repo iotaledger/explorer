@@ -1,7 +1,7 @@
 import { HexEncodedString, IMilestonePayload } from "@iota/iota.js-stardust";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
-export interface IFeedBlockProperties {
+interface IFeedBlockProperties {
     index?: number;
     tag?: HexEncodedString;
     timestamp?: number;

@@ -1,16 +1,13 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import { Axis, axisBottom, axisLeft } from "d3-axis";
 import { format } from "d3-format";
-import { NumberValue, ScaleBand, ScaleLinear, ScaleTime } from "d3-scale";
+import { NumberValue, ScaleLinear, ScaleTime } from "d3-scale";
 import { timeDay, timeMonth, timeWeek, timeYear } from "d3-time";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
-import { TimespanOption } from "./ChartHeader";
-
-export const DAY_LABEL_FORMAT = "DD MMM";
 
 export const noDataView = () => (
     <div className="no-data--wrapper">
@@ -152,27 +149,13 @@ export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => (
         Math.pow(10, tokenInfo.decimals) : null
 );
 
-export const barChartsTickValues = (
-    timespan: TimespanOption,
-    axisBand: ScaleBand<string>
-) => (
-    timespan === "all" ?
-        axisBand.domain().filter(d => d.includes("01")) :
-        (
-            timespan === "7" ?
-                axisBand.domain() :
-                // every third label
-                axisBand.domain().filter((_, i) => !(i % 3))
-        )
-);
-
 const formatHidden = timeFormat("");
 const formatDay = timeFormat("%a %d");
 const formatWeek = timeFormat("%b %d");
 const formatMonth = timeFormat("%B");
 const formatYear = timeFormat("%Y");
 
-export const tickMultiFormat = (date: Date | NumberValue) => {
+const tickMultiFormat = (date: Date | NumberValue) => {
     const theDate = date as Date;
     if (timeDay(theDate) < theDate) {
         return formatHidden(theDate);
