@@ -101,26 +101,21 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 .call(brush);
 
             // bars
-            const renderBars = (datesLen: number) => {
-                svg.selectAll(".the-bars").remove();
-                svg.append("g")
-                    .attr("class", "the-bars")
-                    .attr("clip-path", `url(#clip-${chartId})`)
-                    .selectAll("g")
-                    .data(data)
-                    .enter()
-                    .append("rect")
-                    .attr("class", "bar")
-                    .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / datesLen) / 2))
-                    .attr("y", d => y(d.n))
-                    .attr("fill", color)
-                    .on("mouseover", mouseoverHandler)
-                    .on("mouseout", mouseoutHandler)
-                    .attr("width", INNER_WIDTH / datesLen)
-                    .attr("height", d => INNER_HEIGHT - y(d.n));
-            };
-
-            renderBars(data.length);
+            const barsSelection = svg.append("g")
+                .attr("class", "the-bars")
+                .attr("clip-path", `url(#clip-${chartId})`)
+                .selectAll("g")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / data.length) / 2))
+                .attr("y", d => y(d.n))
+                .attr("fill", color)
+                .on("mouseover", mouseoverHandler)
+                .on("mouseout", mouseoutHandler)
+                .attr("width", INNER_WIDTH / data.length)
+                .attr("height", d => INNER_HEIGHT - y(d.n));
 
             const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
                 if (!event.selection) {
@@ -141,7 +136,12 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
 
                 // Update bars
-                renderBars(selectedData.length);
+                barsSelection.transition().duration(1000)
+                    .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / selectedData.length) / 2))
+                    .attr("y", d => y(d.n))
+                    .attr("width", INNER_WIDTH / selectedData.length)
+                    .attr("height", d => INNER_HEIGHT - y(d.n));
+
                 // Update axis, area and lines position
                 xAxisSelection.transition().duration(750).call(buildXAxis(x));
             };
@@ -152,7 +152,11 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 xAxisSelection.transition().duration(750).call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
-                renderBars(data.length);
+                barsSelection.transition().duration(1000)
+                    .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / data.length) / 2))
+                    .attr("y", d => y(d.n))
+                    .attr("width", INNER_WIDTH / data.length)
+                    .attr("height", d => INNER_HEIGHT - y(d.n));
             });
         }
     }, [data, wrapperWidth, wrapperHeight]);

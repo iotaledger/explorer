@@ -124,26 +124,21 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             // bars
             const barsSelection = svg.append("g")
                 .attr("class", "stacked-bars")
-                .attr("clip-path", `url(#clip-${chartId})`);
-
-            const renderBars = (datesLen: number) => {
-                barsSelection.selectAll("g")
-                    .data(stackedData)
-                    .join("g")
-                    .attr("fill", d => color(d.key))
-                    .selectAll("rect")
-                    .data(d => d)
-                    .join("rect")
-                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / datesLen) / 2))
-                    .attr("y", d => y(d[1]))
-                    .attr("class", (_, i) => `stacked-bar rect-${i}`)
-                    .on("mouseover", mouseoverHandler)
-                    .on("mouseout", mouseoutHandler)
-                    .attr("height", d => y(d[0]) - y(d[1]))
-                    .attr("width", INNER_WIDTH / datesLen);
-            };
-
-            renderBars(data.length);
+                .attr("clip-path", `url(#clip-${chartId})`)
+                .selectAll("g")
+                .data(stackedData)
+                .join("g")
+                .attr("fill", d => color(d.key))
+                .selectAll("rect")
+                .data(d => d)
+                .join("rect")
+                .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
+                .attr("y", d => y(d[1]))
+                .attr("class", (_, i) => `stacked-bar rect-${i}`)
+                .on("mouseover", mouseoverHandler)
+                .on("mouseout", mouseoutHandler)
+                .attr("height", d => y(d[0]) - y(d[1]))
+                .attr("width", INNER_WIDTH / data.length);
 
             const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
                 if (!event.selection) {
@@ -172,7 +167,11 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
 
                 // Update bars
-                renderBars(selectedData.length);
+                barsSelection.transition().duration(1000)
+                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / selectedData.length) / 2))
+                    .attr("y", d => y(d[1]))
+                    .attr("height", d => y(d[0]) - y(d[1]))
+                    .attr("width", INNER_WIDTH / selectedData.length);
                 // Update axis, area and lines position
                 xAxisSelection.transition().duration(1000).call(buildXAxis(x));
             };
@@ -183,7 +182,11 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
-                renderBars(data.length);
+                barsSelection.transition().duration(1000)
+                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
+                    .attr("y", d => y(d[1]))
+                    .attr("height", d => y(d[0]) - y(d[1]))
+                    .attr("width", INNER_WIDTH / data.length);
             });
         }
     }, [data, wrapperWidth, wrapperHeight]);
