@@ -112,6 +112,7 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / data.length) / 2))
                 .attr("y", d => y(d.n))
                 .attr("fill", color)
+                .attr("rx", 2)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler)
                 .attr("width", INNER_WIDTH / data.length)

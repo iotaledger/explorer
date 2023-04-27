@@ -134,6 +134,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .join("rect")
                 .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
                 .attr("y", d => y(d[1]))
+                .attr("rx", 2)
                 .attr("class", (_, i) => `stacked-bar rect-${i}`)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler)
