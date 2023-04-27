@@ -32,37 +32,6 @@
         }
     }
 
-    .chart-header__select {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .select-wrapper {
-            position: relative;
-            margin-right: 20px;
-
-            select {
-                cursor: pointer;
-                background: var(--statistics-select-bg);
-                color: var(--card-color);
-                border-color: var(--statistics-select-border);
-                height: 40px;
-
-                @include phone-down {
-                    height: 32px;
-                }
-            }
-
-            .chevron {
-                top: 23%;
-                color: var(--card-color);
-                z-index: 1;
-
-                @include phone-down {
-                    top: 13%;
-                }
-            }
-        }
-    }
     .charts-css.legend {
         padding: 1rem;
         border: 1px solid var(--legend-border-color);

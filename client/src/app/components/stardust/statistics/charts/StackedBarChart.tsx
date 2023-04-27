@@ -3,9 +3,9 @@ import { brushX, D3BrushEvent } from "d3-brush";
 import { NumberValue, scaleLinear, scaleOrdinal, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { ModalData } from "../../../ModalProps";
-import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartHeader from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
     useMultiValueTooltip,
@@ -47,7 +47,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useTouchMoveEffect(mouseoutHandler);
@@ -58,8 +57,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             const height = wrapperHeight;
             // reset
             select(theSvg.current).select("*").remove();
-
-            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             // chart dimensions
             const yMax = Math.max(
@@ -189,7 +186,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 renderBars(data.length);
             });
         }
-    }, [data, timespan, wrapperWidth, wrapperHeight]);
+    }, [data, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event of a bar "part"
@@ -232,7 +229,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     labels: groupLabels ?? subgroups,
                     colors
                 }}
-                onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (

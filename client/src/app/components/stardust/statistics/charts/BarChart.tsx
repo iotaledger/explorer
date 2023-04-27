@@ -3,9 +3,9 @@ import { max } from "d3-array";
 import { brushX, D3BrushEvent } from "d3-brush";
 import { NumberValue, scaleLinear, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { ModalData } from "../../../ModalProps";
-import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartHeader from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
     buildXAxis,
@@ -38,7 +38,6 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
     }, []);
     const theTooltip = useRef<HTMLDivElement>(null);
     const theSvg = useRef<SVGSVGElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useTouchMoveEffect(mouseoutHandler);
@@ -49,8 +48,6 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
             const height = wrapperHeight;
             // reset
             select(theSvg.current).select("*").remove();
-
-            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             // chart dimensions
             const yMax = max(data, d => d.n) ?? 1;
@@ -158,7 +155,7 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 renderBars(data.length);
             });
         }
-    }, [data, timespan, wrapperWidth, wrapperHeight]);
+    }, [data, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event of a bar "part"
@@ -197,7 +194,6 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
             <ChartHeader
                 title={title}
                 info={info}
-                onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (

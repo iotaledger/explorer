@@ -3,9 +3,9 @@ import { brushX, D3BrushEvent } from "d3-brush";
 import { scaleTime, scaleLinear, scaleOrdinal, NumberValue } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { ModalData } from "../../../ModalProps";
-import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartHeader from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
     buildXAxis,
@@ -47,7 +47,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useTouchMoveEffect(mouseoutHandler);
@@ -58,8 +57,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const height = wrapperHeight;
             // reset
             select(theSvg.current).selectAll("*").remove();
-
-            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             // chart dimensions
             const yMax = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
@@ -258,7 +255,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
             attachOnHoverLinesAndCircles();
         }
-    }, [data, timespan, wrapperWidth, wrapperHeight]);
+    }, [data, wrapperWidth, wrapperHeight]);
 
     /**
      * Get linear gradient for selected color
@@ -348,7 +345,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             <ChartHeader
                 title={title}
                 info={info}
-                onTimespanSelected={value => setTimespan(value)}
                 legend={{
                     labels: groupLabels ?? subgroups,
                     colors

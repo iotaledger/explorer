@@ -4,9 +4,9 @@ import { brushX, D3BrushEvent } from "d3-brush";
 import { NumberValue, scaleLinear, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { line } from "d3-shape";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { ModalData } from "../../../ModalProps";
-import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartHeader from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
     buildXAxis,
@@ -39,7 +39,6 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
     }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useSingleValueTooltip(data, label);
 
     useTouchMoveEffect(mouseoutHandler);
@@ -50,8 +49,6 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
             const height = wrapperHeight;
             // reset
             select(theSvg.current).select("*").remove();
-
-            data = timespan !== "all" ? data.slice(-timespan) : data;
 
             // chart dimensions
             const yMax = max(data, d => d.n) ?? 1;
@@ -214,7 +211,7 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
                 attachPathAndCircles();
             });
         }
-    }, [data, timespan, wrapperWidth, wrapperHeight]);
+    }, [data, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event.
@@ -276,7 +273,6 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
             <ChartHeader
                 title={title}
                 info={info}
-                onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (
