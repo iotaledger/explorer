@@ -1,19 +1,18 @@
 import classNames from "classnames";
 import { max } from "d3-array";
-import { Axis, axisBottom, axisLeft } from "d3-axis";
 import { brushX, D3BrushEvent } from "d3-brush";
-import { format } from "d3-format";
-import { NumberValue, scaleLinear, ScaleTime, scaleTime } from "d3-scale";
+import { NumberValue, scaleLinear, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
-    d3FormatSpecifier,
+    buildXAxis,
+    buildYAxis,
+    computeDataIncludedInSelection,
     determineGraphLeftPadding,
     noDataView,
-    tickMultiFormat,
     timestampToDate,
     useChartWrapperSize,
     useSingleValueTooltip,
@@ -73,10 +72,6 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
             const x = scaleTime()
                 .domain([dates[0], dates[dates.length - 1]])
                 .range([0, INNER_WIDTH]);
-
-            const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
-                axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
-
             const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
@@ -85,11 +80,9 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
             // Y
             const y = scaleLinear().domain([0, yMax])
                 .range([INNER_HEIGHT, 0]);
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(yMax)));
-
-            svg.append("g")
+            const yAxisSelection = svg.append("g")
                 .attr("class", "axis axis--y")
-                .call(yAxisGrid);
+                .call(buildYAxis(y, yMax));
 
             // clip path
             svg.append("defs")
@@ -145,30 +138,23 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                     brushSelection.call(brush.move, null);
                 }
 
-                // compute bars count included in barsSelection
-                const from = x.domain()[0];
-                from.setHours(0, 0, 0, 0);
-                const to = x.domain()[1];
-                to.setHours(0, 0, 0, 0);
-                let barsCount = 0;
-                for (const d of data) {
-                    const target = timestampToDate(d.time);
-                    target.setHours(0, 0, 0, 0);
-                    if (from <= target && target <= to) {
-                        barsCount++;
-                    }
-                }
+                const selectedData = computeDataIncludedInSelection(x, data);
+                const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
+                y.domain([0, yMaxUpdate]);
+                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
 
                 // Update bars
-                renderBars(barsCount);
+                renderBars(selectedData.length);
                 // Update axis, area and lines position
-                xAxisSelection.transition().duration(1000).call(axisBottom(x).tickFormat(tickMultiFormat));
+                xAxisSelection.transition().duration(750).call(buildXAxis(x));
             };
 
             // double click reset
             svg.on("dblclick", () => {
                 x.domain([dates[0], dates[dates.length - 1]]);
-                xAxisSelection.transition().call(axisBottom(x).tickFormat(tickMultiFormat));
+                xAxisSelection.transition().duration(750).call(buildXAxis(x));
+                y.domain([0, yMax]);
+                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
                 renderBars(data.length);
             });
         }

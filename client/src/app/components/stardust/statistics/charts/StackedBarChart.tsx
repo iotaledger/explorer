@@ -1,7 +1,5 @@
 import classNames from "classnames";
-import { axisBottom, axisLeft } from "d3-axis";
 import { brushX, D3BrushEvent } from "d3-brush";
-import { format } from "d3-format";
 import { NumberValue, scaleLinear, scaleOrdinal, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
@@ -14,10 +12,11 @@ import {
     noDataView,
     useChartWrapperSize,
     determineGraphLeftPadding,
-    d3FormatSpecifier,
     useTouchMoveEffect,
-    tickMultiFormat,
-    timestampToDate
+    timestampToDate,
+    buildXAxis,
+    buildYAxis,
+    computeDataIncludedInSelection
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -95,21 +94,16 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             const x = scaleTime()
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
-
-            const xAxis = axisBottom(x).tickFormat(tickMultiFormat);
-
             const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                .call(xAxis);
+                .call(buildXAxis(x));
 
             // Y
-            const y = scaleLinear().domain([0, yMax])
-                .range([INNER_HEIGHT, 0]);
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(yMax)));
-            svg.append("g")
+            const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
+            const yAxisSelection = svg.append("g")
                 .attr("class", "axis axis--y")
-                .call(yAxisGrid);
+                .call(buildYAxis(y, yMax));
 
             // clip path
             svg.append("defs")
@@ -167,30 +161,31 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     brushSelection.call(brush.move, null);
                 }
 
-                // compute bars count included in barsSelection
-                const from = x.domain()[0];
-                from.setHours(0, 0, 0, 0);
-                const to = x.domain()[1];
-                to.setHours(0, 0, 0, 0);
-                let barsCount = 0;
-                for (const d of data) {
-                    const target = timestampToDate(d.time);
-                    target.setHours(0, 0, 0, 0);
-                    if (from <= target && target <= to) {
-                        barsCount++;
-                    }
-                }
+                const selectedData = computeDataIncludedInSelection(x, data);
+                const yMaxUpdate = Math.max(
+                    ...selectedData.map(d => {
+                        let sum = 0;
+                        for (const key of subgroups) {
+                            sum += d[key];
+                        }
+                        return sum;
+                    })
+                );
+                y.domain([0, yMaxUpdate]);
+                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
 
                 // Update bars
-                renderBars(barsCount);
+                renderBars(selectedData.length);
                 // Update axis, area and lines position
-                xAxisSelection.transition().duration(1000).call(axisBottom(x).tickFormat(tickMultiFormat));
+                xAxisSelection.transition().duration(1000).call(buildXAxis(x));
             };
 
             // double click reset
             svg.on("dblclick", () => {
                 x.domain([groups[0], groups[groups.length - 1]]);
-                xAxisSelection.transition().call(axisBottom(x).tickFormat(tickMultiFormat));
+                xAxisSelection.transition().call(buildXAxis(x));
+                y.domain([0, yMax]);
+                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
                 renderBars(data.length);
             });
         }

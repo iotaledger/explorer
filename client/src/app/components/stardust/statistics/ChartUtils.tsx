@@ -1,5 +1,7 @@
 import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
-import { NumberValue, ScaleBand } from "d3-scale";
+import { Axis, axisBottom, axisLeft } from "d3-axis";
+import { format } from "d3-format";
+import { NumberValue, ScaleBand, ScaleLinear, ScaleTime } from "d3-scale";
 import { timeDay, timeMonth, timeWeek, timeYear } from "d3-time";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
@@ -186,8 +188,37 @@ export const tickMultiFormat = (date: Date | NumberValue) => {
     return formatYear(theDate);
 };
 
+export const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
+    axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
+
+export const buildYAxis = (scale: ScaleLinear<number, number>, theYMax: number) =>
+    axisLeft(scale.nice()).tickFormat(format(d3FormatSpecifier(theYMax)));
+
 export const timestampToDate = (timestamp: number) => moment.unix(timestamp)
     .hours(0)
     .minutes(0)
     .toDate();
 
+export const computeDataIncludedInSelection = (
+    scale: ScaleTime<number, number>,
+    data: {
+        [name: string]: number;
+        time: number;
+    }[]
+) => {
+    const selectedData: { [name: string]: number; time: number }[] = [];
+
+    const from = scale.domain()[0];
+    from.setHours(0, 0, 0, 0);
+    const to = scale.domain()[1];
+    to.setHours(0, 0, 0, 0);
+    for (const d of data) {
+        const target = timestampToDate(d.time);
+        target.setHours(0, 0, 0, 0);
+        if (from <= target && target <= to) {
+            selectedData.push(d);
+        }
+    }
+
+    return selectedData;
+};

@@ -1,8 +1,6 @@
 import classNames from "classnames";
-import { Axis, axisBottom, axisLeft } from "d3-axis";
 import { brushX, D3BrushEvent } from "d3-brush";
-import { format } from "d3-format";
-import { scaleTime, scaleLinear, scaleOrdinal, NumberValue, ScaleTime } from "d3-scale";
+import { scaleTime, scaleLinear, scaleOrdinal, NumberValue } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
@@ -10,10 +8,11 @@ import { ModalData } from "../../../ModalProps";
 import ChartHeader, { TimespanOption } from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
-    d3FormatSpecifier,
+    buildXAxis,
+    buildYAxis,
+    computeDataIncludedInSelection,
     determineGraphLeftPadding,
     noDataView,
-    tickMultiFormat,
     timestampToDate,
     useChartWrapperSize,
     useMultiValueTooltip,
@@ -86,22 +85,16 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
 
-            const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
-                axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
-
             const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(buildXAxis(x));
 
             // Y
-            const y = scaleLinear().domain([0, yMax])
-                .range([INNER_HEIGHT, 0]);
-
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(yMax)));
-            svg.append("g")
+            const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
+            const yAxisSelection = svg.append("g")
                 .attr("class", "axis axis--y")
-                .call(yAxisGrid);
+                .call(buildYAxis(y, yMax));
 
             // clip path
             svg.append("defs")
@@ -226,8 +219,13 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     brushSelection.call(brush.move, null);
                 }
 
-                // Update axis, area and lines position
+                const selectedData = computeDataIncludedInSelection(x, data);
+                const yMaxUpdate = Math.max(...selectedData.map(d => Math.max(...subgroups.map(key => d[key]))));
+                y.domain([0, yMaxUpdate]);
+                // Update axis
+                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
                 xAxisSelection.transition().duration(1000).call(buildXAxis(x));
+                // Update area and lines
                 areaSelection
                     .transition()
                     .duration(750)
@@ -236,7 +234,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     .transition()
                     .duration(750)
                     .attr("d", lineGen);
-
                 // rebuild the hover activated lines & cicles
                 attachOnHoverLinesAndCircles();
             };
@@ -245,6 +242,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             svg.on("dblclick", () => {
                 x.domain([groups[0], groups[groups.length - 1]]);
                 xAxisSelection.transition().call(buildXAxis(x));
+                y.domain([0, yMax]);
+                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
                 areaSelection
                     .transition()
                     .duration(500)
