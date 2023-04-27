@@ -15,6 +15,8 @@ export const noDataView = () => (
     </div>
 );
 
+
+const formatToMagnituge = (val: number) => format(d3FormatSpecifier(val));
 export const useSingleValueTooltip = (
     data: { [name: string]: number; time: number }[],
     label?: string
@@ -24,14 +26,13 @@ export const useSingleValueTooltip = (
             <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
             <p>
                 <span class="label">${label ?? "count"}: </span>
-                <span class="value">${dataPoint.n}</span>
+                <span class="value">${formatToMagnituge(dataPoint.n)(dataPoint.n)}</span>
             </p>
         `
     ), [data, label]);
 
     return buildTooltip;
 };
-
 export const useMultiValueTooltip = (
     data: { [name: string]: number; time: number }[],
     subgroups: string[],
@@ -44,7 +45,7 @@ export const useMultiValueTooltip = (
                 <p>
                     <span class="dot" style="background-color: ${colors[idx]}"></span>
                     <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
-                    <span class="value">${dataPoint[subgroup]}</span>
+                    <span class="value">${formatToMagnituge(dataPoint[subgroup])(dataPoint[subgroup])}</span>
                 </p>
         `)).join("")}`
     ), [data, subgroups, groupLabels, colors]);
