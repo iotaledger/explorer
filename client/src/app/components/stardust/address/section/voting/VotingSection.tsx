@@ -1,52 +1,81 @@
+import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
-import { IParticipation } from "../../../../../../models/api/stardust/participation/IParticipation";
+import { IEventDetails } from "../../../../../../helpers/hooks/useParticipationEventDetails";
 import Pagination from "../../../../Pagination";
 import VotingEvent from "./VotingEvent";
+import { VotingEventTab, buildVotingEventTabs } from "./VotingUtils";
+import "./VotingSection.scss";
 
 interface VotingSectionProps {
-    participations?: IParticipation[];
+    eventDetails: IEventDetails[];
 }
 
 const PAGE_SIZE = 10;
 
-const VotingSection: React.FC<VotingSectionProps> = ({ participations }) => {
+const VotingSection: React.FC<VotingSectionProps> = ({ eventDetails }) => {
     const isMounted = useIsMounted();
-    const [currentPage, setCurrentPage] = useState<IParticipation[]>([]);
+    const [currentPage, setCurrentPage] = useState<IEventDetails[]>([]);
+    const [filteredEventDetails, setFilteredEventDetails] = useState<IEventDetails[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
+    const [currentTab, setCurrentTab] = useState<VotingEventTab>();
+    const [tabsToRender, setTabsToRender] = useState<VotingEventTab[]>([]);
 
-    // On page change handler
+    useEffect(() => {
+        const tabs = buildVotingEventTabs(eventDetails);
+        setTabsToRender(tabs);
+        if (tabs.length > 0) {
+            setCurrentTab(tabs[0]);
+        }
+    }, [eventDetails]);
+
+    useEffect(() => {
+        const filteredResults = eventDetails.filter(event => event.status?.status.startsWith(currentTab ?? ""));
+        setFilteredEventDetails(filteredResults);
+        setPageNumber(1);
+    }, [currentTab]);
+
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
-        if (isMounted && participations) {
-            setCurrentPage(participations.slice(from, to));
+        if (isMounted && filteredEventDetails) {
+            setCurrentPage(filteredEventDetails.slice(from, to));
         }
-    }, [participations, pageNumber]);
+    }, [pageNumber, filteredEventDetails]);
 
     return (
-        <div className="section">
+        <div className="section voting-section">
+            <div className="section--header">
+                <div className="tabs-wrapper">
+                    {tabsToRender.map((tab, idx) => (
+                        <button
+                            type="button"
+                            key={idx}
+                            className={classNames("tab", { "active": tab === currentTab })}
+                            onClick={() => setCurrentTab(tab)}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+            </div>
             <div className="section--data">
-                {currentPage?.map((participation, idx) => (
+                {currentPage?.map((event, idx) => (
                     <VotingEvent
                         key={idx}
-                        participation={participation}
+                        event={event}
                     />
                 ))}
             </div>
             <Pagination
                 currentPage={pageNumber}
-                totalCount={participations?.length ?? 0}
+                totalCount={filteredEventDetails.length}
                 pageSize={PAGE_SIZE}
                 siblingsCount={1}
                 onPageChange={newPage => setPageNumber(newPage)}
             />
         </div >
     );
-};
-
-VotingSection.defaultProps = {
-    participations: undefined
 };
 
 export default VotingSection;

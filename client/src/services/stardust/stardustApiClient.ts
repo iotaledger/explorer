@@ -411,7 +411,7 @@ export class StardustApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async participationEventDetails(request: IParticipationEventRequest): Promise<IParticipationEventResponse> {
-        return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
+        return this.callApi<unknown, IParticipationEventResponse>(
             `stardust/participation/events/${request.network}/${request.eventId}`,
             "get"
         );
