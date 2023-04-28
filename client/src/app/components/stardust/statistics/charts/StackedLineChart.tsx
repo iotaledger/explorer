@@ -100,7 +100,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .append("clipPath")
                 .attr("id", `clip-${chartId}`)
                 .append("rect")
-                .attr("width", width)
+                .attr("width", INNER_WIDTH)
                 .attr("height", height)
                 .attr("x", 0)
                 .attr("y", 0);
@@ -217,16 +217,20 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 }
 
                 const selectedData = computeDataIncludedInSelection(x, data);
-                const yMaxUpdate = Math.max(...selectedData.map(d => Math.max(...subgroups.map(key => d[key]))));
-                y.domain([0, yMaxUpdate]);
-                // Update axis
-                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
-                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
-                // Update area and lines
-                areaSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", areaGen);
-                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
-                // rebuild the hover activated lines & cicles
-                attachOnHoverLinesAndCircles();
+
+                // to prevent infinite brushing
+                if (selectedData.length > 1) {
+                    const yMaxUpdate = Math.max(...selectedData.map(d => Math.max(...subgroups.map(key => d[key]))));
+                    y.domain([0, yMaxUpdate]);
+                    // Update axis
+                    yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
+                    xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    // Update area and lines
+                    areaSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", areaGen);
+                    lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
+                    // rebuild the hover activated lines & cicles
+                    attachOnHoverLinesAndCircles();
+                }
             };
 
             // double click reset

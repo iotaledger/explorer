@@ -133,19 +133,22 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 }
 
                 const selectedData = computeDataIncludedInSelection(x, data);
-                const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
-                y.domain([0, yMaxUpdate]);
-                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
-                // Update bars
-                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
-                    .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / selectedData.length) / 2))
-                    .attr("y", d => y(d.n))
-                    .attr("width", INNER_WIDTH / selectedData.length)
-                    .attr("height", d => INNER_HEIGHT - y(d.n));
+                // to prevent infinite brushing
+                if (selectedData.length > 1) {
+                    const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
+                    y.domain([0, yMaxUpdate]);
+                    // Update axis
+                    xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
-                // Update axis, area and lines position
-                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    // Update bars
+                    barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
+                        .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / selectedData.length) / 2))
+                        .attr("y", d => y(d.n))
+                        .attr("width", INNER_WIDTH / selectedData.length)
+                        .attr("height", d => INNER_HEIGHT - y(d.n));
+                }
             };
 
             // double click reset

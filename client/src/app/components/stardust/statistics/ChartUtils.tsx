@@ -175,7 +175,7 @@ const tickMultiFormat = (date: Date | NumberValue) => {
 };
 
 export const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
-    axisBottom(scale).tickFormat(tickMultiFormat) as Axis<Date>;
+    axisBottom(scale).ticks(8).tickFormat(tickMultiFormat) as Axis<Date>;
 
 export const buildYAxis = (scale: ScaleLinear<number, number>, theYMax: number) =>
     axisLeft(scale.nice()).tickFormat(format(d3FormatSpecifier(theYMax)));

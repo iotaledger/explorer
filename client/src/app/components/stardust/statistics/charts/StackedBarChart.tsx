@@ -156,26 +156,30 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 }
 
                 const selectedData = computeDataIncludedInSelection(x, data);
-                const yMaxUpdate = Math.max(
-                    ...selectedData.map(d => {
-                        let sum = 0;
-                        for (const key of subgroups) {
-                            sum += d[key];
-                        }
-                        return sum;
-                    })
-                );
-                y.domain([0, yMaxUpdate]);
-                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
-                // Update bars
-                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
-                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / selectedData.length) / 2))
-                    .attr("y", d => y(d[1]))
-                    .attr("height", d => y(d[0]) - y(d[1]))
-                    .attr("width", INNER_WIDTH / selectedData.length);
-                // Update axis, area and lines position
-                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                // to prevent infinite brushing
+                if (selectedData.length > 1) {
+                    const yMaxUpdate = Math.max(
+                        ...selectedData.map(d => {
+                            let sum = 0;
+                            for (const key of subgroups) {
+                                sum += d[key];
+                            }
+                            return sum;
+                        })
+                    );
+                    y.domain([0, yMaxUpdate]);
+                    // Update axis
+                    xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
+
+                    // Update bars
+                    barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
+                        .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / selectedData.length) / 2))
+                        .attr("y", d => y(d[1]))
+                        .attr("height", d => y(d[0]) - y(d[1]))
+                        .attr("width", INNER_WIDTH / selectedData.length);
+                }
             };
 
             // double click reset

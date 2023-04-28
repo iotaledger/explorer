@@ -88,7 +88,7 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
                 .append("clipPath")
                 .attr("id", `clip-${chartId}`)
                 .append("rect")
-                .attr("width", width)
+                .attr("width", INNER_WIDTH)
                 .attr("height", height)
                 .attr("x", 0)
                 .attr("y", 0);
@@ -178,21 +178,21 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
                     brushSelection.call(brush.move, null);
                 }
 
-                const from = x.domain()[0];
-                from.setHours(0, 0, 0, 0);
-                const to = x.domain()[1];
-                to.setHours(0, 0, 0, 0);
                 const selectedData = computeDataIncludedInSelection(x, data);
-                const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
-                y.domain([0, yMaxUpdate]);
-                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
-                // Update axis, area and lines position
-                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
-                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
+                // to prevent infinite brushing
+                if (selectedData.length > 1) {
+                    const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
+                    y.domain([0, yMaxUpdate]);
 
-                // rebuild the hover activated lines & cicles
-                attachPathAndCircles();
+                    // Update axis and lines position
+                    xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
+                    lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
+
+                    // rebuild the hover activated lines & cicles
+                    attachPathAndCircles();
+                }
             };
 
             // double click reset
