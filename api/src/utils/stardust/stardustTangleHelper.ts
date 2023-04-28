@@ -171,6 +171,38 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the outputs details.
+     * @param network The network to find the items on.
+     * @param outputIds The output ids to get the details.
+     * @returns The item details.
+     */
+    public static async outputsDetails(network: INetwork, outputIds: string[]): Promise<IOutputResponse[]> {
+        const promises: Promise<void>[] = [];
+        const outputResponses: IOutputResponse[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.outputDetails(network, outputId)
+                .then(response => {
+                    if (response.output?.output && response.output?.metadata) {
+                        outputResponses.push(response.output);
+                    }
+                })
+                .catch(e => {
+                    logger.warn(`[StardustTangleHelper] Failed fetching output ${outputId} on ${network.network}. Cause ${e}`);
+                });
+
+            promises.push(promise);
+        }
+        try {
+            await Promise.all(promises);
+
+            return outputResponses;
+        } catch (e) {
+            logger.error(`Fetching outputs details failed. Cause: ${e}`);
+        }
+    }
+
+    /**
      * Get the milestone details by milestone id.
      * @param network The network to find the items on.
      * @param milestoneId The milestone id to get the details.
@@ -624,7 +656,7 @@ export class StardustTangleHelper {
      * @param request The request object.
      * @returns The response object.
      */
-    public static async nodePluginFetch<T, S>(
+    private static async nodePluginFetch<T, S>(
         network: INetwork,
         basePluginPath: string,
         method: "get" | "post" | "delete",
@@ -647,38 +679,5 @@ export class StardustTangleHelper {
         } catch { }
 
         return null;
-    }
-
-    /**
-     * Get the outputs details.
-     * @param network The network to find the items on.
-     * @param outputIds The output ids to get the details.
-     * @returns The item details.
-     */
-    private static async outputsDetails(network: INetwork, outputIds: string[]): Promise<IOutputResponse[]> {
-        const promises: Promise<void>[] = [];
-        const outputResponses: IOutputResponse[] = [];
-
-        for (const outputId of outputIds) {
-            const promise = this.tryFetchPermanodeThenNode<string, IOutputResponse>(
-                outputId,
-                "output",
-                network
-            ).then(response => {
-                if (response.output && response.metadata) {
-                    outputResponses.push(response);
-                }
-            })
-            .catch(e => console.log(e));
-
-            promises.push(promise);
-        }
-        try {
-            await Promise.all(promises);
-
-            return outputResponses;
-        } catch (e) {
-            logger.error(`Fetching outputs details failed. Cause: ${e}`);
-        }
     }
 }
