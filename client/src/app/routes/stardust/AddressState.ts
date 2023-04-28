@@ -9,6 +9,7 @@ import { useAddressNftOutputs } from "../../../helpers/hooks/useAddressNftOutput
 import { useAliasControlledFoundries } from "../../../helpers/hooks/useAliasControlledFoundries";
 import { useAliasDetails } from "../../../helpers/hooks/useAliasDetails";
 import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
+import { IEventDetails, useParticipationEventDetails } from "../../../helpers/hooks/useParticipationEventDetails";
 import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { deserializeParticipationEventMetadata } from "../../../helpers/stardust/participationUtils";
@@ -41,6 +42,7 @@ export interface IAddressState {
     isAddressHistoryDisabled: boolean;
     isAssociatedOutputsLoading: boolean;
     participations: IParticipation[] | null;
+    eventDetails: IEventDetails[] | null;
     tokensCount: number;
     nftCount: number;
     associatedOutputCount: number;
@@ -69,6 +71,7 @@ const initialState = {
     isAddressHistoryDisabled: false,
     isAssociatedOutputsLoading: true,
     participations: null,
+    eventDetails: null,
     tokensCount: 0,
     nftCount: 0,
     associatedOutputCount: 0
@@ -103,6 +106,8 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const [balance, sigLockedBalance] = useAddressBalance(
         network, state.bech32AddressDetails?.bech32 ?? null
     );
+    const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
+
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -127,13 +132,13 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
             addressNftOutputs, isNftOutputsLoading, nftMetadata, nftIssuerId: issuerId, isNftDetailsLoading,
             aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading,
-            balance, sigLockedBalance
+            balance, sigLockedBalance, eventDetails
         });
     }, [
         addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
         addressNftOutputs, isNftOutputsLoading, nftMetadata, issuerId, isNftDetailsLoading,
         aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading,
-        balance, sigLockedBalance
+        balance, sigLockedBalance, eventDetails
     ]);
 
     useEffect(() => {

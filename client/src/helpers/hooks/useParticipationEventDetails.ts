@@ -45,7 +45,7 @@ export function useParticipationEventDetails(participations?: IParticipation[]):
                         network,
                         eventId: participation.eventId
                     }).then(response => {
-                    if (!response?.error) {
+                    if (!response?.error && response.info) {
                         const event: IEventDetails = {
                             participation,
                             info: response.info,

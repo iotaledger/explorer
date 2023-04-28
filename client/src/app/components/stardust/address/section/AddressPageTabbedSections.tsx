@@ -44,7 +44,7 @@ const buildDefaultTabsOptions = (
     isNftOutputsLoading: boolean,
     associatedOutputCount: number,
     isAssociatedOutputsLoading: boolean,
-    participationsCount?: number
+    eventDetailsCount?: number
 ) => ({
     [DEFAULT_TABS.Transactions]: {
         disabled: false,
@@ -71,9 +71,9 @@ const buildDefaultTabsOptions = (
     },
     [DEFAULT_TABS.Voting]: {
         disabled: false,
-        counter: participationsCount,
+        counter: eventDetailsCount,
         infoContent: votingMessage,
-        hidden: !participationsCount
+        hidden: !eventDetailsCount
     }
 });
 
@@ -140,7 +140,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         isAddressHistoryLoading, isAddressHistoryDisabled,
         isAssociatedOutputsLoading,
         tokensCount, nftCount, associatedOutputCount,
-        participations
+        eventDetails
     } = addressPageState;
 
     if (!bech32AddressDetails) {
@@ -152,7 +152,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const addressType = bech32AddressDetails.type;
     const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
     const nft = { nftId: addressHex, issuerId: nftIssuerId, metadata: nftMetadata };
-    const participationsCount = participations?.length;
+    const eventDetailsCount = eventDetails?.length;
 
     const defaultSections = [
         <TransactionHistory
@@ -184,7 +184,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
         <VotingSection
             key={`voting-${addressBech32}`}
-            participations={participations ?? []}
+            eventDetails={eventDetails ?? []}
         />
     ];
 
@@ -213,7 +213,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const defaultTabsOptions = buildDefaultTabsOptions(
         isAddressHistoryLoading, tokensCount, isAddressOutputsLoading,
         nftCount, isNftOutputsLoading, associatedOutputCount, isAssociatedOutputsLoading,
-        participationsCount
+        eventDetailsCount
     );
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;

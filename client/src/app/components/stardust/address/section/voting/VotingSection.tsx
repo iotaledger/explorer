@@ -1,22 +1,20 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
-import { IEventDetails, useParticipationEventDetails } from "../../../../../../helpers/hooks/useParticipationEventDetails";
-import { IParticipation } from "../../../../../../models/api/stardust/participation/IParticipation";
+import { IEventDetails } from "../../../../../../helpers/hooks/useParticipationEventDetails";
 import Pagination from "../../../../Pagination";
 import VotingEvent from "./VotingEvent";
 import { VotingEventTab, buildVotingEventTabs } from "./VotingUtils";
 import "./VotingSection.scss";
 
 interface VotingSectionProps {
-    participations?: IParticipation[];
+    eventDetails: IEventDetails[];
 }
 
 const PAGE_SIZE = 10;
 
-const VotingSection: React.FC<VotingSectionProps> = ({ participations }) => {
+const VotingSection: React.FC<VotingSectionProps> = ({ eventDetails }) => {
     const isMounted = useIsMounted();
-    const [eventDetails] = useParticipationEventDetails(participations);
     const [currentPage, setCurrentPage] = useState<IEventDetails[]>([]);
     const [filteredEventDetails, setFilteredEventDetails] = useState<IEventDetails[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
@@ -78,10 +76,6 @@ const VotingSection: React.FC<VotingSectionProps> = ({ participations }) => {
             />
         </div >
     );
-};
-
-VotingSection.defaultProps = {
-    participations: undefined
 };
 
 export default VotingSection;
