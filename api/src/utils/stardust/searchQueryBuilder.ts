@@ -1,17 +1,17 @@
 import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, HexEncodedString, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 
-interface MaybeAddress {
+interface QueryDetails {
     /**
-     * The bech32 of the address.
+     * The bech32 format.
      */
     bech32: string;
     /**
-     * The full hex of the address.
+     * The hex format.
      */
     hex?: string;
     /*
-     * The hex of the address without prefix.
+     * The hex without prefix.
      */
     hexNoPrefix?: string;
     /**
@@ -22,6 +22,10 @@ interface MaybeAddress {
      * The type label.
      */
     typeLabel: string;
+    /**
+     * The initial query was already valid bech32.
+     */
+    isBech32: boolean;
 }
 
 
@@ -45,7 +49,7 @@ export interface SearchQuery {
     /**
      * The MaybeAddress query.
      */
-    address?: MaybeAddress;
+    address?: QueryDetails;
     /**
      * The blockId query.
      */
@@ -111,6 +115,7 @@ export class SearchQueryBuilder {
      * @returns the SearchQuery object.
      */
     public build(): SearchQuery {
+        let address: QueryDetails;
         let blockId: string;
         let transactionId: string;
         let output: string;
@@ -118,58 +123,42 @@ export class SearchQueryBuilder {
         let nftId: string;
         let milestoneId: string;
         let foundryId: string;
+        let tag: HexEncodedString;
 
         const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
         const milestoneIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
-        let address = this.buildAddress();
+        const queryDetails = this.buildQueryDetails();
 
-        // if the hex without prefix has 64 characters it might be an AliasId, NftId or MilestoneId
-        if (address?.hexNoPrefix && address.hexNoPrefix.length === 64) {
-            aliasId = address.hex;
-            nftId = address.hex;
-            milestoneId = address.hex;
-        }
-
-        // if the hex without prefix has 66 characters, if might be and Alias or Nft Address
-        if (address?.hexNoPrefix && address.hexNoPrefix.length === 66) {
-            const typeByte = address.hexNoPrefix.slice(0, 2);
-            const maybeAddress = address.hexNoPrefix.slice(2);
-
-            if (Number.parseInt(typeByte, 10) === ALIAS_ADDRESS_TYPE) {
-                aliasId = HexHelper.addPrefix(maybeAddress);
+        // if the source query was valid bech32, we should directly look for an address
+        if (queryDetails.isBech32) {
+            address = queryDetails;
+        } else {
+            // if the hex without prefix has 64 characters it might be an alias, nft, milestone, block or tx ID
+            if (queryDetails?.hex && queryDetails.hex.length === 66) {
+                aliasId = queryDetails.hex;
+                nftId = queryDetails.hex;
+                milestoneId = queryDetails.hex;
+                blockId = queryDetails.hex;
+                transactionId = queryDetails.hex;
+            } else if (
+                // if the hex without prefix is 76 characters and first byte is 08,
+                // it might be a FoundryId (tokenId)
+                queryDetails.hex && queryDetails.hexNoPrefix &&
+                Converter.isHex(queryDetails.hex, true) &&
+                queryDetails.hexNoPrefix.length === 76 &&
+                Number.parseInt(queryDetails.hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE
+            ) {
+                foundryId = queryDetails.hex;
+            } else if (
+                // if the hex is 70 characters it might be an output
+                queryDetails?.hex && queryDetails.hex.length === 70
+            ) {
+                output = queryDetails.hex;
             }
 
-            if (Number.parseInt(typeByte, 10) === NFT_ADDRESS_TYPE) {
-                nftId = HexHelper.addPrefix(maybeAddress);
-            }
+            // also perform a tag search
+            tag = Converter.utf8ToHex(this.query, true);
         }
-
-        const hexWithPrefix = HexHelper.addPrefix(this.queryLower);
-        const hexNoPrefix = HexHelper.stripPrefix(this.queryLower);
-        // if the hex without prefix is 76 characters and first byte is 08,
-        // it can be a FoundryId or TokenId
-        if (Converter.isHex(hexWithPrefix, true) &&
-            Number.parseInt(hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE && hexNoPrefix.length === 76) {
-            foundryId = hexWithPrefix;
-        }
-
-        // if the hex has 66 characters, it might be a block or transaction id
-        if (address?.hex && address.hex.length === 66) {
-            blockId = address.hex;
-            transactionId = address.hex;
-        }
-
-        // if the hex is 70 characters, try and look for an output
-        if (address?.hex && address.hex.length === 70) {
-            output = address.hex;
-        }
-
-        // return address only if is built from valid bech32 query
-        if (!Bech32Helper.matches(this.queryLower, this.networkBechHrp)) {
-            address = undefined;
-        }
-
-        const tag: HexEncodedString = Converter.utf8ToHex(this.query, true);
 
         return {
             queryLower: this.queryLower,
@@ -188,18 +177,21 @@ export class SearchQueryBuilder {
     }
 
     /**
-     * @returns the MaybeAddress object.
+     * @returns the QueryDetails object.
      */
-    private buildAddress(): MaybeAddress {
+    private buildQueryDetails(): QueryDetails {
         let bech32: string;
         let hex: string;
         let hexNoPrefix: string;
         let addressType: number;
+        let isBech32: boolean = false;
 
         const q = this.queryLower;
         const hrp = this.networkBechHrp;
 
         if (Bech32Helper.matches(q, hrp)) {
+            isBech32 = true;
+
             try {
                 const result = Bech32Helper.fromBech32(q, hrp);
                 if (result) {
@@ -212,10 +204,10 @@ export class SearchQueryBuilder {
                         Converter.bytesToHex(result.addressBytes)
                     );
                 }
-            } catch {}
+            } catch { }
         }
 
-        if (!bech32) {
+        if (!isBech32) {
             // We assume it's a hex
             hex = HexHelper.addPrefix(q);
             hexNoPrefix = HexHelper.stripPrefix(q);
@@ -225,11 +217,12 @@ export class SearchQueryBuilder {
 
 
         return {
-           bech32,
-           hex,
-           hexNoPrefix,
-           type: addressType,
-           typeLabel: this.typeLabel(addressType)
+            bech32,
+            hex,
+            hexNoPrefix,
+            type: addressType,
+            typeLabel: this.typeLabel(addressType),
+            isBech32
         };
     }
 

@@ -583,9 +583,10 @@ export class StardustTangleHelper {
         network: INetwork,
         query: string
     ): Promise<ISearchResponse> {
-        const searchQuery: SearchQuery = new SearchQueryBuilder(query, network.bechHrp).build();
-
-        return new SearchExecutor(network, searchQuery).run();
+        return new SearchExecutor(
+            network,
+            new SearchQueryBuilder(query, network.bechHrp).build()
+        ).run();
     }
 
     /**
