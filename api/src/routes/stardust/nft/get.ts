@@ -1,11 +1,11 @@
-import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { INftDetailsRequest } from "../../../../models/api/stardust/nft/INftDetailsRequest";
-import { INftDetailsResponse } from "../../../../models/api/stardust/nft/INftDetailsResponse";
-import { IConfiguration } from "../../../../models/configuration/IConfiguration";
-import { STARDUST } from "../../../../models/db/protocolVersion";
-import { NetworkService } from "../../../../services/networkService";
-import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
-import { ValidationHelper } from "../../../../utils/validationHelper";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { INftDetailsRequest } from "../../../models/api/stardust/nft/INftDetailsRequest";
+import { INftDetailsResponse } from "../../../models/api/stardust/nft/INftDetailsResponse";
+import { IConfiguration } from "../../../models/configuration/IConfiguration";
+import { STARDUST } from "../../../models/db/protocolVersion";
+import { NetworkService } from "../../../services/networkService";
+import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
  * Find NFT details by nftId.

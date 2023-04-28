@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { CONFLICT_REASON_STRINGS, ConflictReason } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
-import React, { useContext, useRef } from "react";
+import classNames from "classnames";
+import React, { useContext, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -14,6 +15,7 @@ import BlockTangleState from "../../components/stardust/block/BlockTangleState";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import "./Visualizer.scss";
 
@@ -24,6 +26,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
     const [networkConfig] = useNetworkConfig(network);
     const [blocksPerSecond, confirmedBlocksPerSecond, confirmedBlocksPerSecondPercent] = useNetworkStats(network);
     const graphElement = useRef<HTMLDivElement | null>(null);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const [
         toggleActivity,
@@ -111,7 +114,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                 </div>
             </div>
             {selectedFeedItem && (
-                <div className="info-panel-container card padding-m">
+                <div className="info-panel card padding-m">
                     <div className="row middle spread">
                         <button type="button" className="icon-button" onClick={() => selectNode()}>
                             <CloseIcon />
@@ -122,18 +125,18 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                             <>
                                 <div className="card--label">Block
                                     {selectedFeedItem.payloadType !== "Milestone" &&
-                                    selectedFeedItem.metadata && (
-                                        <span className="margin-l-t">
-                                            <BlockTangleState
-                                                network={network}
-                                                status={getStatus(selectedFeedItem?.metadata?.referenced)}
-                                                hasConflicts={selectedFeedItem.metadata?.conflicting}
-                                                conflictReason={getConflictReasonMessage(
-                                                    selectedFeedItem?.metadata?.conflictReason
-                                                )}
-                                            />
-                                        </span>
-                                    )}
+                                        selectedFeedItem.metadata && (
+                                            <span className="margin-l-t">
+                                                <BlockTangleState
+                                                    network={network}
+                                                    status={getStatus(selectedFeedItem?.metadata?.referenced)}
+                                                    hasConflicts={selectedFeedItem.metadata?.conflicting}
+                                                    conflictReason={getConflictReasonMessage(
+                                                        selectedFeedItem?.metadata?.conflictReason
+                                                    )}
+                                                />
+                                            </span>
+                                        )}
                                 </div>
                                 <div className="card--value overflow-ellipsis">
                                     <Link
@@ -238,34 +241,61 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                             </div>
                                         </React.Fragment>
                                     )}
-                                {selectedFeedItem?.reattachments &&
-                                selectedFeedItem.reattachments.length > 0 && (
+                                {selectedFeedItem?.reattachments && selectedFeedItem.reattachments.length > 0 && (
                                     <React.Fragment>
-                                        <div className="card--label">Reattachments</div>
-                                        {selectedFeedItem.reattachments.map((item, index) => (
-                                            <div key={index} className="card--value row">
-                                                <Link
-                                                    to={`/${networkConfig.network
-                                                        }/block/${item.blockId}`}
-                                                    className="truncate"
-                                                    target="_blank"
-                                                >
-                                                    <TruncatedId id={item.blockId} />
-                                                </Link>
-                                                {item?.metadata && (
-                                                    <span className="margin-l-t">
-                                                        <BlockTangleState
-                                                            network={network}
-                                                            status={getStatus(item.metadata?.referenced)}
-                                                            hasConflicts={item.metadata?.conflicting}
-                                                            conflictReason={getConflictReasonMessage(
-                                                                item.metadata?.conflictReason
-                                                            )}
-                                                        />
-                                                    </span>
-                                                )}
+                                        <div
+                                            className="
+                                                info-panel__dropdown
+                                                card--content__input
+                                                card--value"
+                                            onClick={() => setIsExpanded(!isExpanded)}
+                                        >
+                                            <div
+                                                className={
+                                                    classNames(
+                                                        "margin-r-t",
+                                                        "card--content__input--dropdown",
+                                                        { opened: isExpanded })
+                                                }
+                                            >
+                                                <DropdownIcon />
                                             </div>
-                                        ))}
+                                            <div className="card--label">
+                                                Reattachments
+                                            </div>
+                                        </div>
+                                        <div
+                                            className={
+                                                classNames(
+                                                    "info-panel__reattachments",
+                                                    { "info-panel__reattachments--opened": isExpanded })
+                                            }
+                                        >
+                                            {selectedFeedItem.reattachments.map((item, index) => (
+                                                <div key={index} className="card--value row">
+                                                    <Link
+                                                        to={`/${networkConfig.network
+                                                            }/block/${item.blockId}`}
+                                                        className="truncate"
+                                                        target="_blank"
+                                                    >
+                                                        <TruncatedId id={item.blockId} />
+                                                    </Link>
+                                                    {item?.metadata && (
+                                                        <span className="margin-l-t">
+                                                            <BlockTangleState
+                                                                network={network}
+                                                                status={getStatus(item.metadata?.referenced)}
+                                                                hasConflicts={item.metadata?.conflicting}
+                                                                conflictReason={getConflictReasonMessage(
+                                                                    item.metadata?.conflictReason
+                                                                )}
+                                                            />
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </React.Fragment>
                                 )}
                             </>

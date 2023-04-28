@@ -1,53 +1,80 @@
 import { useContext, useEffect, useState } from "react";
 import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IParticipation } from "../../models/api/stardust/participation/IParticipation";
 import { IParticipationEventInfo } from "../../models/api/stardust/participation/IParticipationEventInfo";
 import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
+export interface IEventDetails {
+    participation: IParticipation;
+    info?: IParticipationEventInfo;
+    status?: IParticipationEventStatus;
+}
+
 /**
  * Fetch participation event details
- * @param eventId The event id
+ * @param participations The participations
  * @returns The participation event details, status and loading bool.
  */
-export function useParticipationEventDetails(eventId: string):
+export function useParticipationEventDetails(participations?: IParticipation[]):
     [
-        IParticipationEventInfo | null,
-        IParticipationEventStatus | null,
-        boolean
+        IEventDetails[],
+        boolean,
+        string?
     ] {
     const { name: network } = useContext(NetworkContext);
     const isMounted = useIsMounted();
     const [apiClient] = useState(
         ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
     );
-    const [eventInfo, setEventInfo] = useState<IParticipationEventInfo | null>(null);
-    const [eventStatus, setEventStatus] = useState<IParticipationEventStatus | null>(null);
+    const [error, setError] = useState<string>();
+    const [eventDetails, setEventDetails] = useState<IEventDetails[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        if (eventId) {
-            // eslint-disable-next-line no-void
-            void (async () => {
-                apiClient.participationEventDetails({
-                    network,
-                    eventId
-                }).then(response => {
-                    if (isMounted) {
-                        setEventInfo(response.info ?? null);
-                        setEventStatus(response.status ?? null);
+        if (participations) {
+            const promises: Promise<void>[] = [];
+            const events: IEventDetails[] = [];
+
+            for (const participation of participations) {
+                const promise = apiClient.participationEventDetails({
+                        network,
+                        eventId: participation.eventId
+                    }).then(response => {
+                    if (!response?.error && response.info) {
+                        const event: IEventDetails = {
+                            participation,
+                            info: response.info,
+                            status: response.status
+                        };
+                        events.push(event);
+                    } else {
+                        setError(response.error);
                     }
-                }).finally(() => {
+                }).catch(e => console.log(e));
+
+                promises.push(promise);
+            }
+
+            Promise.allSettled(promises)
+                .then(_ => {
+                    if (isMounted) {
+                        setEventDetails(events);
+                    }
+                }).catch(_ => {
+                    setError("Failed loading event details!");
+                })
+                .finally(() => {
                     setIsLoading(false);
                 });
-            })();
         } else {
             setIsLoading(false);
         }
-    }, [eventId]);
+    }, [participations]);
 
-    return [eventInfo, eventStatus, isLoading];
+    return [eventDetails, isLoading, error];
 }

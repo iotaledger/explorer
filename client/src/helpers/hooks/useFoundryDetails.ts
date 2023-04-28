@@ -3,7 +3,7 @@ import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -19,9 +19,7 @@ export function useFoundryDetails(network: string, foundryId: string | null):
         string?
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [foundryDetails, setFoundryDetails] = useState<IOutputResponse | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -31,7 +29,7 @@ export function useFoundryDetails(network: string, foundryId: string | null):
         if (foundryId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.foundryDetails({
+                apiClient.foundryDetails({
                     network,
                     foundryId: HexHelper.addPrefix(foundryId)
                 }).then(response => {

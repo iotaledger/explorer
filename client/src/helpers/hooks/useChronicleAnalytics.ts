@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -19,7 +19,7 @@ export function useChronicleAnalytics(network: string): [
     (IAnalyticStats | null)
 ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`));
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timer | null>(null);
     const [chronicleAnalyticStats, setChronicleAnalyticStats] = useState<IAnalyticStats | null>(null);
 
@@ -51,16 +51,16 @@ export function useChronicleAnalytics(network: string): [
 
     const fetchAnalytics = async () => {
         if (network) {
-            const response = await tangleCacheService?.chronicleAnalytics(network);
+            const analyticStats = await apiClient.chronicleAnalytics({ network });
 
-            if (!response?.error && isMounted) {
+            if (!analyticStats?.error && isMounted) {
                 setChronicleAnalyticStats({
-                    nativeTokens: response?.analyticStats?.nativeTokens,
-                    nfts: response?.analyticStats?.nfts,
-                    totalAddresses: response?.analyticStats?.totalAddresses,
-                    dailyAddresses: response?.analyticStats?.dailyAddresses,
-                    lockedStorageDeposit: response?.analyticStats?.lockedStorageDeposit,
-                    unclaimedShimmer: response?.analyticStats?.unclaimedShimmer
+                    nativeTokens: analyticStats?.nativeTokens,
+                    nfts: analyticStats?.nfts,
+                    totalAddresses: analyticStats?.totalAddresses,
+                    dailyAddresses: analyticStats?.dailyAddresses,
+                    lockedStorageDeposit: analyticStats?.lockedStorageDeposit,
+                    unclaimedShimmer: analyticStats?.unclaimedShimmer
                 });
             } else {
                 console.log("Analytics stats refresh failed.");

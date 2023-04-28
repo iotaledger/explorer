@@ -6,7 +6,7 @@ import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
 import NetworkContext from "../../context/NetworkContext";
@@ -31,7 +31,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: StardustTangleCacheService;
+    private readonly _apiClient: StardustApiClient;
 
     /**
      * Create a new instance of Search.
@@ -44,7 +44,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         const protocolVersion: ProtocolVersion = (props.match.params.network &&
             networkService.get(props.match.params.network)?.protocolVersion) || STARDUST;
 
-        this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
+        this._apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
         this.state = {
             protocolVersion,
@@ -219,10 +219,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                 setTimeout(
                     async () => {
                         if (this._isMounted) {
-                            const response = await this._tangleCacheService.search(
-                                this.props.match.params.network,
+                            const response = await this._apiClient.search({
+                                network: this.props.match.params.network,
                                 query
-                            );
+                            });
 
                             if (response) {
                                 let route = "";

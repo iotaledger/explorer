@@ -2,7 +2,7 @@ import { IMilestonePayload } from "@iota/iota.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 interface IMilestoneDetails {
@@ -24,9 +24,7 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneDetails, setMilestoneDetails] = useState<IMilestoneDetails | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -36,10 +34,10 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
         if (milestoneIndex) {
             const fetchDetails = async () => {
                 try {
-                    const details = await tangleCacheService.milestoneDetails(
+                    const details = await apiClient.milestoneDetails({
                         network,
                         milestoneIndex
-                    );
+                    });
                     if (isMounted) {
                         setMilestoneDetails(details);
 

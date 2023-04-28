@@ -2,7 +2,7 @@ export interface IMilestoneStatsRequest {
     /**
      * The network to search on.
      */
-    networkId: string;
+    network: string;
 
     /**
      * The milestone index to get the stats for.
