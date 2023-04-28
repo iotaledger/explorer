@@ -9,6 +9,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
 
+export const TRANSITIONS_DURATION_MS = 750;
+
 export const noDataView = () => (
     <div className="no-data--wrapper">
         <p>No Data</p>
@@ -206,3 +208,13 @@ export const computeDataIncludedInSelection = (
 
     return selectedData;
 };
+
+export const computeHalfLineWidth = (
+    data: { [name: string]: number; time: number }[],
+    x: ScaleTime<number, number>
+) => (
+    data.length > 1 ?
+        ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
+        0
+);
+

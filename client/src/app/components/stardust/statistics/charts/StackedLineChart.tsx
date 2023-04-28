@@ -11,9 +11,11 @@ import {
     buildXAxis,
     buildYAxis,
     computeDataIncludedInSelection,
+    computeHalfLineWidth,
     determineGraphLeftPadding,
     noDataView,
     timestampToDate,
+    TRANSITIONS_DURATION_MS,
     useChartWrapperSize,
     useMultiValueTooltip,
     useTouchMoveEffect
@@ -141,10 +143,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             const attachOnHoverLinesAndCircles = () => {
                 svg.selectAll(".hover-circles").remove();
                 svg.selectAll(".hover-lines").remove();
-                const halfLineWidth = data.length > 1 ?
-                    ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
-                    18;
 
+                const halfLineWidth = computeHalfLineWidth(data, x);
                 for (const dataStack of stackedData) {
                     svg.append("g")
                         .attr("class", "hover-circles")
@@ -220,17 +220,11 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 const yMaxUpdate = Math.max(...selectedData.map(d => Math.max(...subgroups.map(key => d[key]))));
                 y.domain([0, yMaxUpdate]);
                 // Update axis
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
-                xAxisSelection.transition().duration(1000).call(buildXAxis(x));
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
+                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
                 // Update area and lines
-                areaSelection
-                    .transition()
-                    .duration(750)
-                    .attr("d", areaGen);
-                lineSelection
-                    .transition()
-                    .duration(750)
-                    .attr("d", lineGen);
+                areaSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", areaGen);
+                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
                 // rebuild the hover activated lines & cicles
                 attachOnHoverLinesAndCircles();
             };
@@ -240,15 +234,9 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 x.domain([groups[0], groups[groups.length - 1]]);
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
-                areaSelection
-                    .transition()
-                    .duration(500)
-                    .attr("d", areaGen);
-                lineSelection
-                    .transition()
-                    .duration(500)
-                    .attr("d", lineGen);
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
+                areaSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", areaGen);
+                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
 
                 attachOnHoverLinesAndCircles();
             });

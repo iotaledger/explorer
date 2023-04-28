@@ -14,6 +14,7 @@ import {
     determineGraphLeftPadding,
     noDataView,
     timestampToDate,
+    TRANSITIONS_DURATION_MS,
     useChartWrapperSize,
     useSingleValueTooltip,
     useTouchMoveEffect
@@ -134,26 +135,26 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 const selectedData = computeDataIncludedInSelection(x, data);
                 const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
                 y.domain([0, yMaxUpdate]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
                 // Update bars
-                barsSelection.transition().duration(1000)
+                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
                     .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / selectedData.length) / 2))
                     .attr("y", d => y(d.n))
                     .attr("width", INNER_WIDTH / selectedData.length)
                     .attr("height", d => INNER_HEIGHT - y(d.n));
 
                 // Update axis, area and lines position
-                xAxisSelection.transition().duration(750).call(buildXAxis(x));
+                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
             };
 
             // double click reset
             svg.on("dblclick", () => {
                 x.domain([dates[0], dates[dates.length - 1]]);
-                xAxisSelection.transition().duration(750).call(buildXAxis(x));
+                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
                 y.domain([0, yMax]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
-                barsSelection.transition().duration(1000)
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
+                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
                     .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / data.length) / 2))
                     .attr("y", d => y(d.n))
                     .attr("width", INNER_WIDTH / data.length)

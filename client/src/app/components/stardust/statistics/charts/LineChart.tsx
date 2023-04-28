@@ -12,9 +12,11 @@ import {
     buildXAxis,
     buildYAxis,
     computeDataIncludedInSelection,
+    computeHalfLineWidth,
     determineGraphLeftPadding,
     noDataView,
     timestampToDate,
+    TRANSITIONS_DURATION_MS,
     useChartWrapperSize,
     useSingleValueTooltip,
     useTouchMoveEffect
@@ -120,10 +122,8 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
             const attachPathAndCircles = () => {
                 svg.selectAll(".hover-circles").remove();
                 svg.selectAll(".hover-lines").remove();
-                const halfLineWidth = data.length > 1 ?
-                    ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
-                    18;
 
+                const halfLineWidth = computeHalfLineWidth(data, x);
                 svg.append("g")
                     .attr("class", "hover-circles")
                     .selectAll("g")
@@ -185,14 +185,11 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
                 const selectedData = computeDataIncludedInSelection(x, data);
                 const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
                 y.domain([0, yMaxUpdate]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
                 // Update axis, area and lines position
-                xAxisSelection.transition().duration(1000).call(buildXAxis(x));
-                lineSelection
-                    .transition()
-                    .duration(750)
-                    .attr("d", lineGen);
+                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
 
                 // rebuild the hover activated lines & cicles
                 attachPathAndCircles();
@@ -203,11 +200,8 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
                 x.domain([dates[0], dates[dates.length - 1]]);
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
-                lineSelection
-                    .transition()
-                    .duration(500)
-                    .attr("d", lineGen);
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
+                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
                 attachPathAndCircles();
             });
         }

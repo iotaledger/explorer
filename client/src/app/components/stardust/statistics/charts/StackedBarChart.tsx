@@ -16,7 +16,8 @@ import {
     timestampToDate,
     buildXAxis,
     buildYAxis,
-    computeDataIncludedInSelection
+    computeDataIncludedInSelection,
+    TRANSITIONS_DURATION_MS
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -165,16 +166,16 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     })
                 );
                 y.domain([0, yMaxUpdate]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMaxUpdate));
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
                 // Update bars
-                barsSelection.transition().duration(1000)
+                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
                     .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / selectedData.length) / 2))
                     .attr("y", d => y(d[1]))
                     .attr("height", d => y(d[0]) - y(d[1]))
                     .attr("width", INNER_WIDTH / selectedData.length);
                 // Update axis, area and lines position
-                xAxisSelection.transition().duration(1000).call(buildXAxis(x));
+                xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
             };
 
             // double click reset
@@ -182,8 +183,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 x.domain([groups[0], groups[groups.length - 1]]);
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
-                yAxisSelection.transition().duration(750).call(buildYAxis(y, yMax));
-                barsSelection.transition().duration(1000)
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
+                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
                     .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
                     .attr("y", d => y(d[1]))
                     .attr("height", d => y(d[0]) - y(d[1]))
