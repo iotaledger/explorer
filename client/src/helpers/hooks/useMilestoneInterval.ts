@@ -12,7 +12,9 @@ export const useMilestoneInterval = (milestoneIndex?: number, timestamp?: number
     }, [timestamp]);
 
     useEffect(() => {
-        setFrom(moment());
+        if (!timestamp) {
+            setFrom(moment());
+        }
     }, [milestoneIndex]);
 
     useEffect(() => {
