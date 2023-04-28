@@ -47,7 +47,7 @@ import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
  * @yields The next value.
  * @returns The iterator.
  */
-function *keyGenerator(count: number): IterableIterator<number> {
+function* keyGenerator(count: number): IterableIterator<number> {
     while (true) {
         yield count++;
     }

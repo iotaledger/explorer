@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import graphMessages from "../../../../assets/modals/stardust/statistics/graphs.json";
 import { useChartsState } from "../../../../helpers/hooks/useChartsState";
+import { idGenerator } from "../../../../helpers/stardust/statisticsUtils";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { COMMAS_REGEX } from "../../../routes/stardust/landing/ShimmerClaimedUtils";
@@ -37,6 +38,8 @@ export const InfluxChartsTab: React.FC = () => {
         tokenInfo
     ).replace(COMMAS_REGEX, ",") ?? "-";
 
+    const ids = idGenerator();
+
     return (
         <div className="statistics-page--charts">
             <div className="section">
@@ -45,15 +48,17 @@ export const InfluxChartsTab: React.FC = () => {
                     <Modal icon="info" data={graphMessages.blocks} />
                 </div>
                 <div className="row statistics-row">
-                    <StackedBarChart
+                    <StackedLineChart
+                        chartId={ids.next().value}
                         title="Daily Blocks"
                         info={graphMessages.dailyBlocks}
                         subgroups={["transaction", "milestone", "taggedData", "noPayload"]}
                         groupLabels={["Transaction", "Milestone", "Tagged Data", "No payload"]}
-                        colors={["#7AFFF2", "#00E0CA", "#36A1AC", "#186575"]}
+                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
                         data={dailyBlocks}
                     />
-                    <StackedBarChart
+                    <StackedLineChart
+                        chartId={ids.next().value}
                         title="Daily Transactions"
                         info={graphMessages.dailyTransactions}
                         subgroups={["confirmed", "conflicting"]}
@@ -70,6 +75,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Outputs by Type"
                         info={graphMessages.totalOutputs}
                         subgroups={["basic", "alias", "foundry", "nft"]}
@@ -78,6 +84,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={outputs}
                     />
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Tokens by Output Type"
                         info={graphMessages.totalTokens}
                         subgroups={["basic", "alias", "foundry", "nft"]}
@@ -108,6 +115,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row margin-b-s">
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Addresses with Tokens"
                         info={graphMessages.totalAddressesWithTokens}
                         label="Addresses"
@@ -115,6 +123,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={addressesWithBalance}
                     />
                     <LineChart
+                        chartId={ids.next().value}
                         title="Daily Active Addresses"
                         info={graphMessages.dailyActiveAddresses}
                         label="Addresses"
@@ -124,6 +133,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <BarChart
+                        chartId={ids.next().value}
                         title="Daily Sent Tokens"
                         info={graphMessages.dailySentTokens}
                         color="#00E0CA"
@@ -139,6 +149,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <StackedBarChart
+                        chartId={ids.next().value}
                         title="Daily Alias Activity"
                         info={graphMessages.dailyAliasActivity}
                         subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
@@ -147,6 +158,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={aliasActivity}
                     />
                     <StackedBarChart
+                        chartId={ids.next().value}
                         title="Daily NFT Activity"
                         info={graphMessages.dailyNftActivity}
                         subgroups={["created", "transferred", "destroyed"]}
@@ -163,6 +175,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row margin-b-s">
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Unlock Conditions"
                         info={graphMessages.totalUnlockConditions}
                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
@@ -173,6 +186,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Locked Tokens"
                         info={graphMessages.totalLockedTokens}
                         subgroups={["timelock", "storageDepositReturn", "expiration"]}
@@ -189,6 +203,7 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
                 <div className="row statistics-row">
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Unclaimed Tokens"
                         info={graphMessages.totalUnclaimedTokens}
                         label="Unclaimed Tokens"
@@ -196,6 +211,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={unclaimedTokens}
                     />
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Unclaimed Outputs"
                         info={graphMessages.totalUnclaimedOutputs}
                         label="Outputs"
@@ -210,7 +226,8 @@ export const InfluxChartsTab: React.FC = () => {
                     <Modal icon="info" data={graphMessages.dataStorage} />
                 </div>
                 <div className="row statistics-row">
-                    <StackedBarChart
+                    <StackedLineChart
+                        chartId={ids.next().value}
                         title="Total Ledger Size"
                         info={graphMessages.totalLedgerSize}
                         subgroups={["keyBytes", "dataBytes"]}
@@ -219,6 +236,7 @@ export const InfluxChartsTab: React.FC = () => {
                         data={ledgerSize}
                     />
                     <LineChart
+                        chartId={ids.next().value}
                         title="Total Storage Deposit"
                         info={graphMessages.totalStorageDeposit}
                         label="Storage Deposit"

@@ -14,7 +14,7 @@
     &.chart-wrapper--no-data{
         height: 350px;
     }
-    
+
     .chart-wrapper__content {
         height: 350px;
     }
@@ -22,8 +22,7 @@
     svg.hook {
         rect {
             &.bar.active, &.stacked-bar.active {
-                stroke: $gray-5;
-                stroke-width: 1px;
+                opacity: 0.7;
             }
         }
 
@@ -46,6 +45,10 @@
         .axis--x {
             path {
                 stroke: $gray-6;
+            }
+
+            .tick line {
+                color: transparent;
             }
         }
 

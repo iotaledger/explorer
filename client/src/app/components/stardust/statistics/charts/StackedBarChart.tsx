@@ -1,26 +1,28 @@
-import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
-import { axisLeft } from "d3-axis";
-import { format } from "d3-format";
-import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
+import { brushX, D3BrushEvent } from "d3-brush";
+import { NumberValue, scaleLinear, scaleOrdinal, scaleTime } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { SeriesPoint, stack } from "d3-shape";
-import moment from "moment";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { ModalData } from "../../../ModalProps";
-import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartHeader from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
     useMultiValueTooltip,
     noDataView,
     useChartWrapperSize,
     determineGraphLeftPadding,
-    d3FormatSpecifier,
-    useTouchMoveEffect
+    useTouchMoveEffect,
+    timestampToDate,
+    buildXAxis,
+    buildYAxis,
+    computeDataIncludedInSelection,
+    TRANSITIONS_DURATION_MS
 } from "../ChartUtils";
 import "./Chart.scss";
 
 interface StackedBarChartProps {
+    chartId: string;
     title?: string;
     info?: ModalData;
     subgroups: string[];
@@ -29,9 +31,8 @@ interface StackedBarChartProps {
     data: { [name: string]: number; time: number }[];
 }
 
-const DAY_LABEL_FORMAT = "DD MMM";
-
 const StackedBarChart: React.FC<StackedBarChartProps> = ({
+    chartId,
     title,
     info,
     subgroups,
@@ -47,7 +48,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
     }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTooltip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useTouchMoveEffect(mouseoutHandler);
@@ -59,9 +59,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             // reset
             select(theSvg.current).select("*").remove();
 
-            data = timespan !== "all" ? data.slice(-timespan) : data;
-
-            const dataMaxY = Math.max(
+            // chart dimensions
+            const yMax = Math.max(
                 ...data.map(d => {
                     let sum = 0;
                     for (const key of subgroups) {
@@ -70,37 +69,63 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     return sum;
                 })
             );
-            const leftMargin = determineGraphLeftPadding(dataMaxY);
-
+            const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
-            const groups = data.map(d => moment.unix(d.time).format(DAY_LABEL_FORMAT));
 
-            const x = scaleBand().domain(groups)
-                .range([0, INNER_WIDTH])
-                .paddingInner(0.1);
+            const groups = data.map(
+                d => timestampToDate(d.time)
+            );
+            const stackedData = stack().keys(subgroups)(data);
 
-            const y = scaleLinear().domain([0, dataMaxY])
-                .range([INNER_HEIGHT, 0]);
-
+            // SVG
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
+            // X
+            const x = scaleTime()
+                .domain([groups[0], groups[groups.length - 1]])
+                .range([0, INNER_WIDTH]);
+            const xAxisSelection = svg.append("g")
+                .attr("class", "axis axis--x")
+                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
+                .call(buildXAxis(x));
 
-            svg.append("g")
+            // Y
+            const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
+            const yAxisSelection = svg.append("g")
                 .attr("class", "axis axis--y")
-                .call(yAxisGrid);
+                .call(buildYAxis(y, yMax));
 
-            const stackedData = stack().keys(subgroups)(data);
+            // clip path
+            svg.append("defs")
+                .append("clipPath")
+                .attr("id", `clip-${chartId}`)
+                .append("rect")
+                .attr("width", INNER_WIDTH)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
 
-            svg.append("g")
+            // brushing
+            const brush = brushX()
+                .extent([[0, 0], [INNER_WIDTH, height]])
+                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
+
+            const brushSelection = svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
+
+            // bars
+            const barsSelection = svg.append("g")
+                .attr("class", "stacked-bars")
+                .attr("clip-path", `url(#clip-${chartId})`)
                 .selectAll("g")
                 .data(stackedData)
                 .join("g")
@@ -108,29 +133,69 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 .selectAll("rect")
                 .data(d => d)
                 .join("rect")
-                .attr("x", d => x(moment.unix(d.data.time).format(DAY_LABEL_FORMAT)) ?? 0)
+                .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
                 .attr("y", d => y(d[1]))
+                .attr("rx", 2)
                 .attr("class", (_, i) => `stacked-bar rect-${i}`)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler)
                 .attr("height", d => y(d[0]) - y(d[1]))
-                .attr("width", x.bandwidth());
+                .attr("width", INNER_WIDTH / data.length);
 
-            const tickValues = timespan === "7" ?
-                x.domain() :
-                // every third label
-                x.domain().filter((_, i) => !(i % 3));
-            const xAxis = axisLabelRotate(
-                axisBottom(x).tickValues(tickValues)
-            );
+            const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
+                if (!event.selection) {
+                    return;
+                }
+                const extent = event.selection;
+                if (!extent) {
+                    x.domain([groups[0], groups[groups.length - 1]]);
+                } else {
+                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    brushSelection.call(brush.move, null);
+                }
 
-            svg.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .call(xAxis);
+                const selectedData = computeDataIncludedInSelection(x, data);
+
+                // to prevent infinite brushing
+                if (selectedData.length > 1) {
+                    const yMaxUpdate = Math.max(
+                        ...selectedData.map(d => {
+                            let sum = 0;
+                            for (const key of subgroups) {
+                                sum += d[key];
+                            }
+                            return sum;
+                        })
+                    );
+                    y.domain([0, yMaxUpdate]);
+                    // Update axis
+                    xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
+
+                    // Update bars
+                    barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
+                        .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / selectedData.length) / 2))
+                        .attr("y", d => y(d[1]))
+                        .attr("height", d => y(d[0]) - y(d[1]))
+                        .attr("width", INNER_WIDTH / selectedData.length);
+                }
+            };
+
+            // double click reset
+            svg.on("dblclick", () => {
+                x.domain([groups[0], groups[groups.length - 1]]);
+                xAxisSelection.transition().call(buildXAxis(x));
+                y.domain([0, yMax]);
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
+                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
+                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
+                    .attr("y", d => y(d[1]))
+                    .attr("height", d => y(d[0]) - y(d[1]))
+                    .attr("width", INNER_WIDTH / data.length);
+            });
         }
-    }, [data, timespan, wrapperWidth, wrapperHeight]);
+    }, [data, wrapperWidth, wrapperHeight]);
 
     /**
      * Handles mouseover event of a bar "part"
@@ -173,7 +238,6 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     labels: groupLabels ?? subgroups,
                     colors
                 }}
-                onTimespanSelected={value => setTimespan(value)}
                 disabled={data.length === 0}
             />
             {data.length === 0 ? (

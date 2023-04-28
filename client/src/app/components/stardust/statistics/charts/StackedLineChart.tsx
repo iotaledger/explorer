@@ -1,20 +1,21 @@
-import { axisBottom, axisLabelRotate } from "@d3fc/d3fc-axis";
 import classNames from "classnames";
-import { axisLeft } from "d3-axis";
-import { format } from "d3-format";
-import { scaleTime, scaleLinear, scaleOrdinal } from "d3-scale";
+import { brushX, D3BrushEvent } from "d3-brush";
+import { scaleTime, scaleLinear, scaleOrdinal, NumberValue } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import { area, line, SeriesPoint, stack } from "d3-shape";
-import { timeFormat } from "d3-time-format";
-import moment from "moment";
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { ModalData } from "../../../ModalProps";
-import ChartHeader, { TimespanOption } from "../ChartHeader";
+import ChartHeader from "../ChartHeader";
 import ChartTooltip from "../ChartTooltip";
 import {
-    d3FormatSpecifier,
+    buildXAxis,
+    buildYAxis,
+    computeDataIncludedInSelection,
+    computeHalfLineWidth,
     determineGraphLeftPadding,
     noDataView,
+    timestampToDate,
+    TRANSITIONS_DURATION_MS,
     useChartWrapperSize,
     useMultiValueTooltip,
     useTouchMoveEffect
@@ -22,6 +23,7 @@ import {
 import "./Chart.scss";
 
 interface StackedLineChartProps {
+    chartId: string;
     title?: string;
     info?: ModalData;
     subgroups: string[];
@@ -31,6 +33,7 @@ interface StackedLineChartProps {
 }
 
 const StackedLineChart: React.FC<StackedLineChartProps> = ({
+    chartId,
     title,
     info,
     subgroups,
@@ -46,7 +49,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
     }, []);
     const theSvg = useRef<SVGSVGElement>(null);
     const theTooltip = useRef<HTMLDivElement>(null);
-    const [timespan, setTimespan] = useState<TimespanOption>("all");
     const buildTootip = useMultiValueTooltip(data, subgroups, colors, groupLabels);
 
     useTouchMoveEffect(mouseoutHandler);
@@ -58,64 +60,62 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             // reset
             select(theSvg.current).selectAll("*").remove();
 
-            data = timespan !== "all" ? data.slice(-timespan) : data;
-
-            const dataMaxY = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
-            const leftMargin = determineGraphLeftPadding(dataMaxY);
-
+            // chart dimensions
+            const yMax = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
+            const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-            const timestampToDate = (timestamp: number) => moment.unix(timestamp)
-                .hours(0)
-                .minutes(0)
-                .toDate();
-
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
             const stackedData = stack().keys(subgroups)(data);
+            const groups = data.map(d => timestampToDate(d.time));
 
-            const groups = data.map(
-                d => timestampToDate(d.time)
-            );
-
+            // SVG
             const svg = select(theSvg.current)
                 .attr("viewBox", `0 0 ${width} ${height}`)
                 .attr("preserveAspectRatio", "none")
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
+            // X
             const x = scaleTime()
                 .domain([groups[0], groups[groups.length - 1]])
                 .range([0, INNER_WIDTH]);
 
-            const y = scaleLinear().domain([0, dataMaxY])
-                .range([INNER_HEIGHT, 0]);
-
-            const yAxisGrid = axisLeft(y.nice()).tickFormat(format(d3FormatSpecifier(dataMaxY)));
-
-            svg.append("g")
-                .attr("class", "axis axis--y")
-                .call(yAxisGrid);
-
-            const xAxis = axisLabelRotate(
-                axisBottom(x).tickFormat(timeFormat("%d %b"))
-            );
-
-            svg.append("g")
+            const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                .call(xAxis);
+                .call(buildXAxis(x));
 
+            // Y
+            const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
+            const yAxisSelection = svg.append("g")
+                .attr("class", "axis axis--y")
+                .call(buildYAxis(y, yMax));
+
+            // clip path
+            svg.append("defs")
+                .append("clipPath")
+                .attr("id", `clip-${chartId}`)
+                .append("rect")
+                .attr("width", INNER_WIDTH)
+                .attr("height", height)
+                .attr("x", 0)
+                .attr("y", 0);
+
+            // area fill
             const areaGen = area<SeriesPoint<{ [key: string]: number }>>()
                 .x(d => x(timestampToDate(d.data.time)) ?? 0)
                 .y0(_ => y(0))
                 .y1(d => y(d[1] - d[0]));
 
-            svg.append("g")
-                .selectAll("g")
+            const theArea = svg.append("g")
+                .attr("class", "areas")
+                .attr("clip-path", `url(#clip-${chartId})`);
+
+            const areaSelection = theArea.selectAll("g")
                 .data(stackedData)
                 .join("path")
                 .style("fill", d => getGradient(d.key, color(d.key)))
@@ -123,65 +123,131 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                 .attr("class", "area")
                 .attr("d", areaGen);
 
+            // area lines path
             const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
                 .x(d => x(timestampToDate(d.data.time)) ?? 0)
                 .y(d => y(d[1] - d[0]));
 
-            svg.append("g")
+            const lineSelection = svg.append("g")
+                .attr("class", "lines")
+                .attr("clip-path", `url(#clip-${chartId})`)
                 .selectAll("g")
                 .data(stackedData)
                 .join("path")
                 .attr("fill", "none")
                 .attr("stroke", d => color(d.key))
                 .attr("stroke-width", 2)
+                .attr("class", "line")
                 .attr("d", lineGen);
 
-            for (const dataStack of stackedData) {
+            const attachOnHoverLinesAndCircles = () => {
+                svg.selectAll(".hover-circles").remove();
+                svg.selectAll(".hover-lines").remove();
+
+                const halfLineWidth = computeHalfLineWidth(data, x);
+                for (const dataStack of stackedData) {
+                    svg.append("g")
+                        .attr("class", "hover-circles")
+                        .attr("clip-path", `url(#clip-${chartId})`)
+                        .selectAll("g")
+                        .data(dataStack)
+                        .enter()
+                        .append("circle")
+                        .attr("fill", color(dataStack.key))
+                        .style("stroke", color(dataStack.key))
+                        .style("stroke-width", 5)
+                        .style("stroke-opacity", 0)
+                        .attr("cx", d => x(timestampToDate(d.data.time)) ?? 0)
+                        .attr("cy", d => y(d[1] - d[0]))
+                        .attr("r", 0)
+                        .attr("class", (_, i) => `circle-${i}`);
+                }
+
+                // hover lines for tooltip
                 svg.append("g")
+                    .attr("class", "hover-lines")
+                    .attr("clip-path", `url(#clip-${chartId})`)
                     .selectAll("g")
-                    .data(dataStack)
+                    .data(data)
                     .enter()
-                    .append("circle")
-                    .attr("fill", color(dataStack.key))
-                    .style("stroke", color(dataStack.key))
-                    .style("stroke-width", 5)
-                    .style("stroke-opacity", 0)
-                    .attr("cx", d => x(timestampToDate(d.data.time)) ?? 0)
-                    .attr("cy", d => y(d[1] - d[0]))
-                    .attr("r", 1)
-                    .attr("class", (_, i) => `circle-${i}`);
-            }
+                    .append("rect")
+                    .attr("fill", "transparent")
+                    .attr("x", (_, idx) => (
+                        idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
+                    ))
+                    .attr("y", 0)
+                    .attr("class", (_, i) => `rect-${i}`)
+                    .attr("height", INNER_HEIGHT)
+                    .attr("width", (_, idx) => (
+                        (idx === 0 || idx === data.length - 1) ?
+                            halfLineWidth : halfLineWidth * 2
+                    ))
+                    .on("mouseover", mouseoverHandler)
+                    .on("mouseout", mouseoutHandler);
+            };
 
-            const halfLineWidth = data.length > 1 ?
-                ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
-                18;
+            // brushing
+            const brush = brushX()
+                .extent([[0, 0], [INNER_WIDTH, height]])
+                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            svg.append("g")
-                .attr("class", "hover-lines")
-                .selectAll("g")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("fill", "transparent")
-                .attr("x", (_, idx) => (
-                    idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
-                ))
-                .attr("y", 0)
-                .attr("class", (_, i) => `rect-${i}`)
-                .attr("height", INNER_HEIGHT)
-                .attr("width", (_, idx) => {
-                    if (idx === 0) {
-                        return halfLineWidth;
-                    } else if (idx === data.length - 1) {
-                        return halfLineWidth;
+            const brushSelection = svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
+
+            let idleTimeout: NodeJS.Timer | null = null;
+            const idled = () => {
+                idleTimeout = null;
+            };
+            const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
+                if (!event.selection) {
+                    return;
+                }
+                const extent = event.selection;
+                if (!extent) {
+                    if (!idleTimeout) {
+                        idleTimeout = setTimeout(idled, 350);
+                        return idleTimeout;
                     }
+                    x.domain([groups[0], groups[groups.length - 1]]);
+                } else {
+                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    brushSelection.call(brush.move, null);
+                }
 
-                    return halfLineWidth * 2;
-                })
-                .on("mouseover", mouseoverHandler)
-                .on("mouseout", mouseoutHandler);
+                const selectedData = computeDataIncludedInSelection(x, data);
+
+                // to prevent infinite brushing
+                if (selectedData.length > 1) {
+                    const yMaxUpdate = Math.max(...selectedData.map(d => Math.max(...subgroups.map(key => d[key]))));
+                    y.domain([0, yMaxUpdate]);
+                    // Update axis
+                    yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
+                    xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
+                    // Update area and lines
+                    areaSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", areaGen);
+                    lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
+                    // rebuild the hover activated lines & cicles
+                    attachOnHoverLinesAndCircles();
+                }
+            };
+
+            // double click reset
+            svg.on("dblclick", () => {
+                x.domain([groups[0], groups[groups.length - 1]]);
+                xAxisSelection.transition().call(buildXAxis(x));
+                y.domain([0, yMax]);
+                yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
+                areaSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", areaGen);
+                lineSelection.transition().duration(TRANSITIONS_DURATION_MS).attr("d", lineGen);
+
+                attachOnHoverLinesAndCircles();
+            });
+
+            attachOnHoverLinesAndCircles();
         }
-    }, [data, timespan, wrapperWidth, wrapperHeight]);
+    }, [data, wrapperWidth, wrapperHeight]);
 
     /**
      * Get linear gradient for selected color
@@ -258,7 +324,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
             select(theSvg.current)
                 .selectAll(`.circle-${idx}`)
-                .attr("r", 1)
+                .attr("r", 0)
                 .style("stroke-opacity", 0);
 
             activeElement
@@ -271,7 +337,6 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
             <ChartHeader
                 title={title}
                 info={info}
-                onTimespanSelected={value => setTimespan(value)}
                 legend={{
                     labels: groupLabels ?? subgroups,
                     colors

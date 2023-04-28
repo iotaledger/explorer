@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React from "react";
 import Modal from "../../Modal";
 import { ModalData } from "../../ModalProps";
@@ -8,7 +7,6 @@ import "./ChartHeader.scss";
 interface ChartHeaderProps {
     title?: string;
     info?: ModalData;
-    onTimespanSelected: (value: TimespanOption) => void;
     disabled?: boolean;
     legend?: {
         labels: string[];
@@ -16,9 +14,7 @@ interface ChartHeaderProps {
     };
 }
 
-export type TimespanOption = "7" | "30" | "90" | "all";
-
-const ChartHeader: React.FC<ChartHeaderProps> = ({ title, info, onTimespanSelected, disabled, legend }) => (
+const ChartHeader: React.FC<ChartHeaderProps> = ({ title, info, disabled, legend }) => (
     <div className="chart-header">
         <div className="row space-between margin-b-m ">
             {title && (
@@ -27,29 +23,6 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, info, onTimespanSelect
                     {info && (
                         <Modal icon="info" data={info} />
                     )}
-                </div>
-            )}
-
-            {!disabled && (
-                <div className="chart-header__select">
-                    <div className="select-wrapper">
-                        <select
-                            defaultValue="all"
-                            onChange={({ target: { value } }) => {
-                                if (onTimespanSelected) {
-                                    onTimespanSelected(value as TimespanOption);
-                                }
-                            }}
-                        >
-                            <option value="7">Last 7 days</option>
-                            <option value="30">Last 30 days</option>
-                            <option value="90">Last 90 days</option>
-                            <option value="all">All time</option>
-                        </select>
-                        <span className={classNames("material-icons chevron", { opened: false })}>
-                            expand_more
-                        </span>
-                    </div>
                 </div>
             )}
         </div>

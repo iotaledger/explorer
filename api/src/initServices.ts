@@ -26,6 +26,8 @@ import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
+const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
+
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === LEGACY ||
     networkConfig.protocolVersion === CHRYSALIS ||
@@ -96,7 +98,7 @@ export async function initServices(config: IConfiguration) {
         void currencyService.update();
     };
 
-    setInterval(update, 60000);
+    setInterval(update, CURRENCY_UPDATE_INTERVAL_MS);
 
     await update();
 }
