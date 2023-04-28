@@ -5,7 +5,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { TransactionsHelper } from "../stardust/transactionsHelper";
 import { useIsMounted } from "./useIsMounted";
 
@@ -24,9 +24,7 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const { bech32Hrp } = useContext(NetworkContext);
     const [tsxInputs, setInputs] = useState<(IUTXOInput & IInput)[] | null>(null);
     const [tsxUnlocks, setUnlocks] = useState<UnlockTypes[] | null>(null);
@@ -45,7 +43,7 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
                         block,
                         network,
                         bech32Hrp,
-                        tangleCacheService
+                        apiClient
                     );
                 if (isMounted) {
                     setInputs(inputs);

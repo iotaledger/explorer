@@ -3,7 +3,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IAssociation } from "../../models/api/stardust/IAssociationsResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -19,9 +19,7 @@ export function useAssociatedOutputs(
     setOutputCount?: (count: number) => void
 ): [IAssociation[], boolean] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [associations, setAssociations] = useState<IAssociation[]>([]);
     const [isAssociationsLoading, setIsAssociationsLoading] = useState(true);
 
@@ -29,7 +27,7 @@ export function useAssociatedOutputs(
         setIsAssociationsLoading(true);
         // eslint-disable-next-line no-void
         void (async () => {
-            tangleCacheService.associatedOutputs(network, addressDetails).then(response => {
+            apiClient.associatedOutputs({ network, addressDetails }).then(response => {
                 if (response?.associations && isMounted) {
                     setAssociations(response.associations);
 

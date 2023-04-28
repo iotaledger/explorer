@@ -3,7 +3,7 @@ import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData } from "../stardust/statisticsUtils";
 
 /**
@@ -29,9 +29,7 @@ export function useChartsState(): [
     (IAnalyticStats | null),
 ] {
     const { name: network } = useContext(NetworkContext);
-    const [cacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [transactions, setTransactions] = useState<DataPoint[]>([]);
     const [dailyBlocks, setDailyBlocks] = useState<DataPoint[]>([]);
     const [outputs, setOutputs] = useState<DataPoint[]>([]);
@@ -51,9 +49,9 @@ export function useChartsState(): [
     const [analyticStats, setAnalyticStats] = useState<IAnalyticStats | null>(null);
 
     useEffect(() => {
-        cacheService.influxStatisticsData(network).then(response => {
-            if (!response.error && response.influxStats) {
-                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(response.influxStats);
+        apiClient.influxAnalytics({ network }).then(influxStats => {
+            if (!influxStats.error && influxStats) {
+                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(influxStats);
 
                 setDailyBlocks(graphsData.blocksDaily);
                 setTransactions(graphsData.transactionsDaily);
@@ -71,15 +69,15 @@ export function useChartsState(): [
                 setLedgerSize(graphsData.ledgerSizeDaily);
                 setStorageDeposit(graphsData.storageDepositDaily);
             } else {
-                console.log("Fetching influx stats failed", response.error);
+                console.log("Fetching influx stats failed", influxStats.error);
             }
         }).catch(e => console.log("Influx analytics fetch failed", e));
 
-        cacheService.chronicleAnalytics(network).then(response => {
-            if (!response.error && response.analyticStats) {
-                setAnalyticStats(response.analyticStats);
+        apiClient.chronicleAnalytics({ network }).then(analytics => {
+            if (!analytics.error && analytics) {
+                setAnalyticStats(analytics);
             } else {
-                console.log("Fetching chronicle stats failed", response.error);
+                console.log("Fetching chronicle stats failed", analytics.error);
             }
         }).catch(e => console.log("Chronicle analytics fetch failed", e));
     }, [network]);

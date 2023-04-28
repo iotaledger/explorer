@@ -3,7 +3,7 @@ import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -20,9 +20,7 @@ export function useOutputDetails(network: string, outputId: string | null):
         string?
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [output, setOutput] = useState<OutputTypes | null>(null);
     const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(null);
     const [error, setError] = useState<string>();
@@ -35,13 +33,14 @@ export function useOutputDetails(network: string, outputId: string | null):
         if (outputId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.outputDetails(
+                apiClient.outputDetails({
                     network,
-                    HexHelper.addPrefix(outputId)
-                ).then(response => {
+                    outputId: HexHelper.addPrefix(outputId)
+                }).then(response => {
                     if (isMounted) {
-                        setOutput(response.output ?? null);
-                        setMetadata(response.metadata ?? null);
+                        const details = response.output;
+                        setOutput(details?.output ?? null);
+                        setMetadata(details?.metadata ?? null);
                         setError(response.error);
                     }
                 }).finally(() => {

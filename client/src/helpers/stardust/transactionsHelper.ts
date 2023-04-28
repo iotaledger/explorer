@@ -19,7 +19,7 @@ import bigInt from "big-integer";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
@@ -37,7 +37,7 @@ const HEX_PARTICIPATE = "0x5041525449434950415445";
 
 export class TransactionsHelper {
     public static async getInputsAndOutputs(block: IBlock | undefined, network: string,
-        _bechHrp: string, tangleCacheService: StardustTangleCacheService
+        _bechHrp: string, apiClient: StardustApiClient
     ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: IInput[] = [];
@@ -94,13 +94,14 @@ export class TransactionsHelper {
                     input.transactionOutputIndex
                 );
 
-                const outputResponse = await tangleCacheService.outputDetails(network, outputId);
-                if (!outputResponse.error && outputResponse.output && outputResponse.metadata) {
+                const response = await apiClient.outputDetails({ network, outputId });
+                const details = response.output;
+                if (!response.error && details?.output && details?.metadata) {
                     outputDetails = {
-                        output: outputResponse.output,
-                        metadata: outputResponse.metadata
+                        output: details.output,
+                        metadata: details.metadata
                     };
-                    amount = Number(outputResponse.output.amount);
+                    amount = Number(details.output.amount);
                 }
 
                 inputs.push({

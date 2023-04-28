@@ -6,7 +6,7 @@ import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { useIsMounted } from "./useIsMounted";
 
 
@@ -24,9 +24,7 @@ export function useNftDetails(network: string, nftId: string | null):
         boolean
     ] {
     const isMounted = useIsMounted();
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [nftOutput, setNftOutput] = useState<INftOutput | null>(null);
     const [nftMetadata, setNftMetadata] = useState<HexEncodedString | null>(null);
     const [nftIssuerId, setNftIssuerId] = useState<string | null>(null);
@@ -40,7 +38,7 @@ export function useNftDetails(network: string, nftId: string | null):
         if (nftId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                tangleCacheService.nftDetails({
+                apiClient.nftDetails({
                     network,
                     nftId: HexHelper.addPrefix(nftId)
                 }).then(response => {
