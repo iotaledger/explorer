@@ -21,7 +21,6 @@ import { ITaggedOutputsRequest } from "../../models/api/stardust/ITaggedOutputsR
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
-import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
@@ -593,37 +592,6 @@ export class StardustTangleCacheService extends TangleCacheService {
 
         return {
             foundryOutputsResponse: this._stardustSearchCache[request.network][cacheKey]?.data?.foundryOutputs
-        };
-    }
-
-    /**
-     * Get the NFT outputs of an address.
-     * @param request The request.
-     * @param skipCache Skip looking in the cache.
-     * @returns The NFT outputs response.
-     */
-    public async nfts(
-        request: INftOutputsRequest,
-        skipCache: boolean = false
-    ): Promise<{ outputs?: IOutputsResponse; error?: string }> {
-        const cacheKey = `${request.address}--nft-outputs`;
-        const cacheEntry = this._stardustSearchCache[request.network][cacheKey];
-
-        if (!cacheEntry?.data?.nftOutputs || skipCache) {
-            const response = await this._api.nftOutputs(request);
-
-            if (!response.error) {
-                this._stardustSearchCache[request.network][cacheKey] = {
-                    data: { nftOutputs: response.outputs },
-                    cached: Date.now()
-                };
-            } else {
-                return { error: response.error };
-            }
-        }
-
-        return {
-            outputs: this._stardustSearchCache[request.network][cacheKey]?.data?.nftOutputs
         };
     }
 

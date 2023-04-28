@@ -171,6 +171,38 @@ export class StardustTangleHelper {
     }
 
     /**
+     * Get the outputs details.
+     * @param network The network to find the items on.
+     * @param outputIds The output ids to get the details.
+     * @returns The item details.
+     */
+    public static async outputsDetails(network: INetwork, outputIds: string[]): Promise<IOutputResponse[]> {
+        const promises: Promise<void>[] = [];
+        const outputResponses: IOutputResponse[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.outputDetails(network, outputId)
+                .then(response => {
+                    if (response.output?.output && response.output?.metadata) {
+                        outputResponses.push(response.output);
+                    }
+                })
+                .catch(e => {
+                    logger.warn(`[StardustTangleHelper] Failed fetching output ${outputId} on ${network.network}. Cause ${e}`);
+                });
+
+            promises.push(promise);
+        }
+        try {
+            await Promise.all(promises);
+
+            return outputResponses;
+        } catch (e) {
+            logger.error(`Fetching outputs details failed. Cause: ${e}`);
+        }
+    }
+
+    /**
      * Get the milestone details by milestone id.
      * @param network The network to find the items on.
      * @param milestoneId The milestone id to get the details.
@@ -252,11 +284,7 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        const outputResponses: IOutputResponse[] = [];
-        for (const outputId of outputIds) {
-            const outputResponse = await this.outputDetails(network, outputId);
-            outputResponses.push(outputResponse.output);
-        }
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
             outputs: outputResponses
@@ -287,11 +315,7 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        const outputResponses: IOutputResponse[] = [];
-        for (const outputId of outputIds) {
-            const outputResponse = await this.outputDetails(network, outputId);
-            outputResponses.push(outputResponse.output);
-        }
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
             outputs: outputResponses
@@ -322,11 +346,7 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        const outputResponses: IOutputResponse[] = [];
-        for (const outputId of outputIds) {
-            const outputResponse = await this.outputDetails(network, outputId);
-            outputResponses.push(outputResponse.output);
-        }
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
             outputs: outputResponses
@@ -415,32 +435,6 @@ export class StardustTangleHelper {
         }
 
         return { message: "Foundry output not found" };
-    }
-
-    /**
-     * Get the nft outputs by address.
-     * @param network The network to find the items on.
-     * @param address The address to get the details for.
-     * @returns The nft details.
-     */
-    public static async nftOutputs(
-        network: INetwork,
-        address: string
-    ): Promise<INftOutputsResponse | undefined> {
-        try {
-            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32: address },
-                "nfts",
-                network,
-                true
-            );
-
-            if (nftOutputs) {
-                return {
-                    outputs: nftOutputs
-                };
-            }
-        } catch { }
     }
 
     /**
@@ -589,9 +583,10 @@ export class StardustTangleHelper {
         network: INetwork,
         query: string
     ): Promise<ISearchResponse> {
-        const searchQuery: SearchQuery = new SearchQueryBuilder(query, network.bechHrp).build();
-
-        return new SearchExecutor(network, searchQuery).run();
+        return new SearchExecutor(
+            network,
+            new SearchQueryBuilder(query, network.bechHrp).build()
+        ).run();
     }
 
     /**
@@ -662,7 +657,7 @@ export class StardustTangleHelper {
      * @param request The request object.
      * @returns The response object.
      */
-    public static async nodePluginFetch<T, S>(
+    private static async nodePluginFetch<T, S>(
         network: INetwork,
         basePluginPath: string,
         method: "get" | "post" | "delete",
