@@ -147,7 +147,7 @@
     }
   }
 
-  .info-panel-container {
+  .info-panel {
       background: var(--body-background);
       position: relative;
       display: flex;
@@ -177,12 +177,67 @@
 
       .card--content {
           padding: 20px 30px;
+
+          .card--value, .card--label {
+            align-items: center;
+
+            @include phone-down {
+              .block-tangle-state__confirmed {
+                text-indent: -9999px;
+                padding: 0 5px;
+
+                &::before {
+                  content: "\2713";
+                  text-indent: 0px;
+                  color: var(--mint-green-bg);
+                  font-size: 16px;
+                  font-weight: bold;
+                }
+              }
+
+              .blocks-tangle-state .block-tangle-state {
+                margin-right: 0;
+                padding: 0 5px;
+                .tooltip .children {
+                  &::before {
+                    content: "\2717";
+                    padding-top: 4px;
+                    color: $error;
+                    font-size: 16px;
+                    font-weight: bold;
+                  }
+                  span {
+                    display: none;
+                  }
+                }
+              }
+            }
+          }
       }
 
       .tooltip {
-
         .wrap {
           width: 180px;
+        }
+      }
+
+      .info-panel__dropdown {
+        .card--content__input--dropdown {
+          display: none;
+
+          @include phone-down {
+            display: block;
+          }
+        }
+      }
+
+      .info-panel__reattachments {
+        @include phone-down {
+          display: none;
+
+          &.info-panel__reattachments--opened {
+            display: block;
+          }
         }
       }
   }
