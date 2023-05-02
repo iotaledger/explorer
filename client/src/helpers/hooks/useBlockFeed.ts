@@ -9,7 +9,7 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { useIsMounted } from "./useIsMounted";
 
 const MAX_MILESTONE_ITEMS = 20;
-const FEED_PROBE_THRESHOLD: number = 6000;
+const FEED_PROBE_THRESHOLD: number = 10000;
 
 /**
  * Hook into feed service for data

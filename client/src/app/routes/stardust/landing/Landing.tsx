@@ -66,15 +66,18 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
                             <div className="card--content description">{networkConfig.description}</div>
                             {networkConfig.faucet && (
                                 <div className="card--content faucet">
-                                    <span>Get tokens from the Faucet:</span>
-                                    <a
-                                        className="data-link margin-l-t"
-                                        href={networkConfig.faucet}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        {networkConfig.faucet}
-                                    </a>
+                                    <span>Get tokens from the
+                                        {" "}
+                                        <a
+                                            className="data-link link"
+                                            href={networkConfig.faucet}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Faucet
+                                        </a>
+                                    </span>
+
                                 </div>
                             )}
                         </div>
