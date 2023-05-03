@@ -45,8 +45,18 @@
 
             .header {
                 display: flex;
+                justify-content: center;
                 align-items: center;
+                width: 100%;
                 min-height: 400px;
+
+                @include desktop-down {
+                    justify-content: start;
+                }
+
+                @include tablet-down {
+                    justify-content: center;
+                }
 
                 .header--title {
                     text-align: center;
@@ -54,10 +64,12 @@
                     @include desktop-down {
                         margin: 0;
                         margin-bottom: 28px;
+                        margin-left: 160px;
                     }
 
                     @include tablet-down {
-                        margin-bottom: 66px;
+                        margin-bottom: 172px;
+                        margin-left: 0px;
                     }
 
                     h1 {
@@ -88,6 +100,10 @@
                 .switcher {
                     margin: 0 20px 20px 20px;
                 }
+
+                @include phone-down {
+                    width: 100%;
+                }
             }
         }
     }
@@ -103,6 +119,10 @@
             flex: 1;
             flex-direction: column;
             max-width: 960px;
+
+            @include phone-down {
+                margin: 0px;
+            }
 
             .feeds-section {
                 display: flex;
@@ -150,6 +170,10 @@
                             margin-right: 0;
                         }
 
+                        @include phone-down {
+                            margin-top: 0px;
+                        }
+
                         h2 {
                             margin-bottom: 0;
                             padding-top: 0;
@@ -162,12 +186,32 @@
             .description {
                 display: flex;
                 justify-content: center;
-                padding: 20px;
-
                 @include font-size(14px);
-
                 color: $gray;
                 font-family: $metropolis;
+                padding-top: 20px;
+            }
+
+            .faucet {
+                @include font-size(14px);
+
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+                color: $gray;
+                font-family: $metropolis;
+
+                .data-link {
+                    color: var(--link-color);
+                }
+            }
+
+            .card--content {
+                padding:10px 0px;
+            }
+
+            @include phone-down {
+                margin-top: 0px;
             }
         }
 

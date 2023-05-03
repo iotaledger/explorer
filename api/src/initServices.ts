@@ -3,43 +3,42 @@ import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
 import { WebSocketClient, WsMsgType } from "@iota/protonet.js";
 import { Server as SocketIOServer } from "socket.io";
 import { ServiceFactory } from "./factories/serviceFactory";
+import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
-import { IAnalyticsStore } from "./models/db/IAnalyticsStore";
 import { ICurrencyState } from "./models/db/ICurrencyState";
-import { IMarket } from "./models/db/IMarket";
-import { IMilestoneStore } from "./models/db/IMilestoneStore";
 import { INetwork } from "./models/db/INetwork";
-import { CHRYSALIS, OG, PROTO, STARDUST } from "./models/db/protocolVersion";
+import { CHRYSALIS, LEGACY, PROTO, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
-import { IItemsService as IItemsServiceStardust } from "./models/services/stardust/IItemsService";
+import { IItemsService as IItemsServiceLegacy } from "./models/services/legacy/IItemsService";
 import { AmazonDynamoDbService } from "./services/amazonDynamoDbService";
 import { ChrysalisFeedService } from "./services/chrysalis/chrysalisFeedService";
 import { ChrysalisItemsService } from "./services/chrysalis/chrysalisItemsService";
 import { ChrysalisStatsService } from "./services/chrysalis/chrysalisStatsService";
 import { CurrencyService } from "./services/currencyService";
+import { LegacyFeedService } from "./services/legacy/legacyFeedService";
+import { LegacyItemsService } from "./services/legacy/legacyItemsService";
+import { LegacyStatsService } from "./services/legacy/legacyStatsService";
+import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
-import { MilestonesService } from "./services/milestonesService";
 import { NetworkService } from "./services/networkService";
-import { OgFeedService } from "./services/og/ogFeedService";
-import { OgItemsService } from "./services/og/ogItemsService";
-import { OgStatsService } from "./services/og/ogStatsService";
-import { ZmqService } from "./services/og/zmqService";
 import { ChronicleService } from "./services/stardust/chronicleService";
+import { StardustFeed } from "./services/stardust/feed/stardustFeed";
+import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
-import { StardustFeedService } from "./services/stardust/stardustFeedService";
-import { StardustItemsService } from "./services/stardust/stardustItemsService";
-import { StardustStatsService } from "./services/stardust/stardustStatsService";
+import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
+
+const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
-    networkConfig.protocolVersion === OG ||
+    networkConfig.protocolVersion === LEGACY ||
     networkConfig.protocolVersion === CHRYSALIS ||
     networkConfig.protocolVersion === STARDUST ||
     networkConfig.protocolVersion === PROTO;
 
 /**
  * Initialise all the services for the workers.
- * @param socketServer
+ * @param socketServer The socket server.
  * @param config The configuration to initialisation the service with.
  */
 export async function initServices(socketServer: SocketIOServer, config: IConfiguration) {
@@ -52,75 +51,61 @@ export async function initServices(socketServer: SocketIOServer, config: IConfig
     const enabledNetworks = networks.filter(v => v.isEnabled);
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.protocolVersion === OG) {
-            initOgServices(networkConfig);
-        } else if (networkConfig.protocolVersion === CHRYSALIS && networkConfig.feedEndpoint) {
-            initChrysalisServices(networkConfig);
-        } else if (networkConfig.protocolVersion === STARDUST && networkConfig.feedEndpoint) {
-            initStardustServices(networkConfig);
-        } else if (networkConfig.protocolVersion === PROTO && networkConfig.feedEndpoint) {
-            initProtoServices(socketServer, networkConfig);
-        }
+        if (networkConfig.feedEndpoint) {
+            switch (networkConfig.protocolVersion) {
+                case LEGACY:
+                    initLegacyServices(networkConfig);
+                    break;
 
-        if (isKnownProtocolVersion(networkConfig) && networkConfig.feedEndpoint &&
-            networkConfig.protocolVersion !== "proto") {
-            ServiceFactory.register(
-                `milestones-${networkConfig.network}`,
-                () => new MilestonesService(networkConfig.network));
+                case CHRYSALIS:
+                    initChrysalisServices(networkConfig);
+                    break;
+
+                case STARDUST:
+                    initStardustServices(networkConfig);
+                    break;
+                case PROTO:
+                    initProtoServices(socketServer, networkConfig);
+                    break;
+
+                default:
+            }
         }
     }
 
     for (const networkConfig of enabledNetworks) {
-        if (networkConfig.protocolVersion === OG) {
-            const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
-            if (zmqService) {
-                zmqService.connect();
-            }
-        }
-
         if (isKnownProtocolVersion(networkConfig)) {
-            const milestonesService = ServiceFactory.get<MilestonesService>(`milestones-${networkConfig.network}`);
-            if (milestonesService) {
-                await milestonesService.init();
+            if (networkConfig.protocolVersion === LEGACY) {
+                const zmqService = ServiceFactory.get<ZmqService>(`zmq-${networkConfig.network}`);
+                if (zmqService) {
+                    zmqService.connect();
+                }
             }
-        }
 
-        if (isKnownProtocolVersion(networkConfig)) {
-            const websocketClient = ServiceFactory.get<WebSocketClient>(`ws-${networkConfig.network}`);
-            if (websocketClient) {
-                console.log("init websocket proto");
-                websocketClient.init(5000);
-            }
-        }
+            if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
+                const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
+                    `items-${networkConfig.network}`
+                );
+                if (itemsService) {
+                    itemsService.init();
+                }
 
-        if (isKnownProtocolVersion(networkConfig)) {
-            const itemsService = ServiceFactory.get<IItemsServiceChrysalis | IItemsServiceStardust>(
-                `items-${networkConfig.network}`
-            );
-
-            if (itemsService) {
-                itemsService.init();
-            }
-        }
-
-        if (isKnownProtocolVersion(networkConfig)) {
-            const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
-            if (feedService) {
-                feedService.connect();
+                const feedService = ServiceFactory.get<IFeedService>(`feed-${networkConfig.network}`);
+                if (feedService) {
+                    feedService.connect();
+                }
             }
         }
     }
 
     const currencyService = new CurrencyService(config);
-    let log = await currencyService.updateCurrencyNames();
-    console.log(log);
-
     const update = async () => {
-        log = await currencyService.update();
-        console.log(log);
+        logger.verbose("[CurrencyService] Updating currency data");
+        // eslint-disable-next-line no-void
+        void currencyService.update();
     };
 
-    setInterval(update, 60000);
+    setInterval(update, CURRENCY_UPDATE_INTERVAL_MS);
 
     await update();
 }
@@ -129,27 +114,28 @@ export async function initServices(socketServer: SocketIOServer, config: IConfig
  * Register services for legacy network
  * @param networkConfig The Network Config.
  */
-function initOgServices(networkConfig: INetwork): void {
+function initLegacyServices(networkConfig: INetwork): void {
     if (networkConfig.feedEndpoint) {
+        logger.verbose(`Initializing Legacy services for ${networkConfig.network}`);
         ServiceFactory.register(
             `zmq-${networkConfig.network}`, () => new ZmqService(
                 networkConfig.feedEndpoint, [
-                    "trytes",
-                    "sn",
-                    networkConfig.coordinatorAddress
-                ])
+                "trytes",
+                "sn",
+                networkConfig.coordinatorAddress
+            ])
         );
         ServiceFactory.register(
-            `feed-${networkConfig.network}`, () => new OgFeedService(
+            `feed-${networkConfig.network}`, () => new LegacyFeedService(
                 networkConfig.network, networkConfig.coordinatorAddress)
         );
         ServiceFactory.register(
             `items-${networkConfig.network}`,
-            () => new OgItemsService(networkConfig.network));
+            () => new LegacyItemsService(networkConfig.network));
 
         ServiceFactory.register(
             `stats-${networkConfig.network}`,
-            () => new OgStatsService(networkConfig));
+            () => new LegacyStatsService(networkConfig));
     }
 }
 
@@ -158,6 +144,7 @@ function initOgServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initChrysalisServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Chrysalis services for ${networkConfig.network}`);
     ServiceFactory.register(
         `mqtt-${networkConfig.network}`, () => new ChrysalisMqttClient(
             networkConfig.feedEndpoint.split(";"))
@@ -180,6 +167,7 @@ function initChrysalisServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initStardustServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
     const nodeInfoService = new NodeInfoService(networkConfig);
 
     ServiceFactory.register(
@@ -193,13 +181,8 @@ function initStardustServices(networkConfig: INetwork): void {
     );
 
     ServiceFactory.register(
-        `feed-${networkConfig.network}`, () => new StardustFeedService(
-            networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
-    );
-
-    ServiceFactory.register(
-        `items-${networkConfig.network}`,
-        () => new StardustItemsService(networkConfig.network)
+        `feed-${networkConfig.network}`,
+        () => new StardustFeed(networkConfig.network)
     );
 
     const stardustStatsService = new StardustStatsService(networkConfig);
@@ -209,16 +192,28 @@ function initStardustServices(networkConfig: INetwork): void {
     );
 
     if (networkConfig.permaNodeEndpoint) {
+        const chronicleService = new ChronicleService(networkConfig);
         ServiceFactory.register(
             `chronicle-${networkConfig.network}`,
-            () => new ChronicleService(networkConfig)
+            () => chronicleService
         );
     }
+
+    const influxDBService = new InfluxDBService(networkConfig);
+    influxDBService.buildClient().then(hasClient => {
+        logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
+        if (hasClient) {
+            ServiceFactory.register(
+                `influxdb-${networkConfig.network}`,
+                () => influxDBService
+            );
+        }
+    }).catch(e => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
 }
 
 /**
  * Register services for prototype network
- * @param socketServer
+ * @param socketServer The socket server
  * @param networkConfig The Network Config.
  */
 function initProtoServices(socketServer: SocketIOServer, networkConfig: INetwork): void {
@@ -308,38 +303,18 @@ function initProtoServices(socketServer: SocketIOServer, networkConfig: INetwork
  */
 async function registerStorageServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
+        logger.info("Registering 'local' persistence services...");
         ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
             config.rootStorageFolder, "network", "network"));
 
-        ServiceFactory.register("milestone-storage", () => new LocalStorageService<IMilestoneStore>(
-            config.rootStorageFolder, "milestones", "network"));
-
         ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
             config.rootStorageFolder, "currency", "id"));
-
-        ServiceFactory.register("market-storage", () => new LocalStorageService<IMarket>(
-            config.rootStorageFolder, "market", "currency"));
-
-        ServiceFactory.register("analytics-storage", () => new LocalStorageService<IAnalyticsStore>(
-            config.rootStorageFolder, "analytics", "network"));
     } else if (config.dynamoDbConnection) {
-        ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<IMarket>(
+        logger.info("Registering 'dynamoDB' persistence services...");
+        ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
             config.dynamoDbConnection, "network", "network"));
-
-        ServiceFactory.register("milestone-storage", () => new AmazonDynamoDbService<IMilestoneStore>(
-            config.dynamoDbConnection, "milestones", "network"));
 
         ServiceFactory.register("currency-storage", () => new AmazonDynamoDbService<ICurrencyState>(
             config.dynamoDbConnection, "currency", "id"));
-
-        ServiceFactory.register("market-storage", () => new AmazonDynamoDbService<IMarket>(
-            config.dynamoDbConnection, "market", "currency"));
-
-        const analyticsStore = new AmazonDynamoDbService<IAnalyticsStore>(
-            config.dynamoDbConnection, "analytics", "network"
-        );
-        // eslint-disable-next-line no-void
-        await analyticsStore.create();
-        ServiceFactory.register("analytics-storage", () => analyticsStore);
     }
 }

@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { OG } from "../../models/config/protocolVersion";
+import { LEGACY } from "../../models/config/protocolVersion";
 import AsyncComponent from "./AsyncComponent";
 import "./SearchInput.scss";
 import { SearchInputProps } from "./SearchInputProps";
@@ -44,10 +44,10 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                         autoFocus
                         value={this.state.query}
                         onChange={e => this.setState({
-                            query: this.props.protocolVersion === OG
+                            query: this.props.protocolVersion === LEGACY
                                 ? e.target.value.toUpperCase().trim()
                                 : e.target.value,
-                                isValid: this.isValid(this.props.protocolVersion === OG
+                                isValid: this.isValid(this.props.protocolVersion === LEGACY
                                     ? e.target.value.toUpperCase().trim()
                                     : e.target.value)
                         })}
@@ -81,10 +81,10 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                                     autoFocus
                                     value={this.state.query}
                                     onChange={e => this.setState({
-                                        query: this.props.protocolVersion === OG
+                                        query: this.props.protocolVersion === LEGACY
                                             ? e.target.value.toUpperCase().trim()
                                             : e.target.value,
-                                        isValid: this.isValid(this.props.protocolVersion === OG
+                                        isValid: this.isValid(this.props.protocolVersion === LEGACY
                                             ? e.target.value.toUpperCase().trim()
                                             : e.target.value)
                                     })}
@@ -129,7 +129,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
             return false;
         }
 
-        if (this.props.protocolVersion === OG) {
+        if (this.props.protocolVersion === LEGACY) {
             if (!TrytesHelper.isTrytes(query)) {
                 return false;
             }
@@ -145,7 +145,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
      * Perform the search.
      */
     private doSearch(): void {
-        this.props.onSearch(this.props.protocolVersion === OG
+        this.props.onSearch(this.props.protocolVersion === LEGACY
             ? this.state.query.trim().toUpperCase()
             : this.state.query.trim());
 

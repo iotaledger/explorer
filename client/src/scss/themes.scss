@@ -45,9 +45,16 @@
   --shimmer-navbar-bg: rgb(255 255 255 / 20%);
   --shimmer-header-bg: #f2f6f9;
   --shimmer-bg: url('../assets/header-bg-light.svg');
-  --shimmer-copyright: #{$white};
+  --shimmer-visualizer-bg: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
+  --date-input-theme: light;
+  --statistics-charts-tooltip-bg: #{$gray-2};
+  --statistics-charts-axis: #{$gray-1};
+  --statistics-select-bg: #{$gray-1};
+  --statistics-select-border: #{$gray-1};
+  --calendar-bg: #{$white};
+  --calendar-hover: #{$gray-1};
 
   body.darkmode {
     --body-background: #091326;
@@ -65,7 +72,7 @@
     --header-label-color: #{$gray-3};
     --header-icon-color: #{$gray-5};
     --header-svg-bg: #202e4a;
-    --border-color: #ffffff1e;
+    --border-color: #{$gray-5};
     --fiat-acronym-color: #{$white};
     --expanded-color: #{$gray-5};
     --light-bg: #48577614;
@@ -94,9 +101,16 @@
     --shimmer-header-bg: #00121f;
     --shimmer-feeds-bg: #00121f;
     --shimmer-bg: url('../assets/header-bg-dark.svg');
-    --shimmer-copyright: #0f202c;
+    --shimmer-visualizer-bg: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;
+    --date-input-theme: dark;
+    --statistics-charts-tooltip-bg: #{$gray-9};
+    --statistics-charts-axis: #{$gray-9};
+    --statistics-select-bg: #{$gray-9};
+    --statistics-select-border: #{$gray-8};
+    --calendar-bg: #{$gray-9};
+    --calendar-hover: #{$gray-7};
   }
 
   body.shimmer.darkmode {

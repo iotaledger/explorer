@@ -1,11 +1,14 @@
 import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
+import { IAnalyticStats } from "../stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
+import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
+import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
+import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
-import { INftRegistryDetailsResponse } from "./nft/INftRegistryDetailsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -29,9 +32,14 @@ export interface ISearchResponse extends IResponse {
     output?: IOutputResponse;
 
     /**
-     * Outputs response.
+     * The addres UTXOs.
      */
-    taggedOutputs?: IOutputsResponse;
+    addressOutputs?: IOutputResponse[];
+
+    /**
+     * Basic and/or Nft tagged output ids.
+     */
+    taggedOutputs?: ITaggedOutputsResponse;
 
     /**
      * The outputIds of transaction history request.
@@ -79,11 +87,6 @@ export interface ISearchResponse extends IResponse {
     nftDetails?: IOutputResponse;
 
     /**
-     * Nft registry details (mock).
-     */
-    nftRegistryDetails?: INftRegistryDetailsResponse;
-
-    /**
      * Foundry outputs.
      */
     foundryOutputs?: IOutputsResponse;
@@ -97,6 +100,21 @@ export interface ISearchResponse extends IResponse {
      * Milestone chornicle stats.
      */
     milestoneStats?: IMilestoneAnalyticStats;
+
+    /**
+     * Milestone referenced blocks from chornicle.
+     */
+    milestoneBlocks?: IMilestoneBlocksResponse;
+
+    /**
+     * The influx analytic stats.
+     */
+    analyticStats?: IAnalyticStats;
+
+    /**
+     * The influx daily graphs data.
+     */
+    influxStats?: IInfluxDailyResponse;
 
     /**
      * DiD identifier.

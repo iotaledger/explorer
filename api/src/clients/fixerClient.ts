@@ -1,5 +1,5 @@
+import logger from "../logger";
 import { ILatestResponse } from "../models/clients/fixer/ILatestResponse";
-import { ISymbolsResponse } from "../models/clients/fixer/ISymbolsResponse";
 import { FetchHelper } from "../utils/fetchHelper";
 
 /**
@@ -36,33 +36,14 @@ export class FixerClient {
         try {
             response = await FetchHelper.json<unknown, ILatestResponse>(
                 this._endpoint,
-                `latest?&base=${baseCurrency}`,
+                `latest?base=${baseCurrency}&symbols=USD,JPY,GBP,CAD,SEK,CHF`,
                 "get",
                 null,
                 { apiKey: this._apiKey }
             );
-        } catch {
+        } catch (e) {
+            logger.error(`Failed fetching latest from fixerAPI. Cause: ${e}`);
         }
-
-        return response;
-    }
-
-    /**
-     * Get the latest api currency names.
-     * @returns The currency names.
-     */
-    public async symbols(): Promise<ISymbolsResponse> {
-        let response: ISymbolsResponse;
-
-        try {
-            response = await FetchHelper.json<unknown, ISymbolsResponse>(
-                this._endpoint,
-                "symbols",
-                "get",
-                null,
-                { apiKey: this._apiKey }
-            );
-        } catch { }
 
         return response;
     }

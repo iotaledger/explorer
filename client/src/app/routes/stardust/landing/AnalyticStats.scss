@@ -4,21 +4,29 @@
 @import "../../../../scss/themes";
 
 .extended-info-boxes {
-    flex-direction: column;
     display: grid;
-    grid-template-columns: auto auto;
     padding: 12px;
+    grid-template-rows: repeat(1, 140px);
+    grid-auto-flow: column;
     background: var(--header-box-bg);
     backdrop-filter: blur(5px);
     margin: 0 calc(-1 * #{$inner-padding});
     border-radius: 0;
 
     @include desktop-down {
-        grid-template-columns: auto;
+        grid-template-rows: repeat(2, 120px);
     }
+
     @include tablet-down {
+        grid-template-rows: repeat(3, 97px);
+        grid-auto-columns: minmax(0, 1fr);
         backdrop-filter: none;
-        padding-top: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    @include phone-down {
+        grid-template-rows: repeat(3, 79px);
     }
 
     .info-box {
@@ -31,7 +39,7 @@
         padding: 24px;
 
         @include tablet-down {
-            padding: 12px;
+            padding: 16px;
         }
 
         .info-box--title {
@@ -66,9 +74,11 @@
 
             @include tablet-down {
                 text-align: center;
+                font-size: 18px;
             }
 
             @include phone-down {
+                margin-top: 12px;
                 font-size: 14px;
             }
 

@@ -7,24 +7,26 @@ import App from "./app/App";
 import { AppRouteProps } from "./app/AppRouteProps";
 import { ServiceFactory } from "./factories/serviceFactory";
 import "./index.scss";
-import { CHRYSALIS, PROTO, STARDUST } from "./models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, PROTO, STARDUST } from "./models/config/protocolVersion";
 import { ChrysalisApiClient } from "./services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "./services/chrysalis/chrysalisFeedClient";
 import { ChrysalisTangleCacheService } from "./services/chrysalis/chrysalisTangleCacheService";
 import { CurrencyService } from "./services/currencyService";
 import { IdentityService } from "./services/identityService";
+import { LegacyApiClient } from "./services/legacy/legacyApiClient";
+import { LegacyFeedClient } from "./services/legacy/legacyFeedClient";
+import { LegacyTangleCacheService } from "./services/legacy/legacyTangleCacheService";
 import { LocalStorageService } from "./services/localStorageService";
-import { MilestonesClient } from "./services/milestonesClient";
 import { NetworkService } from "./services/networkService";
 import { NodeInfoService } from "./services/nodeInfoService";
+import { ProtoApiClient } from "./services/proto/protoApiClient";
+import { ProtoFeedClient } from "./services/proto/protoFeedClient";
 import { SettingsService } from "./services/settingsService";
 import { StardustApiClient } from "./services/stardust/stardustApiClient";
 import { StardustFeedClient } from "./services/stardust/stardustFeedClient";
-import { StardustTangleCacheService } from "./services/stardust/stardustTangleCacheService";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
-import { ProtoApiClient } from "./services/proto/protoApiClient";
-import { ProtoFeedClient } from "./services/proto/protoFeedClient";
+import { TokenRegistryClient } from "./services/stardust/tokenRegistryClient";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
@@ -49,6 +51,7 @@ initialiseServices().then(() => {
  * Register all the services.
  */
 async function initialiseServices(): Promise<void> {
+    ServiceFactory.register(`api-client-${LEGACY}`, () => new LegacyApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${PROTO}`, () => new ProtoApiClient(apiEndpoint));
@@ -56,6 +59,8 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("local-storage", () => new LocalStorageService());
 
     ServiceFactory.register("identity", () => new IdentityService());
+
+    ServiceFactory.register("token-registry", () => new TokenRegistryClient());
 
     const networkService = new NetworkService();
     await networkService.buildCache();
@@ -66,34 +71,40 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register("node-info", () => nodeInfoService);
 
     ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
+    ServiceFactory.register(`tangle-cache-${LEGACY}`, () => new LegacyTangleCacheService());
     ServiceFactory.register(`tangle-cache-${CHRYSALIS}`, () => new ChrysalisTangleCacheService());
-    ServiceFactory.register(`tangle-cache-${STARDUST}`, () => new StardustTangleCacheService());
 
     const networks = networkService.networks();
 
     if (networks.length > 0) {
         for (const netConfig of networks) {
-            if (netConfig.protocolVersion === STARDUST) {
-                ServiceFactory.register(
-                    `feed-${netConfig.network}`,
-                    serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
-                );
-            } else if (netConfig.protocolVersion === PROTO) {
-                ServiceFactory.register(
-                    `feed-${netConfig.network}`,
-                    serviceName => new ProtoFeedClient(apiEndpoint, serviceName.slice(5))
-                );
-            } else {
-                ServiceFactory.register(
-                    `feed-${netConfig.network}`,
-                    serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
-                );
+            switch (netConfig.protocolVersion) {
+                case LEGACY:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new LegacyFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                case CHRYSALIS:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                case STARDUST:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                case PROTO:
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new ProtoFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                default:
             }
-
-            ServiceFactory.register(
-                `milestones-${netConfig.network}`,
-                serviceName => new MilestonesClient(serviceName.slice(11), netConfig.protocolVersion)
-            );
         }
     }
 }

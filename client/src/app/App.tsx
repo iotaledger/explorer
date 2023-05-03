@@ -3,21 +3,17 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { isMarketedNetwork, isProtoNetwork, isShimmerNetwork } from "../helpers/networkHelper";
+import { isShimmerNetwork } from "../helpers/networkHelper";
+import { scrollToTop } from "../helpers/pageUtils";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
-import { OG, STARDUST } from "../models/config/protocolVersion";
+import { STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
 import { NodeInfoService } from "../services/nodeInfoService";
 import { AppRouteProps } from "./AppRouteProps";
 import {
-    buildMetaLabel,
-    buildUtilities,
-    copyrightInner,
-    getFaviconHelmet,
-    getFooterItems,
-    getPages,
-    networkContextWrapper
+    buildMetaLabel, buildUtilities, getFooterItems,
+    getPages, getFaviconHelmet, networkContextWrapper
 } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
@@ -49,22 +45,13 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     }, [networksLoaded]);
 
     const networkConfig = networks.find(n => n.network === network);
-    const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? false;
-
-    window.scrollTo({
-        left: 0,
-        top: 0,
-        behavior: "smooth"
-    });
-
+    const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
     const currentNetwork = networkConfig?.network;
-    const isShimmer = isShimmerNetwork(networkConfig?.network);
-    const isProtoNet = isProtoNetwork(networkConfig?.network);
-    const isMarketed = isMarketedNetwork(networkConfig?.network);
-    const isStardust = networkConfig?.protocolVersion === STARDUST;
+    const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetwork, nodeInfo);
+    scrollToTop();
 
     if (isShimmer) {
         const body = document.querySelector("body");
@@ -72,14 +59,9 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     }
 
     const routes = buildAppRoutes(
-        isStardust,
-        isProtoNet,
-        isMarketed,
         networkConfig?.protocolVersion ?? "",
         withNetworkContext
     );
-
-    console.log(routes);
 
     const metaLabel = buildMetaLabel(currentNetwork);
     const faviconHelmet = getFaviconHelmet(isShimmer);
@@ -102,11 +84,11 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                 search={
                     <SearchInput
                         onSearch={query => history.push(`/${currentNetwork}/search/${query}`)}
-                        protocolVersion={networkConfig?.protocolVersion ?? OG}
+                        protocolVersion={networkConfig?.protocolVersion ?? STARDUST}
                     />
                 }
-                pages={getPages(network ?? "", networks)}
-                utilities={buildUtilities(network ?? "", networks, isMarketed, identityResolverEnabled)}
+                pages={getPages(networkConfig, networks)}
+                utilities={buildUtilities(network ?? "", networks, identityResolverEnabled)}
             />
             <div className="content">
                 {networks.length > 0 ?
@@ -119,9 +101,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                             </div>
                         )}
                         {networkConfig && routes}
-                        <div className={classNames("copyright", { "shimmer-copyright": isShimmer })}>
-                            <div className="copyright-inner">{copyrightInner}</div>
-                        </div>
                     </React.Fragment> : (
                         <div className="maintenance">
                             <div className="maintenance-inner">

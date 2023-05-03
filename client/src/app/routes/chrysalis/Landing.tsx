@@ -5,8 +5,8 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
-import { CHRYSALIS, OG } from "../../../models/config/protocolVersion";
+import { CUSTOM } from "../../../models/config/networkType";
+import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { getFilterFieldDefaults } from "../../../models/services/filterField";
 import { IFilterSettings } from "../../../models/services/IFilterSettings";
@@ -32,7 +32,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || {
             label: "Custom network",
             network: CUSTOM,
-            protocolVersion: OG,
+            protocolVersion: CHRYSALIS,
+            hasStatisticsSupport: false,
             isEnabled: false
         };
 
@@ -53,9 +54,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             priceCurrency: "--",
             filteredItems: [],
             frozenMessages: [],
-            milestones: [],
             currency: "USD",
-            currencies: [],
             formatFull: false,
             isFeedPaused: false,
             isFilterExpanded: false
@@ -83,7 +82,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
             valuesFilter: filterSettings?.valuesFilter ??
-                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? "chrysalis"),
+                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? CHRYSALIS),
             formatFull: settings.formatFull
         });
     }
@@ -94,7 +93,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     public render(): ReactNode {
         const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
-            this._networkConfig.network !== LEGACY_MAINNET &&
             this._networkConfig.network !== CUSTOM;
 
         return (
@@ -111,11 +109,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             {this.state.networkConfig.isEnabled && (
                                 <div className="row space-between info-boxes">
                                     <div className="info-box">
-                                        <span className="info-box--title">{
-                                            this.state.networkConfig.protocolVersion === OG
-                                                ? "Transactions"
-                                                : "Messages"
-                                        } per sec
+                                        <span className="info-box--title">Messages per sec
                                         </span>
                                         <div className="info-box--value">
                                             <span className="download-rate">
@@ -226,15 +220,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                                         />
                                                                         {payload.label}
                                                                     </label>
-                                                                    {((this.state
-                                                                        .networkConfig
-                                                                        .protocolVersion === OG &&
-                                                                        payload.label === "Non-zero only" &&
-                                                                        payload.isEnabled) ||
-                                                                        (this.state.networkConfig.protocolVersion ===
-                                                                            CHRYSALIS &&
-                                                                            payload.label === "Transaction" &&
-                                                                            payload.isEnabled)) && (
+                                                                    {((this.state.networkConfig.protocolVersion ===
+                                                                        CHRYSALIS &&
+                                                                        payload.label === "Transaction" &&
+                                                                        payload.isEnabled)) && (
                                                                             <div className="row">
                                                                                 {this.transactionDropdown("minimum")}
                                                                                 {this.transactionDropdown("maximum")}
@@ -265,12 +254,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
                                             <span className="label">
-                                                {this.state.networkConfig.protocolVersion === OG
-                                                    ? "Transaction" : "Message id"}
+                                                Message id
                                             </span>
                                             <span className="label">
-                                                {this.state.networkConfig.protocolVersion === OG
-                                                    ? "Amount" : "Payload Type"}
+                                                Payload Type
                                             </span>
                                         </div>
                                         {this.state.filteredItems.length === 0 && (
@@ -280,8 +267,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
-                                                        {this.state.networkConfig.protocolVersion === OG
-                                                            ? "Transaction" : "Message id"}
+                                                        Message id
                                                     </span>
                                                     <Link
                                                         className="feed-item--hash"
@@ -292,8 +278,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 </div>
                                                 <div className="feed-item__content">
                                                     <span className="feed-item--label">
-                                                        {this.state.networkConfig.protocolVersion === OG
-                                                            ? "Amount" : "Payload Type"}
+                                                        Payload Type
                                                     </span>
                                                     <span className="feed-item--value">
                                                         <button
@@ -360,18 +345,18 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._currencyData) {
             this.setState({
                 marketCapCurrency:
-                    this._currencyData.marketCap !== undefined
-                        ? this._currencyService.convertFiatBase(
-                            this._currencyData.marketCap,
+                    this._currencyData.coinStats?.iota?.marketCap ?
+                        this._currencyService.convertFiatBase(
+                            this._currencyData.coinStats.iota.marketCap,
                             this._currencyData,
                             true,
                             2,
                             undefined,
                             true)
                         : "--",
-                priceCurrency: this._currencyData.baseCurrencyRate !== undefined
-                    ? this._currencyService.convertFiatBase(
-                        this._currencyData.baseCurrencyRate,
+                priceCurrency: this._currencyData.coinStats?.iota?.price ?
+                    this._currencyService.convertFiatBase(
+                        this._currencyData.coinStats.iota.price,
                         this._currencyData,
                         true,
                         3,
@@ -397,75 +382,75 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._isMounted && this._feedClient) {
             const minLimit = UnitsHelper.convertUnits(
                 Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
-                const maxLimit = UnitsHelper.convertUnits(
-                    Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
+            const maxLimit = UnitsHelper.convertUnits(
+                Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
 
-                    const filters = [
-                        {
-                            payloadType: "Zero only",
-                            filter: (item: IFeedItem) => item.value === 0
-                        },
-                        {
-                            payloadType: "Non-zero only",
-                            filter: (item: IFeedItem) =>
-                                item.value !== undefined &&
-                                item.value !== 0 &&
-                                Math.abs(item.value) >= minLimit &&
-                                Math.abs(item.value) <= maxLimit
-                        },
-                        {
-                            payloadType: "Transaction",
-                            filter: (item: IFeedItem) =>
-                                item.value !== undefined &&
-                                item.value !== 0 &&
-                                Math.abs(item.value) >= minLimit &&
-                                Math.abs(item.value) <= maxLimit
-                        },
-                        {
-                            payloadType: "Milestone",
-                            filter: (item: IFeedItem) =>
-                                item.payloadType === "MS"
+            const filters = [
+                {
+                    payloadType: "Zero only",
+                    filter: (item: IFeedItem) => item.value === 0
+                },
+                {
+                    payloadType: "Non-zero only",
+                    filter: (item: IFeedItem) =>
+                        item.value !== undefined &&
+                        item.value !== 0 &&
+                        Math.abs(item.value) >= minLimit &&
+                        Math.abs(item.value) <= maxLimit
+                },
+                {
+                    payloadType: "Transaction",
+                    filter: (item: IFeedItem) =>
+                        item.value !== undefined &&
+                        item.value !== 0 &&
+                        Math.abs(item.value) >= minLimit &&
+                        Math.abs(item.value) <= maxLimit
+                },
+                {
+                    payloadType: "Milestone",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "MS"
 
-                        },
-                        {
-                            payloadType: "Indexed",
-                            filter: (item: IFeedItem) =>
-                                item.payloadType === "Index"
-                        },
-                        {
-                            payloadType: "No payload",
-                            filter: (item: IFeedItem) =>
-                                item.payloadType === "None"
+                },
+                {
+                    payloadType: "Indexed",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "Index"
+                },
+                {
+                    payloadType: "No payload",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "None"
 
-                        }
-                    ].filter(f => {
+                }
+            ].filter(f => {
+                let aux = false;
+                for (const payload of this.state.valuesFilter) {
+                    if (f.payloadType === payload.label && payload.isEnabled) {
+                        aux = true;
+                    }
+                }
+                return aux;
+            });
+
+            const filteredMessages = this.state.isFeedPaused
+                ? this.state.frozenMessages
+                : this._feedClient.getItems();
+            this.setState({
+                filteredItems: filteredMessages
+                    .filter(item => {
                         let aux = false;
-                        for (const payload of this.state.valuesFilter) {
-                            if (f.payloadType === payload.label && payload.isEnabled) {
+                        for (const f of filters) {
+                            const filter = f.filter;
+                            if (filter(item)) {
                                 aux = true;
                             }
                         }
                         return aux;
-                    });
-
-                    const filteredMessages = this.state.isFeedPaused
-                        ? this.state.frozenMessages
-                        : this._feedClient.getItems();
-                        this.setState({
-                            filteredItems: filteredMessages
-                            .filter(item => {
-                                let aux = false;
-                                for (const f of filters) {
-                                    const filter = f.filter;
-                                    if (filter(item)) {
-                                        aux = true;
-                                    }
-                                }
-                                return aux;
-                            }
-                                   )
-                                   .slice(0, 10)
-                        });
+                    }
+                    )
+                    .slice(0, 10)
+            });
         }
     }
 

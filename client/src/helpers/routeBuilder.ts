@@ -1,5 +1,5 @@
 import { INetwork } from "../models/config/INetwork";
-import { CHRYSALIS, OG } from "../models/config/protocolVersion";
+import { CHRYSALIS, LEGACY } from "../models/config/protocolVersion";
 
 /**
  * Class for helping to build routes.
@@ -27,7 +27,7 @@ export class RouteBuilder {
         if (networkConfig) {
             parts.push(networkConfig.network);
         }
-        if (networkConfig?.protocolVersion === OG) {
+        if (networkConfig?.protocolVersion === LEGACY) {
             parts.push("transaction");
             parts.push(item.id);
         } else {
@@ -49,7 +49,7 @@ export class RouteBuilder {
         if (networkConfig) {
             parts.push(networkConfig.network);
         }
-        if (networkConfig?.protocolVersion === OG) {
+        if (networkConfig?.protocolVersion === LEGACY) {
             parts.push("transaction");
             parts.push(id);
         } else if (networkConfig?.protocolVersion === CHRYSALIS) {

@@ -41,6 +41,38 @@
                 justify-content: space-between;
             }
 
+            .output-list__basic, .output-list__nft {
+                .load-more--button {
+                    margin: 24px 0 8px 0;
+                    align-self: center;
+                    font-family: $metropolis;
+                    width: fit-content;
+                    padding: 4px 8px;
+                    cursor: pointer;
+
+                    &:hover {
+                        button {
+                            color: $main-green-highlight;
+                        }
+                    }
+
+                    button {
+                        padding: 6px;
+                        color: var(--header-icon-color);
+                    }
+                }
+
+                .outputs-over-limit {
+                    margin: 20px auto 0;
+                    align-items: center;
+                    background-color: var(--header-svg-bg);
+                    color: var(--body-color);
+                    font-family: $inter;
+                    font-size: 0.875rem;
+                    padding: 10px 24px;
+                }
+            }
+
             .section {
                 padding-top: 44px;
 

@@ -1,113 +1,87 @@
-import { IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition } from "@iota/iota.js-stardust";
-import { optional } from "@ruffy/ts-optional";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IMetadataFeature, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
+import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
+import foundryMainHeaderInfo from "../../../assets/modals/stardust/foundry/main-header.json";
+import tokenSchemeIRC30 from "../../../assets/schemas/token-schema-IRC30.json";
+import { useFoundryDetails } from "../../../helpers/hooks/useFoundryDetails";
+import { useIsMounted } from "../../../helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "../../../helpers/networkHelper";
-import PromiseMonitor, { PromiseStatus } from "../../../helpers/promise/promiseMonitor";
+import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { tryParseMetadata } from "../../../helpers/stardust/metadataUtils";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
-import CopyButton from "../../components/CopyButton";
+import { ITokenMetadata } from "../../../models/api/stardust/foundry/ITokenMetadata";
 import FiatValue from "../../components/FiatValue";
+import TabbedSection from "../../components/hoc/TabbedSection";
 import Icon from "../../components/Icon";
+import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Spinner from "../../components/Spinner";
-import AssetsTable from "../../components/stardust/AssetsTable";
-import Feature from "../../components/stardust/Feature";
+import FeaturesSection from "../../components/stardust/address/section/FeaturesSection";
+import AssetsTable from "../../components/stardust/address/section/native-tokens/AssetsTable";
+import TokenInfoSection from "../../components/stardust/foundry/TokenInfoSection";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
 
+enum FOUNDRY_PAGE_TABS {
+    TokenInfo = "Token Info",
+    Features = "Features",
+    NativeTokens = "Native Tokens"
+}
+
 const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     { match: { params: { network, foundryId } } }
 ) => {
-    const isMounted = useRef(false);
-    const { tokenInfo } = useContext(NetworkContext);
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
+    const isMounted = useIsMounted();
+    const { tokenInfo, bech32Hrp } = useContext(NetworkContext);
+
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
-    const [jobToStatus, setJobToStatus] = useState(
-        new Map<string, PromiseStatus>().set("loadFoundryDetails", PromiseStatus.PENDING)
-    );
+
+    const [foundryDetails, isFoundryDetailsLoading, foundryError] = useFoundryDetails(network, foundryId);
     const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
-    const [foundryError, setFoundryError] = useState<string | undefined>();
     const [controllerAlias, setControllerAlias] = useState<string>();
+    const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>();
+    const [tokenCount, setTokenCount] = useState<number>(0);
 
     useEffect(() => {
-        isMounted.current = true;
-        const foundryLoadMonitor = new PromiseMonitor(status => {
-            setJobToStatus(jobToStatus.set("loadFoundryDetails", status));
-        });
+        if (foundryDetails) {
+            const output = foundryDetails?.output as IFoundryOutput;
+            const immutableAliasUnlockCondition =
+                output.unlockConditions[0] as IImmutableAliasUnlockCondition;
+            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
 
-        const loadFoundryDetails = async (): Promise<void> => {
-            // eslint-disable-next-line no-void
-            void foundryLoadMonitor.enqueue(
-                async () => tangleCacheService.foundryDetails({ network, foundryId }).then(
-                    response => {
-                        if (!response.error) {
-                            const theFoundryOutput = response.foundryDetails?.output as IFoundryOutput;
-                            const immutableAliasUnlockCondition =
-                                theFoundryOutput.unlockConditions[0] as IImmutableAliasUnlockCondition;
-                            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+            const immutableFeatures = (foundryDetails?.output as IFoundryOutput).immutableFeatures;
+            const metadataFeature = immutableFeatures?.find(
+                feature => feature.type === METADATA_FEATURE_TYPE
+            ) as IMetadataFeature;
 
-                            if (isMounted.current) {
-                                setFoundryOutput(theFoundryOutput);
-                                setControllerAlias(aliasId);
-                            }
-                        } else if (isMounted.current) {
-                            setFoundryError(response.error);
-                        }
-                    }).catch(_ => { })
-            );
-        };
-
-        // eslint-disable-next-line no-void
-        void loadFoundryDetails();
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
-
-
-    if (foundryError) {
-        return (
-            <div className="foundry">
-                <div className="wrapper">
-                    <div className="inner">
-                        <div className="foundry--header">
-                            <div className="row middle">
-                                <h1>
-                                    Foundry
-                                </h1>
-                            </div>
-                        </div>
-                        <NotFound
-                            searchTarget="foundry"
-                            query={foundryId}
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    }
+            if (isMounted && metadataFeature) {
+                const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.data, tokenSchemeIRC30);
+                setTokenMetadata(parsedMetadata);
+            }
+            if (isMounted) {
+                setFoundryOutput(output);
+                setControllerAlias(aliasId);
+            }
+        }
+    }, [foundryDetails]);
 
     let foundryContent = null;
-    if (foundryOutput) {
+    if (foundryDetails && foundryOutput) {
         const isMarketed = isMarketedNetwork(network);
         const serialNumber = foundryOutput.serialNumber;
         const balance = Number(foundryOutput.amount);
-        const tokenScheme = foundryOutput.tokenScheme.type;
-        const maximumSupply = Number(foundryOutput.tokenScheme.maximumSupply);
-        const mintedTokens = Number(foundryOutput.tokenScheme.mintedTokens);
-        const meltedTokens = Number(foundryOutput.tokenScheme.meltedTokens);
+
+        const controllerAliasBech32 = controllerAlias ?
+            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
+            undefined;
 
         foundryContent = (
             <React.Fragment>
-                <div className="section">
-                    <div className="section--header row row--tablet-responsive middle space-between">
+                <div className="section no-border-bottom padding-b-s">
+                    <div className="section--header">
                         <div className="row middle">
                             <h2>General</h2>
                         </div>
@@ -122,17 +96,20 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             </span>
                         </div>
                     </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Controller Alias
+                    {controllerAlias && controllerAliasBech32 && (
+                        <div className="section--data">
+                            <div className="label">
+                                Controller Alias
+                            </div>
+                            <div className="value code highlight">
+                                <TruncatedId
+                                    id={controllerAlias}
+                                    link={`/${network}/addr/${controllerAliasBech32.bech32}`}
+                                    showCopyButton
+                                />
+                            </div>
                         </div>
-                        <div className="value code row middle highlight">
-                            <Link to={`/${network}/alias/${controllerAlias}`} className="margin-r-t">
-                                {controllerAlias}
-                            </Link>
-                            <CopyButton copy={controllerAlias} />
-                        </div>
-                    </div>
+                    )}
                     <div className="section--data">
                         <div className="row middle">
                             <Icon icon="wallet" boxed />
@@ -164,85 +141,34 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                         </div>
                     </div>
                 </div>
-                <div className="section">
-                    <div className="section--header row row--tablet-responsive middle space-between">
-                        <div className="row middle">
-                            <h2>Token Info</h2>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Token scheme
-                        </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {tokenScheme}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Maximum supply
-                        </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {maximumSupply}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Minted tokens
-                        </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {mintedTokens}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="section--data">
-                        <div className="label">
-                            Melted tokens
-                        </div>
-                        <div className="value code row middle">
-                            <span className="margin-r-t">
-                                {meltedTokens}
-                            </span>
-                        </div>
-                    </div>
-                    {foundryOutput && (
-                        <AssetsTable networkId={network} outputs={[foundryOutput]} />
-                    )}
-                </div>
-                {optional(foundryOutput.features).nonEmpty() && (
-                    <div className="section">
-                        <div className="section--header row row--tablet-responsive middle space-between">
-                            <div className="row middle">
-                                <h2>Features</h2>
-                            </div>
-                        </div>
-                        {foundryOutput.features?.map((feature, idx) => (
-                            <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
-                        ))}
-                    </div>
-                )}
-                {optional(foundryOutput.immutableFeatures).nonEmpty() && (
-                    <div className="section">
-                        <div className="section--header row row--tablet-responsive middle space-between">
-                            <div className="row middle">
-                                <h2>Immutable features</h2>
-                            </div>
-                        </div>
-                        {foundryOutput.immutableFeatures?.map((feature, idx) => (
-                            <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={true} />
-                        ))}
-                    </div>
-                )}
-            </React.Fragment>
+                <TabbedSection
+                    tabsEnum={FOUNDRY_PAGE_TABS}
+                    tabOptions={{
+                        [FOUNDRY_PAGE_TABS.NativeTokens]: {
+                            disabled: tokenCount === 0,
+                            counter: tokenCount,
+                            infoContent: nativeTokensMessage
+                        },
+                        [FOUNDRY_PAGE_TABS.Features]: {
+                            disabled: !foundryOutput.features && !foundryOutput.immutableFeatures
+                        }
+                    }}
+                >
+                    <TokenInfoSection
+                        tokenId={foundryId}
+                        tokenScheme={foundryOutput.tokenScheme}
+                        tokenMetadata={tokenMetadata}
+                    />
+                    <FeaturesSection output={foundryOutput} />
+                    <AssetsTable
+                        networkId={network}
+                        outputs={[foundryDetails]}
+                        setTokenCount={setTokenCount}
+                    />
+                </TabbedSection>
+            </React.Fragment >
         );
     }
-
-    const isLoading = Array.from(jobToStatus.values()).some(status => status !== PromiseStatus.DONE);
 
     return (
         <div className="foundry">
@@ -253,10 +179,16 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             <h1>
                                 Foundry
                             </h1>
-                            {isLoading && <Spinner />}
+                            <Modal icon="info" data={foundryMainHeaderInfo} />
+                            {isFoundryDetailsLoading && <Spinner />}
                         </div>
                     </div>
-                    {foundryContent}
+                    {foundryError ?
+                        <NotFound
+                            searchTarget="foundry"
+                            query={foundryId}
+                        /> :
+                        foundryContent}
                 </div>
             </div>
         </div>

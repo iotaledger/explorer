@@ -1,10 +1,13 @@
-import { ALIAS_OUTPUT_TYPE, ALIAS_UNLOCK_TYPE, BASIC_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
+import {
+    ALIAS_OUTPUT_TYPE, ALIAS_UNLOCK_TYPE, BASIC_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
     NFT_UNLOCK_TYPE, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE, TREASURY_INPUT_TYPE,
     TREASURY_OUTPUT_TYPE, UTXO_INPUT_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
     TIMELOCK_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
     GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, SENDER_FEATURE_TYPE,
     ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, TAG_FEATURE_TYPE,
-    ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+    ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE,
+    IBlock, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE
+} from "@iota/iota.js-stardust";
 
 export class NameHelper {
     /**
@@ -68,7 +71,7 @@ export class NameHelper {
      * @param type The type to get the name for.
      * @returns The unlock condition type name.
      */
-     public static getUnlockConditionTypeName(type: number): string {
+    public static getUnlockConditionTypeName(type: number): string {
         if (type === ADDRESS_UNLOCK_CONDITION_TYPE) {
             return "Address Unlock Condition";
         } else if (type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
@@ -116,7 +119,7 @@ export class NameHelper {
      * @param type The type to get the name for.
      * @returns The address type name.
      */
-     public static getAddressTypeName(type: number): string {
+    public static getAddressTypeName(type: number): string {
         if (type === ED25519_ADDRESS_TYPE) {
             return "Ed25519 address";
         } else if (type === ALIAS_ADDRESS_TYPE) {
@@ -126,5 +129,34 @@ export class NameHelper {
         }
         return "Unknown Address Type";
     }
-}
 
+    /**
+     * Compute a payload type string from block.
+     * @param block The block data.
+     * @returns The payload type string.
+     */
+    public static getPayloadType(block: IBlock | undefined): string {
+        let payloadType = "-";
+
+        if (!block) {
+            return payloadType;
+        }
+
+        switch (block.payload?.type) {
+            case TAGGED_DATA_PAYLOAD_TYPE:
+                payloadType = "Data";
+                break;
+            case TRANSACTION_PAYLOAD_TYPE:
+                payloadType = "Transaction";
+                break;
+            case MILESTONE_PAYLOAD_TYPE:
+                payloadType = "Milestone";
+                break;
+            default:
+                payloadType = "No payload";
+                break;
+        }
+
+        return payloadType;
+    }
+}

@@ -2,35 +2,29 @@ import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimed } from "../../../../models/api/stats/IShimmerClaimed";
 import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
-    analytics: IAnalyticStats | undefined;
+    analytics: IAnalyticStats | null;
     circulatingSupply: number | undefined;
-    shimmerClaimed: IShimmerClaimed | undefined;
     tokenInfo: INodeInfoBaseToken;
 }
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
-    { analytics, shimmerClaimed, circulatingSupply, tokenInfo }
+    { analytics, circulatingSupply, tokenInfo }
 ) => {
-    const nativeTokensCount = analytics?.nativeTokens?.count;
-    const nftsCount = analytics?.nfts?.count;
-    const totalAddresses = analytics?.totalAddresses?.totalActiveAddresses;
-    const lockedStorageDepositValue = analytics?.lockedStorageDeposit?.totalByteCost;
+    const nativeTokensCount = analytics?.nativeTokens;
+    const nftsCount = analytics?.nfts;
+    const totalAddresses = analytics?.totalAddresses;
+    const lockedStorageDepositValue = analytics?.lockedStorageDeposit;
 
     let claimedAndPercentLabels: [string, string] | undefined;
-    if (shimmerClaimed?.count && circulatingSupply) {
+    if (analytics?.unclaimedShimmer && circulatingSupply) {
+        // magic number since influx doesn't account for the unclaimable portion of 20%
+        const shimmerClaimed = circulatingSupply - (Number.parseInt(analytics.unclaimedShimmer, 10) - 362724101812273);
         claimedAndPercentLabels = buildShimmerClaimedStats(
-            shimmerClaimed.count,
-            String(circulatingSupply),
-            tokenInfo
-        );
-    } else if (analytics?.shimmerClaimed?.count && circulatingSupply) {
-        claimedAndPercentLabels = buildShimmerClaimedStats(
-            analytics.shimmerClaimed.count,
+            shimmerClaimed.toString(),
             String(circulatingSupply),
             tokenInfo
         );
@@ -39,53 +33,49 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     return (
         analytics && !analytics.error ? (
             <div className="extended-info-boxes">
-                <div className="row space-between">
-                    {totalAddresses && (
-                        <div className="info-box">
-                            <span className="info-box--title">Total active Addresses</span>
-                            <span className="info-box--value">{totalAddresses}</span>
-                        </div>
-                    )}
-                    {claimedAndPercentLabels && (
-                        <div className="info-box">
-                            <span className="info-box--title">Rewards claimed</span>
-                            <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
-                        </div>
-                    )}
-                    {claimedAndPercentLabels && (
-                        <div className="info-box">
-                            <span className="info-box--title">Total Shimmer claimed</span>
-                            <span className="info-box--value">
-                                {claimedAndPercentLabels[0]}
-                            </span>
-                        </div>
-                    )}
-                </div>
-                <div className="row space-between">
-                    {nftsCount && (
-                        <div className="info-box">
-                            <span className="info-box--title">NFTs minted</span>
-                            <span className="info-box--value">{nftsCount}</span>
-                        </div>
-                    )}
-                    {nativeTokensCount && (
-                        <div className="info-box">
-                            <span className="info-box--title">Tokens created</span>
-                            <span className="info-box--value">{nativeTokensCount}</span>
-                        </div>
-                    )}
-                    {lockedStorageDepositValue && (
-                        <div className="info-box">
-                            <span className="info-box--title">Locked storage deposit</span>
-                            <span className="info-box--value">
-                                {formatAmount(
-                                    Number(lockedStorageDepositValue),
-                                    tokenInfo
-                                ).replace(COMMAS_REGEX, ",")}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                {totalAddresses && (
+                    <div className="info-box">
+                        <span className="info-box--title">Total active Addresses</span>
+                        <span className="info-box--value">{totalAddresses}</span>
+                    </div>
+                )}
+                {claimedAndPercentLabels && (
+                    <div className="info-box">
+                        <span className="info-box--title">Rewards claimed</span>
+                        <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
+                    </div>
+                )}
+                {claimedAndPercentLabels && (
+                    <div className="info-box">
+                        <span className="info-box--title">Total Shimmer claimed</span>
+                        <span className="info-box--value">
+                            {claimedAndPercentLabels[0]}
+                        </span>
+                    </div>
+                )}
+                {nftsCount && (
+                    <div className="info-box">
+                        <span className="info-box--title">NFTs minted</span>
+                        <span className="info-box--value">{nftsCount}</span>
+                    </div>
+                )}
+                {nativeTokensCount && (
+                    <div className="info-box">
+                        <span className="info-box--title">Tokens created</span>
+                        <span className="info-box--value">{nativeTokensCount}</span>
+                    </div>
+                )}
+                {lockedStorageDepositValue && (
+                    <div className="info-box">
+                        <span className="info-box--title">Locked storage deposit</span>
+                        <span className="info-box--value">
+                            {formatAmount(
+                                Number(lockedStorageDepositValue),
+                                tokenInfo
+                            ).replace(COMMAS_REGEX, ",")}
+                        </span>
+                    </div>
+                )}
             </div>
         ) : null
     );

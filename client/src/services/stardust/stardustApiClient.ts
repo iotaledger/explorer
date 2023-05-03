@@ -1,44 +1,52 @@
+import { IOutputsResponse } from "@iota/iota.js-stardust";
 import { FetchHelper } from "../../helpers/fetchHelper";
+import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
+import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
+import { IRawResponse } from "../../models/api/IRawResponse";
+import { IAddressBalanceRequest } from "../../models/api/stardust/address/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "../../models/api/stardust/address/IAddressBalanceResponse";
+import { IAddressDetailsRequest } from "../../models/api/stardust/address/IAddressDetailsRequest";
+import { IAddressDetailsResponse } from "../../models/api/stardust/address/IAddressDetailsResponse";
+import IAddressDetailsWithBalance from "../../models/api/stardust/address/IAddressDetailsWithBalance";
+import { IBlockDetailsRequest } from "../../models/api/stardust/block/IBlockDetailsRequest";
+import { IBlockDetailsResponse } from "../../models/api/stardust/block/IBlockDetailsResponse";
+import { IBlockRequest } from "../../models/api/stardust/block/IBlockRequest";
+import { IBlockResponse } from "../../models/api/stardust/block/IBlockResponse";
+import { IRichestAddressesResponse } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
+import { ITokenDistributionResponse } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import { IFoundriesRequest } from "../../models/api/stardust/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryRequest } from "../../models/api/stardust/foundry/IFoundryRequest";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
-import { IAddressBalanceRequest } from "../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../models/api/stardust/IAddressBalanceResponse";
-import { IAddressBasicOutputsRequest } from "../../models/api/stardust/IAddressBasicOutputsRequest";
-import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
-import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasRequest } from "../../models/api/stardust/IAliasRequest";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IAssociationsRequest } from "../../models/api/stardust/IAssociationsRequest";
 import { IAssociationsResponse } from "../../models/api/stardust/IAssociationsResponse";
-import { IBlockDetailsRequest } from "../../models/api/stardust/IBlockDetailsRequest";
-import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
-import { IBlockRequest } from "../../models/api/stardust/IBlockRequest";
-import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
+import { IBlockChildrenRequest } from "../../models/api/stardust/IBlockChildrenRequest";
+import { IBlockChildrenResponse } from "../../models/api/stardust/IBlockChildrenResponse";
+import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
+import { IMilestoneBlocksResponse } from "../../models/api/stardust/IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/IMilestoneDetailsResponse";
 import { IMilestoneStatsRequest } from "../../models/api/stardust/IMilestoneStatsRequest";
-import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
+import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/stardust/ISearchRequest";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITaggedOutputsRequest } from "../../models/api/stardust/ITaggedOutputsRequest";
 import { ITransactionDetailsRequest } from "../../models/api/stardust/ITransactionDetailsRequest";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { INftDetailsRequest } from "../../models/api/stardust/nft/INftDetailsRequest";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
-import { INftOutputsRequest } from "../../models/api/stardust/nft/INftOutputsRequest";
-import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
-import { INftRegistryDetailsRequest } from "../../models/api/stardust/nft/INftRegistryDetailsRequest";
-import { INftRegistryDetailsResponse } from "../../models/api/stardust/nft/INftRegistryDetailsResponse";
+import { IParticipationEventRequest } from "../../models/api/stardust/participation/IParticipationEventRequest";
+import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
-import { IAnalyticStatsRequest } from "../../models/api/stats/IAnalyticStatsRequest";
 import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { IShimmerClaimedResponse } from "../../models/api/stats/IShimmerClaimed";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
@@ -52,7 +60,7 @@ export class StardustApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+    public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
             "get"
@@ -84,13 +92,37 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the unspent output ids of an address.
+     * Get the basic outputs details of an address.
      * @param request The Address Basic outputs request.
      * @returns The Address outputs response
      */
-    public async addressOutputs(request: IAddressBasicOutputsRequest): Promise<IAddressBasicOutputsResponse> {
-        return this.callApi<unknown, IAddressBasicOutputsResponse>(
-            `stardust/address/outputs/${request.network}/${request.address}`,
+    public async basicOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `stardust/address/outputs/basic/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the alias outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async aliasOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `stardust/address/outputs/alias/${request.network}/${request.address}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the nft outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async nftOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `stardust/address/outputs/nft/${request.network}/${request.address}`,
             "get"
         );
     }
@@ -130,6 +162,17 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
+     * Get the block children.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async blockChildren(request: IBlockChildrenRequest): Promise<IBlockChildrenResponse> {
+        return this.callApi<unknown, IBlockChildrenResponse>(
+            `stardust/block/children/${request.network}/${request.blockId}`, "get"
+        );
+    }
+
+    /**
      * Get the transaction included block.
      * @param request The request to send.
      * @returns The response from the request.
@@ -150,6 +193,20 @@ export class StardustApiClient extends ApiClient {
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(
             `stardust/output/${request.network}/${request.outputId}`, "get"
+        );
+    }
+
+    /**
+     * Get the output ids by tag feature (basic or nft).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async outputsByTag(request: ITaggedOutputsRequest): Promise<{ error?: string; outputs?: IOutputsResponse }> {
+        const params = FetchHelper.urlParams({ cursor: request.cursor });
+
+        return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
+            `stardust/output/tagged/${request.network}/${request.tag}/${request.outputType}${params}`,
+            "get"
         );
     }
 
@@ -185,7 +242,35 @@ export class StardustApiClient extends ApiClient {
      */
     public async milestoneStats(request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
         return this.callApi<unknown, IMilestoneAnalyticStats>(
-            `stardust/milestone/stats/${request.networkId}/${request.milestoneId}`,
+            `stardust/milestone/stats/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the latest milestones.
+     * @param network The network in context.
+     * @returns The latest milestones response.
+     */
+    public async latestMilestones(network: string): Promise<ILatestMilestonesReponse> {
+        return this.callApi<unknown, ILatestMilestonesReponse>(
+            `stardust/milestone/latest/${network}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the blocks (Ids) referenced by a Milestone.
+     * @param request The milestone analytic stats get request.
+     * @param request.network The network in context.
+     * @param request.milestoneId The milestone in context.
+     * @returns The milestone referenced blocks.
+     */
+    public async milestoneReferencedBlocks(
+        request: { network: string; milestoneId: string }
+    ): Promise<IMilestoneBlocksResponse> {
+        return this.callApi<unknown, IMilestoneBlocksResponse>(
+            `stardust/milestone/blocks/${request.network}/${request.milestoneId}`,
             "get"
         );
     }
@@ -210,37 +295,33 @@ export class StardustApiClient extends ApiClient {
     }
 
     /**
-     * Get the nfts of an address.
-     * @param request The request to send.
-     * @returns The response from the request.
+     * Download transaction history.
+     * @param network The network in context.
+     * @param address The address to download history for.
+     * @param targetDate The date to use.
+     * @returns The history.
      */
-    public async nftOutputs(request: INftOutputsRequest): Promise<INftOutputsResponse> {
-        return this.callApi<unknown, INftOutputsResponse>(
-            `stardust/nft/outputs/${request.network}/${request.address}`,
-            "get"
+    public async transactionHistoryDownload(
+        network: string,
+        address: string,
+        targetDate: string
+    ): Promise<IRawResponse> {
+        return this.callApiRaw(
+            `stardust/transactionhistory/dl/${network}/${address}`,
+            "post",
+            { targetDate }
         );
     }
+
 
     /**
      * Get the nft details by NFT address.
      * @param request The request to send.
      * @returns The response from the request.
      */
-     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
+    public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
         return this.callApi<unknown, INftDetailsResponse>(
             `stardust/nft/${request.network}/${request.nftId}`,
-            "get"
-        );
-    }
-
-    /**
-     * Get the nft details (mock).
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-     public async nftRegistryDetails(request: INftRegistryDetailsRequest): Promise<INftRegistryDetailsResponse> {
-        return this.callApi<unknown, INftRegistryDetailsResponse>(
-            `stardust/nft/mock/${request.network}/${request.nftId}`,
             "get"
         );
     }
@@ -286,18 +367,22 @@ export class StardustApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async analytics(request: IAnalyticStatsRequest): Promise<IAnalyticStats> {
-        return this.callApi<unknown, IAnalyticStats>(`stardust/analytics/${request.network}`, "get");
+    public async chronicleAnalytics(request: INetworkBoundGetRequest): Promise<IAnalyticStats> {
+        return this.callApi<unknown, IAnalyticStats>(
+            `stardust/analytics/${request.network}`,
+            "get"
+        );
     }
 
     /**
-     * Get the shimmer claiming stats.
+     * Get the influx analytics stats.
      * @param request The request to send.
+     * @param request.network The network to fetch for.
      * @returns The response from the request.
      */
-    public async shimmerClaimingAnalytics(request: IAnalyticStatsRequest): Promise<IShimmerClaimedResponse> {
-        return this.callApi<unknown, IShimmerClaimedResponse>(
-            `stardust/analytics/shimmer/${request.network}`, "get"
+    public async influxAnalytics(request: { network: string }): Promise<IInfluxDailyResponse> {
+        return this.callApi<unknown, IInfluxDailyResponse>(
+            `stardust/analytics/daily/${request.network}`, "get"
         );
     }
 
@@ -309,6 +394,49 @@ export class StardustApiClient extends ApiClient {
     public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
         return this.callApi<unknown, IStatsGetResponse>(
             `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
+            "get"
+        );
+    }
+
+    public async didDocument(request: IIdentityStardustResolveRequest): Promise<IIdentityStardustResolveResponse> {
+        return this.callApi<unknown, IIdentityStardustResolveResponse>(
+            `stardust/did/${request.network}/${request.did}/document`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the participation events details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async participationEventDetails(request: IParticipationEventRequest): Promise<IParticipationEventResponse> {
+        return this.callApi<unknown, IParticipationEventResponse>(
+            `stardust/participation/events/${request.network}/${request.eventId}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the richest addresses stats for a network.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async richestAddresses(request: INetworkBoundGetRequest): Promise<IRichestAddressesResponse> {
+        return this.callApi<unknown, IRichestAddressesResponse>(
+            `stardust/address/rich/${request.network}`,
+            "get"
+        );
+    }
+
+    /**
+     * Get the token distribution stats for a network.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async tokenDistribution(request: INetworkBoundGetRequest): Promise<ITokenDistributionResponse> {
+        return this.callApi<unknown, ITokenDistributionResponse>(
+            `stardust/token/distribution/${request.network}/`,
             "get"
         );
     }

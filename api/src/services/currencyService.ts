@@ -1,9 +1,9 @@
 import { CoinGeckoClient } from "../clients/coinGeckoClient";
 import { FixerClient } from "../clients/fixerClient";
 import { ServiceFactory } from "../factories/serviceFactory";
+import logger from "../logger";
 import { IConfiguration } from "../models/configuration/IConfiguration";
-import { ICurrencyState } from "../models/db/ICurrencyState";
-import { IMarket } from "../models/db/IMarket";
+import { ICoinStats, ICurrencyState } from "../models/db/ICurrencyState";
 import { IStorageService } from "../models/services/IStorageService";
 
 /**
@@ -21,23 +21,19 @@ export class CurrencyService {
     private static readonly MS_PER_DAY: number = 86400000;
 
     /**
-     * Coin Gecko API calls per minut.
-     */
-    private static readonly CG_CALLS_PER_MINUTE: number = 50;
-
-    /**
      * Service initial state.
      */
     private static readonly INITIAL_STATE: ICurrencyState = {
         id: "default",
-        lastCurrencyUpdate: 0,
-        lastFxUpdate: 0,
-        currentPriceEUR: 0,
-        marketCapEUR: 0,
-        volumeEUR: 0,
-        exchangeRatesEUR: {},
-        currencyNames: {}
+        lastFixerUpdate: 0,
+        fiatExchangeRatesEur: {},
+        coinStats: {}
     };
+
+    /**
+     * Currencies that will trigger a stats update.
+     */
+    private static readonly SUPPORTED_CURRENCIES = ["iota", "shimmer"];
 
     /**
      * Is the service already updating.
@@ -63,11 +59,19 @@ export class CurrencyService {
      * @param force Force the update.
      * @returns Log of operations.
      */
-    public async update(force: boolean = false): Promise<string> {
-        let log = `Currency Updating ${new Date().toUTCString()}\n`;
+    public async update(force: boolean = false): Promise<void> {
+        const now = new Date();
+        const nowMs = now.getTime();
+        const date = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+        const year = date.getFullYear().toString();
+        const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
+        const day = `0${date.getDate().toString()}`.slice(-2);
+        const fullDate = `${year}-${month}-${day}`;
+        logger.info(`Updating Currencies (${new Date().toUTCString()})`);
+
         try {
             if (this._isUpdating) {
-                log += "Already updating\n";
+                logger.debug("Currencies already updating...");
             } else {
                 this._isUpdating = true;
 
@@ -78,271 +82,113 @@ export class CurrencyService {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState || CurrencyService.INITIAL_STATE;
+                currentState = currentState?.coinStats !== undefined ?
+                    currentState :
+                    CurrencyService.INITIAL_STATE;
 
-                // If now date, default to 2 days ago
-                const lastCurrencyUpdate = currentState.lastCurrencyUpdate
-                    ? new Date(currentState.lastCurrencyUpdate)
-                    : new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
-                const lastFxUpdate = currentState.lastFxUpdate
-                    ? new Date(currentState.lastFxUpdate)
-                    : new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
-                const now = new Date();
-                const nowMs = now.getTime();
+                const lastFixerUpdate = currentState?.lastFixerUpdate > 0 ?
+                    new Date(currentState.lastFixerUpdate) :
+                    new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
 
-                // If we have no state, an update over 5 minutes old, the day has changed, or force update
-                if (!currentState ||
-                    nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
-                    (lastCurrencyUpdate.getDate() !== now.getDate()) ||
-                    force) {
-                    // Update FX rates every 4 hours so we dont hit rate limit
-                    if (nowMs - lastFxUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
-                        if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
-                            log += "Updating FX Rates\n";
-
-                            const fixerClient = new FixerClient(this._config.fixerApiKey);
-                            const data = await fixerClient.latest("EUR");
-
-                            if (data?.rates) {
-                                log += `Rates ${JSON.stringify(data?.rates)}\n`;
-
-                                currentState.exchangeRatesEUR = data?.rates;
-                                currentState.lastFxUpdate = nowMs;
-                            }
-                        } else {
-                            log += "Not updating fixer, no API Key\n";
-                        }
-                    }
-
-                    const marketStorage = ServiceFactory.get<IStorageService<IMarket>>("market-storage");
-
-                    const markets = await marketStorage.getAll();
-
-                    const startDate = new Date(2017, 5, 14);
-                    const endDate = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-
-                    const dates: number[] = [];
-
-                    // Look for gaps in the data
-                    const eur = markets.find(m => m.currency === "eur");
-                    if (eur) {
-                        const numDays = (endDate.getTime() - startDate.getTime()) / CurrencyService.MS_PER_DAY;
-
-                        const sortedByDate = eur.data.map(d => d.d).sort((a, b) => a.localeCompare(b));
-
-                        for (let i = 0; i < numDays; i++) {
-                            const iMs = startDate.getTime() + (i * CurrencyService.MS_PER_DAY);
-                            const iDate = this.indexDate(new Date(iMs));
-                            const idx = sortedByDate.indexOf(iDate);
-                            if (idx < 0) {
-                                dates.push(iMs);
-                            }
-                        }
-                    }
-
-                    // Make sure we have the final figures for yesterday
-                    if (!dates.includes(endDate.getTime() - CurrencyService.MS_PER_DAY)) {
-                        dates.push(endDate.getTime() - CurrencyService.MS_PER_DAY);
-                    }
-
-                    // Finally todays date
-                    if (!dates.includes(endDate.getTime())) {
-                        dates.push(endDate.getTime());
-                    }
-
-                    const numDates = dates.length > 50 ? CurrencyService.CG_CALLS_PER_MINUTE : dates.length;
-                    for (let i = 0; i < numDates; i++) {
-                        log += await this.updateMarketsForDate(
-                            markets, new Date(dates[i]), currentState, i === dates.length - 1);
-                    }
-
-                    for (const market of markets) {
-                        market.data.sort((a, b) => a.d.localeCompare(b.d));
-                    }
-
-                    await marketStorage.setAll(markets);
-
-                    currentState.lastCurrencyUpdate = nowMs;
-                    if (currencyStorageService) {
-                        await currencyStorageService.set(currentState);
-                    }
-                } else {
-                    log += "No update required\n";
+                // Update Fixer rates every 4 hours so we dont hit rate limit
+                if (nowMs - lastFixerUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
+                    await this.updateFixerDxyRates(currentState, fullDate);
                 }
+
+                for (const coin of CurrencyService.SUPPORTED_CURRENCIES) {
+                    const currentStats = currentState.coinStats[coin];
+
+                    // If now date, default to 2 days ago
+                    const lastCurrencyUpdate = currentStats?.lastUpdate ?
+                        new Date(currentStats.lastUpdate) :
+                        new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
+
+                    // If we have no state, an update over 5 minutes old, the day has changed, or force update
+                    if (
+                        !currentStats ||
+                        nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
+                        (lastCurrencyUpdate.getDate() !== now.getDate()) ||
+                        force
+                    ) {
+                        await this.updateCoinStats(coin, currentState, fullDate);
+
+                        if (currencyStorageService) {
+                            await currencyStorageService.set(currentState);
+                        }
+                    } else {
+                        logger.info("No currencies update required");
+                    }
+                }
+
                 this._isUpdating = false;
             }
         } catch (err) {
-            log += `Error updating currencies ${err.toString()}\n`;
+            logger.error(`Error updating currencies ${err.toString()}`);
             this._isUpdating = false;
         }
-        return log;
     }
 
     /**
-     * Update the stored currency names.
-     * @returns Log of operations.
+     * Update the EUR to DXY index currencies rates from Fixer.
+     * @param currentState Current currency state.
+     * @param date The date string for logging.
      */
-    public async updateCurrencyNames(): Promise<string> {
-        let log = "Updating Currency names\n";
+    private async updateFixerDxyRates(
+        currentState: ICurrencyState,
+        date: string
+    ): Promise<void> {
+        if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
+            logger.verbose(`[Fixer API] Updating Currency Rates (${date})...`);
 
-        const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
-        let currentState: ICurrencyState;
-
-        if (currencyStorageService) {
-            currentState = await currencyStorageService.get("default");
-        }
-
-        if (currentState && (!currentState.currencyNames || Object.keys(currentState.currencyNames).length === 0)) {
             const fixerClient = new FixerClient(this._config.fixerApiKey);
+            const data = await fixerClient.latest("EUR");
 
-            const data = await fixerClient.symbols();
-            if (data?.success) {
-                currentState.currencyNames = data.symbols;
-                if (currencyStorageService) {
-                    await currencyStorageService.set(currentState);
-                }
+            if (data?.rates && data?.base) {
+                logger.debug(`[Fixer API] Currency Rates: ${JSON.stringify(data?.rates)}`);
+                data.rates[data.base] = 1;
 
-                log += `${JSON.stringify(currentState.currencyNames)}\n`;
-            } else {
-                log += `${JSON.stringify(data)}\n`;
+                currentState.fiatExchangeRatesEur = data.rates;
+                currentState.lastFixerUpdate = Date.now();
             }
         } else {
-            log += "No update required\n";
+            logger.warn("Fixer Api key NOT FOUND!");
         }
-
-        return log;
     }
 
     /**
-     * Update the market data for the given date.
-     * @param markets The markets.
-     * @param date The date to update the market for.
-     * @param currentState Current state of currency.
-     * @param isToday Update the state.
-     * @returns Log of the operations.
+     * Update the Iota to EUR rates from CoinGecko.
+     * @param coin The coin to fetch stats for.
+     * @param currentState Current currency state.
+     * @param date The date string for logging.
      */
-    private async updateMarketsForDate(
-        markets: IMarket[],
-        date: Date,
+    private async updateCoinStats(
+        coin: string,
         currentState: ICurrencyState,
-        isToday: boolean): Promise<string> {
-        const year = date.getFullYear().toString();
-        const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
-        const day = `0${date.getDate().toString()}`.slice(-2);
-
-        const fullDate = `${year}-${month}-${day}`;
-
-        let log = `Coin Gecko ${fullDate}\n`;
-
-        let priceEUR;
-        let marketCapEUR;
-        let volumeEUR;
-
-        const dayData: {
-            t: number;
-            p: number;
-            m: number;
-            v: number;
-        }[] = [];
+        date: string
+    ): Promise<void> {
+        logger.verbose(`[Coin Gecko] Updating Coin stats (${date})...`);
 
         const coinGeckoClient = new CoinGeckoClient();
-        if (isToday) {
-            const coinMarkets = await coinGeckoClient.coinMarkets("iota", "eur");
+        const coinMarkets = await coinGeckoClient.coinMarkets(coin, "eur");
 
-            if (coinMarkets && coinMarkets.length > 0) {
-                priceEUR = coinMarkets[0].current_price;
-                marketCapEUR = coinMarkets[0].market_cap;
-                volumeEUR = coinMarkets[0].total_volume;
+        if (coinMarkets && coinMarkets.length > 0) {
+            const price = coinMarkets[0].current_price;
+            const volume24h = coinMarkets[0].total_volume;
+
+            let marketCap = coinMarkets[0].market_cap;
+            if (marketCap === 0) {
+                marketCap = coinMarkets[0].total_supply * price;
             }
 
-            log += `Markets ${JSON.stringify(coinMarkets)}\n`;
+            const coinStats: ICoinStats = {
+                price,
+                marketCap,
+                volume24h,
+                lastUpdate: Date.now()
+            };
 
-            const coinMarketChart = await coinGeckoClient.coinMarketChartDay("iota", "eur");
-
-            if (coinMarketChart?.prices &&
-                coinMarketChart.market_caps &&
-                coinMarketChart.total_volumes) {
-                for (let i = 0; i < coinMarketChart.prices.length; i++) {
-                    dayData.push({
-                        t: coinMarketChart.prices[i][0],
-                        p: coinMarketChart.prices[i][1],
-                        m: coinMarketChart.market_caps[i][1],
-                        v: coinMarketChart.total_volumes[i][1]
-                    });
-                }
-                log += `Market Chart ${JSON.stringify(dayData)}\n`;
-            }
-        } else {
-            const coinHistory = await coinGeckoClient.coinsHistory("iota", date);
-
-            // eslint-disable-next-line camelcase
-            if (coinHistory?.market_data && currentState.exchangeRatesEUR) {
-                log += `History ${JSON.stringify(coinHistory)}\n`;
-
-                priceEUR = coinHistory.market_data.current_price.eur;
-                marketCapEUR = coinHistory.market_data.market_cap.eur;
-                volumeEUR = coinHistory.market_data.total_volume.eur;
-            }
+            currentState.coinStats[coin] = coinStats;
+            logger.debug(`Markets ${JSON.stringify(coinMarkets)}`);
         }
-
-        if (priceEUR && marketCapEUR && volumeEUR) {
-            if (isToday || !currentState.currentPriceEUR) {
-                currentState.currentPriceEUR = priceEUR;
-                currentState.marketCapEUR = marketCapEUR;
-                currentState.volumeEUR = volumeEUR;
-            }
-
-            for (const currency in currentState.exchangeRatesEUR) {
-                let market: IMarket = markets.find(m => m.currency === currency.toLowerCase());
-                if (!market) {
-                    market = {
-                        currency: currency.toLowerCase(),
-                        data: [],
-                        day: []
-                    };
-                    markets.push(market);
-                }
-
-                const conversionRate = currentState.exchangeRatesEUR[currency];
-
-                const data = {
-                    d: fullDate,
-                    p: priceEUR * conversionRate,
-                    m: marketCapEUR * conversionRate,
-                    v: volumeEUR * conversionRate
-                };
-
-                const idx = market.data.findIndex(d => d.d === fullDate);
-                if (idx >= 0) {
-                    market.data[idx] = data;
-                } else {
-                    market.data.push(data);
-                }
-
-                if (dayData.length > 0) {
-                    market.day = dayData.map(d => ({
-                        t: d.t,
-                        p: d.p * conversionRate,
-                        m: d.m * conversionRate,
-                        v: d.v * conversionRate
-                    }));
-                }
-            }
-        }
-
-        return log;
-    }
-
-    /**
-     * Return the date in the formatted form.
-     * @param date The date to format;
-     * @returns The formatted date.
-     */
-    private indexDate(date: Date): string {
-        const year = date.getFullYear().toString();
-        const month = `0${(date.getMonth() + 1).toString()}`.slice(-2);
-        const day = `0${date.getDate().toString()}`.slice(-2);
-
-        return `${year}-${month}-${day}`;
     }
 }

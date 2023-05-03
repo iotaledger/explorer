@@ -1,0 +1,62 @@
+import { IBlock, IUTXOInput, TRANSACTION_PAYLOAD_TYPE, UnlockTypes } from "@iota/iota.js-stardust";
+import { useContext, useEffect, useState } from "react";
+import NetworkContext from "../../app/context/NetworkContext";
+import { ServiceFactory } from "../../factories/serviceFactory";
+import { IInput } from "../../models/api/stardust/IInput";
+import { IOutput } from "../../models/api/stardust/IOutput";
+import { STARDUST } from "../../models/config/protocolVersion";
+import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { TransactionsHelper } from "../stardust/transactionsHelper";
+import { useIsMounted } from "./useIsMounted";
+
+/**
+ * Fetch block inputs and outputs
+ * @param network The Network in context
+ * @param block The block
+ * @returns The inputs, unlocks, outputs, transfer total an a loading bool.
+ */
+export function useInputsAndOutputs(network: string, block: IBlock | null):
+    [
+        (IUTXOInput & IInput)[] | null,
+        UnlockTypes[] | null,
+        IOutput[] | null,
+        number | null,
+        boolean
+    ] {
+    const isMounted = useIsMounted();
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+    const { bech32Hrp } = useContext(NetworkContext);
+    const [tsxInputs, setInputs] = useState<(IUTXOInput & IInput)[] | null>(null);
+    const [tsxUnlocks, setUnlocks] = useState<UnlockTypes[] | null>(null);
+    const [tsxOutputs, setOutputs] = useState<IOutput[] | null>(null);
+    const [tsxTransferTotal, setTransferTotal] = useState<number | null>(null);
+
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        setIsLoading(true);
+        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            // eslint-disable-next-line no-void
+            void (async () => {
+                const { inputs, unlocks, outputs, transferTotal } =
+                    await TransactionsHelper.getInputsAndOutputs(
+                        block,
+                        network,
+                        bech32Hrp,
+                        apiClient
+                    );
+                if (isMounted) {
+                    setInputs(inputs);
+                    setUnlocks(unlocks);
+                    setOutputs(outputs);
+                    setTransferTotal(transferTotal);
+                    setIsLoading(false);
+                }
+            })();
+        } else {
+            setIsLoading(false);
+        }
+    }, [network, block]);
+
+    return [tsxInputs, tsxUnlocks, tsxOutputs, tsxTransferTotal, isLoading];
+}

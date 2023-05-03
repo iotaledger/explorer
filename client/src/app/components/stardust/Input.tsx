@@ -8,7 +8,7 @@ import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.s
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IInput } from "../../../models/api/stardust/IInput";
 import NetworkContext from "../../context/NetworkContext";
-import Bech32Address from "./Bech32Address";
+import Bech32Address from "./address/Bech32Address";
 import Output from "./Output";
 
 interface InputProps {
@@ -67,7 +67,6 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                             advancedMode
                             hideLabel
                             truncateAddress={false}
-                            showCopyButton={true}
                             labelPosition="bottom"
                         />
                     </div>

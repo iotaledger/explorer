@@ -4,14 +4,14 @@ import { TangleStatus } from "../../../models/tangleStatus";
 
 export interface MessageState {
     /**
-     * The message id that was the parameter.
-     */
-    paramMessageId?: string;
-
-    /**
      * The actual message Id in the case of an included message.
      */
     actualMessageId?: string;
+
+    /**
+     * The transaction id.
+     */
+    transactionId?: string;
 
     /**
      * Message.

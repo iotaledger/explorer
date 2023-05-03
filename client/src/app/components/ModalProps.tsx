@@ -1,3 +1,13 @@
+export interface ModalData {
+    title?: string;
+    description: string;
+    links?: {
+        label?: string;
+        href?: string;
+        isExternal?: boolean;
+    }[];
+}
+
 export interface ModalProps {
     /**
      * The clickable icon in "material icon string" format to show modal.
@@ -6,16 +16,7 @@ export interface ModalProps {
     /**
      * The title and description of Modal.
      */
-    data: {
-        title?: string;
-        description: string;
-        links?: {
-            label?: string;
-            href?: string;
-            isExternal?: boolean;
-        }[];
-    };
-
+    data: ModalData;
     /**
      * Show and hide state of modal.
      */

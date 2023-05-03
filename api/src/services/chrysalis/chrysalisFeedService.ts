@@ -1,6 +1,7 @@
-import { SingleNodeClient } from "@iota/iota.js";
+import { SingleNodeClient } from "@iota/iota.js-chrysalis";
 import type { IMqttClient } from "@iota/mqtt.js";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
 import { IFeedService } from "../../models/services/IFeedService";
 
 /**
@@ -40,7 +41,7 @@ export class ChrysalisFeedService implements IFeedService {
         this._user = user;
         this._password = password;
 
-        this._mqttClient.statusChanged(data => console.log("Chrysalis Mqtt Status", data));
+        this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Chrysalis status changed (${data.state})`));
     }
 
     /**
@@ -64,7 +65,7 @@ export class ChrysalisFeedService implements IFeedService {
                 const ms = await apiClient.milestone(message.index);
                 callback(message.index, ms.messageId, message.timestamp * 1000);
             } catch (err) {
-                console.error(err);
+                logger.error(`[ChrysalisFeedService] Subscribe Milestones failed: ${err}`);
             }
         });
     }

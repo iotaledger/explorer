@@ -5,8 +5,10 @@ node_modules
 application-data
 .DS_Store
 
+.idea/
 /api/dist
 /api/.env
+/api/logs/
 /client/build
 .idea/
 

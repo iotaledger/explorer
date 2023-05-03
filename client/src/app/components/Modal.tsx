@@ -1,11 +1,11 @@
 import React, { Component, ReactNode } from "react";
-import "./Modal.scss";
 import { ModalProps } from "./ModalProps";
 import { ModalState } from "./ModalState";
+import "./Modal.scss";
 
 
 /**
- * Component which will display a transaction.
+ * Component to reuse for info modals.
  */
 class Modal extends Component<ModalProps, ModalState> {
     /**
@@ -77,10 +77,8 @@ class Modal extends Component<ModalProps, ModalState> {
                             }}
                         />
                     </React.Fragment>
-
                 )}
             </div>
-
         );
     }
 

@@ -177,11 +177,11 @@ export class App {
                 const embed = new MessageEmbed()
                     .setTitle(status.label)
                     .setColor(color)
-                    .addField(status.protocol === "og"
+                    .addField(status.protocol === "legacy"
                         ? "TPS" : "MPS", status.itemsPerSecond.toString(), true)
-                    .addField(status.protocol === "og"
+                    .addField(status.protocol === "legacy"
                         ? "CTPS" : "CMPS", status.confirmedItemsPerSecond.toString(), true)
-                    .addField(status.protocol === "og" ? "Confirmation Rate" : "Referenced Rate",
+                    .addField(status.protocol === "legacy" ? "Confirmation Rate" : "Referenced Rate",
                         `${status.confirmationRate.toFixed(1)}%`, true)
                     .addField(
                         "Latest Milestone Index",

@@ -1,43 +1,21 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
-import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
-import { STARDUST } from "../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import { useOutputDetails } from "../../../helpers/hooks/useOutputDetails";
+import { formatSpecialBlockId } from "../../../helpers/stardust/valueFormatHelper";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
+import TruncatedId from "../../components/stardust/TruncatedId";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
     { match: { params: { network, outputId } } }
 ) => {
-    const [tangleCacheService] = useState(
-        ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`)
-    );
-    const [outputDetails, setOutputDetails] = useState<IOutputResponse | undefined>();
-    const [outputError, setOutputError] = useState<string | undefined>();
-
-    useEffect(() => {
-        tangleCacheService.outputDetails(network, outputId).then(response => {
-            if (!response.error) {
-                if (response.output && response.metadata) {
-                    const fetchedOutputDetails = {
-                        output: response.output,
-                        metadata: response.metadata
-                    };
-
-                    setOutputDetails(fetchedOutputDetails);
-                }
-            } else {
-                setOutputError(response.error);
-            }
-        }).catch(() => { });
-    }, []);
+    const [output, outputMetadata, , outputError] = useOutputDetails(network, outputId);
 
     if (outputError) {
         return (
@@ -64,9 +42,9 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
     const {
         blockId, transactionId, outputIndex, isSpent, milestoneIndexSpent, milestoneTimestampSpent,
         transactionIdSpent, milestoneIndexBooked, milestoneTimestampBooked
-    } = outputDetails?.metadata ?? {};
+    } = outputMetadata ?? {};
 
-    return (outputDetails &&
+    return (output &&
         <div className="output-page">
             <div className="wrapper">
                 <div className="inner">
@@ -83,8 +61,8 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             <Output
                                 network={network}
                                 outputId={outputId}
-                                output={outputDetails.output}
-                                amount={Number(outputDetails.output.amount)}
+                                output={output}
+                                amount={Number(output.amount)}
                                 showCopyAmount={true}
                                 isPreExpanded={true}
                             />
@@ -104,9 +82,9 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="value code row middle highlight">
                                     <Link
                                         to={`/${network}/block/${blockId}`}
-                                        className="margin-r-t"
+                                        className="margin-r-t text--no-decoration truncate"
                                     >
-                                        {blockId}
+                                        {formatSpecialBlockId(blockId)}
                                     </Link>
                                     <CopyButton copy={blockId} />
                                 </div>
@@ -118,14 +96,12 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Transaction ID
                                 </div>
-                                <div className="value code row middle highlight">
-                                    <Link
-                                        to={`/${network}/transaction/${transactionId}`}
-                                        className="margin-r-t"
-                                    >
-                                        {transactionId}
-                                    </Link>
-                                    <CopyButton copy={transactionId} />
+                                <div className="value code highlight">
+                                    <TruncatedId
+                                        id={transactionId}
+                                        link={`/${network}/transaction/${transactionId}`}
+                                        showCopyButton
+                                    />
                                 </div>
                             </div>
                         )}
@@ -156,7 +132,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneIndexSpent && (
+                        {milestoneIndexSpent !== undefined && (
                             <div className="section--data">
                                 <div className="label">
                                     Spent at milestone
@@ -169,7 +145,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneTimestampSpent && (
+                        {milestoneTimestampSpent !== undefined && (
                             <div className="section--data">
                                 <div className="label">
                                     Spent at milestone timestamp
@@ -199,7 +175,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneIndexBooked && (
+                        {milestoneIndexBooked !== undefined && (
                             <div className="section--data">
                                 <div className="label">
                                     Booked at milestone
@@ -212,7 +188,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                             </div>
                         )}
 
-                        {milestoneTimestampBooked && (
+                        {milestoneTimestampBooked !== undefined && milestoneTimestampBooked !== 0 && (
                             <div className="section--data">
                                 <div className="label">
                                     Booked on

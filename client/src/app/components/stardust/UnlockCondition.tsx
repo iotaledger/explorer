@@ -1,6 +1,8 @@
-import { ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
+import {
+    ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
     IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE,
-    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE, INodeInfoBaseToken } from "@iota/iota.js-stardust";
+    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE, INodeInfoBaseToken
+} from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -9,7 +11,7 @@ import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import Address from "./Address";
+import Address from "./address/Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
 import { UnlockConditionState } from "./UnlockConditionState";
 
@@ -39,7 +41,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
     /**
      * The component mounted.
      */
-     public async componentDidMount(): Promise<void> {
+    public async componentDidMount(): Promise<void> {
         super.componentDidMount();
     }
 
@@ -66,7 +68,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                     </div>
                 </div>
                 {isExpanded && (
-                    <div className="margin-l-t">
+                    <div className="padding-l-t left-border">
                         {unlockCondition.type === ADDRESS_UNLOCK_CONDITION_TYPE && (
                             <Address
                                 address={unlockCondition.address}
@@ -103,7 +105,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                         {DateHelper.formatShort(unlockCondition.unixTime * 1000)}
                                     </div>
                                 </React.Fragment>
-                        )}
+                            )}
                         {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
                             <React.Fragment>
                                 <Address

@@ -7,12 +7,11 @@ interface InfoBoxProps {
     confirmedItemsPerSecondPercent: string;
     marketCapCurrency: string;
     priceCurrency: string;
-    isShimmer: boolean;
     showMarket: boolean;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = (
-    { itemsPerSecond, confirmedItemsPerSecondPercent, marketCapCurrency, priceCurrency, isShimmer, showMarket }
+    { itemsPerSecond, confirmedItemsPerSecondPercent, marketCapCurrency, priceCurrency, showMarket }
 ) => (
     <div className="main-info-boxes">
         <div className="info-box">
@@ -30,15 +29,15 @@ const InfoBox: React.FC<InfoBoxProps> = (
                 {confirmedItemsPerSecondPercent}
             </span>
         </div>
-        {!isShimmer && showMarket && (
+        {showMarket && (
             <div className="info-box">
-                <span className="info-box--title">IOTA Market Cap</span>
+                <span className="info-box--title">SMR Market Cap</span>
                 <span className="info-box--value">{marketCapCurrency}</span>
             </div>
         )}
-        {!isShimmer && showMarket && (
+        {showMarket && (
             <div className="info-box">
-                <span className="info-box--title">Price / MI</span>
+                <span className="info-box--title">Price</span>
                 <span className="info-box--value">
                     {priceCurrency}
                 </span>

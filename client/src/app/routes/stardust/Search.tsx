@@ -2,16 +2,17 @@ import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, TransactionHelper } from "@iota/i
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
+import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleCacheService } from "../../../services/stardust/stardustTangleCacheService";
+import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
 import NetworkContext from "../../context/NetworkContext";
-import "../Search.scss";
 import { SearchRouteProps } from "../SearchRouteProps";
 import { SearchState } from "../SearchState";
+import "../Search.scss";
 
 /**
  * Component which will show the search page.
@@ -30,7 +31,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     /**
      * API Client for tangle requests.
      */
-    private readonly _tangleCacheService: StardustTangleCacheService;
+    private readonly _apiClient: StardustApiClient;
 
     /**
      * Create a new instance of Search.
@@ -43,7 +44,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         const protocolVersion: ProtocolVersion = (props.match.params.network &&
             networkService.get(props.match.params.network)?.protocolVersion) || STARDUST;
 
-        this._tangleCacheService = ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`);
+        this._apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
         this.state = {
             protocolVersion,
@@ -60,7 +61,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
      */
     public componentDidMount(): void {
         super.componentDidMount();
-        window.scrollTo(0, 0);
+        scrollToTop();
 
         this.updateState();
     }
@@ -218,10 +219,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                 setTimeout(
                     async () => {
                         if (this._isMounted) {
-                            const response = await this._tangleCacheService.search(
-                                this.props.match.params.network,
+                            const response = await this._apiClient.search({
+                                network: this.props.match.params.network,
                                 query
-                            );
+                            });
 
                             if (response) {
                                 let route = "";
@@ -244,27 +245,33 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.taggedOutputs) {
                                     route = "outputs";
                                     redirectState = {
-                                        outputIds: response.taggedOutputs.items,
+                                        outputIds: response.taggedOutputs,
                                         tag: query
                                     };
                                     routeParam = "";
                                 } else if (response.transactionBlock) {
                                     route = "transaction";
                                 } else if (response.aliasId) {
-                                    route = "alias";
+                                    route = "addr";
                                     const aliasAddress = this.buildAddressFromIdAndType(
                                         response.aliasId, ALIAS_ADDRESS_TYPE
                                     );
+                                    redirectState = {
+                                        addressDetails: aliasAddress
+                                    };
                                     routeParam = aliasAddress.bech32;
                                 } else if (response.foundryId) {
                                     route = "foundry";
                                     routeParam = response.foundryId;
                                 } else if (response.nftId) {
-                                    route = "nft";
+                                    route = "addr";
                                     const nftAddress = this.buildAddressFromIdAndType(
                                         response.nftId,
                                         NFT_ADDRESS_TYPE
                                     );
+                                    redirectState = {
+                                        addressDetails: nftAddress
+                                    };
                                     routeParam = nftAddress.bech32;
                                 } else if (response.milestone?.blockId) {
                                     route = "block";

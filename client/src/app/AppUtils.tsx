@@ -32,26 +32,28 @@ export const networkContextWrapper = (
     ) : null;
 };
 
-export const getPages = (currentNetwork: string, networks: INetwork[]) => (
-    networks.length > 0 ? [
-        { label: "Explorer", url: `/${currentNetwork}/` },
-        { label: "Visualizer", url: `/${currentNetwork}/visualizer/` }
-    ] : []
-);
+export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]) => {
+    const pages = [];
+    if (networks.length > 0 && currentNetwork !== undefined) {
+        pages.push({ label: "Explorer", url: `/${currentNetwork.network}/` });
+        pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+
+        if (currentNetwork.hasStatisticsSupport) {
+            pages.push({ label: "Statistics", url: `/${currentNetwork.network}/statistics/` });
+        }
+    }
+
+    return pages;
+};
 
 export const buildUtilities = (
     currentNetwork: string,
     networks: INetwork[],
-    isMarketed: boolean,
     identityResolverEnabled: boolean
 ) => {
     const utilities = [];
     if (networks.length > 0 && currentNetwork !== PROTONET) {
         utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
-        if (isMarketed) {
-            utilities.push({ label: "Markets", url: `/${currentNetwork}/markets/` });
-            utilities.push({ label: "Currency Converter", url: `/${currentNetwork}/currency-converter/` });
-        }
         if (identityResolverEnabled) {
             utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
         }
@@ -72,9 +74,7 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
         const footerArray = networks.filter(network => network.isEnabled)
             .map(n => ({ label: n.label, url: n.network.toString() }))
             .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
-            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` })
-            .concat({ label: "Markets", url: `${currentNetwork}/markets/` })
-            .concat({ label: "Currency Converter", url: `${currentNetwork}/currency-converter/` });
+            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
 
         if (identityResolverEnabled) {
             footerArray.push({ label: "Identity Resolver", url: `${currentNetwork}/identity-resolver/` });
@@ -85,18 +85,6 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
 
     return [{ label: "Maintenance Mode", url: "" }];
 };
-
-const copyrightInnerContent = "This explorer implementation is inspired by ";
-export const copyrightInner = (
-    <React.Fragment>
-        {copyrightInnerContent}
-        <span>
-            <a href="https://thetangle.org">
-                thetangle.org
-            </a>.
-        </span>
-    </React.Fragment>
-);
 
 export const buildMetaLabel = (network: NetworkType | undefined): string => {
     let metaLabel = "Tangle Explorer";

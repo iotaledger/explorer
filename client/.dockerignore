@@ -1,1 +1,6 @@
 node_modules
+build
+Dockerfile
+CHANGELOG.md
+DEPLOYMENT.md
+README.md

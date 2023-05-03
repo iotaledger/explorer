@@ -1,4 +1,4 @@
-import { IMessageMetadata } from "@iota/iota.js";
+import { IMessageMetadata } from "@iota/iota.js-chrysalis";
 import type { IMqttClient } from "@iota/mqtt.js";
 import { Converter } from "@iota/util.js";
 import { ServiceFactory } from "../../factories/serviceFactory";

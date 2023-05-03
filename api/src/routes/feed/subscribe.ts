@@ -1,25 +1,30 @@
 import SocketIO from "socket.io";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
 import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
+import { CHRYSALIS, LEGACY, STARDUST } from "../../models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
-import { IItemsService as IItemsServiceStardust } from "../../models/services/stardust/IItemsService";
+import { IItemsService as IItemsServiceLegacy } from "../../models/services/legacy/IItemsService";
 import { NetworkService } from "../../services/networkService";
+import { StardustFeed } from "../../services/stardust/feed/stardustFeed";
 import { ValidationHelper } from "../../utils/validationHelper";
 
 /**
  * Subscribe to transactions events.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param socket The websocket.
  * @param request The request.
  * @returns The response.
  */
 export async function subscribe(
-    config: IConfiguration,
+    _: IConfiguration,
     socket: SocketIO.Socket,
-    request: IFeedSubscribeRequest): Promise<IFeedSubscribeResponse> {
+    request: IFeedSubscribeRequest
+): Promise<IFeedSubscribeResponse> {
     let response: IFeedSubscribeResponse;
+    logger.verbose(`[subscribe] req = ${JSON.stringify(request)}`);
 
     try {
         const networkService = ServiceFactory.get<NetworkService>("network");
@@ -27,14 +32,45 @@ export async function subscribe(
         const networks = networkService.networkNames();
         ValidationHelper.oneOf(request.network, networks, "network");
 
-        const itemsService = ServiceFactory.get<IItemsServiceChrysalis | IItemsServiceStardust>(
-            `items-${request.network}`
-        );
+        const networkConfig = networkService.get(request.network);
 
-        if (itemsService) {
-            itemsService.subscribe(socket.id, async data => {
-                socket.emit("transactions", data);
-            });
+        if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
+            const service = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
+                `items-${request.network}`
+            );
+
+            if (service) {
+                service.subscribe(socket.id, async data => {
+                    socket.emit("transactions", data);
+                });
+            }
+        } else if (networkConfig.protocolVersion === STARDUST) {
+            ValidationHelper.string(request.feedSelect, "feedSelect");
+            ValidationHelper.oneOf(request.feedSelect, ["block", "milestone"], "feedSelect");
+
+            const service = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
+
+            if (service) {
+                await (
+                    request.feedSelect === "block" ?
+                        service.subscribeBlocks(
+                            socket.id,
+                            async data => {
+                                socket.emit("block", data);
+                            }
+                        ) :
+                        service.subscribeMilestones(
+                            socket.id,
+                            async data => {
+                                socket.emit("milestone", data);
+                            }
+                        )
+                );
+            }
+        } else {
+            return {
+                error: "Network protocol not supported for feed."
+            };
         }
 
         response = {

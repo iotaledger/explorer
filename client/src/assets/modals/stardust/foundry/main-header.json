@@ -1,0 +1,11 @@
+{
+    "title": "Foundry",
+    "description": "<p>Stardust introduces the concept of native tokens, or also called user-defined custom tokens. These tokens are minted into existence by token foundries, represented as Foundry Outputs on protocol level. The foundry defines the supply control rules, that is, how many tokens can ever be created.</p>",
+    "links": [
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/foundry",
+        "isExternal": true
+      }
+    ]
+}
