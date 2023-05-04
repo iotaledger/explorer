@@ -125,7 +125,7 @@ export class SearchExecutor {
         if (searchQuery.output) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchPermanodeThenNode<string, IOutputResponse>(
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputResponse>(
                         searchQuery.output,
                         "output",
                         network
@@ -148,7 +148,7 @@ export class SearchExecutor {
         if (searchQuery.aliasId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.aliasId,
                         "alias",
                         network,
@@ -174,7 +174,7 @@ export class SearchExecutor {
         if (searchQuery.nftId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.nftId,
                         "nft",
                         network,
@@ -200,7 +200,7 @@ export class SearchExecutor {
         if (searchQuery.foundryId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchPermanodeThenNode<string, IOutputsResponse>(
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.foundryId,
                         "foundry",
                         network,
