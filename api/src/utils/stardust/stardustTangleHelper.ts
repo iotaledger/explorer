@@ -587,64 +587,6 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Generic helper function to try fetching from permanode client (if configured).
-     * On failure (or not present), we try to fetch from node.
-     * @param args The argument(s) to pass to the fetch calls.
-     * @param methodName The function to call on the client.
-     * @param network The network config in context.
-     * @param isIndexerCall The boolean flag for indexer api instead of core api.
-     * @returns The results or null if call(s) failed.
-     */
-    public static async tryFetchPermanodeThenNode<A, R>(
-        args: A,
-        methodName: string,
-        network: INetwork,
-        isIndexerCall: boolean = false
-    ): Promise<R> | null {
-        const {
-            provider, user, password, permaNodeEndpoint,
-            permaNodeEndpointUser, permaNodeEndpointPassword, disableApiFallback
-        } = network;
-        const isFallbackEnabled = !disableApiFallback;
-
-        if (permaNodeEndpoint) {
-            const permanode = !isIndexerCall ?
-                new SingleNodeClient(
-                    permaNodeEndpoint,
-                    { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-                ) :
-                new IndexerPluginClient(
-                    new SingleNodeClient(
-                        permaNodeEndpoint,
-                        { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-                    )
-                );
-
-            try {
-                // try fetch from permanode (chronicle)
-                const result: Promise<R> = permanode[methodName](args);
-                return await result;
-            } catch { }
-        }
-
-        if (!permaNodeEndpoint || isFallbackEnabled) {
-            const node = !isIndexerCall ?
-                new SingleNodeClient(provider, { userName: user, password }) :
-                new IndexerPluginClient(
-                    new SingleNodeClient(provider, { userName: user, password })
-                );
-
-            try {
-                // try fetch from node
-                const result: Promise<R> = node[methodName](args);
-                return await result;
-            } catch { }
-        }
-
-        return null;
-    }
-
-    /**
      * Generic helper function to try fetching from node client.
      * On failure (or not present), we try to fetch from permanode (if configured).
      * @param args The argument(s) to pass to the fetch calls.

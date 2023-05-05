@@ -157,7 +157,12 @@ export class SearchQueryBuilder {
             }
 
             // also perform a tag search
-            tag = Converter.utf8ToHex(this.query, true);
+            const maybeTag = Converter.isHex(this.query, true) ?
+                    HexHelper.addPrefix(this.query) :
+                    Converter.utf8ToHex(this.query, true);
+            if (maybeTag.length < 66) {
+                tag = maybeTag;
+            }
         }
 
         return {
