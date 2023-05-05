@@ -276,7 +276,7 @@ const buildAppRoutes = (
             )}
             {protocolVersion === STARDUST && (
                 withNetworkContext(stardustRoutes)
-            )} &&
+            )}
             {protocolVersion === PROTO && (
                 protoRoutes
             )}
