@@ -34,6 +34,17 @@ export function formatAmount(
 }
 
 /**
+ * Formats a number by adding commas as thousands separators.
+ * @param {string|number} value - The number to format. Can be a string or a number.
+ * @returns {string} The formatted number as a string, with commas separating thousands.
+ */
+export function formatNumberWithCommas(
+    value: string | number
+): string {
+    return BigInt(value).toLocaleString("en", { useGrouping: true });
+}
+
+/**
  * Format amount to two decimal places without rounding off.
  * @param value The raw amount to format.
  * @param precision The decimal places to show.

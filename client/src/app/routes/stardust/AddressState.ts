@@ -1,4 +1,4 @@
-import { BASIC_OUTPUT_TYPE, Bech32Helper, HexEncodedString, IAliasOutput, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, OutputTypes } from "@iota/iota.js-stardust";
+import { ALIAS_ADDRESS_TYPE, BASIC_OUTPUT_TYPE, Bech32Helper, HexEncodedString, IAliasOutput, IMetadataFeature, IOutputResponse, METADATA_FEATURE_TYPE, NFT_ADDRESS_TYPE, OutputTypes } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
@@ -95,13 +95,18 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
 
     const addressBech32: string | null = state.bech32AddressDetails?.bech32 ?? null;
     const addressHex: string | null = state.bech32AddressDetails?.hex ?? null;
+    const addressType: number | null = state.bech32AddressDetails?.type ?? null;
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
-    const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(network, addressHex);
-    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressHex);
+    const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(
+        network, addressType === NFT_ADDRESS_TYPE ? addressHex : null
+    );
+    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(
+        network, addressType === ALIAS_ADDRESS_TYPE ? addressHex : null
+    );
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
-        network, state.bech32AddressDetails
+        network, addressType === ALIAS_ADDRESS_TYPE ? state.bech32AddressDetails : null
     );
     const [balance, sigLockedBalance] = useAddressBalance(
         network, state.bech32AddressDetails?.bech32 ?? null
