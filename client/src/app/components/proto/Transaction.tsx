@@ -32,7 +32,7 @@ const Transaction: React.FC<TransactionProps> = ({ network, txId }) => {
                         <div className="label">ID</div>
                         <div className="value">
                             <ShortID
-                                hasEpoch={false} linkType={LinkType.Transaction}
+                                hasSlot={false} linkType={LinkType.Transaction}
                                 network={network} id={txId}
                             />
                         </div>
@@ -105,7 +105,7 @@ const Transaction: React.FC<TransactionProps> = ({ network, txId }) => {
                         <div className="value">
                             {txMeta?.conflictIDs.map((conflictID, _) => (
                                 <ShortID
-                                    hasEpoch={false} linkType={LinkType.Conflict}
+                                    hasSlot={false} linkType={LinkType.Conflict}
                                     key={conflictID}
                                     network={network} id={conflictID}
                                 />

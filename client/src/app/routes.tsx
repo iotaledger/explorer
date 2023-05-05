@@ -28,10 +28,10 @@ import LegacyVisualizer from "./routes/legacy/Visualizer";
 import ProtoAddressPage from "./routes/proto/AddressPage";
 import ProtoBlockPage from "./routes/proto/BlockPage";
 import ProtoConflictPage from "./routes/proto/ConflictPage";
-import ProtoEpochPage from "./routes/proto/EpochPage";
 import ProtoLanding from "./routes/proto/landing/Landing";
 import ProtoOutputPage from "./routes/proto/OutputPage";
 import ProtoSearch from "./routes/proto/Search";
+import ProtoSlotPage from "./routes/proto/SlotPage";
 import ProtoTransactionPage from "./routes/proto/TransactionPage";
 import ProtoVisualizer from "./routes/proto/Visualizer";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
@@ -221,9 +221,9 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={ProtoLanding}
         />,
-        <Route exact path="/:network/epoch/:epochId"
+        <Route exact path="/:network/slot/:slotId"
             key={keys.next().value}
-            component={ProtoEpochPage}
+            component={ProtoSlotPage}
         />,
         <Route exact path="/:network/block/:blockId"
             key={keys.next().value}
@@ -258,7 +258,7 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={StardustVisualizer}
         />,
-        <Route exact path="/:network/validators/:epochId"
+        <Route exact path="/:network/validators/:slotId"
             key={keys.next().value}
             component={StardustLanding}
         />

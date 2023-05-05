@@ -2,12 +2,12 @@ import React from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { useAddress } from "../../../helpers/proto/useAddress";
 import { useBlock } from "../../../helpers/proto/useBlock";
-import { useEpoch } from "../../../helpers/proto/useEpoch";
+import { useConflict } from "../../../helpers/proto/useConflict";
 import { useOutput } from "../../../helpers/proto/useOutput";
+import { useSlot } from "../../../helpers/proto/useSlot";
 import { useTx } from "../../../helpers/proto/useTx";
 import Spinner from "../../components/Spinner";
 import "./Search.scss";
-import { useConflict } from "../../../helpers/proto/useConflict";
 
 interface SearchProps {
     network: string;
@@ -15,18 +15,18 @@ interface SearchProps {
 }
 
 const Search: React.FC<RouteComponentProps<SearchProps>> = (
-    { history, match: { params: { network, query } } }
+    { match: { params: { network, query } } }
 ) => {
     const [tx, isTxLoading] = useTx(network, query);
-    const [block, payloadName, isBlockLoading] = useBlock(network, query);
+    const [block, , isBlockLoading] = useBlock(network, query);
     const [conflict, isConflictLoading] = useConflict(network, query);
     const [address, isAddressLoading] = useAddress(network, query);
     const [output, isOutputLoading] = useOutput(network, query);
-    const epochIndex = Number.parseInt(query, 10);
-    const [epoch, isEpochLoading] = epochIndex ? useEpoch(network, "", epochIndex) : useEpoch(network, query);
+    const slotIndex = Number.parseInt(query, 10);
+    const [slot, isSlotLoading] = slotIndex ? useSlot(network, "", slotIndex) : useSlot(network, query);
 
     const isSearching = isTxLoading || isBlockLoading || isConflictLoading ||
-        isAddressLoading || isOutputLoading || isEpochLoading;
+        isAddressLoading || isOutputLoading || isSlotLoading;
 
     if (!isSearching) {
         if (block) {
@@ -41,8 +41,8 @@ const Search: React.FC<RouteComponentProps<SearchProps>> = (
         if (tx) {
             return <Redirect to={`/${network}/transaction/${query}`} />;
         }
-        if (epoch) {
-            return <Redirect to={`/${network}/epoch/${query}`} />;
+        if (slot) {
+            return <Redirect to={`/${network}/slot/${query}`} />;
         }
         if (address) {
             return <Redirect to={`/${network}/address/${query}`} />;
@@ -73,7 +73,7 @@ const Search: React.FC<RouteComponentProps<SearchProps>> = (
                             </div>
                             <div className="card--content">
                                 <p>
-                                    We could not find any blocks, addresses, outputs or epochs
+                                    We could not find any blocks, addresses, outputs or slots
                                     for the query.
                                 </p>
                                 <br />
@@ -90,12 +90,12 @@ const Search: React.FC<RouteComponentProps<SearchProps>> = (
                                 <br />
                                 <ul>
                                     <li>
-                                        <span>Epochs</span>
-                                        <span>Numeric or 47 base58 characters (incl. epoch index)</span>
+                                        <span>Slots</span>
+                                        <span>Numeric or 47 base58 characters (incl. slot index)</span>
                                     </li>
                                     <li>
                                         <span>Blocks</span>
-                                        <span>47 base58 characters (incl. epoch index)</span>
+                                        <span>47 base58 characters (incl. slot index)</span>
                                     </li>
                                     <li>
                                         <span>Addresses</span>

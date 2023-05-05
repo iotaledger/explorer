@@ -7,45 +7,40 @@ export enum LinkType {
     Block,
     Transaction,
     Output,
-    Epoch,
+    Slot,
     Conflict
-}
-
-/**
- *
- * @param linkType
- * @param props
- */
-function linkByType(props: ShortIDProps): string {
-    switch (props.linkType) {
-        case LinkType.Block: {
-            return `/${props.network}/block/${props.id}`;
-        }
-        case LinkType.Transaction: {
-            return `/${props.network}/transaction/${props.id}`;
-        }
-        case LinkType.Epoch: {
-            return `/${props.network}/epoch/${props.id}`;
-        }
-        case LinkType.Output: {
-            return `/${props.network}/output/${props.id}`;
-        }
-        case LinkType.Conflict: {
-            return `/${props.network}/conflict/${props.id}`;
-        }
-        default: {
-            return "";
-        }
-    }
 }
 
 interface ShortIDProps {
     network: string;
     id: string;
     linkType: LinkType;
-    hasEpoch?: boolean;
+    hasSlot?: boolean;
     marginTop?: boolean;
 }
+
+const linkByType = ({ network, id, linkType }: ShortIDProps): string => {
+    switch (linkType) {
+        case LinkType.Block: {
+            return `/${network}/block/${id}`;
+        }
+        case LinkType.Transaction: {
+            return `/${network}/transaction/${id}`;
+        }
+        case LinkType.Slot: {
+            return `/${network}/slot/${id}`;
+        }
+        case LinkType.Output: {
+            return `/${network}/output/${id}`;
+        }
+        case LinkType.Conflict: {
+            return `/${network}/conflict/${id}`;
+        }
+        default: {
+            return "";
+        }
+    }
+};
 
 const ShortID: React.FC<ShortIDProps> = props => {
     const link = linkByType(props);
@@ -53,7 +48,7 @@ const ShortID: React.FC<ShortIDProps> = props => {
     const inner = (
         <React.Fragment>
             {props.id.slice(0, 30)}...
-            {props.hasEpoch ?
+            {props.hasSlot ?
                 <span>: {props.id.split(":")[1]}</span>
                 : <span />} <span className="id-part">{props.id}</span>
         </React.Fragment>
@@ -78,7 +73,7 @@ const ShortID: React.FC<ShortIDProps> = props => {
 };
 
 ShortID.defaultProps = {
-    hasEpoch: false,
+    hasSlot: false,
     marginTop: false
 };
 

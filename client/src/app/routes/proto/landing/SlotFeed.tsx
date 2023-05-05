@@ -2,26 +2,26 @@ import { IWsNodeStatus } from "@iota/protonet.js";
 import React from "react";
 import { INetwork } from "../../../../models/config/INetwork";
 import Spinner from "../../../components/Spinner";
-import "./EpochFeed.scss";
 import ShortID, { LinkType } from "../ShortID";
-import EpochFeedItem from "./EpochFeedItem";
+import SlotFeedItem from "./SlotFeedItem";
+import "./SlotFeed.scss";
 
-interface EpochFeedProps {
+interface SlotFeedProps {
     networkConfig: INetwork;
-    latestEpochIndices: number[];
-    latestEpochIndex?: number;
+    latestSlotIndices: number[];
+    latestSlotIndex?: number;
     status?: IWsNodeStatus;
 }
 
-const EpochFeed: React.FC<EpochFeedProps> = (
-    { networkConfig, latestEpochIndices, latestEpochIndex, status }
+const SlotFeed: React.FC<SlotFeedProps> = (
+    { networkConfig, latestSlotIndices, latestSlotIndex, status }
 ) => {
     const network = networkConfig.network;
 
     return (
         <>
             <div className="section--header milestone-feed-header row">
-                <h2>Latest Epochs</h2>
+                <h2>Latest Slots</h2>
             </div>
             <div className="row row--tablet-responsive fill">
                 <div className="col fill margin-b-s">
@@ -64,20 +64,21 @@ const EpochFeed: React.FC<EpochFeedProps> = (
                     <span className="label ms-txs">Txs</span>
                     <span className="label ms-timestamp">Timestamp</span>
                 </div>
-                {latestEpochIndices.length === 0 && (<Spinner />)}
-                {latestEpochIndices.map(epochIndex => (
-                    <EpochFeedItem
-                        index={epochIndex} network={network} key={epochIndex}
-                        isLatestEpoch={epochIndex === latestEpochIndex} latestEpochIndex={latestEpochIndex ?? 0}
+                {latestSlotIndices.length === 0 && (<Spinner />)}
+                {latestSlotIndices.map(slotIndex => (
+                    <SlotFeedItem
+                        index={slotIndex} network={network} key={slotIndex}
+                        isLatestSlot={slotIndex === latestSlotIndex} latestSlotIndex={latestSlotIndex ?? 0}
                     />))}
             </div>
         </>
     );
 };
 
-EpochFeed.defaultProps = {
-    latestEpochIndex: undefined,
+SlotFeed.defaultProps = {
+    latestSlotIndex: undefined,
     status: undefined
 };
 
-export default EpochFeed;
+export default SlotFeed;
+

@@ -3,15 +3,15 @@
 @import "../../../scss/media-queries";
 @import "../../../scss/variables";
 
-.epoch-page {
+.slot-page {
   display: flex;
   flex-direction: column;
 
-  .epoch--header {
+  .slot--header {
     display: flex;
     align-items: center;
 
-    .epoch--header__switch {
+    .slot--header__switch {
       display: flex;
       align-items: center;
 

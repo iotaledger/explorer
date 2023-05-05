@@ -8,8 +8,9 @@ type OutputResult = IOutput | null | undefined;
 
 /**
  *
- * @param network
- * @param outputId
+ * @param network The Network in context.
+ * @param outputId The output id to load.
+ * @returns the hook.
  */
 export function useOutput(network: string, outputId: string): [OutputResult, boolean] {
     const [output, setOutput] = useState<IOutput | null>();
@@ -17,7 +18,8 @@ export function useOutput(network: string, outputId: string): [OutputResult, boo
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             try {
                 const fetchedOutput = await apiClient.output({ network, outputId });
@@ -40,8 +42,9 @@ type OutputMetadataResult = IOutputMetadata | null | undefined;
 
 /**
  *
- * @param network
- * @param outputId
+ * @param network The Network in context.
+ * @param outputId The output id to load.
+ * @returns the hook.
  */
 export function useOutputMetadata(network: string, outputId: string): [OutputMetadataResult, boolean] {
     const [outputMeta, setOutputMeta] = useState<IOutputMetadata | null>();
@@ -49,7 +52,8 @@ export function useOutputMetadata(network: string, outputId: string): [OutputMet
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             const fetchedOutputMeta = await apiClient.outputMetadata({ network, outputId });
             if (fetchedOutputMeta.error || fetchedOutputMeta.meta === undefined) {
