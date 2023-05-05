@@ -158,22 +158,18 @@ export const routes: IRoute[] = [
         folder: "proto/block/metadata", func: "get"
     },
     { path: "/proto/address/:network/:addressBase58", method: "get", folder: "proto/address", func: "get" },
-    { path: "/proto/epoch/:network/:epochId", method: "get", folder: "proto/epoch", func: "get" },
+    { path: "/proto/slot/:network/:slotId", method: "get", folder: "proto/slot", func: "get" },
     {
-        path: "/proto/epoch/:network/index/:index", method: "get",
-        folder: "proto/epoch/index", func: "get"
+        path: "/proto/slot/:network/index/:index", method: "get",
+        folder: "proto/slot/index", func: "get"
     },
     {
-        path: "/proto/epoch/:network/transactions/:index", method: "get",
-        folder: "proto/epoch/transactions", func: "get"
+        path: "/proto/slot/:network/transactions/:index", method: "get",
+        folder: "proto/slot/transactions", func: "get"
     },
     {
-        path: "/proto/epoch/:network/blocks/:index", method: "get",
-        folder: "proto/epoch/blocks", func: "get"
-    },
-    {
-        path: "/proto/epoch/:network/voters/:index", method: "get",
-        folder: "proto/epoch/voters", func: "get"
+        path: "/proto/slot/:network/blocks/:index", method: "get",
+        folder: "proto/slot/blocks", func: "get"
     },
     { path: "/proto/conflict/:network/:conflictId", method: "get", folder: "proto/conflict", func: "get" },
     {

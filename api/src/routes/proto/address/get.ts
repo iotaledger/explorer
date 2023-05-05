@@ -31,7 +31,7 @@ export async function get(
     const client = new SingleNodeClient(networkConfig.provider);
     try {
         const address = await client.address(request.addressBase58);
-        return { address };
+        return address;
     } catch (e) {
         return { error: e };
     }

@@ -1,7 +1,7 @@
 import { SingleNodeClient } from "@iota/protonet.js";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IEpochBlocksReponse } from "../../../../models/api/proto/IEpochBlocks";
-import { IEpochRequest } from "../../../../models/api/proto/IEpochRequest";
+import { ISlotRequest } from "../../../../models/api/proto/ISlotRequest";
+import { ISlotResponse } from "../../../../models/api/proto/ISlotResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { PROTO } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  */
 export async function get(
     _: IConfiguration,
-    request: IEpochRequest
-): Promise<IEpochBlocksReponse> {
+    request: ISlotRequest
+): Promise<ISlotResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -30,8 +30,8 @@ export async function get(
 
     const client = new SingleNodeClient(networkConfig.provider);
     try {
-        const blocks = await client.epochBlocks(request.index);
-        return { blocks };
+        const slot = await client.slotByIndex(request.index);
+        return { slot };
     } catch (e) {
         return { error: e };
     }

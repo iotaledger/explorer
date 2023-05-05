@@ -276,11 +276,6 @@ function initProtoServices(socketServer: SocketIOServer, networkConfig: INetwork
         socketServer.to(`proto-${key}`).emit(key, msg);
     });
 
-    protoWebSocketClient.onChat(msg => {
-        const key = WsMsgType.Chat.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
     protoWebSocketClient.onRateSetterMetric(msg => {
         const key = WsMsgType.RateSetterMetric.toString();
         socketServer.to(`proto-${key}`).emit(key, msg);

@@ -1,7 +1,7 @@
 import { SingleNodeClient } from "@iota/protonet.js";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IEpochRequest } from "../../../../models/api/proto/IEpochRequest";
-import { IEpochTransactionsResponse } from "../../../../models/api/proto/IEpochTransactions";
+import { ISlotRequest } from "../../../../models/api/proto/ISlotRequest";
+import { ISlotTransactionsResponse } from "../../../../models/api/proto/ISlotTransactions";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { PROTO } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  */
 export async function get(
     _: IConfiguration,
-    request: IEpochRequest
-): Promise<IEpochTransactionsResponse> {
+    request: ISlotRequest
+): Promise<ISlotTransactionsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -30,7 +30,7 @@ export async function get(
 
     const client = new SingleNodeClient(networkConfig.provider);
     try {
-        const txs = await client.epochTransactions(request.index);
+        const txs = await client.slotTransactions(request.index);
         return { transactions: txs };
     } catch (e) {
         return { error: e };

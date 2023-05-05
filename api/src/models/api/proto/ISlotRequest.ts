@@ -1,13 +1,13 @@
-export interface IEpochRequest {
+export interface ISlotRequest {
     /**
      * The network to search on.
      */
     network: string;
 
     /**
-     * The epoch id to get the details for.
+     * The slot id to get the details for.
      */
-    epochId?: string;
+    slotId?: string;
 
     index?: number;
 }

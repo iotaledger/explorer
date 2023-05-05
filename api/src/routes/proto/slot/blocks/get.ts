@@ -1,7 +1,7 @@
 import { SingleNodeClient } from "@iota/protonet.js";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { IEpochRequest } from "../../../../models/api/proto/IEpochRequest";
-import { IEpochVotersWeightResponse } from "../../../../models/api/proto/IEpochVotersWeight";
+import { ISlotBlocksReponse } from "../../../../models/api/proto/ISlotBlocks";
+import { ISlotRequest } from "../../../../models/api/proto/ISlotRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { PROTO } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  */
 export async function get(
     _: IConfiguration,
-    request: IEpochRequest
-): Promise<IEpochVotersWeightResponse> {
+    request: ISlotRequest
+): Promise<ISlotBlocksReponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -30,8 +30,8 @@ export async function get(
 
     const client = new SingleNodeClient(networkConfig.provider);
     try {
-        const voters = await client.epochVotersWeight(request.index);
-        return { voters };
+        const blocks = await client.slotBlocks(request.index);
+        return { blocks };
     } catch (e) {
         return { error: e };
     }
