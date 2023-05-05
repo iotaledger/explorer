@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.2.0
+
+* Add Token distribution Stats
+* Improve Address page loading time
+* Improve Visualizer UI
+* Support for rendering Participation Events
+* Improve UI, bug fixes, and code refactor for better performance and maintainability.
+
 ## v3.1.0
 
 * Support for rendering NFT metadata
