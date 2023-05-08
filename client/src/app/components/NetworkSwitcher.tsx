@@ -35,7 +35,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                 <div
                     style={headerStyle}
                     className={classNames("network--switcher__header row middle", { opened: isExpanded })}
-                    onClick={isSingleNetwork ? () => { } : onClick}
+                    onClick={isSingleNetwork ? () => {} : onClick}
                 >
                     <div className="network--switcher__dropdown">
                         <div className="eyebrow">{eyebrow}</div>

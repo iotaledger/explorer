@@ -224,7 +224,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 query
                             });
 
-                            if (response) {
+                            if (response && Object.keys(response).length > 0) {
                                 let route = "";
                                 let routeParam = query;
                                 let redirectState = {};

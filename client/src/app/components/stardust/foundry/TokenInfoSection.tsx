@@ -1,6 +1,7 @@
 import { TokenSchemeTypes } from "@iota/iota.js-stardust";
 import React from "react";
 import { useTokenRegistryNativeTokenCheck } from "../../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
+import { formatNumberWithCommas } from "../../../../helpers/stardust/valueFormatHelper";
 import { ITokenMetadata } from "../../../../models/api/stardust/foundry/ITokenMetadata";
 import "./TokenInfoSection.scss";
 
@@ -22,9 +23,9 @@ interface TokenInfoSectionProps {
 const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenScheme, tokenMetadata }) => {
     const [isWhitelisted] = useTokenRegistryNativeTokenCheck(tokenId);
 
-    const maximumSupply = Number(tokenScheme.maximumSupply);
-    const mintedTokens = Number(tokenScheme.mintedTokens);
-    const meltedTokens = Number(tokenScheme.meltedTokens);
+    const maximumSupply = formatNumberWithCommas(tokenScheme.maximumSupply);
+    const mintedTokens = formatNumberWithCommas(tokenScheme.mintedTokens);
+    const meltedTokens = formatNumberWithCommas(tokenScheme.meltedTokens);
     return (
         <div className="token-info">
             <div className="section no-border-bottom padding-b-0">

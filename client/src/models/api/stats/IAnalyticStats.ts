@@ -12,6 +12,7 @@ export interface IAnalyticStats extends IResponse {
     dailyAddresses?: string;
     lockedStorageDeposit?: string;
     unclaimedShimmer?: string;
+    TODO: Move this somewhere else
     mana?: IProtoStats;
 }
 
