@@ -12,11 +12,11 @@ interface AddressPageProps {
 }
 
 const AddressPage: React.FC<RouteComponentProps<AddressPageProps>> = (
-    { history, match: { params: { network, address } } }
+    { match: { params: { network, address } } }
 ) => {
     const [addr, isAddrLoading] = useAddress(network, address);
 
-    if (isAddrLoading || !addr) {
+    if (isAddrLoading || !addr || !addr.unspentOutputs || !addr.spentOutputs) {
         return (
             <div className="address-page">
                 <div className="wrapper">
@@ -36,33 +36,35 @@ const AddressPage: React.FC<RouteComponentProps<AddressPageProps>> = (
     const balances = calcBalance(addr.unspentOutputs);
 
     const unspentOutputNodes = addr.unspentOutputs.map(output => (
-        <div key={output.outputID.base58} className="transaction-payload">
-            <div className="row row--tablet-responsive fill">
-                <div className="card col fill">
-                    <div key={output.outputID.base58} className="transaction-from card--content">
-                        <Output
-                            key={output.outputID.base58} outputId={output.outputID.base58}
-                            network={network} isPreExpanded={false}
-                        />
+        output.outputID ?
+            <div key={output.outputID.base58} className="transaction-payload">
+                <div className="row row--tablet-responsive fill">
+                    <div className="card col fill">
+                        <div key={output.outputID.base58} className="transaction-from card--content">
+                            <Output
+                                key={output.outputID.base58} outputId={output.outputID.base58}
+                                network={network} isPreExpanded={false}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> : null
     ));
 
     const spentOutputNodes = addr.spentOutputs.map(output => (
-        <div key={output.outputID.base58} className="transaction-payload">
-            <div className="row row--tablet-responsive fill">
-                <div className="card col fill">
-                    <div className="card--content">
-                        <Output
-                            key={output.outputID.base58} outputId={output.outputID.base58}
-                            network={network} isPreExpanded={false}
-                        />
+        output.outputID ?
+            <div key={output.outputID.base58} className="transaction-payload">
+                <div className="row row--tablet-responsive fill">
+                    <div className="card col fill">
+                        <div className="card--content">
+                            <Output
+                                key={output.outputID.base58} outputId={output.outputID.base58}
+                                network={network} isPreExpanded={false}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> : null
     ));
 
     return (

@@ -1,3 +1,4 @@
+import moment from "moment";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import metadataMessage from "../../../assets/modals/stardust/block/metadata.json";
@@ -15,7 +16,7 @@ interface BlockPageProps {
 }
 
 const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
-    { history, match: { params: { network, blockId } } }
+    { match: { params: { network, blockId } } }
 ) => {
     const [block, payloadName, isBlockLoading] = useBlock(network, blockId);
     const [blockMeta, isBlockMetaLoading] = useBlockMeta(network, blockId);
@@ -67,12 +68,6 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">version</div>
-                                            <div className="value">{block.version}</div>
-                                        </div>
-                                    </div>
-                                    <div className="col fill margin-b-s">
-                                        <div className="section--data">
                                             <div className="label">Issuing Time</div>
                                             <div
                                                 className="value"
@@ -96,14 +91,6 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                 Sequence Number
                                             </div>
                                             <div className="value">{block.sequenceNumber}</div>
-                                        </div>
-                                    </div>
-                                    <div className="col fill margin-b-s">
-                                        <div className="section--data">
-                                            <div className="label">
-                                                Nonce
-                                            </div>
-                                            <div className="value">{block.nonce}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -483,7 +470,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     "-"
                                                     :
                                                     Object.keys(blockMeta.likedInsteadChildren ?? {})
-                                                        .map((parent, idx) => (
+                                                        .map(parent => (
                                                             <ShortID
                                                                 hasSlot={true} marginTop={true}
                                                                 linkType={LinkType.Block} key={parent}

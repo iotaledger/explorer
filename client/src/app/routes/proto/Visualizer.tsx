@@ -353,8 +353,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
 
     /**
      * The confirmed items have been updated.
-     * @param metaData The updated confirmed items.
-     * @param item
+     * @param item The vertex.
      */
     protected metadataUpdated(item: IWsVertex): void {
         if (!this._graph || !this._hadInitialLoad) {
@@ -368,15 +367,15 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
         }
 
         if (node.data) {
-            node.data.isAccepted = node.data?.isAccepted || item.isAccepted;
-            node.data.isFinalized = node.data?.isFinalized || item.isFinalized;
-            node.data.isOrphaned = node.data?.isOrphaned || item.isOrphaned;
-            node.data.isBooked = node.data?.isBooked || item.isBooked;
-            node.data.isMissing = node.data?.isMissing || item.isMissing;
-            node.data.isTx = node.data?.isTx || item.isTx;
-            node.data.isTxAccepted = node.data?.isTxAccepted || item.isTxAccepted;
-            node.data.isTxRejected = node.data?.isTxRejected || item.isTxRejected;
-            node.data.isTxConflicting = node.data?.isTxConflicting || item.isTxConflicting;
+            // node.data.isAccepted = node.data?.isAccepted || item.isAccepted;
+            node.data.is_finalized = node.data?.is_finalized || item.is_finalized;
+            // node.data.isOrphaned = node.data?.isOrphaned || item.isOrphaned;
+            // node.data.isBooked = node.data?.isBooked || item.isBooked;
+            // node.data.isMissing = node.data?.isMissing || item.isMissing;
+            node.data.is_tx = node.data?.is_tx || item.is_tx;
+            // node.data.isTxAccepted = node.data?.isTxAccepted || item.isTxAccepted;
+            // node.data.isTxRejected = node.data?.isTxRejected || item.isTxRejected;
+            // node.data.isTxConflicting = node.data?.isTxConflicting || item.isTxConflicting;
         }
         this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
     }
@@ -508,29 +507,29 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
             return { color, size };
         }
 
-        if (node.data.isTx) {
+        if (node.data.is_tx) {
             color = Visualizer.COLOR_TX;
             size = 45;
 
-            if (node.data.isAccepted) {
-                color = Visualizer.COLOR_TX_ACCEPTED;
-            } else if (node.data.isTxRejected) {
-                color = Visualizer.COLOR_TX_REJECTED;
-            } else if (node.data.isTxConflicting) {
-                color = Visualizer.COLOR_TX_CONFLICT;
-            }
+            // if (node.data.isAccepted) {
+            //     color = Visualizer.COLOR_TX_ACCEPTED;
+            // } else if (node.data.isTxRejected) {
+            //     color = Visualizer.COLOR_TX_REJECTED;
+            // } else if (node.data.isTxConflicting) {
+            //     color = Visualizer.COLOR_TX_CONFLICT;
+            // }
 
             return { color, size };
         }
 
-        if (node.data.isFinalized) {
+        if (node.data.is_finalized) {
             color = Visualizer.COLOR_FINALIZED;
-        } else if (node.data.isOrphaned) {
-            color = Visualizer.COLOR_ORPHANED;
-        } else if (node.data.isInvalid) {
-            color = Visualizer.COLOR_INVALID;
-        } else if (node.data.isAccepted) {
-            color = Visualizer.COLOR_ACCEPTED;
+            // } else if (node.data.isOrphaned) {
+            //     color = Visualizer.COLOR_ORPHANED;
+            // } else if (node.data.isInvalid) {
+            //     color = Visualizer.COLOR_INVALID;
+            // } else if (node.data.isAccepted) {
+            //     color = Visualizer.COLOR_ACCEPTED;
         } else {
             color = Visualizer.COLOR_PENDING;
         }

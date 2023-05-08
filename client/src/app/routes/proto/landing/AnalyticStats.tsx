@@ -1,8 +1,8 @@
+import { IGlobalMetrics } from "@iota/protonet.js";
 import React from "react";
-import "./AnalyticStats.scss";
-import { IGlobalMetrics } from "../../../../../../../protonet.js/packages";
 import MiniTooltip from "../../../components/MiniTooltip";
 import Spinner from "../../../components/Spinner";
+import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
     globalMetrics: IGlobalMetrics | undefined;

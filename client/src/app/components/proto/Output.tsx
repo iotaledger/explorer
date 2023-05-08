@@ -38,7 +38,7 @@ const Output: React.FC<OutputProps> = (
         }
     }, []);
 
-    if (isOutputLoading || !output || !outputMeta || isOutputMetaLoading) {
+    if (isOutputLoading || !output || !output.outputID || !outputMeta || isOutputMetaLoading) {
         return <div />;
     }
 

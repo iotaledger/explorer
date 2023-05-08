@@ -8,9 +8,9 @@ import { cleanTypeName } from "./misc";
 type BlockResult = IBlock | null | undefined;
 
 /**
- *
- * @param network
- * @param blockId
+ * @param network The network in context.
+ * @param blockId The block id to load.
+ * @returns The hook.
  */
 export function useBlock(network: string, blockId: string): [BlockResult, string, boolean] {
     const [block, setBlock] = useState<IBlock | null>();
@@ -19,7 +19,8 @@ export function useBlock(network: string, blockId: string): [BlockResult, string
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             try {
                 const fetchedBlock = await apiClient.block({ network, id: blockId });
@@ -42,9 +43,9 @@ export function useBlock(network: string, blockId: string): [BlockResult, string
 type BlockMetadataResult = IBlockMetadata | null | undefined;
 
 /**
- *
- * @param network
- * @param blockId
+ * @param network The network in context.
+ * @param blockId The block id to load.
+ * @returns The hook.
  */
 export function useBlockMeta(network: string, blockId: string): [BlockMetadataResult, boolean] {
     const [blockMeta, setBlockMeta] = useState<IBlockMetadata | null>();
@@ -52,7 +53,8 @@ export function useBlockMeta(network: string, blockId: string): [BlockMetadataRe
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             const fetchedBlockMeta = await apiClient.blockMeta({ network, id: blockId });
             if (fetchedBlockMeta.error || fetchedBlockMeta.meta === undefined) {

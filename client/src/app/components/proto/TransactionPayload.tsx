@@ -1,13 +1,8 @@
 import { ITransaction } from "@iota/protonet.js";
 import React from "react";
 import Output from "./Output";
-import "./TransactionPayload.scss";
-import { Link } from "react-router-dom";
-import { cleanTypeName } from "../../../helpers/proto/misc";
-import CopyButton from "../CopyButton";
 import UnlockBlock from "./UnlockBlock";
-
-// import Unlocks from "./Unlocks";
+import "./TransactionPayload.scss";
 
 interface TransactionPayloadProps {
     tx: ITransaction;
@@ -44,7 +39,7 @@ const TransactionPayload: React.FC<TransactionPayloadProps> = (
                     {tx.outputs.map((output, idx) => (
                         <Output
                             key={idx} network={network}
-                            isPreExpanded={false} outputId={output.outputID.base58}
+                            isPreExpanded={false} outputId={output.outputID?.base58 ?? "unknown"}
                         />
                     ))}
                 </div>

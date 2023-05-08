@@ -1,6 +1,6 @@
 import { INetwork } from "../../../../models/config/INetwork";
 import { IFeedItem } from "../../../../models/feed/IFeedItem";
-import { FeedsState } from "../../../components/stardust/FeedsState";
+import { FeedsState } from "../../../components/proto/FeedsState";
 
 export interface LandingState extends FeedsState {
     /**
@@ -37,9 +37,7 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
 
                 }
             }
-        ],
-        currency: "USD",
-        currencies: []
+        ]
     }
 );
 

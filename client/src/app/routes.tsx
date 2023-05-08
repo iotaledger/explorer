@@ -248,12 +248,12 @@ const buildAppRoutes = (
         <Route path="/:network/conflict/:conflictId"
             key={keys.next().value}
             component={ProtoConflictPage}
-        />,
-        <Route path="/:network/visualizer/"
-            key={keys.next().value}
-            component={ProtoVisualizer}
         />
         /*
+           <Route path="/:network/visualizer/"
+           key={keys.next().value}
+           component={ProtoVisualizer}
+           />
         <Route path="/:network/network/"
             key={keys.next().value}
             component={StardustVisualizer}
