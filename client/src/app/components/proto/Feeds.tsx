@@ -47,7 +47,7 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     protected _feedProbeTimerId?: NodeJS.Timer;
 
     /**
-     * The last update items call in epoch time.
+     * The last update items call in slot time.
      */
     protected _lastUpdateItems?: number;
 
@@ -89,7 +89,6 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
         if (this.props.match.params.network !== prevProps.match.params.network) {
             this.closeItems();
             this.setState({ latestMilestoneIndex: undefined });
-            this.setState({ shimmerClaimed: undefined });
 
             this.initNetworkServices();
         }

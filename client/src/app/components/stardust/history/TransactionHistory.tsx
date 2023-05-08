@@ -1,153 +1,38 @@
 /* eslint-disable no-void */
-import { IOutputResponse } from "@iota/iota.js-stardust";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import transactionHistoryMessage from "../../../../assets/modals/stardust/address/transaction-history.json";
-import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { AsyncProps } from "../../../../helpers/promise/AsyncProps";
-import PromiseMonitor, { PromiseStatus } from "../../../../helpers/promise/promiseMonitor";
-import { ITransactionHistoryRequest } from "../../../../models/api/stardust/ITransactionHistoryRequest";
-import {
-    ITransactionHistoryItem, ITransactionHistoryResponse
-} from "../../../../models/api/stardust/ITransactionHistoryResponse";
-import { STARDUST } from "../../../../models/config/protocolVersion";
-import { StardustTangleCacheService } from "../../../../services/stardust/stardustTangleCacheService";
-import Modal from "../../../components/Modal";
-import Spinner from "../../Spinner";
+import React, { useEffect, useState } from "react";
+import { useAddressHistory } from "../../../../helpers/hooks/useAddressHistory";
+import DownloadModal from "../DownloadModal";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import "./TransactionHistory.scss";
 
 interface TransactionHistoryProps {
     network: string;
-    address: string;
+    address?: string;
+    setLoading: (isLoadin: boolean) => void;
+    setDisabled?: (isDisabled: boolean) => void;
 }
 
-interface IOutputDetailsMap {
-    [outputId: string]: IOutputResponse;
-}
-
-const PAGE_SIZE: number = 10;
-const SORT: string = "newest";
-
-const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
-    { network, address, onAsyncStatusChange }
+const TransactionHistory: React.FC<TransactionHistoryProps> = (
+    { network, address, setLoading, setDisabled }
 ) => {
-    const mounted = useRef(false);
-    const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
-    const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
-    const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
-
-    const [cursor, setCursor] = useState<string | undefined>();
+    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
+        network,
+        address,
+        setDisabled
+    );
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
 
-    const [isLoading, setIsLoading] = useState(true);
-
-    const unmount = () => {
-        mounted.current = false;
-    };
-
-    const tangleService = useCallback(
-        () => ServiceFactory.get<StardustTangleCacheService>(`tangle-cache-${STARDUST}`),
-        [network, address]
-    );
-
     useEffect(() => {
-        mounted.current = true;
-        loadHistory();
-        setHistoryView(history);
-
-        return unmount;
-    }, [network, address]);
-
-    const loadHistory = () => {
-        const request: ITransactionHistoryRequest = {
-            network,
-            address,
-            pageSize: PAGE_SIZE,
-            sort: SORT,
-            cursor
-        };
-
-        tangleService().transactionHistory(request)
-            .then((response: ITransactionHistoryResponse | undefined) => {
-                if (response?.items && mounted.current) {
-                    setHistory([...history, ...response.items]);
-                    setCursor(response.cursor);
-                }
-            })
-            .catch(e => console.log(e));
-    };
-
-    useEffect(() => {
-        if (history.length > 0) {
-            const promises: Promise<void>[] = [];
-            const detailsPage: IOutputDetailsMap = {};
-
-            const promiseMonitor = new PromiseMonitor((status: PromiseStatus) => {
-                onAsyncStatusChange(status);
-                if (status === PromiseStatus.DONE && mounted.current) {
-                    setOutputDetailsMap(detailsPage);
-                    setIsLoading(false);
-                    const updatedHistoryView = [...history].sort((a, b) => {
-                        // Ensure that entries with equal timestamp, but different isSpent,
-                        // have the spending before the depositing
-                        if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                            return !a.isSpent ? -1 : 1;
-                        }
-                        return 1;
-                    });
-
-                    setHistoryView(updatedHistoryView);
-                }
-            });
-
-            const fetchDetails = async () => {
-                for (const item of history) {
-                    const promise = tangleService().outputDetails(network, item.outputId)
-                        .then(response => {
-                            if (!response.error && response.output && response.metadata) {
-                                const outputDetails = {
-                                    output: response.output,
-                                    metadata: response.metadata
-                                };
-
-                                detailsPage[item.outputId] = outputDetails;
-                            }
-                        })
-                        .catch(e => console.log(e));
-
-                    promises.push(promise);
-                }
-
-                const allPromises = Promise.all(promises);
-                void promiseMonitor.enqueue(async () => allPromises);
-            };
-
-            void fetchDetails();
-        }
-    }, [history]);
-
-    const loadMoreHandler = () => {
-        if (mounted.current) {
-            setIsLoading(true);
-            loadHistory();
-        }
-    };
+        setLoading(isLoading);
+    }, [isLoading]);
 
     let isDarkBackgroundRow = false;
 
-    return (historyView.length > 0 ? (
+    return (historyView.length > 0 && address ? (
         <div className="section transaction-history--section">
-            <div className="section--header row space-between">
-                <div className="row middle">
-                    <h2>
-                        Transaction History
-                    </h2>
-                    <Modal icon="info" data={transactionHistoryMessage} />
-                </div>
-                <div className="margin-t-s middle row">
-                    {isLoading && <Spinner />}
-                </div>
+            <div className="section--header row end">
+                <DownloadModal network={network} address={address} />
             </div>
             <table className="transaction-history--table">
                 <thead>
@@ -239,13 +124,27 @@ const TransactionHistory: React.FC<TransactionHistoryProps & AsyncProps> = (
                     })
                 )}
             </div>
-            {cursor && historyView.length > 0 && (
-                <div className="card load-more--button" onClick={loadMoreHandler}>
+            {hasMore && historyView.length > 0 && (
+                <div className="card load-more--button" onClick={loadMore}>
                     <button type="button">Load more...</button>
                 </div>
             )}
-        </div>) : null
+        </div>) :
+        <div className="section transaction-history--section">
+            <div className="section">
+                <div className="section--data">
+                    <p>
+                        There are no transactions for this address.
+                    </p>
+                </div>
+            </div>
+        </div>
     );
+};
+
+TransactionHistory.defaultProps = {
+    address: undefined,
+    setDisabled: undefined
 };
 
 export default TransactionHistory;

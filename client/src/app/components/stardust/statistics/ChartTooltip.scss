@@ -1,0 +1,42 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/fonts";
+@import "../../../../scss/themes";
+@import "../../../../scss/fonts";
+@import "../../../../scss/media-queries";
+
+#tooltip {
+    display: none;
+    position: fixed;
+    background-color: var(--statistics-charts-tooltip-bg);
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    z-index: 10;
+
+    #content {
+        p, span {
+            font-family: $inter;
+            letter-spacing: 0.5px;
+        }
+        p {
+            margin-bottom: 4px;
+        }
+
+        span.value {
+            font-weight: 600;
+        }
+        .dot {
+            height: 8px;
+            width: 8px;
+            margin-right: 4px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        @include phone-down {
+            p, span {
+                @include font-size(10px);
+            }
+        }
+    }
+}

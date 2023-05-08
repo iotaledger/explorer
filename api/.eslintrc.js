@@ -451,7 +451,7 @@ module.exports = {
             "off"
         ],
         "generator-star-spacing": [
-            "error"
+            "error", {"before": false, "after": true}
         ],
         "getter-return": [
             "off"
@@ -556,7 +556,7 @@ module.exports = {
             "error",
             {
                 "ignorePattern": "^import",
-                "code": 120
+                "code": 140
             }
         ],
         "max-lines": [

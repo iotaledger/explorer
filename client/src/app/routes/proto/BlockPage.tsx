@@ -1,7 +1,5 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import "./BlockPage.scss";
-import moment from "moment";
 import metadataMessage from "../../../assets/modals/stardust/block/metadata.json";
 import { pastMarkersToNodes } from "../../../helpers/proto/misc";
 import { useBlock, useBlockMeta } from "../../../helpers/proto/useBlock";
@@ -9,6 +7,7 @@ import Modal from "../../components/Modal";
 import BlockTransaction from "../../components/proto/BlockTransaction";
 import Spinner from "../../components/Spinner";
 import ShortID, { LinkType } from "./ShortID";
+import "./BlockPage.scss";
 
 interface BlockPageProps {
     network: string;
@@ -110,7 +109,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                 </div>
                                 <div className="section--header">
                                     <div className="row middle">
-                                        <h2>Epoch</h2>
+                                        <h2>Slot</h2>
                                     </div>
                                 </div>
                                 <div className="row row--tablet-responsive fill margin-b-s">
@@ -119,8 +118,8 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                             <div className="label">Commitment</div>
                                             <div className="value">
                                                 <ShortID
-                                                    hasEpoch={true}
-                                                    linkType={LinkType.Epoch}
+                                                    hasSlot={true}
+                                                    linkType={LinkType.Slot}
                                                     network={network} id={block.commitmentID}
                                                 />
                                             </div>
@@ -128,8 +127,8 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">Latest Confirmed Epoch</div>
-                                            <div className="value">{block.latestConfirmedEpoch}</div>
+                                            <div className="label">Latest Confirmed Slot</div>
+                                            <div className="value">{block.latestConfirmedSlot}</div>
                                         </div>
                                     </div>
                                     <div className="col fill margin-b-s" />
@@ -189,7 +188,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     :
                                                     Object.entries(blockMeta.conflictIDs).map(entry => (
                                                         <ShortID
-                                                            hasEpoch={false} marginTop={true}
+                                                            hasSlot={false} marginTop={true}
                                                             linkType={LinkType.Conflict} key={entry[0]}
                                                             network={network} id={entry[0]}
                                                         />))}
@@ -205,7 +204,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     :
                                                     Object.entries(blockMeta.addedConflictIDs).map(entry => (
                                                         <ShortID
-                                                            hasEpoch={false} marginTop={true}
+                                                            hasSlot={false} marginTop={true}
                                                             linkType={LinkType.Conflict} key={entry[0]}
                                                             network={network} id={entry[0]}
                                                         />))}
@@ -221,7 +220,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     :
                                                     Object.entries(blockMeta.subtractedConflictIDs).map(entry => (
                                                         <ShortID
-                                                            hasEpoch={false} marginTop={true}
+                                                            hasSlot={false} marginTop={true}
                                                             linkType={LinkType.Conflict} key={entry[0]}
                                                             network={network} id={entry[0]}
                                                         />))}
@@ -333,8 +332,8 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                     </div>
                                     <div className="col fill margin-b-s">
                                         <div className="section--data">
-                                            <div className="label">Confirmed By Epoch</div>
-                                            <div className="value">{blockMeta.confirmedByEpoch}</div>
+                                            <div className="label">Confirmed By Slot</div>
+                                            <div className="value">{blockMeta.confirmedBySlot}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -394,7 +393,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     :
                                                     block.strongParents.map((parent, _) => (
                                                         <ShortID
-                                                            hasEpoch={true} marginTop={true}
+                                                            hasSlot={true} marginTop={true}
                                                             linkType={LinkType.Block} key={parent}
                                                             network={network} id={parent}
                                                         />
@@ -411,7 +410,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     :
                                                     block.weakParents.map((parent, _) => (
                                                         <ShortID
-                                                            hasEpoch={true} marginTop={true}
+                                                            hasSlot={true} marginTop={true}
                                                             linkType={LinkType.Block} key={parent}
                                                             network={network} id={parent}
                                                         />
@@ -428,7 +427,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     :
                                                     block.shallowLikeParents.map((parent, _) => (
                                                         <ShortID
-                                                            hasEpoch={true} marginTop={true}
+                                                            hasSlot={true} marginTop={true}
                                                             linkType={LinkType.Block} key={parent}
                                                             network={network} id={parent}
                                                         />
@@ -449,7 +448,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                         Object.keys(blockMeta.strongChildren ?? {})
                                                             .map((parent, _) => (
                                                                 <ShortID
-                                                                    hasEpoch={true} marginTop={true}
+                                                                    hasSlot={true} marginTop={true}
                                                                     linkType={LinkType.Block} key={parent}
                                                                     network={network} id={parent}
                                                                 />
@@ -468,7 +467,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     Object.keys(blockMeta.weakChildren ?? {})
                                                         .map((parent, _) => (
                                                             <ShortID
-                                                                hasEpoch={true} marginTop={true}
+                                                                hasSlot={true} marginTop={true}
                                                                 linkType={LinkType.Block} key={parent}
                                                                 network={network} id={parent}
                                                             />
@@ -486,7 +485,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                                     Object.keys(blockMeta.likedInsteadChildren ?? {})
                                                         .map((parent, idx) => (
                                                             <ShortID
-                                                                hasEpoch={true} marginTop={true}
+                                                                hasSlot={true} marginTop={true}
                                                                 linkType={LinkType.Block} key={parent}
                                                                 network={network} id={parent}
                                                             />

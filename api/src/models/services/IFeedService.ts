@@ -12,7 +12,9 @@ export interface IFeedService {
      * @param callback The callback for new milestones.
      * @returns The subscription id.
      */
-    subscribeMilestones(callback: (milestone: number, id: string, timestamp: number) => void): string;
+    subscribeMilestones(
+        callback: (milestone: number, id: string, timestamp: number, milestoneId?: string) => void
+    ): string;
 
     /**
      * Unsubscribe from subscription.

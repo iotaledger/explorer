@@ -11,7 +11,6 @@
   align-items: center;
   justify-content: space-between;
   min-height: 56px;
-  margin-bottom: 16px;
   padding: 16px;
   border-radius: 6px;
   background-color: var(--light-bg);
@@ -28,7 +27,7 @@
     word-break: break-all;
 
     .json-viewer {
-      max-height: 400px;
+      max-height: 1000px;
       overflow-y: auto;
     }
   }

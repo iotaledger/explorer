@@ -101,7 +101,7 @@
 
       .modal--actions {
         margin: 24px 0;
-
+        pointer-events: auto;
         .modal--action {
           @include font-size(14px, 21px);
 

@@ -9,7 +9,7 @@ export interface IStatsGetResponse extends IStatistics, IResponse, ISignedRespon
     health?: number;
 
     /**
-     * The reason for the heslth status
+     * The reason for the health status
      */
     healthReason?: string;
 

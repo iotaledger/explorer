@@ -161,19 +161,19 @@
       border-radius: 6px;
       width: 469px;
       height: 85px;
-  
+
       .inner--asset {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin: 30px;
-  
+
         .assets {
           display: flex;
           flex-direction: column;
         }
       }
-  
+
       .svg-navigation {
         width: 16px;
         height: 16px;
@@ -191,19 +191,19 @@
       width: 469px;
       height: 85px;
       margin-left: 20px;
-  
+
       .inner--asset {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin: 30px;
-  
+
         .assets {
           display: flex;
           flex-direction: column;
         }
       }
-  
+
       .svg-navigation {
         width: 16px;
         height: 16px;
@@ -231,57 +231,53 @@
       .section--header {
         flex-direction: column;
         align-items: flex-start;
-
-        .transactions-filter {
-          margin-top: 24px;
-        }
       }
-    }
-
-    .transactions-filter {
-      display: flex;
-      font-family: $inter;
-      font-size: 12px;
-      font-weight: 500;
-
-      button {
-        @include font-size(12px, 18px);
-
-        padding: 3px 12px;
-        border: 0.2px solid var(--input-border-color);
-        border-radius: 0;
-        background-color: var(--body-background);
-        color: $gray-5;
-        color: var(--header-color);
-        letter-spacing: 0.5px;
-
-        &:focus {
-          box-shadow: none;
-        }
-
-        &.active {
-          background-color: rgba(20, 202, 191, 0.12);
-          color: var(--header-color);
-        }
-
-        &:first-child {
-          border-radius: 6px 0 0 6px;
-        }
-
-        &:last-child {
-          border-radius: 0 6px 6px 0;
-        }
-      }
-    }
-
-    .section--header__filter {
-      display: flex;
     }
   }
 
   .general-content {
+      padding-bottom: 26px;
+
+      @include phone-down {
+          flex-direction: column;
+      }
+  }
+
+  .qr-content {
     @include tablet-down {
-      flex-direction: column;
+      align-self: flex-end;
+    }
+
+    @include phone-down {
+      align-self: center;
+    }
+  }
+
+  .feature-block {
+    .card--label {
+      @include font-size(12px);
+
+      display: flex;
+      align-items: center;
+      height: 32px;
+      color: var(--card-color);
+      font-family: $inter;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .card--value {
+      @include font-size(14px, 20px);
+      margin-bottom: 12px;
+      color: var(--body-color);
+      font-family: $ibm-plex-mono;
+      word-break: break-all;
+
+      a,
+      button {
+          color: var(--link-color);
+      }
     }
   }
 }

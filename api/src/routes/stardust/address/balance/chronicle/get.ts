@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
+import { IAddressBalanceResponse } from "../../../../../models/api/stardust/chronicle/IAddressBalanceResponse";
 import { IAddressBalanceRequest } from "../../../../../models/api/stardust/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../../../../models/api/stardust/IAddressBalanceResponse";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
@@ -9,12 +9,12 @@ import { ValidationHelper } from "../../../../../utils/validationHelper";
 
 /**
  * Fetch the address balance from chronicle stardust.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
 export async function get(
-    config: IConfiguration,
+    _: IConfiguration,
     request: IAddressBalanceRequest
 ): Promise<IAddressBalanceResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");

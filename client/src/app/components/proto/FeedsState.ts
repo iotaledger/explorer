@@ -1,5 +1,5 @@
 import { IAnalyticStats } from "../../../models/api/stats/IAnalyticStats";
-import { IShimmerClaimed } from "../../../models/api/stats/IShimmerClaimed";
+import { IProtoStats } from "../../../models/api/stats/IProtoStats";
 
 export interface FeedsState {
     /**
@@ -33,7 +33,8 @@ export interface FeedsState {
     networkAnalytics?: IAnalyticStats;
 
     /**
-     * The shimmer token claimed stat for the network.
+     * The current mana stats.
      */
-    shimmerClaimed?: IShimmerClaimed;
+    protoStats?: IProtoStats;
 }
+

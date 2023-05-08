@@ -10,27 +10,22 @@ export interface IFeedItemMetadata {
     timestamp?: number;
 
     /**
-     * Is the item confirmed, only applies to OG.
-     */
-    confirmed?: number;
-
-    /**
-     * Is the item referenced, only applies to Chrysalis.
+     * Is the item referenced.
      */
     referenced?: number;
 
     /**
-     * Is the item solid, only applies to Chrysalis.
+     * Is the item solid.
      */
     solid?: boolean;
 
     /**
-     * Is the item conflicting, only applies to Chrysalis.
+     * Is the item conflicting.
      */
     conflicting?: boolean;
 
     /**
-     * Is the item included, only applies to Chrysalis.
+     * Is the item included.
      */
     included?: boolean;
 }

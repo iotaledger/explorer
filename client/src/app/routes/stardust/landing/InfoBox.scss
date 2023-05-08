@@ -5,10 +5,10 @@
 @import "../../../../scss/themes";
 
 .main-info-boxes {
-    width: 324px;
+    max-width: 372px;
     position: absolute;
     right: 8%;
-    top: 32%;
+    top: 18%;
     display: grid;
     grid-template-columns: auto auto;
     padding: 10px 20px;
@@ -17,13 +17,14 @@
     backdrop-filter: blur(20px);
 
     @include desktop-down {
-        top: 60%;
+        top: 20%;
         right: 4%;
     }
 
     @include tablet-down {
-        padding: 0 20px;
+        padding: 0;
         width: 100%;
+        max-width: inherit;
         top: auto;
         right: 0;
         left: 0;
@@ -42,7 +43,7 @@
         padding: 24px;
 
         @include tablet-down {
-            padding: 12px;
+            padding: 16px;
         }
 
         .info-box--title {
@@ -78,9 +79,11 @@
 
             @include tablet-down {
                 text-align: center;
+                font-size: 18px;
             }
 
             @include phone-down {
+                margin-top: 12px;
                 font-size: 14px;
             }
 

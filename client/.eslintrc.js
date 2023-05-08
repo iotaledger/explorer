@@ -463,7 +463,7 @@ module.exports = {
             "off"
         ],
         "generator-star-spacing": [
-            "error"
+            "error", {"before": false, "after": true}
         ],
         "getter-return": [
             "off"
@@ -602,7 +602,7 @@ module.exports = {
             "error"
         ],
         "newline-per-chained-call": [
-            "error", { "ignoreChainWithDepth": 3 }
+            "off"
         ],
         "no-alert": [
             "error"

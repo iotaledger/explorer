@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useState } from "react";
+import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { useBPSStream } from "../../../../helpers/proto/useBPSStream";
@@ -10,8 +10,8 @@ import { CUSTOM } from "../../../../models/config/networkType";
 import { STARDUST } from "../../../../models/config/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import AnalyticStats from "./AnalyticStats";
-import EpochFeed from "./EpochFeed";
 import InfoBox from "./InfoBox";
+import SlotFeed from "./SlotFeed";
 import "./Landing.scss";
 
 export interface LandingProps {
@@ -22,7 +22,8 @@ const defaultNetworkConfig: INetwork = {
     label: "Custom network",
     network: CUSTOM,
     protocolVersion: STARDUST,
-    isEnabled: false
+    isEnabled: false,
+    hasStatisticsSupport: false
 };
 
 const Landing: React.FC<RouteComponentProps<LandingProps>> = (
@@ -30,7 +31,7 @@ const Landing: React.FC<RouteComponentProps<LandingProps>> = (
 ) => {
     const [bps] = useBPSStream(network);
     const networkConfig = ServiceFactory.get<NetworkService>("network").get(network) ?? defaultNetworkConfig;
-    const [status, lastEpochIndex, latestEpochIndices] = useStatusStream(network);
+    const [status, lastSlotIndex, latestSlotIndices] = useStatusStream();
     const [globalMetrics] = useGlobalMetrics(network);
 
     return (
@@ -56,10 +57,10 @@ const Landing: React.FC<RouteComponentProps<LandingProps>> = (
                     <div className="feeds-section">
                         <div className="row wrap feeds">
                             <div className="feed section">
-                                <EpochFeed
+                                <SlotFeed
                                     networkConfig={networkConfig}
-                                    latestEpochIndices={latestEpochIndices}
-                                    latestEpochIndex={lastEpochIndex}
+                                    latestSlotIndices={latestSlotIndices}
+                                    latestSlotIndex={lastSlotIndex}
                                     status={status ?? undefined}
                                 />
                             </div>

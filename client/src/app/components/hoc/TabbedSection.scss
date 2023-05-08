@@ -1,0 +1,109 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.tabbed-section {
+    .tabbed-section--tabs-wrapper {
+        display: flex;
+        margin-top:16px;
+        border-bottom: 1px solid var(--border-color);
+        overflow: auto;
+
+        &::-webkit-scrollbar {
+            height: 4px;
+            &-track {
+                background-color: var(--associated-outputs-tabs-bg);
+            }
+            &-thumb {
+                -webkit-border-radius: 8px;
+                border-radius: 8px;
+            }
+        }
+
+        .tab-wrapper {
+            display: flex;
+            padding: 24px 32px;
+            align-items: center;
+            cursor: pointer;
+
+            @include tablet-down {
+                padding: 16px 24px;
+            }
+
+            @include phone-down {
+                padding: 12px 12px;
+            }
+
+            &.active {
+                color: $mint-green-6;
+                padding-bottom: 21px;
+                border-bottom: 3px solid $mint-green-6;
+
+                @include tablet-down {
+                    padding-bottom: 13px;
+                }
+
+                @include phone-down {
+                    padding-bottom: 9px;
+                }
+            }
+
+            &.disabled {
+                pointer-events: none;
+            }
+
+            button.tab {
+                background: var(--associated-outputs-tabs-bg);
+                color: $gray-6;
+                border-radius: 0;
+                white-space: nowrap;
+                border: none;
+                padding-right: 4px;
+
+                &:focus {
+                    box-shadow: none;
+                }
+
+                @include phone-down {
+                    font-size: 14px;
+                    padding: 3px 5px;
+                }
+            }
+
+            .modal button {
+                pointer-events: auto;
+                padding-left: 0;
+            }
+
+            .tab-counter {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 24px;
+                font-size: 12px;
+                font-family: $inter;
+                font-weight: 500;
+                padding: 4px;
+                border-radius: 16px;
+                background: var(--header-svg-bg);
+                color: $gray-6;
+
+                @include tablet-down {
+                    font-size: 10px;
+                }
+
+                @include phone-down {
+                    font-size: 8px;
+                }
+            }
+        }
+    }
+
+    .tab-content {
+        &:not(.active) {
+            display: none;
+        };
+    }
+}
+

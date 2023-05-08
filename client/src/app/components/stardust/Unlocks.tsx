@@ -1,22 +1,37 @@
-import { ISignatureUnlock } from "@iota/iota.js-stardust";
+import { SIGNATURE_UNLOCK_TYPE, UnlockTypes } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useState } from "react";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import TruncatedId from "./TruncatedId";
 
 interface IUnlocksProps {
-    unlocks: ISignatureUnlock[];
+    unlocks: UnlockTypes[];
 }
 
 const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
+    const displayUnlocksTypeAndIndex = (type: number, index: number) => (
+        <div>
+            <div className="unlocks-card--row">
+                <span className="label">Index:</span>
+                <span className="value">{index}</span>
+            </div>
+            <div className="unlocks-card--row">
+                <span className="label">Type:</span>
+                <span className="value">{NameHelper.getUnlockTypeName(type)}</span>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="card--content__output ">
+        <div className="card--content__output unlocks">
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="card--value card-header--wrapper"
             >
-                <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
+                <div className={classNames("card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
                 <div className="output-header">
@@ -25,20 +40,39 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                     </button>
                 </div>
             </div>
-            {isExpanded && (
-                <div className="card--content">
-                    {
-                        unlocks.map((unlock, idx) => (
-                            <React.Fragment key={idx}>
-                                <div className="card--label"> Public Key</div>
-                                <div className="card--value">{unlock.signature.publicKey}</div>
-                                <div className="card--label"> Signature</div>
-                                <div className="card--value">{unlock.signature.signature}</div>
-                            </React.Fragment>
-                        ))
-                    }
-                </div>
-            )}
+            {
+                isExpanded && (
+                    <div>
+                        {
+                            unlocks.map((unlock, idx) => (
+                                unlock.type === SIGNATURE_UNLOCK_TYPE ?
+                                    <div key={idx} className="unlocks-card margin-l-t">
+                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                        <div className="unlocks-card--row">
+                                            <span className="label">Public Key:</span>
+                                            <div className="value public-key">
+                                                <TruncatedId id={unlock.signature.publicKey} />
+                                            </div>
+                                        </div>
+                                        <div className="unlocks-card--row">
+                                            <span className="label">Signature:</span>
+                                            <div className="value signature">
+                                                <TruncatedId id={unlock.signature.signature} />
+                                            </div>
+                                        </div>
+                                    </div> :
+                                    <div key={idx} className="unlocks-card margin-l-t">
+                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                        <div className="unlocks-card--row">
+                                            <span className="label">References unlock at index:</span>
+                                            <span className="value">{unlock.reference}</span>
+                                        </div>
+                                    </div>
+                            ))
+                        }
+                    </div>
+                )
+            }
         </div>
     );
 };

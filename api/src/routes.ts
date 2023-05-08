@@ -15,15 +15,21 @@ export const routes: IRoute[] = [
             } as IResponse;
         }
     },
+    // Generic
     { path: "/init", method: "get", func: "init" },
     { path: "/networks", method: "get", folder: "networks", func: "get" },
     { path: "/node-info/:network", method: "get", folder: "node", func: "info" },
     { path: "/currencies", method: "get", folder: "currency", func: "get", sign: true },
-    { path: "/currency/names", method: "get", folder: "currency/names", func: "get", sign: true },
-    { path: "/transactions/:network/:hash", method: "get", folder: "og/transactions", func: "get" },
-    { path: "/transactions/:network/:hash/action/:action", method: "get", folder: "og/transactions", func: "action" },
-    { path: "/trytes/:network", method: "post", folder: "og/trytes", func: "post" },
-    { path: "/address/:network/:hash", method: "get", folder: "og/address", func: "get" },
+    { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
+    // Legacy
+    { path: "/transactions/:network/:hash", method: "get", folder: "legacy/transactions", func: "get" },
+    {
+        path: "/transactions/:network/:hash/action/:action", method: "get",
+        folder: "legacy/transactions", func: "action"
+    },
+    { path: "/trytes/:network", method: "post", folder: "legacy/trytes", func: "post" },
+    { path: "/address/:network/:hash", method: "get", folder: "legacy/address", func: "get" },
+    // Chrysalis
     { path: "/search/:network/:query", method: "get", folder: "chrysalis", func: "search" },
     { path: "/message/:network/:messageId", method: "get", folder: "chrysalis/message", func: "get" },
     { path: "/milestone/:network/:milestoneIndex", method: "get", folder: "chrysalis/milestone", func: "get" },
@@ -32,6 +38,19 @@ export const routes: IRoute[] = [
         path: "/transactionhistory/:network/:address", method: "get",
         folder: "chrysalis/transactionhistory", func: "get"
     },
+    {
+        path: "/chrysalis/did/:network/:did/document", method: "get",
+        folder: "/chrysalis/identity/resolution", func: "get"
+    },
+    {
+        path: "/chrysalis/did/:network/:did/history", method: "get",
+        folder: "/chrysalis/identity/history", func: "get"
+    },
+    {
+        path: "/chrysalis/did/:network/diffHistory/:integrationMsgId", method: "post",
+        folder: "/chrysalis/identity/diff", func: "get", dataBody: true
+    },
+    // Stardust
     { path: "/stardust/search/:network/:query", method: "get", folder: "stardust", func: "search" },
     {
         path: "/stardust/balance/:network/:address", method: "get",
@@ -42,18 +61,38 @@ export const routes: IRoute[] = [
         folder: "stardust/address/balance/chronicle", func: "get"
     },
     {
-        path: "/stardust/address/outputs/:network/:address", method: "get",
-        folder: "stardust/address/outputs", func: "get"
+        path: "/stardust/address/outputs/basic/:network/:address", method: "get",
+        folder: "stardust/address/outputs/basic", func: "get"
+    },
+    {
+        path: "/stardust/address/outputs/alias/:network/:address", method: "get",
+        folder: "stardust/address/outputs/alias", func: "get"
+    },
+    {
+        path: "/stardust/address/outputs/nft/:network/:address", method: "get",
+        folder: "stardust/address/outputs/nft", func: "get"
     },
     { path: "/stardust/block/:network/:blockId", method: "get", folder: "stardust/block", func: "get" },
     {
         path: "/stardust/block/metadata/:network/:blockId", method: "get",
         folder: "stardust/block/metadata", func: "get"
     },
+    {
+        path: "/stardust/block/children/:network/:blockId", method: "get",
+        folder: "stardust/block/children", func: "get"
+    },
+    {
+        path: "/stardust/milestone/latest/:network", method: "get",
+        folder: "stardust/milestone/latest", func: "get"
+    },
     { path: "/stardust/milestone/:network/:milestoneIndex", method: "get", folder: "stardust/milestone", func: "get" },
     {
-        path: "/stardust/milestone/stats/:network/:milestoneId", method: "get",
-        folder: "stardust/milestone/stats", func: "get"
+        path: "/stardust/milestone/blocks/:network/:milestoneId", method: "get",
+        folder: "stardust/milestone/blocks", func: "get"
+    },
+    {
+        path: "/stardust/milestone/stats/:network/:milestoneIndex", method: "get",
+        folder: "stardust/milestone/influx", func: "get"
     },
     { path: "/stardust/output/:network/:outputId", method: "get", folder: "stardust/output", func: "get" },
     {
@@ -65,23 +104,50 @@ export const routes: IRoute[] = [
         folder: "stardust/output/associated", func: "post", dataBody: true
     },
     {
+        path: "/stardust/output/tagged/:network/:tag/:outputType", method: "get",
+        folder: "stardust/output/tagged", func: "get"
+    },
+    {
         path: "/stardust/transactionhistory/:network/:address", method: "get",
         folder: "stardust/transactionhistory", func: "get"
     },
-    { path: "/stardust/nft/outputs/:network/:address", method: "get", folder: "stardust/nft/outputs", func: "get" },
-    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nft/details", func: "get" },
-    { path: "/stardust/nft/mock/:network/:nftId", method: "get", folder: "stardust/nft/registry", func: "get" },
+    {
+        path: "/stardust/transactionhistory/dl/:network/:address", method: "post",
+        folder: "stardust/transactionhistory/download", func: "post", dataBody: true, dataResponse: true
+    },
+    { path: "/stardust/nft/:network/:nftId", method: "get", folder: "stardust/nft", func: "get" },
     { path: "/stardust/alias/:network/:aliasId", method: "get", folder: "stardust/alias", func: "get" },
     {
         path: "/stardust/alias/foundries/:network/:aliasAddress", method: "get",
         folder: "stardust/alias/foundries", func: "get"
     },
     { path: "/stardust/foundry/:network/:foundryId", method: "get", folder: "stardust/foundry", func: "get" },
-    { path: "/stardust/analytics/:network", method: "get", folder: "stardust/analytics", func: "get", sign: true },
     {
-        path: "/stardust/analytics/shimmer/:network", method: "get",
-        folder: "stardust/analytics/shimmer", func: "get", sign: true
+        path: "/stardust/analytics/:network", method: "get",
+        folder: "stardust/analytics/influx/stats", func: "get", sign: true
     },
+    {
+        path: "/stardust/analytics/daily/:network", method: "get",
+        folder: "stardust/analytics/influx/daily", func: "get", sign: true
+    },
+    {
+        path: "/stardust/did/:network/:did/document", method: "get",
+        folder: "stardust/identity/resolution-stardust", func: "get"
+    },
+    {
+        path: "/stardust/participation/events/:network/:eventId", method: "get",
+        folder: "stardust/participation/events", func: "get"
+    },
+    {
+        path: "/stardust/address/rich/:network", method: "get",
+        folder: "stardust/address/richest", func: "get"
+    },
+    {
+        path: "/stardust/token/distribution/:network", method: "get",
+        folder: "stardust/address/distribution", func: "get"
+    },
+
+    // Protonet
     {
         path: "/proto/metrics/global/:network", method: "get",
         folder: "proto/metrics/global", func: "get"
@@ -92,22 +158,18 @@ export const routes: IRoute[] = [
         folder: "proto/block/metadata", func: "get"
     },
     { path: "/proto/address/:network/:addressBase58", method: "get", folder: "proto/address", func: "get" },
-    { path: "/proto/epoch/:network/:epochId", method: "get", folder: "proto/epoch", func: "get" },
+    { path: "/proto/slot/:network/:slotId", method: "get", folder: "proto/slot", func: "get" },
     {
-        path: "/proto/epoch/:network/index/:index", method: "get",
-        folder: "proto/epoch/index", func: "get"
+        path: "/proto/slot/:network/index/:index", method: "get",
+        folder: "proto/slot/index", func: "get"
     },
     {
-        path: "/proto/epoch/:network/transactions/:index", method: "get",
-        folder: "proto/epoch/transactions", func: "get"
+        path: "/proto/slot/:network/transactions/:index", method: "get",
+        folder: "proto/slot/transactions", func: "get"
     },
     {
-        path: "/proto/epoch/:network/blocks/:index", method: "get",
-        folder: "proto/epoch/blocks", func: "get"
-    },
-    {
-        path: "/proto/epoch/:network/voters/:index", method: "get",
-        folder: "proto/epoch/voters", func: "get"
+        path: "/proto/slot/:network/blocks/:index", method: "get",
+        folder: "proto/slot/blocks", func: "get"
     },
     { path: "/proto/conflict/:network/:conflictId", method: "get", folder: "proto/conflict", func: "get" },
     {
@@ -131,17 +193,5 @@ export const routes: IRoute[] = [
     {
         path: "/proto/transaction/metadata/:network/:txId", method: "get",
         folder: "proto/transaction/metadata", func: "get"
-    },
-    { path: "/milestones/:network", method: "get", folder: "milestones", func: "get" },
-    { path: "/stats/:network", method: "get", folder: "stats", func: "get", sign: true },
-    { path: "/market/:currency", method: "get", folder: "market", func: "get", sign: true },
-    { path: "/did/:network/:did/document", method: "get", folder: "identity/resolution", func: "get" },
-    { path: "/did/:network/:did/history", method: "get", folder: "identity/history", func: "get" },
-    {
-        path: "/did/:network/diffHistory/:integrationMsgId",
-        method: "post",
-        folder: "identity/diff",
-        func: "get",
-        dataBody: true
     }
 ];

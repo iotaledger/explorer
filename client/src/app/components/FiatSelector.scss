@@ -54,6 +54,7 @@
     z-index: 5;
     width: 356px;
     max-height: 500px;
+    padding-bottom: 14px;
     overflow: auto;
     border: 1px solid var(--input-border-color);
     border-radius: 6px;
@@ -85,7 +86,6 @@
       display: flex;
       margin: 0 20px;
       padding: 10px 0;
-      border-bottom: 1px solid var(--input-border-color);
       cursor: pointer;
 
       .acronym {
@@ -98,6 +98,10 @@
 
       .full-name {
         color: $gray-7;
+      }
+
+      &:not(:last-child) {
+          border-bottom: 1px solid var(--input-border-color);
       }
     }
   }

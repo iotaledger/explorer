@@ -66,8 +66,12 @@
   white-space: pre;
 }
 
-.margin-t-0 {
-  margin-top: 0 !important;
+.margin-0 {
+  margin: 0 !important;
+}
+
+.margin-b-0 {
+  margin-bottom: 0 !important;
 }
 
 .margin-b-2 {
@@ -80,6 +84,10 @@
 
 .margin-r-5 {
   margin-right: 5px !important;
+}
+
+.margin-t-0 {
+  margin-top: 0 !important;
 }
 
 .margin-t-2 {
@@ -138,8 +146,16 @@
   margin-left: 30px;
 }
 
+.padding-l-t {
+  padding-left: 10px;
+}
+
 .padding-l-8 {
   padding-left: 8px;
+}
+
+.padding-b-0 {
+  padding-bottom: 0;
 }
 
 .padding-b-s {
@@ -201,4 +217,10 @@
 
   margin: 0 6px;
   color: $gray-6;
+}
+
+.truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }

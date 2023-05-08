@@ -2,25 +2,32 @@
 import {
     addressBalance, IOutputResponse, SingleNodeClient,
     IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock
+    IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString
 } from "@iota/iota.js-stardust";
 import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
+import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
 import { IFoundriesResponse } from "../../models/api/stardust/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/stardust/foundry/IFoundryResponse";
-import { IAddressBasicOutputsResponse } from "../../models/api/stardust/IAddressBasicOutputsResponse";
+import { IAddressDetailsResponse } from "../../models/api/stardust/IAddressDetailsResponse";
 import IAddressDetailsWithBalance from "../../models/api/stardust/IAddressDetailsWithBalance";
 import { IAliasResponse } from "../../models/api/stardust/IAliasResponse";
 import { IBlockDetailsResponse } from "../../models/api/stardust/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/stardust/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/stardust/IOutputDetailsResponse";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { ITaggedOutputsResponse } from "../../models/api/stardust/ITaggedOutputsResponse";
 import { ITransactionDetailsResponse } from "../../models/api/stardust/ITransactionDetailsResponse";
 import { IMilestoneDetailsResponse } from "../../models/api/stardust/milestone/IMilestoneDetailsResponse";
 import { INftDetailsResponse } from "../../models/api/stardust/nft/INftDetailsResponse";
 import { INftOutputsResponse } from "../../models/api/stardust/nft/INftOutputsResponse";
+import { IParticipationEventInfo } from "../../models/api/stardust/participation/IParticipationEventInfo";
+import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
+import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
+import { SearchExecutor } from "./searchExecutor";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 
 /**
@@ -86,7 +93,7 @@ export class StardustTangleHelper {
                 };
             }
         } catch (e) {
-            console.log(`Block deserialization failed for block with block id ${blockId}.`, e);
+            logger.error(`Block deserialization failed for block with block id ${blockId}. Cause: ${e}`);
             return { error: "Block deserialization failed." };
         }
     }
@@ -135,13 +142,13 @@ export class StardustTangleHelper {
 
         try {
             const block = deserializeBlock(new ReadStream(blockRaw));
-            if (block) {
+            if (block && Object.keys(block).length > 0) {
                 return {
                     block
                 };
             }
         } catch (e) {
-            console.log(`Block deserialization failed for block with transaction id ${transactionId}.`, e);
+            logger.error(`Block deserialization failed for block with transaction id ${transactionId}. Cause: ${e}`);
         }
     }
 
@@ -160,7 +167,39 @@ export class StardustTangleHelper {
 
         return outputResponse ?
             { output: outputResponse } :
-            { error: "Output not found" };
+            { message: "Output not found" };
+    }
+
+    /**
+     * Get the outputs details.
+     * @param network The network to find the items on.
+     * @param outputIds The output ids to get the details.
+     * @returns The item details.
+     */
+    public static async outputsDetails(network: INetwork, outputIds: string[]): Promise<IOutputResponse[]> {
+        const promises: Promise<void>[] = [];
+        const outputResponses: IOutputResponse[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.outputDetails(network, outputId)
+                .then(response => {
+                    if (response.output?.output && response.output?.metadata) {
+                        outputResponses.push(response.output);
+                    }
+                })
+                .catch(e => {
+                    logger.warn(`[StardustTangleHelper] Failed fetching output ${outputId} on ${network.network}. Cause ${e}`);
+                });
+
+            promises.push(promise);
+        }
+        try {
+            await Promise.all(promises);
+
+            return outputResponses;
+        } catch (e) {
+            logger.error(`Fetching outputs details failed. Cause: ${e}`);
+        }
     }
 
     /**
@@ -222,14 +261,14 @@ export class StardustTangleHelper {
     }
 
     /**
-     * Get the relevant upspent output ids for an address.
+     * Get the relevant basic output details for an address.
      * @param network The network to find the items on.
      * @param addressBech32 The address in bech32 format.
-     * @returns The output ids.
+     * @returns The basic output details.
      */
-    public static async outputIdsByAddress(
+    public static async basicOutputDetailsByAddress(
         network: INetwork, addressBech32: string
-    ): Promise<IAddressBasicOutputsResponse | undefined> {
+    ): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
 
@@ -245,36 +284,72 @@ export class StardustTangleHelper {
             cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        cursor = undefined;
+        const outputResponses = await this.outputsDetails(network, outputIds);
+
+        return {
+            outputs: outputResponses
+        };
+    }
+
+    /**
+     * Get the relevant alias output details for an address.
+     * @param network The network to find the items on.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public static async aliasOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
 
         do {
-            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
+                { stateControllerBech32: addressBech32, cursor },
+                "aliases",
+                network,
+                true
+            );
+
+            outputIds = outputIds.concat(outputIdsResponse.items);
+            cursor = outputIdsResponse.cursor;
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(network, outputIds);
+
+        return {
+            outputs: outputResponses
+        };
+    }
+
+    /**
+     * Get the relevant nft output details for an address.
+     * @param network The network to find the items on.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public static async nftOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            const outputIdsResponse = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
                 { addressBech32, cursor },
                 "nfts",
                 network,
                 true
             );
 
-            outputIds = outputIds.concat(nftOutputs.items);
-            cursor = nftOutputs.cursor;
+            outputIds = outputIds.concat(outputIdsResponse.items);
+            cursor = outputIdsResponse.cursor;
         } while (cursor);
 
-        cursor = undefined;
-
-        do {
-            const aliasOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { governorBech32: addressBech32, cursor },
-                "aliases",
-                network,
-                true
-            );
-
-            outputIds = outputIds.concat(aliasOutputs.items);
-            cursor = aliasOutputs.cursor;
-        } while (cursor);
+        const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
-            outputIds
+            outputs: outputResponses
         };
     }
 
@@ -295,13 +370,15 @@ export class StardustTangleHelper {
             true
         );
 
-        if (aliasOutput.items.length > 0) {
+        if (aliasOutput?.items.length > 0) {
             const outputResponse = await this.outputDetails(network, aliasOutput.items[0]);
 
             return !outputResponse.error ?
                 { aliasDetails: outputResponse.output } :
                 { error: outputResponse.error };
         }
+
+        return { message: "Alias output not found" };
     }
 
     /**
@@ -328,7 +405,7 @@ export class StardustTangleHelper {
                 };
             }
 
-            return { error: "Foundry output not found" };
+            return { message: "Foundries output not found" };
         } catch { }
     }
 
@@ -349,39 +426,15 @@ export class StardustTangleHelper {
             true
         );
 
-        if (foundryOutput.items.length > 0) {
+        if (foundryOutput?.items.length > 0) {
             const outputResponse = await this.outputDetails(network, foundryOutput.items[0]);
 
             return !outputResponse.error ?
                 { foundryDetails: outputResponse.output } :
                 { error: outputResponse.error };
         }
-    }
 
-    /**
-     * Get the nft outputs by address.
-     * @param network The network to find the items on.
-     * @param address The address to get the details for.
-     * @returns The nft details.
-     */
-    public static async nftOutputs(
-        network: INetwork,
-        address: string
-    ): Promise<INftOutputsResponse | undefined> {
-        try {
-            const nftOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32: address },
-                "nfts",
-                network,
-                true
-            );
-
-            if (nftOutputs) {
-                return {
-                    outputs: nftOutputs
-                };
-            }
-        } catch { }
+        return { message: "Foundry output not found" };
     }
 
     /**
@@ -410,164 +463,130 @@ export class StardustTangleHelper {
                     { error: outputResponse.error };
             }
 
-            return { error: "Nft output not found" };
+            return { message: "Nft output not found" };
         } catch { }
+    }
+
+    /**
+     * Get the basic output Ids with specific tag feature.
+     * @param network The network to find the items on.
+     * @param encodedTag The tag hex.
+     * @param pageSize The page size.
+     * @param cursor The cursor for pagination.
+     * @returns The basic outputs response.
+     */
+    public static async taggedBasicOutputs(
+        network: INetwork,
+        encodedTag: HexEncodedString,
+        pageSize: number,
+        cursor?: string
+    ): Promise<IBasicOutputsResponse | undefined> {
+        try {
+            const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchPermanodeThenNode<
+                Record<string, unknown>,
+                IOutputsResponse
+            >({ tagHex: encodedTag, pageSize, cursor }, "basicOutputs", network, true);
+
+            if (basicOutputIdsResponse?.items.length > 0) {
+                return { outputs: basicOutputIdsResponse };
+            }
+        } catch { }
+
+        return { error: `Basic outputs not found with given tag ${encodedTag}` };
+    }
+
+    /**
+     * Get the nft output Ids with specific tag feature.
+     * @param network The network to find the items on.
+     * @param encodedTag The tag hex.
+     * @param pageSize The page size.
+     * @param cursor The cursor for pagination.
+     * @returns The nft outputs response.
+     */
+    public static async taggedNftOutputs(
+        network: INetwork,
+        encodedTag: HexEncodedString,
+        pageSize: number,
+        cursor?: string
+    ): Promise<INftOutputsResponse | undefined> {
+        try {
+            const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchPermanodeThenNode<
+                Record<string, unknown>,
+                IOutputsResponse
+            >({ tagHex: encodedTag, pageSize, cursor }, "nfts", network, true);
+
+            if (nftOutputIdsResponse?.items.length > 0) {
+                return { outputs: nftOutputIdsResponse };
+            }
+        } catch { }
+
+        return { error: `Nft outputs not found with given tag ${encodedTag}` };
+    }
+
+    /**
+     * Get the output Ids (basic/nft) with specific tag feature.
+     * @param network The network to find the items on.
+     * @param tag The tag hex.
+     * @returns .
+     */
+    public static async taggedOutputs(
+        network: INetwork,
+        tag: HexEncodedString
+    ): Promise<ITaggedOutputsResponse | undefined> {
+        const basicOutputs = await this.taggedBasicOutputs(network, tag, 10);
+        const nftOutputs = await this.taggedNftOutputs(network, tag, 10);
+
+        return {
+            basicOutputs,
+            nftOutputs
+        };
+    }
+
+    /**
+     * Get the relevant nft output details for an address.
+     * @param network The network to find the items on.
+     * @param eventId The id of the event.
+     * @returns The participation event details.
+     */
+    public static async participationEventDetails(
+        network: INetwork, eventId: string
+    ): Promise<IParticipationEventResponse | undefined> {
+        const basePluginPath: string = "participation/v1/";
+        const method = "get";
+        const methodPath: string = `events/${eventId}`;
+        const info = await this.nodePluginFetch<unknown, IParticipationEventInfo>(
+            network,
+            basePluginPath,
+            method,
+            methodPath
+        );
+        const status = await this.nodePluginFetch<unknown, IParticipationEventStatus>(
+            network,
+            basePluginPath,
+            method,
+            `${methodPath}/status`
+        );
+
+        return {
+            info,
+            status
+        };
     }
 
     /**
      * Find item on the stardust network.
      * @param network The network config.
-     * @param bechHrp The bech32 human readable part of the network.
      * @param query The query to use for finding items.
      * @returns The item found.
      */
     public static async search(
         network: INetwork,
-        bechHrp: string,
         query: string
     ): Promise<ISearchResponse> {
-        const searchQuery: SearchQuery = new SearchQueryBuilder(query, bechHrp).build();
-
-        if (searchQuery.did) {
-            return {
-                did: searchQuery.did
-            };
-        }
-
-        if (searchQuery.milestoneIndex) {
-            const milestoneDetails = await this.milestoneDetailsByIndex(network, searchQuery.milestoneIndex);
-            return {
-                milestone: milestoneDetails
-            };
-        }
-
-        if (searchQuery.milestoneId) {
-            const milestoneDetails = await this.milestoneDetailsById(network, searchQuery.milestoneId);
-            if (milestoneDetails) {
-                return {
-                    milestone: milestoneDetails
-                };
-            }
-        }
-
-        if (searchQuery.blockId) {
-            const response = await StardustTangleHelper.block(network, searchQuery.blockId);
-            if (response && !response.error) {
-                return response;
-            }
-        }
-
-        if (searchQuery.transactionId) {
-            const blockRaw = await this.tryFetchPermanodeThenNode<string, Uint8Array>(
-                searchQuery.transactionId,
-                "transactionIncludedBlockRaw",
-                network
-            );
-
-            if (blockRaw) {
-                try {
-                    const block = deserializeBlock(new ReadStream(blockRaw));
-                    if (block && Object.keys(block).length > 0) {
-                        return {
-                            transactionBlock: block
-                        };
-                    }
-                } catch (e) {
-                    console.log(
-                        `Block deserialization failed for block with transaction id ${searchQuery.transactionId}.`,
-                        e
-                    );
-                }
-            }
-        }
-
-        if (searchQuery.output) {
-            const output = await this.tryFetchPermanodeThenNode<string, IOutputResponse>(
-                searchQuery.output,
-                "output",
-                network
-            );
-
-            if (output) {
-                return { output };
-            }
-        }
-
-        if (searchQuery.aliasId) {
-            try {
-                const aliasOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
-                    searchQuery.aliasId,
-                    "alias",
-                    network,
-                    true
-                );
-
-                if (aliasOutputs.items.length > 0) {
-                    return {
-                        aliasId: searchQuery.aliasId
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.nftId) {
-            try {
-                const nftOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
-                    searchQuery.nftId,
-                    "nft",
-                    network,
-                    true
-                );
-
-                if (nftOutputs.items.length > 0) {
-                    return {
-                        nftId: searchQuery.nftId
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.foundryId) {
-            try {
-                const foundryOutputs = await this.tryFetchPermanodeThenNode<string, IOutputsResponse>(
-                    searchQuery.foundryId,
-                    "foundry",
-                    network,
-                    true
-                );
-
-                if (foundryOutputs.items.length > 0) {
-                    return {
-                        foundryId: searchQuery.foundryId
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.tag) {
-            try {
-                const taggedOutputs = await this.tryFetchPermanodeThenNode<Record<string, unknown>, IOutputsResponse>(
-                    { tagHex: searchQuery.tag },
-                    "basicOutputs",
-                    network,
-                    true
-                );
-
-                if (taggedOutputs.items.length > 0) {
-                    return {
-                        taggedOutputs
-                    };
-                }
-            } catch { }
-        }
-
-        if (searchQuery.address?.bech32) {
-            return {
-                addressDetails: searchQuery.address
-            };
-        }
-
-        return {};
+        return new SearchExecutor(
+            network,
+            new SearchQueryBuilder(query, network.bechHrp).build()
+        ).run();
     }
 
     /**
@@ -579,7 +598,7 @@ export class StardustTangleHelper {
      * @param isIndexerCall The boolean flag for indexer api instead of core api.
      * @returns The results or null if call(s) failed.
      */
-    private static async tryFetchPermanodeThenNode<A, R>(
+    public static async tryFetchPermanodeThenNode<A, R>(
         args: A,
         methodName: string,
         network: INetwork,
@@ -627,5 +646,39 @@ export class StardustTangleHelper {
 
         return null;
     }
-}
 
+    /**
+     * Extension method which provides request methods for plugins.
+     * @param network The network config in context.
+     * @param basePluginPath The base path for the plugin eg indexer/v1/ .
+     * @param method The http method.
+     * @param methodPath The path for the plugin request.
+     * @param queryParams Additional query params for the request.
+     * @param request The request object.
+     * @returns The response object.
+     */
+    private static async nodePluginFetch<T, S>(
+        network: INetwork,
+        basePluginPath: string,
+        method: "get" | "post" | "delete",
+        methodPath: string,
+        queryParams?: string[],
+        request?: T
+    ): Promise<S> | null {
+        const { provider, user, password } = network;
+
+        const client = new SingleNodeClient(provider, { userName: user, password });
+        try {
+            const result: S = await client.pluginFetch<T, S>(
+                basePluginPath,
+                method,
+                methodPath,
+                queryParams,
+                request
+            );
+            return result;
+        } catch { }
+
+        return null;
+    }
+}

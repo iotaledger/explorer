@@ -8,25 +8,14 @@ import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
 import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
 import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
 import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
-import { ICurrencyNamesResponse } from "../../models/api/ICurrencyNamesResponse";
 import { IIdentityDidHistoryRequest } from "../../models/api/IIdentityDidHistoryRequest";
 import { IIdentityDidHistoryResponse } from "../../models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveRequest } from "../../models/api/IIdentityDidResolveRequest";
 import { IIdentityDiffHistoryRequest } from "../../models/api/IIdentityDiffHistoryRequest";
 import { IIdentityDidResolveResponse } from "../../models/api/IIdentityResolveResponse";
-import { IMarketGetRequest } from "../../models/api/IMarketGetRequest";
-import { IMarketGetResponse } from "../../models/api/IMarketGetResponse";
 import { IMilestoneDetailsRequest } from "../../models/api/IMilestoneDetailsRequest";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
-import { IAddressGetRequest } from "../../models/api/og/IAddressGetRequest";
-import { IAddressGetResponse } from "../../models/api/og/IAddressGetResponse";
-import { ITransactionActionRequest } from "../../models/api/og/ITransactionActionRequest";
-import { ITransactionActionResponse } from "../../models/api/og/ITransactionActionResponse";
-import { ITransactionsGetRequest } from "../../models/api/og/ITransactionsGetRequest";
-import { ITransactionsGetResponse } from "../../models/api/og/ITransactionsGetResponse";
-import { ITrytesRetrieveRequest } from "../../models/api/og/ITrytesRetrieveRequest";
-import { ITrytesRetrieveResponse } from "../../models/api/og/ITrytesRetrieveResponse";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
 import { IIdentityDiffHistoryResponse } from ".././../models/api/IIdentityDiffHistoryResponse";
@@ -50,70 +39,6 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async currencies(): Promise<ICurrenciesResponse> {
         return this.callApi<unknown, ICurrenciesResponse>("currencies", "get");
-    }
-
-    /**
-     * Perform a request to get currency names.
-     * @returns The response from the request.
-     */
-    public async currencyNames(): Promise<ICurrencyNamesResponse> {
-        return this.callApi<unknown, ICurrencyNamesResponse>("currency/names", "get");
-    }
-
-    /**
-     * Find transactions from the tangle.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
-        const { network, hash, ...rest } = request;
-
-        return this.callApi<unknown, ITransactionsGetResponse>(
-            `transactions/${network}/${hash}/${FetchHelper.urlParams(rest)}`,
-            "get"
-        );
-    }
-
-    /**
-     * Get trytes from the tangle.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async trytesRetrieve(request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
-        const { network, ...rest } = request;
-
-        return this.callApi<unknown, ITransactionsGetResponse>(`trytes/${network}`, "post", rest);
-    }
-
-    /**
-     * Perform tangle operation on hash.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async transactionAction(request: ITransactionActionRequest): Promise<ITransactionActionResponse> {
-        return this.callApi<unknown, ITransactionActionResponse>(
-            `transactions/${request.network}/${request.hash}/action/${request.action}`,
-            "get"
-        );
-    }
-
-    /**
-     * Perform tangle operation on address.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
-        return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.hash}`, "get");
-    }
-
-
-    /**
-     * Perform a request to get the market data information.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async marketGet(request: IMarketGetRequest): Promise<IMarketGetResponse> {
-        return this.callApi<unknown, IMarketGetResponse>(`market/${request.currency}`, "get");
     }
 
     /**
@@ -190,7 +115,7 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async didDocument(request: IIdentityDidResolveRequest): Promise<IIdentityDidResolveResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did/${request.network}/${request.did}/document`, "get"
+            `chrysalis/did/${request.network}/${request.did}/document`, "get"
             );
     }
 
@@ -201,7 +126,7 @@ export class ChrysalisApiClient extends ApiClient {
      */
     public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
-            `did/${request.network}/${request.did}/history?version=${request.version}`,
+            `chrysalis/did/${request.network}/${request.did}/history?version=${request.version}`,
             "get"
         );
     }
@@ -217,7 +142,7 @@ export class ChrysalisApiClient extends ApiClient {
         payload: unknown
     ): Promise<IIdentityDiffHistoryResponse> {
         return this.callApi<unknown, IIdentityDiffHistoryResponse>(
-            `did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
+            `chrysalis/did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
             "post",
             payload
         );

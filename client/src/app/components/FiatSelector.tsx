@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import React, { ReactNode, RefObject } from "react";
 import Currency from "./Currency";
-import "./FiatSelector.scss";
 import { FiatSelectorState } from "./FiatSelectorState";
+import "./FiatSelector.scss";
 
 /**
  * Component which will display a currency button.
@@ -12,11 +12,6 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
      * The dropdown button class name.
      */
     private static readonly BUTTON_CLASSNAME: string = "fiat-selector__button";
-
-    /**
-     * The most used currencies shown on the top of the dropdown
-     */
-    private static readonly MOST_USED_CURRENCIES: string[] = ["EUR", "GBP", "USD", "TRY", "AUD"];
 
     /**
      * The dropdown reference.
@@ -31,8 +26,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         super(props);
         this.dropdown = React.createRef();
         this.setState({
-            isExpanded: false,
-            currencyNames: {}
+            isExpanded: false
         });
     }
 
@@ -43,14 +37,6 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         super.componentDidMount();
 
         document.addEventListener("mousedown", this.outsideClickHandler);
-        this._currencyService.loadCurrencyNames().then(
-            currencyNames => {
-                if (currencyNames && this._isMounted) {
-                    this.setState({ currencyNames });
-                }
-            }
-        )
-        .catch(_ => { });
     }
 
     /**
@@ -72,15 +58,15 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 className="fiat-selector__currency"
                 onClick={() => {
                     this.setCurrency(currency);
-                    this.updateCurrency();
                     this.closeDropdown();
                 }}
             >
                 <span className="acronym">{currency}</span>
-                <span className="full-name">{this.state?.currencyNames?.[currency]}</span>
+                <span className="full-name">{this._currencyService.getCurrencyName(currency)}</span>
             </div>
         );
-        const hasCurrencies = this.state?.currencies?.length > 0;
+
+        const supportedFiatCurrencies = this._currencyService.getFiatCurrencies();
 
         return (
             <div className="fiat-selector" >
@@ -96,17 +82,10 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 </span>
                 {
                     this.state?.isExpanded &&
-                        <div className="fiat-selector__entries" ref={this.dropdown}>
-                            <div className="most-used">
-                                <div className="group-header">Most used currencies</div>
-                                {hasCurrencies &&
-                                    FiatSelector.MOST_USED_CURRENCIES.map(currency => renderCurrency(currency))}
-                            </div>
-                            <div>
-                                <div className="group-header">All currencies</div>
-                                {this.state?.currencies?.map(currency => renderCurrency(currency))}
-                            </div>
-                        </div>
+                    <div className="fiat-selector__entries" ref={this.dropdown}>
+                        <div className="group-header">Currencies</div>
+                        {supportedFiatCurrencies.map(currency => renderCurrency(currency))}
+                    </div>
                 }
             </div >
         );

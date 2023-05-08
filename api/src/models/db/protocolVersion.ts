@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const OG = "og";
+export const LEGACY = "legacy";
 export const CHRYSALIS = "chrysalis";
 export const STARDUST = "stardust";
 export const PROTO = "proto";
 
 const protocolVersions = [
-    OG,
+    LEGACY,
     CHRYSALIS,
     STARDUST,
     PROTO

@@ -27,6 +27,7 @@ export async function get(
     if (networkConfig.protocolVersion !== STARDUST) {
         return {};
     }
+
     const milestoneDetails = await StardustTangleHelper.milestoneDetailsByIndex(
         networkConfig,
         Number(request.milestoneIndex)

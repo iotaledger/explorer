@@ -1,3 +1,4 @@
+import { ConfirmationState } from "@iota/protonet.js";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useConflict } from "../../../helpers/proto/useConflict";
@@ -7,7 +8,6 @@ import { useConflictConflicts } from "../../../helpers/proto/useConflictConflict
 import { useConflictVoters } from "../../../helpers/proto/useConflictVoters";
 import Spinner from "../../components/Spinner";
 import ShortID, { LinkType } from "./ShortID";
-import { ConfirmationState } from "@iota/protonet.js";
 
 interface ConflictPageProps {
     network: string;
@@ -15,12 +15,12 @@ interface ConflictPageProps {
 }
 
 const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
-    { history, match: { params: { network, conflictId } } }
+    { match: { params: { network, conflictId } } }
 ) => {
     const [conflict, isConflictLoading] = useConflict(network, conflictId);
     const [children] = useConflictChildren(network, conflictId);
-    const [conflicts, areConflictsLoading] = useConflictConflicts(network, conflictId);
-    const [voters, areVotersLoading] = useConflictVoters(network, conflictId);
+    const [conflicts] = useConflictConflicts(network, conflictId);
+    const [voters] = useConflictVoters(network, conflictId);
 
     console.log(children);
     console.log(voters);
@@ -71,7 +71,7 @@ const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
                                             <div className="value">
                                                 <ShortID
                                                     network={network} id={conflict.id}
-                                                    linkType={LinkType.None} hasEpoch={false}
+                                                    linkType={LinkType.None} hasSlot={false}
                                                 />
                                             </div>
                                         </div>
@@ -83,7 +83,7 @@ const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
                                                     :
                                                     conflict.parents.map((parent, _) => (
                                                         <ShortID
-                                                            hasEpoch={false} marginTop={true}
+                                                            hasSlot={false} marginTop={true}
                                                             linkType={LinkType.Conflict} key={parent}
                                                             network={network} id={parent}
                                                         />
@@ -100,7 +100,7 @@ const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
                                                     :
                                                     voters?.voters.map((voter, _) => (
                                                         <ShortID
-                                                            hasEpoch={false} marginTop={true}
+                                                            hasSlot={false} marginTop={true}
                                                             linkType={LinkType.None} key={voter}
                                                             network={network} id={voter}
                                                         />
@@ -115,7 +115,7 @@ const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
                                                     :
                                                     children?.childConflicts.map((childConflict, _) => (
                                                         <ShortID
-                                                            hasEpoch={false} marginTop={true}
+                                                            hasSlot={false} marginTop={true}
                                                             linkType={LinkType.Conflict} key={childConflict.conflictID}
                                                             network={network} id={childConflict.conflictID}
                                                         />
@@ -148,7 +148,7 @@ const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
                                                         <div key={linkedConflict.outputID.base58}>
                                                             <p>Output ID</p>
                                                             <ShortID
-                                                                hasEpoch={false} marginTop={true}
+                                                                hasSlot={false} marginTop={true}
                                                                 linkType={LinkType.Output}
                                                                 network={network} id={linkedConflict.outputID.base58}
                                                             />
@@ -156,7 +156,7 @@ const ConflictPage: React.FC<RouteComponentProps<ConflictPageProps>> = (
                                                             {linkedConflict.conflictIDs.map(linkedConflictId => (
                                                                 <ShortID
                                                                     key={linkedConflictId}
-                                                                    hasEpoch={false} marginTop={true}
+                                                                    hasSlot={false} marginTop={true}
                                                                     linkType={LinkType.Conflict}
                                                                     network={network} id={linkedConflictId}
                                                                 />))}

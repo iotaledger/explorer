@@ -1,4 +1,4 @@
-name: Build All with Node versions 14, 16
+name: Build All with Node versions 14, 16.16
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - "client/**"
       - ".github/workflows/build.yaml"
 
-concurrency: 
+concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '14', '16' ]
+        node: [ '14', '16.16' ]
     name: Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v2

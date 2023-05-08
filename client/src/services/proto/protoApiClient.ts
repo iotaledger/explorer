@@ -1,4 +1,4 @@
-import { IGlobalMetrics } from "../../../../../protonet.js/packages";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IAddressRequest } from "../../models/api/proto/IAddressRequest";
 import { IAddressResponse } from "../../models/api/proto/IAddressResponse";
 import { IBlockMetadataRequest } from "../../models/api/proto/IBlockMetadataRequest";
@@ -11,21 +11,19 @@ import { IConflictConflictsResponse } from "../../models/api/proto/IConflictConf
 import { IConflictRequest } from "../../models/api/proto/IConflictRequest";
 import { IConflictVotersResponse } from "../../models/api/proto/IConflictVotersResponse";
 import { IConflictWeightResponse } from "../../models/api/proto/IConflictWeightResponse";
-import { IEpochBlocksReponse } from "../../models/api/proto/IEpochBlocks";
-import { IEpochRequest } from "../../models/api/proto/IEpochRequest";
-import { IEpochResponse } from "../../models/api/proto/IEpochResponse";
-import { IEpochTransactionsResponse } from "../../models/api/proto/IEpochTransactions";
-import { IEpochVotersWeightResponse } from "../../models/api/proto/IEpochVotersWeight";
 import { IGlobalMetricsResponse } from "../../models/api/proto/IGlobalMetricsResponse";
 import { IOutputMetadataRequest } from "../../models/api/proto/IOutputMetadataRequest";
 import { IOutputMetadataResponse } from "../../models/api/proto/IOutputMetadataResponse";
 import { IOutputRequest } from "../../models/api/proto/IOutputRequest";
 import { IOutputResponse } from "../../models/api/proto/IOutputResponse";
+import { ISlotBlocksReponse } from "../../models/api/proto/ISlotBlocks";
+import { ISlotRequest } from "../../models/api/proto/ISlotRequest";
+import { ISlotResponse } from "../../models/api/proto/ISlotResponse";
+import { ISlotTransactionsResponse } from "../../models/api/proto/ISlotTransactions";
 import { ITransactionMetadataRequest } from "../../models/api/proto/ITransactionMetadataRequest";
 import { ITransactionMetadataResponse } from "../../models/api/proto/ITransactionMetadataResponse";
 import { ITransactionRequest } from "../../models/api/proto/ITransactionRequest";
 import { ITransactionResponse } from "../../models/api/proto/ITransactionResponse";
-import { INodeInfoRequest } from "../../models/api/stardust/INodeInfoRequest";
 import { INodeInfoResponse } from "../../models/api/stardust/INodeInfoResponse";
 import { ApiClient } from "../apiClient";
 
@@ -38,7 +36,7 @@ export class ProtoApiClient extends ApiClient {
      * @param request The Base token request.
      * @returns The response from the request.
      */
-    public async nodeInfo(request: INodeInfoRequest): Promise<INodeInfoResponse> {
+    public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
             "get"
@@ -135,36 +133,29 @@ export class ProtoApiClient extends ApiClient {
         );
     }
 
-    public async epochById(request: IEpochRequest): Promise<IEpochResponse> {
+    public async slotById(request: ISlotRequest): Promise<ISlotResponse> {
         if (request.index) {
-            return this.callApi<unknown, IEpochResponse>(
-                `proto/epoch/${request.network}/index/${request.index}`,
+            return this.callApi<unknown, ISlotResponse>(
+                `proto/slot/${request.network}/index/${request.index}`,
                 "get"
             );
         }
-        return this.callApi<unknown, IEpochResponse>(
-            `proto/epoch/${request.network}/${request.epochId}`,
+        return this.callApi<unknown, ISlotResponse>(
+            `proto/slot/${request.network}/${request.slotId}`,
             "get"
         );
     }
 
-    public async epochTxs(request: IEpochRequest): Promise<IEpochTransactionsResponse> {
-        return this.callApi<unknown, IEpochTransactionsResponse>(
-            `proto/epoch/${request.network}/transactions/${request.index}`,
+    public async slotTxs(request: ISlotRequest): Promise<ISlotTransactionsResponse> {
+        return this.callApi<unknown, ISlotTransactionsResponse>(
+            `proto/slot/${request.network}/transactions/${request.index}`,
             "get"
         );
     }
 
-    public async epochBlocks(request: IEpochRequest): Promise<IEpochBlocksReponse> {
-        return this.callApi<unknown, IEpochBlocksReponse>(
-            `proto/epoch/${request.network}/blocks/${request.index}`,
-            "get"
-        );
-    }
-
-    public async epochVoters(request: IEpochRequest): Promise<IEpochVotersWeightResponse> {
-        return this.callApi<unknown, IEpochVotersWeightResponse>(
-            `proto/epoch/${request.network}/voters/${request.index}`,
+    public async slotBlocks(request: ISlotRequest): Promise<ISlotBlocksReponse> {
+        return this.callApi<unknown, ISlotBlocksReponse>(
+            `proto/slot/${request.network}/blocks/${request.index}`,
             "get"
         );
     }

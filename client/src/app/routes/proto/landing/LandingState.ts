@@ -14,9 +14,9 @@ export interface LandingState extends FeedsState {
     confirmationLatency: number;
 
     /**
-     * The epochs from the feed.
+     * The slots from the feed.
      */
-    epochs: IFeedItem[];
+    slots: IFeedItem[];
 }
 
 export const getDefaultLandingState = (networkConfig: INetwork): LandingState => (
@@ -27,7 +27,7 @@ export const getDefaultLandingState = (networkConfig: INetwork): LandingState =>
         confirmedItemsPerSecondPercent: "--",
         confirmationLatency: 1.2,
         itemsPerSecondHistory: [],
-        epochs: [
+        slots: [
             {
                 id: "HXXTtSGm2ZEmEKJCzQdWm9RdcNPDvAYJnhUt7KTi3XW3:47",
                 properties: {

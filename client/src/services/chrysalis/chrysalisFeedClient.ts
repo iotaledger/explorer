@@ -1,13 +1,11 @@
 import { Blake2b } from "@iota/crypto.js";
 import { deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
-import { asTransactionObject } from "@iota/transaction-converter";
 import { Converter, ReadStream } from "@iota/util.js";
 import { TrytesHelper } from "../../helpers/trytesHelper";
-import { IFeedSubscribeRequest } from "../../models/api/IFeedSubscribeRequest";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
 import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { CHRYSALIS, OG } from "../../models/config/protocolVersion";
+import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { IFeedItem } from "../../models/feed/IFeedItem";
 import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
@@ -27,7 +25,7 @@ export class ChrysalisFeedClient extends FeedClient {
 
         try {
             if (!this._subscriptionId) {
-                const subscribeRequest: IFeedSubscribeRequest = {
+                const subscribeRequest: INetworkBoundGetRequest = {
                     network: this._networkId
                 };
 
@@ -39,7 +37,7 @@ export class ChrysalisFeedClient extends FeedClient {
                 });
                 this._socket.on("transactions", async (subscriptionMessage: IFeedSubscriptionMessage) => {
                     if (subscriptionMessage.subscriptionId === this._subscriptionId) {
-                       if (subscriptionMessage.itemsMetadata) {
+                        if (subscriptionMessage.itemsMetadata) {
                             for (const metadataId in subscriptionMessage.itemsMetadata) {
                                 const existing = this._items.find(c => c.id === metadataId);
                                 if (existing) {
@@ -60,41 +58,27 @@ export class ChrysalisFeedClient extends FeedClient {
 
                             let removeItems: IFeedItem[] = [];
 
-                            if (this._networkConfig?.protocolVersion === OG) {
-                                const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
-                                const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (zeroToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
-                                }
-                                const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
-                                    t.value !== 0 && t.value !== undefined);
-                                const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (nonZeroToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
-                                }
-                            } else {
-                                const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
-                                const transactionPayloadToRemoveCount =
-                                    transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (transactionPayloadToRemoveCount > 0) {
-                                    removeItems =
-                                        removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
-                                }
-                                const indexPayload = this._items.filter(t => t.payloadType === "Index");
-                                const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (indexPayloadToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
-                                }
-                                const msPayload = this._items.filter(t => t.payloadType === "MS");
-                                const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (msPayloadToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
-                                }
-                                const nonePayload = this._items.filter(t => t.payloadType === "None");
-                                const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
-                                if (nonePayloadToRemoveCount > 0) {
-                                    removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
-                                }
+                            const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
+                            const transactionPayloadToRemoveCount =
+                                transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (transactionPayloadToRemoveCount > 0) {
+                                removeItems =
+                                    removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
+                            }
+                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                            const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (indexPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
+                            }
+                            const msPayload = this._items.filter(t => t.payloadType === "MS");
+                            const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (msPayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
+                            }
+                            const nonePayload = this._items.filter(t => t.payloadType === "None");
+                            const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            if (nonePayloadToRemoveCount > 0) {
+                                removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
                             }
 
                             this._items = this._items.filter(t => !removeItems.includes(t));
@@ -149,68 +133,48 @@ export class ChrysalisFeedClient extends FeedClient {
      * @returns The feed item.
      */
     private convertItem(item: string): IFeedItem {
-        if (this._networkConfig?.protocolVersion === CHRYSALIS) {
-            const bytes = Converter.hexToBytes(item);
-            const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
+        const bytes = Converter.hexToBytes(item);
+        const messageId = Converter.bytesToHex(Blake2b.sum256(bytes));
 
-            let value;
-            let payloadType: "Transaction" | "Index" | "MS" | "None" = "None";
-            const properties: { [key: string]: unknown } = {};
-            let message;
+        let value;
+        let payloadType: "Transaction" | "Index" | "MS" | "None" = "None";
+        const properties: { [key: string]: unknown } = {};
+        let message;
 
-            try {
-                message = deserializeMessage(new ReadStream(bytes));
+        try {
+            message = deserializeMessage(new ReadStream(bytes));
 
-                if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                    payloadType = "Transaction";
-                    value = 0;
+            if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+                payloadType = "Transaction";
+                value = 0;
 
-                    for (const output of message.payload.essence.outputs) {
-                        if (output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
-                            value += output.amount;
-                        }
+                for (const output of message.payload.essence.outputs) {
+                    if (output.type === SIG_LOCKED_SINGLE_OUTPUT_TYPE) {
+                        value += output.amount;
                     }
-
-                    if (message.payload.essence.payload) {
-                        properties.Index = message.payload.essence.payload.index;
-                    }
-                } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
-                    payloadType = "MS";
-                    properties.index = message.payload.index;
-                    properties.timestamp = message.payload.timestamp;
-                } else if (message.payload?.type === INDEXATION_PAYLOAD_TYPE) {
-                    payloadType = "Index";
-                    properties.Index = message.payload.index;
                 }
-            } catch (err) {
-                console.error(err);
-            }
 
-            return {
-                id: messageId,
-                value,
-                parents: message?.parentMessageIds ?? [],
-                properties,
-                payloadType
-            };
+                if (message.payload.essence.payload) {
+                    properties.Index = message.payload.essence.payload.index;
+                }
+            } else if (message.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+                payloadType = "MS";
+                properties.index = message.payload.index;
+                properties.timestamp = message.payload.timestamp;
+            } else if (message.payload?.type === INDEXATION_PAYLOAD_TYPE) {
+                payloadType = "Index";
+                properties.Index = message.payload.index;
+            }
+        } catch (err) {
+            console.error(err);
         }
 
-        const tx = asTransactionObject(item);
-
         return {
-            id: tx.hash,
-            value: tx.value,
-            parents: [
-                tx.trunkTransaction,
-                tx.branchTransaction
-            ],
-            properties: {
-                "Tag": tx.tag,
-                "Address": tx.address,
-                "Bundle": tx.bundle
-            },
-            payloadType: "Transaction"
+            id: messageId,
+            value,
+            parents: message?.parentMessageIds ?? [],
+            properties,
+            payloadType
         };
     }
 }
-
