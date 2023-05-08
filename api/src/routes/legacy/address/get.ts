@@ -20,7 +20,7 @@ export async function get(
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.address, "hash");
+    ValidationHelper.string(request.address, "address");
 
     const networkConfig = networkService.get(request.network);
 
