@@ -22,6 +22,7 @@ import { LegacyStatsService } from "./services/legacy/legacyStatsService";
 import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
+import { ProtonetFeed } from "./services/protonet/feed/protonetFeed";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
@@ -65,7 +66,7 @@ export async function initServices(socketServer: SocketIOServer, config: IConfig
                     initStardustServices(networkConfig);
                     break;
                 case PROTO:
-                    initProtoServices(socketServer, networkConfig);
+                    initProtonetServices(socketServer, networkConfig);
                     break;
 
                 default:
@@ -216,80 +217,16 @@ function initStardustServices(networkConfig: INetwork): void {
  * @param socketServer The socket server
  * @param networkConfig The Network Config.
  */
-function initProtoServices(socketServer: SocketIOServer, networkConfig: INetwork): void {
+function initProtonetServices(socketServer: SocketIOServer, networkConfig: INetwork): void {
     const protoWebSocketClient = new WebSocketClient(networkConfig.feedEndpoint);
     ServiceFactory.register(
-        `ws-${networkConfig.network}`, () => protoWebSocketClient
+        `proto-ws-${networkConfig.network}`, () => protoWebSocketClient
     );
-    protoWebSocketClient.onNodeStatus(msg => {
-        const key = WsMsgType.NodeStatus.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
 
-    protoWebSocketClient.onBpsMetric(msg => {
-        const key = WsMsgType.BPSMetric.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onBlock(msg => {
-        const key = WsMsgType.Block.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onNeighborMetrics(msg => {
-        const key = WsMsgType.NeighborMetrics.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onComponentCounterMetric(msg => {
-        const key = WsMsgType.ComponentCounterMetrics.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onTipsMetric(msg => {
-        const key = WsMsgType.TipsMetric.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onVertex(msg => {
-        const key = WsMsgType.Vertex.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onTipInfo(msg => {
-        const key = WsMsgType.TipInfo.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onManaValue(msg => {
-        const key = WsMsgType.ManaValue.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onManaMapOverall(msg => {
-        const key = WsMsgType.ManaMapOverall.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onManaMapOnline(msg => {
-        const key = WsMsgType.ManaMapOnline.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onRateSetterMetric(msg => {
-        const key = WsMsgType.RateSetterMetric.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onConflictsConflictSet(msg => {
-        const key = WsMsgType.ConflictsConflictSet.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
-
-    protoWebSocketClient.onConflictsConflict(msg => {
-        const key = WsMsgType.ConflictsConflict.toString();
-        socketServer.to(`proto-${key}`).emit(key, msg);
-    });
+    ServiceFactory.register(
+        `feed-${networkConfig.network}`,
+        () => new ProtonetFeed(networkConfig.network, socketServer)
+    );
 }
 
 /**

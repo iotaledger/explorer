@@ -10,6 +10,7 @@ import { Server as SocketIOServer } from "socket.io";
 import { NetworkConfigurationError } from "./errors/networkConfigurationError";
 import { initServices } from "./initServices";
 import logger from "./logger";
+import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IFeedUnsubscribeRequest } from "./models/api/IFeedUnsubscribeRequest";
 import { INetworkBoundGetRequest } from "./models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -94,7 +95,7 @@ const sockets: {
 
 socketServer.on("connection", socket => {
     logger.debug(`Socket::Connection [${socket.id}]`);
-    socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
+    socket.on("subscribe", async (data: IFeedSubscribeRequest) => {
         const response = await subscribe(config, socket, data);
         if (!response.error) {
             sockets[socket.id] = data.network;
@@ -123,12 +124,13 @@ socketServer.on("connection", socket => {
         }
     });
 
-    // Protonet
+    // Protonet room joining
     for (const wsMsgTypeKey in WsMsgType) {
         socket.on(`proto-${wsMsgTypeKey}`, () => {
             // eslint-disable-next-line no-void
             void socket.join(`proto-${wsMsgTypeKey}`);
         });
+
         socket.on(`proto-${wsMsgTypeKey}-leave`, () => {
             // eslint-disable-next-line no-void
             void socket.leave(`proto-${wsMsgTypeKey}`);
