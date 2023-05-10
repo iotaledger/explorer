@@ -1,8 +1,7 @@
 import { WebSocketClient, WsMsgType } from "@iota/protonet.js";
-import { SocketAddress } from "net";
-import SocketIO, { Server as SocketIOServer } from "socket.io";
+import { Server as SocketIOServer } from "socket.io";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IFeedSelect } from "../../../models/api/IFeedSubscribeRequest";
+import logger from "../../../logger";
 
 /**
  * Wrapper class for Protonet feed.
@@ -46,6 +45,7 @@ export class ProtonetFeed {
      * Connects the callbacks for upstream data.
      */
     private connect() {
+        logger.verbose("[ProtonetFeed] Attaching upstream listeners.");
         this.wsClient.onNodeStatus(msg => {
             const key = WsMsgType.NodeStatus.toString();
             this.wsServer.to(`proto-${key}`).emit(key, msg);

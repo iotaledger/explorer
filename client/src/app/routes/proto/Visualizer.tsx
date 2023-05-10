@@ -142,6 +142,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
         this._graphElement = null;
         window.removeEventListener("resize", this._resize);
         if (this._socket) {
+            this._socket?.emit(`proto-${WsMsgType.Vertex}-leave`);
             this._socket?.close();
         }
     }

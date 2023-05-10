@@ -12,7 +12,6 @@ import { initServices } from "./initServices";
 import logger from "./logger";
 import { IFeedSubscribeRequest } from "./models/api/IFeedSubscribeRequest";
 import { IFeedUnsubscribeRequest } from "./models/api/IFeedUnsubscribeRequest";
-import { INetworkBoundGetRequest } from "./models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { routes } from "./routes";
 import { subscribe } from "./routes/feed/subscribe";
@@ -127,6 +126,7 @@ socketServer.on("connection", socket => {
     // Protonet room joining
     for (const wsMsgTypeKey in WsMsgType) {
         socket.on(`proto-${wsMsgTypeKey}`, () => {
+            logger.verbose(`[Protonet]: "Subscribing to room proto-${wsMsgTypeKey} socket id ${socket.id}"`);
             // eslint-disable-next-line no-void
             void socket.join(`proto-${wsMsgTypeKey}`);
         });

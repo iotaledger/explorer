@@ -76,6 +76,7 @@ export class StardustFeed {
             this.setupCacheTrimJob();
             this.connect();
         } else {
+            logger.warn(`Failed to build stardustFeed instance for ${networkId}`);
             throw new Error(`Failed to build stardustFeed instance for ${networkId}`);
         }
     }

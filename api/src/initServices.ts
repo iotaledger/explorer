@@ -1,6 +1,6 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
-import { WebSocketClient, WsMsgType } from "@iota/protonet.js";
+import { WebSocketClient } from "@iota/protonet.js";
 import { Server as SocketIOServer } from "socket.io";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
@@ -218,14 +218,18 @@ function initStardustServices(networkConfig: INetwork): void {
  * @param networkConfig The Network Config.
  */
 function initProtonetServices(socketServer: SocketIOServer, networkConfig: INetwork): void {
+    logger.verbose(`Initializing Protonet services for ${networkConfig.network} (${networkConfig.feedEndpoint})`);
     const protoWebSocketClient = new WebSocketClient(networkConfig.feedEndpoint);
+    protoWebSocketClient.init(2000);
+
     ServiceFactory.register(
         `proto-ws-${networkConfig.network}`, () => protoWebSocketClient
     );
 
+    const protonetFeed = new ProtonetFeed(networkConfig.network, socketServer);
     ServiceFactory.register(
         `feed-${networkConfig.network}`,
-        () => new ProtonetFeed(networkConfig.network, socketServer)
+        () => protonetFeed
     );
 }
 
