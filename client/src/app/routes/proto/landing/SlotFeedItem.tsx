@@ -1,29 +1,30 @@
 import React from "react";
-import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
-import { useSlotBlocks, useSlotTxs } from "../../../../helpers/proto/useSlot";
+import { Link } from "react-router-dom";
+import { useSlot, useSlotBlocks, useSlotTxs } from "../../../../helpers/proto/useSlot";
 import Spinner from "../../../components/Spinner";
 
 interface SlotFeedItemProps {
     index: number;
-    latestSlotIndex: number;
     network: string;
     isLatestSlot: boolean;
 }
 
 const SlotFeedItem: React.FC<SlotFeedItemProps> = (
-    { network, index, latestSlotIndex, isLatestSlot }
+    { network, index, isLatestSlot }
 ) => {
+    const [slot] = useSlot(network, "", index);
     const [slotBlocks] = useSlotBlocks(network, "", index);
     const [slotTxs] = useSlotTxs(network, "", index);
-
-    const secondsSinceLast = useMilestoneInterval(latestSlotIndex);
-    const secondsSinceLastView = secondsSinceLast ? (
-        <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span>
-    ) : "";
 
     const classes = ["feed-item"];
     if (isLatestSlot) {
         classes.push("feed-item__latest");
+    }
+
+    let slotIdShort;
+    if (slot) {
+        const slotId = slot.id;
+        slotIdShort = `${slotId.slice(0, 6)}....${slotId.slice(-6)}`;
     }
 
     return (
@@ -33,6 +34,16 @@ const SlotFeedItem: React.FC<SlotFeedItemProps> = (
                 <span className="feed-item--value ms-index">
                     {index}
                 </span>
+            </div>
+            <div className="feed-item__content desktop-only">
+                <span className="feed-item--label">Commitment</span>
+                {slot ?
+                    <Link
+                        className="feed-item--hash ms-id"
+                        to={`/${network}/slot/${slot?.id}`}
+                    >
+                        {slotIdShort}
+                    </Link> : <Spinner />}
             </div>
             <div className="feed-item__content desktop-only">
                 <span className="feed-item--label">Blocks</span>
@@ -46,15 +57,17 @@ const SlotFeedItem: React.FC<SlotFeedItemProps> = (
                     {slotTxs ? <span>{slotTxs.transactions.length}</span> : <Spinner />}
                 </span>
             </div>
-            <div className="feed-item__content">
+            {/*
+                <div className="feed-item__content">
                 <span className="feed-item--label">Timestamp</span>
                 <span className="feed-item--value ms-timestamp desktop-only">
-                    {secondsSinceLastView}
+                {secondsSinceLastView}
                 </span>
                 <span className="feed-item--value ms-timestamp mobile">
-                    {secondsSinceLastView}
+                {secondsSinceLastView}
                 </span>
-            </div>
+                </div>
+            */}
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import { IGlobalMetrics } from "@iota/protonet.js";
 import React from "react";
+import BigDecimal from "../../../../helpers/bigDecimal";
 import MiniTooltip from "../../../components/MiniTooltip";
 import Spinner from "../../../components/Spinner";
 import "./AnalyticStats.scss";
@@ -18,54 +19,60 @@ const CONFLICTS_RESOLVED_24H_HELPER_TXT = "Amount of conflicts which got activel
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
     { globalMetrics }
-) => (
-    <div className="extended-info-boxes">
-        <div className="row space-between">
-            <div className="info-box">
-                <span className="info-box--title">
-                    <MiniTooltip tooltipContent={MANA_STAT_HELPER_TXT}>
-                        <span className="info-box--title">Active Mana Ratio</span>
-                    </MiniTooltip>
-                </span>
-                <span className="info-box--value">
-                    {globalMetrics?.activeManaRatio ? globalMetrics?.activeManaRatio * 100 : <Spinner />}%
-                </span>
+) => {
+    const activeManaRatio = globalMetrics?.activeManaRatio ?
+        `${new BigDecimal(globalMetrics.activeManaRatio.toString()).toString()}%` :
+        <Spinner />;
+
+    return (
+        <div className="extended-info-boxes">
+            <div className="row space-between">
+                <div className="info-box">
+                    <span className="info-box--title">
+                        <MiniTooltip tooltipContent={MANA_STAT_HELPER_TXT}>
+                            <span className="info-box--title">Active Mana Ratio</span>
+                        </MiniTooltip>
+                    </span>
+                    <span className="info-box--value">
+                        {activeManaRatio}
+                    </span>
+                </div>
+                <div className="info-box">
+                    <span className="info-box--title">
+                        <MiniTooltip tooltipContent={NODES_ONLINE_HELPER_TXT}>
+                            <span className="info-box--title">Nodes Online</span>
+                        </MiniTooltip>
+                    </span>
+                    <span className="info-box--value">
+                        {globalMetrics?.onlineNodes ?? <Spinner />}
+                    </span>
+                </div>
             </div>
-            <div className="info-box">
-                <span className="info-box--title">
-                    <MiniTooltip tooltipContent={NODES_ONLINE_HELPER_TXT}>
-                        <span className="info-box--title">Nodes Online</span>
-                    </MiniTooltip>
-                </span>
-                <span className="info-box--value">
-                    {globalMetrics?.onlineNodes ?? <Spinner />}
-                </span>
+            <div className="row space-between">
+                <div className="info-box">
+                    <span className="info-box--title">
+                        <MiniTooltip tooltipContent={TXS_BOOKED_24H_HELPER_TXT}>
+                            <span className="info-box--title">Transactions (24h)</span>
+                        </MiniTooltip>
+                    </span>
+                    <span className="info-box--value">
+                        {globalMetrics?.bookedTransactions ?? <Spinner />}
+                    </span>
+                </div>
+                <div className="info-box">
+                    <span className="info-box--title">
+                        <MiniTooltip tooltipContent={CONFLICTS_RESOLVED_24H_HELPER_TXT}>
+                            <span className="info-box--title">Conflicts Resolved (24h)</span>
+                        </MiniTooltip>
+                    </span>
+                    <span className="info-box--value">
+                        {globalMetrics?.conflictsResolved ?? <Spinner />}
+                    </span>
+                </div>
             </div>
         </div>
-        <div className="row space-between">
-            <div className="info-box">
-                <span className="info-box--title">
-                    <MiniTooltip tooltipContent={TXS_BOOKED_24H_HELPER_TXT}>
-                        <span className="info-box--title">Transactions (24h)</span>
-                    </MiniTooltip>
-                </span>
-                <span className="info-box--value">
-                    {globalMetrics?.bookedTransactions ?? <Spinner />}
-                </span>
-            </div>
-            <div className="info-box">
-                <span className="info-box--title">
-                    <MiniTooltip tooltipContent={CONFLICTS_RESOLVED_24H_HELPER_TXT}>
-                        <span className="info-box--title">Conflicts Resolved (24h)</span>
-                    </MiniTooltip>
-                </span>
-                <span className="info-box--value">
-                    {globalMetrics?.conflictsResolved ?? <Spinner />}
-                </span>
-            </div>
-        </div>
-    </div>
-);
+    );
+};
 
 export default AnalyticStats;
 

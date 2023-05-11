@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import BigDecimal from "../../../../helpers/bigDecimal";
 import { useBPSStream } from "../../../../helpers/proto/useBPSStream";
 import { useGlobalMetrics } from "../../../../helpers/proto/useGlobalMetrics";
 import { useStatusStream } from "../../../../helpers/proto/useStatusStream";
@@ -34,9 +35,13 @@ const Landing: React.FC<RouteComponentProps<LandingProps>> = (
     const [status, lastSlotIndex, latestSlotIndices] = useStatusStream();
     const [globalMetrics] = useGlobalMetrics(network);
 
+    const inclusionRate = globalMetrics?.inclusionRate ?
+        new BigDecimal(globalMetrics.inclusionRate.toString()).toString() :
+        "0";
+
     return (
         <div className="landing-protonet">
-            <div className={classNames("header-wrapper", { "protonet": true })}>
+            <div className="header-wrapper protonet">
                 <div className="inner">
                     <div className="header">
                         <div className="header--title">
@@ -44,9 +49,9 @@ const Landing: React.FC<RouteComponentProps<LandingProps>> = (
                             <div className="network-name"><h1>{networkConfig.label}</h1></div>
                         </div>
                         <InfoBox
-                            bps={bps}
                             confLatency={globalMetrics?.confirmationDelay ?? "NA"}
-                            inclusionRate={globalMetrics?.inclusionRate ?? 0}
+                            bps={bps}
+                            inclusionRate={inclusionRate}
                         />
                     </div>
                 </div>

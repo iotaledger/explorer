@@ -75,7 +75,7 @@
             font-weight: 600;
             text-decoration: none;
             text-transform: uppercase;
-            white-space: break-spaces;
+            white-space: nowrap;
 
             @include tablet-down {
                 text-align: center;

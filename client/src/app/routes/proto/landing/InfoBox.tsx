@@ -4,7 +4,7 @@ import "./InfoBox.scss";
 
 interface InfoBoxProps {
     bps: number;
-    inclusionRate: number;
+    inclusionRate: string;
     confLatency: string;
 }
 
@@ -15,7 +15,7 @@ const InfoBox: React.FC<InfoBoxProps> = (
         <div className="info-box">
             <span className="info-box--title">Conf. Latency</span>
             <span className="info-box--value">
-                {confLatency}s
+                {confLatency}
             </span>
         </div>
         <div className="info-box">

@@ -34,23 +34,21 @@ const SlotFeed: React.FC<SlotFeedProps> = (
                                 <ShortID
                                     linkType={LinkType.Block} network={network}
                                     id={status?.tangleTime.acceptedBlockID ?? ""}
-                                />
-                                :
-                                <Spinner />}
+                                /> : <Spinner />}
                         </div>
                     </div>
                 </div>
                 <div className="col fill margin-b-s">
                     <div className="section--data">
-                        <div className="label">Latest Confirmed Block</div>
+                        <div className="label">
+                            Latest Confirmed Block
+                        </div>
                         <div className="value swapIn" key={status?.tangleTime.confirmedBlockID}>
                             {status ?
                                 <ShortID
                                     linkType={LinkType.Block} network={network}
                                     id={status?.tangleTime.confirmedBlockID ?? ""}
-                                />
-                                :
-                                <Spinner />}
+                                /> : <Spinner />}
                         </div>
                     </div>
                 </div>
@@ -62,13 +60,14 @@ const SlotFeed: React.FC<SlotFeedProps> = (
                     <span className="label ms-id">ID</span>
                     <span className="label ms-blocks">Blocks</span>
                     <span className="label ms-txs">Txs</span>
-                    <span className="label ms-timestamp">Timestamp</span>
                 </div>
                 {latestSlotIndices.length === 0 && (<Spinner />)}
                 {latestSlotIndices.map(slotIndex => (
                     <SlotFeedItem
-                        index={slotIndex} network={network} key={slotIndex}
-                        isLatestSlot={slotIndex === latestSlotIndex} latestSlotIndex={latestSlotIndex ?? 0}
+                        index={slotIndex}
+                        network={network}
+                        key={slotIndex}
+                        isLatestSlot={slotIndex === latestSlotIndex}
                     />))}
             </div>
         </>
