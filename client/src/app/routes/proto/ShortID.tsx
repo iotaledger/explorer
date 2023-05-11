@@ -1,6 +1,6 @@
 import React from "react";
-import "./ShortID.scss";
 import { Link } from "react-router-dom";
+import "./ShortID.scss";
 
 export enum LinkType {
     None,
@@ -19,7 +19,7 @@ interface ShortIDProps {
     marginTop?: boolean;
 }
 
-const linkByType = ({ network, id, linkType }: ShortIDProps): string => {
+const linkByType = (id: string, network: string, linkType: LinkType) => {
     switch (linkType) {
         case LinkType.Block: {
             return `/${network}/block/${id}`;
@@ -42,24 +42,24 @@ const linkByType = ({ network, id, linkType }: ShortIDProps): string => {
     }
 };
 
-const ShortID: React.FC<ShortIDProps> = props => {
-    const link = linkByType(props);
+const ShortID: React.FC<ShortIDProps> = ({ id, network, linkType, hasSlot, marginTop }) => {
+    const link = linkByType(id, network, linkType);
 
     const inner = (
         <React.Fragment>
-            {props.id.slice(0, 30)}...
-            {props.hasSlot ?
-                <span>: {props.id.split(":")[1]}</span>
-                : <span />} <span className="id-part">{props.id}</span>
+            {id.slice(0, 30)}...
+            {hasSlot ?
+                <span>: {id.split(":")[1]}</span>
+                : <span />} <span className="id-part">{id}</span>
         </React.Fragment>
     );
 
     const classes = [];
-    if (props.marginTop) {
+    if (marginTop) {
         classes.push("id-with-margin-top");
     }
 
-    if (props.linkType === LinkType.None) {
+    if (linkType === LinkType.None) {
         return (<div className={classes.join(" ")}>{inner}</div>);
     }
 

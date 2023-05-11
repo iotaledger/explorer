@@ -6,12 +6,10 @@ import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
 type Result = IConflictConflicts | null | undefined;
 
-// eslint-disable-next-line jsdoc/require-returns
 /**
- *
- * @param network
- * @param txId
- * @param conflictId
+ * @param network The network in context.
+ * @param conflictId The conflictId.
+ * @returns The hook.
  */
 export function useConflictConflicts(network: string, conflictId: string): [Result, boolean] {
     const [conflicts, setConflicts] = useState<IConflictConflicts | null>();
@@ -19,7 +17,8 @@ export function useConflictConflicts(network: string, conflictId: string): [Resu
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             try {
                 const fetchedConflicts = await apiClient.conflictConflicts({ network, conflictId });
@@ -37,3 +36,4 @@ export function useConflictConflicts(network: string, conflictId: string): [Resu
 
     return [conflicts, isLoading];
 }
+

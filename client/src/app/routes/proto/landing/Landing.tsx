@@ -30,7 +30,7 @@ const defaultNetworkConfig: INetwork = {
 const Landing: React.FC<RouteComponentProps<LandingProps>> = (
     { match: { params: { network } } }
 ) => {
-    const [bps] = useBPSStream(network);
+    const [bps] = useBPSStream();
     const networkConfig = ServiceFactory.get<NetworkService>("network").get(network) ?? defaultNetworkConfig;
     const [status, lastSlotIndex, latestSlotIndices] = useStatusStream();
     const [globalMetrics] = useGlobalMetrics(network);

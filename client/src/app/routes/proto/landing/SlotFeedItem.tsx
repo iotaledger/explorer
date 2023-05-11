@@ -43,18 +43,18 @@ const SlotFeedItem: React.FC<SlotFeedItemProps> = (
                         to={`/${network}/slot/${slot?.id}`}
                     >
                         {slotIdShort}
-                    </Link> : <Spinner />}
+                    </Link> : <Spinner compact />}
             </div>
             <div className="feed-item__content desktop-only">
                 <span className="feed-item--label">Blocks</span>
                 <span className="feed-item--value ms-blocks">
-                    {slotBlocks ? <span>{slotBlocks.blocks.length}</span> : <Spinner />}
+                    {slotBlocks ? <span>{slotBlocks.blocks.length}</span> : <Spinner compact />}
                 </span>
             </div>
             <div className="feed-item__content desktop-only">
                 <span className="feed-item--label">Txs</span>
                 <span className="feed-item--value ms-txs">
-                    {slotTxs ? <span>{slotTxs.transactions.length}</span> : <Spinner />}
+                    {slotTxs ? <span>{slotTxs.transactions.length}</span> : <Spinner compact />}
                 </span>
             </div>
             {/*

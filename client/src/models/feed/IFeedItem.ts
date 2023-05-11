@@ -27,8 +27,7 @@ export interface IFeedItem {
     /**
      * The payload type for Chrysalis/Stardust.
      */
-    // TODO: This should be here "PROTO", refactor proto feed to be stardust-like and decoupled from chrysalis feed
-    payloadType?: "Transaction" | IndexationPayloadType | "MS" | "None" | "Slot";
+    payloadType?: "Transaction" | IndexationPayloadType | "MS" | "None";
 
     /**
      * Metadata for the item.

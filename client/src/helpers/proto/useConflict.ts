@@ -1,4 +1,4 @@
-import { IConflictConflicts, IConflictWeight } from "@iota/protonet.js";
+import { IConflictWeight } from "@iota/protonet.js";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { PROTO } from "../../models/config/protocolVersion";
@@ -6,12 +6,11 @@ import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
 type Result = IConflictWeight | null | undefined;
 
-// eslint-disable-next-line jsdoc/require-returns
 /**
  *
- * @param network
- * @param txId
- * @param conflictId
+ * @param network The network in context.
+ * @param conflictId The conflict Id.
+ * @returns The hook.
  */
 export function useConflict(network: string, conflictId: string): [Result, boolean] {
     const [conflict, setConflict] = useState<IConflictWeight | null>();
@@ -19,7 +18,8 @@ export function useConflict(network: string, conflictId: string): [Result, boole
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             try {
                 const fetchedConflict = await apiClient.conflict({ network, conflictId });
@@ -37,3 +37,4 @@ export function useConflict(network: string, conflictId: string): [Result, boole
 
     return [conflict, isLoading];
 }
+

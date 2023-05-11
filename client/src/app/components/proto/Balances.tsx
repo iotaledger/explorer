@@ -38,7 +38,9 @@ const Balances: React.FC<BalancesProps> = (
 
 
     return (
-        <React.Fragment>{balanceNodes}</React.Fragment>
+        <React.Fragment>
+            {balanceNodes.map(node => node)}
+        </React.Fragment>
     );
 };
 

@@ -6,8 +6,8 @@ import React from "react";
 
 
 /**
- *
- * @param pastMarkers
+ * @param pastMarkers The pastMarkers object.
+ * @returns The nodes to render.
  */
 export function pastMarkersToNodes(pastMarkers: Record<string, unknown>): React.ReactNode[] {
     const nodes = [];
