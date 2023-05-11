@@ -1,6 +1,6 @@
 import { Output, OutputType, OutputTypeName, IAliasOutput, ISigLockedColoredOutput, ISigLockedSingleOutput, IExtendedLockedOutput } from "@iota/protonet.js";
 
-export const IOTABalanceKey: string = "11111111111111111111111111111111";
+const IOTABalanceKey: string = "11111111111111111111111111111111";
 
 /**
  * @param outputType The output type.

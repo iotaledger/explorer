@@ -15,7 +15,7 @@ import InfoBox from "./InfoBox";
 import SlotFeed from "./SlotFeed";
 import "./Landing.scss";
 
-export interface LandingProps {
+interface LandingProps {
     network: string;
 }
 
