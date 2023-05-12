@@ -17,6 +17,7 @@ import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import Modal from "./../../components/Modal";
 import "./Visualizer.scss";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT as string;
 
 interface VisualizerProps {
