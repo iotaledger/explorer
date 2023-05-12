@@ -6,11 +6,9 @@ import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
 type Result = IGlobalMetrics | null | undefined;
 
-// eslint-disable-next-line jsdoc/require-returns
 /**
- *
- * @param network
- * @param txId
+ * @param network The network in context.
+ * @returns The hook.
  */
 export function useGlobalMetrics(network: string): [Result, boolean] {
     const [globalMetrics, setGlobalMetrics] = useState<IGlobalMetrics | null>();
@@ -18,7 +16,8 @@ export function useGlobalMetrics(network: string): [Result, boolean] {
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             try {
                 const fetchedMetrics = await apiClient.globalMetrics({ network });

@@ -7,15 +7,15 @@ const apiEndpoint = (window as any).env.API_ENDPOINT as string;
 
 /**
  *
- * @param network
- * @param txId
+ * @returns The txId
  */
-export function useBPSStream(network: string): [number] {
+export function useBPSStream(): [number] {
     const [bps, setBPS] = useState(0);
 
     useEffect(() => {
         let socket: Socket;
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             socket = io(apiEndpoint, { upgrade: true, transports: ["websocket"] });
 
             socket?.emit(`proto-${WsMsgType.BPSMetric}`);
@@ -31,3 +31,4 @@ export function useBPSStream(network: string): [number] {
 
     return [bps];
 }
+

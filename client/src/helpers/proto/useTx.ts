@@ -6,11 +6,10 @@ import { ProtoApiClient } from "../../services/proto/protoApiClient";
 
 type Result = ITransaction | null | undefined;
 
-// eslint-disable-next-line jsdoc/require-returns
 /**
- *
- * @param network
- * @param txId
+ * @param network The network in context.
+ * @param txId The txId.
+ * @returns The hook.
  */
 export function useTx(network: string, txId: string): [Result, boolean] {
     const [tx, setTx] = useState<ITransaction | null>();
@@ -18,7 +17,8 @@ export function useTx(network: string, txId: string): [Result, boolean] {
     const apiClient = ServiceFactory.get<ProtoApiClient>(`api-client-${PROTO}`);
 
     useEffect(() => {
-        (async () => {
+        // eslint-disable-next-line no-void
+        void (async () => {
             setIsLoading(true);
             try {
                 const fetchedTx = await apiClient.transaction({ network, txId });
