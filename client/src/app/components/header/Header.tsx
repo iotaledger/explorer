@@ -100,55 +100,57 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         {page.label}
                                     </Link>
                                 ))}
-                            <div className="utilities--wrapper">
-                                <div
-                                    className={classNames("utilities--dropdown", {
+                            {utilities && utilities?.length > 0 && (
+                                <div className="utilities--wrapper">
+                                    <div
+                                        className={classNames("utilities--dropdown", {
+                                            opened: this.state.isUtilitiesExpanded
+                                        })}
+                                        onClick={() =>
+                                            this.setState({
+                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
+                                                isNetworkSwitcherExpanded: false
+                                            })}
+                                    >
+                                        <div className="label">Utilities</div>
+                                        <div className="icon">
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={classNames("header--expanded", {
                                         opened: this.state.isUtilitiesExpanded
                                     })}
-                                    onClick={() =>
-                                        this.setState({
-                                            isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
-                                            isNetworkSwitcherExpanded: false
-                                        })}
-                                >
-                                    <div className="label">Utilities</div>
-                                    <div className="icon">
-                                        <span className="material-icons">
-                                            expand_more
-                                        </span>
+                                    >
+                                        <div className="utilities">
+                                            <div className="utilities--label">Utilities</div>
+                                            {utilities?.map(utility => (
+                                                <div key={utility.url} className="utilities--item">
+                                                    <Link
+                                                        to={utility.url}
+                                                        onClick={() =>
+                                                            this.setState({ isUtilitiesExpanded: false })}
+                                                        className={classNames(
+                                                            { "active-item": utility.url === window.location.pathname }
+                                                        )}
+                                                    >
+                                                        {utility.label}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
+                                    {this.state.isUtilitiesExpanded && (
+                                        <div
+                                            className="header--expanded--shield"
+                                            onClick={() =>
+                                                this.setState({ isUtilitiesExpanded: false })}
+                                        />
+                                    )}
                                 </div>
-
-                                <div className={classNames("header--expanded", {
-                                    opened: this.state.isUtilitiesExpanded
-                                })}
-                                >
-                                    <div className="utilities">
-                                        <div className="utilities--label">Utilities</div>
-                                        {utilities?.map(utility => (
-                                            <div key={utility.url} className="utilities--item">
-                                                <Link
-                                                    to={utility.url}
-                                                    onClick={() =>
-                                                        this.setState({ isUtilitiesExpanded: false })}
-                                                    className={classNames(
-                                                        { "active-item": utility.url === window.location.pathname }
-                                                    )}
-                                                >
-                                                    {utility.label}
-                                                </Link>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {this.state.isUtilitiesExpanded && (
-                                    <div
-                                        className="header--expanded--shield"
-                                        onClick={() =>
-                                            this.setState({ isUtilitiesExpanded: false })}
-                                    />
-                                )}
-                            </div>
+                            )}
                             {/* ----- Only visible in mobile ----- */}
                             {isMarketed && (
                                 <div className="mobile-fiat">
@@ -233,47 +235,52 @@ class Header extends Component<HeaderProps, HeaderState> {
                                             </Link>
 
                                         ))}
-                                    <li
-                                        className={classNames("menu--expanded__item", {
+                                    {utilities && utilities?.length > 0 && (
+                                        <li
+                                            className={classNames("menu--expanded__item", {
+                                                opened: this.state.isUtilitiesExpanded
+                                            })}
+                                            onClick={() =>
+                                                this.setState({
+                                                    isUtilitiesExpanded: !this.state.isUtilitiesExpanded
+                                                })}
+                                        >
+                                            <div className="label">Utilities</div>
+                                            <div className="icon">
+                                                <span className="material-icons">
+                                                    expand_more
+                                                </span>
+                                            </div>
+                                        </li>
+                                    )}
+                                    {/* ----- Only visible in mobile ----- */}
+                                    {utilities && utilities?.length > 0 && (
+                                        <div className={classNames("utilities--mobile", {
                                             opened: this.state.isUtilitiesExpanded
                                         })}
-                                        onClick={() =>
-                                            this.setState({
-                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded
-                                            })}
-                                    >
-                                        <div className="label">Utilities</div>
-                                        <div className="icon">
-                                            <span className="material-icons">
-                                                expand_more
-                                            </span>
-                                        </div>
-                                    </li>
-                                    {/* ----- Only visible in mobile ----- */}
-                                    <div className={classNames("utilities--mobile", {
-                                        opened: this.state.isUtilitiesExpanded
-                                    })}
-                                    >
-                                        {utilities?.map(utility => (
-                                            <Link
-                                                key={utility.url}
-                                                to={utility.url}
-                                                onClick={() =>
-                                                    this.setState({
-                                                        isMenuExpanded: false,
-                                                        isNetworkSwitcherExpanded: false
-                                                    })}
-                                            >
-                                                <li
+                                        >
+                                            {utilities?.map(utility => (
+                                                <Link
                                                     key={utility.url}
-                                                    className={classNames("menu--expanded__item margin-l-t",
-                                                        { "active-item": utility.url === window.location.pathname })}
+                                                    to={utility.url}
+                                                    onClick={() =>
+                                                        this.setState({
+                                                            isMenuExpanded: false,
+                                                            isNetworkSwitcherExpanded: false
+                                                        })}
                                                 >
-                                                    {utility.label}
-                                                </li>
-                                            </Link>
-                                        ))}
-                                    </div>
+                                                    <li
+                                                        key={utility.url}
+                                                        className={classNames("menu--expanded__item margin-l-t",
+                                                            { "active-item":
+                                                                utility.url === window.location.pathname })}
+                                                    >
+                                                        {utility.label}
+                                                    </li>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
                                     {/* ---------- */}
                                 </ul>
                             </div>
