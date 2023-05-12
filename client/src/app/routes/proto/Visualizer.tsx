@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-no-useless-fragment */
+/* eslint-disable react/jsx-no-useless-fragment, camelcase */
 import { IWsVertex, WsMsgType, WsVertexParentType } from "@iota/protonet.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -9,6 +9,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
+import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import AsyncComponent from "../../components/AsyncComponent";
 import NetworkContext from "../../context/NetworkContext";
@@ -42,7 +43,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
 
     private static readonly MAX_ITEMS: number = 5000;
 
-    private static readonly EDGE_COLOR_LIGHT: number = 0x00000055;
+    private static readonly EDGE_COLOR_LIGHT: number = 0x00066055;
 
     private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF33;
 
@@ -53,18 +54,6 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
     private static readonly COLOR_TX: string = "0xff33d4";
 
     private static readonly COLOR_PENDING: string = "0xbbbbbb";
-
-    private static readonly COLOR_ACCEPTED: string = "0x4caaff";
-
-    private static readonly COLOR_ORPHANED: string = "0xff8b5c";
-
-    private static readonly COLOR_INVALID: string = "0xff5c5c";
-
-    private static readonly COLOR_TX_ACCEPTED: string = "0x00BF94";
-
-    private static readonly COLOR_TX_REJECTED: string = "0xa04cff";
-
-    private static readonly COLOR_TX_CONFLICT: string = "0xffd95c";
 
     private static readonly COLOR_FINALIZED: string = "0x61e884";
 
@@ -77,6 +66,12 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
     private _renderer?: Viva.Graph.View.IRenderer;
 
     private _graphics?: Viva.Graph.View.IWebGLGraphics<IWsVertex, unknown>;
+
+    /**
+     * Last time a node was clicked.
+     */
+    private _lastClick: number;
+
 
     // All the items being visualized.
     private readonly _existingIds: string[];
@@ -104,8 +99,13 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
 
     constructor(props: RouteComponentProps<VisualizerProps>) {
         super(props);
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        this._networkConfig = this.props.match.params.network
+            ? networkService.get(this.props.match.params.network)
+            : undefined;
 
         this._existingIds = [];
+        this._lastClick = 0;
         this._removeNodes = [];
         this._hadInitialLoad = false;
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
@@ -183,6 +183,11 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
                 <div className="graph-border">
                     <div
                         className="viva"
+                        onClick={() => {
+                            if (Date.now() - this._lastClick > 300) {
+                                this.selectNode();
+                            }
+                        }}
                         ref={r => this.setupGraph(r)}
                     />
                     <div className="action-panel-container">
@@ -198,13 +203,17 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
                 <div className="stats-panel-container">
                     <div className="card stats-panel">
                         <div className="card--content">
-                            <div className="card--label">Blocks</div>
-                            <div className="card--value">
-                                {itemCount}
+                            <div className="stats-panel__info">
+                                <div className="card--label">Blocks</div>
+                                <div className="card--value">
+                                    {itemCount}
+                                </div>
                             </div>
-                            <div className="card--label">BPS</div>
-                            <div className="card--value">
-                                {itemsPerSecond}
+                            <div className="stats-panel__info">
+                                <div className="card--label">BPS</div>
+                                <div className="card--value">
+                                    {itemsPerSecond}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -248,45 +257,16 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
                             <div className="key-label">Pending</div>
                         </div>
                         <div className="key-panel-item">
-                            <div className="key-marker vertex-state--accepted" />
-                            <div className="key-label">Accepted</div>
-                        </div>
-                        <div className="key-panel-item">
                             <div className="key-marker vertex-state--finalized" />
                             <div className="key-label">Finalized</div>
                         </div>
                         <div className="key-panel-item">
-                            <div className="key-marker vertex-state--orphaned" />
-                            <div className="key-label">Orphaned</div>
-                        </div>
-                        <div className="key-panel-item">
-                            <div className="key-marker vertex-state--invalid" />
-                            <div className="key-label">Invalid</div>
+                            <div className="key-marker vertex-state--tx" />
+                            <div className="key-label">Transaction</div>
                         </div>
                         <div className="key-panel-item">
                             <div className="key-marker vertex-state--search-result" />
                             <div className="key-label">Search result</div>
-                        </div>
-                    </div>
-                    <div className="card key-panel">
-                        <div className="key-panel-item">
-                            <div className="key-label">Tx</div>
-                        </div>
-                        <div className="key-panel-item">
-                            <div className="key-marker vertex-state--tx-pending" />
-                            <div className="key-label">Pending</div>
-                        </div>
-                        <div className="key-panel-item">
-                            <div className="key-marker vertex-state--tx-accepted" />
-                            <div className="key-label">Accepted</div>
-                        </div>
-                        <div className="key-panel-item">
-                            <div className="key-marker vertex-state--tx-conflict" />
-                            <div className="key-label">Conflict</div>
-                        </div>
-                        <div className="key-panel-item">
-                            <div className="key-marker vertex-state--tx-rejected" />
-                            <div className="key-label">Rejected</div>
                         </div>
                     </div>
                 </div>
@@ -313,7 +293,6 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
 
         const existingNode = this._graph.getNode(item.id);
         if (!existingNode) {
-            console.log("adding node with id", item.id);
             this._graph.addNode(item.id, item);
             this._existingIds.push(item.id);
 
@@ -342,7 +321,6 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
             if (!addedParents.includes(parentId)) {
                 addedParents.push(parentId);
                 if (!this._graph.getNode(parentId)) {
-                    console.log("parent", parentId, "not found for", item.id);
                     this._graph.addNode(parentId);
                     this._existingIds.push(parentId);
                 }
@@ -368,17 +346,10 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
         }
 
         if (node.data) {
-            // node.data.isAccepted = node.data?.isAccepted || item.isAccepted;
             node.data.is_finalized = node.data?.is_finalized || item.is_finalized;
-            // node.data.isOrphaned = node.data?.isOrphaned || item.isOrphaned;
-            // node.data.isBooked = node.data?.isBooked || item.isBooked;
-            // node.data.isMissing = node.data?.isMissing || item.isMissing;
             node.data.is_tx = node.data?.is_tx || item.is_tx;
-            // node.data.isTxAccepted = node.data?.isTxAccepted || item.isTxAccepted;
-            // node.data.isTxRejected = node.data?.isTxRejected || item.isTxRejected;
-            // node.data.isTxConflicting = node.data?.isTxConflicting || item.isTxConflicting;
         }
-        this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
+        this.styleNode(node, this.testForHighlight(highlightRegEx, node.id));
     }
 
     /**
@@ -406,7 +377,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
             this._graphics.setNodeProgram(buildNodeShader());
 
             this._graphics.node(node => this.calculateNodeStyle(
-                node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
+                node, this.testForHighlight(this.highlightNodesRegEx(), node.id)));
 
             this._graphics.link(() => Viva.Graph.View.webglLine(this._darkMode
                 ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
@@ -512,28 +483,9 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
             color = Visualizer.COLOR_TX;
             size = 45;
 
-            // if (node.data.isAccepted) {
-            //     color = Visualizer.COLOR_TX_ACCEPTED;
-            // } else if (node.data.isTxRejected) {
-            //     color = Visualizer.COLOR_TX_REJECTED;
-            // } else if (node.data.isTxConflicting) {
-            //     color = Visualizer.COLOR_TX_CONFLICT;
-            // }
-
             return { color, size };
         }
-
-        if (node.data.is_finalized) {
-            color = Visualizer.COLOR_FINALIZED;
-            // } else if (node.data.isOrphaned) {
-            //     color = Visualizer.COLOR_ORPHANED;
-            // } else if (node.data.isInvalid) {
-            //     color = Visualizer.COLOR_INVALID;
-            // } else if (node.data.isAccepted) {
-            //     color = Visualizer.COLOR_ACCEPTED;
-        } else {
-            color = Visualizer.COLOR_PENDING;
-        }
+        color = node.data.is_finalized ? Visualizer.COLOR_FINALIZED : Visualizer.COLOR_PENDING;
 
         return {
             color,
@@ -585,6 +537,8 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
         if (!isDeselect && node) {
             this.highlightConnections(node.id);
         }
+
+        this._lastClick = Date.now();
     }
 
     /**
@@ -635,7 +589,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
 
         if (this._graph) {
             this._graph.forEachNode((node: Viva.Graph.INode<IWsVertex, unknown>) => {
-                this.styleNode(node, this.testForHighlight(regEx, node.id, node.data));
+                this.styleNode(node, this.testForHighlight(regEx, node.id));
             });
         }
     }
@@ -656,33 +610,18 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
      * Highlight nodes.
      * @param regEx The pattern to match in the properties.
      * @param nodeId The node to match the data.
-     * @param data The data node to match.
      * @returns True if we should highlight the node.
      */
     private testForHighlight(
         regEx: RegExp | undefined,
-        nodeId: string | undefined,
-        data: IWsVertex | undefined): boolean {
-        /*
-        if (!regEx || !nodeId || !data) {
+        nodeId: string | undefined): boolean {
+        if (!regEx || !nodeId) {
             return false;
         }
-
         if (regEx.test(nodeId)) {
             return true;
         }
 
-        if (data) {
-            for (const key in data) {
-                const val = data.properties[key] as string;
-                if (typeof val === "string" && Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val))) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-         */
         return false;
     }
 
