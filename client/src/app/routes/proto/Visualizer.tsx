@@ -44,9 +44,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
 
     private static readonly MAX_ITEMS: number = 5000;
 
-    private static readonly EDGE_COLOR_LIGHT: number = 0x00066055;
-
-    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF33;
+    private static readonly EDGE_COLOR: number = 0xB0BFD9FF;
 
     private static readonly EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
 
@@ -380,8 +378,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
             this._graphics.node(node => this.calculateNodeStyle(
                 node, this.testForHighlight(this.highlightNodesRegEx(), node.id)));
 
-            this._graphics.link(() => Viva.Graph.View.webglLine(this._darkMode
-                ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
+            this._graphics.link(() => Viva.Graph.View.webglLine(Visualizer.EDGE_COLOR));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
             events.click(node => this.selectNode(node));
@@ -574,9 +571,7 @@ class Visualizer extends AsyncComponent<RouteComponentProps<VisualizerProps>, Vi
             this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
-                    linkUI.color = this._darkMode
-                        ? Visualizer.EDGE_COLOR_DARK
-                        : Visualizer.EDGE_COLOR_LIGHT;
+                    linkUI.color = Visualizer.EDGE_COLOR;
                 }
             });
         }
