@@ -110,6 +110,40 @@
         padding: 20px 30px;
       }
     }
+
+    @include tablet-down {
+      top: 60px;
+      left: 20px;
+      bottom: auto;
+      justify-content: left;
+
+      .stats-panel {
+        .card--value,
+        .card--label {
+          text-align: left;
+        }
+        .card--label {
+          justify-content: flex-start;
+        }
+        .card--content {
+          padding: 0;
+        }
+        .stats-panel__info{
+          padding: 0 10px;
+          display: inline-block;
+        }
+      }
+    }
+
+    @include phone-down {
+      left: 10px;
+      .stats-panel {
+        .card--value,
+        .card--label {
+          font-size: 12px;
+        }
+      }
+    }
   }
 
   .info-panel-container {
@@ -174,54 +208,20 @@
           margin-right: 10px;
           border-radius: 3px;
 
-          /*
-            isAccepted: boolean;
-            isOrphaned: boolean;
-            isMissing: boolean;
-            isInvalid: boolean;
-            isSolid: boolean;
-            isBooked: boolean;
-            isFinalized: boolean;
-           */
-
           &.vertex-state--pending {
             background-color: #bbbbbb;
-          }
-
-          &.vertex-state--accepted {
-            background-color: #4caaff;
-          }
-
-          &.vertex-state--orphaned {
-            background-color: #ff8b5c;
-          }
-
-          &.vertex-state--invalid {
-            background-color: #ff5c5c;
           }
 
           &.vertex-state--finalized {
             background-color: #61e884;
           }
 
-          &.vertex-state--tx-pending {
+          &.vertex-state--tx {
             background-color: #ff33d4;
           }
 
           &.vertex-state--search-result {
             background-color: #e79c18;
-          }
-
-          &.vertex-state--tx-accepted {
-            background-color: #00BF94;
-          }
-
-          &.vertex-state--tx-conflict {
-            background-color: #ffd95c;
-          }
-
-          &.vertex-state--tx-rejected {
-            background-color: #a04cff;
           }
         }
 
