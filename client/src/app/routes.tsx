@@ -253,16 +253,6 @@ const buildAppRoutes = (
             key={keys.next().value}
             component={ProtoVisualizer}
         />
-        /*
-        <Route path="/:network/network/"
-            key={keys.next().value}
-            component={StardustVisualizer}
-        />,
-        <Route exact path="/:network/validators/:slotId"
-            key={keys.next().value}
-            component={StardustLanding}
-        />
-         */
     ];
 
     return (
