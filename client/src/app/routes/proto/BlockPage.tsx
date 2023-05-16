@@ -280,7 +280,7 @@ const BlockPage: React.FC<RouteComponentProps<BlockPageProps>> = (
                                     </div>
                                 </div>
 
-                                <div className="Scheduler">
+                                <div className="section">
                                     <div className="section--header">
                                         <div className="row middle">
                                             <h2>Scheduler</h2>
