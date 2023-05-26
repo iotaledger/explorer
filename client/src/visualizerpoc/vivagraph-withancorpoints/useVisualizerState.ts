@@ -177,6 +177,7 @@ export function useVisualizerStateVivaWithAncorsPoc(
                             }
                         }
 
+                        styleAncors();
                         setItemCount(existingIds.current.length);
                     }
 
@@ -200,35 +201,36 @@ export function useVisualizerStateVivaWithAncorsPoc(
                             }
 
                             styleNode(node, testForHighlight(highlightRegEx, node.id, node.data));
+
                             if (graphics.current) {
                                 let nodeUI = graphics.current.getNodeUI(ANCOR_TOP_1);
                                 if (nodeUI) {
-                                    nodeUI.color = COLOR_SEARCH_RESULT;
+                                    nodeUI.color = darkMode ? "0x000000" : "0xFFFFFF";
                                     nodeUI.size = 50;
                                 }
                                 nodeUI = graphics.current.getNodeUI(ANCOR_TOP_2);
                                 if (nodeUI) {
-                                    nodeUI.color = COLOR_SEARCH_RESULT;
+                                    nodeUI.color = darkMode ? "0x000000" : "0xFFFFFF";
                                     nodeUI.size = 50;
                                 }
                                 nodeUI = graphics.current.getNodeUI(ANCOR_TOP_3);
                                 if (nodeUI) {
-                                    nodeUI.color = COLOR_SEARCH_RESULT;
+                                    nodeUI.color = darkMode ? "0x000000" : "0xFFFFFF";
                                     nodeUI.size = 50;
                                 }
                                 nodeUI = graphics.current.getNodeUI(ANCOR_BOTTOM_1);
                                 if (nodeUI) {
-                                    nodeUI.color = COLOR_SEARCH_RESULT;
+                                    nodeUI.color = darkMode ? "0x000000" : "0xFFFFFF";
                                     nodeUI.size = 50;
                                 }
                                 nodeUI = graphics.current.getNodeUI(ANCOR_BOTTOM_2);
                                 if (nodeUI) {
-                                    nodeUI.color = COLOR_SEARCH_RESULT;
+                                    nodeUI.color = darkMode ? "0x000000" : "0xFFFFFF";
                                     nodeUI.size = 50;
                                 }
                                 nodeUI = graphics.current.getNodeUI(ANCOR_BOTTOM_3);
                                 if (nodeUI) {
-                                    nodeUI.color = COLOR_SEARCH_RESULT;
+                                    nodeUI.color = darkMode ? "0x000000" : "0xFFFFFF";
                                     nodeUI.size = 50;
                                 }
                             }
@@ -431,6 +433,8 @@ export function useVisualizerStateVivaWithAncorsPoc(
                     }
                 }
             }
+
+            styleAncors();
         }
     }
 
@@ -603,6 +607,22 @@ export function useVisualizerStateVivaWithAncorsPoc(
         graph.current?.forEachNode((node: Viva.Graph.INode<INodeData, unknown>) => {
             styleNode(node, testForHighlight(regEx, node.id, node.data));
         });
+    }
+
+    function styleAncors(): void {
+        for (const ancorId of [ANCOR_TOP_1, ANCOR_TOP_2, ANCOR_TOP_3, ANCOR_BOTTOM_1, ANCOR_BOTTOM_2, ANCOR_BOTTOM_3]) {
+            const node = graph.current?.getNode(ancorId);
+            if (node) {
+                for (const link of node.links) {
+                    const linkUI = graphics.current?.getLinkUI(link.id);
+                    if (linkUI) {
+                        linkUI.color = darkMode ?
+                            EDGE_COLOR_LIGHT :
+                            EDGE_COLOR_DARK;
+                    }
+                }
+            }
+        }
     }
 
     /**
