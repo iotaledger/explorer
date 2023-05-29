@@ -10,6 +10,7 @@ import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";
 import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import { useVisualizerStateVivaWithAncorsPoc } from "../../../visualizerpoc/vivagraph-withancorpoints/useVisualizerState";
 import Modal from "../../components/Modal";
 import BlockTangleState from "../../components/stardust/block/BlockTangleState";
 import TruncatedId from "../../components/stardust/TruncatedId";
@@ -39,7 +40,20 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         isFormatAmountsFull,
         setIsFormatAmountsFull,
         lastClick
-    ] = useVisualizerState(network, graphElement);
+    ] = useVisualizerStateVivaWithAncorsPoc(network, graphElement);
+
+    // const [
+    //     toggleActivity,
+    //     selectNode,
+    //     filter,
+    //     setFilter,
+    //     isActive,
+    //     blocksCount,
+    //     selectedFeedItem,
+    //     isFormatAmountsFull,
+    //     setIsFormatAmountsFull,
+    //     lastClick
+    // ] = useVisualizerState(network, graphElement);
 
     const getStatus = (referenced?: number) => (referenced ? "referenced" : undefined);
     const getConflictReasonMessage = (conflictReason?: ConflictReason) => (
