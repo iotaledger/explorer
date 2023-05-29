@@ -2,6 +2,7 @@
 import React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { CHRYSALIS, LEGACY, STARDUST } from "../models/config/protocolVersion";
+import { VisualizerD3 } from "../visualizerpoc/d3/VisualizerD3";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import ChrysalisIndexed from "./routes/chrysalis/Indexed";
@@ -168,6 +169,10 @@ const buildAppRoutes = (
         <Route path="/:network/visualizer/"
             key={keys.next().value}
             component={StardustVisualizer}
+        />,
+        <Route path="/:network/visualizerd3/"
+            key={keys.next().value}
+            component={VisualizerD3}
         />,
         <Route path="/:network/search/:query?"
             key={keys.next().value}

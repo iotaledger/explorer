@@ -28,6 +28,7 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
     if (networks.length > 0 && currentNetwork !== undefined) {
         pages.push({ label: "Explorer", url: `/${currentNetwork.network}/` });
         pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+        pages.push({ label: "VisualizerD3", url: `/${currentNetwork.network}/visualizerd3/` });
 
         if (currentNetwork.hasStatisticsSupport) {
             pages.push({ label: "Statistics", url: `/${currentNetwork.network}/statistics/` });
