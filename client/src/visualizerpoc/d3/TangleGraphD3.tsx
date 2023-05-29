@@ -96,8 +96,8 @@ const linkColor = (link: GraphLink) => {
           ref={fgRef}
           graphData={graphData}
           nodeLabel="id"
-          // nodeColor={nodeColor}
-          // linkColor={linkColor}
+          nodeColor={nodeColor}
+          linkColor={linkColor}
           // dagMode="td"
           // dagLevelDistance={300}
           linkDirectionalArrowLength={3.5}
@@ -121,25 +121,25 @@ const linkColor = (link: GraphLink) => {
             setUserInteracted(true);
             setSelectedNode(null);
           }}
-          nodeCanvasObject={(node, ctx) => {
-            ctx.beginPath();
-            ctx.arc(node.x ?? 0, node.y ?? 0, 5, 0, 2 * Math.PI, false);
-            ctx.fillStyle = nodeColor(node);
-            ctx.fill();
-          }}
-          linkCanvasObject={(link, ctx) => {
-            const source = link.source as GraphNode;
-            const target = link.target as GraphNode;
-            console.log()
-            if (source.x && source.y && target.x && target.y) {
-              // console.log("setting coclor")
-              ctx.beginPath();
-              ctx.moveTo(source.x, source.y);
-              ctx.lineTo(target.x, target.y);
-              ctx.strokeStyle = linkColor(link);
-              ctx.stroke();
-            }
-          }}
+          // nodeCanvasObject={(node, ctx) => {
+          //   ctx.beginPath();
+          //   ctx.arc(node.x ?? 0, node.y ?? 0, 5, 0, 2 * Math.PI, false);
+          //   ctx.fillStyle = nodeColor(node);
+          //   ctx.fill();
+          // }}
+          // linkCanvasObject={(link, ctx) => {
+          //   const source = link.source as GraphNode;
+          //   const target = link.target as GraphNode;
+          //   console.log()
+          //   if (source.x && source.y && target.x && target.y) {
+          //     // console.log("setting coclor")
+          //     ctx.beginPath();
+          //     ctx.moveTo(source.x, source.y);
+          //     ctx.lineTo(target.x, target.y);
+          //     ctx.strokeStyle = linkColor(link);
+          //     ctx.stroke();
+          //   }
+          // }}
       />
   );
 };
