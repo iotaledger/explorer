@@ -34,13 +34,13 @@ function* generateY() {
     let inc = 0;
 
     while (true) {
-        yield values[inc++ % 4];
+        yield values[inc++ % 5];
         // yield values[inc++ % 2];
     }
 }
 
 const placeNodeCallback = (nodeCount: number, y: number) => ({
-    x: 1 + (nodeCount * 100),
+    x: nodeCount * 20,
     y
 });
 
