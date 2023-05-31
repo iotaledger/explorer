@@ -10,6 +10,7 @@ import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";
 import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import { useVisualizerViva } from "../../../visualizerpoc/vivagraph-layout/useVisualizerViva";
 import { useVisualizerStateVivaWithAncorsPoc } from "../../../visualizerpoc/vivagraph-withancorpoints/useVisualizerState";
 import Modal from "../../components/Modal";
 import BlockTangleState from "../../components/stardust/block/BlockTangleState";
@@ -40,7 +41,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         isFormatAmountsFull,
         setIsFormatAmountsFull,
         lastClick
-    ] = useVisualizerStateVivaWithAncorsPoc(network, graphElement);
+    ] = useVisualizerViva(network, graphElement);
 
     // const [
     //     toggleActivity,
