@@ -27,22 +27,44 @@ class Rect {
         this.y2 = y2 || 0;
     }
 }
+const createCoordinateGenerator = (n: number) => {
+    let currentX: number | null = null;
+    let currentY = 0;
+    const map = new Map<number, Set<number>>(); // To track filled positions for each x
+    return (x: number) => {
+        // console.log("map for x", x, map)
+      // If the map doesn't contain x yet, initialize it
+      if (!map.has(x)) {
+        map.set(x, new Set<number>());
+      }
+      const ySetForX = map.get(x);
+      const ySetSize = ySetForX?.size; // Get the size of the map
 
-function* generateY() {
-    const values = [0, 200, 400, 600, 800];
-    // const values = [0, 80];
-    let inc = 0;
+      if (x !== currentX) {
+        // Reset Y if X changes
+        if (currentX === 0 || currentX) {
+            map.delete(currentX); // Remove the old x
+        }
+        currentY = 0;
+        currentX = x;
+      } else if (ySetSize) {
+        currentY = ySetSize % 2 === 0 ?
+            currentY - (ySetSize * n) :
+            currentY + (ySetSize * n);
+      }
+      ySetForX?.add(currentY);
 
-    while (true) {
-        yield values[inc++ % 5];
-        // yield values[inc++ % 2];
-    }
-}
+      return currentY;
+    };
+  };
+const generateY = createCoordinateGenerator(40);
 
-const placeNodeCallback = (nodeCount: number, y: number) => ({
-    x: nodeCount * 20,
-    y
-});
+const placeNodeCallback = (startTime: number) => {
+    const secondsPassed = Math.floor((Date.now() - startTime) / 2000);
+    const y = generateY(secondsPassed);
+    console.log("secondsPassed", secondsPassed, y);
+    return { x: secondsPassed * 50, y };
+};
 
 export function customLayout(
     theGraph: Viva.Graph.IGraph<INodeData, unknown>,
@@ -51,8 +73,9 @@ export function customLayout(
     const graphRect = new Rect(Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
     const layoutNodes: { [nodeId: string]: { x: number; y: number } } = {};
     const layoutLinks: { [linkId: string]: { fromId: string; toId: string; data?: INodeData } } = {};
-    const yGen = generateY();
-
+    // const yGen = generateY();
+    const startTime: number = Date.now();
+    // console.log("startTime", startTime)
     const updateGraphRect = (position: { x: number; y: number }, theGraphRect: Rect) => {
         if (position.x < theGraphRect.x1) {
             theGraphRect.x1 = position.x;
@@ -71,8 +94,7 @@ export function customLayout(
     // @ts-expect-error wrong type
     const ensureNodeInitialized = node => {
         if (!layoutNodes[node.id]) {
-            // @ts-expect-error wrong type
-            layoutNodes[node.id] = placeNodeCallback(theGraph.getNodesCount(), yGen.next().value);
+            layoutNodes[node.id] = placeNodeCallback(startTime);
             // console.log("Node init", node.id, layoutNodes[node.id]);
             updateGraphRect(layoutNodes[node.id], graphRect);
         }
@@ -129,6 +151,9 @@ export function customLayout(
 
     return {
         run: (iterationsCount?: number) => {
+            // Store the start time when run() is first called
+            // startTime = Date.now();
+            // console.log("startTime", startTime)
             // @ts-expect-error wrong type
             this.step();
         },
@@ -192,7 +217,7 @@ export function customLayout(
                 return this;
             }
 
-            return placeNodeCallback(newPlaceNodeCallbackOrNode, yGen.next().value ?? 0);
+            return placeNodeCallback(startTime);
         }
 
     };

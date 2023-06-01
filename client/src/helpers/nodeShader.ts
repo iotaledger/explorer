@@ -13,12 +13,19 @@ export function buildNodeShader(): WebGLProgram {
         "precision mediump float;",
         "varying vec4 color;",
         "void main(void) {",
-        "   if (gl_PointCoord.x > 0.2 && gl_PointCoord.x < 0.8 && ",
-        "       gl_PointCoord.y > 0.2 && gl_PointCoord.y < 0.8) {",
+        "   vec2 center = vec2(0.5);",
+        "   float radius = 0.5;",
+        "   if (length(gl_PointCoord - center) < radius) {",
         "     gl_FragColor = color;",
         "   } else {",
         "     gl_FragColor = vec4(0);",
         "   }",
+        // "   if (gl_PointCoord.x > 0.2 && gl_PointCoord.x < 0.8 && ",
+        // "       gl_PointCoord.y > 0.2 && gl_PointCoord.y < 0.8) {",
+        // "     gl_FragColor = color;",
+        // "   } else {",
+        // "     gl_FragColor = vec4(0);",
+        // "   }",
         "}"
     ].join("\n");
     const nodesVS = [
