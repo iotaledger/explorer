@@ -81,6 +81,8 @@ export function useVisualizerViva(
 
     function setupGraph() {
         if (graphElement.current && !graph.current) {
+            let centerX = 5;
+            const centerY = 20;
             graph.current = Viva.Graph.graph<INodeData, unknown>();
             graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
 
@@ -91,8 +93,7 @@ export function useVisualizerViva(
             graphics.current.node(node => calculateNodeStyle(
                 node, testForHighlight(highlightNodesRegEx(), node.id, node.data)));
 
-            // @ts-expect-error nonono
-            graphics.current.graphCenterChanged(5, 20);
+            graphics.current.graphCenterChanged(centerX, centerY);
 
             graphics.current.link(() => Viva.Graph.View.webglLine(
                 darkMode ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT
@@ -132,6 +133,16 @@ export function useVisualizerViva(
             for (let i = 0; i < 12; i++) {
                 renderer.current.zoomOut();
             }
+            const pixelsPerSecond = 15;
+            const intervalMilliseconds = 100;
+            // 60 frames per second, which corresponds to roughly 16.67 milliseconds per frame
+            const pixelsPerInterval = (pixelsPerSecond / 60) * (intervalMilliseconds / 16.67);
+
+            setInterval(() => {
+                // update the graph's position
+                centerX += pixelsPerInterval;
+                renderer.current?.moveTo(centerX, centerY);
+            }, 50);
         }
     }
 

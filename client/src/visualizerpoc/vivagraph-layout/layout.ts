@@ -45,7 +45,7 @@ const createCoordinateGenerator = (n: number) => {
         if (currentX === 0 || currentX) {
             map.delete(currentX); // Remove the old x
         }
-        currentY = 0;
+        currentY = Math.floor(Math.random() * 40);
         currentX = x;
       } else if (ySetSize) {
         currentY = ySetSize % 2 === 0 ?
@@ -62,8 +62,8 @@ const generateY = createCoordinateGenerator(40);
 const placeNodeCallback = (startTime: number) => {
     const secondsPassed = Math.floor((Date.now() - startTime) / 2000);
     const y = generateY(secondsPassed);
-    console.log("secondsPassed", secondsPassed, y);
-    return { x: secondsPassed * 50, y };
+    // console.log("secondsPassed", secondsPassed, y);
+    return { x: secondsPassed * 150, y };
 };
 
 export function customLayout(
@@ -101,7 +101,6 @@ export function customLayout(
     };
 
     const updateNodePositions = () => {
-        // @ts-expect-error wrong type
         if (theGraph.getNodesCount() === 0) {
             return;
         }
@@ -152,8 +151,6 @@ export function customLayout(
     return {
         run: (iterationsCount?: number) => {
             // Store the start time when run() is first called
-            // startTime = Date.now();
-            // console.log("startTime", startTime)
             // @ts-expect-error wrong type
             this.step();
         },

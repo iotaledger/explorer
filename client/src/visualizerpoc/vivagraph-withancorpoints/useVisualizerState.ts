@@ -281,7 +281,6 @@ export function useVisualizerStateVivaWithAncorsPoc(
             graphics.current.node(node => calculateNodeStyle(
                 node, testForHighlight(highlightNodesRegEx(), node.id, node.data)));
 
-            // @ts-expect-error nonono
             graphics.current.graphCenterChanged(5, 20);
 
             graphics.current.link(() => Viva.Graph.View.webglLine(

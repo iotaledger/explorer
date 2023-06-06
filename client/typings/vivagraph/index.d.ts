@@ -22,6 +22,7 @@ declare module "vivagraphjs" {
             addNode: (node: string, data?: T) => INode<T, U>;
             removeNode: (node: string) => void;
 
+            getNodesCount: () => number;
             beginUpdate: () => void;
             endUpdate: () => void;
             forEachNode: (callback: (node: INode<T, U>) => void) => void;
@@ -71,6 +72,7 @@ declare module "vivagraphjs" {
                 setNodeProgram: (program: WebGLProgram) => void;
                 updateSize: () => void;
                 scale: (scale: number, offset: { x: number; y: number }) => void;
+                graphCenterChanged: (x: number, y: number) => void;
             }
 
             export interface IRenderer {
@@ -79,11 +81,12 @@ declare module "vivagraphjs" {
                 getLayout: () => Layout.ILayout;
                 rerender: () => void;
                 zoomOut: () => void;
+                zoomIn: () => void;
                 reset: () => void;
                 pause: () => void;
                 resume: () => void;
-                getTransform: () => { scale?: number; offset?: { x: number; y: number } };
-
+                getTransform: () => { scale?: number; offsetX?: number; offsetY: number };
+                moveTo: (x: number, y: number) => void;
                 on: (event: "scale", callback: (scale: number) => void) => void;
             }
             function webglGraphics<T, U>(): IWebGLGraphics<T, U>;
