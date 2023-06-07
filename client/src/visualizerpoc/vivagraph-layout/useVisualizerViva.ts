@@ -23,21 +23,24 @@ const COLOR_INCLUDED: string = "0x4caaff";
 const COLOR_MILESTONE: string = "0x666af6";
 const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
+
+interface ReturnTypes {
+    toggleActivity: (() => void);
+    selectNode: ((node?: Viva.Graph.INode<INodeData, unknown>) => void);
+    filter: string;
+    setFilter: React.Dispatch<React.SetStateAction<string>>;
+    isActive: boolean;
+    blocksCount: number;
+    selectedFeedItem: (IFeedBlockData | null);
+    isFormatAmountsFull: (boolean | null);
+    setIsFormatAmountsFull: React.Dispatch<React.SetStateAction<boolean | null>>;
+    lastClick: number | null;
+}
+
 export function useVisualizerViva(
     network: string,
     graphElement: React.MutableRefObject<HTMLDivElement | null>
-): [
-        (() => void),
-        ((node?: Viva.Graph.INode<INodeData, unknown>) => void),
-        string,
-        React.Dispatch<React.SetStateAction<string>>,
-        boolean,
-        number,
-        (IFeedBlockData | null),
-        (boolean | null),
-        React.Dispatch<React.SetStateAction<boolean | null>>,
-        number | null
-    ] {
+): ReturnTypes {
     const [settingsService] = useState<SettingsService>(ServiceFactory.get<SettingsService>("settings"));
     const [darkMode, setDarkMode] = useState<boolean | null>(
         settingsService.get().darkMode ?? null
@@ -502,16 +505,16 @@ export function useVisualizerViva(
         setDarkMode(dMode);
     }
 
-    return [
+    return {
         toggleActivity,
         selectNode,
         filter,
         setFilter,
         isActive,
-        itemCount,
+        blocksCount: itemCount,
         selectedFeedItem,
         isFormatAmountsFull,
         setIsFormatAmountsFull,
-        lastClick.current
-    ];
+        lastClick: lastClick.current
+    };
 }
