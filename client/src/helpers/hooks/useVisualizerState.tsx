@@ -1,6 +1,7 @@
 import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
+import { TSelectFeedItem, TSelectNode } from "../../app/types/visualizer.types";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMetadata";
@@ -30,12 +31,12 @@ const COLOR_SEARCH_RESULT: string = "0xC061E8";
  */
 export function useVisualizerState(network: string, graphElement: React.MutableRefObject<HTMLDivElement | null>): [
     (() => void),
-    ((node?: Viva.Graph.INode<INodeData, unknown>) => void),
+    TSelectNode,
     string,
     React.Dispatch<React.SetStateAction<string>>,
     boolean,
     number,
-    (IFeedBlockData | null),
+    TSelectFeedItem,
     (boolean | null),
     React.Dispatch<React.SetStateAction<boolean | null>>,
     number | null
