@@ -10,18 +10,17 @@ import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";
 import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { useVisualizerViva } from "../../../visualizerpoc/vivagraph-layout/useVisualizerViva";
-import { useVisualizerStateVivaWithAncorsPoc } from "../../../visualizerpoc/vivagraph-withancorpoints/useVisualizerState";
 import Modal from "../../components/Modal";
 import BlockTangleState from "../../components/stardust/block/BlockTangleState";
 import TruncatedId from "../../components/stardust/TruncatedId";
+import { KeyPanel } from "../../components/Visualizer/KeyPanel";
 import NetworkContext from "../../context/NetworkContext";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import "./Visualizer.scss";
 
-export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
+export const VisualizerDefault: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
     { match: { params: { network } } }
 ) => {
     const { tokenInfo } = useContext(NetworkContext);
@@ -41,20 +40,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         isFormatAmountsFull,
         setIsFormatAmountsFull,
         lastClick
-    ] = useVisualizerViva(network, graphElement);
-
-    // const [
-    //     toggleActivity,
-    //     selectNode,
-    //     filter,
-    //     setFilter,
-    //     isActive,
-    //     blocksCount,
-    //     selectedFeedItem,
-    //     isFormatAmountsFull,
-    //     setIsFormatAmountsFull,
-    //     lastClick
-    // ] = useVisualizerState(network, graphElement);
+    ] = useVisualizerState(network, graphElement);
 
     const getStatus = (referenced?: number) => (referenced ? "referenced" : undefined);
     const getConflictReasonMessage = (conflictReason?: ConflictReason) => (
@@ -318,34 +304,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                     </div>
                 </div>
             )}
-            <div className="key-panel-container">
-                <div className="card key-panel">
-                    <div className="key-panel-item">
-                        <div className="key-marker vertex-state--pending" />
-                        <div className="key-label">Pending</div>
-                    </div>
-                    <div className="key-panel-item">
-                        <div className="key-marker vertex-state--included" />
-                        <div className="key-label">Included</div>
-                    </div>
-                    <div className="key-panel-item">
-                        <div className="key-marker vertex-state--referenced" />
-                        <div className="key-label">Referenced</div>
-                    </div>
-                    <div className="key-panel-item">
-                        <div className="key-marker vertex-state--conflicting" />
-                        <div className="key-label">Conflicting</div>
-                    </div>
-                    <div className="key-panel-item">
-                        <div className="key-marker vertex-state--milestone" />
-                        <div className="key-label">Milestone</div>
-                    </div>
-                    <div className="key-panel-item">
-                        <div className="key-marker vertex-state--search-result" />
-                        <div className="key-label">Search result</div>
-                    </div>
-                </div>
-            </div>
+            <KeyPanel />
         </div>
     );
 };
