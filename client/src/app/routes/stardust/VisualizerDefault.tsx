@@ -6,6 +6,7 @@ import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
 import Modal from "../../components/Modal";
 import { KeyPanel } from "../../components/Visualizer/KeyPanel";
 import { SelectedFeedInfo } from "../../components/Visualizer/SelectedFeedInfo";
+import { StatsPanel } from "../../components/Visualizer/StatsPanel";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import "./Visualizer.scss";
@@ -14,7 +15,6 @@ export const VisualizerDefault: React.FC<RouteComponentProps<VisualizerRouteProp
     { match: { params: { network } } }
 ) => {
     const [networkConfig] = useNetworkConfig(network);
-    const [blocksPerSecond, confirmedBlocksPerSecond, confirmedBlocksPerSecondPercent] = useNetworkStats(network);
     const graphElement = useRef<HTMLDivElement | null>(null);
 
     const [
@@ -71,30 +71,7 @@ export const VisualizerDefault: React.FC<RouteComponentProps<VisualizerRouteProp
                     </div>
                 </div>
             </div>
-            <div className="stats-panel-container">
-                <div className="card stats-panel">
-                    <div className="card--content">
-                        <div className="stats-panel__info">
-                            <div className="card--label">Blocks</div>
-                            <div className="card--value">
-                                {blocksCount}
-                            </div>
-                        </div>
-                        <div className="stats-panel__info">
-                            <div className="card--label">BPS / CBPS</div>
-                            <div className="card--value">
-                                {blocksPerSecond} / {confirmedBlocksPerSecond}
-                            </div>
-                        </div>
-                        <div className="stats-panel__info">
-                            <div className="card--label">Referenced Rate</div>
-                            <div className="card--value">
-                                {confirmedBlocksPerSecondPercent}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <StatsPanel blocksCount={blocksCount} network={network} />
             <SelectedFeedInfo
                 networkConfig={networkConfig}
                 network={network}
