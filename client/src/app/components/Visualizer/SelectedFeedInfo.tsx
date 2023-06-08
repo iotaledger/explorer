@@ -22,7 +22,11 @@ export const SelectedFeedInfo = ({
     selectedFeedItem,
     selectNode,
     networkConfig
-}: { networkConfig: INetwork; network: string; selectedFeedItem: TSelectFeedItem; selectNode: TSelectNode;
+}: {
+    networkConfig: INetwork;
+    network: string;
+    selectedFeedItem: TSelectFeedItem;
+    selectNode: TSelectNode;
 }) => {
     const { tokenInfo } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(false);
