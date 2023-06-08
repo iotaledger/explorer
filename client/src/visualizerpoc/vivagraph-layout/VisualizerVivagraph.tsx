@@ -1,11 +1,7 @@
 import React, { useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import Modal from "../../app/components/Modal";
-import { KeyPanel } from "../../app/components/Visualizer/KeyPanel";
-import { SelectedFeedInfo } from "../../app/components/Visualizer/SelectedFeedInfo";
-import { StatsPanel } from "../../app/components/Visualizer/StatsPanel";
+import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
-import mainHeader from "../../assets/modals/visualizer/main-header.json";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { useVisualizerViva } from "./useVisualizerViva";
 
@@ -23,60 +19,33 @@ const VisualizerVivagraph: React.FC<RouteComponentProps<VisualizerRouteProps>> =
         isActive,
         blocksCount,
         selectedFeedItem,
-        isFormatAmountsFull,
-        setIsFormatAmountsFull,
+        // isFormatAmountsFull,
+        // setIsFormatAmountsFull,
         lastClick
     } = useVisualizerViva(network, graphElement);
 
     return (
-        <div className="visualizer-stardust">
-            <div className="row middle">
-                <div className="row middle heading margin-r-t margin-b-t">
-                    <h1>Visualizer</h1>
-                    <Modal icon="info" data={mainHeader} />
-                </div>
-                <div className="card search-filter fill">
-                    <div className="card--content row middle">
-                        <div className="card--label margin-r-s">Search</div>
-                        <input
-                            className="input form-input-long"
-                            type="text"
-                            value={filter}
-                            onChange={e => setFilter(e.target.value)}
-                            maxLength={2000}
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="graph-border">
-                <div
-                    className="viva"
-                    onClick={() => {
-                        if (lastClick && Date.now() - lastClick > 300) {
-                            selectNode();
-                        }
-                    }}
-                    ref={graphElement}
-                />
-                <div className="action-panel-container">
-                    <div className="card">
-                        <button className="pause-button" type="button" onClick={() => toggleActivity()}>
-                            {isActive
-                                ? <span className="material-icons">pause</span>
-                                : <span className="material-icons">play_arrow</span>}
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <StatsPanel blocksCount={blocksCount} network={network} />
-            <SelectedFeedInfo
-                networkConfig={networkConfig}
-                network={network}
-                selectedFeedItem={selectedFeedItem}
-                selectNode={selectNode}
+        <Wrapper
+            blocksCount={blocksCount}
+            filter={filter}
+            isActive={isActive}
+            network={network}
+            networkConfig={networkConfig}
+            onChangeFilter={e => setFilter(e.target.value)}
+            selectNode={selectNode}
+            selectedFeedItem={selectedFeedItem}
+            toggleActivity={toggleActivity}
+        >
+            <div
+                className="viva"
+                onClick={() => {
+                    if (lastClick && Date.now() - lastClick > 300) {
+                        selectNode();
+                    }
+                }}
+                ref={graphElement}
             />
-            <KeyPanel />
-        </div>
+        </Wrapper>
 );
 };
 export { VisualizerVivagraph };

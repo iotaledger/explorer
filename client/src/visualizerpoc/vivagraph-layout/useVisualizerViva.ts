@@ -2,6 +2,7 @@
 import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
+import { IVisualizerHookArgs, IVisualizerHookReturn } from "../../app/types/visualizer.types";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { buildNodeShader } from "../../helpers/nodeShader";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
@@ -24,23 +25,10 @@ const COLOR_MILESTONE: string = "0x666af6";
 const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
 
-interface ReturnTypes {
-    toggleActivity: (() => void);
-    selectNode: ((node?: Viva.Graph.INode<INodeData, unknown>) => void);
-    filter: string;
-    setFilter: React.Dispatch<React.SetStateAction<string>>;
-    isActive: boolean;
-    blocksCount: number;
-    selectedFeedItem: (IFeedBlockData | null);
-    isFormatAmountsFull: (boolean | null);
-    setIsFormatAmountsFull: React.Dispatch<React.SetStateAction<boolean | null>>;
-    lastClick: number | null;
-}
-
 export function useVisualizerViva(
-    network: string,
-    graphElement: React.MutableRefObject<HTMLDivElement | null>
-): ReturnTypes {
+    network: IVisualizerHookArgs["network"],
+    graphElement: IVisualizerHookArgs["graphElement"]
+): IVisualizerHookReturn {
     const [settingsService] = useState<SettingsService>(ServiceFactory.get<SettingsService>("settings"));
     const [darkMode, setDarkMode] = useState<boolean | null>(
         settingsService.get().darkMode ?? null

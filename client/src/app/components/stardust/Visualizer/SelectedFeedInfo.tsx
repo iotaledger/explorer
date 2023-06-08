@@ -5,17 +5,17 @@ import React, { useContext, useState } from "react";
 
 import "./KeyPanel.scss";
 import { Link } from "react-router-dom";
-import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
+import { ReactComponent as CloseIcon } from "../../../../assets/close.svg";
 
-import { DateHelper } from "../../../helpers/dateHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
-import { INetwork } from "../../../models/config/INetwork";
-import NetworkContext from "../../context/NetworkContext";
-import { TSelectFeedItem, TSelectNode } from "../../types/visualizer.types";
-import BlockTangleState from "../stardust/block/BlockTangleState";
+import { ReactComponent as DropdownIcon } from "../../../../assets/dropdown-arrow.svg";
+import { DateHelper } from "../../../../helpers/dateHelper";
+import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { INetwork } from "../../../../models/config/INetwork";
+import NetworkContext from "../../../context/NetworkContext";
+import { TSelectFeedItem, TSelectNode } from "../../../types/visualizer.types";
+import BlockTangleState from "../block/BlockTangleState";
 
-import TruncatedId from "../stardust/TruncatedId";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import TruncatedId from "../TruncatedId";
 
 export const SelectedFeedInfo = ({
     network,

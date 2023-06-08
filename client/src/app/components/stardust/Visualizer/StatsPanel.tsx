@@ -1,5 +1,5 @@
 import React from "react";
-import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";
+import { useNetworkStats } from "../../../../helpers/hooks/useNetworkStats";
 
 export const StatsPanel = ({ blocksCount, network }: {blocksCount: number; network: string}) => {
     const [blocksPerSecond, confirmedBlocksPerSecond, confirmedBlocksPerSecondPercent] = useNetworkStats(network);

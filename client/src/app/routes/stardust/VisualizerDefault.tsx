@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useVisualizerState } from "../../../helpers/hooks/useVisualizerState";
-import { Wrapper } from "../../components/Visualizer/Wrapper";
+import { Wrapper } from "../../components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import "./Visualizer.scss";
 

@@ -10,18 +10,18 @@ import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
 
-const MAX_ITEMS: number = 2500;
-const FEED_PROBE_THRESHOLD: number = 3000;
-const EDGE_COLOR_LIGHT: number = 0x00000055;
-const EDGE_COLOR_DARK: number = 0xFFFFFF33;
-const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
-const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
-const COLOR_PENDING: string = "0xbbbbbb";
-const COLOR_REFERENCED: string = "0x61e884";
-const COLOR_CONFLICTING: string = "0xff8b5c";
-const COLOR_INCLUDED: string = "0x4caaff";
-const COLOR_MILESTONE: string = "0x666af6";
-const COLOR_SEARCH_RESULT: string = "0xC061E8";
+export const MAX_ITEMS: number = 2500;
+export const FEED_PROBE_THRESHOLD: number = 3000;
+export const EDGE_COLOR_LIGHT: number = 0x00000055;
+export const EDGE_COLOR_DARK: number = 0xFFFFFF33;
+export const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
+export const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
+export const COLOR_PENDING: string = "0xbbbbbb";
+export const COLOR_REFERENCED: string = "0x61e884";
+export const COLOR_CONFLICTING: string = "0xff8b5c";
+export const COLOR_INCLUDED: string = "0x4caaff";
+export const COLOR_MILESTONE: string = "0x666af6";
+export const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
 /**
  * Setup the Visualizer state and ook into feed service for visalizer data.

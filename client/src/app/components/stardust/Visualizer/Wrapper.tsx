@@ -1,8 +1,8 @@
 import React from "react";
-import mainHeader from "../../../assets/modals/visualizer/main-header.json";
-import { INetwork } from "../../../models/config/INetwork";
-import { TSelectFeedItem, TSelectNode } from "../../types/visualizer.types";
-import Modal from "../Modal";
+import mainHeader from "../../../../assets/modals/visualizer/main-header.json";
+import { INetwork } from "../../../../models/config/INetwork";
+import { TSelectFeedItem, TSelectNode } from "../../../types/visualizer.types";
+import Modal from "../../Modal";
 import { KeyPanel } from "./KeyPanel";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import { StatsPanel } from "./StatsPanel";
