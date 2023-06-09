@@ -74,42 +74,43 @@ export const useVisualizerForceGraph = (
 
 
         setState(prevState => {
+            const MAX_Y = 2000;
             const newNode = {
                 ...newBlock,
                 id: newBlock.blockId,
                 // x: prevState.nodes.length * 5,
                 x: undefined,
-                y: getRandomNumber(3, 377)
+                y: getRandomNumber(3, MAX_Y)
             };
             const parentNodes = prevState.nodes.filter(node =>
                 newBlock.parents?.includes(node.blockId)
             );
             if (!parentNodes?.length) {
-                newNode.x = findMostRightXPosition(prevState.nodes) + 21;
+                newNode.x = findMostRightXPosition(prevState.nodes) + 20;
             } else {
-                const maxDistance = 377; // Maximum distance between nodes
+                const maxDistance = MAX_Y; // Maximum distance between nodes
                 const minDistance = 3; // Minimum distance between nodes
-                const maxDeltaY = 233; // Maximum vertical difference between nodes
+                const maxDeltaY = 144; // Maximum vertical difference between nodes
 
-                let minX = Number.POSITIVE_INFINITY;
-                let maxX = Number.NEGATIVE_INFINITY;
-                let averageY = 0;
+                let totalX = findMostRightXPosition(prevState.nodes);
+                let totalY = MAX_Y;
 
                 for (const parentNode of parentNodes) {
-                    minX = Math.min(minX, parentNode.x || 0);
-                    maxX = Math.max(maxX, parentNode.x || 0);
-                    averageY += parentNode.y || 0;
+                    totalX += parentNode.x || 0;
+                    totalY += parentNode.y || 0;
                 }
 
-                averageY /= parentNodes.length;
+                const averageX = totalX / (parentNodes.length + 1);
+                const averageY = totalY / (parentNodes.length + 1);
 
-                const distance = Math.random() * (maxDistance - minDistance) + minDistance;
-                const deltaY = Math.random() * maxDeltaY * (Math.random() > 0.5 ? 1 : -1);
-                const xOffset = maxX + distance;
-                const yOffset = averageY + deltaY;
+                const xOffset = (Math.random()) * 500; // Random offset within the distance range
+                const yOffset = (Math.random() - 0.5) * (maxDistance - minDistance); // Random offset within the distance range
 
-                newNode.x = xOffset;
-                newNode.y = yOffset;
+                const newX = averageX + xOffset;
+                const newY = averageY + yOffset;
+
+                newNode.x = newX;
+                newNode.y = newY;
             }
 
             const updatedNodes = [...prevState.nodes, newNode];
