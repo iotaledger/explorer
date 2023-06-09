@@ -41,8 +41,6 @@ const VisualizerForceGraph: React.FC<RouteComponentProps<VisualizerRouteProps>> 
         graphData
     } = useVisualizerForceGraph(network, graphElement);
 
-    console.log("--- graphData", graphData);
-
     return (
         <Wrapper
             blocksCount={blocksCount}
@@ -63,8 +61,6 @@ const VisualizerForceGraph: React.FC<RouteComponentProps<VisualizerRouteProps>> 
                 // graphData={{ nodes: [...Array.from({ length: 5 }).keys()].map(i => ({ id: i })), links: [{ target: 1, source: 2 }] }}
                 // d3VelocityDecay={0.5}
                 // d3AlphaMin={0.05}
-                // linkWidth={2}
-                // linkDirectionalParticleWidth={3}
             />
             {/* <div */}
             {/*     className="force-graph" */}

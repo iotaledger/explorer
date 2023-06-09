@@ -6,6 +6,8 @@ import { IVisualizerHookArgs, IVisualizerHookReturn } from "../../app/types/visu
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { findMostRightXPosition } from "./helpers";
+import { mockNodes } from "./mock-data";
 
 interface Node {
     id: string;
@@ -17,6 +19,12 @@ interface Link {
     target: string;
 }
 
+export interface IFeedBlockLocal extends IFeedBlockData {
+    id: string;
+    x: number;
+    y: number;
+}
+
 /**
  * @param min minimum number
  * @param max maximum number
@@ -24,7 +32,12 @@ interface Link {
  */
 export const getRandomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const initialState = {
+const initialState: {
+    nodes: IFeedBlockLocal[];
+    nodesCoordinates: {
+        [k: string]: IFeedBlockLocal;
+    };
+} = {
     nodes: [],
     nodesCoordinates: {}
 };
@@ -36,7 +49,7 @@ export const useVisualizerForceGraph = (
     const [filter, setFilter] = useState<string>("");
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
     const lastClick = useRef<number | null>(null);
-    // const [nodes, setNodes] = useState<Node[]>([]);
+    const [nodes, setNodes] = useState<Node[]>([]);
     const [links, setLinks] = useState<Link[]>([]);
     const [state, setState] = useState(initialState);
 
@@ -56,15 +69,48 @@ export const useVisualizerForceGraph = (
         //         newNode.y = averageY + (Math.random() * 100) - 50;
         //     }
         // }
-        console.log("--", state);
+
+        setNodes(prev => ([...prev, newBlock]));
+
 
         setState(prevState => {
             const newNode = {
                 ...newBlock,
                 id: newBlock.blockId,
-                x: prevState.nodes.length * 5,
-                y: getRandomNumber(50, 350)
+                // x: prevState.nodes.length * 5,
+                x: undefined,
+                y: getRandomNumber(3, 377)
             };
+            const parentNodes = prevState.nodes.filter(node =>
+                newBlock.parents?.includes(node.blockId)
+            );
+            if (!parentNodes?.length) {
+                newNode.x = findMostRightXPosition(prevState.nodes) + 21;
+            } else {
+                const maxDistance = 377; // Maximum distance between nodes
+                const minDistance = 3; // Minimum distance between nodes
+                const maxDeltaY = 233; // Maximum vertical difference between nodes
+
+                let minX = Number.POSITIVE_INFINITY;
+                let maxX = Number.NEGATIVE_INFINITY;
+                let averageY = 0;
+
+                for (const parentNode of parentNodes) {
+                    minX = Math.min(minX, parentNode.x || 0);
+                    maxX = Math.max(maxX, parentNode.x || 0);
+                    averageY += parentNode.y || 0;
+                }
+
+                averageY /= parentNodes.length;
+
+                const distance = Math.random() * (maxDistance - minDistance) + minDistance;
+                const deltaY = Math.random() * maxDeltaY * (Math.random() > 0.5 ? 1 : -1);
+                const xOffset = maxX + distance;
+                const yOffset = averageY + deltaY;
+
+                newNode.x = xOffset;
+                newNode.y = yOffset;
+            }
 
             const updatedNodes = [...prevState.nodes, newNode];
             const updatedNodesCoordinates = {
@@ -75,6 +121,7 @@ export const useVisualizerForceGraph = (
                 }
             };
 
+            // links
             if (newBlock.parents && newBlock.parents.length > 0) {
                 const newLinks: Link[] = newBlock.parents?.reduce<Link[]>((acc, parent) => {
                     const parentNode = prevState.nodes.find(node => node.blockId === parent);
@@ -149,8 +196,20 @@ export const useVisualizerForceGraph = (
     //     }
     // }, [nodes, links, graphElement.current]);
 
+    // Mock data.
+    useEffect(() => {
+        if (graphElement.current) {
+            for (const n of mockNodes) {
+                onNewBlockData(n);
+            }
+        }
+    }, []);
+
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
+
+        // TODO enable updates from backend
+        return;
         if (feedService && graphElement.current) {
             feedService.subscribeBlocks(onNewBlockData, () => {});
         }
@@ -185,10 +244,6 @@ export const useVisualizerForceGraph = (
     //     // console.log("--- resLinks", resLinks);
     //     return resLinks;
     // }, [state]);
-
-    // console.log("---", links);
-
-    // console.log("--- state", state.nodes[4]);
 
     return {
         toggleActivity: () => {},

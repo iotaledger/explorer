@@ -86,9 +86,9 @@ export function useVisualizerViva(
 
             graphics.current.graphCenterChanged(centerX, centerY);
 
-            graphics.current.link(() => Viva.Graph.View.webglLine(
-                darkMode ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT
-            ));
+            // graphics.current.link(() => Viva.Graph.View.webglLine(
+            //     darkMode ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT
+            // ));
 
             const events = Viva.Graph.webglInputEvents(graphics.current, graph.current);
 
@@ -96,16 +96,16 @@ export function useVisualizerViva(
             events.dblClick(node => {
                 window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
             });
-            events.mouseEnter(node => {
-                if (!selectedFeedItemBlockId.current) {
-                    highlightConnections(node.id);
-                }
-            });
-            events.mouseLeave(_ => {
-                if (!selectedFeedItemBlockId.current) {
-                    styleConnections();
-                }
-            });
+            // events.mouseEnter(node => {
+            //     if (!selectedFeedItemBlockId.current) {
+            //         highlightConnections(node.id);
+            //     }
+            // });
+            // events.mouseLeave(_ => {
+            //     if (!selectedFeedItemBlockId.current) {
+            //         styleConnections();
+            //     }
+            // });
 
             renderer.current = Viva.Graph.View.renderer<INodeData, unknown>(graph.current, {
                 container: graphElement.current,
@@ -188,16 +188,14 @@ export function useVisualizerViva(
 
                     for (const blockId in updatedMetadata) {
                         const node = graph.current.getNode(blockId);
-                        if (node) {
-                            if (node.data) {
+                        if (node && node.data) {
                                 node.data.feedItem.metadata = {
                                     ...node.data.feedItem.metadata,
                                     ...updatedMetadata[blockId]
                                 };
                             }
 
-                            styleNode(node, testForHighlight(highlightRegEx, node.id, node.data));
-                        }
+                            // styleNode(node, testForHighlight(highlightRegEx, node.id, node.data));
                     }
                 }
             };
