@@ -6,7 +6,7 @@ import { IVisualizerHookArgs, IVisualizerHookReturn } from "../../app/types/visu
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { adjustNodePositions, findMostRightXPosition } from "./helpers";
+import { adjustNodePositions, findMostRightXPosition, generateLinks, multipleGenerateLinks } from "./helpers";
 import { mockNodes } from "./mock-data";
 
 interface Node {
@@ -49,6 +49,7 @@ export const useVisualizerForceGraph = (
     const [filter, setFilter] = useState<string>("");
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
     const lastClick = useRef<number | null>(null);
+    const optimizedOnce = useRef<boolean | null>(null);
     const [nodes, setNodes] = useState<Node[]>([]);
     const [links, setLinks] = useState<Link[]>([]);
     const [state, setState] = useState(initialState);
@@ -124,17 +125,7 @@ export const useVisualizerForceGraph = (
 
             // links
             if (newBlock.parents && newBlock.parents.length > 0) {
-                const newLinks: Link[] = newBlock.parents?.reduce<Link[]>((acc, parent) => {
-                    const parentNode = prevState.nodes.find(node => node.blockId === parent);
-
-                    if (parentNode) {
-                        acc.push({
-                            source: parent,
-                            target: newBlock.blockId
-                        });
-                    }
-                    return acc;
-                }, []);
+                const newLinks = generateLinks(newBlock, prevState.nodesCoordinates);
                 setLinks(prevLinks => [...prevLinks, ...newLinks]);
             }
 
@@ -200,23 +191,30 @@ export const useVisualizerForceGraph = (
     // Mock data.
     useEffect(() => {
         if (graphElement.current) {
-            for (const n of mockNodes.slice(0, 100)) {
+            // for (const n of mockNodes.slice(0, 100)) {
+            for (const n of mockNodes) {
                 onNewBlockData(n);
             }
         }
     }, []);
 
     useEffect(() => {
-        if (state.nodes.length === 0 || links.length === 0) {
+        if (state.nodes.length === 0 || links.length === 0 || optimizedOnce.current) {
             return;
         }
         setTimeout(() => {
-            const newCoordinatesMap = adjustNodePositions(state.nodes, links, {});
-            console.log("---", newCoordinatesMap);
+            const newCoordinatesMap = adjustNodePositions(state.nodes, links, state.nodesCoordinates, {});
+
             const newNodes = state.nodes.map(n => ({ ...n,
                 x: newCoordinatesMap[n.blockId].x || n.x,
                 y: newCoordinatesMap[n.blockId].y || n.y }));
+
+
             setState(p => ({ ...p, nodes: newNodes }));
+
+            const newLinks = multipleGenerateLinks(state.nodes, state.nodesCoordinates);
+            setLinks(prevLinks => [...prevLinks, ...newLinks]);
+            optimizedOnce.current = true;
         }, 4000);
     }, [state, links]);
 

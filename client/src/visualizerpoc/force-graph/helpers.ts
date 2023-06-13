@@ -1,3 +1,4 @@
+import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { IFeedBlockLocal, Link } from "./useVisualizerForceGraph";
 /**
  * We need to know right position of all nodes
@@ -27,18 +28,18 @@ interface PositionMap {
 export const adjustNodePositions = (
     nodes: IFeedBlockLocal[],
     links: Link[],
+    nodeCoordinates: PositionMap,
     positionMap: PositionMap
 ) => {
-    // console.log("--- x");
-    const iterations = 10; // Number of iterations to adjust positions (adjust as needed)
-    const distance = 200; // Distance between nodes
+    const iterations = 100; // Number of iterations to adjust positions (adjust as needed)
+    const distance = 300; // Distance between nodes
+    const existNodes = Object.keys(nodeCoordinates);
 
     for (let i = 0; i < iterations; i++) {
         for (const node of nodes) {
-            const parentNodes = links
-                .filter(link => link.target === node.blockId)
-                .map(link => nodes.find(n => n.blockId === link.source))
-                .filter(parent => parent !== undefined) as NodeWithPosition[];
+            const parentNodes = node?.parents
+                ?.filter(nodeId => existNodes.includes(nodeId))
+                .map(nodeId => nodeCoordinates[nodeId]) ?? [];
 
             if (parentNodes.length > 0) {
                 let totalX = 0;
@@ -81,4 +82,35 @@ export const adjustNodePositions = (
     }
 
     return positionMap;
+};
+
+
+export const generateLinks = (nodeBlock: IFeedBlockData, prevNodesMap: Readonly<PositionMap>): Link[] => {
+    if (nodeBlock.parents && nodeBlock.parents.length > 0) {
+        return nodeBlock.parents?.reduce<Link[]>((acc, parent) => {
+            const parentNode = prevNodesMap[parent];
+
+            if (parentNode) {
+                acc.push({
+                    source: parent,
+                    target: nodeBlock.blockId
+                });
+            }
+            return acc;
+        }, []);
+    }
+
+    return [];
+};
+
+
+export const multipleGenerateLinks = (nodes: IFeedBlockLocal[], prevNodesMap: Readonly<PositionMap>): Link[] => {
+    let links: Link[] = [];
+
+    for (const node of nodes) {
+        const linksFromNode = generateLinks(node, prevNodesMap);
+        links = [...links, ...linksFromNode];
+    }
+
+    return links;
 };
