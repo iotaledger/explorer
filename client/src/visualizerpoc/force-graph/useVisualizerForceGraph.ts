@@ -191,8 +191,8 @@ export const useVisualizerForceGraph = (
     // Mock data.
     useEffect(() => {
         if (graphElement.current) {
-            for (const n of mockNodes.slice(0, 100)) {
-            // for (const n of mockNodes) {
+            // for (const n of mockNodes.slice(0, 100)) {
+            for (const n of mockNodes) {
                 onNewBlockData(n);
             }
         }
@@ -210,10 +210,10 @@ export const useVisualizerForceGraph = (
                 y: newCoordinatesMap[n.blockId].y || n.y }));
 
 
-            setState(p => ({ ...p, nodes: newNodes }));
+            setState(p => ({ ...p, nodes: newNodes, nodesCoordinates: newCoordinatesMap }));
 
             const newLinks = multipleGenerateLinks(state.nodes, state.nodesCoordinates);
-            setLinks(prevLinks => [...prevLinks, ...newLinks]);
+            setLinks(prevLinks => [...newLinks]);
             optimizedOnce.current = true;
         }, 4000);
     }, [state, links]);

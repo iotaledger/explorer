@@ -28,18 +28,21 @@ interface PositionMap {
 export const adjustNodePositions = (
     nodes: IFeedBlockLocal[],
     links: Link[],
-    nodeCoordinates: PositionMap,
-    positionMap: PositionMap
-) => {
-    const iterations = 100; // Number of iterations to adjust positions (adjust as needed)
+    nodeCoordinates: PositionMap
+): PositionMap => {
+    const iterations = 10; // Number of iterations to adjust positions (adjust as needed)
     const targetDistance = 300; // Target distance between nodes
     const damping = 0.5; // Damping factor for adjustment
+    const maxY = 800; // Maximum Y-axis position
+
+    // Clone the nodeCoordinates object to avoid modifying the original
+    const positionMap: PositionMap = { ...nodeCoordinates };
 
     // Calculate initial distances
     const initialDistances: { [key: string]: number } = {};
     for (const link of links) {
-        const source = nodeCoordinates[link.source];
-        const target = nodeCoordinates[link.target];
+        const source = positionMap[link.source];
+        const target = positionMap[link.target];
         if (source && target) {
             const dx = target.x - source.x;
             const dy = target.y - source.y;
@@ -52,8 +55,8 @@ export const adjustNodePositions = (
     for (let i = 0; i < iterations; i++) {
         for (const node of nodes) {
             const parentNodes = node?.parents
-                ?.filter(nodeId => nodeCoordinates[nodeId])
-                .map(nodeId => nodeCoordinates[nodeId]) ?? [];
+                ?.filter(nodeId => positionMap[nodeId])
+                .map(nodeId => positionMap[nodeId]) ?? [];
 
             if (parentNodes.length > 0) {
                 let totalX = 0;
@@ -67,8 +70,8 @@ export const adjustNodePositions = (
                 const averageX = totalX / parentNodes.length;
                 const averageY = totalY / parentNodes.length;
 
-                const currentX = node.x;
-                const currentY = node.y;
+                const currentX = positionMap[node.id].x;
+                const currentY = positionMap[node.id].y;
 
                 const dx = averageX - currentX;
                 const dy = averageY - currentY;
@@ -86,8 +89,8 @@ export const adjustNodePositions = (
 
         // Adjust distances between connected nodes
         for (const link of links) {
-            const source = nodeCoordinates[link.source];
-            const target = nodeCoordinates[link.target];
+            const source = positionMap[link.source];
+            const target = positionMap[link.target];
             if (source && target) {
                 const dx = target.x - source.x;
                 const dy = target.y - source.y;
@@ -96,7 +99,21 @@ export const adjustNodePositions = (
 
                 const adjustment = (currentDistance - initialDistance) * damping;
                 const offsetX = (dx / currentDistance) * adjustment;
-                const offsetY = (dy / currentDistance) * adjustment;
+                let offsetY = (dy / currentDistance) * adjustment;
+
+                // Limit Y-axis position to desired range
+                if (source.y + offsetY > maxY) {
+                    offsetY = maxY - source.y;
+                }
+                if (source.y + offsetY < 0) {
+                    offsetY = -source.y;
+                }
+                if (target.y - offsetY > maxY) {
+                    offsetY = target.y - maxY;
+                }
+                if (target.y - offsetY < 0) {
+                    offsetY = target.y;
+                }
 
                 source.x += offsetX;
                 source.y += offsetY;
@@ -104,11 +121,6 @@ export const adjustNodePositions = (
                 target.y -= offsetY;
             }
         }
-    }
-
-    // Update position map with adjusted positions
-    for (const node of nodes) {
-        positionMap[node.id] = { x: node.x, y: node.y };
     }
 
     return positionMap;
