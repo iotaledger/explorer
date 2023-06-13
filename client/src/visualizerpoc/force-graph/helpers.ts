@@ -32,13 +32,27 @@ export const adjustNodePositions = (
     positionMap: PositionMap
 ) => {
     const iterations = 100; // Number of iterations to adjust positions (adjust as needed)
-    const distance = 300; // Distance between nodes
-    const existNodes = Object.keys(nodeCoordinates);
+    const targetDistance = 300; // Target distance between nodes
+    const damping = 0.5; // Damping factor for adjustment
 
+    // Calculate initial distances
+    const initialDistances: { [key: string]: number } = {};
+    for (const link of links) {
+        const source = nodeCoordinates[link.source];
+        const target = nodeCoordinates[link.target];
+        if (source && target) {
+            const dx = target.x - source.x;
+            const dy = target.y - source.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            initialDistances[`${link.source}-${link.target}`] = distance;
+        }
+    }
+
+    // Adjust node positions iteratively
     for (let i = 0; i < iterations; i++) {
         for (const node of nodes) {
             const parentNodes = node?.parents
-                ?.filter(nodeId => existNodes.includes(nodeId))
+                ?.filter(nodeId => nodeCoordinates[nodeId])
                 .map(nodeId => nodeCoordinates[nodeId]) ?? [];
 
             if (parentNodes.length > 0) {
@@ -61,17 +75,33 @@ export const adjustNodePositions = (
 
                 const distanceToParent = Math.sqrt(dx * dx + dy * dy);
 
-                if (distanceToParent > distance) {
-                    const scaleFactor = distance / distanceToParent;
+                const scaleFactor = targetDistance / distanceToParent;
 
-                    for (const parentNode of parentNodes) {
-                        parentNode.x -= dx * scaleFactor;
-                        parentNode.y -= dy * scaleFactor;
-                    }
+                for (const parentNode of parentNodes) {
+                    parentNode.x = currentX + dx * scaleFactor;
+                    parentNode.y = currentY + dy * scaleFactor;
                 }
+            }
+        }
 
-                node.x = averageX;
-                node.y = averageY;
+        // Adjust distances between connected nodes
+        for (const link of links) {
+            const source = nodeCoordinates[link.source];
+            const target = nodeCoordinates[link.target];
+            if (source && target) {
+                const dx = target.x - source.x;
+                const dy = target.y - source.y;
+                const currentDistance = Math.sqrt(dx * dx + dy * dy);
+                const initialDistance = initialDistances[`${link.source}-${link.target}`];
+
+                const adjustment = (currentDistance - initialDistance) * damping;
+                const offsetX = (dx / currentDistance) * adjustment;
+                const offsetY = (dy / currentDistance) * adjustment;
+
+                source.x += offsetX;
+                source.y += offsetY;
+                target.x -= offsetX;
+                target.y -= offsetY;
             }
         }
     }

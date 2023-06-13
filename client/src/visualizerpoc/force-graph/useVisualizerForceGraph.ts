@@ -191,8 +191,8 @@ export const useVisualizerForceGraph = (
     // Mock data.
     useEffect(() => {
         if (graphElement.current) {
-            // for (const n of mockNodes.slice(0, 100)) {
-            for (const n of mockNodes) {
+            for (const n of mockNodes.slice(0, 100)) {
+            // for (const n of mockNodes) {
                 onNewBlockData(n);
             }
         }
