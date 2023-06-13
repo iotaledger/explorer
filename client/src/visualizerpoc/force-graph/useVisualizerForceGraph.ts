@@ -6,7 +6,7 @@ import { IVisualizerHookArgs, IVisualizerHookReturn } from "../../app/types/visu
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { findMostRightXPosition } from "./helpers";
+import { adjustNodePositions, findMostRightXPosition } from "./helpers";
 import { mockNodes } from "./mock-data";
 
 interface Node {
@@ -14,7 +14,7 @@ interface Node {
     name: string;
 }
 
-interface Link {
+export interface Link {
     source: string;
     target: string;
 }
@@ -200,11 +200,25 @@ export const useVisualizerForceGraph = (
     // Mock data.
     useEffect(() => {
         if (graphElement.current) {
-            for (const n of mockNodes) {
+            for (const n of mockNodes.slice(0, 100)) {
                 onNewBlockData(n);
             }
         }
     }, []);
+
+    useEffect(() => {
+        if (state.nodes.length === 0 || links.length === 0) {
+            return;
+        }
+        setTimeout(() => {
+            const newCoordinatesMap = adjustNodePositions(state.nodes, links, {});
+            console.log("---", newCoordinatesMap);
+            const newNodes = state.nodes.map(n => ({ ...n,
+                x: newCoordinatesMap[n.blockId].x || n.x,
+                y: newCoordinatesMap[n.blockId].y || n.y }));
+            setState(p => ({ ...p, nodes: newNodes }));
+        }, 4000);
+    }, [state, links]);
 
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
