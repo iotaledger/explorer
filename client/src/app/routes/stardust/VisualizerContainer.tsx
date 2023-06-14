@@ -12,7 +12,7 @@ enum Views {
 }
 
 export const VisualizerContainer: React.FC<RouteComponentProps<VisualizerRouteProps>> = props => {
-    const [currentView] = useState(Views.forcegraph);
+    const [currentView] = useState(Views.vivagraphlayout);
 
     if (currentView === Views.default) {
         return <VisualizerDefault {...props} />;

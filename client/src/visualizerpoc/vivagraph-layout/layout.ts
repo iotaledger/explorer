@@ -59,6 +59,10 @@ const createCoordinateGenerator = (n: number) => {
   };
 const generateY = createCoordinateGenerator(40);
 
+/**
+ * Function for generation positions;
+ * @param startTime - timestamp for correct work.
+ */
 const placeNodeCallback = (startTime: number) => {
     const secondsPassed = Math.floor((Date.now() - startTime) / 2000);
     const y = generateY(secondsPassed);
