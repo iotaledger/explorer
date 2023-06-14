@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-invalid-this */
 import Viva from "vivagraphjs";
 import { INodeData } from "../../models/graph/stardust/INodeData";
+import { getYCoordinates } from "./vivagraph-layout.helpers";
 import { VivaLink } from "./vivagraph-layout.types";
 
 class Rect {
@@ -30,35 +31,22 @@ class Rect {
 }
 
 const createCoordinateGenerator = (n: number) => {
-    let currentX: number | null = null;
-    let currentY = 0;
+    const currentX: number | null = null;
+    const listOfCoordinates = getYCoordinates(-300, 300, 21);
 
-    const filledPositions = new Set([]);
-    const map = new Map<number, Set<number>>(); // To track filled positions for each x
+    let filledPositions = new Set<number>([]);
 
-    return (x: number) => {
-        // console.log("map for x", x, map)
-      // If the map doesn't contain x yet, initialize it
-      if (!map.has(x)) {
-        map.set(x, new Set<number>());
-      }
-      const ySetForX = map.get(x);
-      const ySetSize = ySetForX?.size; // Get the size of the map
+    return () => {
+        const freeCoordinates = listOfCoordinates.filter(coordinate => !filledPositions.has(coordinate));
+        const currentY = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
 
-      if (x !== currentX) {
-        // Reset Y if X changes
-        if (currentX === 0 || currentX) {
-            map.delete(currentX); // Remove the old x
+        if (filledPositions.size > 10) {
+            const filledPositionsArr: number[] = Array.from(filledPositions); // Convert Set to an array
+            filledPositionsArr.shift(); // Remove the first element from the array
+            filledPositions = new Set(filledPositionsArr);
         }
-        currentY = Math.floor(Math.random() * 40);
-        currentX = x;
-      } else if (ySetSize) {
-        currentY = ySetSize % 2 === 0 ?
-            currentY - (ySetSize * n) :
-            currentY + (ySetSize * n);
-      }
-      ySetForX?.add(currentY);
 
+        filledPositions.add(currentY);
       return currentY;
     };
   };
@@ -71,10 +59,7 @@ const generateY = createCoordinateGenerator(40);
  */
 const placeNodeCallback = (numberOfNodes: number) => {
     const THRESHOLD_PX = 30;
-    // const secondsPassed = Math.floor((Date.now() - startTime) / 2000);
-    const y = generateY(THRESHOLD_PX);
-    // debugger;
-    // console.log("secondsPassed", secondsPassed, y);
+    const y = generateY();
     return { x: numberOfNodes * THRESHOLD_PX, y };
 };
 
@@ -92,7 +77,6 @@ export function customLayout(
     const startTime: number = Date.now();
 
     const updateGraphRect = (position: { x: number; y: number }, theGraphRect: Rect) => {
-        console.log("--- theGraphRect", theGraphRect);
         if (position.x < theGraphRect.x1) {
             theGraphRect.x1 = position.x;
         }
