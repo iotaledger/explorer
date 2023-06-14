@@ -1,4 +1,6 @@
-export const mockNodes = [
+import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+
+export const mockNodes: IFeedBlockData[] = [
     {
         "blockId": "0x5ef64aef377fccce61af7c281bc2ccd6e01d11d8b1c5b55b6fd7b3293d79d437",
         "parents": [

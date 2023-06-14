@@ -10,6 +10,7 @@ import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMet
 import { INodeData } from "../../models/graph/stardust/INodeData";
 import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { mockNodes } from "../force-graph/mock-data";
 import { customLayout } from "./layout";
 
 const MAX_ITEMS: number = 2500;
@@ -79,8 +80,6 @@ export function useVisualizerViva(
 
             const layout = customLayout(graph.current, {});
 
-            // console.log("--- layout", layout);
-
             graphics.current.setNodeProgram(buildNodeShader());
 
             graphics.current.node(node => calculateNodeStyle(
@@ -94,15 +93,21 @@ export function useVisualizerViva(
 
             const events = Viva.Graph.webglInputEvents(graphics.current, graph.current);
 
-            events.click(node => selectNode(node));
-            events.dblClick(node => {
-                window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
-            });
+            // // If click to node
+            // events.click(node => selectNode(node));
+
+            // events.dblClick(node => {
+            //     window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
+            // });
+
+            // // If mouse moved to graph
             // events.mouseEnter(node => {
             //     if (!selectedFeedItemBlockId.current) {
             //         highlightConnections(node.id);
             //     }
             // });
+
+            // // If mouse leave from chart
             // events.mouseLeave(_ => {
             //     if (!selectedFeedItemBlockId.current) {
             //         styleConnections();
@@ -201,6 +206,13 @@ export function useVisualizerViva(
                     }
                 }
             };
+
+            // for (const n of mockNodes.slice(0, 100)) {
+            for (const n of mockNodes.slice(0, 50)) {
+                onNewBlockData(n);
+            }
+
+            return;
 
             feedService.subscribeBlocks(onNewBlockData, onMetaDataUpdated);
         }

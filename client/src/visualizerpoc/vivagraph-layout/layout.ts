@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-invalid-this */
 import Viva from "vivagraphjs";
 import { INodeData } from "../../models/graph/stardust/INodeData";
+import { VivaLink } from "./vivagraph-layout.types";
 
 class Rect {
     public x1: number;
@@ -27,10 +28,14 @@ class Rect {
         this.y2 = y2 || 0;
     }
 }
+
 const createCoordinateGenerator = (n: number) => {
     let currentX: number | null = null;
     let currentY = 0;
+
+    const filledPositions = new Set([]);
     const map = new Map<number, Set<number>>(); // To track filled positions for each x
+
     return (x: number) => {
         // console.log("map for x", x, map)
       // If the map doesn't contain x yet, initialize it
@@ -62,25 +67,32 @@ const generateY = createCoordinateGenerator(40);
 /**
  * Function for generation positions;
  * @param startTime - timestamp for correct work.
+ * @param numberOfNodes
  */
-const placeNodeCallback = (startTime: number) => {
-    const secondsPassed = Math.floor((Date.now() - startTime) / 2000);
-    const y = generateY(secondsPassed);
+const placeNodeCallback = (numberOfNodes: number) => {
+    const THRESHOLD_PX = 30;
+    // const secondsPassed = Math.floor((Date.now() - startTime) / 2000);
+    const y = generateY(THRESHOLD_PX);
+    // debugger;
     // console.log("secondsPassed", secondsPassed, y);
-    return { x: secondsPassed * 150, y };
+    return { x: numberOfNodes * THRESHOLD_PX, y };
 };
 
+
+//
 export function customLayout(
     theGraph: Viva.Graph.IGraph<INodeData, unknown>,
     options: Record<string, unknown>
 ) {
     const graphRect = new Rect(Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
     const layoutNodes: { [nodeId: string]: { x: number; y: number } } = {};
-    const layoutLinks: { [linkId: string]: { fromId: string; toId: string; data?: INodeData } } = {};
-    // const yGen = generateY();
+    let numberOfNodes = 0;
+    const layoutLinks: { [linkId: string]: VivaLink } = {};
+
     const startTime: number = Date.now();
-    // console.log("startTime", startTime)
+
     const updateGraphRect = (position: { x: number; y: number }, theGraphRect: Rect) => {
+        console.log("--- theGraphRect", theGraphRect);
         if (position.x < theGraphRect.x1) {
             theGraphRect.x1 = position.x;
         }
@@ -95,11 +107,11 @@ export function customLayout(
         }
     };
 
-    // @ts-expect-error wrong type
-    const ensureNodeInitialized = node => {
+
+    const ensureNodeInitialized = (node: Viva.Graph.INode<INodeData, unknown>) => {
         if (!layoutNodes[node.id]) {
-            layoutNodes[node.id] = placeNodeCallback(startTime);
-            // console.log("Node init", node.id, layoutNodes[node.id]);
+            layoutNodes[node.id] = placeNodeCallback(numberOfNodes);
+            numberOfNodes += 1;
             updateGraphRect(layoutNodes[node.id], graphRect);
         }
     };
