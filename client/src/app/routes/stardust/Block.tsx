@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import {
-    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload, IMilestonePayload
+    MilestonePayload, PayloadType, TransactionPayload, Utils
 } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -51,14 +49,14 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     );
 
     useEffect(() => {
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+        if (block?.payload?.getType() === PayloadType.Transaction) {
             const tsxId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
-                block.payload
+                block.payload as TransactionPayload
             );
             setTransactionId(tsxId);
         }
-        if (block?.payload?.type === MILESTONE_PAYLOAD_TYPE) {
-            const mId = milestoneIdFromMilestonePayload(block.payload);
+        if (block?.payload?.getType() === PayloadType.Milestone) {
+            const mId = Utils.milestoneId(block.payload as MilestonePayload);
             setMilestoneId(mId);
         }
     }, [block]);
@@ -66,23 +64,23 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
-    const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
-    const isTransactionBlock = block?.payload?.type === TRANSACTION_PAYLOAD_TYPE;
+    const isMilestoneBlock = block?.payload?.getType() === PayloadType.Milestone;
+    const isTransactionBlock = block?.payload?.getType() === PayloadType.Transaction;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = isBlockLoading ||
         isInputsAndOutputsLoading ||
         isBlockMetadataLoading ||
         isMilestoneReferencedBlockLoading;
-    const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
+    const milestoneIndex = isMilestoneBlock ? (block.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
-    switch (block?.payload?.type) {
-        case MILESTONE_PAYLOAD_TYPE:
+    switch (block?.payload?.getType()) {
+        case PayloadType.Milestone:
             pageTitle = `Milestone Block ${milestoneIndex}`;
             break;
-        case TRANSACTION_PAYLOAD_TYPE:
+        case PayloadType.Transaction:
             pageTitle = "Transaction Block";
             break;
-        case TAGGED_DATA_PAYLOAD_TYPE:
+        case PayloadType.TaggedData:
             pageTitle = "Data Block";
             break;
         default:
@@ -204,7 +202,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 </div>
             )}
-            {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+            {block?.payload?.getType() === PayloadType.Transaction &&
                 transferTotal !== null && (
                     <div className="section--data">
                         <div className="label">
@@ -289,13 +287,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 hasConflicts={isLinksDisabled}
                                 conflictReason={conflictReason}
                                 onClick={metadata?.referencedByMilestoneIndex
-                                    ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
+                                    ? (theBlockId: string) => history.push(`/${network}/block/${theBlockId}`)
                                     : undefined}
                             />
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
-                                milestone={block.payload as IMilestonePayload}
+                                milestone={block.payload as MilestonePayload}
                             />
                         )}
                     </div>

@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE, TransactionHelper } from "@iota/iota.js-stardust";
+import { AddressType, TransactionHelper } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -254,7 +254,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.aliasId) {
                                     route = "addr";
                                     const aliasAddress = this.buildAddressFromIdAndType(
-                                        response.aliasId, ALIAS_ADDRESS_TYPE
+                                        response.aliasId, AddressType.Alias
                                     );
                                     redirectState = {
                                         addressDetails: aliasAddress
@@ -267,7 +267,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     route = "addr";
                                     const nftAddress = this.buildAddressFromIdAndType(
                                         response.nftId,
-                                        NFT_ADDRESS_TYPE
+                                        AddressType.Nft
                                     );
                                     redirectState = {
                                         addressDetails: nftAddress

@@ -1,4 +1,6 @@
-import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IMetadataFeature, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import {
+    AddressType, AliasAddress, FeatureType, FoundryOutput, ImmutableAliasAddressUnlockCondition, MetadataFeature
+} from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
@@ -40,25 +42,25 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
 
     const [foundryDetails, isFoundryDetailsLoading, foundryError] = useFoundryDetails(network, foundryId);
-    const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
+    const [foundryOutput, setFoundryOutput] = useState<FoundryOutput>();
     const [controllerAlias, setControllerAlias] = useState<string>();
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>();
     const [tokenCount, setTokenCount] = useState<number>(0);
 
     useEffect(() => {
         if (foundryDetails) {
-            const output = foundryDetails?.output as IFoundryOutput;
+            const output = foundryDetails?.output as FoundryOutput;
             const immutableAliasUnlockCondition =
-                output.unlockConditions[0] as IImmutableAliasUnlockCondition;
-            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+                output.getUnlockConditions()[0] as ImmutableAliasAddressUnlockCondition;
+            const aliasId = (immutableAliasUnlockCondition.getAddress() as AliasAddress).getAliasId();
 
-            const immutableFeatures = (foundryDetails?.output as IFoundryOutput).immutableFeatures;
+            const immutableFeatures = (foundryDetails?.output as FoundryOutput).getImmutableFeatures();
             const metadataFeature = immutableFeatures?.find(
-                feature => feature.type === METADATA_FEATURE_TYPE
-            ) as IMetadataFeature;
+                feature => feature.getType() === FeatureType.Metadata
+            ) as MetadataFeature;
 
             if (isMounted && metadataFeature) {
-                const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.data, tokenSchemeIRC30);
+                const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.getData(), tokenSchemeIRC30);
                 setTokenMetadata(parsedMetadata);
             }
             if (isMounted) {
@@ -71,11 +73,11 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     let foundryContent = null;
     if (foundryDetails && foundryOutput) {
         const isMarketed = isMarketedNetwork(network);
-        const serialNumber = foundryOutput.serialNumber;
-        const balance = Number(foundryOutput.amount);
+        const serialNumber = foundryOutput.getSerialNumber();
+        const balance = Number(foundryOutput.getAmount());
 
         const controllerAliasBech32 = controllerAlias ?
-            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
+            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, AddressType.Alias) :
             undefined;
 
         foundryContent = (
@@ -150,13 +152,13 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
                             infoContent: nativeTokensMessage
                         },
                         [FOUNDRY_PAGE_TABS.Features]: {
-                            disabled: !foundryOutput.features && !foundryOutput.immutableFeatures
+                            disabled: !foundryOutput.getFeatures() && !foundryOutput.getImmutableFeatures()
                         }
                     }}
                 >
                     <TokenInfoSection
                         tokenId={foundryId}
-                        tokenScheme={foundryOutput.tokenScheme}
+                        tokenScheme={foundryOutput.getTokenScheme()}
                         tokenMetadata={tokenMetadata}
                     />
                     <FeaturesSection output={foundryOutput} />

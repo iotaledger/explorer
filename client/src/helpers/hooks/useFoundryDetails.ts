@@ -1,4 +1,4 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { OutputResponse } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -14,13 +14,13 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useFoundryDetails(network: string, foundryId: string | null):
     [
-        IOutputResponse | null,
+        OutputResponse | null,
         boolean,
         string?
     ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [foundryDetails, setFoundryDetails] = useState<IOutputResponse | null>(null);
+    const [foundryDetails, setFoundryDetails] = useState<OutputResponse | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 

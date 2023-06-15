@@ -1,4 +1,4 @@
-import { blockIdFromMilestonePayload, IMilestonePayload } from "@iota/iota.js-stardust";
+import { blockIdFromMilestonePayload, MilestonePayload } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useMilestoneDetails } from "../../../../helpers/hooks/useMilestoneDetails";
@@ -6,7 +6,7 @@ import NetworkContext from "../../../context/NetworkContext";
 import "./MilestoneControls.scss";
 
 interface MilestoneControlProps {
-    milestone: IMilestonePayload;
+    milestone: MilestonePayload;
 }
 
 const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {

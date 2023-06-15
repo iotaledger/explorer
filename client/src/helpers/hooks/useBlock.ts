@@ -1,4 +1,4 @@
-import { IBlock } from "@iota/iota.js-stardust";
+import { Block } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -14,13 +14,13 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useBlock(network: string, blockId: string | null):
     [
-        IBlock | null,
+        Block | null,
         boolean,
         string?
     ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [block, setBlock] = useState<IBlock | null>(null);
+    const [block, setBlock] = useState<Block | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 

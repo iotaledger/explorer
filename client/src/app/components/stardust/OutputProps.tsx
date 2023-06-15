@@ -1,4 +1,4 @@
-import { OutputTypes } from "@iota/iota.js-stardust";
+import { Output } from "@iota/iota.js-stardust";
 
 export interface OutputProps {
     /**
@@ -9,7 +9,7 @@ export interface OutputProps {
     /**
      * The output to display.
      */
-    output: OutputTypes;
+    output: Output;
 
     /**
      * The amount to display.

@@ -1,4 +1,4 @@
-import { SIGNATURE_UNLOCK_TYPE, UnlockTypes } from "@iota/iota.js-stardust";
+import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
@@ -6,7 +6,7 @@ import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow
 import TruncatedId from "./TruncatedId";
 
 interface IUnlocksProps {
-    unlocks: UnlockTypes[];
+    unlocks: Unlock[];
 }
 
 const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
@@ -45,27 +45,27 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                     <div>
                         {
                             unlocks.map((unlock, idx) => (
-                                unlock.type === SIGNATURE_UNLOCK_TYPE ?
+                                unlock.getType() === UnlockType.Signature ?
                                     <div key={idx} className="unlocks-card margin-l-t">
-                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                        {displayUnlocksTypeAndIndex(unlock.getType(), idx)}
                                         <div className="unlocks-card--row">
                                             <span className="label">Public Key:</span>
                                             <div className="value public-key">
-                                                <TruncatedId id={unlock.signature.publicKey} />
+                                                <TruncatedId id={(unlock as SignatureUnlock).signature.publicKey} />
                                             </div>
                                         </div>
                                         <div className="unlocks-card--row">
                                             <span className="label">Signature:</span>
                                             <div className="value signature">
-                                                <TruncatedId id={unlock.signature.signature} />
+                                                <TruncatedId id={(unlock as SignatureUnlock).signature.signature} />
                                             </div>
                                         </div>
                                     </div> :
                                     <div key={idx} className="unlocks-card margin-l-t">
-                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                        {displayUnlocksTypeAndIndex((unlock as ReferenceUnlock).getType(), idx)}
                                         <div className="unlocks-card--row">
                                             <span className="label">References unlock at index:</span>
-                                            <span className="value">{unlock.reference}</span>
+                                            <span className="value">{(unlock as ReferenceUnlock).reference}</span>
                                         </div>
                                     </div>
                             ))

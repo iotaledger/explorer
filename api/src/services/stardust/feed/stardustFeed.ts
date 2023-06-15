@@ -1,4 +1,4 @@
-import { blockIdFromMilestonePayload, IBlockMetadata, milestoneIdFromMilestonePayload } from "@iota/iota.js-stardust";
+import { blockIdFromMilestonePayload, IBlockMetadata, milestoneIdFromMilestonePayload, Utils } from "@iota/iota.js-stardust";
 import { IMqttClient } from "@iota/mqtt.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../../factories/serviceFactory";

@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { TransactionHelper, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { TransactionHelper, PayloadType, TransactionPayload as ITransactionPayload } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import metadataInfoMessage from "../../../assets/modals/stardust/block/metadata.json";
@@ -43,10 +43,11 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     useEffect(() => {
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+        if (block?.payload?.getType() === PayloadType.Transaction) {
+            const transactionPayload = block.payload as ITransactionPayload;
             setIncludedBlockId(TransactionHelper.calculateBlockId(block));
-            setTangleNetworkId(block.payload.essence.networkId);
-            setInputsCommitment(block.payload.essence.inputsCommitment);
+            setTangleNetworkId(transactionPayload.essence.networkId);
+            setInputsCommitment(transactionPayload.essence.inputsCommitment);
         }
     }, [block]);
 

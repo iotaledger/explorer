@@ -1,12 +1,9 @@
 import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    BASIC_OUTPUT_TYPE,
     deserializeBlock,
-    IBlock,
+    Block,
     milestoneIdFromMilestonePayload,
-    MILESTONE_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE,
+    PayloadType,
     TransactionHelper
 } from "@iota/iota.js-stardust";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
@@ -284,11 +281,11 @@ export class StardustFeedClient {
         let transactionId;
         let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
-        let block: IBlock | null = null;
+        let block: Block | null = null;
 
         try {
             block = deserializeBlock(new ReadStream(bytes));
-            if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+            if (block.payload?.getType() === PayloadType.Transaction) {
                 transactionId = Converter.bytesToHex(
                     TransactionHelper.getTransactionPayloadHash(block.payload),
                     true

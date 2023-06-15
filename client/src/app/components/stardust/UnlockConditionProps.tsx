@@ -1,10 +1,10 @@
-import { UnlockConditionTypes } from "@iota/iota.js-stardust";
+import { UnlockCondition } from "@iota/iota.js-stardust";
 
 export interface UnlockConditionProps {
     /**
      * The unlock condition.
      */
-    unlockCondition: UnlockConditionTypes;
+    unlockCondition: UnlockCondition;
 
     /**
      * Is the unlock condition pre-expanded.

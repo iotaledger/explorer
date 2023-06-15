@@ -1,4 +1,4 @@
-import { IOutputResponse, IUTXOInput } from "@iota/iota.js-stardust";
+import { OutputResponse, UTXOInput } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 interface IInputExtension {
@@ -9,7 +9,7 @@ interface IInputExtension {
     /**
      * The output used as input.
      */
-    output?: IOutputResponse;
+    output?: OutputResponse;
     /**
      * The transaction address details.
      */
@@ -24,5 +24,5 @@ interface IInputExtension {
     isGenesis: boolean;
 }
 
-export type IInput = IUTXOInput & IInputExtension;
+export type IInput = UTXOInput & IInputExtension;
 

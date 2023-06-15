@@ -90,7 +90,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
         <Output
             outputId={outputId}
             output={input.output.output}
-            amount={Number(input.output.output.amount)}
+            amount={Number(input.output.output.getAmount())}
             network={network}
             showCopyAmount={true}
         /> : fallbackInputView;

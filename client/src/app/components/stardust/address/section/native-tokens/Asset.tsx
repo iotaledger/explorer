@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { IFoundryOutput, IMetadataFeature, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/iota.js-stardust";
 import { Converter } from "@iota/util.js-stardust";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
@@ -24,11 +24,11 @@ const Asset: React.FC<AssetProps> = (
 
     useEffect(() => {
         if (isWhitelisted && foundryDetails) {
-            const immutableFeatures = (foundryDetails?.output as IFoundryOutput).immutableFeatures;
+            const immutableFeatures = (foundryDetails?.output as FoundryOutput).getImmutableFeatures();
 
             const metadata = immutableFeatures?.find(
-                feature => feature.type === METADATA_FEATURE_TYPE
-            ) as IMetadataFeature;
+                feature => feature.getType() === FeatureType.Metadata
+            ) as MetadataFeature;
 
             if (metadata) {
                 updateTokenInfo(metadata);
@@ -36,11 +36,11 @@ const Asset: React.FC<AssetProps> = (
         }
     }, [isWhitelisted, foundryDetails]);
 
-    const updateTokenInfo = (metadata: IMetadataFeature): void => {
+    const updateTokenInfo = (metadata: MetadataFeature): void => {
         const validator = new JsonSchemaValidator();
 
         try {
-            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.data)) as ITokenMetadata;
+            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.getData())) as ITokenMetadata;
             const result = validator.validate(tokenInfo, tokenSchemeIRC30);
 
             if (result.valid) {

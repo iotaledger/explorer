@@ -1,18 +1,14 @@
 /* eslint-disable no-warning-comments */
 import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    BASIC_OUTPUT_TYPE, IAddressUnlockCondition, IStateControllerAddressUnlockCondition,
-    IGovernorAddressUnlockCondition, IBlock,
-    ISignatureUnlock, SIGNATURE_UNLOCK_TYPE,
-    TRANSACTION_PAYLOAD_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, ITransactionPayload,
-    IBasicOutput, UnlockConditionTypes, ITreasuryOutput, IAliasOutput, INftOutput, IFoundryOutput,
-    TREASURY_OUTPUT_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, ALIAS_OUTPUT_TYPE,
-    NFT_OUTPUT_TYPE, serializeTransactionPayload, FOUNDRY_OUTPUT_TYPE,
-    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, IImmutableAliasUnlockCondition,
-    TransactionHelper, IReferenceUnlock, Ed25519Address, OutputTypes,
-    STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-    IRent, UnlockTypes, TAG_FEATURE_TYPE, ITagFeature
+    AddressUnlockCondition,
+    BasicOutput,
+    Block, CommonOutput, FeatureType, GovernorAddressUnlockCondition,
+    ImmutableAliasAddressUnlockCondition, Output, OutputType, PayloadType,
+    ReferenceUnlock, SignatureUnlock,
+    StateControllerAddressUnlockCondition,
+    TagFeature,
+    TransactionPayload, Unlock, UnlockCondition, UnlockConditionType, UnlockType
 } from "@iota/iota.js-stardust";
 import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
@@ -24,7 +20,7 @@ import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];
-    unlocks: UnlockTypes[];
+    unlocks: Unlock[];
     outputs: IOutput[];
     unlockAddresses: IBech32AddressDetails[];
     transferTotal: number;
@@ -36,20 +32,20 @@ interface TransactionInputsAndOutputsResponse {
 const HEX_PARTICIPATE = "0x5041525449434950415445";
 
 export class TransactionsHelper {
-    public static async getInputsAndOutputs(block: IBlock | undefined, network: string,
+    public static async getInputsAndOutputs(block: Block | undefined, network: string,
         _bechHrp: string, apiClient: StardustApiClient
     ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: IInput[] = [];
-        let unlocks: UnlockTypes[] = [];
+        let unlocks: Unlock[] = [];
         const outputs: IOutput[] = [];
         const remainderOutputs: IOutput[] = [];
         const unlockAddresses: IBech32AddressDetails[] = [];
         let transferTotal = 0;
         let sortedOutputs: IOutput[] = [];
 
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            const payload: ITransactionPayload = block.payload;
+        if (block?.payload?.getType() === PayloadType.Transaction) {
+            const payload: TransactionPayload = block.payload as TransactionPayload;
             const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(payload);
 
             // Unlocks
@@ -58,17 +54,17 @@ export class TransactionsHelper {
             // unlock Addresses computed from public keys in unlocks
             for (let i = 0; i < unlocks.length; i++) {
                 const unlock = payload.unlocks[i];
-                let signatureUnlock: ISignatureUnlock;
+                let signatureUnlock: SignatureUnlock;
 
-                if (unlock.type === SIGNATURE_UNLOCK_TYPE) {
-                    signatureUnlock = unlock;
+                if (unlock.getType() === UnlockType.Signature) {
+                    signatureUnlock = unlock as SignatureUnlock;
                 } else {
                     let refUnlockIdx = i;
                     // unlock references can be transitive,
                     // so we need to follow the path until we find the signature
                     do {
-                        const referenceUnlock = payload.unlocks[refUnlockIdx] as IReferenceUnlock;
-                        signatureUnlock = payload.unlocks[referenceUnlock.reference] as ISignatureUnlock;
+                        const referenceUnlock = payload.unlocks[refUnlockIdx] as ReferenceUnlock;
+                        signatureUnlock = payload.unlocks[referenceUnlock.reference] as SignatureUnlock;
                         refUnlockIdx = referenceUnlock.reference;
                     } while (!signatureUnlock.signature);
                 }
@@ -76,6 +72,7 @@ export class TransactionsHelper {
                 const hex = Converter.bytesToHex(
                     new Ed25519Address(Converter.hexToBytes(signatureUnlock.signature.publicKey)).toAddress()
                 );
+
                 unlockAddresses.push(
                     Bech32AddressHelper.buildAddress(_bechHrp, hex)
                 );
@@ -206,7 +203,7 @@ export class TransactionsHelper {
         return bigEndian.join("");
     }
 
-    public static computeTransactionIdFromTransactionPayload(payload: ITransactionPayload) {
+    public static computeTransactionIdFromTransactionPayload(payload: TransactionPayload) {
         const tpWriteStream = new WriteStream();
         serializeTransactionPayload(tpWriteStream, payload);
         return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
@@ -224,13 +221,13 @@ export class TransactionsHelper {
             TransactionHelper.resolveIdFromOutputId(outputId);
     }
 
-    public static computeStorageRentBalance(outputs: OutputTypes[], rentStructure: IRent): number {
+    public static computeStorageRentBalance(outputs: Output[], rentStructure: IRent): number {
         const outputsWithoutSdruc = outputs.filter(output => {
-            if (output.type === TREASURY_OUTPUT_TYPE) {
+            if (output.getType() === OutputType.Treasury) {
                 return false;
             }
-            const hasStorageDepositUnlockCondition = output.unlockConditions.some(
-                uc => uc.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE
+            const hasStorageDepositUnlockCondition = (output as CommonOutput).getUnlockConditions().some(
+                uc => uc.getType() === UnlockConditionType.StorageDepositReturn
             );
 
             return !hasStorageDepositUnlockCondition;
@@ -239,7 +236,7 @@ export class TransactionsHelper {
         const rentBalance = outputsWithoutSdruc.reduce(
             (acc, output) => acc + TransactionHelper.getStorageDeposit(output, rentStructure),
             0
-            );
+        );
         return rentBalance;
     }
 
@@ -248,50 +245,50 @@ export class TransactionsHelper {
      * @param output The output to check.
      * @returns true if participation event output.
      */
-    public static isParticipationEventOutput(output: OutputTypes): boolean {
-        if (output.type === BASIC_OUTPUT_TYPE) {
-            const tagFeature = output.features?.find(
-                feature => feature.type === TAG_FEATURE_TYPE
-            ) as ITagFeature;
+    public static isParticipationEventOutput(output: Output): boolean {
+        if (output.getType() === OutputType.Basic) {
+            const tagFeature = (output as BasicOutput).getFeatures()?.find(
+                feature => feature.getType() === FeatureType.Tag
+            ) as TagFeature;
 
             if (tagFeature) {
-                return tagFeature.tag === HEX_PARTICIPATE;
+                return tagFeature.getTag() === HEX_PARTICIPATE;
             }
         }
         return false;
     }
 
     private static bechAddressFromAddressUnlockCondition(
-        unlockConditions: UnlockConditionTypes[],
+        unlockConditions: UnlockCondition[],
         _bechHrp: string,
         outputType: number
     ): IBech32AddressDetails {
         let address: IBech32AddressDetails = { bech32: "" };
         let unlockCondition;
 
-        if (outputType === BASIC_OUTPUT_TYPE || outputType === NFT_OUTPUT_TYPE) {
+        if (outputType === OutputType.Basic || outputType === OutputType.Nft) {
             unlockCondition = unlockConditions?.filter(
-                ot => ot.type === ADDRESS_UNLOCK_CONDITION_TYPE
-            ).map(ot => ot as IAddressUnlockCondition)[0];
-        } else if (outputType === ALIAS_OUTPUT_TYPE) {
-            if (unlockConditions.some(ot => ot.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE)) {
+                ot => ot.getType() === UnlockConditionType.Address
+            ).map(ot => ot as AddressUnlockCondition)[0];
+        } else if (outputType === OutputType.Alias) {
+            if (unlockConditions.some(ot => ot.getType() === UnlockConditionType.StateControllerAddress)) {
                 unlockCondition = unlockConditions?.filter(
-                    ot => ot.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE
-                ).map(ot => ot as IStateControllerAddressUnlockCondition)[0];
+                    ot => ot.getType() === UnlockConditionType.StateControllerAddress
+                ).map(ot => ot as StateControllerAddressUnlockCondition)[0];
             }
-            if (unlockConditions.some(ot => ot.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE)) {
+            if (unlockConditions.some(ot => ot.getType() === UnlockConditionType.GovernorAddress)) {
                 unlockCondition = unlockConditions?.filter(
-                    ot => ot.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE
-                ).map(ot => ot as IGovernorAddressUnlockCondition)[0];
+                    ot => ot.getType() === UnlockConditionType.GovernorAddress
+                ).map(ot => ot as GovernorAddressUnlockCondition)[0];
             }
-        } else if (outputType === FOUNDRY_OUTPUT_TYPE) {
+        } else if (outputType === OutputType.Foundry) {
             unlockCondition = unlockConditions?.filter(
-                ot => ot.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE
-            ).map(ot => ot as IImmutableAliasUnlockCondition)[0];
+                ot => ot.getType() === UnlockConditionType.ImmutableAliasAddress
+            ).map(ot => ot as ImmutableAliasAddressUnlockCondition)[0];
         }
 
-        if (unlockCondition?.address) {
-            address = Bech32AddressHelper.buildAddress(_bechHrp, unlockCondition?.address);
+        if (unlockCondition?.getAddress()) {
+            address = Bech32AddressHelper.buildAddress(_bechHrp, unlockCondition?.getAddress());
         }
 
         return address;

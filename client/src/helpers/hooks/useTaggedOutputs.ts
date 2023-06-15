@@ -1,4 +1,4 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { OutputResponse } from "@iota/iota.js-stardust";
 import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { OUTPUT_LIST_TABS } from "../../app/routes/stardust/OutputList";
@@ -14,7 +14,7 @@ interface OutputListLocationProps {
 }
 
 interface OutputListItem {
-    outputDetails: IOutputResponse;
+    outputDetails: OutputResponse;
     outputId: string;
 }
 
