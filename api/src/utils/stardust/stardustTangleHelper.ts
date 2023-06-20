@@ -644,7 +644,7 @@ export class StardustTangleHelper {
         const client = new Client({ nodes: [provider] });
 
         try {
-            const result: Uint8Array = await client.pluginFetch(
+            const response: Uint8Array = await client.pluginFetch(
                 basePluginPath,
                 method,
                 methodPath,
@@ -652,7 +652,10 @@ export class StardustTangleHelper {
                 request
             );
 
-            return result as S;
+            const jsonPayload = Buffer.from(response).toString("utf8");
+            const result: S = JSON.parse(jsonPayload);
+
+            return result;
         } catch { }
 
         return null;
