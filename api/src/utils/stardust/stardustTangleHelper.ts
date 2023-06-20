@@ -1,10 +1,8 @@
 /* eslint-disable no-warning-comments */
 import {
-    addressBalance, OutputResponse, Client,
-    blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, MilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString
+    OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse, HexEncodedString, Block, Utils
 } from "@iota/iota.js-stardust";
-import { HexHelper, ReadStream } from "@iota/util.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
@@ -29,6 +27,7 @@ import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { SearchExecutor } from "./searchExecutor";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
+import { addressBalance, blockIdFromMilestonePayload } from "./utils";
 
 /**
  * Helper functions for use with tangle.
@@ -52,6 +51,7 @@ export class StardustTangleHelper {
         }
 
         try {
+            // Using ported balance from iota.js until it is added to iota-sdk https://github.com/iotaledger/iota-sdk/issues/604
             const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
 
             if (addressBalanceDetails) {
@@ -75,26 +75,25 @@ export class StardustTangleHelper {
      */
     public static async block(network: INetwork, blockId: string): Promise<IBlockResponse> {
         blockId = HexHelper.addPrefix(blockId);
-        const blockRaw = await this.tryFetchNodeThenPermanode<string, Uint8Array>(
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(
             blockId,
-            "blockRaw",
+            "getBlock",
             network
         );
 
-        if (!blockRaw) {
+        if (!block) {
             return { error: `Couldn't find block with id ${blockId}` };
         }
 
         try {
-            const block = deserializeBlock(new ReadStream(blockRaw));
             if (block && Object.keys(block).length > 0) {
                 return {
                     block
                 };
             }
         } catch (e) {
-            logger.error(`Block deserialization failed for block with block id ${blockId}. Cause: ${e}`);
-            return { error: "Block deserialization failed." };
+            logger.error(`Failed fetching block with block id ${blockId}. Cause: ${e}`);
+            return { error: "Block fetch failed." };
         }
     }
 
@@ -130,25 +129,24 @@ export class StardustTangleHelper {
         transactionId: string
     ): Promise<ITransactionDetailsResponse> {
         transactionId = HexHelper.addPrefix(transactionId);
-        const blockRaw = await this.tryFetchNodeThenPermanode<string, Uint8Array>(
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(
             transactionId,
-            "transactionIncludedBlockRaw",
+            "getIncludedBlock",
             network
         );
 
-        if (!blockRaw) {
+        if (!block) {
             return { error: `Couldn't find block from transaction id ${transactionId}` };
         }
 
         try {
-            const block = deserializeBlock(new ReadStream(blockRaw));
             if (block && Object.keys(block).length > 0) {
                 return {
                     block
                 };
             }
         } catch (e) {
-            logger.error(`Block deserialization failed for block with transaction id ${transactionId}. Cause: ${e}`);
+            logger.error(`Failed fetching block with transaction id ${transactionId}. Cause: ${e}`);
         }
     }
 
@@ -248,7 +246,7 @@ export class StardustTangleHelper {
             const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
 
             const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
-            const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
+            const milestoneId = Utils.milestoneId(milestonePayload);
 
             return {
                 blockId,

@@ -1,11 +1,10 @@
-import { blockIdFromMilestonePayload, IBlockMetadata, milestoneIdFromMilestonePayload, Utils } from "@iota/iota.js-stardust";
-import { IMqttClient } from "@iota/mqtt.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { Block, Client, IBlockMetadata, MilestonePayload, Utils } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
 import { IFeedUpdate } from "../../../models/api/stardust/feed/IFeedUpdate";
 import { ILatestMilestone } from "../../../models/api/stardust/milestone/ILatestMilestonesResponse";
+import { blockIdFromMilestonePayload } from "../../../utils/stardust/utils";
 import { NodeInfoService } from "../nodeInfoService";
 
 const CACHE_TRIM_INTERVAL_MS = 60000;
@@ -35,7 +34,7 @@ export class StardustFeed {
     /**
      * Mqtt service for data (upstream).
      */
-    private readonly _mqttClient: IMqttClient;
+    private readonly _mqttClient: Client;
 
     /**
      * The latest milestones.
@@ -65,11 +64,11 @@ export class StardustFeed {
         this.blockSubscribers = {};
         this.milestoneSubscribers = {};
         this.blockMetadataCache = new Map();
-        this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
+        this._mqttClient = ServiceFactory.get<Client>(`mqtt-${networkId}`);
         const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
         if (this._mqttClient && nodeInfoService) {
-            this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
+            // this._mqttClient.listen.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
             const nodeInfo = nodeInfoService.getNodeInfo();
             this.networkProtocolVersion = nodeInfo.protocolVersion;
 
@@ -127,55 +126,61 @@ export class StardustFeed {
      * Connects the callbacks for upstream data.
      */
     private connect() {
-        this._mqttClient.blocksRaw(
-            (_: string, block: Uint8Array) => {
-                const serializedBlock = Converter.bytesToHex(block);
-
-                const update: Partial<IFeedUpdate> = {
-                    block: serializedBlock
-                };
-
-                // eslint-disable-next-line no-void
-                void this.broadcastBlock(update);
-            });
-
-        this._mqttClient.blocksReferenced(
-            (_: string, metadata: IBlockMetadata) => {
-                // update cache
-                let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
-                currentEntry = !currentEntry ? {
-                    milestone: metadata.milestoneIndex,
-                    referenced: metadata.referencedByMilestoneIndex,
-                    solid: metadata.isSolid,
-                    conflicting: metadata.ledgerInclusionState === "conflicting",
-                    conflictReason: metadata.conflictReason,
-                    included: metadata.ledgerInclusionState === "included"
-                } : {
-                    ...currentEntry,
-                    milestone: metadata.milestoneIndex,
-                    referenced: metadata.referencedByMilestoneIndex,
-                    solid: metadata.isSolid,
-                    conflicting: metadata.ledgerInclusionState === "conflicting",
-                    conflictReason: metadata.conflictReason,
-                    included: metadata.ledgerInclusionState === "included"
-                };
-
-                this.blockMetadataCache.set(metadata.blockId, currentEntry);
-
-                const update: Partial<IFeedUpdate> = {
-                    blockMetadata: {
-                        blockId: metadata.blockId,
-                        metadata: currentEntry
-                    }
-                };
-
-                // eslint-disable-next-line no-void
-                void this.broadcastBlock(update);
-            });
-
-        this._mqttClient.milestone(async (_, milestonePayload) => {
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listen(["blocks"], (_, result) => {
             try {
-                const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
+                const block: Block = JSON.parse(result);
+                const update: Partial<IFeedUpdate> = {
+                    block
+                };
+
+                // eslint-disable-next-line no-void
+                void this.broadcastBlock(update);
+            } catch {
+                logger.error("[FeedClient]: Failed broadcasting block downstream.");
+            }
+        });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listen(["block-metadata/referenced"], (_, result) => {
+            const metadata: IBlockMetadata = JSON.parse(result);
+            // update cache
+            let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
+            currentEntry = !currentEntry ? {
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                conflictReason: metadata.conflictReason,
+                included: metadata.ledgerInclusionState === "included"
+            } : {
+                ...currentEntry,
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                conflictReason: metadata.conflictReason,
+                included: metadata.ledgerInclusionState === "included"
+            };
+
+            this.blockMetadataCache.set(metadata.blockId, currentEntry);
+
+            const update: Partial<IFeedUpdate> = {
+                blockMetadata: {
+                    blockId: metadata.blockId,
+                    metadata: currentEntry
+                }
+            };
+
+            // eslint-disable-next-line no-void
+            void this.broadcastBlock(update);
+        });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listen(["milestones"], (_, result) => {
+            const milestonePayload: MilestonePayload = JSON.parse(result);
+            try {
+                const milestoneId = Utils.milestoneId(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
                 const timestamp = milestonePayload.timestamp;

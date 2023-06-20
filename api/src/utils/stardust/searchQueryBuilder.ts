@@ -1,3 +1,4 @@
+import { Bech32Helper } from "@iota/iota.js-chrysalis";
 import { AddressType, HexEncodedString, Utils } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 
