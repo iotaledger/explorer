@@ -1,8 +1,8 @@
 /* eslint-disable no-warning-comments */
 import {
-    Utils, addressBalance, OutputResponse, Client,
+    addressBalance, OutputResponse, Client,
     blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, MilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString, Account
+    IBlockMetadata, MilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString
 } from "@iota/iota.js-stardust";
 import { HexHelper, ReadStream } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -546,15 +546,15 @@ export class StardustTangleHelper {
         network: INetwork, eventId: string
     ): Promise<IParticipationEventResponse | undefined> {
         const basePluginPath: string = "participation/v1/";
-        const method = "get";
+        const method = "GET";
         const methodPath: string = `events/${eventId}`;
-        const info = await this.nodePluginFetch<unknown, IParticipationEventInfo>(
+        const info = await this.nodePluginFetch<IParticipationEventInfo>(
             network,
             basePluginPath,
             method,
             methodPath
         );
-        const status = await this.nodePluginFetch<unknown, IParticipationEventStatus>(
+        const status = await this.nodePluginFetch<IParticipationEventStatus>(
             network,
             basePluginPath,
             method,
@@ -631,20 +631,20 @@ export class StardustTangleHelper {
      * @param request The request object.
      * @returns The response object.
      */
-    private static async nodePluginFetch<T, S>(
+    private static async nodePluginFetch<S>(
         network: INetwork,
         basePluginPath: string,
-        method: "get" | "post" | "delete",
+        method: "GET" | "POST",
         methodPath: string,
         queryParams?: string[],
-        request?: T
+        request?: string
     ): Promise<S> | null {
         const { provider } = network;
 
         const client = new Client({ nodes: [provider] });
 
         try {
-            const result: S = await client.pluginFetch<T, S>(
+            const result: Uint8Array = await client.pluginFetch(
                 basePluginPath,
                 method,
                 methodPath,
@@ -652,7 +652,7 @@ export class StardustTangleHelper {
                 request
             );
 
-            return result;
+            return result as S;
         } catch { }
 
         return null;
