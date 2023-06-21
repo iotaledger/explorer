@@ -11,10 +11,11 @@ import { INodeData } from "../../models/graph/stardust/INodeData";
 import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { mockNodes } from "../force-graph/mock-data";
-import { customLayout } from "./layout";
+import { customLayout, THRESHOLD_PX } from "./layout";
+import { VivaNode } from "./vivagraph-layout.types";
 
 const MAX_ITEMS: number = 2500;
-const EDGE_COLOR_LIGHT: number = 0x00000055;
+const EDGE_COLOR_LIGHT: number = 0xB3B3B3CC;
 const EDGE_COLOR_DARK: number = 0xFFFFFF33;
 const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
 const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
@@ -45,6 +46,7 @@ export function useVisualizerViva(
     const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
     const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
     const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
+    const nodesDictionary = useRef<{ [id: string]: IFeedBlockData }>({});
 
     useEffect(() => {
         console.log("Setup!");
@@ -78,7 +80,7 @@ export function useVisualizerViva(
             graph.current = Viva.Graph.graph<INodeData, unknown>();
             graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
 
-            const layout = customLayout(graph.current, {});
+            const layout = customLayout(graph.current, {}, graphics.current);
 
             graphics.current.setNodeProgram(buildNodeShader());
 
@@ -93,8 +95,8 @@ export function useVisualizerViva(
 
             const events = Viva.Graph.webglInputEvents(graphics.current, graph.current);
 
-            // // If click to node
-            // events.click(node => selectNode(node));
+            // If click to node
+            events.click(node => selectNode(node));
 
             // events.dblClick(node => {
             //     window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
@@ -113,6 +115,7 @@ export function useVisualizerViva(
             //         styleConnections();
             //     }
             // });
+
 
             renderer.current = Viva.Graph.View.renderer<INodeData, unknown>(graph.current, {
                 container: graphElement.current,
@@ -136,6 +139,10 @@ export function useVisualizerViva(
             // 60 frames per second, which corresponds to roughly 16.67 milliseconds per frame
             const pixelsPerInterval = (pixelsPerSecond / 60) * (intervalMilliseconds / 16.67);
 
+            // setTimeout(() => {
+            //     console.log("--- Timeout", renderer.current);
+            //     renderer.current?.zoomOut();
+            // }, 3000);
             // setInterval(() => {
             //     // update the graph's position
             //     centerX += pixelsPerInterval;
@@ -161,10 +168,18 @@ export function useVisualizerViva(
                             added: now
                         });
 
-                        // console.log("Added node", blockId);
+                        // console.log("--- graph.current", graphics?.current?.getNodeUI(blockId));
 
+                        // console.log("Added node", blockId);
+                        // const node = graph.current.getNode(blockId);
+                        // console.log("--- node", node);
                         existingIds.current.push(blockId);
 
+                        const numberOfNodes = existingIds.current.length;
+
+                        renderer.current?.moveTo(numberOfNodes * THRESHOLD_PX, 0);
+                        const gr = renderer.current;
+                        console.log("--- rg", gr);
                         if (newBlock.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < newBlock.parents.length; i++) {
@@ -195,6 +210,8 @@ export function useVisualizerViva(
 
                     for (const blockId in updatedMetadata) {
                         const node = graph.current.getNode(blockId);
+
+                        // console.log("--- node", node);
                         if (node && node.data) {
                                 node.data.feedItem.metadata = {
                                     ...node.data.feedItem.metadata,
@@ -207,12 +224,12 @@ export function useVisualizerViva(
                 }
             };
 
+            // // for (const n of mockNodes.slice(0, 100)) {
             // for (const n of mockNodes.slice(0, 100)) {
-            for (const n of mockNodes.slice(0, 50)) {
-                onNewBlockData(n);
-            }
-
-            return;
+            //     onNewBlockData(n);
+            // }
+            //
+            // return;
 
             feedService.subscribeBlocks(onNewBlockData, onMetaDataUpdated);
         }
@@ -275,6 +292,7 @@ export function useVisualizerViva(
             const nodeUI = graphics.current?.getNodeUI(node.id);
             if (nodeUI) {
                 const { color, size } = calculateNodeStyle(node, highlight);
+                console.log("--- color", color, size);
                 nodeUI.color = color;
                 nodeUI.size = size;
             }

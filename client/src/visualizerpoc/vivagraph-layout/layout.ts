@@ -32,7 +32,7 @@ class Rect {
 
 const createCoordinateGenerator = (n: number) => {
     const currentX: number | null = null;
-    const listOfCoordinates = getYCoordinates(-300, 300, 21);
+    const listOfCoordinates = getYCoordinates(-1200, 1200, 36);
 
     let filledPositions = new Set<number>([]);
 
@@ -40,7 +40,7 @@ const createCoordinateGenerator = (n: number) => {
         const freeCoordinates = listOfCoordinates.filter(coordinate => !filledPositions.has(coordinate));
         const currentY = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
 
-        if (filledPositions.size > 10) {
+        if (filledPositions.size > 20) {
             const filledPositionsArr: number[] = Array.from(filledPositions); // Convert Set to an array
             filledPositionsArr.shift(); // Remove the first element from the array
             filledPositions = new Set(filledPositionsArr);
@@ -52,13 +52,13 @@ const createCoordinateGenerator = (n: number) => {
   };
 const generateY = createCoordinateGenerator(40);
 
+export const THRESHOLD_PX = 30;
 /**
  * Function for generation positions;
  * @param startTime - timestamp for correct work.
  * @param numberOfNodes
  */
 const placeNodeCallback = (numberOfNodes: number) => {
-    const THRESHOLD_PX = 30;
     const y = generateY();
     return { x: numberOfNodes * THRESHOLD_PX, y };
 };
@@ -67,7 +67,8 @@ const placeNodeCallback = (numberOfNodes: number) => {
 //
 export function customLayout(
     theGraph: Viva.Graph.IGraph<INodeData, unknown>,
-    options: Record<string, unknown>
+    options: Record<string, unknown>,
+    graphics: Viva.Graph.View.IWebGLGraphics<INodeData, unknown>
 ) {
     const graphRect = new Rect(Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
     const layoutNodes: { [nodeId: string]: { x: number; y: number } } = {};
@@ -125,6 +126,7 @@ export function customLayout(
     const onGraphChanged = changes => {
         for (let i = 0; i < changes.length; ++i) {
             const change = changes[i];
+
             if (change.node) {
                 if (change.changeType === "add") {
                     ensureNodeInitialized(change.node);
