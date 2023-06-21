@@ -1,6 +1,7 @@
-import { Magnitudes } from "@iota/iota.js-stardust";
+import { Units } from "@iota/iota.js";
 import { FilterField } from "../filterField";
 
+// This is unused, should be removed (???)
 export interface IFilterSettings {
     /**
      * Value filter for feeds.
@@ -15,7 +16,7 @@ export interface IFilterSettings {
     /**
      * Value limit units for feeds.
      */
-    valueMinimumMagnitude?: Magnitudes;
+    valueMinimumMagnitude?: Units;
 
     /**
      * Value limit feeds.
@@ -25,7 +26,7 @@ export interface IFilterSettings {
     /**
      * Value limit units for feeds.
      */
-    valueMaximumMagnitude?: Magnitudes;
+    valueMaximumMagnitude?: Units;
 }
 
 

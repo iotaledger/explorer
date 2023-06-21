@@ -1,16 +1,15 @@
 /* eslint-disable no-warning-comments */
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
     AddressUnlockCondition,
     BasicOutput,
     Block, CommonOutput, FeatureType, GovernorAddressUnlockCondition,
-    ImmutableAliasAddressUnlockCondition, Output, OutputType, PayloadType,
-    ReferenceUnlock, SignatureUnlock,
+    ImmutableAliasAddressUnlockCondition, InputType, IRent, MilestonePayload, Output, OutputType, PayloadType,
+    ReferenceUnlock, RegularTransactionEssence, SignatureUnlock,
     StateControllerAddressUnlockCondition,
     TagFeature,
-    TransactionPayload, Unlock, UnlockCondition, UnlockConditionType, UnlockType
+    TransactionPayload, TreasuryOutput, Unlock, UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
 } from "@iota/iota.js-stardust";
-import { Converter, HexHelper, WriteStream } from "@iota/util.js-stardust";
+import { HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -46,7 +45,7 @@ export class TransactionsHelper {
 
         if (block?.payload?.getType() === PayloadType.Transaction) {
             const payload: TransactionPayload = block.payload as TransactionPayload;
-            const transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(payload);
+            const transactionId = Utils.transactionId(payload);
 
             // Unlocks
             unlocks = payload.unlocks;
@@ -69,66 +68,73 @@ export class TransactionsHelper {
                     } while (!signatureUnlock.signature);
                 }
 
-                const hex = Converter.bytesToHex(
-                    new Ed25519Address(Converter.hexToBytes(signatureUnlock.signature.publicKey)).toAddress()
-                );
-
                 unlockAddresses.push(
-                    Bech32AddressHelper.buildAddress(_bechHrp, hex)
+                    Bech32AddressHelper.buildAddress(
+                        _bechHrp,
+                        Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp)
+                    )
                 );
             }
 
+            const payloadEssence = payload.essence as RegularTransactionEssence;
+
             // Inputs
-            for (let i = 0; i < payload.essence.inputs.length; i++) {
+            for (let i = 0; i < payloadEssence.inputs.length; i++) {
                 let outputDetails;
                 let amount;
+                let isGenesis = false;
                 const address = unlockAddresses[i];
-                const input = payload.essence.inputs[i];
-                const isGenesis = input.transactionId === GENESIS_HASH;
+                const input = payloadEssence.inputs[i];
 
-                const outputId = TransactionHelper.outputIdFromTransactionData(
-                    input.transactionId,
-                    input.transactionOutputIndex
-                );
+                if (input.getType() === InputType.UTXO) {
+                    const utxoInput = input as UTXOInput;
+                    isGenesis = utxoInput.transactionId === GENESIS_HASH;
 
-                const response = await apiClient.outputDetails({ network, outputId });
-                const details = response.output;
-                if (!response.error && details?.output && details?.metadata) {
-                    outputDetails = {
-                        output: details.output,
-                        metadata: details.metadata
-                    };
-                    amount = Number(details.output.amount);
+                    const outputId = Utils.computeOutputId(
+                        utxoInput.transactionId,
+                        utxoInput.transactionInputIndex
+                    );
+
+                    const response = await apiClient.outputDetails({ network, outputId });
+                    const details = response.output;
+
+                    if (!response.error && details?.output && details?.metadata) {
+                        outputDetails = {
+                            output: details.output,
+                            metadata: details.metadata
+                        };
+                        amount = Number(details.output.getAmount());
+                    }
+
+                    inputs.push({
+                        ...utxoInput,
+                        amount,
+                        isGenesis,
+                        outputId,
+                        output: outputDetails,
+                        address
+                    });
                 }
-
-                inputs.push({
-                    ...input,
-                    amount,
-                    isGenesis,
-                    outputId,
-                    output: outputDetails,
-                    address
-                });
             }
 
             // Outputs
-            for (let i = 0; i < payload.essence.outputs.length; i++) {
-                const outputId = TransactionHelper.outputIdFromTransactionData(transactionId, i);
+            for (let i = 0; i < payloadEssence.outputs.length; i++) {
+                const outputId = Utils.computeOutputId(transactionId, i);
 
-                if (payload.essence.outputs[i].type === TREASURY_OUTPUT_TYPE) {
-                    const output = payload.essence.outputs[i] as ITreasuryOutput;
+                if (payloadEssence.outputs[i].getType() === OutputType.Treasury) {
+                    const output = payloadEssence.outputs[i] as TreasuryOutput;
 
                     outputs.push({
                         id: outputId,
                         output,
-                        amount: Number(payload.essence.outputs[i].amount)
+                        amount: Number(payloadEssence.outputs[i].getAmount())
                     });
                 } else {
-                    const output = payload.essence.outputs[i] as IBasicOutput |
-                        IFoundryOutput | IAliasOutput | INftOutput;
+                    const output = payloadEssence.outputs[i] as CommonOutput;
 
-                    const address: IBech32AddressDetails = TransactionsHelper
-                        .bechAddressFromAddressUnlockCondition(output.unlockConditions, _bechHrp, output.type);
+                    const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
+                        output.getUnlockConditions(), _bechHrp, output.getType()
+                    );
 
                     const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
 
@@ -136,7 +142,7 @@ export class TransactionsHelper {
                         remainderOutputs.push({
                             id: outputId,
                             address,
-                            amount: Number(payload.essence.outputs[i].amount),
+                            amount: Number(payloadEssence.outputs[i].getAmount()),
                             isRemainder,
                             output
                         });
@@ -144,14 +150,14 @@ export class TransactionsHelper {
                         outputs.push({
                             id: outputId,
                             address,
-                            amount: Number(payload.essence.outputs[i].amount),
+                            amount: Number(payloadEssence.outputs[i].getAmount()),
                             isRemainder,
                             output
                         });
                     }
 
                     if (!isRemainder) {
-                        transferTotal += Number(payload.essence.outputs[i].amount);
+                        transferTotal += Number(payloadEssence.outputs[i].getAmount());
                     }
                 }
             }
@@ -203,22 +209,28 @@ export class TransactionsHelper {
         return bigEndian.join("");
     }
 
-    public static computeTransactionIdFromTransactionPayload(payload: TransactionPayload) {
-        const tpWriteStream = new WriteStream();
-        serializeTransactionPayload(tpWriteStream, payload);
-        return Converter.bytesToHex(Blake2b.sum256(tpWriteStream.finalBytes()), true);
+    /**
+     * Compute BLAKE2b-256 hash for alias.
+     * @param aliasId Alias id.
+     * @param outputId Output id.
+     * @returns The BLAKE2b-256 hash for Alias Id.
+     */
+    public static buildIdHashForAlias(aliasId: string, outputId: string): string {
+        return !HexHelper.toBigInt256(aliasId).eq(bigInt.zero) ?
+            aliasId :
+            Utils.computeAliasId(outputId);
     }
 
     /**
-     * Compute BLAKE2b-256 hash for alias or nft which has Id 0.
-     * @param aliasOrNftId Alias or Nft id.
+     * Compute BLAKE2b-256 hash for nft Id.
+     * @param nftId Nft id.
      * @param outputId Output id.
-     * @returns The BLAKE2b-256 hash for Alias or Nft Id.
+     * @returns The BLAKE2b-256 hash for Nft Id.
      */
-    public static buildIdHashForAliasOrNft(aliasOrNftId: string, outputId: string): string {
-        return !HexHelper.toBigInt256(aliasOrNftId).eq(bigInt.zero) ?
-            aliasOrNftId :
-            TransactionHelper.resolveIdFromOutputId(outputId);
+    public static buildIdHashForNft(nftId: string, outputId: string): string {
+        return !HexHelper.toBigInt256(nftId).eq(bigInt.zero) ?
+            nftId :
+            Utils.computeNftId(outputId);
     }
 
     public static computeStorageRentBalance(outputs: Output[], rentStructure: IRent): number {
@@ -234,7 +246,7 @@ export class TransactionsHelper {
         });
 
         const rentBalance = outputsWithoutSdruc.reduce(
-            (acc, output) => acc + TransactionHelper.getStorageDeposit(output, rentStructure),
+            (acc, output) => acc + Number(Utils.computeStorageDeposit(output, rentStructure)),
             0
         );
         return rentBalance;
@@ -256,6 +268,22 @@ export class TransactionsHelper {
             }
         }
         return false;
+    }
+
+    /**
+     * Compute a blockId from a milestone payload.
+     * @param protocolVersion The protocol version to use.
+     * @param payload The milestone payload.
+     * @returns The blockId of the block with the milestone payload.
+     */
+    public static blockIdFromMilestonePayload(protocolVersion: number, payload: MilestonePayload): string {
+        const block = new Block();
+        block.protocolVersion = protocolVersion;
+        block.parents = payload.parents;
+        block.payload = payload;
+        block.nonce = "0";
+
+        return Utils.blockId(block);
     }
 
     private static bechAddressFromAddressUnlockCondition(

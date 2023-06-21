@@ -1,4 +1,4 @@
-import { Block, UTXOInput, Unlock, PayloadType } from "@iota/iota.js-stardust";
+import { Block, Unlock, PayloadType } from "@iota/iota.js-stardust";
 import { useContext, useEffect, useState } from "react";
 import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -17,7 +17,7 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useInputsAndOutputs(network: string, block: Block | null):
     [
-        (UTXOInput & IInput)[] | null,
+        IInput[] | null,
         Unlock[] | null,
         IOutput[] | null,
         number | null,
@@ -26,7 +26,7 @@ export function useInputsAndOutputs(network: string, block: Block | null):
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const { bech32Hrp } = useContext(NetworkContext);
-    const [tsxInputs, setInputs] = useState<(UTXOInput & IInput)[] | null>(null);
+    const [tsxInputs, setInputs] = useState<IInput[] | null>(null);
     const [tsxUnlocks, setUnlocks] = useState<Unlock[] | null>(null);
     const [tsxOutputs, setOutputs] = useState<IOutput[] | null>(null);
     const [tsxTransferTotal, setTransferTotal] = useState<number | null>(null);

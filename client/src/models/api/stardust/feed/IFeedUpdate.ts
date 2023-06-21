@@ -1,7 +1,7 @@
-import { IMilestonePayload } from "@iota/iota.js-stardust";
+import { Block, MilestonePayload } from "@iota/iota.js-stardust";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
-type IFeedBlockUpdate = string;
+type IFeedBlockUpdate = Block;
 
 interface IFeedBlockMetadataUpdate {
     blockId: string;
@@ -12,7 +12,7 @@ interface IFeedMilestoneUpdate {
     blockId: string;
     milestoneId: string;
     milestoneIndex: number;
-    payload: IMilestonePayload;
+    payload: MilestonePayload;
     timestamp: number;
 }
 

@@ -1,7 +1,15 @@
-import { OutputResponse, UTXOInput } from "@iota/iota.js-stardust";
+import { HexEncodedString, OutputResponse } from "@iota/iota.js-stardust";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
-interface IInputExtension {
+export interface IInput {
+    /**
+     * The transaction Id.
+     */
+    transactionId: HexEncodedString;
+    /**
+     * The input index.
+     */
+    transactionInputIndex: number;
     /**
      * The output id.
      */
@@ -23,6 +31,4 @@ interface IInputExtension {
      */
     isGenesis: boolean;
 }
-
-export type IInput = UTXOInput & IInputExtension;
 

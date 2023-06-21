@@ -1,4 +1,4 @@
-import { INftAddress, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { NftAddress } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import nftSchemeIRC27 from "../../../../../../assets/schemas/nft-schema-IRC27.json";
@@ -23,7 +23,7 @@ const Nft: React.FC<NftProps> = ({ network, nft }) => {
             tryParseMetadata<INftImmutableMetadata>(nft.metadata, nftSchemeIRC27)
             : null;
     const { bech32Hrp } = useContext(NetworkContext);
-    const address: INftAddress = { type: NFT_ADDRESS_TYPE, nftId: id };
+    const address: NftAddress = new NftAddress(id);
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const [isWhitelisted] = useTokenRegistryNftCheck(nft.issuerId, id);
     const [name, setName] = useState<string | null>();

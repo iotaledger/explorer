@@ -1,3 +1,4 @@
+import { Bech32Helper } from "@iota/iota.js";
 import {
     HexEncodedString, AliasOutput, MetadataFeature, OutputResponse,
     OutputType, AddressType, Output, BasicOutput, FeatureType

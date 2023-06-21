@@ -1,9 +1,7 @@
 import {
-    AddressType,
-    FeatureType,
-    IssuerFeature, MetadataFeature, NftOutput, OutputResponse, OutputType, TransactionHelper
+    AddressType, AliasAddress, Ed25519Address, FeatureType, IssuerFeature, MetadataFeature,
+    NftAddress, NftOutput, OutputResponse, OutputType, Utils
 } from "@iota/iota.js-stardust";
-
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../../../../helpers/stardust/transactionsHelper";
@@ -39,13 +37,13 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     !outputResponse.metadata.isSpent &&
                     outputResponse.output.getType() === OutputType.Nft
                 ) {
-                    const outputId = TransactionHelper.outputIdFromTransactionData(
+                    const outputId = Utils.computeOutputId(
                         outputResponse.metadata.transactionId,
                         outputResponse.metadata.outputIndex
                     );
 
                     const nftOutput = outputResponse.output as NftOutput;
-                    const nftId = TransactionsHelper.buildIdHashForAliasOrNft(nftOutput.getNnftId(), outputId);
+                    const nftId = TransactionsHelper.buildIdHashForNft(nftOutput.getNftId(), outputId);
                     const metadataFeature = nftOutput.getImmutableFeatures()?.find(
                         feature => feature.getType() === FeatureType.Metadata
                     ) as MetadataFeature;
@@ -58,13 +56,13 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     if (issuerFeature) {
                         switch (issuerFeature.getIssuer().getType()) {
                             case AddressType.Ed25519:
-                                issuerId = issuerFeature.address.pubKeyHash;
+                                issuerId = (issuerFeature.getIssuer() as Ed25519Address).getPubKeyHash();
                                 break;
                             case AddressType.Alias:
-                                issuerId = issuerFeature.address.aliasId;
+                                issuerId = (issuerFeature.getIssuer() as AliasAddress).getAliasId();
                                 break;
                             case AddressType.Nft:
-                                issuerId = issuerFeature.address.nftId;
+                                issuerId = (issuerFeature.getIssuer() as NftAddress).getNftId();
                                 break;
                             default:
                                 break;

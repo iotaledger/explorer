@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { TransactionHelper, PayloadType, TransactionPayload as ITransactionPayload } from "@iota/iota.js-stardust";
+import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import metadataInfoMessage from "../../../assets/modals/stardust/block/metadata.json";
@@ -36,7 +36,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     const [block, isIncludedBlockLoading, blockError] = useTransactionIncludedBlock(network, transactionId);
     const [inputs, unlocks, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
     const [includedBlockId, setIncludedBlockId] = useState<string | null>(null);
-    const [tangleNetworkId, setTangleNetworkId] = useState<string | undefined>();
+    const [tangleNetworkId, setTangleNetworkId] = useState<number | undefined>();
     const [inputsCommitment, setInputsCommitment] = useState<string | undefined>();
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
@@ -45,9 +45,10 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     useEffect(() => {
         if (block?.payload?.getType() === PayloadType.Transaction) {
             const transactionPayload = block.payload as ITransactionPayload;
-            setIncludedBlockId(TransactionHelper.calculateBlockId(block));
-            setTangleNetworkId(transactionPayload.essence.networkId);
-            setInputsCommitment(transactionPayload.essence.inputsCommitment);
+            const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
+            setIncludedBlockId(Utils.blockId(block));
+            setTangleNetworkId(transactionEssence.networkId);
+            setInputsCommitment(transactionEssence.inputsCommitment);
         }
     }, [block]);
 

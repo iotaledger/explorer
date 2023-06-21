@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { AddressType } from "@iota/iota.js-stardust";
 import React from "react";
 import nativeTokensMessage from "../../../../../assets/modals/stardust/address/assets-in-wallet.json";
 import associatedOuputsMessage from "../../../../../assets/modals/stardust/address/associated-outputs.json";
@@ -188,7 +188,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />
     ];
 
-    const aliasAddressSections = addressType !== ALIAS_ADDRESS_TYPE ? null : [
+    const aliasAddressSections = addressType !== AddressType.Alias ? null : [
         <AliasStateSection
             key={`alias-state-${addressBech32}`}
             output={aliasOutput}
@@ -200,7 +200,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />
     ];
 
-    const nftAddressSections = addressType !== NFT_ADDRESS_TYPE ? null : [
+    const nftAddressSections = addressType !== AddressType.Nft ? null : [
         <NftMetadataSection
             key={`nft-meta-${addressBech32}`}
             network={network}
@@ -219,7 +219,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     let tabbedSections = defaultSections;
 
     switch (addressType) {
-        case ALIAS_ADDRESS_TYPE:
+        case AddressType.Alias:
             tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
             tabOptions = {
@@ -233,7 +233,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             };
             tabbedSections = [...(aliasAddressSections ?? []), ...defaultSections];
             break;
-        case NFT_ADDRESS_TYPE:
+        case AddressType.Nft:
             tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
             tabOptions = {

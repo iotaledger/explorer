@@ -1,12 +1,14 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    deserializeBlock,
+    BasicOutput,
     Block,
-    milestoneIdFromMilestonePayload,
+    MilestonePayload,
+    OutputType,
     PayloadType,
-    TransactionHelper
+    RegularTransactionEssence,
+    TaggedDataPayload,
+    TransactionPayload,
+    Utils
 } from "@iota/iota.js-stardust";
-import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
@@ -137,7 +139,7 @@ export class StardustFeedClient {
                         }
 
                         if (update.block) {
-                            const block: IFeedBlockData = this.unmarshalBlock(update.block);
+                            const block: IFeedBlockData = this.buildFeedBlockData(update.block);
 
                             if (!this.latestBlocks.has(block.blockId)) {
                                 this.latestBlocks.set(block.blockId, block);
@@ -269,48 +271,47 @@ export class StardustFeedClient {
     }
 
     /**
-     * Deserialize the block into block data object.
-     * @param serializedBlock The item source.
+     * Build the block data object.
+     * @param block The item source.
      * @returns The feed item.
      */
-    private unmarshalBlock(serializedBlock: string): IFeedBlockData {
-        const bytes = Converter.hexToBytes(serializedBlock);
-        const blockId = Converter.bytesToHex(Blake2b.sum256(bytes), true);
+    private buildFeedBlockData(block: Block): IFeedBlockData {
+        const blockId = Utils.blockId(block);
 
         let value;
         let transactionId;
         let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
-        let block: Block | null = null;
 
         try {
-            block = deserializeBlock(new ReadStream(bytes));
             if (block.payload?.getType() === PayloadType.Transaction) {
-                transactionId = Converter.bytesToHex(
-                    TransactionHelper.getTransactionPayloadHash(block.payload),
-                    true
-                );
+                const transactionPayload = block.payload as TransactionPayload;
+                const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
+                transactionId = Utils.transactionId(transactionPayload);
                 properties.transactionId = transactionId;
                 payloadType = "Transaction";
                 value = 0;
 
-                for (const output of block.payload.essence.outputs) {
-                    if (output.type === BASIC_OUTPUT_TYPE) {
-                        value += Number(output.amount);
+                for (const output of transactionEssence.outputs) {
+                    if (output.getType() === OutputType.Basic) {
+                        const basicOutput = output as BasicOutput;
+                        value += Number(basicOutput.getAmount());
                     }
                 }
 
-                if (block.payload.essence.payload) {
-                    properties.tag = block.payload.essence.payload.tag;
+                if (transactionEssence.payload?.getType() === PayloadType.TaggedData) {
+                    properties.tag = (transactionEssence.payload as TaggedDataPayload).tag;
                 }
-            } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+            } else if (block.payload?.getType() === PayloadType.Milestone) {
+                const milestonePayload = block.payload as MilestonePayload;
                 payloadType = "Milestone";
-                properties.index = block.payload.index;
-                properties.timestamp = block.payload.timestamp;
-                properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
-            } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
+                properties.index = milestonePayload.index;
+                properties.timestamp = milestonePayload.timestamp;
+                properties.milestoneId = Utils.milestoneId(milestonePayload);
+            } else if (block.payload?.getType() === PayloadType.TaggedData) {
+                const taggedDataPayload = block.payload as TaggedDataPayload;
                 payloadType = "TaggedData";
-                properties.tag = block.payload.tag;
+                properties.tag = taggedDataPayload.tag;
             }
         } catch (err) {
             console.error(err);

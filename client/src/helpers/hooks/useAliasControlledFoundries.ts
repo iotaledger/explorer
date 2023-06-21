@@ -1,4 +1,4 @@
-import { OutputType, HexEncodedString, TransactionHelper, FoundryOutput } from "@iota/iota.js-stardust";
+import { OutputType, HexEncodedString, FoundryOutput, Utils } from "@iota/iota.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
@@ -63,7 +63,7 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
                     const output = details.output as FoundryOutput;
                     const serialNumber = output.getSerialNumber();
                     const tokenSchemeType = output.getTokenScheme().getType();
-                    const tokenId = TransactionHelper.constructTokenId(
+                    const tokenId = Utils.computeTokenId(
                         aliasAddress.hex,
                         serialNumber,
                         tokenSchemeType

@@ -170,7 +170,7 @@ function initStardustServices(networkConfig: INetwork): void {
 
     ServiceFactory.register(
         `mqtt-${networkConfig.network}`,
-        () => new StardustMqttClient({ nodes: [networkConfig.feedEndpoint] })
+        () => new StardustMqttClient({ nodes: [networkConfig.feedEndpoint], brokerOptions: { useWs: true } })
     );
 
     ServiceFactory.register(

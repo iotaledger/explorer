@@ -1,4 +1,4 @@
-import { Block, Client, IBlockMetadata, MilestonePayload, Utils } from "@iota/iota.js-stardust";
+import { Block, Client, IBlockMetadata, MilestonePayload, parsePayload, Utils } from "@iota/iota.js-stardust";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
@@ -126,6 +126,7 @@ export class StardustFeed {
      * Connects the callbacks for upstream data.
      */
     private connect() {
+        logger.info("[StardustFeed] Connecting upstream feed!");
         // eslint-disable-next-line no-void
         void this._mqttClient.listen(["blocks"], (_, result) => {
             try {
@@ -178,7 +179,9 @@ export class StardustFeed {
 
         // eslint-disable-next-line no-void
         void this._mqttClient.listen(["milestones"], (_, result) => {
-            const milestonePayload: MilestonePayload = JSON.parse(result);
+            const parsedResult: { topic: string; payload: string } = JSON.parse(result);
+            const milestonePayload: MilestonePayload = parsePayload(JSON.stringify(parsedResult.payload)) as MilestonePayload;
+
             try {
                 const milestoneId = Utils.milestoneId(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
@@ -200,8 +203,8 @@ export class StardustFeed {
 
                 // eslint-disable-next-line no-void
                 void this.broadcastMilestone(update);
-            } catch (err) {
-                logger.error(`[FeedClient] Mqtt milestone callback failed: ${err}`);
+            } catch (err: unknown) {
+                logger.error(`[FeedClient] Mqtt milestone callback failed: ${JSON.stringify(err)}`);
             }
         });
     }

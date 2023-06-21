@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { TransactionHelper } from "@iota/iota.js-stardust";
+import { Utils } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { useContext, useState } from "react";
 import { useHistory, Link } from "react-router-dom";
@@ -77,13 +77,13 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                         </Link>
                     </div>
                     <div className="card--label"> Transaction Output Index</div>
-                    <div className="card--value">{input.transactionOutputIndex}</div>
+                    <div className="card--value">{input.transactionInputIndex}</div>
                 </React.Fragment>)}
         </React.Fragment>
     );
 
-    const outputId = TransactionHelper.outputIdFromTransactionData(
-        input.transactionId, input.transactionOutputIndex
+    const outputId = Utils.computeOutputId(
+        input.transactionId, input.transactionInputIndex
     );
 
     return input.output ?

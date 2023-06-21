@@ -1,4 +1,5 @@
-import { INodeInfoBaseToken, UnitsHelper } from "@iota/iota.js-stardust";
+import { UnitsHelper } from "@iota/iota.js";
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
 import React from "react";
 import Tooltip from "../../app/components/Tooltip";
 /**

@@ -1,7 +1,8 @@
-import { blockIdFromMilestonePayload, MilestonePayload } from "@iota/iota.js-stardust";
+import { MilestonePayload } from "@iota/iota.js-stardust";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useMilestoneDetails } from "../../../../helpers/hooks/useMilestoneDetails";
+import { TransactionsHelper } from "../../../../helpers/stardust/transactionsHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import "./MilestoneControls.scss";
 
@@ -20,10 +21,14 @@ const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {
 
     useEffect(() => {
         if (previousMsDetails?.milestone) {
-            setPreviousMsBlockId(blockIdFromMilestonePayload(protocolVersion, previousMsDetails.milestone));
+            setPreviousMsBlockId(
+                TransactionsHelper.blockIdFromMilestonePayload(protocolVersion, previousMsDetails.milestone)
+            );
         }
         if (nextMsDetails?.milestone) {
-            setNextMsBlockId(blockIdFromMilestonePayload(protocolVersion, nextMsDetails.milestone));
+            setNextMsBlockId(
+                TransactionsHelper.blockIdFromMilestonePayload(protocolVersion, nextMsDetails.milestone)
+            );
         }
     }, [nextMsDetails, previousMsDetails]);
 

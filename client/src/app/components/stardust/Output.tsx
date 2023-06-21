@@ -4,7 +4,7 @@ import {
     INodeInfoBaseToken, NftOutput, OutputType, SimpleTokenScheme,
     StorageDepositReturnUnlockCondition,
     TimelockUnlockCondition,
-    TokenSchemeType, UnlockCondition as IUnlockCondition, UnlockConditionType
+    TokenSchemeType, UnlockCondition as IUnlockCondition, UnlockConditionType, Utils
 } from "@iota/iota.js-stardust";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
@@ -306,11 +306,11 @@ class Output extends Component<OutputProps, OutputState> {
         let addressType: number = 0;
 
         if (output.getType() === OutputType.Alias) {
-            const aliasId = TransactionsHelper.buildIdHashForAliasOrNft((output as AliasOutput).getAliasId(), outputId);
+            const aliasId = TransactionsHelper.buildIdHashForNft((output as AliasOutput).getAliasId(), outputId);
             address = aliasId;
             addressType = AddressType.Alias;
         } else if (output.getType() === OutputType.Nft) {
-            const nftId = TransactionsHelper.buildIdHashForAliasOrNft((output as NftOutput).getNnftId(), outputId);
+            const nftId = TransactionsHelper.buildIdHashForAlias((output as NftOutput).getNftId(), outputId);
             address = nftId;
             addressType = AddressType.Nft;
         }
@@ -336,7 +336,7 @@ class Output extends Component<OutputProps, OutputState> {
             const serialNumber = (output as FoundryOutput).getSerialNumber();
             const tokenSchemeType = (output as FoundryOutput).getTokenScheme().getType();
 
-            return TransactionHelper.constructTokenId(
+            return Utils.computeTokenId(
                 aliasId,
                 serialNumber,
                 tokenSchemeType

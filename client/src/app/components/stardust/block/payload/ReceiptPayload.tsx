@@ -129,7 +129,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                         >
                             {
                                 formatAmount(
-                                    Number(this.props.payload.transaction.output.amount),
+                                    Number(this.props.payload.transaction.output.getAmount()),
                                     tokenInfo,
                                     this.state.formatFull
                                 )

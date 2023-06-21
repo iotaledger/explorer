@@ -1,13 +1,4 @@
-import {
-    ALIAS_OUTPUT_TYPE, ALIAS_UNLOCK_TYPE, BASIC_OUTPUT_TYPE, FOUNDRY_OUTPUT_TYPE, NFT_OUTPUT_TYPE,
-    NFT_UNLOCK_TYPE, REFERENCE_UNLOCK_TYPE, SIGNATURE_UNLOCK_TYPE, TREASURY_INPUT_TYPE,
-    TREASURY_OUTPUT_TYPE, UTXO_INPUT_TYPE, ADDRESS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE,
-    TIMELOCK_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE,
-    GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE, IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, SENDER_FEATURE_TYPE,
-    ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, TAG_FEATURE_TYPE,
-    ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE,
-    IBlock, TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE
-} from "@iota/iota.js-stardust";
+import { AddressType, Block, FeatureType, InputType, OutputType, PayloadType, UnlockConditionType, UnlockType } from "@iota/iota.js-stardust";
 
 export class NameHelper {
     /**
@@ -16,9 +7,9 @@ export class NameHelper {
      * @returns The input type name.
      */
     public static getInputTypeName(type: number): string {
-        if (type === UTXO_INPUT_TYPE) {
+        if (type === InputType.UTXO) {
             return "UTXO Input";
-        } else if (type === TREASURY_INPUT_TYPE) {
+        } else if (type === InputType.Treasury) {
             return "Treasury Input";
         }
         return "Unknown Input";
@@ -31,15 +22,15 @@ export class NameHelper {
      */
     public static getOutputTypeName(type: number): string {
         switch (type) {
-            case BASIC_OUTPUT_TYPE:
+            case OutputType.Basic:
                 return "Basic";
-            case ALIAS_OUTPUT_TYPE:
+            case OutputType.Alias:
                 return "Alias";
-            case FOUNDRY_OUTPUT_TYPE:
+            case OutputType.Foundry:
                 return "Foundry";
-            case NFT_OUTPUT_TYPE:
+            case OutputType.Nft:
                 return "NFT";
-            case TREASURY_OUTPUT_TYPE:
+            case OutputType.Treasury:
                 return "Treasury";
             default:
                 return "Unknown";
@@ -53,13 +44,13 @@ export class NameHelper {
      */
     public static getUnlockTypeName(type: number): string {
         switch (type) {
-            case ALIAS_UNLOCK_TYPE:
+            case UnlockType.Alias:
                 return "Alias Unlock";
-            case NFT_UNLOCK_TYPE:
+            case UnlockType.Nft:
                 return "NFT Unlock";
-            case SIGNATURE_UNLOCK_TYPE:
+            case UnlockType.Signature:
                 return "Signature Unlock";
-            case REFERENCE_UNLOCK_TYPE:
+            case UnlockType.Reference:
                 return "Reference Unlock";
             default:
                 return "Unknown Unlock";
@@ -72,19 +63,19 @@ export class NameHelper {
      * @returns The unlock condition type name.
      */
     public static getUnlockConditionTypeName(type: number): string {
-        if (type === ADDRESS_UNLOCK_CONDITION_TYPE) {
+        if (type === UnlockConditionType.Address) {
             return "Address Unlock Condition";
-        } else if (type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE) {
+        } else if (type === UnlockConditionType.StorageDepositReturn) {
             return "Storage Deposit Return Unlock Condition";
-        } else if (type === TIMELOCK_UNLOCK_CONDITION_TYPE) {
+        } else if (type === UnlockConditionType.Timelock) {
             return "Timelock Unlock Condition";
-        } else if (type === EXPIRATION_UNLOCK_CONDITION_TYPE) {
+        } else if (type === UnlockConditionType.Expiration) {
             return "Expiration Unlock Condition";
-        } else if (type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE) {
+        } else if (type === UnlockConditionType.StateControllerAddress) {
             return "State Controller Address Unlock Condition";
-        } else if (type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE) {
+        } else if (type === UnlockConditionType.GovernorAddress) {
             return "Governor Unlock Condition";
-        } else if (type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE) {
+        } else if (type === UnlockConditionType.ImmutableAliasAddress) {
             return "Immutable Alias Unlock Condition";
         }
         return "Unknown Unlock Condition";
@@ -98,13 +89,13 @@ export class NameHelper {
      */
     public static getFeatureTypeName(type: number, isImmutable: boolean): string {
         let name: string = "";
-        if (type === SENDER_FEATURE_TYPE) {
+        if (type === FeatureType.Sender) {
             name = "Sender";
-        } else if (type === ISSUER_FEATURE_TYPE) {
+        } else if (type === FeatureType.Issuer) {
             name = "Issuer";
-        } else if (type === METADATA_FEATURE_TYPE) {
+        } else if (type === FeatureType.Metadata) {
             name = "Metadata";
-        } else if (type === TAG_FEATURE_TYPE) {
+        } else if (type === FeatureType.Tag) {
             name = "Tag";
         }
 
@@ -120,11 +111,11 @@ export class NameHelper {
      * @returns The address type name.
      */
     public static getAddressTypeName(type: number): string {
-        if (type === ED25519_ADDRESS_TYPE) {
+        if (type === AddressType.Ed25519) {
             return "Ed25519 address";
-        } else if (type === ALIAS_ADDRESS_TYPE) {
+        } else if (type === AddressType.Alias) {
             return "Alias address";
-        } else if (type === NFT_ADDRESS_TYPE) {
+        } else if (type === AddressType.Nft) {
             return "NFT address";
         }
         return "Unknown Address Type";
@@ -135,22 +126,25 @@ export class NameHelper {
      * @param block The block data.
      * @returns The payload type string.
      */
-    public static getPayloadType(block: IBlock | undefined): string {
+    public static getPayloadType(block: Block | undefined): string {
         let payloadType = "-";
 
         if (!block) {
             return payloadType;
         }
 
-        switch (block.payload?.type) {
-            case TAGGED_DATA_PAYLOAD_TYPE:
+        switch (block.payload?.getType()) {
+            case PayloadType.TaggedData:
                 payloadType = "Data";
                 break;
-            case TRANSACTION_PAYLOAD_TYPE:
+            case PayloadType.Transaction:
                 payloadType = "Transaction";
                 break;
-            case MILESTONE_PAYLOAD_TYPE:
+            case PayloadType.Milestone:
                 payloadType = "Milestone";
+                break;
+            case PayloadType.TreasuryTransaction:
+                payloadType = "Treasury Transaction";
                 break;
             default:
                 payloadType = "No payload";

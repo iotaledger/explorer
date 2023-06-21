@@ -29,7 +29,6 @@ import BlockPayloadSection from "../../components/stardust/block/section/BlockPa
 import ReferencedBlocksSection from "../../components/stardust/block/section/referenced-blocks/ReferencedBlocksSection";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
-import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
 import { BlockProps } from "./BlockProps";
 import "./Block.scss";
 
@@ -50,7 +49,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     useEffect(() => {
         if (block?.payload?.getType() === PayloadType.Transaction) {
-            const tsxId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
+            const tsxId = Utils.transactionId(
                 block.payload as TransactionPayload
             );
             setTransactionId(tsxId);

@@ -1,4 +1,4 @@
-import { UnlockTypes } from "@iota/iota.js-stardust";
+import { Unlock } from "@iota/iota.js-stardust";
 import { IInput } from "../../../../../models/api/stardust/IInput";
 import { IOutput } from "../../../../../models/api/stardust/IOutput";
 
@@ -16,7 +16,7 @@ export interface TransactionPayloadProps {
     /**
      * The unlocks of the transaction.
      */
-    unlocks: UnlockTypes[];
+    unlocks: Unlock[];
 
     /**
      * The outputs.

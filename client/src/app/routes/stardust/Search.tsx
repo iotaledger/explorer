@@ -1,4 +1,4 @@
-import { AddressType, TransactionHelper } from "@iota/iota.js-stardust";
+import { AddressType, Utils } from "@iota/iota.js-stardust";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -237,7 +237,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     };
                                 } else if (response.output) {
                                     route = "output";
-                                    const outputId = TransactionHelper.outputIdFromTransactionData(
+                                    const outputId = Utils.computeOutputId(
                                         response.output.metadata.transactionId,
                                         response.output.metadata.outputIndex
                                     );

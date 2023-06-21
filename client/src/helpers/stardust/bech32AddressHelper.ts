@@ -1,4 +1,5 @@
-import { Address, AddressType, Bech32Helper } from "@iota/iota.js-stardust";
+import { Bech32Helper } from "@iota/iota.js";
+import { Address, AddressType, AliasAddress, Ed25519Address, NftAddress } from "@iota/iota.js-stardust";
 import { Converter, HexHelper } from "@iota/util.js-stardust";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 
@@ -10,7 +11,7 @@ export class Bech32AddressHelper {
      * @param typeHint The type of the address.
      * @returns The parts of the address.
      */
-    public static buildAddress(hrp: string, address: string | AddressType, typeHint?: number): IBech32AddressDetails {
+    public static buildAddress(hrp: string, address: string | Address, typeHint?: number): IBech32AddressDetails {
         return typeof address === "string"
             ? this.buildAddressFromString(hrp, address, typeHint)
             : this.buildAddressFromTypes(hrp, address);
@@ -53,15 +54,15 @@ export class Bech32AddressHelper {
 
         if (address.getType() === AddressType.Ed25519) {
             hex = HexHelper.stripPrefix(
-                address.pubKeyHash
+                (address as Ed25519Address).getPubKeyHash()
             );
         } else if (address.getType() === AddressType.Alias) {
             hex = HexHelper.stripPrefix(
-                address.aliasId
+                (address as AliasAddress).getAliasId()
             );
         } else if (address.getType() === AddressType.Nft) {
             hex = HexHelper.stripPrefix(
-                address.nftId
+                (address as NftAddress).getNftId()
             );
         }
 
