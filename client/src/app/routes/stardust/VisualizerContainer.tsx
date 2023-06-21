@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { VisualizerForceGraph } from "../../../visualizerpoc/force-graph/VisualizerForceGraph";
+import { VisualizerReagraph } from "../../../visualizerpoc/reagraph/VisualizerReagraph";
 import { VisualizerVivagraph } from "../../../visualizerpoc/vivagraph-layout/VisualizerVivagraph";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerDefault } from "./VisualizerDefault";
@@ -8,11 +9,12 @@ import { VisualizerDefault } from "./VisualizerDefault";
 enum Views {
     "default" = "default",
     "vivagraphlayout" = "vivagraphlayout",
-    "forcegraph" = "forcegraph"
+    "forcegraph" = "forcegraph",
+    "reagraph" = "reagraph",
 }
 
 export const VisualizerContainer: React.FC<RouteComponentProps<VisualizerRouteProps>> = props => {
-    const [currentView] = useState(Views.vivagraphlayout);
+    const [currentView] = useState(Views.reagraph);
 
     if (currentView === Views.default) {
         return <VisualizerDefault {...props} />;
@@ -22,6 +24,9 @@ export const VisualizerContainer: React.FC<RouteComponentProps<VisualizerRoutePr
     }
     if (currentView === Views.forcegraph) {
         return <VisualizerForceGraph {...props} />;
+    }
+    if (currentView === Views.reagraph) {
+        return <VisualizerReagraph {...props} />;
     }
 
     return null;
