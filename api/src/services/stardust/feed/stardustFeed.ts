@@ -180,7 +180,9 @@ export class StardustFeed {
         // eslint-disable-next-line no-void
         void this._mqttClient.listen(["milestones"], (_, result) => {
             const parsedResult: { topic: string; payload: string } = JSON.parse(result);
-            const milestonePayload: MilestonePayload = parsePayload(JSON.stringify(parsedResult.payload)) as MilestonePayload;
+            logger.info(parsedResult);
+            const milestonePayload: MilestonePayload = parsePayload(JSON.parse(parsedResult.payload)) as MilestonePayload;
+            // const milestonePayload = parsedResult.payload;
 
             try {
                 const milestoneId = Utils.milestoneId(milestonePayload);
