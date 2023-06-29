@@ -83,8 +83,8 @@ export function useVisualizerViva(
 
     function setupGraph() {
         if (graphElement.current && !graph.current) {
-            const centerX = 5;
-            const centerY = 20;
+            // const centerX = 5;
+            // const centerY = 20;
             graph.current = Viva.Graph.graph<INodeData, unknown>();
             graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
 
@@ -95,7 +95,7 @@ export function useVisualizerViva(
             graphics.current.node(node => calculateNodeStyle(
                 node, testForHighlight(highlightNodesRegEx(), node.id, node.data)));
 
-            graphics.current.graphCenterChanged(centerX, centerY);
+            // graphics.current.graphCenterChanged(centerX, centerY);
 
             // graphics.current.link(() => Viva.Graph.View.webglLine(
             //     darkMode ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT

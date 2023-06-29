@@ -58,7 +58,7 @@ export const THRESHOLD_PX = 30;
  * @param startTime - timestamp for correct work.
  * @param numberOfNodes
  */
-const placeNodeCallback = (numberOfNodes: number) => {
+export const placeNodeCallback = (numberOfNodes: number) => {
     const y = generateY();
     return { x: numberOfNodes * THRESHOLD_PX, y };
 };
