@@ -72,6 +72,14 @@ export function useVisualizerViva(
         styleConnections();
     }, [darkMode]);
 
+    // useEffect(() => {
+    //     if (renderer.current) {
+    //         setTimeout(() => {
+    //             renderer.current?.pause();
+    //         }, 100);
+    //     }
+    // }, [renderer.current]);
+
 
     function setupGraph() {
         if (graphElement.current && !graph.current) {
@@ -179,7 +187,7 @@ export function useVisualizerViva(
 
                         renderer.current?.moveTo(numberOfNodes * THRESHOLD_PX, 0);
                         const gr = renderer.current;
-                        console.log("--- rg", gr);
+                        // console.log("--- rg", gr);
                         if (newBlock.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < newBlock.parents.length; i++) {
@@ -536,3 +544,4 @@ export function useVisualizerViva(
         lastClick: lastClick.current
     };
 }
+
