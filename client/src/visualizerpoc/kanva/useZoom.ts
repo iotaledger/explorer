@@ -1,5 +1,8 @@
 import Konva from "konva";
 
+const SCALE_MIN = 0.8;
+const SCALE_MAX = 0.05;
+
 export const useZoom = () => {
     const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
@@ -19,6 +22,10 @@ export const useZoom = () => {
                 };
 
                 const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+                if (newScale < SCALE_MAX || newScale > SCALE_MIN) {
+                    return;
+                }
 
                 stage.scale({ x: newScale, y: newScale });
 

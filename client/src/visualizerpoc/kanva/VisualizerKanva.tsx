@@ -35,6 +35,9 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
     const layerRef = useRef<Konva.Layer>(null);
     const stageRef = useRef<Konva.Stage>(null);
     const lastNodePositionRef = useRef<number>(0);
+    // Store a map of node IDs to Konva nodes
+    const nodeMap = useRef<Map<string, Konva.Circle>>(new Map());
+
     const { handleWheel } = useZoom();
     const {
         handleMouseMove,
@@ -55,8 +58,8 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
                 removeFirstNodeFromLayer(layerRef.current);
             }
 
-            // add node
-            const circle = new Konva.Circle({
+            // add newNode
+            const newNode = new Konva.Circle({
                 x,
                 y,
                 radius: 30,
@@ -64,14 +67,35 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
                 id: block.blockId
             });
 
-            circle.on("click", () => {
+            // Store the Konva node in the nodeMap
+            nodeMap.current.set(block.blockId, {
+                x,
+                y
+            });
+
+            for (const parent of block.parents) {
+                const parentKonvaNode = nodeMap.current.get(parent);
+                if (parentKonvaNode) {
+                    const line = new Konva.Line({
+                        points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
+                        stroke: "gray",
+                        strokeWidth: 2,
+                        lineCap: "round",
+                        lineJoin: "round"
+                    });
+                    layerRef.current.add(line).moveToBottom();
+                }
+            }
+
+            newNode.on("click", () => {
                 console.log("click");
             });
-            layerRef.current.add(circle);
+            layerRef.current.add(newNode).moveToTop();
 
-            shiftGraphRight();
+            // Shift graph every new node
+            // shiftGraphRight();
 
-            // now we need to to refresh the layer manually
+            // now we need to refresh the layer manually
             layerRef.current.batchDraw();
         }
     };
