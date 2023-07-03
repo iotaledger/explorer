@@ -4,9 +4,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Circle, Line } from "react-konva";
 import { RouteComponentProps } from "react-router-dom";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
+import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { useUpdateListener } from "../common/useUpdateListener";
 import { placeNodeCallback } from "../vivagraph-layout/layout";
+import { LIMIT_NODES } from "./constants";
 import { useDrag } from "./useDrag";
+import { useStoreIds } from "./useStoreIds";
 import { useZoom } from "./useZoom";
 
 interface ParentNode {
@@ -31,18 +34,21 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
 }) => {
     const layerRef = useRef<Konva.Layer>(null);
     const stageRef = useRef<Konva.Stage>(null);
-    const numberOfNodesRef = useRef<number>(0);
+    const lastNodePositionRef = useRef<number>(0);
     const { handleWheel } = useZoom();
     const { handleMouseMove, handleMouseUp, handleMouseDown } = useDrag();
+    const { removeFirstNodeFromLayer, storeAddBlock, getNumberOfNodes } = useStoreIds();
 
 
-    const onNewBlock = (block: any) => {
+    const onNewBlock = (block: IFeedBlockData) => {
         if (layerRef.current) {
-            const { x, y } = placeNodeCallback(numberOfNodesRef.current);
-            numberOfNodesRef.current += 1;
+            const { x, y } = placeNodeCallback(lastNodePositionRef.current);
 
-            if (numberOfNodesRef.current > 2500) {
-                return;
+            lastNodePositionRef.current += 1;
+            storeAddBlock(block.blockId);
+
+            if (getNumberOfNodes() > LIMIT_NODES) {
+                removeFirstNodeFromLayer(layerRef.current);
             }
 
             // add node
