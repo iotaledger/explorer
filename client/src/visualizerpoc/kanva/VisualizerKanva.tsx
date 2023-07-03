@@ -37,6 +37,7 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
     const lastNodePositionRef = useRef<number>(0);
     // Store a map of node IDs to Konva nodes
     const nodeMap = useRef<Map<string, Konva.Circle>>(new Map());
+    const parentNodesList = useRef<string[]>([]);
 
     const { handleWheel } = useZoom();
     const {
@@ -68,10 +69,17 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
             });
 
             // Store the Konva node in the nodeMap
+            parentNodesList.current.push(block.blockId);
             nodeMap.current.set(block.blockId, {
                 x,
                 y
             });
+
+            if (parentNodesList.current.length > 200) {
+                const firstParent = parentNodesList.current.shift();
+                nodeMap.current.delete(firstParent);
+                console.log(nodeMap.current.size);
+            }
 
             for (const parent of block.parents) {
                 const parentKonvaNode = nodeMap.current.get(parent);
@@ -83,14 +91,14 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
                         lineCap: "round",
                         lineJoin: "round"
                     });
-                    layerRef.current.add(line).moveToBottom();
+                    layerRef.current.add(line);
                 }
             }
 
             newNode.on("click", () => {
                 console.log("click");
             });
-            layerRef.current.add(newNode).moveToTop();
+            layerRef.current.add(newNode);
 
             // Shift graph every new node
             // shiftGraphRight();
