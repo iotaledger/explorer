@@ -37,6 +37,7 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
     const lastNodePositionRef = useRef<number>(0);
     // Store a map of node IDs to Konva nodes
     const nodeMap = useRef<Map<string, Konva.Circle>>(new Map());
+    const linesMap = useRef<string[]>([]);
     const parentNodesList = useRef<string[]>([]);
 
     const { handleWheel } = useZoom();
@@ -56,7 +57,7 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
             storeAddBlock(block.blockId);
 
             if (getNumberOfNodes() > LIMIT_NODES) {
-                removeFirstNodeFromLayer(layerRef.current);
+                removeFirstNodeFromLayer(layerRef.current, linesMap);
             }
 
 
@@ -84,20 +85,23 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
                 // console.log(nodeMap.current.size);
             }
 
-            // for (const parent of block.parents) {
-            //     const parentKonvaNode = nodeMap.current.get(parent);
-            //     if (parentKonvaNode) {
-            //         const line = new Konva.Line({
-            //             points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
-            //             stroke: "gray",
-            //             strokeWidth: 2,
-            //             lineCap: "round",
-            //             lineJoin: "round"
-            //             // id:
-            //         });
-            //         layerRef.current.add(line);
-            //     }
-            // }
+            for (const parent of block.parents) {
+                const parentKonvaNode = nodeMap.current.get(parent);
+                if (parentKonvaNode) {
+                    const id = `${parentKonvaNode.id}-${block.blockId}`;
+
+                    const line = new Konva.Line({
+                        points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
+                        stroke: "gray",
+                        strokeWidth: 2,
+                        lineCap: "round",
+                        lineJoin: "round",
+                        id
+                    });
+                    linesMap.current.push(id);
+                    layerRef.current.add(line);
+                }
+            }
 
             newNode.on("click", () => {
                 console.log("click");

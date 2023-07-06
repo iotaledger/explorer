@@ -15,9 +15,20 @@ export const useStoreIds = () => {
         storedIdsRef.current.shift();
     };
 
-    const removeFirstNodeFromLayer = (layer: Konva.Layer) => {
+    const removeFirstNodeFromLayer = (layer: Konva.Layer, linesRef: React.RefObject<string[]>) => {
         const firstNodeId = getFirstNodeId();
         const nodeForRemove = layer.findOne(`#${firstNodeId}`);
+
+        if (linesRef.current) {
+            const linesForRemove = linesRef.current.filter(line => line.includes(`${firstNodeId}`));
+
+            for (const line of linesForRemove) {
+                const lineForRemove = layer.findOne(`#${line}`);
+                if (lineForRemove) {
+                    lineForRemove.remove();
+                }
+            }
+        }
 
         if (nodeForRemove) {
             nodeForRemove.remove();
