@@ -32,7 +32,7 @@ class Rect {
 
 const createCoordinateGenerator = (n: number) => {
     const currentX: number | null = null;
-    const listOfCoordinates = getYCoordinates(-1200, 1200, 36);
+    const listOfCoordinates = getYCoordinates(-800, 800, 36);
 
     let filledPositions = new Set<number>([]);
 
@@ -52,7 +52,7 @@ const createCoordinateGenerator = (n: number) => {
   };
 const generateY = createCoordinateGenerator(40);
 
-export const THRESHOLD_PX = 30;
+export const THRESHOLD_PX = 20;
 /**
  * Function for generation positions;
  * @param startTime - timestamp for correct work.

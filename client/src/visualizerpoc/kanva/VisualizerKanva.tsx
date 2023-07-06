@@ -59,12 +59,15 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
                 removeFirstNodeFromLayer(layerRef.current);
             }
 
+
+            const colors = ["#7575ed", "#4f4fed", "#4141f1", "#1010eb"];
+            const random = Math.floor(Math.random() * colors.length);
             // add newNode
             const newNode = new Konva.Circle({
                 x,
                 y,
-                radius: 30,
-                fill: "blue",
+                radius: 80,
+                fill: colors[random],
                 id: block.blockId
             });
 
@@ -78,22 +81,23 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
             if (parentNodesList.current.length > 200) {
                 const firstParent = parentNodesList.current.shift();
                 nodeMap.current.delete(firstParent);
-                console.log(nodeMap.current.size);
+                // console.log(nodeMap.current.size);
             }
 
-            for (const parent of block.parents) {
-                const parentKonvaNode = nodeMap.current.get(parent);
-                if (parentKonvaNode) {
-                    const line = new Konva.Line({
-                        points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
-                        stroke: "gray",
-                        strokeWidth: 2,
-                        lineCap: "round",
-                        lineJoin: "round"
-                    });
-                    layerRef.current.add(line);
-                }
-            }
+            // for (const parent of block.parents) {
+            //     const parentKonvaNode = nodeMap.current.get(parent);
+            //     if (parentKonvaNode) {
+            //         const line = new Konva.Line({
+            //             points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
+            //             stroke: "gray",
+            //             strokeWidth: 2,
+            //             lineCap: "round",
+            //             lineJoin: "round"
+            //             // id:
+            //         });
+            //         layerRef.current.add(line);
+            //     }
+            // }
 
             newNode.on("click", () => {
                 console.log("click");
@@ -101,7 +105,7 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
             layerRef.current.add(newNode);
 
             // Shift graph every new node
-            // shiftGraphRight();
+            shiftGraphRight();
 
             // now we need to refresh the layer manually
             layerRef.current.batchDraw();

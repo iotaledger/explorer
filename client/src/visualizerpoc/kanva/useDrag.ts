@@ -28,6 +28,7 @@ export const useDrag = (stageRef: RefObject<Konva.Stage>, layerRef: RefObject<Ko
 
         const newPos = stage.getPointerPosition();
 
+
         if (newPos && pos) {
             stage.position({
                 x: stage.x() + newPos.x - pos.x,
