@@ -4,7 +4,6 @@ import Konva from "konva";
 import React, { useState, useEffect, useRef } from "react";
 
 import { Stage, Layer, Circle, Line } from "react-konva";
-import { useResizeDetector } from "react-resize-detector";
 import { RouteComponentProps } from "react-router-dom";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
@@ -14,6 +13,7 @@ import { useUpdateListener } from "../common/useUpdateListener";
 import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
 import { LIMIT_NODES } from "./constants";
 import { useDrag } from "./useDrag";
+import { useInit } from "./useInit";
 import { useStoreIds } from "./useStoreIds";
 import { useZoom } from "./useZoom";
 
@@ -41,18 +41,25 @@ export const VisualizerKanva: React.FC<
         params: { network }
     }
 }) => {
-    const { width = 1, height = 1, ref: divWrapRef } = useResizeDetector();
-
-    const [networkConfig] = useNetworkConfig(network);
-
+    /**
+     * References
+     */
     const stageRef = useRef<Konva.Stage>(null);
     const nodesLayerRef = useRef<Konva.Layer>(null);
     const linesLayerRef = useRef<Konva.Layer>(null);
     const lastNodePositionRef = useRef<number>(0);
-    // Store a map of node IDs to Konva nodes
     const nodeMap = useRef<Map<string, Konva.Circle>>(new Map());
     const linesMap = useRef<string[]>([]);
     const parentNodesList = useRef<string[]>([]);
+
+    /**
+     * Custom hooks
+     */
+
+    const { divWrapRef, isInit, stageHeight, stageWidth } = useInit(stageRef);
+
+    console.log("--- isInit", isInit);
+    const [networkConfig] = useNetworkConfig(network);
 
     const { handleWheel } = useZoom();
     const { handleMouseMove, handleMouseUp, handleMouseDown, shiftGraphRight } =
@@ -160,18 +167,20 @@ export const VisualizerKanva: React.FC<
             toggleActivity={() => {}}
         >
             <div ref={divWrapRef} style={{ width: "100%", height: "100%" }}>
-                <Stage
-                    width={width}
-                    height={height}
-                    // onWheel={handleWheel}
-                    // draggable
-                    // onMouseDown={handleMouseDown}
-                    // onMouseUp={handleMouseUp}
-                    // onMouseMove={handleMouseMove}
-                    ref={stageRef}
-                >
-                    <Layer />
-                </Stage>
+                {stageWidth && stageHeight && (
+                    <Stage
+                        width={stageWidth}
+                        height={stageHeight}
+                        // onWheel={handleWheel}
+                        // draggable
+                        // onMouseDown={handleMouseDown}
+                        // onMouseUp={handleMouseUp}
+                        // onMouseMove={handleMouseMove}
+                        ref={stageRef}
+                    >
+                        <Layer ref={nodesLayerRef} />
+                    </Stage>
+                )}
             </div>
         </Wrapper>
     );
