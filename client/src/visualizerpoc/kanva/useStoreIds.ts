@@ -24,6 +24,7 @@ export const useStoreIds = () => {
 
             for (const line of linesForRemove) {
                 const lineForRemove = layer.findOne(`#${line}`);
+
                 if (lineForRemove) {
                     lineForRemove.remove();
                 }

@@ -88,12 +88,12 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
             for (const parent of block.parents) {
                 const parentKonvaNode = nodeMap.current.get(parent);
                 if (parentKonvaNode) {
-                    const id = `${parentKonvaNode.id}-${block.blockId}`;
+                    const id = `${parentKonvaNode.blockId}-${block.blockId}`;
 
                     const line = new Konva.Line({
                         points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
-                        stroke: "gray",
-                        strokeWidth: 2,
+                        stroke: "rgba(180,180,180,0.1)",
+                        strokeWidth: 5,
                         lineCap: "round",
                         lineJoin: "round",
                         id
@@ -106,7 +106,8 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
             newNode.on("click", () => {
                 console.log("click");
             });
-            layerRef.current.add(newNode);
+            const returnedFromLayer = layerRef.current.add(newNode);
+            console.log("--- returnedFromLayer", returnedFromLayer);
 
             // Shift graph every new node
             shiftGraphRight();
@@ -123,11 +124,11 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
         <Stage
             width={window.innerWidth - 50}
             height={window.innerHeight}
-            onWheel={handleWheel}
-            draggable
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
+            // onWheel={handleWheel}
+            // draggable
+            // onMouseDown={handleMouseDown}
+            // onMouseUp={handleMouseUp}
+            // onMouseMove={handleMouseMove}
             ref={stageRef}
         >
             <Layer ref={layerRef} />
