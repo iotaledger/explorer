@@ -4,6 +4,7 @@ import { VisualizerForceGraph } from "../../../visualizerpoc/force-graph/Visuali
 import { VisualizerKanva } from "../../../visualizerpoc/kanva/VisualizerKanva";
 import { VisualizerReagraph } from "../../../visualizerpoc/reagraph/VisualizerReagraph";
 import { VisualizerVivagraph } from "../../../visualizerpoc/vivagraph-layout/VisualizerVivagraph";
+import { VisualizerWebglD3 } from "../../../visualizerpoc/webgl-d3/VisualizerWebglD3";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerDefault } from "./VisualizerDefault";
 
@@ -13,10 +14,13 @@ enum Views {
     "forcegraph" = "forcegraph",
     "reagraph" = "reagraph",
     "kanva" = "kanva",
+    "webgld3" = "webgld3"
 }
 
-export const VisualizerContainer: React.FC<RouteComponentProps<VisualizerRouteProps>> = props => {
-    const [currentView] = useState(Views.kanva);
+export const VisualizerContainer: React.FC<
+    RouteComponentProps<VisualizerRouteProps>
+> = (props) => {
+    const [currentView] = useState(Views.webgld3);
 
     if (currentView === Views.default) {
         return <VisualizerDefault {...props} />;
@@ -32,6 +36,9 @@ export const VisualizerContainer: React.FC<RouteComponentProps<VisualizerRoutePr
     }
     if (currentView === Views.kanva) {
         return <VisualizerKanva {...props} />;
+    }
+    if (currentView === Views.webgld3) {
+        return <VisualizerWebglD3 {...props} />;
     }
 
     return null;
