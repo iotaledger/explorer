@@ -1,9 +1,14 @@
 // @ts-nocheck
+// import { default as useResizeObserver } from "@react-hook/resize-observer";
 import Konva from "konva";
 import React, { useState, useEffect, useRef } from "react";
+
 import { Stage, Layer, Circle, Line } from "react-konva";
+import { useResizeDetector } from "react-resize-detector";
 import { RouteComponentProps } from "react-router-dom";
+import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
+import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { useUpdateListener } from "../common/useUpdateListener";
 import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
@@ -29,11 +34,20 @@ interface GraphProps {
     nodes: Node[];
 }
 
-export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
-    match: { params: { network } }
+export const VisualizerKanva: React.FC<
+    RouteComponentProps<VisualizerRouteProps>
+> = ({
+    match: {
+        params: { network }
+    }
 }) => {
-    const layerRef = useRef<Konva.Layer>(null);
+    const { width = 1, height = 1, ref: divWrapRef } = useResizeDetector();
+
+    const [networkConfig] = useNetworkConfig(network);
+
     const stageRef = useRef<Konva.Stage>(null);
+    const nodesLayerRef = useRef<Konva.Layer>(null);
+    const linesLayerRef = useRef<Konva.Layer>(null);
     const lastNodePositionRef = useRef<number>(0);
     // Store a map of node IDs to Konva nodes
     const nodeMap = useRef<Map<string, Konva.Circle>>(new Map());
@@ -41,25 +55,21 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
     const parentNodesList = useRef<string[]>([]);
 
     const { handleWheel } = useZoom();
-    const {
-        handleMouseMove,
-        handleMouseUp,
-        handleMouseDown,
-        shiftGraphRight
-    } = useDrag(stageRef, layerRef, lastNodePositionRef);
-    const { removeFirstNodeFromLayer, storeAddBlock, getNumberOfNodes } = useStoreIds();
+    const { handleMouseMove, handleMouseUp, handleMouseDown, shiftGraphRight } =
+        useDrag(stageRef, nodesLayerRef, linesLayerRef, lastNodePositionRef);
+    const { removeFirstNodeFromLayer, storeAddBlock, getNumberOfNodes } =
+        useStoreIds();
 
     const onNewBlock = (block: IFeedBlockData) => {
-        if (layerRef.current) {
+        if (nodesLayerRef.current) {
             const { x, y } = placeNodeCallback(lastNodePositionRef.current);
 
             lastNodePositionRef.current += 1;
             storeAddBlock(block.blockId);
 
             if (getNumberOfNodes() > LIMIT_NODES) {
-                removeFirstNodeFromLayer(layerRef.current, linesMap);
+                removeFirstNodeFromLayer(nodesLayerRef.current, linesMap);
             }
-
 
             const colors = ["#7575ed", "#4f4fed", "#4141f1", "#1010eb"];
             const random = Math.floor(Math.random() * colors.length);
@@ -99,40 +109,71 @@ export const VisualizerKanva: React.FC<RouteComponentProps<VisualizerRouteProps>
                         id
                     });
                     linesMap.current.push(id);
-                    layerRef.current.add(line);
+                    // linesLayerRef.current.add(line); // add lines to layer
                 }
             }
 
             newNode.on("click", () => {
                 console.log("click");
             });
-            const returnedFromLayer = layerRef.current.add(newNode);
-            console.log("--- returnedFromLayer", returnedFromLayer);
+
+            // add new node
+            nodesLayerRef.current.add(newNode);
 
             // Shift graph every new node
             shiftGraphRight();
 
             // now we need to refresh the layer manually
-            layerRef.current.batchDraw();
+            nodesLayerRef.current.batchDraw();
+            // linesLayerRef.current.batchDraw();
         }
     };
 
     const { nodes } = useUpdateListener(network, onNewBlock);
 
+    useEffect(() => {
+        if (stageRef.current) {
+            const stage = stageRef.current;
+
+            // Create a layer for the lines
+            // linesLayerRef.current = new Konva.Layer();
+            // stage.add(linesLayerRef.current);
+
+            // Create a layer for the nodes
+            nodesLayerRef.current = new Konva.Layer();
+            stage.add(nodesLayerRef.current);
+
+            console.log("--- nodesLayerRef.current", nodesLayerRef.current);
+        }
+    }, []);
 
     return (
-        <Stage
-            width={window.innerWidth - 50}
-            height={window.innerHeight}
-            // onWheel={handleWheel}
-            // draggable
-            // onMouseDown={handleMouseDown}
-            // onMouseUp={handleMouseUp}
-            // onMouseMove={handleMouseMove}
-            ref={stageRef}
+        <Wrapper
+            blocksCount={0}
+            filter=""
+            isActive={false}
+            network={network}
+            networkConfig={networkConfig}
+            onChangeFilter={() => {}}
+            selectNode={() => {}}
+            selectedFeedItem={null}
+            toggleActivity={() => {}}
         >
-            <Layer ref={layerRef} />
-        </Stage>
+            <div ref={divWrapRef} style={{ width: "100%", height: "100%" }}>
+                <Stage
+                    width={width}
+                    height={height}
+                    // onWheel={handleWheel}
+                    // draggable
+                    // onMouseDown={handleMouseDown}
+                    // onMouseUp={handleMouseUp}
+                    // onMouseMove={handleMouseMove}
+                    ref={stageRef}
+                >
+                    <Layer />
+                </Stage>
+            </div>
+        </Wrapper>
     );
 };
 

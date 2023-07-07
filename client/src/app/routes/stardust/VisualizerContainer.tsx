@@ -20,7 +20,7 @@ enum Views {
 export const VisualizerContainer: React.FC<
     RouteComponentProps<VisualizerRouteProps>
 > = (props) => {
-    const [currentView] = useState(Views.webgld3);
+    const [currentView] = useState(Views.kanva);
 
     if (currentView === Views.default) {
         return <VisualizerDefault {...props} />;
