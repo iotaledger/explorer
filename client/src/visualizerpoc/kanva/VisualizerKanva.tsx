@@ -138,22 +138,6 @@ export const VisualizerKanva: React.FC<
 
     const { nodes } = useUpdateListener(network, onNewBlock);
 
-    useEffect(() => {
-        if (stageRef.current) {
-            const stage = stageRef.current;
-
-            // Create a layer for the lines
-            // linesLayerRef.current = new Konva.Layer();
-            // stage.add(linesLayerRef.current);
-
-            // Create a layer for the nodes
-            nodesLayerRef.current = new Konva.Layer();
-            stage.add(nodesLayerRef.current);
-
-            console.log("--- nodesLayerRef.current", nodesLayerRef.current);
-        }
-    }, []);
-
     return (
         <Wrapper
             blocksCount={0}
@@ -166,21 +150,20 @@ export const VisualizerKanva: React.FC<
             selectedFeedItem={null}
             toggleActivity={() => {}}
         >
-            <div ref={divWrapRef} style={{ width: "100%", height: "100%" }}>
-                {stageWidth && stageHeight && (
-                    <Stage
-                        width={stageWidth}
-                        height={stageHeight}
-                        // onWheel={handleWheel}
-                        // draggable
-                        // onMouseDown={handleMouseDown}
-                        // onMouseUp={handleMouseUp}
-                        // onMouseMove={handleMouseMove}
-                        ref={stageRef}
-                    >
-                        <Layer ref={nodesLayerRef} />
-                    </Stage>
-                )}
+            <div
+                ref={divWrapRef}
+                style={{ width: "100%", height: "100%", minHeight: 600 }}
+            >
+                <Stage
+                    // onWheel={handleWheel}
+                    // draggable
+                    // onMouseDown={handleMouseDown}
+                    // onMouseUp={handleMouseUp}
+                    // onMouseMove={handleMouseMove}
+                    ref={stageRef}
+                >
+                    <Layer ref={nodesLayerRef} />
+                </Stage>
             </div>
         </Wrapper>
     );

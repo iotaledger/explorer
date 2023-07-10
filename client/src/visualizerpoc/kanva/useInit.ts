@@ -2,7 +2,10 @@ import Konva from "konva";
 import { RefObject, useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
-export const useInit = (stageRef: RefObject<Konva.Stage>) => {
+export const useInit = (
+    stageRef: RefObject<Konva.Stage>,
+    nodesLayerRef: RefObject<Konva.Layer>
+) => {
     const [isInit, setIsInit] = useState(false);
     const { width, height, ref: divWrapRef } = useResizeDetector();
 
@@ -12,7 +15,6 @@ export const useInit = (stageRef: RefObject<Konva.Stage>) => {
         }
         // Set the initial position of the stage
         const viewportHeight = stageRef.current.height(); // The height of the viewport
-        console.log("--- viewportHeight", viewportHeight);
         const nodeRangeCenter = -800; // The center of the Y range of the nodes (0 + 800) / 2
         return (viewportHeight - nodeRangeCenter) / 2 + nodeRangeCenter / 2;
     };
@@ -30,6 +32,8 @@ export const useInit = (stageRef: RefObject<Konva.Stage>) => {
     // check if the stage is ready
     useEffect(() => {
         if (stageRef.current && width && height) {
+            stageRef.current.width(width);
+            stageRef.current.height(height);
             setIsInit(true);
         }
     }, [width, height, stageRef]);
@@ -38,6 +42,9 @@ export const useInit = (stageRef: RefObject<Konva.Stage>) => {
      * Set initial position
      */
     useEffect(() => {
+        if (!isInit) {
+            return;
+        }
         if (stageRef.current) {
             // Set the initial scale of the stage
             stageRef.current.scale({ x: 0.25, y: 0.25 }); // Set the scale as needed
@@ -48,6 +55,25 @@ export const useInit = (stageRef: RefObject<Konva.Stage>) => {
             stageRef.current.position({ x: initialX, y: initialY });
         }
     }, [isInit]);
+
+    // useEffect(() => {
+    //     if (!nodesLayerRef?.current || !stageRef?.current) {
+    //         return;
+    //     }
+    //     const stage = stageRef.current;
+    //     let nodesLayer = nodesLayerRef.current;
+    //
+    //     // Create a layer for the lines
+    //     // linesLayerRef.current = new Konva.Layer();
+    //     // stage.add(linesLayerRef.current);
+    //
+    //     // Create a layer for the nodes
+    //
+    //     nodesLayer = new Konva.Layer();
+    //     stage.add(nodesLayerRef.current);
+    //
+    //     console.log("--- nodesLayerRef.current", nodesLayerRef.current);
+    // }, []);
 
     return { isInit, divWrapRef, stageWidth: width, stageHeight: height };
 };
