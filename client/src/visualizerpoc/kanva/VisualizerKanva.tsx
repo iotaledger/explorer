@@ -48,7 +48,9 @@ export const VisualizerKanva: React.FC<
     const nodesLayerRef = useRef<Konva.Layer>(null);
     const linesLayerRef = useRef<Konva.Layer>(null);
     const lastNodePositionRef = useRef<number>(0);
-    const nodeMap = useRef<Map<string, Konva.Circle>>(new Map());
+    const nodeMap = useRef<Map<string, Konva.Circle & { size: number }>>(
+        new Map()
+    );
     const linesMap = useRef<string[]>([]);
     const parentNodesList = useRef<string[]>([]);
 
@@ -80,11 +82,14 @@ export const VisualizerKanva: React.FC<
 
             const colors = ["#7575ed", "#4f4fed", "#4141f1", "#1010eb"];
             const random = Math.floor(Math.random() * colors.length);
+
+            const DEFAULT_SIZE = 80;
+
             // add newNode
             const newNode = new Konva.Circle({
                 x,
                 y,
-                radius: 80,
+                radius: DEFAULT_SIZE,
                 fill: colors[random],
                 id: block.blockId
             });
@@ -93,7 +98,8 @@ export const VisualizerKanva: React.FC<
             parentNodesList.current.push(block.blockId);
             nodeMap.current.set(block.blockId, {
                 x,
-                y
+                y,
+                size: DEFAULT_SIZE
             });
 
             if (parentNodesList.current.length > 200) {
@@ -105,23 +111,38 @@ export const VisualizerKanva: React.FC<
             for (const parent of block.parents) {
                 const parentKonvaNode = nodeMap.current.get(parent);
                 if (parentKonvaNode) {
-                    const id = `${parentKonvaNode.blockId}-${block.blockId}`;
+                    const newRadius = parentKonvaNode.size + 10;
 
-                    const line = new Konva.Line({
-                        points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
-                        stroke: "rgba(180,180,180,0.1)",
-                        strokeWidth: 5,
-                        lineCap: "round",
-                        lineJoin: "round",
-                        id
+                    nodeMap.current.set(parent, {
+                        ...parentKonvaNode,
+                        size: newRadius
                     });
-                    linesMap.current.push(id);
-                    // linesLayerRef.current.add(line); // add lines to layer
+
+                    const parentNodeOnLayer = nodesLayerRef.current.findOne(
+                        `#${parent}`
+                    );
+                    if (parentNodeOnLayer) {
+                        parentNodeOnLayer.radius(newRadius); // Adjust the base radius and the multiplier as needed
+                        parentNodeOnLayer.draw(); // Redraw the node
+                    }
+                    // nodesLayerRef.current
+                    //         const id = `${parentKonvaNode.blockId}-${block.blockId}`;
+                    //
+                    //         const line = new Konva.Line({
+                    //             points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
+                    //             stroke: "rgba(180,180,180,0.1)",
+                    //             strokeWidth: 5,
+                    //             lineCap: "round",
+                    //             lineJoin: "round",
+                    //             id
+                    //         });
+                    //         linesMap.current.push(id);
+                    //         // linesLayerRef.current.add(line); // add lines to layer
                 }
             }
 
-            newNode.on("click", () => {
-                console.log("click");
+            newNode.on("click", (e) => {
+                console.log("click", e);
             });
 
             // add new node
