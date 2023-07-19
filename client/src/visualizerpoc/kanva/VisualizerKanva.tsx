@@ -14,6 +14,7 @@ import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
 import { LIMIT_NODES } from "./constants";
 import { useDrag } from "./useDrag";
 import { useInit } from "./useInit";
+import { useShift } from "./useShift";
 import { useStoreIds } from "./useStoreIds";
 import { useZoom } from "./useZoom";
 
@@ -53,12 +54,20 @@ export const VisualizerKanva: React.FC<
     );
     const linesMap = useRef<string[]>([]);
     const parentNodesList = useRef<string[]>([]);
+    const graphShiftCountRef = useRef(0);
 
     /**
      * Custom hooks
      */
 
     const { divWrapRef, isInit, stageHeight, stageWidth } = useInit(stageRef);
+    const {} = useShift(
+        stageRef,
+        nodesLayerRef,
+        linesLayerRef,
+        nodeMap,
+        graphShiftCountRef
+    );
 
     console.log("--- isInit", isInit);
     const [networkConfig] = useNetworkConfig(network);
@@ -105,7 +114,6 @@ export const VisualizerKanva: React.FC<
             if (parentNodesList.current.length > 200) {
                 const firstParent = parentNodesList.current.shift();
                 nodeMap.current.delete(firstParent);
-                // console.log(nodeMap.current.size);
             }
 
             for (const parent of block.parents) {
@@ -125,19 +133,6 @@ export const VisualizerKanva: React.FC<
                         parentNodeOnLayer.radius(newRadius); // Adjust the base radius and the multiplier as needed
                         parentNodeOnLayer.draw(); // Redraw the node
                     }
-                    // nodesLayerRef.current
-                    //         const id = `${parentKonvaNode.blockId}-${block.blockId}`;
-                    //
-                    //         const line = new Konva.Line({
-                    //             points: [parentKonvaNode.x, parentKonvaNode.y, x, y],
-                    //             stroke: "rgba(180,180,180,0.1)",
-                    //             strokeWidth: 5,
-                    //             lineCap: "round",
-                    //             lineJoin: "round",
-                    //             id
-                    //         });
-                    //         linesMap.current.push(id);
-                    //         // linesLayerRef.current.add(line); // add lines to layer
                 }
             }
 
@@ -147,9 +142,6 @@ export const VisualizerKanva: React.FC<
 
             // add new node
             nodesLayerRef.current.add(newNode);
-
-            // Shift graph every new node
-            shiftGraphRight();
 
             // now we need to refresh the layer manually
             nodesLayerRef.current.batchDraw();

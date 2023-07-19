@@ -23,6 +23,7 @@ export const useUpdateListener = (network: IVisualizerHookArgs["network"], handl
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
 
+
         if (feedService) {
             feedService.subscribeBlocks(handlerNewBlock ?? onNewBlockData, () => {});
         }
