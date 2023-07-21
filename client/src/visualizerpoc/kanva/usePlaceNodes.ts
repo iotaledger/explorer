@@ -1,11 +1,16 @@
 import { useRef, useEffect, useCallback } from "react";
+import { generateCoordinateGrid } from "../common/heplers";
 
 export const useYCoordinateGenerator = (
     start = -800,
     end = 800,
     limit = 10
 ) => {
-    const positionsRef = useRef<number[]>([]);
+    const positionsRef = useRef<number[]>(
+        generateCoordinateGrid(start, end, limit)
+    );
+
+    console.log("--- positionsRef", positionsRef);
     const usedPositionsRef = useRef(new Set());
     const step = useRef((end - start) / (limit - 1));
 

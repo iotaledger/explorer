@@ -1,1 +1,1 @@
-export const LIMIT_NODES = 1000;
+export const LIMIT_NODES = 2000;

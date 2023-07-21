@@ -8,24 +8,39 @@ interface IGraphNode extends IFeedBlockData {
     id: string;
 }
 
-export const useUpdateListener = (network: IVisualizerHookArgs["network"], handlerNewBlock?: (newBlock: IFeedBlockData) => void) => {
-    const [nodes, setNodes] = useState<{list: IGraphNode[]; map: {[k: string]: IGraphNode}}>({ list: [], map: {} });
+export const useUpdateListener = (
+    network: IVisualizerHookArgs["network"],
+    handlerNewBlock?: (newBlock: IFeedBlockData) => void
+) => {
+    const [nodes, setNodes] = useState<{
+        list: IGraphNode[];
+        map: { [k: string]: IGraphNode };
+    }>({ list: [], map: {} });
 
     const onNewBlockData = (newBlock: IFeedBlockData) => {
-        setNodes(prev => {
+        setNodes((prev) => {
             const newBlockWithId = { ...newBlock, id: newBlock.blockId };
             const newList = [...prev.list, newBlockWithId];
-            const newMap = { ...prev.map, [newBlockWithId.blockId]: newBlockWithId };
+            const newMap = {
+                ...prev.map,
+                [newBlockWithId.blockId]: newBlockWithId
+            };
             return { list: newList, map: newMap };
         });
     };
 
     useEffect(() => {
-        const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
-
+        const feedService = ServiceFactory.get<StardustFeedClient>(
+            `feed-${network}`
+        );
 
         if (feedService) {
-            feedService.subscribeBlocks(handlerNewBlock ?? onNewBlockData, () => {});
+            feedService.subscribeBlocks(
+                handlerNewBlock ?? onNewBlockData,
+                (e) => {
+                    console.log("--- e", e);
+                }
+            );
         }
     }, []);
     return {

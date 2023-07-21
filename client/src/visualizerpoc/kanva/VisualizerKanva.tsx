@@ -87,7 +87,7 @@ export const VisualizerKanva: React.FC<
             const y = generateY();
             const x = generateX();
 
-            console.log("--- y", y);
+            // console.log("--- y", y);
 
             // lastNodePositionRef.current += 1;
             storeAddBlock(block.blockId);

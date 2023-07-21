@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-invalid-this */
 import Viva from "vivagraphjs";
 import { INodeData } from "../../models/graph/stardust/INodeData";
-import { getYCoordinates } from "./vivagraph-layout.helpers";
+import { generateCoordinateGrid } from "../common/heplers";
 import { VivaLink } from "./vivagraph-layout.types";
 
 class Rect {
@@ -27,7 +27,7 @@ class Rect {
 
 const createCoordinateGenerator = (n: number = 36) => {
     const currentX: number | null = null;
-    const listOfCoordinates = getYCoordinates(-800, 800, n);
+    const listOfCoordinates = generateCoordinateGrid(-800, 800, n);
 
     let filledPositions = new Set<number>([]);
 
@@ -50,7 +50,7 @@ const createCoordinateGenerator = (n: number = 36) => {
 };
 const generateY = createCoordinateGenerator(40);
 
-export const THRESHOLD_PX = 20;
+export const THRESHOLD_PX = 250;
 /**
  * Function for generation positions;
  * @param startTime - timestamp for correct work.
