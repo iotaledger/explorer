@@ -2,11 +2,19 @@
 // @ts-nocheck
 import * as d3 from "d3";
 import { useEffect, useRef, useState, useMemo } from "react";
-import { IVisualizerHookArgs, IVisualizerHookReturn } from "../../app/types/visualizer.types";
+import {
+    IVisualizerHookArgs,
+    IVisualizerHookReturn
+} from "../../app/types/visualizer.types";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { adjustNodePositions, findMostRightXPosition, generateLinks, multipleGenerateLinks } from "./helpers";
+import {
+    adjustNodePositions,
+    findMostRightXPosition,
+    generateLinks,
+    multipleGenerateLinks
+} from "./helpers";
 import { mockNodes } from "./mock-data";
 
 interface Node {
@@ -30,7 +38,8 @@ export interface IFeedBlockLocal extends IFeedBlockData {
  * @param max maximum number
  * @returns number
  */
-export const getRandomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+export const getRandomNumber = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
 
 const initialState: {
     nodes: IFeedBlockLocal[];
@@ -45,15 +54,16 @@ const initialState: {
 export const useVisualizerForceGraph = (
     network: IVisualizerHookArgs["network"],
     graphElement: IVisualizerHookArgs["graphElement"]
-): IVisualizerHookReturn & {graphData: {nodes: Node[]; links: Link[]}} => {
+): IVisualizerHookReturn & { graphData: { nodes: Node[]; links: Link[] } } => {
     const [filter, setFilter] = useState<string>("");
-    const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
+    const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<
+        boolean | null
+    >(null);
     const lastClick = useRef<number | null>(null);
     const optimizedOnce = useRef<boolean | null>(null);
     const [nodes, setNodes] = useState<Node[]>([]);
     const [links, setLinks] = useState<Link[]>([]);
     const [state, setState] = useState(initialState);
-
 
     const itemCount = 0;
     const selectedFeedItem = null;
@@ -71,10 +81,9 @@ export const useVisualizerForceGraph = (
         //     }
         // }
 
-        setNodes(prev => ([...prev, newBlock]));
+        setNodes((prev) => [...prev, newBlock]);
 
-
-        setState(prevState => {
+        setState((prevState) => {
             const MAX_Y = 2000;
             const newNode = {
                 ...newBlock,
@@ -83,8 +92,8 @@ export const useVisualizerForceGraph = (
                 x: undefined,
                 y: getRandomNumber(3, MAX_Y)
             };
-            const parentNodes = prevState.nodes.filter(node =>
-                newBlock.parents?.includes(node.blockId)
+            const parentNodes = prevState.nodes.filter(
+                (node) => newBlock.parents?.includes(node.blockId)
             );
             if (!parentNodes?.length) {
                 newNode.x = findMostRightXPosition(prevState.nodes) + 20;
@@ -104,8 +113,9 @@ export const useVisualizerForceGraph = (
                 const averageX = totalX / (parentNodes.length + 1);
                 const averageY = totalY / (parentNodes.length + 1);
 
-                const xOffset = (Math.random()) * 500; // Random offset within the distance range
-                const yOffset = (Math.random() - 0.5) * (maxDistance - minDistance); // Random offset within the distance range
+                const xOffset = Math.random() * 500; // Random offset within the distance range
+                const yOffset =
+                    (Math.random() - 0.5) * (maxDistance - minDistance); // Random offset within the distance range
 
                 const newX = averageX + xOffset;
                 const newY = averageY + yOffset;
@@ -125,8 +135,11 @@ export const useVisualizerForceGraph = (
 
             // links
             if (newBlock.parents && newBlock.parents.length > 0) {
-                const newLinks = generateLinks(newBlock, prevState.nodesCoordinates);
-                setLinks(prevLinks => [...prevLinks, ...newLinks]);
+                const newLinks = generateLinks(
+                    newBlock,
+                    prevState.nodesCoordinates
+                );
+                setLinks((prevLinks) => [...prevLinks, ...newLinks]);
             }
 
             return {
@@ -134,7 +147,6 @@ export const useVisualizerForceGraph = (
                 nodesCoordinates: updatedNodesCoordinates
             };
         });
-
 
         // if (newBlock.parents && newBlock.parents.length > 0) {
         //     // const existsParents = newBlock.parents.filter(id => )
@@ -145,7 +157,6 @@ export const useVisualizerForceGraph = (
         //     setLinks(prevLinks => [...prevLinks, ...newLinks]);
         // }
     };
-
 
     /**
      * USE EFFECTS
@@ -162,7 +173,6 @@ export const useVisualizerForceGraph = (
     //     ));
     // }
 
-
     // useEffect(() => {
     //     // Apply position constraints along the y-axis on each rerender
     //     if (graphElement.current) {
@@ -177,12 +187,10 @@ export const useVisualizerForceGraph = (
     //     }
     // }, [state.nodes]);
 
-
     // useEffect(() => {
     //     // Update the graph data
     //     if (graphElement.current) {
     //         debugger;
-    //         console.log("--- graphElement.current", graphElement.current);
     //         // @ts-expect-error property
     //         // graphElement.current?.graphData({ nodes, links });
     //     }
@@ -199,27 +207,46 @@ export const useVisualizerForceGraph = (
     }, []);
 
     useEffect(() => {
-        if (state.nodes.length === 0 || links.length === 0 || optimizedOnce.current) {
+        if (
+            state.nodes.length === 0 ||
+            links.length === 0 ||
+            optimizedOnce.current
+        ) {
             return;
         }
         setTimeout(() => {
-            const newCoordinatesMap = adjustNodePositions(state.nodes, links, state.nodesCoordinates, {});
+            const newCoordinatesMap = adjustNodePositions(
+                state.nodes,
+                links,
+                state.nodesCoordinates,
+                {}
+            );
 
-            const newNodes = state.nodes.map(n => ({ ...n,
+            const newNodes = state.nodes.map((n) => ({
+                ...n,
                 x: newCoordinatesMap[n.blockId].x || n.x,
-                y: newCoordinatesMap[n.blockId].y || n.y }));
+                y: newCoordinatesMap[n.blockId].y || n.y
+            }));
 
+            setState((p) => ({
+                ...p,
+                nodes: newNodes,
+                nodesCoordinates: newCoordinatesMap
+            }));
 
-            setState(p => ({ ...p, nodes: newNodes, nodesCoordinates: newCoordinatesMap }));
-
-            const newLinks = multipleGenerateLinks(state.nodes, state.nodesCoordinates);
-            setLinks(prevLinks => [...newLinks]);
+            const newLinks = multipleGenerateLinks(
+                state.nodes,
+                state.nodesCoordinates
+            );
+            setLinks((prevLinks) => [...newLinks]);
             optimizedOnce.current = true;
         }, 4000);
     }, [state, links]);
 
     useEffect(() => {
-        const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
+        const feedService = ServiceFactory.get<StardustFeedClient>(
+            `feed-${network}`
+        );
 
         // TODO enable updates from backend
         return;
@@ -228,15 +255,12 @@ export const useVisualizerForceGraph = (
         }
     }, []);
 
-
     // const links = useMemo(() => {
     //     return [];
     //     if (state.nodes.length === 0 || state.nodes.length < 3) {
     //         return [];
     //     }
     //
-    //     // console.log("---", { target: state.nodes[0].blockId, source: state.nodes[1].blockId });
-    //     // console.log("--", state.nodes[1]);
     //
     //     return [{ target: state.nodes[0].blockId, source: state.nodes[1].blockId }];
     //
@@ -254,7 +278,6 @@ export const useVisualizerForceGraph = (
     //             }
     //         }
     //     }
-    //     // console.log("--- resLinks", resLinks);
     //     return resLinks;
     // }, [state]);
 

@@ -10,7 +10,6 @@ export const useYCoordinateGenerator = (
         generateCoordinateGrid(start, end, limit)
     );
 
-    console.log("--- positionsRef", positionsRef);
     const usedPositionsRef = useRef(new Set());
     const step = useRef((end - start) / (limit - 1));
 

@@ -35,7 +35,7 @@ export const useShift = ({
             // nodes animation
             const tweenNode = new Konva.Tween({
                 node: nodesLayerRef.current,
-                duration: 0.05, // The duration of the animation in seconds
+                duration: 0.2, // The duration of the animation in seconds
                 x: newPosition
             });
 
@@ -49,7 +49,7 @@ export const useShift = ({
     useEffect(() => {
         const intervalId = setInterval(() => {
             shiftGraphRight();
-        }, 100); // call shiftGraphRight every second
+        }, 150); // call shiftGraphRight every second
 
         return () => clearInterval(intervalId); // This is cleanup function that React will call when the component is unmounted
     }, [shiftGraphRight]); // list shiftGraphRight as a dependency, so if it changes, the effect is re-run

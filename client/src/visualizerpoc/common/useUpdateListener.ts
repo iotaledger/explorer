@@ -37,9 +37,7 @@ export const useUpdateListener = (
         if (feedService) {
             feedService.subscribeBlocks(
                 handlerNewBlock ?? onNewBlockData,
-                (e) => {
-                    console.log("--- e", e);
-                }
+                () => {}
             );
         }
     }, []);

@@ -2,15 +2,14 @@ import React, { useEffect } from "react";
 import { GraphCanvasRef } from "reagraph";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 
-export const useVisualizerReagraph = (refGraph: React.RefObject<GraphCanvasRef>) => {
+export const useVisualizerReagraph = (
+    refGraph: React.RefObject<GraphCanvasRef>
+) => {
     const addNode = (node: IFeedBlockData) => {
         // const graphRefInternal = refGraph.current?.getGraph();
         // if (!graphRefInternal) {
         //     return;
         // }
-
-
-        // console.log("---", node.blockId);
         // graphRefInternal.addNode(node.blockId, {
         //     feedItem: node,
         //     added: new Date()

@@ -71,8 +71,6 @@ export const useInit = (
     //
     //     nodesLayer = new Konva.Layer();
     //     stage.add(nodesLayerRef.current);
-    //
-    //     console.log("--- nodesLayerRef.current", nodesLayerRef.current);
     // }, []);
 
     return { isInit, divWrapRef, stageWidth: width, stageHeight: height };

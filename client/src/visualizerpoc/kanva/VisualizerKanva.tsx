@@ -63,10 +63,9 @@ export const VisualizerKanva: React.FC<
 
     const { divWrapRef, isInit, stageHeight, stageWidth } = useInit(stageRef);
 
-    console.log("--- isInit", isInit);
     const [networkConfig] = useNetworkConfig(network);
 
-    const { handleWheel } = useZoom();
+    const { handleWheel, recalculateZoom } = useZoom({ stageRef });
     const { handleMouseMove, handleMouseUp, handleMouseDown, shiftGraphRight } =
         useDrag(stageRef, nodesLayerRef, linesLayerRef, lastNodePositionRef);
     const { removeFirstNodeFromLayer, storeAddBlock, getNumberOfNodes } =
@@ -87,7 +86,7 @@ export const VisualizerKanva: React.FC<
             const y = generateY();
             const x = generateX();
 
-            // console.log("--- y", y);
+            recalculateZoom(y);
 
             // lastNodePositionRef.current += 1;
             storeAddBlock(block.blockId);
