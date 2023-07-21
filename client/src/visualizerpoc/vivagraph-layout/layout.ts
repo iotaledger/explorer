@@ -17,12 +17,7 @@ class Rect {
 
     public y2: number;
 
-    constructor(
-        x1: number,
-        y1: number,
-        x2: number,
-        y2: number
-    ) {
+    constructor(x1: number, y1: number, x2: number, y2: number) {
         this.x1 = x1 || 0;
         this.y1 = y1 || 0;
         this.x2 = x2 || 0;
@@ -34,11 +29,16 @@ const createCoordinateGenerator = (n: number) => {
     const currentX: number | null = null;
     const listOfCoordinates = getYCoordinates(-800, 800, 36);
 
+    console.log("--- listOfCoordinates", listOfCoordinates);
+
     let filledPositions = new Set<number>([]);
 
     return () => {
-        const freeCoordinates = listOfCoordinates.filter(coordinate => !filledPositions.has(coordinate));
-        const currentY = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
+        const freeCoordinates = listOfCoordinates.filter(
+            (coordinate) => !filledPositions.has(coordinate)
+        );
+        const currentY =
+            freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
 
         if (filledPositions.size > 20) {
             const filledPositionsArr: number[] = Array.from(filledPositions); // Convert Set to an array
@@ -47,9 +47,9 @@ const createCoordinateGenerator = (n: number) => {
         }
 
         filledPositions.add(currentY);
-      return currentY;
+        return currentY;
     };
-  };
+};
 const generateY = createCoordinateGenerator(40);
 
 export const THRESHOLD_PX = 20;
@@ -63,21 +63,28 @@ export const placeNodeCallback = (numberOfNodes: number) => {
     return { x: numberOfNodes * THRESHOLD_PX, y };
 };
 
-
 //
 export function customLayout(
     theGraph: Viva.Graph.IGraph<INodeData, unknown>,
     options: Record<string, unknown>,
     graphics: Viva.Graph.View.IWebGLGraphics<INodeData, unknown>
 ) {
-    const graphRect = new Rect(Number.MAX_VALUE, Number.MAX_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+    const graphRect = new Rect(
+        Number.MAX_VALUE,
+        Number.MAX_VALUE,
+        Number.MIN_VALUE,
+        Number.MIN_VALUE
+    );
     const layoutNodes: { [nodeId: string]: { x: number; y: number } } = {};
     let numberOfNodes = 0;
     const layoutLinks: { [linkId: string]: VivaLink } = {};
 
     const startTime: number = Date.now();
 
-    const updateGraphRect = (position: { x: number; y: number }, theGraphRect: Rect) => {
+    const updateGraphRect = (
+        position: { x: number; y: number },
+        theGraphRect: Rect
+    ) => {
         if (position.x < theGraphRect.x1) {
             theGraphRect.x1 = position.x;
         }
@@ -92,8 +99,9 @@ export function customLayout(
         }
     };
 
-
-    const ensureNodeInitialized = (node: Viva.Graph.INode<INodeData, unknown>) => {
+    const ensureNodeInitialized = (
+        node: Viva.Graph.INode<INodeData, unknown>
+    ) => {
         if (!layoutNodes[node.id]) {
             layoutNodes[node.id] = placeNodeCallback(numberOfNodes);
             numberOfNodes += 1;
@@ -115,7 +123,7 @@ export function customLayout(
     };
 
     // @ts-expect-error wrong type
-    const ensureLinkInitialized = link => {
+    const ensureLinkInitialized = (link) => {
         // console.log("Links init", link, getNodePosition(link.fromId), getNodePosition(link.toId));
         if (!layoutLinks[link.id]) {
             layoutLinks[link.id] = link;
@@ -123,7 +131,7 @@ export function customLayout(
     };
 
     // @ts-expect-error wrong type
-    const onGraphChanged = changes => {
+    const onGraphChanged = (changes) => {
         for (let i = 0; i < changes.length; ++i) {
             const change = changes[i];
 
@@ -174,7 +182,7 @@ export function customLayout(
          * Checks whether given node is pinned; all nodes in this layout are pinned.
          */
         // @ts-expect-error wrong type
-        isNodePinned: node => true,
+        isNodePinned: (node) => true,
 
         // @ts-expect-error wrong type
         pinNode: (node, isPinned) => {
@@ -218,7 +226,6 @@ export function customLayout(
 
             return placeNodeCallback(startTime);
         }
-
     };
 
     function getNodePosition(nodeId: string) {

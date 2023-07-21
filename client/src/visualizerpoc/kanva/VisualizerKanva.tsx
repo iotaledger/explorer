@@ -54,7 +54,7 @@ export const VisualizerKanva: React.FC<
     );
     const linesMap = useRef<string[]>([]);
     const parentNodesList = useRef<string[]>([]);
-    const graphShiftCountRef = useRef(0);
+    const graphShiftCountRef = useRef<number>(0);
 
     /**
      * Custom hooks
@@ -68,7 +68,6 @@ export const VisualizerKanva: React.FC<
         nodeMap,
         graphShiftCountRef
     );
-
     console.log("--- isInit", isInit);
     const [networkConfig] = useNetworkConfig(network);
 
@@ -89,10 +88,22 @@ export const VisualizerKanva: React.FC<
                 removeFirstNodeFromLayer(nodesLayerRef.current, linesMap);
             }
 
-            const colors = ["#7575ed", "#4f4fed", "#4141f1", "#1010eb"];
+            const colors = [
+                "#F0F4FF",
+                "#E0EAFF",
+                "#C8DAFE",
+                "#A6C3FC",
+                "#82A5F8",
+                "#5C84FA",
+                "#2559F5",
+                "#0101FF",
+                "#0000DB",
+                "#0101AB"
+            ];
             const random = Math.floor(Math.random() * colors.length);
 
-            const DEFAULT_SIZE = 80;
+            const DEFAULT_SIZE = 20;
+            const INCREASE_SIZE = 20;
 
             // add newNode
             const newNode = new Konva.Circle({
@@ -119,7 +130,7 @@ export const VisualizerKanva: React.FC<
             for (const parent of block.parents) {
                 const parentKonvaNode = nodeMap.current.get(parent);
                 if (parentKonvaNode) {
-                    const newRadius = parentKonvaNode.size + 10;
+                    const newRadius = parentKonvaNode.size + INCREASE_SIZE;
 
                     nodeMap.current.set(parent, {
                         ...parentKonvaNode,
