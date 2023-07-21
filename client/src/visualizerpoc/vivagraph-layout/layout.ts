@@ -25,11 +25,9 @@ class Rect {
     }
 }
 
-const createCoordinateGenerator = (n: number) => {
+const createCoordinateGenerator = (n: number = 36) => {
     const currentX: number | null = null;
-    const listOfCoordinates = getYCoordinates(-800, 800, 36);
-
-    console.log("--- listOfCoordinates", listOfCoordinates);
+    const listOfCoordinates = getYCoordinates(-800, 800, n);
 
     let filledPositions = new Set<number>([]);
 

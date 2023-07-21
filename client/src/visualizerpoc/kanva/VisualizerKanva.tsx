@@ -14,6 +14,7 @@ import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
 import { LIMIT_NODES } from "./constants";
 import { useDrag } from "./useDrag";
 import { useInit } from "./useInit";
+import { useYCoordinateGenerator } from "./usePlaceNodes";
 import { useShift } from "./useShift";
 import { useStoreIds } from "./useStoreIds";
 import { useZoom } from "./useZoom";
@@ -61,13 +62,7 @@ export const VisualizerKanva: React.FC<
      */
 
     const { divWrapRef, isInit, stageHeight, stageWidth } = useInit(stageRef);
-    const {} = useShift(
-        stageRef,
-        nodesLayerRef,
-        linesLayerRef,
-        nodeMap,
-        graphShiftCountRef
-    );
+
     console.log("--- isInit", isInit);
     const [networkConfig] = useNetworkConfig(network);
 
@@ -76,12 +71,25 @@ export const VisualizerKanva: React.FC<
         useDrag(stageRef, nodesLayerRef, linesLayerRef, lastNodePositionRef);
     const { removeFirstNodeFromLayer, storeAddBlock, getNumberOfNodes } =
         useStoreIds();
+    const { generateY, resetY } = useYCoordinateGenerator();
+    const { generateX } = useShift({
+        stageRef,
+        nodesLayerRef,
+        linesLayerRef,
+        nodeMap,
+        graphShiftCountRef,
+        resetY
+    });
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
-            const { x, y } = placeNodeCallback(lastNodePositionRef.current);
+            // const { y } = placeNodeCallback(graphShiftCountRef.current);
+            const y = generateY();
+            const x = generateX();
 
-            lastNodePositionRef.current += 1;
+            console.log("--- y", y);
+
+            // lastNodePositionRef.current += 1;
             storeAddBlock(block.blockId);
 
             if (getNumberOfNodes() > LIMIT_NODES) {
