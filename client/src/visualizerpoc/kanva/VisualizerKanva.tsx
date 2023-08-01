@@ -1,7 +1,7 @@
 // @ts-nocheck
 // import { default as useResizeObserver } from "@react-hook/resize-observer";
 import Konva from "konva";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
 import { Stage, Layer, Circle, Line } from "react-konva";
 import { RouteComponentProps } from "react-router-dom";
@@ -18,6 +18,7 @@ import { useYCoordinateGenerator } from "./usePlaceNodes";
 import { useShift } from "./useShift";
 import { useStoreIds } from "./useStoreIds";
 import { useZoom } from "./useZoom";
+import "./nodePosition";
 
 interface ParentNode {
     id: number;
@@ -82,6 +83,7 @@ export const VisualizerKanva: React.FC<
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
+            // console.log("--- block", block);
             // const { y } = placeNodeCallback(graphShiftCountRef.current);
             const y = generateY();
             const x = generateX();
@@ -168,6 +170,39 @@ export const VisualizerKanva: React.FC<
     };
 
     const { nodes } = useUpdateListener(network, onNewBlock);
+
+    const workerRef = useRef(null);
+    // const wNodePosition = useMemo(
+    //     () => new Worker(new URL("./nodePosition.ts"), import.meta.url),
+    //     []
+    // );
+
+    useEffect(() => {
+        workerRef.current = new Worker(
+            new URL("nodePosition.ts", import.meta.url)
+        );
+
+        workerRef.current.addEventListener("message", (e) => {
+            console.log("--- event from worker", e);
+        });
+        if (window.Worker) {
+            setTimeout(() => {
+                workerRef.current.postMessage({
+                    nodes,
+                    nodeMap: Array.from(nodeMap.current.values())
+                });
+            }, 3000);
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log("--- workerRef.current", workerRef.current);
+        //     if (window.Worker) {
+        //         wNodePosition.addEventListener("message", (e) => {
+        //             console.log("--- event from worker", e);
+        //         });
+        //     }
+    }, [workerRef.current]);
 
     return (
         <Wrapper
