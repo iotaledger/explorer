@@ -12,3 +12,6 @@ export const colors = [
     "#0000DB",
     "#0101AB"
 ];
+
+export const DEFAULT_SIZE = 20;
+export const INCREASE_SIZE = 20;

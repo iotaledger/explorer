@@ -9,9 +9,10 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { Updates } from "../common/Nodes";
 import { useUpdateListener } from "../common/useUpdateListener";
 import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
-import { LIMIT_NODES, colors } from "./constants";
+import { LIMIT_NODES, colors, DEFAULT_SIZE, INCREASE_SIZE } from "./constants";
 import { useDrag } from "./useDrag";
 import { useInit } from "./useInit";
 import { useYCoordinateGenerator } from "./usePlaceNodes";
@@ -26,12 +27,12 @@ interface ParentNode {
     y: number;
 }
 
-interface Node {
-    id: number;
-    x: number;
-    y: number;
-    parents: ParentNode[];
-}
+// interface Node {
+//     id: number;
+//     x: number;
+//     y: number;
+//     parents: ParentNode[];
+// }
 
 interface GraphProps {
     nodes: Node[];
@@ -86,6 +87,8 @@ export const VisualizerKanva: React.FC<
             workerRef.current.postMessage({ type: "add", data: block });
             // console.log("--- block", block);
             // const { y } = placeNodeCallback(graphShiftCountRef.current);
+
+            return;
             const y = generateY();
             const x = generateX();
 
@@ -97,20 +100,6 @@ export const VisualizerKanva: React.FC<
             if (getNumberOfNodes() > LIMIT_NODES) {
                 removeFirstNodeFromLayer(nodesLayerRef.current, linesMap);
             }
-
-            const random = Math.floor(Math.random() * colors.length);
-
-            const DEFAULT_SIZE = 20;
-            const INCREASE_SIZE = 20;
-
-            // add newNode
-            const newNode = new Konva.Circle({
-                x,
-                y,
-                radius: DEFAULT_SIZE,
-                fill: colors[random],
-                id: block.blockId
-            });
 
             // Store the Konva node in the nodeMap
             parentNodesList.current.push(block.blockId);
@@ -149,22 +138,42 @@ export const VisualizerKanva: React.FC<
                 console.log("click", e);
             });
 
-            // add new node
-            nodesLayerRef.current.add(newNode);
-
             // now we need to refresh the layer manually
-            nodesLayerRef.current.batchDraw();
+
             // linesLayerRef.current.batchDraw();
         }
     };
 
-    const { nodes } = useUpdateListener(network, onNewBlock);
+    useUpdateListener(network, onNewBlock);
 
     const workerRef = useRef(null);
-    // const wNodePosition = useMemo(
-    //     () => new Worker(new URL("./nodePosition.ts"), import.meta.url),
-    //     []
-    // );
+
+    const handleAddNodes = (n: Node[]) => {
+        if (!nodesLayerRef.current) {
+            return;
+        }
+        const random = Math.floor(Math.random() * colors.length);
+
+        for (const node of n) {
+            const konvaNode = new Konva.Circle({
+                x: node.x,
+                y: node.y,
+                radius: DEFAULT_SIZE,
+                fill: colors[random],
+                id: node.id
+            });
+            nodesLayerRef.current.add(konvaNode);
+        }
+    };
+
+    const onWorkerMessage = (event: MessageEvent<Updates>) => {
+        const { add, modify, remove } = event.data;
+
+        handleAddNodes(add);
+
+        nodesLayerRef.current.batchDraw();
+        console.log("Message received from worker", event.data);
+    };
 
     useEffect(() => {
         workerRef.current = new Worker(
@@ -172,19 +181,8 @@ export const VisualizerKanva: React.FC<
         );
         workerRef.current.postMessage(null);
 
-        workerRef.current.addEventListener("message", (event) => {
-            console.log("--- message from event", event);
-        });
+        workerRef.current.addEventListener("message", onWorkerMessage);
     }, []);
-    // useEffect(() => {
-    //     if (window.Worker) {
-    //         setTimeout(() => {
-    //             workerRef.current.postMessage({
-    //                 data: 1
-    //             });
-    //         }, 3000);
-    //     }
-    // }, []);
 
     return (
         <Wrapper
@@ -202,13 +200,6 @@ export const VisualizerKanva: React.FC<
                 ref={divWrapRef}
                 style={{ width: "100%", height: "100%", minHeight: 600 }}
             >
-                <button
-                    onClick={() => {
-                        workerRef.current.postMessage("Message to worker");
-                    }}
-                >
-                    asdfadsf
-                </button>
                 <Stage
                     // onWheel={handleWheel}
                     // draggable

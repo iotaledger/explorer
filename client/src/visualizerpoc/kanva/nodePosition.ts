@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { generateCoordinateGrid, batchDataCounter } from "../common/heplers";
-import { Nodes } from "../common/Nodes";
+import { Nodes, Node } from "../common/Nodes";
 import { NetworkNode } from "../common/types";
 
+// @ts-expect-error type any
 const ctx: Worker = self as any;
 
-// const positions = useRef<number[]>(generateCoordinateGrid(start, end, limit));
 const batchCounter = batchDataCounter();
 
 const nodesInstance = new Nodes();
@@ -22,12 +22,20 @@ ctx.addEventListener(
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
         }
 
-        console.log("--- data", data);
+        const calculatedNode: Node = {
+            id: data?.blockId,
+            x: 0,
+            y: 0
+        };
+
+        nodesInstance.add(calculatedNode);
 
         // collect info by portions and return it when it's 10 items
         const isBatchLimit = batchCounter();
         if (isBatchLimit) {
-            ctx.postMessage("pong");
+            const updates = nodesInstance.getUpdates();
+            ctx.postMessage(updates);
+            nodesInstance.clearUpdates();
         }
     }
 );
