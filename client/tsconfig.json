@@ -18,7 +18,9 @@
       "./typings",
       "./node_modules/@types"
     ],
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "lib": ["webworker", "dom", "esnext"
+
   },
   "include": [
     "src"

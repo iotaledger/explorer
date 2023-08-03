@@ -181,28 +181,22 @@ export const VisualizerKanva: React.FC<
         workerRef.current = new Worker(
             new URL("nodePosition.ts", import.meta.url)
         );
+        workerRef.current.postMessage(null);
 
-        workerRef.current.addEventListener("message", (e) => {
-            console.log("--- event from worker", e);
+        workerRef.current.addEventListener("message", (event) => {
+            console.log("--- message from event", event);
         });
-        if (window.Worker) {
-            setTimeout(() => {
-                workerRef.current.postMessage({
-                    nodes,
-                    nodeMap: Array.from(nodeMap.current.values())
-                });
-            }, 3000);
-        }
     }, []);
 
-    useEffect(() => {
-        console.log("--- workerRef.current", workerRef.current);
-        //     if (window.Worker) {
-        //         wNodePosition.addEventListener("message", (e) => {
-        //             console.log("--- event from worker", e);
-        //         });
-        //     }
-    }, [workerRef.current]);
+    // useEffect(() => {
+    //     if (window.Worker) {
+    //         setTimeout(() => {
+    //             workerRef.current.postMessage({
+    //                 data: 1
+    //             });
+    //         }, 3000);
+    //     }
+    // }, []);
 
     return (
         <Wrapper
@@ -220,6 +214,13 @@ export const VisualizerKanva: React.FC<
                 ref={divWrapRef}
                 style={{ width: "100%", height: "100%", minHeight: 600 }}
             >
+                <button
+                    onClick={() => {
+                        workerRef.current.postMessage("Message to worker");
+                    }}
+                >
+                    asdfadsf
+                </button>
                 <Stage
                     // onWheel={handleWheel}
                     // draggable
