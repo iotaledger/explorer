@@ -19,3 +19,20 @@ export function generateCoordinateGrid(
 
     return coordinates;
 }
+
+/**
+ * Calculation for batch data
+ * if limit - return true
+ */
+export const batchDataCounter = () => {
+    const LIMIT = 10;
+    let counter = 0;
+    return () => {
+        counter += 1;
+        if (counter === LIMIT) {
+            counter = 0;
+            return true;
+        }
+        return false;
+    };
+};

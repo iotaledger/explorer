@@ -1,6 +1,12 @@
+import { useRef } from "react";
+import { generateCoordinateGrid, batchDataCounter } from "../common/heplers";
+
 const ctx: Worker = self as any;
 
-let data = 1;
+const data = 1;
+
+// const positions = useRef<number[]>(generateCoordinateGrid(start, end, limit));
+const batchCounter = batchDataCounter();
 
 ctx.addEventListener(
     "message",
@@ -11,8 +17,11 @@ ctx.addEventListener(
             return; // Ignore the message if it's from Webpack
         }
 
-        data += 1;
-        ctx.postMessage(`pong${data}`);
+        // collect info by portions and return it when it's 10 items
+        const isBatchLimit = batchCounter();
+        if (isBatchLimit) {
+            ctx.postMessage("pong");
+        }
     }
 );
 
