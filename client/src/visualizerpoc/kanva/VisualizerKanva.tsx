@@ -187,7 +187,6 @@ export const VisualizerKanva: React.FC<
             console.log("--- message from event", event);
         });
     }, []);
-
     // useEffect(() => {
     //     if (window.Worker) {
     //         setTimeout(() => {

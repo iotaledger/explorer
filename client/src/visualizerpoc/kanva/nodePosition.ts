@@ -1,14 +1,19 @@
 const ctx: Worker = self as any;
 
-ctx.addEventListener("message", (e: MessageEvent<string>) => {
-    // @ts-expect-error wrong type
-    if (!e.data || e.data.type === "webpackOk") {
-        return; // Ignore the message if it's from Webpack
+let data = 1;
+
+ctx.addEventListener(
+    "message",
+    (e: MessageEvent<{ type: string; data: never }>) => {
+        const type = e.data?.type;
+
+        if (!e.data || type?.startsWith("webpack")) {
+            return; // Ignore the message if it's from Webpack
+        }
+
+        data += 1;
+        ctx.postMessage(`pong${data}`);
     }
-
-    console.log("Worker received message", e);
-
-    ctx.postMessage("pong");
-});
+);
 
 export {};
