@@ -36,3 +36,31 @@ export const batchDataCounter = () => {
         return false;
     };
 };
+
+/**
+ * Y coordinate generator from zero coordinate to top and bottom
+ */
+export function* yCoordinateGenerator() {
+    let count = 1;
+    let isPositive = true;
+
+    yield 0; // Initial value
+
+    while (true) {
+        // @ts-expect-error any type
+        const reset = yield isPositive ? count : -count;
+
+        if (reset) {
+            count = 1;
+            isPositive = true;
+        } else {
+            // Alternate between positive and negative
+            isPositive = !isPositive;
+
+            // Increase count after generating both a positive and negative pair
+            if (!isPositive) {
+                count++;
+            }
+        }
+    }
+}

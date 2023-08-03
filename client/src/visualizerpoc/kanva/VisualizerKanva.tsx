@@ -11,7 +11,7 @@ import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { useUpdateListener } from "../common/useUpdateListener";
 import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
-import { LIMIT_NODES } from "./constants";
+import { LIMIT_NODES, colors } from "./constants";
 import { useDrag } from "./useDrag";
 import { useInit } from "./useInit";
 import { useYCoordinateGenerator } from "./usePlaceNodes";
@@ -83,6 +83,7 @@ export const VisualizerKanva: React.FC<
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
+            workerRef.current.postMessage({ type: "add", data: block });
             // console.log("--- block", block);
             // const { y } = placeNodeCallback(graphShiftCountRef.current);
             const y = generateY();
@@ -97,18 +98,6 @@ export const VisualizerKanva: React.FC<
                 removeFirstNodeFromLayer(nodesLayerRef.current, linesMap);
             }
 
-            const colors = [
-                "#F0F4FF",
-                "#E0EAFF",
-                "#C8DAFE",
-                "#A6C3FC",
-                "#82A5F8",
-                "#5C84FA",
-                "#2559F5",
-                "#0101FF",
-                "#0000DB",
-                "#0101AB"
-            ];
             const random = Math.floor(Math.random() * colors.length);
 
             const DEFAULT_SIZE = 20;
