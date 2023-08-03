@@ -9,10 +9,14 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { Updates } from "../common/Nodes";
+import {
+    colors,
+    LIMIT_NODES,
+    DEFAULT_SIZE,
+    INCREASE_SIZE
+} from "../common/constants";
+import { Updates, WorkerNode } from "../common/Nodes";
 import { useUpdateListener } from "../common/useUpdateListener";
-import { placeNodeCallback, THRESHOLD_PX } from "../vivagraph-layout/layout";
-import { LIMIT_NODES, colors, DEFAULT_SIZE, INCREASE_SIZE } from "./constants";
 import { useDrag } from "./useDrag";
 import { useInit } from "./useInit";
 import { useYCoordinateGenerator } from "./usePlaceNodes";
@@ -84,7 +88,11 @@ export const VisualizerKanva: React.FC<
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
-            workerRef.current.postMessage({ type: "add", data: block });
+            workerRef.current.postMessage({
+                type: "add",
+                graphShift: graphShiftCountRef.current,
+                data: block
+            });
             // console.log("--- block", block);
             // const { y } = placeNodeCallback(graphShiftCountRef.current);
 
@@ -148,17 +156,21 @@ export const VisualizerKanva: React.FC<
 
     const workerRef = useRef(null);
 
-    const handleAddNodes = (n: Node[]) => {
+    /**
+     * Add node to chart
+     * @param workerNodes - node to add
+     */
+    const handleAddNodes = (workerNodes: WorkerNode[]) => {
         if (!nodesLayerRef.current) {
             return;
         }
         const random = Math.floor(Math.random() * colors.length);
 
-        for (const node of n) {
+        for (const node of workerNodes) {
             const konvaNode = new Konva.Circle({
                 x: node.x,
                 y: node.y,
-                radius: DEFAULT_SIZE,
+                radius: node.radius ?? DEFAULT_SIZE,
                 fill: colors[random],
                 id: node.id
             });
@@ -166,15 +178,21 @@ export const VisualizerKanva: React.FC<
         }
     };
 
+    /**
+     * Handle message from worker
+     * @param event
+     */
     const onWorkerMessage = (event: MessageEvent<Updates>) => {
         const { add, modify, remove } = event.data;
 
         handleAddNodes(add);
 
         nodesLayerRef.current.batchDraw();
-        console.log("Message received from worker", event.data);
     };
 
+    /**
+     * Start work with worker
+     */
     useEffect(() => {
         workerRef.current = new Worker(
             new URL("nodePosition.ts", import.meta.url)

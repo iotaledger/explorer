@@ -1,3 +1,6 @@
+import { THRESHOLD_PX } from "../vivagraph-layout/layout";
+import { THRESHOLD_PX_X } from "./constants";
+
 /**
  * Function for generating list of coordinates
  * @param start - start of coordinates. Example: -300
@@ -40,8 +43,8 @@ export const batchDataCounter = () => {
 /**
  * Y coordinate generator from zero coordinate to top and bottom
  */
-export function* yCoordinateGenerator() {
-    let count = 1;
+export function* yCoordinateGenerator(): Generator<number> {
+    let count = 0;
     let isPositive = true;
 
     yield 0; // Initial value
@@ -51,7 +54,7 @@ export function* yCoordinateGenerator() {
         const reset = yield isPositive ? count : -count;
 
         if (reset) {
-            count = 1;
+            count = 0;
             isPositive = true;
         } else {
             // Alternate between positive and negative
@@ -64,3 +67,10 @@ export function* yCoordinateGenerator() {
         }
     }
 }
+
+export const generateX = (shift: number) => {
+    const randomNumber = Math.floor(Math.random() * THRESHOLD_PX) + 1;
+
+    const shiftWithThreshold = (shift ?? 0) * THRESHOLD_PX_X;
+    return shiftWithThreshold;
+};

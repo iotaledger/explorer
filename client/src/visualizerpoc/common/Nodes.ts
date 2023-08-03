@@ -1,4 +1,4 @@
-export interface Node {
+export interface WorkerNode {
     id: string;
     x: number;
     y: number;
@@ -7,17 +7,17 @@ export interface Node {
 }
 
 export interface Updates {
-    add: Node[];
-    modify: Node[];
-    remove: Node[];
+    add: WorkerNode[];
+    modify: WorkerNode[];
+    remove: WorkerNode[];
 }
 
 export class Nodes {
-    public list: Node[] = [];
+    public list: WorkerNode[] = [];
 
     public ids: string[] = [];
 
-    public dict: Map<string, Node> = new Map();
+    public dict: Map<string, WorkerNode> = new Map();
 
     public updates: Updates = {
         add: [],
@@ -29,7 +29,7 @@ export class Nodes {
         this.list = [];
     }
 
-    public add(node: Node) {
+    public add(node: WorkerNode) {
         this.list.push(node);
         this.ids.push(node.id);
         this.dict.set(node.id, node);

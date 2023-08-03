@@ -1,5 +1,8 @@
 export const LIMIT_NODES = 2000;
 
+export const THRESHOLD_PX_Y = 50;
+export const THRESHOLD_PX_X = 250;
+export const THRESHOLD_SHIFT_PX = 250;
 export const colors = [
     "#F0F4FF",
     "#E0EAFF",

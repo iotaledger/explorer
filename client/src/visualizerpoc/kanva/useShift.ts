@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { RefObject, useState, useRef, useEffect } from "react";
-import { THRESHOLD_PX } from "../vivagraph-layout/layout";
+import { THRESHOLD_SHIFT_PX } from "../common/constants";
 
 export const useShift = ({
     graphShiftCountRef,
@@ -17,8 +17,8 @@ export const useShift = ({
     // Define generateX function
     const generateX = () =>
         graphShiftCountRef &&
-        (graphShiftCountRef.current ?? 0) * THRESHOLD_PX +
-            Math.floor(Math.random() * THRESHOLD_PX) +
+        (graphShiftCountRef.current ?? 0) * THRESHOLD_SHIFT_PX +
+            Math.floor(Math.random() * THRESHOLD_SHIFT_PX) +
             1;
 
     const shiftGraphRight = () => {
@@ -27,10 +27,9 @@ export const useShift = ({
             graphShiftCountRef &&
             graphShiftCountRef?.current !== null
         ) {
-            const newPosition = -(graphShiftCountRef.current * THRESHOLD_PX);
-            const currentPosition = nodesLayerRef.current.x();
-            const shiftBy = -30; // change this to the number of pixels you want to shift
-            // const newPosition = currentPosition + shiftBy;
+            const newPosition = -(
+                graphShiftCountRef.current * THRESHOLD_SHIFT_PX
+            );
 
             // nodes animation
             const tweenNode = new Konva.Tween({
