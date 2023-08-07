@@ -1,1 +1,1 @@
-export type TransactionsGetMode = "addresses" | "tags" | "bundles" | "transaction" | "approvees";
+export type TransactionsGetMode = "address" | "tag" | "bundle" | "transaction" | "approvee";

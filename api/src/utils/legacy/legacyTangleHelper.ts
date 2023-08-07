@@ -1,6 +1,4 @@
-import { composeAPI, Transaction } from "@iota/core";
-import { LegacyChronicleClient } from "../../clients/legacy/chronicleClient";
-import { LegacyHornetClient } from "../../clients/legacy/hornetClient";
+import { LegacyClient } from "../../clients/legacy/client";
 import logger from "../../logger";
 import { ITransactionsCursor } from "../../models/api/legacy/ITransactionsCursor";
 import { TransactionsGetMode } from "../../models/api/legacy/transactionsGetMode";
@@ -41,15 +39,15 @@ export class LegacyTangleHelper {
         };
 
         try {
-            const legacyHornetClient = new LegacyHornetClient(network.provider, network.user, network.password);
+            const client = new LegacyClient(network.provider, network.user, network.password);
 
-            const response = await legacyHornetClient.findTransactions({
+            const response = await client.findTransactions({
                 ...findReq,
                 maxresults: 5000
             });
 
-            if (response?.hashes && response.hashes.length > 0) {
-                hashes = response.hashes;
+            if (response?.txHashes && response.txHashes.length > 0) {
+                hashes = response.txHashes;
                 cursor.node = hashes.length;
 
                 if (limit !== undefined) {
@@ -66,34 +64,6 @@ export class LegacyTangleHelper {
             logger.error(`[LegacyTangleHelper] API error (${network.network}): ${err}`);
         }
 
-        // Also request more from chronicle if permanode is configured
-        if (network.permaNodeEndpoint) {
-            const legacyChronicleClient = new LegacyChronicleClient(network.permaNodeEndpoint);
-
-            const response = await legacyChronicleClient.findTransactions(findReq);
-
-            if (response?.hashes && response.hashes.length > 0) {
-                cursor.perma = response.hashes.length;
-
-                if (response.hints && response.hints.length > 0) {
-                    cursor.permaPaging = Buffer.from(JSON.stringify(response.hints[0])).toString("base64");
-                }
-
-                // Add any that we didn't already get from hornet
-                hashes = hashes.concat(response.hashes.filter(h => !hashes.includes(h)));
-
-                if (limit !== undefined) {
-                    cursor.hasMore = hashes.length > limit;
-                    if (hashes.length > limit) {
-                        // If there is a limit then remove any additional
-                        hashes = hashes.slice(0, limit);
-                    }
-                } else {
-                    cursor.hasMore = hashes.length === 5000;
-                }
-            }
-        }
-
         cursor.nextIndex = hashes.length;
 
         return {
@@ -105,12 +75,12 @@ export class LegacyTangleHelper {
     /**
      * Get transactions for the requested hashes.
      * @param network The network configuration.
-     * @param hashes The hashes to get the transactions.
+     * @param txHashes The hashes to get the transactions.
      * @returns The response.
      */
     public static async getTrytes(
         network: INetwork,
-        hashes: string[]): Promise<{
+        txHashes: string[]): Promise<{
             /**
              * The trytes for the requested transactions.
              */
@@ -130,7 +100,7 @@ export class LegacyTangleHelper {
             /**
              * The hash.
              */
-            hash: string;
+            txHash: string;
             /**
              * The trytes.
              */
@@ -139,155 +109,45 @@ export class LegacyTangleHelper {
              * The milestone index.
              */
             milestoneIndex: number | null;
-        }[] = hashes.map((h, idx) => ({ index: idx, hash: h, milestoneIndex: null }));
-
-
-        // If we have a permanode connection try there first
-        if (network.permaNodeEndpoint) {
-            const legacyChronicleClient = new LegacyChronicleClient(network.permaNodeEndpoint);
-
-            const response = await legacyChronicleClient.getTrytes({ hashes });
-
-            if (response?.trytes) {
-                for (let i = 0; i < hashes.length; i++) {
-                    allTrytes[i].trytes = response.trytes[i];
-
-                    allTrytes[i].milestoneIndex = response.milestones[i];
-                }
-            }
-        }
+        }[] = txHashes.map((h, idx) => ({ index: idx, txHash: h, milestoneIndex: null }));
 
         try {
             const missingTrytes = allTrytes.filter(a => !a.trytes);
 
             if (missingTrytes.length > 0) {
-                const api = composeAPI({
-                    provider: network.provider,
-                    user: network.user,
-                    password: network.password
-                });
+                const client = new LegacyClient(network.provider, network.user, network.password);
 
-                const response = await api.getTrytes(missingTrytes.map(a => a.hash));
-                if (response) {
-                    for (let i = 0; i < response.length; i++) {
-                        missingTrytes[i].trytes = response[i];
+                for (const element of missingTrytes) {
+                    const response = await client.getTrytes({ txHash: element.txHash });
+                    if (response) {
+                        element.trytes = response.trytes;
                     }
                 }
             }
         } catch (err) {
-            logger.error(`[LegacyTangleHelper] Get Trytes (${network.network}) failed. Cause: ${err}`);
+            logger.error(`[LegacyTangleHelper] getTrytes (${network.network}) failed. Cause: ${err}`);
         }
 
         try {
             const missingState = allTrytes.filter(a => a.milestoneIndex === null);
-
             if (missingState.length > 0) {
-                const api = composeAPI({
-                    provider: network.provider,
-                    user: network.user,
-                    password: network.password
-                });
+                const client = new LegacyClient(network.provider, network.user, network.password);
 
-                const statesResponse = await api.getInclusionStates(missingState.map(a => a.hash));
-                if (statesResponse) {
-                    for (let i = 0; i < statesResponse.length; i++) {
-                        missingState[i].milestoneIndex = statesResponse[i] ? 1 : 0;
+                for (const element of missingState) {
+                    const response = await client.getTransactionMetadata({ txHash: element.txHash });
+                    if (response) {
+                        element.milestoneIndex = response.referencedByMilestoneIndex;
                     }
                 }
             }
         } catch (err) {
-            logger.error(`[LegacyTangleHelper] Get Inclusion states (${network.network}) failed. Cause: ${err}`);
+            logger.error(`[LegacyTangleHelper] getTransactionMetadata (${network.network}) failed. Cause: ${err}`);
         }
 
         return {
             trytes: allTrytes.map(t => t.trytes || "9".repeat(2673)),
             milestoneIndexes: allTrytes.map(t => t.milestoneIndex ?? 0)
         };
-    }
-
-    /**
-     * Can we promote the tranaction.
-     * @param network The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction is promotable.
-     */
-    public static async canPromoteTransaction(
-        network: INetwork,
-        tailHash: string): Promise<boolean> {
-        try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
-
-            const result = await api.isPromotable(
-                tailHash
-            );
-            return result as boolean;
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Promote the tranaction.
-     * @param network The network to use.
-     * @param tailHash The hash.
-     * @returns Hash if the transaction was promoted.
-     */
-    public static async promoteTransaction(
-        network: INetwork,
-        tailHash: string): Promise<string | undefined> {
-        try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
-
-            const response = await api.promoteTransaction(
-                tailHash,
-                network.depth,
-                network.mwm
-            );
-
-            if (Array.isArray(response) && response.length > 0) {
-                const txs = response[0] as Transaction[];
-                return txs.length > 0 ? txs[0].hash : undefined;
-            }
-        } catch (err) {
-            logger.error(`[LegacyTangleHelper] Promote transaction failed. Cause: ${err}`);
-        }
-    }
-
-    /**
-     * Replay the tranaction.
-     * @param network The network to use.
-     * @param tailHash The hash.
-     * @returns True if the transaction was promoted.
-     */
-    public static async replayBundle(
-        network: INetwork,
-        tailHash: string): Promise<string | undefined> {
-        try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
-
-            const response = await api.replayBundle(
-                tailHash,
-                network.depth,
-                network.mwm
-            );
-            if (Array.isArray(response) && response.length > 0) {
-                return response[0].hash as string;
-            }
-        } catch (err) {
-            logger.error(`[LegacyTangleHelper] Replay bundle failed. Cause: ${err}`);
-        }
     }
 
     /**
@@ -300,21 +160,17 @@ export class LegacyTangleHelper {
         network: INetwork,
         addressHash: string): Promise<number> {
         try {
-            const api = composeAPI({
-                provider: network.provider,
-                user: network.user,
-                password: network.password
-            });
+            const client = new LegacyClient(network.provider, network.user, network.password);
 
-            const response = await api.getBalances([addressHash]);
-            if (response?.balances && response?.balances.length > 0) {
-                return response?.balances[0] as number;
+            const response = await client.getBalance({ address: addressHash });
+
+            if (response?.address && response?.address.length > 0) {
+                return response?.balance;
             }
         } catch (err) {
-            logger.error(`[LegacyTangleHelper] Get Address balance failed. Cause: ${err}`);
+            logger.error(`[LegacyTangleHelper] getAddressBalance failed. Cause: ${err}`);
         }
 
         return 0;
     }
 }
-

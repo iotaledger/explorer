@@ -1,10 +1,10 @@
+import { LegacyClient } from "../../../clients/legacy/client";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IAddressGetRequest } from "../../../models/api/legacy/IAddressGetRequest";
-import { IAddressGetResponse } from "../../../models/api/legacy/IAddressGetResponse";
+import { IMilestoneGetRequest } from "../../../models/api/legacy/IMilestoneGetRequest";
+import { IMilestoneGetResponse } from "../../../models/api/legacy/IMilestoneGetResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { LEGACY } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { LegacyTangleHelper } from "../../../utils/legacy/legacyTangleHelper";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -15,12 +15,13 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: IAddressGetRequest
-): Promise<IAddressGetResponse> {
+    request: IMilestoneGetRequest
+): Promise<IMilestoneGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
+
     ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.address, "address");
+    ValidationHelper.numberFromString(request.milestoneIndex, "milestoneIndex");
 
     const networkConfig = networkService.get(request.network);
 
@@ -28,9 +29,7 @@ export async function get(
         return {};
     }
 
-    const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.address);
+    const client = new LegacyClient(networkConfig.provider, networkConfig.user, networkConfig.password);
 
-    return {
-        balance
-    };
+    return client.milestoneByIndex(request);
 }
