@@ -1,9 +1,11 @@
+import { NetworkNode } from "./types";
+
 export interface WorkerNode {
     id: string;
     x: number;
     y: number;
     color?: string;
-    radius?: number;
+    radius: number;
 }
 
 export interface Updates {
@@ -45,6 +47,19 @@ export class Nodes {
             this.ids.shift();
             this.dict.delete(removed?.id);
             this.updates.remove.push(removed);
+        }
+    }
+
+    public updateParents(node: NetworkNode) {
+        if (node?.parents?.length) {
+            for (const parent of node.parents) {
+                const parentNode = this.dict.get(parent);
+
+                if (parentNode) {
+                    parentNode.radius += 10;
+                    this.updates.modify.push(parentNode);
+                }
+            }
         }
     }
 

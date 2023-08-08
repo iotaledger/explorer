@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { THRESHOLD_PX_Y } from "../common/constants";
+import { colors, THRESHOLD_PX_Y } from "../common/constants";
 import {
     generateCoordinateGrid,
     batchDataCounter,
@@ -63,13 +63,18 @@ ctx.addEventListener(
 
         const { x, y } = getCoordinates(shift);
 
+        const random = Math.floor(Math.random() * colors.length);
+
         const calculatedNode: WorkerNode = {
             id: data?.blockId,
             x,
-            y
+            y,
+            color: colors[random],
+            radius: 10
         };
 
         nodesInstance.add(calculatedNode);
+        nodesInstance.updateParents(data);
         nodesInstance.checkLimit();
 
         // collect info by portions and return it when it's 10 items

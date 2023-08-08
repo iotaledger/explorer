@@ -156,6 +156,17 @@ export const VisualizerKanva: React.FC<
 
     const workerRef = useRef(null);
 
+    const handleAddNode = (node: WorkerNode) => {
+        const konvaNode = new Konva.Circle({
+            x: node.x,
+            y: node.y,
+            radius: node.radius ?? DEFAULT_SIZE,
+            fill: node.color,
+            id: node.id
+        });
+        nodesLayerRef.current.add(konvaNode);
+    };
+
     /**
      * Add node to chart
      * @param workerNodes - node to add
@@ -164,17 +175,9 @@ export const VisualizerKanva: React.FC<
         if (!nodesLayerRef.current) {
             return;
         }
-        const random = Math.floor(Math.random() * colors.length);
 
         for (const node of workerNodes) {
-            const konvaNode = new Konva.Circle({
-                x: node.x,
-                y: node.y,
-                radius: node.radius ?? DEFAULT_SIZE,
-                fill: colors[random],
-                id: node.id
-            });
-            nodesLayerRef.current.add(konvaNode);
+            handleAddNode(node);
         }
     };
     /**
@@ -190,7 +193,30 @@ export const VisualizerKanva: React.FC<
             const konvaNode = nodesLayerRef.current.findOne(`#${node.id}`);
             if (konvaNode) {
                 konvaNode.destroy();
+                konvaNode.remove();
+            }
+        }
+    };
+    /**
+     * modify node to chart
+     * @param workerNodes
+     */
+    const handleModifyNodes = (workerNodes: WorkerNode[]) => {
+        if (!nodesLayerRef.current) {
+            return;
+        }
+
+        for (const node of workerNodes) {
+            const konvaNode = nodesLayerRef.current.findOne(`#${node.id}`);
+            if (konvaNode) {
+                konvaNode.to({
+                    radius: node.radius,
+                    duration: 0.2,
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    easing: Konva.Easings.EaseInOut
+                });
                 // konvaNode.remove();
+                // handleAddNode(node);
             }
         }
     };
@@ -204,6 +230,7 @@ export const VisualizerKanva: React.FC<
 
         handleAddNodes(add);
         handleRemoveNodes(remove);
+        handleModifyNodes(modify);
 
         nodesLayerRef.current.batchDraw();
     };
