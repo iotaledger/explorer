@@ -3,8 +3,8 @@ import { Bech32Helper, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesR
 import { Converter, WriteStream } from "@iota/util.js";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
-import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionHistoryRequest } from "../../models/api/chrysalis/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../models/api/chrysalis/ITransactionHistoryResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 
@@ -16,42 +16,11 @@ export class ChrysalisTangleHelper {
      * Find item on the chrysalis network.
      * @param network The network to find the items on.
      * @param query The query to use for finding items.
-     * @param cursor A cursor if are requesting subsequent pages.
      * @returns The item found.
      */
-    public static async search(network: INetwork, query: string, cursor?: string): Promise<ISearchResponse> {
-        // If we have a cursor this must be next page of permanode, so don't do the node lookup
-        let nodeResult = cursor ? {} : await ChrysalisTangleHelper.searchApi(
+    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
+        const nodeResult = await ChrysalisTangleHelper.searchApi(
             network.provider, network.user, network.password, false, network.bechHrp, query);
-
-        // If there were no results from regular node and we have a permanode
-        // or if there were output ids get any additional historic ones
-        if (network.permaNodeEndpoint &&
-            (Object.keys(nodeResult).length === 0 || nodeResult.addressOutputIds || nodeResult.indexMessageIds)) {
-            const permaResult = await ChrysalisTangleHelper.searchApi(
-                network.permaNodeEndpoint,
-                network.permaNodeEndpointUser,
-                network.permaNodeEndpointPassword,
-                true,
-                network.bechHrp,
-                query);
-
-            if (nodeResult.addressOutputIds) {
-                if (permaResult.addressOutputIds) {
-                    nodeResult.historicAddressOutputIds =
-                        permaResult.addressOutputIds.filter(a => !nodeResult.addressOutputIds.includes(a));
-                    nodeResult.cursor = permaResult.cursor;
-                }
-            } else if (nodeResult.indexMessageIds) {
-                if (permaResult.indexMessageIds) {
-                    nodeResult.indexMessageIds = nodeResult.indexMessageIds.concat(
-                        permaResult.indexMessageIds.filter(a => !nodeResult.indexMessageIds.includes(a)));
-                    nodeResult.cursor = permaResult.cursor;
-                }
-            } else {
-                nodeResult = permaResult;
-            }
-        }
 
         return nodeResult;
     }
@@ -274,25 +243,6 @@ export class ChrysalisTangleHelper {
             };
         } catch {
         }
-
-        if (network.permaNodeEndpoint) {
-            try {
-                const client = new SingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
-
-                const metadata = await client.messageMetadata(messageId);
-                const children = await client.messageChildren(messageId);
-
-                return {
-                    metadata,
-                    childrenMessageIds: children ? children.childrenMessageIds : undefined
-                };
-            } catch {
-            }
-        }
     }
 
     /**
@@ -310,43 +260,23 @@ export class ChrysalisTangleHelper {
             return await client.output(outputId);
         } catch {
         }
-
-        if (network.permaNodeEndpoint) {
-            try {
-                const client = new SingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
-                return await client.output(outputId);
-            } catch {
-            }
-        }
     }
 
     /**
-     * Get the transactions of an address.
+     * Get the transaction history of an address.
      * @param network The network to find the items on.
      * @param request The request.
      * @returns The transactions.
      */
-    public static async transactionsDetails(network: INetwork,
-        request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse | undefined> {
-        if (network.permaNodeEndpoint) {
-            try {
-                // We use ExtendedSingleNodeClient instead of SingleNodeClient
-                // because @iota/iota.js does not support the address/transactions endpoint.
-                // The @iota/iota.js dependency must be updated to offer this new feature.
-                // This class must be replaced by SingleNodeClient when suported
-                const client = new ExtendedSingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
-                return await client.transactionHistory(request);
-            } catch {
-                return { error: "Failed to fetch" };
-            }
+    public static async transactionHistory(network: INetwork,
+        request: ITransactionHistoryRequest): Promise<ITransactionHistoryResponse | undefined> {
+        try {
+            const client = new ExtendedSingleNodeClient(network.provider, {
+                userName: network.user,
+                password: network.password
+            });
+            return await client.transactionHistory(request);
+        } catch {
         }
     }
 
@@ -365,18 +295,6 @@ export class ChrysalisTangleHelper {
             });
             return await client.milestone(milestoneIndex);
         } catch {
-        }
-
-        if (network.permaNodeEndpoint) {
-            try {
-                const client = new SingleNodeClient(network.permaNodeEndpoint, {
-                    userName: network.permaNodeEndpointUser,
-                    password: network.permaNodeEndpointPassword,
-                    basePath: "/"
-                });
-                return await client.milestone(milestoneIndex);
-            } catch {
-            }
         }
     }
 }
