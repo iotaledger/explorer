@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { THRESHOLD_PX } from "../vivagraph-layout/layout";
 import { THRESHOLD_PX_X } from "./constants";
 
@@ -72,5 +73,5 @@ export const generateX = (shift: number) => {
     const randomNumber = Math.floor(Math.random() * THRESHOLD_PX) + 1;
 
     const shiftWithThreshold = (shift ?? 0) * THRESHOLD_PX_X;
-    return shiftWithThreshold;
+    return shiftWithThreshold + randomNumber;
 };

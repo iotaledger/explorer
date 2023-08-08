@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { THRESHOLD_PX_Y } from "../common/constants";
 import {
     generateCoordinateGrid,
@@ -11,6 +12,7 @@ import { NetworkNode } from "../common/types";
 /**
  * Initialize constants for worker
  */
+// @ts-expect-error
 // @ts-expect-error type any
 const ctx: Worker = self as any;
 
@@ -68,6 +70,7 @@ ctx.addEventListener(
         };
 
         nodesInstance.add(calculatedNode);
+        nodesInstance.checkLimit();
 
         // collect info by portions and return it when it's 10 items
         // note: we can also batch and return data based on shift param

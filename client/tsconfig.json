@@ -19,8 +19,7 @@
       "./node_modules/@types"
     ],
     "noFallthroughCasesInSwitch": true,
-    "lib": ["webworker", "dom", "esnext"
-
+    "lib": ["webworker", "dom", "esnext"]
   },
   "include": [
     "src"

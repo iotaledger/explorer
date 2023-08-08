@@ -177,6 +177,23 @@ export const VisualizerKanva: React.FC<
             nodesLayerRef.current.add(konvaNode);
         }
     };
+    /**
+     * Add node to chart
+     * @param workerNodes - node to add
+     */
+    const handleRemoveNodes = (workerNodes: WorkerNode[]) => {
+        if (!nodesLayerRef.current) {
+            return;
+        }
+
+        for (const node of workerNodes) {
+            const konvaNode = nodesLayerRef.current.findOne(`#${node.id}`);
+            if (konvaNode) {
+                konvaNode.destroy();
+                // konvaNode.remove();
+            }
+        }
+    };
 
     /**
      * Handle message from worker
@@ -186,6 +203,7 @@ export const VisualizerKanva: React.FC<
         const { add, modify, remove } = event.data;
 
         handleAddNodes(add);
+        handleRemoveNodes(remove);
 
         nodesLayerRef.current.batchDraw();
     };

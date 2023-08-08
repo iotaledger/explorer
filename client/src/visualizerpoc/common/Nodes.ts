@@ -37,6 +37,17 @@ export class Nodes {
         this.updates.add.push(node);
     }
 
+    public checkLimit() {
+        const LIMIT = 200;
+
+        if (this.list.length > LIMIT) {
+            const removed = this.list.shift() as WorkerNode;
+            this.ids.shift();
+            this.dict.delete(removed?.id);
+            this.updates.remove.push(removed);
+        }
+    }
+
     public getUpdates() {
         return this.updates;
     }
