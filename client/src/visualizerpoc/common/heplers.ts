@@ -29,7 +29,7 @@ export function generateCoordinateGrid(
  * if limit - return true
  */
 export const batchDataCounter = () => {
-    const LIMIT = 10;
+    const LIMIT = 5;
     let counter = 0;
     return () => {
         counter += 1;

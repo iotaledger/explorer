@@ -15,7 +15,7 @@ import {
     DEFAULT_SIZE,
     INCREASE_SIZE
 } from "../common/constants";
-import { Updates, WorkerNode } from "../common/Nodes";
+import { Updates, WorkerNode, ZoomY } from "../common/Nodes";
 import { useUpdateListener } from "../common/useUpdateListener";
 import { useDrag } from "./useDrag";
 import { useInit } from "./useInit";
@@ -193,7 +193,7 @@ export const VisualizerKanva: React.FC<
             const konvaNode = nodesLayerRef.current.findOne(`#${node.id}`);
             if (konvaNode) {
                 konvaNode.destroy();
-                konvaNode.remove();
+                // konvaNode.remove();
             }
         }
     };
@@ -211,7 +211,7 @@ export const VisualizerKanva: React.FC<
             if (konvaNode) {
                 konvaNode.to({
                     radius: node.radius,
-                    duration: 0.2,
+                    duration: 0.1,
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     easing: Konva.Easings.EaseInOut
                 });
@@ -225,12 +225,13 @@ export const VisualizerKanva: React.FC<
      * Handle message from worker
      * @param event
      */
-    const onWorkerMessage = (event: MessageEvent<Updates>) => {
-        const { add, modify, remove } = event.data;
+    const onWorkerMessage = (event: MessageEvent<Updates & ZoomY>) => {
+        const { add, modify, remove, maxY, minY } = event.data;
 
         handleAddNodes(add);
         handleRemoveNodes(remove);
         handleModifyNodes(modify);
+        recalculateZoom(maxY);
 
         nodesLayerRef.current.batchDraw();
     };

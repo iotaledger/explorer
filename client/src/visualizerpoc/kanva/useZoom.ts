@@ -44,7 +44,7 @@ export const useZoom = ({
                     y: pointerPosition.y - mousePointTo.y * newScale
                 });
 
-                stage.batchDraw();
+                // stage.batchDraw();
             }
         }
     };
@@ -56,8 +56,15 @@ export const useZoom = ({
      */
     const recalculateZoom = (newY: number) => {
         const isPositive = newY > 0;
+        const DEFAULT_SCALE = 0.25;
 
         if (!stageRef?.current) {
+            return;
+        }
+
+        if (newY < MAX_Y) {
+            stageRef.current.scale({ x: DEFAULT_SCALE, y: DEFAULT_SCALE });
+            stageRef.current.batchDraw();
             return;
         }
 
@@ -65,9 +72,8 @@ export const useZoom = ({
         // x == height / stageHeight
 
         const getNewScale = (height: number) => {
-            const DEFAULT_SCALE = 0.25;
             const stageHeight = stageRef?.current?.height() as number;
-            return (DEFAULT_SCALE * stageHeight) / height;
+            return ((DEFAULT_SCALE * stageHeight) / height) * 1.5;
         };
 
         if (isPositive && newY > maxY.current) {

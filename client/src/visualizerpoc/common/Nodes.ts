@@ -14,7 +14,18 @@ export interface Updates {
     remove: WorkerNode[];
 }
 
+export interface ZoomY {
+    maxY: number;
+    minY: number;
+}
+
 export class Nodes {
+    public maxY = 0;
+
+    public minY = 0;
+
+    public zoom = 0.25;
+
     public list: WorkerNode[] = [];
 
     public ids: string[] = [];
@@ -37,16 +48,19 @@ export class Nodes {
         this.dict.set(node.id, node);
 
         this.updates.add.push(node);
+
+        this.checkScaleUp(node.y);
     }
 
     public checkLimit() {
-        const LIMIT = 200;
+        const LIMIT = 500;
 
         if (this.list.length > LIMIT) {
             const removed = this.list.shift() as WorkerNode;
             this.ids.shift();
             this.dict.delete(removed?.id);
             this.updates.remove.push(removed);
+            // this.checkScaleDown(removed.y);
         }
     }
 
@@ -63,6 +77,14 @@ export class Nodes {
         }
     }
 
+    public getSendMessage() {
+        return {
+            ...this.updates,
+            maxY: this.maxY,
+            minY: this.minY
+        };
+    }
+
     public getUpdates() {
         return this.updates;
     }
@@ -74,4 +96,22 @@ export class Nodes {
             remove: []
         };
     }
+
+    private readonly checkScaleUp = (y: number) => {
+        if (y > 0 && y > this.maxY) {
+            this.maxY = y;
+        }
+        if (y < 0 && y < this.minY) {
+            this.minY = y;
+        }
+    };
+
+    private readonly checkScaleDown = (y: number) => {
+        if (y > 0 && y <= this.maxY) {
+            this.maxY = y;
+        }
+        if (y < 0 && y >= this.minY) {
+            this.minY = y;
+        }
+    };
 }

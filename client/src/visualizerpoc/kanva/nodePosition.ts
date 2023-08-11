@@ -81,8 +81,8 @@ ctx.addEventListener(
         // note: we can also batch and return data based on shift param
         const isBatchLimit = batchCounter();
         if (isBatchLimit) {
-            const updates = nodesInstance.getUpdates();
-            ctx.postMessage(updates);
+            const msg = nodesInstance.getSendMessage();
+            ctx.postMessage(msg);
             nodesInstance.clearUpdates();
         }
     }
