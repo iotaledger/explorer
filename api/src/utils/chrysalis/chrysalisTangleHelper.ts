@@ -1,5 +1,5 @@
 import { Blake2b } from "@iota/crypto.js";
-import { Bech32Helper, ED25519_ADDRESS_TYPE, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js-chrysalis";
+import { Bech32Helper, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js-chrysalis";
 import { Converter, WriteStream } from "@iota/util.js";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
@@ -20,7 +20,7 @@ export class ChrysalisTangleHelper {
      */
     public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
         const nodeResult = await ChrysalisTangleHelper.searchApi(
-            network.provider, network.user, network.password, false, network.bechHrp, query);
+            network.provider, network.user, network.password, network.bechHrp, query);
 
         return nodeResult;
     }
@@ -30,7 +30,6 @@ export class ChrysalisTangleHelper {
      * @param provider The provider for the REST API.
      * @param user The user for the for the REST API.
      * @param password The password for the REST API.
-     * @param isPermanode Is this a permanode endpoint.
      * @param bechHrp The bech32 hrp for the network.
      * @param query The query to use for finding items.
      * @param cursor Cursor data to send with the request.
@@ -40,16 +39,14 @@ export class ChrysalisTangleHelper {
         provider: string,
         user: string | undefined,
         password: string | undefined,
-        isPermanode: boolean,
         bechHrp: string,
         query: string,
         cursor?: string): Promise<ISearchResponse> {
         const client = new SingleNodeClient(provider, {
             userName: user,
-            password,
-            basePath: isPermanode ? "/" : undefined
+            password
         });
-        let queryLower = query.toLowerCase();
+        const queryLower = query.toLowerCase();
 
         try {
             // If the query starts with did:iota: then lookup a Decentralized identifier
@@ -75,25 +72,14 @@ export class ChrysalisTangleHelper {
         try {
             // If the query is bech format lookup address
             if (Bech32Helper.matches(queryLower, bechHrp)) {
-                // Permanode doesn't support the bech32 address endpoint so convert
-                // the query to ed25519 format if thats what the type is
-                // it will then be tried using the ed25519 address/outputs endpoint
-                // later in this process
-                if (isPermanode) {
-                    const converted = Bech32Helper.fromBech32(queryLower, bechHrp);
-                    if (converted.addressType === ED25519_ADDRESS_TYPE) {
-                        queryLower = Converter.bytesToHex(converted.addressBytes);
-                    }
-                } else {
-                    const address = await client.address(queryLower);
-                    if (address) {
-                        const addressOutputs = await client.addressOutputs(queryLower);
+                const address = await client.address(queryLower);
+                if (address) {
+                    const addressOutputs = await client.addressOutputs(queryLower);
 
-                        return {
-                            address,
-                            addressOutputIds: addressOutputs.outputIds
-                        };
-                    }
+                    return {
+                        address,
+                        addressOutputIds: addressOutputs.outputIds
+                    };
                 }
             }
         } catch {
@@ -146,17 +132,7 @@ export class ChrysalisTangleHelper {
             // If the query is bech format lookup address
             if (Converter.isHex(queryLower) && queryLower.length === 64) {
                 // We have 64 characters hex so could possible be a raw ed25519 address
-
-                // Permanode does not support the address/ed25519 endpoint
-                // as it does not maintain utxo state, so we create a dummy
-                // for permanode, but we can still get outputs for the address
-                const address = isPermanode ? {
-                    addressType: ED25519_ADDRESS_TYPE,
-                    address: queryLower,
-                    balance: 0,
-                    dustAllowed: false,
-                    ledgerIndex: 0
-                } : await client.addressEd25519(queryLower);
+                const address = await client.addressEd25519(queryLower);
 
                 const addressOutputs = await client.addressEd25519Outputs(queryLower);
 

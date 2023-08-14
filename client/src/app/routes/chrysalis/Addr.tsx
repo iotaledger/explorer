@@ -5,7 +5,6 @@ import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
-import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { ITransactionHistoryItem, calculateTangleMessageStatus } from "../../../models/api/chrysalis/ITransactionHistoryResponse";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
@@ -339,34 +338,16 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
     }
 
     private async getTransactionHistory() {
-        const transactionsDetails = await this._tangleCacheService.transactionsHistory({
+        const transactionHistory = await this._tangleCacheService.transactionsHistory({
             network: this.props.match.params.network,
             address: this.state.address?.address ?? ""
         }, false);
 
-        this.setState({ transactionHistory: transactionsDetails });
-    }
-
-    private async getTransactionAmount(
-        messageId: string): Promise<number> {
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, messageId);
-        const { inputs, outputs } =
-            await TransactionsHelper.getInputsAndOutputs(result?.message,
-                this.props.match.params.network,
-                this._bechHrp,
-                this._tangleCacheService);
-        const inputsRelated = inputs.filter(input => input.transactionAddress.hex === this.state.address?.address);
-        const outputsRelated = outputs.filter(output => output.address.hex === this.state.address?.address);
-        let fromAmount = 0;
-        let toAmount = 0;
-        for (const input of inputsRelated) {
-            fromAmount += input.amount;
-        }
-        for (const output of outputsRelated) {
-            toAmount += output.amount;
-        }
-        return toAmount - fromAmount;
+        this.setState({
+            status: "",
+            statusBusy: false,
+            transactionHistory
+        });
     }
 }
 

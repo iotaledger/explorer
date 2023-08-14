@@ -16,7 +16,7 @@ import { ValidationHelper } from "../../../utils/validationHelper";
 export async function get(
     config: IConfiguration,
     request: ITransactionHistoryRequest
-): Promise<{ transactionHistory: ITransactionHistoryResponse } | unknown> {
+): Promise<ITransactionHistoryResponse | unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -26,7 +26,8 @@ export async function get(
     if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {};
     }
-    return {
-        transactionHistory: await ChrysalisTangleHelper.transactionHistory(networkConfig, request)
-    };
+
+    const transactionHistory = await ChrysalisTangleHelper.transactionHistory(networkConfig, request);
+
+    return transactionHistory;
 }
