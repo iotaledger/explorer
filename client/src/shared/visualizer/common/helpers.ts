@@ -3,6 +3,7 @@
  * @param start - start of coordinates. Example: -300
  * @param end - end of coordinates. Example - 300
  * @param numberOfPoints - how much points you need between start and end.
+ * @returns list of coordinates
  */
 export function generateCoordinateGrid(
     start: number,

@@ -1,18 +1,15 @@
 import React, { useEffect } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
-import { IFeedBlockMetadata } from "../../../models/api/stardust/feed/IFeedBlockMetadata";
 import { StardustFeedClient } from "../../../services/stardust/stardustFeedClient";
-
-export type TBlockAdd = (newBlock: IFeedBlockData) => void;
-export type TBlockMetaUpdate = (metadataUpdate: {
-    [id: string]: IFeedBlockMetadata;
-}) => void;
+import {
+    TFeedBlockMetadataUpdate,
+    TFeedBlockAdd
+} from "../../../shared/visualizer/startdust/types";
 
 export const useUpdateListener = (
     network: string,
-    handlerNewBlock?: React.RefObject<TBlockAdd>,
-    handlerUpdateBlock?: TBlockMetaUpdate
+    handlerNewBlock?: React.RefObject<TFeedBlockAdd>,
+    handlerUpdateBlock?: TFeedBlockMetadataUpdate
 ) => {
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(
@@ -20,7 +17,10 @@ export const useUpdateListener = (
         );
 
         if (feedService && handlerNewBlock?.current) {
-            feedService.subscribeBlocks(handlerNewBlock.current, handlerUpdateBlock);
+            feedService.subscribeBlocks(
+                handlerNewBlock.current,
+                handlerUpdateBlock
+            );
         }
     }, [handlerNewBlock]);
     return {};

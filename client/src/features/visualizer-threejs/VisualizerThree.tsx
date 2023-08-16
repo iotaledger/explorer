@@ -1,11 +1,12 @@
 import { CameraControls, OrthographicCamera, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React from "react";
+import React, { useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import CanvasContext from "./CanvasContext";
+import { useUpdateListener } from "../visualizer-canvas/hooks/useUpdateListener";
 
 const VisualizerThree: React.FC<
     RouteComponentProps<VisualizerRouteProps>
@@ -15,6 +16,10 @@ const VisualizerThree: React.FC<
     }
 }) => {
         const [networkConfig] = useNetworkConfig(network);
+        const streamOnNewBlock = useRef(null);
+        const replayAttackOnNewBlock = useRef(null);
+
+        useUpdateListener(network, streamOnNewBlock);
 
         const controlsEnabled = true;
         const statsEnabled = true;

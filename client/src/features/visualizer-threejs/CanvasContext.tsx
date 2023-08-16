@@ -30,7 +30,6 @@ const CanvasContext: React.FC<CanvasContextProps> = ({ network }) => {
             color: colors[randomIntFromInterval(0, colors.length - 1)]
         });
     };
-    useUpdateListener(network, onNewBlock);
 
     console.log("block on screen N:", blocks.length);
 
