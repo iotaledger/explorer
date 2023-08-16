@@ -1,4 +1,4 @@
-FROM node:16-alpine3.14 AS build
+FROM node:16-alpine
 
 ## Include the build tools for any npm packages that rebuild
 RUN apk --no-cache add git curl python3 build-base cmake

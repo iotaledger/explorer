@@ -105,28 +105,28 @@ const buildAppRoutes = (
             )}
         />,
         <Route
-            path="/:network/address/:hash"
+            path="/:network/address/:address"
             key={keys.next().value}
             component={(
                 props: RouteComponentProps<LegacyAddressRouteProps>
             ) => <LegacyAddress {...props} />}
         />,
         <Route
-            path="/:network/transaction/:hash"
+            path="/:network/transaction/:txHash"
             key={keys.next().value}
             component={(
                 props: RouteComponentProps<LegacyTransactionRouteProps>
             ) => <LegacyTransaction {...props} />}
         />,
         <Route
-            path="/:network/tag/:hash"
+            path="/:network/tag/:tag"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyTagRouteProps>) => (
                 <LegacyTag {...props} />
             )}
         />,
         <Route
-            path="/:network/bundle/:hash"
+            path="/:network/bundle/:bundle"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyBundleRouteProps>) => (
                 <LegacyBundle {...props} />

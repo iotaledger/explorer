@@ -2,20 +2,7 @@ import { v4 } from "uuid";
 import zmq from "zeromq";
 import logger from "../../logger";
 import { IAddress } from "../../models/zmq/IAddress";
-import { IAntn } from "../../models/zmq/IAntn";
-import { IDnscc } from "../../models/zmq/IDnscc";
-import { IDnscu } from "../../models/zmq/IDnscu";
-import { IDnscv } from "../../models/zmq/IDnscv";
-import { IHmr } from "../../models/zmq/IHmr";
-import { ILmhs } from "../../models/zmq/ILmhs";
-import { ILmi } from "../../models/zmq/ILmi";
-import { ILmsi } from "../../models/zmq/ILmsi";
-import { IMctn } from "../../models/zmq/IMctn";
-import { IRntn } from "../../models/zmq/IRntn";
-import { IRstat } from "../../models/zmq/IRstat";
-import { IRtl } from "../../models/zmq/IRtl";
 import { ISn } from "../../models/zmq/ISn";
-import { ITx } from "../../models/zmq/ITx";
 import { ITxTrytes } from "../../models/zmq/ITxTrytes";
 import { ZmqEvent } from "../../models/zmq/zmqEvent";
 
@@ -121,103 +108,13 @@ export class ZmqService {
     }
 
     /**
-     * Subscribe to antn event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "antn", callback: (eventName: string, data: IAntn) => Promise<void>): string;
-    /**
-     * Subscribe to dnscc event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "dnscc", callback: (eventName: string, data: IDnscc) => Promise<void>): string;
-    /**
-     * Subscribe to dnscu event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "dnscu", callback: (eventName: string, data: IDnscu) => Promise<void>): string;
-    /**
-     * Subscribe to dnscv event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "dnscv", callback: (eventName: string, data: IDnscv) => Promise<void>): string;
-    /**
-     * Subscribe to hmr event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "hmr", callback: (eventName: string, data: IHmr) => Promise<void>): string;
-    /**
-     * Subscribe to lmhs event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "lmhs", callback: (eventName: string, data: ILmhs) => Promise<void>): string;
-    /**
-     * Subscribe to lmi event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "lmi", callback: (eventName: string, data: ILmi) => Promise<void>): string;
-    /**
-     * Subscribe to lmsi event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "lmsi", callback: (eventName: string, data: ILmsi) => Promise<void>): string;
-    /**
-     * Subscribe to mctn event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "mctn", callback: (eventName: string, data: IMctn) => Promise<void>): string;
-    /**
-     * Subscribe to rntn event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "rntn", callback: (eventName: string, data: IRntn) => Promise<void>): string;
-    /**
-     * Subscribe to rstat event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "rstat", callback: (eventName: string, data: IRstat) => Promise<void>): string;
-    /**
-     * Subscribe to rtl event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "rtl", callback: (eventName: string, data: IRtl) => Promise<void>): string;
-    /**
      * Subscribe to sn event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
     public subscribe(event: "sn", callback: (eventName: string, data: ISn) => Promise<void>): string;
-    /**
-     * Subscribe to tx event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event: "tx", callback: (eventName: string, data: ITx) => Promise<void>): string;
+
     /**
      * Subscribe to trytes event.
      * @param event The event to subscribe to.
@@ -228,6 +125,7 @@ export class ZmqService {
         event: "trytes",
         callback: (eventName: string, data: ITxTrytes) => Promise<void>
     ): string;
+
     /**
      * Subscribe to named event.
      * @param event The event to subscribe to.
@@ -307,100 +205,6 @@ export class ZmqService {
             let data;
 
             switch (event) {
-                case "antn": {
-                    data = {
-                        url: messageParams[1]
-                    } as IAntn;
-                    break;
-                }
-
-                case "dnscc": {
-                    data = {
-                        neighborsHostname: messageParams[1]
-                    } as IDnscc;
-                    break;
-                }
-
-                case "dnscu": {
-                    data = {
-                        neighborsHostname: messageParams[1]
-                    } as IDnscu;
-                    break;
-                }
-
-                case "dnscv": {
-                    data = {
-                        neighborsHostname: messageParams[1],
-                        neighborsIPAddress: messageParams[2]
-                    } as IDnscv;
-                    break;
-                }
-
-                case "hmr": {
-                    const parts = messageParams[1].split("/");
-                    data = {
-                        hitCount: Number.parseInt(parts[0], 10),
-                        missCount: Number.parseInt(parts[1], 10)
-                    } as IHmr;
-                    break;
-                }
-
-                case "lmhs": {
-                    data = {
-                        latestMilestoneHash: messageParams[1]
-                    } as ILmhs;
-                    break;
-                }
-
-                case "lmi": {
-                    data = {
-                        previousIndex: Number.parseInt(messageParams[1], 10),
-                        latestIndex: Number.parseInt(messageParams[2], 10)
-                    } as ILmi;
-                    break;
-                }
-
-                case "lmsi": {
-                    data = {
-                        prevSolidMilestoneIndex: Number.parseInt(messageParams[1], 10),
-                        latestMilestoneIndex: Number.parseInt(messageParams[2], 10)
-                    } as ILmsi;
-                    break;
-                }
-
-                case "mctn": {
-                    data = {
-                        totalTransactions: Number.parseInt(messageParams[1], 10)
-                    } as IMctn;
-                    break;
-                }
-
-                case "rntn": {
-                    data = {
-                        url: messageParams[1],
-                        maxPeers: Number.parseInt(messageParams[2], 10)
-                    } as IRntn;
-                    break;
-                }
-
-                case "rstat": {
-                    data = {
-                        received: Number.parseInt(messageParams[1], 10),
-                        toBroadcast: Number.parseInt(messageParams[2], 10),
-                        notRequested: Number.parseInt(messageParams[3], 10),
-                        notSent: Number.parseInt(messageParams[4], 10),
-                        stored: Number.parseInt(messageParams[5], 10)
-                    } as IRstat;
-                    break;
-                }
-
-                case "rtl": {
-                    data = {
-                        hash: messageParams[1]
-                    } as IRtl;
-                    break;
-                }
-
                 case "sn": {
                     data = {
                         index: Number.parseInt(messageParams[1], 10),
@@ -413,28 +217,10 @@ export class ZmqService {
                     break;
                 }
 
-                case "tx": {
-                    data = {
-                        hash: messageParams[1],
-                        address: messageParams[2],
-                        value: Number.parseInt(messageParams[3], 10),
-                        obsoleteTag: messageParams[4],
-                        timestamp: Number.parseInt(messageParams[5], 10),
-                        currentIndex: Number.parseInt(messageParams[6], 10),
-                        lastIndex: Number.parseInt(messageParams[7], 10),
-                        bundle: messageParams[8],
-                        trunk: messageParams[9],
-                        branch: messageParams[10],
-                        attachmentTimestamp: Number.parseInt(messageParams[11], 10),
-                        tag: messageParams[12]
-                    } as ITx;
-                    break;
-                }
-
                 case "trytes": {
                     data = {
                         trytes: messageParams[1],
-                        hash: messageParams[2]
+                        txHash: messageParams[2]
                     } as ITxTrytes;
                     break;
                 }

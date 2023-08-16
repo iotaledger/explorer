@@ -44,11 +44,11 @@ export async function get(
         if (request.mode) {
             modes = [request.mode];
         } else if (request.hash.length <= 27) {
-            modes = ["tags"];
+            modes = ["tag"];
         } else if (request.hash.length === 90) {
-            modes = ["addresses"];
+            modes = ["address"];
         } else {
-            modes = ["addresses", "bundles"];
+            modes = ["address", "bundle"];
         }
 
         for (const mode of modes) {
@@ -66,7 +66,7 @@ export async function get(
 
     // We can't find the hash as an address, bundle etc, so see if this was a tx hash
     // but not if we were looking for approvees as we don't want to list ourselves
-    if (request.mode !== "approvees" && (!txHashes || txHashes.length === 0) && request.hash.length === 81) {
+    if (request.mode !== "approvee" && (!txHashes || txHashes.length === 0) && request.hash.length === 81) {
         const { trytes } = await LegacyTangleHelper.getTrytes(networkConfig, [request.hash]);
 
         if (trytes && trytes.length > 0 && !isEmpty(trytes[0])) {
@@ -77,7 +77,7 @@ export async function get(
 
     return {
         mode: foundMode,
-        hashes: txHashes,
+        txHashes,
         cursor: txCursor
     };
 }

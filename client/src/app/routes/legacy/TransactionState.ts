@@ -97,26 +97,6 @@ export interface TransactionState {
     children?: string[];
 
     /**
-     * The transaction is busy with an action.
-     */
-    actionBusy: boolean;
-
-    /**
-     * The message for the action.
-     */
-    actionBusyMessage: string;
-
-    /**
-     * The resulting hash for the action.
-     */
-    actionResultHash?: string;
-
-    /**
-     * The tail hash for reattaching.
-     */
-    bundleTailHash?: string;
-
-    /**
      * Does this look like a streams v0 root.
      */
     streamsV0Root?: string;

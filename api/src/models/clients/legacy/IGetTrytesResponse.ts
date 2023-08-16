@@ -5,7 +5,7 @@ export interface IGetTrytesResponse {
     error?: string;
 
     /**
-     * The transaction trytes for the requested hashes.
+     * The transaction trytes for the requested hash.
      */
-    trytes: string[];
+    trytes: string;
 }

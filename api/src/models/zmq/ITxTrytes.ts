@@ -10,5 +10,5 @@ export interface ITxTrytes {
     /**
      * Transaction hash.
      */
-    hash: string;
+    txHash: string;
 }

@@ -19,7 +19,7 @@ export interface TagState {
         /**
          * The transaction hash.
          */
-        hash: string;
+        txHash: string;
 
         /**
          * The details details.
@@ -34,7 +34,7 @@ export interface TagState {
         /**
          * The transaction hash.
          */
-        hash: string;
+        txHash: string;
 
         /**
          * The details details.
