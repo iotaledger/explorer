@@ -4,7 +4,6 @@ import { VisualizerForceGraph } from "../../../visualizerpoc/force-graph/Visuali
 import { VisualizerKanva } from "../../../visualizerpoc/kanva/VisualizerKanva";
 import { VisualizerReagraph } from "../../../visualizerpoc/reagraph/VisualizerReagraph";
 import { VisualizerVivagraph } from "../../../visualizerpoc/vivagraph-layout/VisualizerVivagraph";
-import { VisualizerWebglD3 } from "../../../visualizerpoc/webgl-d3/VisualizerWebglD3";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerDefault } from "./VisualizerDefault";
 
@@ -31,14 +30,8 @@ export const VisualizerContainer: React.FC<
     if (currentView === Views.forcegraph) {
         return <VisualizerForceGraph {...props} />;
     }
-    if (currentView === Views.reagraph) {
-        return <VisualizerReagraph {...props} />;
-    }
     if (currentView === Views.kanva) {
         return <VisualizerKanva {...props} />;
-    }
-    if (currentView === Views.webgld3) {
-        return <VisualizerWebglD3 {...props} />;
     }
 
     return null;

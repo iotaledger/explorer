@@ -9,12 +9,8 @@ import {
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import {
-    adjustNodePositions,
-    findMostRightXPosition,
-    generateLinks,
-    multipleGenerateLinks
-} from "./helpers";
+import { adjustNodePositions, findMostRightXPosition } from "../common/heplers";
+import { generateLinks, multipleGenerateLinks } from "./helpers";
 import { mockNodes } from "./mock-data";
 
 interface Node {
