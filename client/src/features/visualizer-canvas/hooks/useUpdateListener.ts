@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { IVisualizerHookArgs } from "../../app/types/visualizer.types";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { IVisualizerHookArgs } from "../../../app/types/visualizer.types";
+import { ServiceFactory } from "../../../factories/serviceFactory";
+import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
+import { StardustFeedClient } from "../../../services/stardust/stardustFeedClient";
 
 interface IGraphNode extends IFeedBlockData {
     id: string;

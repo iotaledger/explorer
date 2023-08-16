@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback } from "react";
-import { generateCoordinateGrid } from "../common/heplers";
+
+import { generateCoordinateGrid } from "../../../shared/visualizer/helpers";
 
 export const useYCoordinateGenerator = (
     start = -800,

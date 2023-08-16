@@ -9,21 +9,21 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { useDrag } from "./hooks/useDrag";
+import { useInit } from "./hooks/useInit";
+import { useYCoordinateGenerator } from "./hooks/usePlaceNodes";
+import { useShift } from "./hooks/useShift";
+import { useStoreIds } from "./hooks/useStoreIds";
+import { useUpdateListener } from "./hooks/useUpdateListener";
+import { useZoom } from "./hooks/useZoom";
 import {
     colors,
     LIMIT_NODES,
     DEFAULT_SIZE,
     INCREASE_SIZE
-} from "../common/constants";
-import { Updates, WorkerNode, ZoomY } from "../common/Nodes";
-import { useUpdateListener } from "../common/useUpdateListener";
-import { useDrag } from "./useDrag";
-import { useInit } from "./useInit";
-import { useYCoordinateGenerator } from "./usePlaceNodes";
-import { useShift } from "./useShift";
-import { useStoreIds } from "./useStoreIds";
-import { useZoom } from "./useZoom";
-import "./nodePosition";
+} from "./lib/constants";
+import { Updates, WorkerNode, ZoomY } from "./lib/Nodes";
+import "./worker";
 
 interface ParentNode {
     id: number;
@@ -42,7 +42,7 @@ interface GraphProps {
     nodes: Node[];
 }
 
-export const VisualizerKanva: React.FC<
+export const VisualizerCanvas: React.FC<
     RouteComponentProps<VisualizerRouteProps>
 > = ({
     match: {
@@ -240,9 +240,7 @@ export const VisualizerKanva: React.FC<
      * Start work with worker
      */
     useEffect(() => {
-        workerRef.current = new Worker(
-            new URL("nodePosition.ts", import.meta.url)
-        );
+        workerRef.current = new Worker(new URL("worker.ts", import.meta.url));
         workerRef.current.postMessage(null);
 
         workerRef.current.addEventListener("message", onWorkerMessage);
@@ -279,4 +277,4 @@ export const VisualizerKanva: React.FC<
     );
 };
 
-export default VisualizerKanva;
+export default VisualizerCanvas;

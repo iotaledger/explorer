@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { RefObject, useState, useRef, useEffect } from "react";
-import { THRESHOLD_SHIFT_PX } from "../common/constants";
+import { THRESHOLD_SHIFT_PX } from "../lib/constants";
 
 export const useShift = ({
     graphShiftCountRef,

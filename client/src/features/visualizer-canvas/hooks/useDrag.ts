@@ -1,6 +1,6 @@
 import Konva from "konva";
 import { useEffect, useState, RefObject } from "react";
-import { THRESHOLD_PX } from "../vivagraph-layout/layout";
+import { THRESHOLD_PX } from "../../visualizer-webgl/layout";
 
 export const useDrag = (
     stageRef: RefObject<Konva.Stage>,

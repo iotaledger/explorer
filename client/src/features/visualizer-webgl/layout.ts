@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-invalid-this */
 import Viva from "vivagraphjs";
 import { INodeData } from "../../models/graph/stardust/INodeData";
-import { generateCoordinateGrid } from "../common/heplers";
+import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
 import { VivaLink } from "./vivagraph-layout.types";
 
 class Rect {

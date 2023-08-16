@@ -1,18 +1,18 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { colors, THRESHOLD_PX_Y } from "../common/constants";
+import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
+import { colors, THRESHOLD_PX_Y } from "./lib/constants";
 import {
-    generateCoordinateGrid,
     batchDataCounter,
     yCoordinateGenerator,
     generateX
-} from "../common/heplers";
-import { Nodes, WorkerNode } from "../common/Nodes";
-import { NetworkNode } from "../common/types";
+} from "./lib/heplers";
+import { Nodes, WorkerNode } from "./lib/Nodes";
+import { NetworkNode } from "./lib/types";
 
 /**
  * Initialize constants for worker
  */
-// @ts-expect-error
 // @ts-expect-error type any
 const ctx: Worker = self as any;
 
@@ -24,6 +24,7 @@ const getYCoordinate = yCoordinateGenerator();
 
 let currentShift = 0;
 
+// eslint-disable-next-line no-warning-comments
 // TODO we need to collect updates like change size, color, position and return it in batch
 
 /**

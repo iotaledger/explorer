@@ -5,9 +5,11 @@ import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { useVisualizerViva } from "./useVisualizerViva";
 
-const VisualizerVivagraph: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
-    { match: { params: { network } } }
-) => {
+const VisualizerWebgl: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
+    match: {
+        params: { network }
+    }
+}) => {
     const [networkConfig] = useNetworkConfig(network);
     const graphElement = useRef<HTMLDivElement | null>(null);
 
@@ -31,7 +33,7 @@ const VisualizerVivagraph: React.FC<RouteComponentProps<VisualizerRouteProps>> =
             isActive={isActive}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={e => setFilter(e.target.value)}
+            onChangeFilter={(e) => setFilter(e.target.value)}
             selectNode={selectNode}
             selectedFeedItem={selectedFeedItem}
             toggleActivity={toggleActivity}
@@ -46,7 +48,7 @@ const VisualizerVivagraph: React.FC<RouteComponentProps<VisualizerRouteProps>> =
                 ref={graphElement}
             />
         </Wrapper>
-);
+    );
 };
-export { VisualizerVivagraph };
-export default VisualizerVivagraph;
+export { VisualizerWebgl };
+export default VisualizerWebgl;
