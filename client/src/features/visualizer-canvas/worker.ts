@@ -23,6 +23,7 @@ const nodesInstance = new Nodes();
 const getYCoordinate = yCoordinateGenerator();
 
 let currentShift = 0;
+const timestamps = [];
 
 // eslint-disable-next-line no-warning-comments
 // TODO we need to collect updates like change size, color, position and return it in batch
@@ -62,6 +63,8 @@ ctx.addEventListener(
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
         }
 
+        timestamps.push(data.timestamp);
+
         const { x, y } = getCoordinates(shift);
 
         const random = Math.floor(Math.random() * colors.length);
@@ -86,6 +89,11 @@ ctx.addEventListener(
             ctx.postMessage(msg);
             nodesInstance.clearUpdates();
         }
+
+        // if (timestamps.length > 1000) {
+        //     ctx.postMessage(timestamps);
+        //     timestamps.length = 0;
+        // }
     }
 );
 

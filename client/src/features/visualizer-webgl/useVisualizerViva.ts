@@ -2,10 +2,7 @@
 import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
-import {
-    IVisualizerHookArgs,
-    IVisualizerHookReturn
-} from "../../app/types/visualizer.types";
+import { IVisualizerHookReturn } from "../../app/types/visualizer.types";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { buildNodeShader } from "../../helpers/nodeShader";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
@@ -29,8 +26,8 @@ const COLOR_MILESTONE: string = "0x666af6";
 const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
 export function useVisualizerViva(
-    network: IVisualizerHookArgs["network"],
-    graphElement: IVisualizerHookArgs["graphElement"]
+    network: string,
+    graphElement: React.MutableRefObject<HTMLDivElement | null>
 ): IVisualizerHookReturn {
     const [settingsService] = useState<SettingsService>(
         ServiceFactory.get<SettingsService>("settings")

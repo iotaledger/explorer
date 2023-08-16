@@ -13,6 +13,7 @@ export const useZoom = ({
 }) => {
     const minY = useRef(MIN_Y);
     const maxY = useRef(MAX_Y);
+
     const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
         e.evt.preventDefault();
 
@@ -94,7 +95,6 @@ export const useZoom = ({
         }
     };
     return {
-        handleWheel,
         recalculateZoom
     };
 };

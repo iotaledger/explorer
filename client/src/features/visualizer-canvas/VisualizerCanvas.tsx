@@ -9,7 +9,6 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { useDrag } from "./hooks/useDrag";
 import { useInit } from "./hooks/useInit";
 import { useYCoordinateGenerator } from "./hooks/usePlaceNodes";
 import { useShift } from "./hooks/useShift";
@@ -71,84 +70,17 @@ export const VisualizerCanvas: React.FC<
 
     const [networkConfig] = useNetworkConfig(network);
 
-    const { handleWheel, recalculateZoom } = useZoom({ stageRef });
-    const { handleMouseMove, handleMouseUp, handleMouseDown, shiftGraphRight } =
-        useDrag(stageRef, nodesLayerRef, linesLayerRef, lastNodePositionRef);
-    const { removeFirstNodeFromLayer, storeAddBlock, getNumberOfNodes } =
-        useStoreIds();
-    const { generateY, resetY } = useYCoordinateGenerator();
-    const { generateX } = useShift({
-        stageRef,
-        nodesLayerRef,
-        linesLayerRef,
-        nodeMap,
-        graphShiftCountRef,
-        resetY
-    });
+    const { recalculateZoom } = useZoom({ stageRef });
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
+            block.timestamp = Date.now();
+
             workerRef.current.postMessage({
                 type: "add",
                 graphShift: graphShiftCountRef.current,
                 data: block
             });
-            // console.log("--- block", block);
-            // const { y } = placeNodeCallback(graphShiftCountRef.current);
-
-            return;
-            const y = generateY();
-            const x = generateX();
-
-            recalculateZoom(y);
-
-            // lastNodePositionRef.current += 1;
-            storeAddBlock(block.blockId);
-
-            if (getNumberOfNodes() > LIMIT_NODES) {
-                removeFirstNodeFromLayer(nodesLayerRef.current, linesMap);
-            }
-
-            // Store the Konva node in the nodeMap
-            parentNodesList.current.push(block.blockId);
-            nodeMap.current.set(block.blockId, {
-                x,
-                y,
-                size: DEFAULT_SIZE
-            });
-
-            if (parentNodesList.current.length > 200) {
-                const firstParent = parentNodesList.current.shift();
-                nodeMap.current.delete(firstParent);
-            }
-
-            for (const parent of block.parents) {
-                const parentKonvaNode = nodeMap.current.get(parent);
-                if (parentKonvaNode) {
-                    const newRadius = parentKonvaNode.size + INCREASE_SIZE;
-
-                    nodeMap.current.set(parent, {
-                        ...parentKonvaNode,
-                        size: newRadius
-                    });
-
-                    const parentNodeOnLayer = nodesLayerRef.current.findOne(
-                        `#${parent}`
-                    );
-                    if (parentNodeOnLayer) {
-                        parentNodeOnLayer.radius(newRadius); // Adjust the base radius and the multiplier as needed
-                        parentNodeOnLayer.draw(); // Redraw the node
-                    }
-                }
-            }
-
-            newNode.on("click", (e) => {
-                console.log("click", e);
-            });
-
-            // now we need to refresh the layer manually
-
-            // linesLayerRef.current.batchDraw();
         }
     };
 
@@ -164,6 +96,11 @@ export const VisualizerCanvas: React.FC<
             fill: node.color,
             id: node.id
         });
+
+        konvaNode.on("click", (e) => {
+            console.log("click", e);
+        });
+
         nodesLayerRef.current.add(konvaNode);
     };
 
