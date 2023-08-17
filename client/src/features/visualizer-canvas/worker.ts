@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
+// import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
 import { colors, THRESHOLD_PX_Y } from "./lib/constants";
 import {
     batchDataCounter,
@@ -8,6 +8,7 @@ import {
     generateX
 } from "./lib/heplers";
 import { Nodes, WorkerNode } from "./lib/Nodes";
+import { Shift } from "./lib/Shift";
 import { NetworkNode } from "./lib/types";
 
 /**
@@ -19,6 +20,7 @@ const ctx: Worker = self as any;
 const batchCounter = batchDataCounter();
 
 const nodesInstance = new Nodes();
+const shiftInstance = new Shift();
 
 const getYCoordinate = yCoordinateGenerator();
 
@@ -52,7 +54,7 @@ ctx.addEventListener(
         e: MessageEvent<{
             type: "add" | "update" | string;
             graphShift: number;
-            data: NetworkNode;
+            data: NetworkNode & { timestamp: number };
         }>
     ) => {
         const type = e.data?.type;
@@ -63,7 +65,9 @@ ctx.addEventListener(
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
         }
 
-        timestamps.push(data.timestamp);
+        const shiftForNode = shiftInstance.calculateShift(data.timestamp);
+        console.log("--- shiftForNode", shiftForNode);
+        // timestamps.push(data.timestamp);
 
         const { x, y } = getCoordinates(shift);
 

@@ -4,6 +4,15 @@ import { THRESHOLD_PX } from "../../visualizer-webgl/layout";
 import { THRESHOLD_PX_X } from "./constants";
 import { IFeedBlockLocal, Link, PositionMap } from "./types";
 
+export const calculateShiftDiff = (
+    startTimestamp: number,
+    endTimestamp: number,
+    threshold: number
+) => {
+    const diff = endTimestamp - startTimestamp;
+    return Math.floor(diff / threshold);
+};
+
 /**
  * Calculation for batch data
  * if limit - return true

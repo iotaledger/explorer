@@ -71,6 +71,7 @@ export const VisualizerCanvas: React.FC<
     const [networkConfig] = useNetworkConfig(network);
 
     const { recalculateZoom } = useZoom({ stageRef });
+    const {} = useShift({ stageRef, nodesLayerRef, linesLayerRef });
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
