@@ -27,21 +27,9 @@ export const useShift = ({
             graphShiftCountRef &&
             graphShiftCountRef?.current !== null
         ) {
-            const newPosition = -(
-                graphShiftCountRef.current * THRESHOLD_SHIFT_PX
-            );
-
-            // nodes animation
-            const tweenNode = new Konva.Tween({
-                node: nodesLayerRef.current,
-                duration: 0.2, // The duration of the animation in seconds
-                x: newPosition
-            });
-
             // @ts-expect-error const not let
             graphShiftCountRef.current++;
             resetY();
-            tweenNode.play();
         }
     };
 

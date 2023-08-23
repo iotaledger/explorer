@@ -40,8 +40,6 @@ const getCoordinates = (shift: number) => {
         Y = getYCoordinate.next(true).value;
     }
 
-    console.log("--- Y", Y);
-
     const X = generateX(shift);
 
     // update shift locally

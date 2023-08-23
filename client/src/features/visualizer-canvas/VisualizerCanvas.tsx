@@ -13,7 +13,7 @@ import { useInit } from "./hooks/useInit";
 import { useShift } from "./hooks/useShift";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
-import { DEFAULT_SIZE } from "./lib/constants";
+import { DEFAULT_SIZE, THRESHOLD_SHIFT_PX } from "./lib/constants";
 import { WorkerNode } from "./lib/Nodes";
 import "./worker";
 import {
@@ -171,11 +171,16 @@ export const VisualizerCanvas: React.FC<
         payload: WorkerUpdateShift["payload"]
     ) => {
         const { shift } = payload;
-        console.log("--- shift", shift);
-        // handleAddNodes(add);
-        // handleRemoveNodes(remove);
-        // handleModifyNodes(modify);
-        // recalculateZoom(maxY); // TODO move it to separate event
+        const newPosition = -(shift * THRESHOLD_SHIFT_PX);
+
+        console.log("--- newPosition", newPosition);
+        // nodes animation
+        const tweenNode = new Konva.Tween({
+            node: nodesLayerRef.current,
+            duration: 0.2, // The duration of the animation in seconds
+            x: newPosition
+        });
+        tweenNode.play();
     };
 
     /**
@@ -199,8 +204,6 @@ export const VisualizerCanvas: React.FC<
         }
 
         if (type === WorkerType.UpdateShift) {
-            const { shift } = payload;
-            // graphShiftCountRef.current = shift;
         }
 
         nodesLayerRef.current.batchDraw();
