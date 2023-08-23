@@ -91,8 +91,11 @@ ctx.addEventListener(
         if (isBatchLimit) {
             const msg = nodesInstance.getSendMessage();
             ctx.postMessage({
-                type: WorkerType.UpdateNodes,
-                payload: msg
+                type: WorkerType.Full,
+                payload: {
+                    ...msg,
+                    shift: shiftForNode
+                }
             });
             nodesInstance.clearUpdates();
         }

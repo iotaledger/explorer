@@ -16,7 +16,12 @@ import { useZoom } from "./hooks/useZoom";
 import { DEFAULT_SIZE } from "./lib/constants";
 import { WorkerNode } from "./lib/Nodes";
 import "./worker";
-import { WorkerType, WorkerUpdateNodes, WorkerUpdateShift } from "./lib/types";
+import {
+    WorkerType,
+    WorkerUpdateFull,
+    WorkerUpdateNodes,
+    WorkerUpdateShift
+} from "./lib/types";
 
 interface ParentNode {
     id: number;
@@ -73,7 +78,6 @@ export const VisualizerCanvas: React.FC<
 
             workerRef.current.postMessage({
                 type: "add",
-                graphShift: graphShiftCountRef.current,
                 data: block
             });
         }
@@ -153,22 +157,45 @@ export const VisualizerCanvas: React.FC<
         }
     };
 
+    const handlePayloadUpdateNodes = (
+        payload: WorkerUpdateNodes["payload"]
+    ) => {
+        const { add, remove, modify } = payload;
+        handleAddNodes(add);
+        handleRemoveNodes(remove);
+        handleModifyNodes(modify);
+        // recalculateZoom(maxY); // TODO move it to separate event
+    };
+
+    const handlePayloadUpdateShift = (
+        payload: WorkerUpdateShift["payload"]
+    ) => {
+        const { shift } = payload;
+        console.log("--- shift", shift);
+        // handleAddNodes(add);
+        // handleRemoveNodes(remove);
+        // handleModifyNodes(modify);
+        // recalculateZoom(maxY); // TODO move it to separate event
+    };
+
     /**
      * Handle message from worker
      * @param event
      */
     const onWorkerMessage = (
-        event: MessageEvent<WorkerUpdateNodes | WorkerUpdateShift>
+        event: MessageEvent<
+            WorkerUpdateNodes | WorkerUpdateShift | WorkerUpdateFull
+        >
     ) => {
         const { type, payload } = event.data;
 
-        console.log("--- event.data", event.data);
+        if (type === WorkerType.Full) {
+            handlePayloadUpdateNodes(payload);
+            handlePayloadUpdateShift(payload);
+        }
+
         if (type === WorkerType.UpdateNodes) {
-            const { add, remove, modify } = payload;
-            handleAddNodes(add);
-            handleRemoveNodes(remove);
-            handleModifyNodes(modify);
-            // recalculateZoom(maxY); // TODO move it to separate event
+            handlePayloadUpdateNodes(payload);
         }
 
         if (type === WorkerType.UpdateShift) {

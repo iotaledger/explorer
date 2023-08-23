@@ -2,6 +2,7 @@ import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData
 import { Updates as NodesUpdates } from "./Nodes";
 
 export enum WorkerType {
+    Full = "Full",
     UpdateNodes = "UpdateNodes",
     UpdateShift = "UpdateShift"
 }
@@ -23,6 +24,15 @@ export interface Link {
     target: string;
 }
 
+export interface PayloadShift {
+    shift: number;
+}
+
+export interface WorkerUpdateFull {
+    type: WorkerType.Full;
+    payload: NodesUpdates & PayloadShift;
+}
+
 export interface WorkerUpdateNodes {
     type: WorkerType.UpdateNodes;
     payload: NodesUpdates;
@@ -30,5 +40,5 @@ export interface WorkerUpdateNodes {
 
 export interface WorkerUpdateShift {
     type: WorkerType.UpdateShift;
-    payload: number;
+    payload: PayloadShift;
 }
