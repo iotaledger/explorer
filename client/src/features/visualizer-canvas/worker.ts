@@ -9,7 +9,7 @@ import {
 } from "./lib/heplers";
 import { Nodes, WorkerNode } from "./lib/Nodes";
 import { Shift } from "./lib/Shift";
-import { NetworkNode } from "./lib/types";
+import { NetworkNode, WorkerType } from "./lib/types";
 
 /**
  * Initialize constants for worker
@@ -40,6 +40,8 @@ const getCoordinates = (shift: number) => {
         Y = getYCoordinate.next(true).value;
     }
 
+    console.log("--- Y", Y);
+
     const X = generateX(shift);
 
     // update shift locally
@@ -66,10 +68,8 @@ ctx.addEventListener(
         }
 
         const shiftForNode = shiftInstance.calculateShift(data.timestamp);
-        console.log("--- shiftForNode", shiftForNode);
-        // timestamps.push(data.timestamp);
 
-        const { x, y } = getCoordinates(shift);
+        const { x, y } = getCoordinates(shiftForNode);
 
         const random = Math.floor(Math.random() * colors.length);
 
@@ -90,7 +90,10 @@ ctx.addEventListener(
         const isBatchLimit = batchCounter();
         if (isBatchLimit) {
             const msg = nodesInstance.getSendMessage();
-            ctx.postMessage(msg);
+            ctx.postMessage({
+                type: WorkerType.UpdateNodes,
+                payload: msg
+            });
             nodesInstance.clearUpdates();
         }
 

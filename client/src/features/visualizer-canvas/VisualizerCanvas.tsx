@@ -1,28 +1,22 @@
 // @ts-nocheck
 // import { default as useResizeObserver } from "@react-hook/resize-observer";
 import Konva from "konva";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef } from "react";
 
-import { Stage, Layer, Circle, Line } from "react-konva";
+import { Layer, Stage } from "react-konva";
 import { RouteComponentProps } from "react-router-dom";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { useInit } from "./hooks/useInit";
-import { useYCoordinateGenerator } from "./hooks/usePlaceNodes";
 import { useShift } from "./hooks/useShift";
-import { useStoreIds } from "./hooks/useStoreIds";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
-import {
-    colors,
-    LIMIT_NODES,
-    DEFAULT_SIZE,
-    INCREASE_SIZE
-} from "./lib/constants";
-import { Updates, WorkerNode, ZoomY } from "./lib/Nodes";
+import { DEFAULT_SIZE } from "./lib/constants";
+import { WorkerNode } from "./lib/Nodes";
 import "./worker";
+import { WorkerType, WorkerUpdateNodes, WorkerUpdateShift } from "./lib/types";
 
 interface ParentNode {
     id: number;
@@ -163,13 +157,24 @@ export const VisualizerCanvas: React.FC<
      * Handle message from worker
      * @param event
      */
-    const onWorkerMessage = (event: MessageEvent<Updates & ZoomY>) => {
-        const { add, modify, remove, maxY, minY } = event.data;
+    const onWorkerMessage = (
+        event: MessageEvent<WorkerUpdateNodes | WorkerUpdateShift>
+    ) => {
+        const { type, payload } = event.data;
 
-        handleAddNodes(add);
-        handleRemoveNodes(remove);
-        handleModifyNodes(modify);
-        recalculateZoom(maxY);
+        console.log("--- event.data", event.data);
+        if (type === WorkerType.UpdateNodes) {
+            const { add, remove, modify } = payload;
+            handleAddNodes(add);
+            handleRemoveNodes(remove);
+            handleModifyNodes(modify);
+            // recalculateZoom(maxY); // TODO move it to separate event
+        }
+
+        if (type === WorkerType.UpdateShift) {
+            const { shift } = payload;
+            // graphShiftCountRef.current = shift;
+        }
 
         nodesLayerRef.current.batchDraw();
     };
