@@ -1,3 +1,5 @@
+import { DATA_SENDER_TIME_INTERVAL } from "./constants";
+
 export class Shift {
     public startTimestamp?: number;
 
@@ -5,12 +7,11 @@ export class Shift {
 
     public calculateShift(timestamp: number) {
         if (!this.startTimestamp) {
-            console.log(timestamp);
             this.startTimestamp = timestamp;
             return 0;
         }
 
         const diff = timestamp - this.startTimestamp;
-        return Math.floor(diff / 1000);
+        return Math.floor(diff / DATA_SENDER_TIME_INTERVAL);
     }
 }

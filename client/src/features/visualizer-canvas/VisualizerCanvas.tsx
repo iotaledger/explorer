@@ -10,10 +10,9 @@ import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { useInit } from "./hooks/useInit";
-import { useShift } from "./hooks/useShift";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
-import { DEFAULT_SIZE, THRESHOLD_SHIFT_PX } from "./lib/constants";
+import { NODE_SIZE_DEFAULT, THRESHOLD_SHIFT_PX } from "./lib/constants";
 import { WorkerNode } from "./lib/Nodes";
 import "./worker";
 import {
@@ -70,7 +69,6 @@ export const VisualizerCanvas: React.FC<
     const [networkConfig] = useNetworkConfig(network);
 
     const { recalculateZoom } = useZoom({ stageRef });
-    const {} = useShift({ stageRef, nodesLayerRef, linesLayerRef });
 
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
@@ -91,7 +89,7 @@ export const VisualizerCanvas: React.FC<
         const konvaNode = new Konva.Circle({
             x: node.x,
             y: node.y,
-            radius: node.radius ?? DEFAULT_SIZE,
+            radius: node.radius ?? NODE_SIZE_DEFAULT,
             fill: node.color,
             id: node.id
         });
@@ -133,6 +131,7 @@ export const VisualizerCanvas: React.FC<
             }
         }
     };
+
     /**
      * modify node to chart
      * @param workerNodes
@@ -173,11 +172,10 @@ export const VisualizerCanvas: React.FC<
         const { shift } = payload;
         const newPosition = -(shift * THRESHOLD_SHIFT_PX);
 
-        console.log("--- newPosition", newPosition);
         // nodes animation
         const tweenNode = new Konva.Tween({
             node: nodesLayerRef.current,
-            duration: 0.2, // The duration of the animation in seconds
+            duration: 0.5, // The duration of the animation in seconds
             x: newPosition
         });
         tweenNode.play();

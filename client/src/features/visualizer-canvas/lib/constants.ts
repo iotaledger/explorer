@@ -16,5 +16,8 @@ export const colors = [
     "#0101AB"
 ];
 
-export const DEFAULT_SIZE = 20;
-export const INCREASE_SIZE = 20;
+export const NODE_SIZE_DEFAULT = 10;
+export const NODE_SIZE_INCREMENT = 10;
+
+export const NODES_LIMIT = 500;
+export const DATA_SENDER_TIME_INTERVAL = 500;

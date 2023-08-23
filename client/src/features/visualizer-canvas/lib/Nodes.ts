@@ -1,3 +1,4 @@
+import { NODE_SIZE_INCREMENT, NODES_LIMIT } from "./constants";
 import { NetworkNode } from "./types";
 
 export interface WorkerNode {
@@ -53,9 +54,7 @@ export class Nodes {
     }
 
     public checkLimit() {
-        const LIMIT = 500;
-
-        if (this.list.length > LIMIT) {
+        if (this.list.length > NODES_LIMIT) {
             const removed = this.list.shift() as WorkerNode;
             this.ids.shift();
             this.dict.delete(removed?.id);
@@ -70,7 +69,7 @@ export class Nodes {
                 const parentNode = this.dict.get(parent);
 
                 if (parentNode) {
-                    parentNode.radius += 10;
+                    parentNode.radius += NODE_SIZE_INCREMENT;
                     this.updates.modify.push(parentNode);
                 }
             }

@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
-import { colors, THRESHOLD_PX_Y } from "./lib/constants";
+import { colors, NODE_SIZE_DEFAULT, THRESHOLD_PX_Y } from "./lib/constants";
+import { DataSender } from "./lib/DataSender";
 import {
     batchDataCounter,
     yCoordinateGenerator,
@@ -21,6 +22,7 @@ const batchCounter = batchDataCounter();
 
 const nodesInstance = new Nodes();
 const shiftInstance = new Shift();
+const dataSenderInstance = new DataSender();
 
 const getYCoordinate = yCoordinateGenerator();
 
@@ -59,7 +61,6 @@ ctx.addEventListener(
     ) => {
         const type = e.data?.type;
         const data = e.data?.data;
-        const shift = e.data?.graphShift;
 
         if (!e.data || type?.startsWith("webpack")) {
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
@@ -76,7 +77,7 @@ ctx.addEventListener(
             x,
             y,
             color: colors[random],
-            radius: 10
+            radius: NODE_SIZE_DEFAULT
         };
 
         nodesInstance.add(calculatedNode);
@@ -86,8 +87,10 @@ ctx.addEventListener(
         // collect info by portions and return it when it's 10 items
         // note: we can also batch and return data based on shift param
         const isBatchLimit = batchCounter();
-        if (isBatchLimit) {
+        if (dataSenderInstance.shouldSend(data.timestamp)) {
             const msg = nodesInstance.getSendMessage();
+            // TODO detect number of noder per second here
+            // TODO crop number of nodes depends on nodes per second here
             ctx.postMessage({
                 type: WorkerType.Full,
                 payload: {
