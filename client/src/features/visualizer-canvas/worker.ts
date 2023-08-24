@@ -68,6 +68,8 @@ ctx.addEventListener(
 
         const shiftForNode = shiftInstance.calculateShift(data.timestamp);
 
+        nodesInstance.checkShiftRange(shiftForNode);
+
         if (!nodesInstance.isNodesReachedByShift(shiftForNode)) {
             const { x, y } = getCoordinates(shiftForNode);
 

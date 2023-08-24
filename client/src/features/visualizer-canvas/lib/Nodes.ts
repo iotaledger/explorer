@@ -36,7 +36,7 @@ export class Nodes {
      */
     public shiftMap: Map<number, string[]> = new Map();
 
-    public lastShiftForRemove = 0;
+    public lastShiftForRemove?: number;
 
     public dict: Map<string, WorkerNode> = new Map();
 
@@ -112,7 +112,42 @@ export class Nodes {
         return nodes.length > 20;
     }
 
-    public checkShiftRange(shift: number) {}
+    public checkShiftRange(shift: number) {
+        const shiftOutOfScreen = shift - 20;
+        let range;
+        if (!this.lastShiftForRemove) {
+            this.lastShiftForRemove = 0;
+            range = this.createRange(this.lastShiftForRemove, shiftOutOfScreen);
+        } else {
+            range = this.createRange(
+                this.lastShiftForRemove + 1,
+                shiftOutOfScreen
+            );
+        }
+
+        for (const r of range) {
+            const nodes = this.shiftMap.get(r);
+            if (nodes) {
+                for (const id of nodes) {
+                    const node = this.dict.get(id);
+                    if (node) {
+                        this.updates.remove.push(node);
+                    }
+                }
+            }
+            this.shiftMap.delete(r);
+        }
+
+        this.lastShiftForRemove = shiftOutOfScreen;
+    }
+
+    private createRange(start: number, end: number) {
+        const range = [];
+        for (let i = start; i <= end; i++) {
+            range.push(i);
+        }
+        return range;
+    }
 
     private readonly checkScaleUp = (y: number) => {
         if (y > 0 && y > this.maxY) {
