@@ -68,21 +68,23 @@ ctx.addEventListener(
 
         const shiftForNode = shiftInstance.calculateShift(data.timestamp);
 
-        const { x, y } = getCoordinates(shiftForNode);
+        if (!nodesInstance.isNodesReachedByShift(shiftForNode)) {
+            const { x, y } = getCoordinates(shiftForNode);
 
-        const random = Math.floor(Math.random() * colors.length);
+            const random = Math.floor(Math.random() * colors.length);
 
-        const calculatedNode: WorkerNode = {
-            id: data?.blockId,
-            x,
-            y,
-            color: colors[random],
-            radius: NODE_SIZE_DEFAULT
-        };
+            const calculatedNode: WorkerNode = {
+                id: data?.blockId,
+                x,
+                y,
+                color: colors[random],
+                radius: NODE_SIZE_DEFAULT
+            };
 
-        nodesInstance.add(calculatedNode);
-        nodesInstance.updateParents(data);
-        nodesInstance.checkLimit();
+            nodesInstance.add(calculatedNode, shiftForNode);
+            nodesInstance.updateParents(data);
+            // nodesInstance.checkLimit();
+        }
 
         // collect info by portions and return it when it's 10 items
         // note: we can also batch and return data based on shift param

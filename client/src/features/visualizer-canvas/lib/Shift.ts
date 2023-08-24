@@ -5,6 +5,8 @@ export class Shift {
 
     public shift = 0;
 
+    public lastShift = 0;
+
     public calculateShift(timestamp: number) {
         if (!this.startTimestamp) {
             this.startTimestamp = timestamp;
@@ -12,6 +14,7 @@ export class Shift {
         }
 
         const diff = timestamp - this.startTimestamp;
+
         return Math.floor(diff / DATA_SENDER_TIME_INTERVAL);
     }
 }

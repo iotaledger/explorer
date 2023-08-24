@@ -31,6 +31,13 @@ export class Nodes {
 
     public ids: string[] = [];
 
+    /**
+     * Shift map needs to detect if node out of screen and we can remove it
+     */
+    public shiftMap: Map<number, string[]> = new Map();
+
+    public lastShiftForRemove = 0;
+
     public dict: Map<string, WorkerNode> = new Map();
 
     public updates: Updates = {
@@ -43,10 +50,11 @@ export class Nodes {
         this.list = [];
     }
 
-    public add(node: WorkerNode) {
+    public add(node: WorkerNode, shift: number) {
         this.list.push(node);
         this.ids.push(node.id);
         this.dict.set(node.id, node);
+        this.addToShiftMap(node, shift);
 
         this.updates.add.push(node);
 
@@ -96,6 +104,16 @@ export class Nodes {
         };
     }
 
+    public isNodesReachedByShift(shift: number) {
+        const nodes = this.shiftMap.get(shift);
+        if (!nodes) {
+            return false;
+        }
+        return nodes.length > 20;
+    }
+
+    public checkShiftRange(shift: number) {}
+
     private readonly checkScaleUp = (y: number) => {
         if (y > 0 && y > this.maxY) {
             this.maxY = y;
@@ -113,4 +131,10 @@ export class Nodes {
             this.minY = y;
         }
     };
+
+    private addToShiftMap(node: WorkerNode, shift: number) {
+        const nodes = this.shiftMap.get(shift) ?? [];
+        nodes.push(node.id);
+        this.shiftMap.set(shift, nodes);
+    }
 }

@@ -21,3 +21,4 @@ export const NODE_SIZE_INCREMENT = 10;
 
 export const NODES_LIMIT = 500;
 export const DATA_SENDER_TIME_INTERVAL = 500;
+export const KONVA_SHIFT_DURATION = 0.5;

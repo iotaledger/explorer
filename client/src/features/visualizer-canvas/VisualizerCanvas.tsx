@@ -12,7 +12,11 @@ import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { useInit } from "./hooks/useInit";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
-import { NODE_SIZE_DEFAULT, THRESHOLD_SHIFT_PX } from "./lib/constants";
+import {
+    KONVA_SHIFT_DURATION,
+    NODE_SIZE_DEFAULT,
+    THRESHOLD_SHIFT_PX
+} from "./lib/constants";
 import { WorkerNode } from "./lib/Nodes";
 import "./worker";
 import {
@@ -134,7 +138,7 @@ export const VisualizerCanvas: React.FC<
 
     /**
      * modify node to chart
-     * @param workerNodes
+     * @param workerNodes - .
      */
     const handleModifyNodes = (workerNodes: WorkerNode[]) => {
         if (!nodesLayerRef.current) {
@@ -175,7 +179,7 @@ export const VisualizerCanvas: React.FC<
         // nodes animation
         const tweenNode = new Konva.Tween({
             node: nodesLayerRef.current,
-            duration: 0.5, // The duration of the animation in seconds
+            duration: KONVA_SHIFT_DURATION, // The duration of the animation in seconds
             x: newPosition
         });
         tweenNode.play();
