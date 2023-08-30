@@ -194,6 +194,7 @@ export const VisualizerCanvas: React.FC<
             WorkerUpdateNodes | WorkerUpdateShift | WorkerUpdateFull
         >
     ) => {
+        const start = Date.now();
         const { type, payload } = event.data;
 
         if (type === WorkerType.Full) {
@@ -209,6 +210,8 @@ export const VisualizerCanvas: React.FC<
         }
 
         nodesLayerRef.current.batchDraw();
+
+        console.log("--- end", Date.now() - start, "ms");
     };
 
     /**

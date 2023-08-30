@@ -109,11 +109,12 @@ export class Nodes {
         if (!nodes) {
             return false;
         }
-        return nodes.length > 20;
+        return false;
+        // return nodes.length > 20;
     }
 
     public checkShiftRange(shift: number) {
-        const shiftOutOfScreen = shift - 20;
+        const shiftOutOfScreen = shift - 40;
         let range;
         if (!this.lastShiftForRemove) {
             this.lastShiftForRemove = 0;
