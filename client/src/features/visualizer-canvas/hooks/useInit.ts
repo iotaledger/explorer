@@ -1,6 +1,7 @@
 import Konva from "konva";
 import { RefObject, useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import { SCALE_DEFAULT } from "../lib/constants";
 
 export const useInit = (
     stageRef: RefObject<Konva.Stage>,
@@ -9,14 +10,13 @@ export const useInit = (
     const [isInit, setIsInit] = useState(false);
     const { width, height, ref: divWrapRef } = useResizeDetector();
 
-    const getYCenterCoordinate = () => {
+    const getInitialPositionY = () => {
         if (!stageRef.current) {
             return 0;
         }
         // Set the initial position of the stage
         const viewportHeight = stageRef.current.height(); // The height of the viewport
-        const nodeRangeCenter = -800; // The center of the Y range of the nodes (0 + 800) / 2
-        return (viewportHeight - nodeRangeCenter) / 2 + nodeRangeCenter / 2;
+        return viewportHeight / 2;
     };
 
     const getXCenterCoordinate = () => {
@@ -47,12 +47,16 @@ export const useInit = (
         }
         if (stageRef.current) {
             // Set the initial scale of the stage
-            stageRef.current.scale({ x: 0.25, y: 0.25 }); // Set the scale as needed
+            // const initialY = getYCenterCoordinate();
+            // const initialX = getXCenterCoordinate();
+            stageRef.current.position({ x: 0, y: getInitialPositionY() });
 
-            const initialY = getYCenterCoordinate();
-            const initialX = getXCenterCoordinate();
-
-            stageRef.current.position({ x: initialX, y: initialY });
+            setTimeout(() => {
+                stageRef?.current?.scale({
+                    x: SCALE_DEFAULT,
+                    y: SCALE_DEFAULT
+                }); // Set the scale as needed
+            }, 3000);
         }
     }, [isInit]);
 

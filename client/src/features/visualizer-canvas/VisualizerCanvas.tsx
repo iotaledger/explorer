@@ -57,6 +57,8 @@ export const VisualizerCanvas: React.FC<
     const stageRef = useRef<Konva.Stage>(null);
     const nodesLayerRef = useRef<Konva.Layer>(null);
     const workerRef = useRef(null);
+    window.st = stageRef;
+    window.nd = nodesLayerRef;
 
     /**
      * Custom hooks
@@ -91,7 +93,8 @@ export const VisualizerCanvas: React.FC<
             y: node.y,
             radius: node.radius ?? NODE_SIZE_DEFAULT,
             fill: node.color,
-            id: node.id
+            id: node.id,
+            opacity: 0
         });
 
         konvaNode.on("click", (e) => {
@@ -99,6 +102,16 @@ export const VisualizerCanvas: React.FC<
         });
 
         nodesLayerRef.current.add(konvaNode);
+
+        // Create a tween to animate the opacity
+        const tween = new Konva.Tween({
+            node: konvaNode,
+            duration: 0.2, // duration in seconds
+            opacity: 1 // target opacity
+        });
+
+        // Play the tween to start the animation
+        tween.play();
     };
 
     /**
@@ -178,7 +191,7 @@ export const VisualizerCanvas: React.FC<
         payload: WorkerUpdateShift["payload"]
     ) => {
         const { shift } = payload;
-        const newPosition = -((shift + 20) * THRESHOLD_SHIFT_PX);
+        const newPosition = -(shift * THRESHOLD_SHIFT_PX);
 
         // nodes animation
         const tweenNode = new Konva.Tween({

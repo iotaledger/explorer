@@ -1,8 +1,3 @@
-export const LIMIT_NODES = 2000;
-
-export const THRESHOLD_PX_Y = 80;
-export const THRESHOLD_PX_X = 100;
-export const THRESHOLD_SHIFT_PX = 100;
 export const colors = [
     "#F0F4FF",
     "#E0EAFF",
@@ -15,10 +10,12 @@ export const colors = [
     "#0000DB",
     "#0101AB"
 ];
-
+export const SCALE_DEFAULT = 0.25;
+export const THRESHOLD_PX_Y = 20;
+export const THRESHOLD_PX_X = 100;
+export const THRESHOLD_SHIFT_PX = 100;
 export const NODE_SIZE_DEFAULT = 3;
 export const NODE_SIZE_INCREMENT = 3;
-
 export const NODES_LIMIT = 500;
-export const DATA_SENDER_TIME_INTERVAL = 200;
-export const KONVA_SHIFT_DURATION = 1;
+export const DATA_SENDER_TIME_INTERVAL = 500;
+export const KONVA_SHIFT_DURATION = 0.5;
