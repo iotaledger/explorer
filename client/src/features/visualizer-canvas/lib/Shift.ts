@@ -5,6 +5,8 @@ export class Shift {
 
     public shift = 0;
 
+    public stageWidth = 0;
+
     public lastShift = 0;
 
     public calculateShift(timestamp: number) {
@@ -16,5 +18,9 @@ export class Shift {
         const diff = timestamp - this.startTimestamp;
 
         return Math.floor(diff / DATA_SENDER_TIME_INTERVAL);
+    }
+
+    public setStageWidth(width: number) {
+        this.stageWidth = width;
     }
 }

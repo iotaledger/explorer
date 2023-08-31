@@ -10,7 +10,9 @@ import {
 } from "./lib/heplers";
 import { Nodes, WorkerNode } from "./lib/Nodes";
 import { Shift } from "./lib/Shift";
-import { NetworkNode, WorkerType } from "./lib/types";
+import { WorkerType } from "./lib/types";
+import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
+
 
 /**
  * Initialize constants for worker
@@ -27,7 +29,6 @@ const dataSenderInstance = new DataSender();
 const getYCoordinate = yCoordinateGenerator();
 
 let currentShift = 0;
-const timestamps = [];
 
 // eslint-disable-next-line no-warning-comments
 // TODO we need to collect updates like change size, color, position and return it in batch
@@ -53,17 +54,18 @@ const getCoordinates = (shift: number) => {
 ctx.addEventListener(
     "message",
     (
-        e: MessageEvent<{
-            type: "add" | "update" | string;
-            graphShift: number;
-            data: NetworkNode & { timestamp: number };
-        }>
+        e: MessageEvent<WorkerEventOnNode | WorkerEventSetStageWidth>
     ) => {
         const type = e.data?.type;
         const data = e.data?.data;
 
         if (!e.data || type?.startsWith("webpack")) {
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
+        }
+
+        if (type === "setStageWidth") {
+            shiftInstance.setStageWidth(data);
+            return;
         }
 
         const shiftForNode = shiftInstance.calculateShift(data.timestamp);

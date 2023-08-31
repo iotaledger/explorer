@@ -82,7 +82,7 @@ export const VisualizerCanvas: React.FC<
     useUpdateListener(network, onNewBlock);
 
     /**
-     * Methods: onNehandleAddNodewBlock
+     * Methods:
      * @param node
      */
     const handleAddNode = (node: WorkerNode) => {
@@ -94,7 +94,7 @@ export const VisualizerCanvas: React.FC<
             id: node.id
         });
 
-        konvaNode.on("click", (e) => {
+        konvaNode.on("click", e => {
             console.log("click", e);
         });
 
@@ -235,6 +235,10 @@ export const VisualizerCanvas: React.FC<
         if (!stageWidth) {
         }
 
+        workerRef.current.postMessage({
+            type: "setStageWidth",
+            data: stageWidth
+        });
         // TODO call to web worker here.
     }, [stageWidth]);
 
