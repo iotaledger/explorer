@@ -13,7 +13,6 @@ import { Shift } from "./lib/Shift";
 import { WorkerType } from "./lib/types";
 import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
 
-
 /**
  * Initialize constants for worker
  */
@@ -53,27 +52,29 @@ const getCoordinates = (shift: number) => {
 
 ctx.addEventListener(
     "message",
-    (
-        e: MessageEvent<WorkerEventOnNode | WorkerEventSetStageWidth>
-    ) => {
-        const type = e.data?.type;
-        const data = e.data?.data;
-
-        if (!e.data || type?.startsWith("webpack")) {
+    (e: MessageEvent<WorkerEventOnNode | WorkerEventSetStageWidth>) => {
+        if (!e.data || e.data?.type?.startsWith("webpack")) {
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
         }
 
-        if (type === "setStageWidth") {
-            shiftInstance.setStageWidth(data);
+        if (e.data.type === "setStageWidth") {
+            shiftInstance.setStageWidth(e.data?.data);
             return;
         }
 
-        const shiftForNode = shiftInstance.calculateShift(data.timestamp);
+        const { type, data } = e.data as WorkerEventOnNode;
 
-        nodesInstance.checkShiftRange(shiftForNode);
+        const rightShiftVisible = shiftInstance.calculateRightShift(
+            // @ts-expect-error wrong type
+            data.timestamp
+        );
 
-        if (!nodesInstance.isNodesReachedByShift(shiftForNode)) {
-            const { x, y } = getCoordinates(shiftForNode);
+        const shiftRangeVisible = shiftInstance.getRangeShiftVisible();
+
+        nodesInstance.removeNodesOutOfScreen(shiftRangeVisible);
+
+        if (!nodesInstance.isNodesReachedByShift(rightShiftVisible)) {
+            const { x, y } = getCoordinates(rightShiftVisible);
 
             const random = Math.floor(Math.random() * colors.length);
 
@@ -85,7 +86,7 @@ ctx.addEventListener(
                 radius: NODE_SIZE_DEFAULT
             };
 
-            nodesInstance.add(calculatedNode, shiftForNode);
+            nodesInstance.add(calculatedNode, rightShiftVisible);
             nodesInstance.updateParents(data);
             // nodesInstance.checkLimit();
         }
@@ -95,13 +96,15 @@ ctx.addEventListener(
         const isBatchLimit = batchCounter();
         if (dataSenderInstance.shouldSend(data.timestamp)) {
             const msg = nodesInstance.getSendMessage();
+            // eslint-disable-next-line no-warning-comments
             // TODO detect number of noder per second here
+            // eslint-disable-next-line no-warning-comments
             // TODO crop number of nodes depends on nodes per second here
             ctx.postMessage({
                 type: WorkerType.Full,
                 payload: {
                     ...msg,
-                    shift: shiftForNode
+                    shift: rightShiftVisible
                 }
             });
             nodesInstance.clearUpdates();

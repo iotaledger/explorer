@@ -1,15 +1,19 @@
-import { DATA_SENDER_TIME_INTERVAL } from "./constants";
+import { DATA_SENDER_TIME_INTERVAL, THRESHOLD_SHIFT_PX } from "./constants";
 
 export class Shift {
     public startTimestamp?: number;
 
-    public shift = 0;
-
     public stageWidth = 0;
 
-    public lastShift = 0;
+    public leftShiftVisible = 0;
 
-    public calculateShift(timestamp: number) {
+    public rightShiftVisible = 0;
+
+    /**
+     * Calculate last shift;
+     * @param timestamp
+     */
+    public calculateRightShift(timestamp: number) {
         if (!this.startTimestamp) {
             this.startTimestamp = timestamp;
             return 0;
@@ -17,10 +21,38 @@ export class Shift {
 
         const diff = timestamp - this.startTimestamp;
 
-        return Math.floor(diff / DATA_SENDER_TIME_INTERVAL);
+        this.rightShiftVisible = Math.floor(diff / DATA_SENDER_TIME_INTERVAL);
+
+        return this.rightShiftVisible;
     }
 
+    public getRangeShiftVisible() {
+        this.calculateLeftShift();
+        return this.createRange(this.leftShiftVisible, this.rightShiftVisible);
+    }
+
+    /**
+     * We need to know stage width to calculate visible shift
+     * @param width
+     */
     public setStageWidth(width: number) {
         this.stageWidth = width;
+    }
+
+    public calculateLeftShift() {
+        // max number of shift visible on screen
+        const max = Math.floor(this.stageWidth / THRESHOLD_SHIFT_PX) + 1;
+
+        console.log("---", max);
+        this.leftShiftVisible = this.rightShiftVisible - max; // technicaly feature works, but scaling is not correct
+        return this.leftShiftVisible;
+    }
+
+    private createRange(start: number, end: number) {
+        const range = [];
+        for (let i = start; i <= end; i++) {
+            range.push(i);
+        }
+        return range;
     }
 }

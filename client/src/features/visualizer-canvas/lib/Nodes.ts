@@ -113,41 +113,21 @@ export class Nodes {
         // return nodes.length > 20;
     }
 
-    public checkShiftRange(shift: number) {
-        const shiftOutOfScreen = shift - 40;
-        let range;
-        if (!this.lastShiftForRemove) {
-            this.lastShiftForRemove = 0;
-            range = this.createRange(this.lastShiftForRemove, shiftOutOfScreen);
-        } else {
-            range = this.createRange(
-                this.lastShiftForRemove + 1,
-                shiftOutOfScreen
-            );
-        }
-
-        for (const r of range) {
-            const nodes = this.shiftMap.get(r);
-            if (nodes) {
-                for (const id of nodes) {
-                    const node = this.dict.get(id);
-                    if (node) {
-                        this.updates.remove.push(node);
+    public removeNodesOutOfScreen(shiftRangeVisible: number[]) {
+        for (const key of this.shiftMap.keys()) {
+            if (!shiftRangeVisible.includes(key)) {
+                const nodes = this.shiftMap.get(key);
+                if (nodes) {
+                    for (const id of nodes) {
+                        const node = this.dict.get(id);
+                        if (node) {
+                            this.updates.remove.push(node);
+                        }
                     }
                 }
+                this.shiftMap.delete(key);
             }
-            this.shiftMap.delete(r);
         }
-
-        this.lastShiftForRemove = shiftOutOfScreen;
-    }
-
-    private createRange(start: number, end: number) {
-        const range = [];
-        for (let i = start; i <= end; i++) {
-            range.push(i);
-        }
-        return range;
     }
 
     private readonly checkScaleUp = (y: number) => {
