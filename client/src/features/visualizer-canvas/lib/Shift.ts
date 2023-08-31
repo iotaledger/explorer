@@ -43,7 +43,6 @@ export class Shift {
         // max number of shift visible on screen
         const max = Math.floor(this.stageWidth / THRESHOLD_SHIFT_PX) + 1;
 
-        console.log("---", max);
         this.leftShiftVisible = this.rightShiftVisible - max; // technicaly feature works, but scaling is not correct
         return this.leftShiftVisible;
     }

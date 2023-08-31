@@ -63,7 +63,7 @@ export const VisualizerCanvas: React.FC<
      */
     const { divWrapRef, isInit, stageHeight, stageWidth } = useInit(stageRef);
     const [networkConfig] = useNetworkConfig(network);
-    const { recalculateZoom } = useZoom({ stageRef });
+    // const { recalculateZoom } = useZoom({ stageRef });
 
     /**
      * Methods: onNewBlock
@@ -94,7 +94,7 @@ export const VisualizerCanvas: React.FC<
             id: node.id
         });
 
-        konvaNode.on("click", e => {
+        konvaNode.on("click", (e) => {
             console.log("click", e);
         });
 
@@ -178,7 +178,7 @@ export const VisualizerCanvas: React.FC<
         payload: WorkerUpdateShift["payload"]
     ) => {
         const { shift } = payload;
-        const newPosition = -(shift * THRESHOLD_SHIFT_PX);
+        const newPosition = -((shift + 20) * THRESHOLD_SHIFT_PX);
 
         // nodes animation
         const tweenNode = new Konva.Tween({

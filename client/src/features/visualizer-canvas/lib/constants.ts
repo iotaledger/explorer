@@ -1,8 +1,8 @@
 export const LIMIT_NODES = 2000;
 
 export const THRESHOLD_PX_Y = 80;
-export const THRESHOLD_PX_X = 250;
-export const THRESHOLD_SHIFT_PX = 250;
+export const THRESHOLD_PX_X = 100;
+export const THRESHOLD_SHIFT_PX = 100;
 export const colors = [
     "#F0F4FF",
     "#E0EAFF",
@@ -16,8 +16,8 @@ export const colors = [
     "#0101AB"
 ];
 
-export const NODE_SIZE_DEFAULT = 10;
-export const NODE_SIZE_INCREMENT = 10;
+export const NODE_SIZE_DEFAULT = 3;
+export const NODE_SIZE_INCREMENT = 3;
 
 export const NODES_LIMIT = 500;
 export const DATA_SENDER_TIME_INTERVAL = 200;

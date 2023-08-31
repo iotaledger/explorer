@@ -25,7 +25,7 @@ export class Nodes {
 
     public minY = 0;
 
-    public zoom = 0.25;
+    public zoom = 1;
 
     public list: WorkerNode[] = [];
 
@@ -36,8 +36,6 @@ export class Nodes {
      */
     public shiftMap: Map<number, string[]> = new Map();
 
-    public lastShiftForRemove?: number;
-
     public dict: Map<string, WorkerNode> = new Map();
 
     public updates: Updates = {
@@ -45,10 +43,6 @@ export class Nodes {
         modify: [],
         remove: []
     };
-
-    constructor() {
-        this.list = [];
-    }
 
     public add(node: WorkerNode, shift: number) {
         this.list.push(node);
