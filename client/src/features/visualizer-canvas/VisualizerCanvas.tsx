@@ -241,7 +241,7 @@ export const VisualizerCanvas: React.FC<
 
         nodesLayerRef.current.batchDraw();
 
-        // console.log("--- end", Date.now() - start, "ms");
+        console.log("--- end", Date.now() - start, "ms");
     };
 
     /**
@@ -258,15 +258,19 @@ export const VisualizerCanvas: React.FC<
      * Listen width of stage.
      */
     useEffect(() => {
-        if (!stageWidth) {
+        if (!stageWidth || !stageHeight) {
+            return;
         }
 
+        workerRef.current.postMessage({
+            type: "setStageHeight",
+            data: stageHeight
+        });
         workerRef.current.postMessage({
             type: "setStageWidth",
             data: stageWidth
         });
-        // TODO call to web worker here.
-    }, [stageWidth]);
+    }, [stageWidth, stageHeight]);
 
     return (
         <Wrapper

@@ -61,6 +61,10 @@ ctx.addEventListener(
             shiftInstance.setStageWidth(e.data?.data);
             return;
         }
+        if (e.data.type === "setStageHeight") {
+            shiftInstance.setStageHeight(e.data?.data);
+            return;
+        }
 
         const { type, data } = e.data as WorkerEventOnNode;
 

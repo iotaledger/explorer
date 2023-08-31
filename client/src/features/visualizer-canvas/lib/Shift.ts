@@ -5,6 +5,8 @@ export class Shift {
 
     public stageWidth = 0;
 
+    public stageHeight = 0;
+
     public leftShiftVisible = 1;
 
     public rightShiftVisible = 1;
@@ -39,6 +41,10 @@ export class Shift {
      */
     public setStageWidth(width: number) {
         this.stageWidth = width;
+    }
+
+    public setStageHeight(height: number) {
+        this.stageHeight = height;
     }
 
     public calculateLeftShift() {

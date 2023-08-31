@@ -1,6 +1,11 @@
 import { NetworkNode } from "./lib/types";
 
-export type WorkerEventType = "add" | "update" | "setStageWidth" | string;
+export type WorkerEventType =
+    | "add"
+    | "update"
+    | "setStageWidth"
+    | "setStageHeight"
+    | string;
 
 export interface WorkerEventOnNode {
     type: WorkerEventType;
@@ -11,4 +16,3 @@ export interface WorkerEventSetStageWidth {
     type: WorkerEventType;
     data: number;
 }
-
