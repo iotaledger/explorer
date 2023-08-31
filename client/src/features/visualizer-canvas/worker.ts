@@ -75,7 +75,6 @@ ctx.addEventListener(
 
         if (!nodesInstance.isNodesReachedByShift(rightShiftVisible)) {
             const { x, y } = getCoordinates(rightShiftVisible);
-
             const random = Math.floor(Math.random() * colors.length);
 
             const calculatedNode: WorkerNode = {

@@ -5,9 +5,9 @@ export class Shift {
 
     public stageWidth = 0;
 
-    public leftShiftVisible = 0;
+    public leftShiftVisible = 1;
 
-    public rightShiftVisible = 0;
+    public rightShiftVisible = 1;
 
     /**
      * Calculate last shift;
@@ -16,12 +16,14 @@ export class Shift {
     public calculateRightShift(timestamp: number) {
         if (!this.startTimestamp) {
             this.startTimestamp = timestamp;
-            return 0;
+            return 1;
         }
 
         const diff = timestamp - this.startTimestamp;
 
-        this.rightShiftVisible = Math.floor(diff / DATA_SENDER_TIME_INTERVAL);
+        // Min shift is 1
+        this.rightShiftVisible =
+            Math.floor(diff / DATA_SENDER_TIME_INTERVAL) + 1;
 
         return this.rightShiftVisible;
     }
