@@ -9,6 +9,7 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import useDimensions from "./hooks/useDimensions";
 import { useInit } from "./hooks/useInit";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
@@ -55,6 +56,10 @@ export const VisualizerCanvas: React.FC<
      */
     const stageRef = useRef<Konva.Stage>(null);
     const nodesLayerRef = useRef<Konva.Layer>(null);
+
+    const stageDimensions = useDimensions(stageRef);
+    console.log("--- stageDimensions", stageDimensions);
+    window.st = stageRef;
     const linesLayerRef = useRef<Konva.Layer>(null);
     const lastNodePositionRef = useRef<number>(0);
     const nodeMap = useRef<Map<string, Konva.Circle & { size: number }>>(
@@ -211,7 +216,7 @@ export const VisualizerCanvas: React.FC<
 
         nodesLayerRef.current.batchDraw();
 
-        console.log("--- end", Date.now() - start, "ms");
+        // console.log("--- end", Date.now() - start, "ms");
     };
 
     /**
