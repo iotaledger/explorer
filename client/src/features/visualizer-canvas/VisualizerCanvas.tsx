@@ -56,29 +56,19 @@ export const VisualizerCanvas: React.FC<
      */
     const stageRef = useRef<Konva.Stage>(null);
     const nodesLayerRef = useRef<Konva.Layer>(null);
-
-    const stageDimensions = useDimensions(stageRef);
-    console.log("--- stageDimensions", stageDimensions);
-    window.st = stageRef;
-    const linesLayerRef = useRef<Konva.Layer>(null);
-    const lastNodePositionRef = useRef<number>(0);
-    const nodeMap = useRef<Map<string, Konva.Circle & { size: number }>>(
-        new Map()
-    );
-    const linesMap = useRef<string[]>([]);
-    const parentNodesList = useRef<string[]>([]);
-    const graphShiftCountRef = useRef<number>(0);
+    const workerRef = useRef(null);
 
     /**
      * Custom hooks
      */
-
     const { divWrapRef, isInit, stageHeight, stageWidth } = useInit(stageRef);
-
     const [networkConfig] = useNetworkConfig(network);
-
     const { recalculateZoom } = useZoom({ stageRef });
 
+    /**
+     * Methods: onNewBlock
+     * @param block
+     */
     const onNewBlock = (block: IFeedBlockData) => {
         if (nodesLayerRef.current) {
             block.timestamp = Date.now();
@@ -89,11 +79,12 @@ export const VisualizerCanvas: React.FC<
             });
         }
     };
-
     useUpdateListener(network, onNewBlock);
 
-    const workerRef = useRef(null);
-
+    /**
+     * Methods: onNehandleAddNodewBlock
+     * @param node
+     */
     const handleAddNode = (node: WorkerNode) => {
         const konvaNode = new Konva.Circle({
             x: node.x,
@@ -165,6 +156,10 @@ export const VisualizerCanvas: React.FC<
         }
     };
 
+    /**
+     * Methods: handlePayloadUpdateNodes
+     * @param payload
+     */
     const handlePayloadUpdateNodes = (
         payload: WorkerUpdateNodes["payload"]
     ) => {
@@ -175,6 +170,10 @@ export const VisualizerCanvas: React.FC<
         // recalculateZoom(maxY); // TODO move it to separate event
     };
 
+    /**
+     * Methods: handlePayloadUpdateShift
+     * @param payload
+     */
     const handlePayloadUpdateShift = (
         payload: WorkerUpdateShift["payload"]
     ) => {
@@ -228,6 +227,16 @@ export const VisualizerCanvas: React.FC<
 
         workerRef.current.addEventListener("message", onWorkerMessage);
     }, []);
+
+    /**
+     * Listen width of stage.
+     */
+    useEffect(() => {
+        if (!stageWidth) {
+        }
+
+        // TODO call to web worker here.
+    }, [stageWidth]);
 
     return (
         <Wrapper
