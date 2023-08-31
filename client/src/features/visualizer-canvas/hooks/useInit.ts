@@ -19,14 +19,13 @@ export const useInit = (
         return viewportHeight / 2;
     };
 
-    const getXCenterCoordinate = () => {
+    const getInitialPositionX = () => {
         if (!stageRef.current) {
             return 0;
         }
         // Set the initial position of the stage
         const viewportWidth = stageRef.current.width(); // The width of the viewport
-        const nodeRangeCenter = -400; // The center of the Y range of the nodes (0 + 800) / 2
-        return viewportWidth - 50;
+        return viewportWidth * 0.5;
     };
 
     // check if the stage is ready
@@ -49,9 +48,13 @@ export const useInit = (
             // Set the initial scale of the stage
             // const initialY = getYCenterCoordinate();
             // const initialX = getXCenterCoordinate();
-            stageRef.current.position({ x: 0, y: getInitialPositionY() });
+            stageRef.current.position({
+                x: getInitialPositionX(),
+                y: getInitialPositionY()
+            });
 
             setTimeout(() => {
+                return;
                 stageRef?.current?.scale({
                     x: SCALE_DEFAULT,
                     y: SCALE_DEFAULT

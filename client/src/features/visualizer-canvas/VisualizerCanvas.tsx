@@ -14,6 +14,7 @@ import { useInit } from "./hooks/useInit";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
 import {
+    ANIMATION_DURATION_SHOW_NODE,
     KONVA_SHIFT_DURATION,
     NODE_SIZE_DEFAULT,
     THRESHOLD_SHIFT_PX
@@ -100,13 +101,25 @@ export const VisualizerCanvas: React.FC<
         konvaNode.on("click", (e) => {
             console.log("click", e);
         });
+        konvaNode.on("mouseenter", (e) => {
+            e.currentTarget.to({
+                opacity: 0.5
+            });
+        });
+        konvaNode.on("mouseleave", (e) => {
+            setTimeout(() => {
+                e.currentTarget.to({
+                    opacity: 1
+                });
+            }, 500);
+        });
 
         nodesLayerRef.current.add(konvaNode);
 
         // Create a tween to animate the opacity
         const tween = new Konva.Tween({
             node: konvaNode,
-            duration: 0.2, // duration in seconds
+            duration: ANIMATION_DURATION_SHOW_NODE, // duration in seconds
             opacity: 1 // target opacity
         });
 
