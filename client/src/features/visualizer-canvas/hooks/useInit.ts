@@ -53,13 +53,13 @@ export const useInit = (
                 y: getInitialPositionY()
             });
 
-            setTimeout(() => {
-                return;
-                stageRef?.current?.scale({
-                    x: SCALE_DEFAULT,
-                    y: SCALE_DEFAULT
-                }); // Set the scale as needed
-            }, 3000);
+            // setTimeout(() => {
+            //     // return;
+            //     stageRef?.current?.scale({
+            //         x: SCALE_DEFAULT,
+            //         y: SCALE_DEFAULT
+            //     }); // Set the scale as needed
+            // }, 3000);
         }
     }, [isInit]);
 

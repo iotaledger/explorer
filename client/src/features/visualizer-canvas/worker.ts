@@ -99,6 +99,9 @@ ctx.addEventListener(
         const isBatchLimit = batchCounter();
         if (dataSenderInstance.shouldSend(data.timestamp)) {
             const msg = nodesInstance.getSendMessage();
+            const zoom = nodesInstance.getZoom();
+
+            console.log("--- zoom", zoom);
             // eslint-disable-next-line no-warning-comments
             // TODO detect number of noder per second here
             // eslint-disable-next-line no-warning-comments
@@ -107,6 +110,7 @@ ctx.addEventListener(
                 type: WorkerType.Full,
                 payload: {
                     ...msg,
+                    zoom,
                     shift: rightShiftVisible
                 }
             });

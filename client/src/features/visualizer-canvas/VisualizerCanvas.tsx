@@ -17,6 +17,7 @@ import {
     ANIMATION_DURATION_SHOW_NODE,
     KONVA_SHIFT_DURATION,
     NODE_SIZE_DEFAULT,
+    SCALE_DEFAULT,
     THRESHOLD_SHIFT_PX
 } from "./lib/constants";
 import { WorkerNode } from "./lib/Nodes";
@@ -215,6 +216,15 @@ export const VisualizerCanvas: React.FC<
         tweenNode.play();
     };
 
+    const handlePayloadUpdateZoom = (payload: WorkerUpdateZoom["payload"]) => {
+        if (stageRef.current) {
+            stageRef?.current?.scale({
+                x: payload.zoom,
+                y: payload.zoom
+            }); // Set the scale as needed
+        }
+    };
+
     /**
      * Handle message from worker
      * @param event
@@ -230,6 +240,7 @@ export const VisualizerCanvas: React.FC<
         if (type === WorkerType.Full) {
             handlePayloadUpdateNodes(payload);
             handlePayloadUpdateShift(payload);
+            handlePayloadUpdateZoom(payload);
         }
 
         if (type === WorkerType.UpdateNodes) {

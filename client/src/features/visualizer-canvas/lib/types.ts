@@ -4,7 +4,8 @@ import { Updates as NodesUpdates } from "./Nodes";
 export enum WorkerType {
     Full = "Full",
     UpdateNodes = "UpdateNodes",
-    UpdateShift = "UpdateShift"
+    UpdateShift = "UpdateShift",
+    UpdateZoom = "UpdateZoom"
 }
 
 export type NetworkNode = IFeedBlockData;
@@ -28,9 +29,13 @@ export interface PayloadShift {
     shift: number;
 }
 
+export interface PayloadZoom {
+    zoom: number;
+}
+
 export interface WorkerUpdateFull {
     type: WorkerType.Full;
-    payload: NodesUpdates & PayloadShift;
+    payload: NodesUpdates & PayloadShift & PayloadZoom;
 }
 
 export interface WorkerUpdateNodes {
@@ -41,4 +46,8 @@ export interface WorkerUpdateNodes {
 export interface WorkerUpdateShift {
     type: WorkerType.UpdateShift;
     payload: PayloadShift;
+}
+export interface WorkerUpdateZoom {
+    type: WorkerType.UpdateZoom;
+    payload: PayloadZoom;
 }

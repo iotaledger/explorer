@@ -32,7 +32,11 @@ export class Shift {
 
     public getRangeShiftVisible() {
         this.calculateLeftShift();
-        return this.createRange(this.leftShiftVisible, this.rightShiftVisible);
+
+        return this.createRange(
+            this.leftShiftVisible - 16,
+            this.rightShiftVisible
+        );
     }
 
     /**

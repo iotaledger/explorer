@@ -31,6 +31,8 @@ export class Nodes {
 
     public ids: string[] = [];
 
+    public yPositions: { [k: number]: number } = {};
+
     /**
      * Shift map needs to detect if node out of screen and we can remove it
      */
@@ -52,7 +54,9 @@ export class Nodes {
 
         this.updates.add.push(node);
 
-        this.checkScaleUp(node.y);
+        this.addYPosition(node);
+
+        // this.checkScaleUp(node.y);
     }
 
     public checkLimit() {
@@ -116,6 +120,7 @@ export class Nodes {
                         const node = this.dict.get(id);
                         if (node) {
                             this.updates.remove.push(node);
+                            this.removeYPosition(node);
                         }
                     }
                 }
@@ -124,27 +129,53 @@ export class Nodes {
         }
     }
 
-    private readonly checkScaleUp = (y: number) => {
-        if (y > 0 && y > this.maxY) {
-            this.maxY = y;
-        }
-        if (y < 0 && y < this.minY) {
-            this.minY = y;
-        }
-    };
+    // private readonly checkScaleUp = (y: number) => {
+    //     if (y > 0 && y > this.maxY) {
+    //         this.maxY = y;
+    //     }
+    //     if (y < 0 && y < this.minY) {
+    //         this.minY = y;
+    //     }
+    // };
 
-    private readonly checkScaleDown = (y: number) => {
-        if (y > 0 && y <= this.maxY) {
-            this.maxY = y;
-        }
-        if (y < 0 && y >= this.minY) {
-            this.minY = y;
-        }
-    };
+    // private readonly checkScaleDown = (y: number) => {
+    //     if (y > 0 && y <= this.maxY) {
+    //         this.maxY = y;
+    //     }
+    //     if (y < 0 && y >= this.minY) {
+    //         this.minY = y;
+    //     }
+    // };
+
+    public getZoom() {
+        console.log("--- this.yPositions", this.yPositions);
+        const max = Math.max(...Object.keys(this.yPositions).map(Number));
+        return 240 / max;
+    }
 
     private addToShiftMap(node: WorkerNode, shift: number) {
         const nodes = this.shiftMap.get(shift) ?? [];
         nodes.push(node.id);
         this.shiftMap.set(shift, nodes);
+    }
+
+    private addYPosition(node: WorkerNode) {
+        const Y = Math.abs(node.y);
+        const current = this.yPositions[Y];
+        if (!current) {
+            this.yPositions[Y] = 1;
+            return;
+        }
+        this.yPositions[Y] += 1;
+    }
+
+    private removeYPosition(node: WorkerNode) {
+        const Y = Math.abs(node.y);
+        const current = this.yPositions[Y];
+        if (current === 1) {
+            delete this.yPositions[Y];
+        } else {
+            this.yPositions[Y] -= 1;
+        }
     }
 }

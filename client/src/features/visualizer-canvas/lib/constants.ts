@@ -10,7 +10,7 @@ export const colors = [
     "#0000DB",
     "#0101AB"
 ];
-export const SCALE_DEFAULT = 0.25;
+export const SCALE_DEFAULT = 0.5;
 export const THRESHOLD_PX_Y = 20;
 export const THRESHOLD_PX_X = 100;
 export const THRESHOLD_SHIFT_PX = 100;
