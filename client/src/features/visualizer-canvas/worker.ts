@@ -80,11 +80,13 @@ ctx.addEventListener(
         if (!nodesInstance.isNodesReachedByShift(rightShiftVisible)) {
             const { x, y } = getCoordinates(rightShiftVisible);
             const random = Math.floor(Math.random() * colors.length);
+            const yMultiplier =
+                nodesInstance.getShiftMultiplier(rightShiftVisible);
 
             const calculatedNode: WorkerNode = {
                 id: data?.blockId,
                 x,
-                y,
+                y: y * yMultiplier,
                 color: colors[random],
                 radius: NODE_SIZE_DEFAULT
             };
@@ -101,7 +103,6 @@ ctx.addEventListener(
             const msg = nodesInstance.getSendMessage();
             const zoom = nodesInstance.getZoom();
 
-            console.log("--- zoom", zoom);
             // eslint-disable-next-line no-warning-comments
             // TODO detect number of noder per second here
             // eslint-disable-next-line no-warning-comments

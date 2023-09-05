@@ -108,7 +108,22 @@ export class Nodes {
             return false;
         }
         return false;
-        // return nodes.length > 20;
+        // return nodes.length > 25;
+    }
+
+    public getShiftMultiplier(shift: number) {
+        const min = 25;
+        const max = 250;
+
+        const nodes = this.shiftMap.get(shift);
+        if (!nodes || nodes.length < min) {
+            return 1;
+        }
+
+        const diff = nodes.length - min;
+        const range = max - min;
+        const percent = (diff / range) * 3;
+        return 1 + percent;
     }
 
     public removeNodesOutOfScreen(shiftRangeVisible: number[]) {
@@ -148,7 +163,6 @@ export class Nodes {
     // };
 
     public getZoom() {
-        console.log("--- this.yPositions", this.yPositions);
         const max = Math.max(...Object.keys(this.yPositions).map(Number));
         return 240 / max;
     }
