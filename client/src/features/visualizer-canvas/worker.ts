@@ -1,15 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
+import { DataSender } from "./entities/DataSender";
+import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
+import { Nodes, WorkerNode } from "./entities/Nodes";
+import { Shift } from "./entities/Shift";
 import { colors, NODE_SIZE_DEFAULT, THRESHOLD_PX_Y } from "./lib/constants";
-import { DataSender } from "./lib/DataSender";
 import {
     batchDataCounter,
     yCoordinateGenerator,
     generateX
 } from "./lib/heplers";
-import { Nodes, WorkerNode } from "./lib/Nodes";
-import { Shift } from "./lib/Shift";
 import { WorkerType } from "./lib/types";
 import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
 
@@ -24,6 +25,7 @@ const batchCounter = batchDataCounter();
 const nodesInstance = new Nodes();
 const shiftInstance = new Shift();
 const dataSenderInstance = new DataSender();
+const ndfInstance = new NodeDroppedFactor();
 
 const getYCoordinate = yCoordinateGenerator();
 

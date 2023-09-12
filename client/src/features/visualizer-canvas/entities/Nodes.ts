@@ -1,5 +1,5 @@
-import { NODE_SIZE_INCREMENT, NODES_LIMIT } from "./constants";
-import { NetworkNode } from "./types";
+import { NODE_SIZE_INCREMENT } from "../lib/constants";
+import { NetworkNode } from "../lib/types";
 
 export interface WorkerNode {
     id: string;
@@ -15,21 +15,12 @@ export interface Updates {
     remove: WorkerNode[];
 }
 
-export interface ZoomY {
-    maxY: number;
-    minY: number;
-}
-
 export class Nodes {
     public maxY = 0;
 
     public minY = 0;
 
     public zoom = 1;
-
-    public list: WorkerNode[] = [];
-
-    public ids: string[] = [];
 
     public yPositions: { [k: number]: number } = {};
 
@@ -47,8 +38,6 @@ export class Nodes {
     };
 
     public add(node: WorkerNode, shift: number) {
-        this.list.push(node);
-        this.ids.push(node.id);
         this.dict.set(node.id, node);
         this.addToShiftMap(node, shift);
 
@@ -57,16 +46,6 @@ export class Nodes {
         this.addYPosition(node);
 
         // this.checkScaleUp(node.y);
-    }
-
-    public checkLimit() {
-        if (this.list.length > NODES_LIMIT) {
-            const removed = this.list.shift() as WorkerNode;
-            this.ids.shift();
-            this.dict.delete(removed?.id);
-            this.updates.remove.push(removed);
-            // this.checkScaleDown(removed.y);
-        }
     }
 
     public updateParents(node: NetworkNode) {
@@ -143,24 +122,6 @@ export class Nodes {
             }
         }
     }
-
-    // private readonly checkScaleUp = (y: number) => {
-    //     if (y > 0 && y > this.maxY) {
-    //         this.maxY = y;
-    //     }
-    //     if (y < 0 && y < this.minY) {
-    //         this.minY = y;
-    //     }
-    // };
-
-    // private readonly checkScaleDown = (y: number) => {
-    //     if (y > 0 && y <= this.maxY) {
-    //         this.maxY = y;
-    //     }
-    //     if (y < 0 && y >= this.minY) {
-    //         this.minY = y;
-    //     }
-    // };
 
     public getZoom() {
         const max = Math.max(...Object.keys(this.yPositions).map(Number));

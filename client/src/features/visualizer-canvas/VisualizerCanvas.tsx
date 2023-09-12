@@ -3,24 +3,25 @@
 import Konva from "konva";
 import React, { useEffect, useRef } from "react";
 
-import { Layer, Stage } from "react-konva";
+import { Layer, Stage, FastLayer } from "react-konva";
 import { RouteComponentProps } from "react-router-dom";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { WorkerNode } from "./entities/Nodes";
 import useDimensions from "./hooks/useDimensions";
 import { useInit } from "./hooks/useInit";
 import { useUpdateListener } from "./hooks/useUpdateListener";
 import { useZoom } from "./hooks/useZoom";
 import {
+    ANIMATION_DURATION_MODIFY_NODE,
     ANIMATION_DURATION_SHOW_NODE,
     KONVA_SHIFT_DURATION,
     NODE_SIZE_DEFAULT,
     SCALE_DEFAULT,
     THRESHOLD_SHIFT_PX
 } from "./lib/constants";
-import { WorkerNode } from "./lib/Nodes";
 import "./worker";
 import {
     WorkerType,
@@ -91,6 +92,7 @@ export const VisualizerCanvas: React.FC<
      */
     const handleAddNode = (node: WorkerNode) => {
         const konvaNode = new Konva.Circle({
+            perfectDrawEnabled: false,
             x: node.x,
             y: node.y,
             radius: node.radius ?? NODE_SIZE_DEFAULT,
@@ -173,7 +175,7 @@ export const VisualizerCanvas: React.FC<
             if (konvaNode) {
                 konvaNode.to({
                     radius: node.radius,
-                    duration: 0.1,
+                    duration: ANIMATION_DURATION_MODIFY_NODE,
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     easing: Konva.Easings.EaseInOut
                 });
@@ -307,7 +309,7 @@ export const VisualizerCanvas: React.FC<
                     // onMouseMove={handleMouseMove}
                     ref={stageRef}
                 >
-                    <Layer ref={nodesLayerRef} />
+                    <FastLayer ref={nodesLayerRef} />
                 </Stage>
             </div>
         </Wrapper>

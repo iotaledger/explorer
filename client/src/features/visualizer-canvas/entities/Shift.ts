@@ -1,4 +1,7 @@
-import { DATA_SENDER_TIME_INTERVAL, THRESHOLD_SHIFT_PX } from "./constants";
+import {
+    DATA_SENDER_TIME_INTERVAL,
+    THRESHOLD_SHIFT_PX
+} from "../lib/constants";
 
 export class Shift {
     public startTimestamp?: number;

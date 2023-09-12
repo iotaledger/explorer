@@ -1,5 +1,5 @@
 import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
-import { Updates as NodesUpdates } from "./Nodes";
+import { Updates as NodesUpdates } from "../entities/Nodes";
 
 export enum WorkerType {
     Full = "Full",
