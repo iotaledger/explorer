@@ -4,6 +4,25 @@ import { THRESHOLD_PX } from "../../visualizer-webgl/layout";
 import { THRESHOLD_PX_X } from "./constants";
 import { IFeedBlockLocal, Link, PositionMap } from "./types";
 
+/**
+ * Generates a random subset of k elements from the given array.
+ *
+ * Utilizes a partial Fisher-Yates shuffle for efficiency (O(k)).
+ *
+ * @param arr Original array
+ * @param k Size of subset to return
+ * @returns Random subset of k elements
+ */
+export function randomSubset(arr: never[], k: number) {
+    const n = arr.length;
+    const subset = arr.slice();
+    for (let i = 0; i < k; i++) {
+        const randIdx = i + Math.floor(Math.random() * (n - i));
+        [subset[i], subset[randIdx]] = [subset[randIdx], subset[i]];
+    }
+    return subset.slice(0, k);
+}
+
 export const calculateShiftDiff = (
     startTimestamp: number,
     endTimestamp: number,

@@ -1,4 +1,11 @@
+import { NetworkNode } from "../lib/types";
+
 export class NodeDroppedFactor {
+    public allIncomeNodes: NetworkNode[] = [];
+
+    // arr.length calculate every time, so better to store separate value.
+    public allIncomeNodesLength = 0;
+
     private readonly minNodesUi = 20;
 
     private readonly startDroppedFactor = 30;
@@ -16,6 +23,16 @@ export class NodeDroppedFactor {
         return numberNodesPrevShift < this.minNodesUi
             ? numberNodesPrevShift
             : (this.maxNodesUi - this.startDroppedFactor) * allowedPercent;
+    };
+
+    public addIncomeNode = (node: NetworkNode) => {
+        this.allIncomeNodes.push(node);
+        this.allIncomeNodesLength += 1;
+    };
+
+    public clearIncomeNodes = () => {
+        this.allIncomeNodes = [];
+        this.allIncomeNodesLength = 0;
     };
 
     // current node count need to be no more than 50;

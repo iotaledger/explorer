@@ -70,6 +70,11 @@ ctx.addEventListener(
 
         const { type, data } = e.data as WorkerEventOnNode;
 
+        // timestamp doesn't attach on hot reload
+        if (!data?.timestamp) {
+            return;
+        }
+
         const rightShiftVisible = shiftInstance.calculateRightShift(
             // @ts-expect-error wrong type
             data.timestamp
@@ -78,6 +83,8 @@ ctx.addEventListener(
         const shiftRangeVisible = shiftInstance.getRangeShiftVisible();
 
         nodesInstance.removeNodesOutOfScreen(shiftRangeVisible);
+
+        ndfInstance.addIncomeNode(data);
 
         if (!nodesInstance.isNodesReachedByShift(rightShiftVisible)) {
             const { x, y } = getCoordinates(rightShiftVisible);
@@ -110,6 +117,7 @@ ctx.addEventListener(
             const msg = nodesInstance.sendMessagePayload;
             const zoom = nodesInstance.getZoom();
 
+            ndfInstance.clearIncomeNodes();
             // eslint-disable-next-line no-warning-comments
             // TODO detect number of noder per second here
             // eslint-disable-next-line no-warning-comments

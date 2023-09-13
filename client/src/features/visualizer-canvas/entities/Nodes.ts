@@ -15,11 +15,10 @@ export interface Updates {
     remove: WorkerNode[];
 }
 
+/**
+ * Here we collect all nodes that send to canvas
+ */
 export class Nodes {
-    public maxY = 0;
-
-    public minY = 0;
-
     public zoom = 1;
 
     public yPositions: { [k: number]: number } = {};

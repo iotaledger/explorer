@@ -1,5 +1,5 @@
 import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
-import { Updates as NodesUpdates } from "../entities/Nodes";
+import { Updates as PayloadNodesUpdates } from "../entities/Nodes";
 
 export enum WorkerType {
     Full = "Full",
@@ -35,12 +35,12 @@ export interface PayloadZoom {
 
 export interface WorkerUpdateFull {
     type: WorkerType.Full;
-    payload: NodesUpdates & PayloadShift & PayloadZoom;
+    payload: PayloadNodesUpdates & PayloadShift & PayloadZoom;
 }
 
 export interface WorkerUpdateNodes {
     type: WorkerType.UpdateNodes;
-    payload: NodesUpdates;
+    payload: PayloadNodesUpdates;
 }
 
 export interface WorkerUpdateShift {
