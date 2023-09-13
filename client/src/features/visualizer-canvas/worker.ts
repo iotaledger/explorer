@@ -116,7 +116,7 @@ ctx.addEventListener(
         if (dataSenderInstance.shouldSend(data.timestamp)) {
             const msg = nodesInstance.sendMessagePayload;
             const zoom = nodesInstance.getZoom();
-
+            ndfInstance.getAllowedNumberOfNodes();
             ndfInstance.clearIncomeNodes();
             // eslint-disable-next-line no-warning-comments
             // TODO detect number of noder per second here

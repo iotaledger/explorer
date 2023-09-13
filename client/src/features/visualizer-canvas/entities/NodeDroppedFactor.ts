@@ -8,24 +8,37 @@ export class NodeDroppedFactor {
 
     private readonly minNodesUi = 20;
 
-    private readonly startDroppedFactor = 30;
-
     private readonly maxNodesUi = 50;
 
-    private readonly maxBps = 1000;
+    private readonly maxBps = 500;
 
     // here we can implement memoization if needs
-    public getAllowedNumberOfNodes = (numberNodesPrevShift: number) => {
-        const allowedPercent =
-            (numberNodesPrevShift - this.startDroppedFactor) /
-            (this.maxBps - this.startDroppedFactor);
+    public getAllowedNumberOfNodes = () => {
+        if (this.allIncomeNodesLength < this.minNodesUi) {
+            return this.allIncomeNodesLength;
+        }
 
-        return numberNodesPrevShift < this.minNodesUi
-            ? numberNodesPrevShift
-            : (this.maxNodesUi - this.startDroppedFactor) * allowedPercent;
+        const diffUi = this.maxNodesUi - this.minNodesUi;
+        const diffBps = this.maxBps - this.minNodesUi;
+        const diffAllIncome = this.allIncomeNodesLength - this.minNodesUi;
+
+        const percent = diffAllIncome / diffBps;
+        const diffWithPercent = diffUi * percent;
+
+        const uiNodes = this.minNodesUi + diffWithPercent;
+
+        return {
+            percent,
+            uiNodesNumber: uiNodes
+        };
     };
 
     public addIncomeNode = (node: NetworkNode) => {
+        // protect overloading
+        if (this.allIncomeNodesLength >= this.maxBps) {
+            return;
+        }
+
         this.allIncomeNodes.push(node);
         this.allIncomeNodesLength += 1;
     };
