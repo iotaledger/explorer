@@ -175,6 +175,7 @@ export const VisualizerCanvas: React.FC<
             if (konvaNode) {
                 konvaNode.to({
                     radius: node.radius,
+                    fill: node.color,
                     duration: ANIMATION_DURATION_MODIFY_NODE,
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     easing: Konva.Easings.EaseInOut

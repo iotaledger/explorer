@@ -1,8 +1,26 @@
 // @ts-nocheck
 import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
 import { THRESHOLD_PX } from "../../visualizer-webgl/layout";
-import { THRESHOLD_PX_X } from "./constants";
+import {
+    colors,
+    NODE_SIZE_DEFAULT,
+    NODE_SIZE_INCREMENT,
+    THRESHOLD_PX_X
+} from "./constants";
 import { IFeedBlockLocal, Link, PositionMap } from "./types";
+
+/**
+ *
+ * @param radius
+ */
+export function colorBasedOnChildrenCount(radius: number) {
+    const childrenNumber = (radius - NODE_SIZE_DEFAULT) / NODE_SIZE_INCREMENT;
+
+    if (childrenNumber > colors.length) {
+        return colors[colors.length - 1];
+    }
+    return colors[childrenNumber];
+}
 
 /**
  * Generates a random subset of k elements from the given array.

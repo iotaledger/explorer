@@ -95,7 +95,7 @@ ctx.addEventListener(
                     id: node?.blockId,
                     x,
                     y: y * yMultiplier,
-                    color: colors[random],
+                    color: colors[0],
                     radius: NODE_SIZE_DEFAULT
                 };
 

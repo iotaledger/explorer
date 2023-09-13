@@ -1,4 +1,5 @@
 import { NODE_SIZE_INCREMENT } from "../lib/constants";
+import { colorBasedOnChildrenCount } from "../lib/heplers";
 import { NetworkNode } from "../lib/types";
 
 export interface WorkerNode {
@@ -56,6 +57,9 @@ export class Nodes {
 
                 if (parentNode) {
                     parentNode.radius += NODE_SIZE_INCREMENT;
+                    parentNode.color = colorBasedOnChildrenCount(
+                        parentNode.radius
+                    );
                     this.updates.modify.push(parentNode);
                 }
             }

@@ -12,7 +12,7 @@ export class NodeDroppedFactor {
 
     private readonly maxNodesUi = 50;
 
-    private readonly maxBps = 500;
+    private readonly maxBps = 1000;
 
     // here we can implement memoization if needs
     public getAllowedNumberOfNodes = () => {
