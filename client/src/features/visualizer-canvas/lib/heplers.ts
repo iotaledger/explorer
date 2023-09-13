@@ -13,7 +13,7 @@ import { IFeedBlockLocal, Link, PositionMap } from "./types";
  * @param k Size of subset to return
  * @returns Random subset of k elements
  */
-export function randomSubset(arr: never[], k: number) {
+export function randomSubset<T>(arr: T[], k: number) {
     const n = arr.length;
     const subset = arr.slice();
     for (let i = 0; i < k; i++) {

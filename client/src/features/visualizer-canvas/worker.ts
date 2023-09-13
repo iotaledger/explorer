@@ -6,11 +6,7 @@ import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
 import { Nodes, WorkerNode } from "./entities/Nodes";
 import { Shift } from "./entities/Shift";
 import { colors, NODE_SIZE_DEFAULT, THRESHOLD_PX_Y } from "./lib/constants";
-import {
-    batchDataCounter,
-    yCoordinateGenerator,
-    generateX
-} from "./lib/heplers";
+import { yCoordinateGenerator, generateX } from "./lib/heplers";
 import { WorkerType } from "./lib/types";
 import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
 
@@ -19,8 +15,6 @@ import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
  */
 // @ts-expect-error type any
 const ctx: Worker = self as any;
-
-const batchCounter = batchDataCounter();
 
 const nodesInstance = new Nodes();
 const shiftInstance = new Shift();
@@ -86,37 +80,28 @@ ctx.addEventListener(
 
         ndfInstance.addIncomeNode(data);
 
-        if (!nodesInstance.isNodesReachedByShift(rightShiftVisible)) {
-            const { x, y } = getCoordinates(rightShiftVisible);
-            const random = Math.floor(Math.random() * colors.length);
-            const yMultiplier =
-                nodesInstance.getShiftMultiplier(rightShiftVisible);
-
-            const calculatedNode: WorkerNode = {
-                id: data?.blockId,
-                x,
-                y: y * yMultiplier,
-                color: colors[random],
-                radius: NODE_SIZE_DEFAULT
-            };
-
-            const prevRightShift = rightShiftVisible - 1;
-            const prevShiftNodesCount =
-                nodesInstance.getShiftCountMap(prevRightShift);
-
-            nodesInstance.add(calculatedNode, rightShiftVisible);
-            nodesInstance.addShiftCountMap(rightShiftVisible);
-            nodesInstance.updateParents(data);
-            // nodesInstance.checkLimit();
-        }
-
-        // collect info by portions and return it when it's 10 items
-        // note: we can also batch and return data based on shift param
-        const isBatchLimit = batchCounter();
         if (dataSenderInstance.shouldSend(data.timestamp)) {
             const msg = nodesInstance.sendMessagePayload;
             const zoom = nodesInstance.getZoom();
-            ndfInstance.getAllowedNumberOfNodes();
+            const nodes = ndfInstance.getNodes();
+
+            for (const node of nodes) {
+                const { x, y } = getCoordinates(rightShiftVisible);
+                const random = Math.floor(Math.random() * colors.length);
+                const yMultiplier =
+                    1 + ndfInstance.getAllowedNumberOfNodes().percent * 2;
+
+                const calculatedNode: WorkerNode = {
+                    id: node?.blockId,
+                    x,
+                    y: y * yMultiplier,
+                    color: colors[random],
+                    radius: NODE_SIZE_DEFAULT
+                };
+
+                nodesInstance.add(calculatedNode, rightShiftVisible);
+                nodesInstance.updateParents(node);
+            }
             ndfInstance.clearIncomeNodes();
             // eslint-disable-next-line no-warning-comments
             // TODO detect number of noder per second here

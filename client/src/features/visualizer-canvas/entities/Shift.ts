@@ -37,7 +37,7 @@ export class Shift {
         this.calculateLeftShift();
 
         return this.createRange(
-            this.leftShiftVisible - 16,
+            this.leftShiftVisible - 10,
             this.rightShiftVisible
         );
     }

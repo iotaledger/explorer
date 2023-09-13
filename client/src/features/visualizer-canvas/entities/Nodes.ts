@@ -28,11 +28,6 @@ export class Nodes {
      */
     public shiftMap: Map<number, string[]> = new Map();
 
-    /**
-     * shiftCountMap needs to detect total number of nodes that came from network
-     */
-    public shiftCountMap: Map<number, number> = new Map();
-
     public dict: Map<string, WorkerNode> = new Map();
 
     public updates: Updates = {
@@ -75,15 +70,6 @@ export class Nodes {
         };
     }
 
-    public isNodesReachedByShift(shift: number) {
-        const nodes = this.shiftMap.get(shift);
-        if (!nodes) {
-            return false;
-        }
-        return false;
-        // return nodes.length > 25;
-    }
-
     public getShiftMultiplier(shift: number) {
         const min = 25;
         const max = 250;
@@ -113,7 +99,6 @@ export class Nodes {
                     }
                 }
                 this.shiftMap.delete(key);
-                this.shiftCountMap.delete(key);
             }
         }
     }
@@ -121,15 +106,6 @@ export class Nodes {
     public getZoom() {
         const max = Math.max(...Object.keys(this.yPositions).map(Number));
         return 240 / max;
-    }
-
-    public addShiftCountMap(shift: number) {
-        const count = this.shiftCountMap.get(shift) ?? 0;
-        this.shiftCountMap.set(shift, count + 1);
-    }
-
-    public getShiftCountMap(shift: number) {
-        return this.shiftCountMap.get(shift) ?? 0;
     }
 
     private addToShiftMap(node: WorkerNode, shift: number) {
