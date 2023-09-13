@@ -93,7 +93,12 @@ ctx.addEventListener(
                 radius: NODE_SIZE_DEFAULT
             };
 
+            const prevRightShift = rightShiftVisible - 1;
+            const prevShiftNodesCount =
+                nodesInstance.getShiftCountMap(prevRightShift);
+
             nodesInstance.add(calculatedNode, rightShiftVisible);
+            nodesInstance.addShiftCountMap(rightShiftVisible);
             nodesInstance.updateParents(data);
             // nodesInstance.checkLimit();
         }
@@ -102,7 +107,7 @@ ctx.addEventListener(
         // note: we can also batch and return data based on shift param
         const isBatchLimit = batchCounter();
         if (dataSenderInstance.shouldSend(data.timestamp)) {
-            const msg = nodesInstance.getSendMessage();
+            const msg = nodesInstance.sendMessagePayload;
             const zoom = nodesInstance.getZoom();
 
             // eslint-disable-next-line no-warning-comments

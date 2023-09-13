@@ -29,6 +29,11 @@ export class Nodes {
      */
     public shiftMap: Map<number, string[]> = new Map();
 
+    /**
+     * shiftCountMap needs to detect total number of nodes that came from network
+     */
+    public shiftCountMap: Map<number, number> = new Map();
+
     public dict: Map<string, WorkerNode> = new Map();
 
     public updates: Updates = {
@@ -37,6 +42,10 @@ export class Nodes {
         remove: []
     };
 
+    public get sendMessagePayload() {
+        return this.updates;
+    }
+
     public add(node: WorkerNode, shift: number) {
         this.dict.set(node.id, node);
         this.addToShiftMap(node, shift);
@@ -44,8 +53,6 @@ export class Nodes {
         this.updates.add.push(node);
 
         this.addYPosition(node);
-
-        // this.checkScaleUp(node.y);
     }
 
     public updateParents(node: NetworkNode) {
@@ -59,18 +66,6 @@ export class Nodes {
                 }
             }
         }
-    }
-
-    public getSendMessage() {
-        return {
-            ...this.updates,
-            maxY: this.maxY,
-            minY: this.minY
-        };
-    }
-
-    public getUpdates() {
-        return this.updates;
     }
 
     public clearUpdates() {
@@ -119,6 +114,7 @@ export class Nodes {
                     }
                 }
                 this.shiftMap.delete(key);
+                this.shiftCountMap.delete(key);
             }
         }
     }
@@ -126,6 +122,15 @@ export class Nodes {
     public getZoom() {
         const max = Math.max(...Object.keys(this.yPositions).map(Number));
         return 240 / max;
+    }
+
+    public addShiftCountMap(shift: number) {
+        const count = this.shiftCountMap.get(shift) ?? 0;
+        this.shiftCountMap.set(shift, count + 1);
+    }
+
+    public getShiftCountMap(shift: number) {
+        return this.shiftCountMap.get(shift) ?? 0;
     }
 
     private addToShiftMap(node: WorkerNode, shift: number) {
