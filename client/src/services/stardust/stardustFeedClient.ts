@@ -284,7 +284,7 @@ export class StardustFeedClient {
         const properties: { [key: string]: unknown } = {};
 
         try {
-            if (block.payload?.getType() === PayloadType.Transaction) {
+            if (block.payload?.type === PayloadType.Transaction) {
                 const transactionPayload = block.payload as TransactionPayload;
                 const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
                 transactionId = Utils.transactionId(transactionPayload);
@@ -293,22 +293,22 @@ export class StardustFeedClient {
                 value = 0;
 
                 for (const output of transactionEssence.outputs) {
-                    if (output.getType() === OutputType.Basic) {
+                    if (output.type === OutputType.Basic) {
                         const basicOutput = output as BasicOutput;
                         value += Number(basicOutput.getAmount());
                     }
                 }
 
-                if (transactionEssence.payload?.getType() === PayloadType.TaggedData) {
+                if (transactionEssence.payload?.type === PayloadType.TaggedData) {
                     properties.tag = (transactionEssence.payload as TaggedDataPayload).tag;
                 }
-            } else if (block.payload?.getType() === PayloadType.Milestone) {
+            } else if (block.payload?.type === PayloadType.Milestone) {
                 const milestonePayload = block.payload as MilestonePayload;
                 payloadType = "Milestone";
                 properties.index = milestonePayload.index;
                 properties.timestamp = milestonePayload.timestamp;
                 properties.milestoneId = Utils.milestoneId(milestonePayload);
-            } else if (block.payload?.getType() === PayloadType.TaggedData) {
+            } else if (block.payload?.type === PayloadType.TaggedData) {
                 const taggedDataPayload = block.payload as TaggedDataPayload;
                 payloadType = "TaggedData";
                 properties.tag = taggedDataPayload.tag;

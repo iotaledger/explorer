@@ -52,21 +52,21 @@ export class Bech32AddressHelper {
     private static buildAddressFromTypes(hrp: string, address: Address): IBech32AddressDetails {
         let hex: string = "";
 
-        if (address.getType() === AddressType.Ed25519) {
+        if (address.type === AddressType.Ed25519) {
             hex = HexHelper.stripPrefix(
                 (address as Ed25519Address).getPubKeyHash()
             );
-        } else if (address.getType() === AddressType.Alias) {
+        } else if (address.type === AddressType.Alias) {
             hex = HexHelper.stripPrefix(
                 (address as AliasAddress).getAliasId()
             );
-        } else if (address.getType() === AddressType.Nft) {
+        } else if (address.type === AddressType.Nft) {
             hex = HexHelper.stripPrefix(
                 (address as NftAddress).getNftId()
             );
         }
 
-        return this.buildAddressFromString(hrp, hex, address.getType());
+        return this.buildAddressFromString(hrp, hex, address.type);
     }
 
     /**

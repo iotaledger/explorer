@@ -27,7 +27,7 @@ const Asset: React.FC<AssetProps> = (
             const immutableFeatures = (foundryDetails?.output as FoundryOutput).getImmutableFeatures();
 
             const metadata = immutableFeatures?.find(
-                feature => feature.getType() === FeatureType.Metadata
+                feature => feature.type === FeatureType.Metadata
             ) as MetadataFeature;
 
             if (metadata) {

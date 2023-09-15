@@ -167,11 +167,11 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         if (addressBasicOutputs && !state.participations) {
             let foundParticipations: IParticipation[] = [];
             for (const outputResponse of addressBasicOutputs) {
-                if (outputResponse.output.getType() === OutputType.Basic &&
+                if (outputResponse.output.type === OutputType.Basic &&
                     TransactionsHelper.isParticipationEventOutput(outputResponse.output)
                 ) {
                     const metadataFeature = (outputResponse.output as BasicOutput).getFeatures()?.find(
-                        feature => feature.getType() === FeatureType.Metadata
+                        feature => feature.type === FeatureType.Metadata
                     ) as MetadataFeature;
 
                     if (metadataFeature) {

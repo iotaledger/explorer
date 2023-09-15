@@ -23,22 +23,22 @@ const Feature: React.FC<FeatureProps> = (
                     <DropdownIcon />
                 </div>
                 <div className="card--label">
-                    {NameHelper.getFeatureTypeName(feature.getType(), isImmutable)}
+                    {NameHelper.getFeatureTypeName(feature.type, isImmutable)}
                 </div>
             </div>
             {isExpanded && (
                 <div className="padding-l-t left-border">
-                    {feature.getType() === FeatureType.Sender && (
+                    {feature.type === FeatureType.Sender && (
                         <Address
                             address={(feature as SenderFeature).getSender()}
                         />
                     )}
-                    {feature.getType() === FeatureType.Issuer && (
+                    {feature.type === FeatureType.Issuer && (
                         <Address
                             address={(feature as IssuerFeature).getIssuer()}
                         />
                     )}
-                    {feature.getType() === FeatureType.Metadata && (
+                    {feature.type === FeatureType.Metadata && (
                         <div className="card--value row">
                             <DataToggle
                                 sourceData={(feature as MetadataFeature).getData()}
@@ -47,7 +47,7 @@ const Feature: React.FC<FeatureProps> = (
                             />
                         </div>
                     )}
-                    {feature.getType() === FeatureType.Tag && (
+                    {feature.type === FeatureType.Tag && (
                         <div>
                             {(feature as TagFeature).getTag() && (
                                 <DataToggle

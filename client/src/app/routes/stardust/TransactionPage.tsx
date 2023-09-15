@@ -43,7 +43,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     useEffect(() => {
-        if (block?.payload?.getType() === PayloadType.Transaction) {
+        if (block?.payload?.type === PayloadType.Transaction) {
             const transactionPayload = block.payload as ITransactionPayload;
             const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
             setIncludedBlockId(Utils.blockId(block));

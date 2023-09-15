@@ -33,7 +33,7 @@ class Address extends Component<AddressProps> {
         return (
             <div className="address-type">
                 <div className="card--label">
-                    {NameHelper.getAddressTypeName(this.props.address.getType())}
+                    {NameHelper.getAddressTypeName(this.props.address.type)}
                 </div>
                 <div className="card--value">
                     <TruncatedId id={address.bech32} link={link} showCopyButton />

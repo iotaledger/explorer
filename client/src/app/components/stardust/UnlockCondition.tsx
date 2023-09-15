@@ -65,17 +65,17 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                         <DropdownIcon />
                     </div>
                     <div className="card--label">
-                        {NameHelper.getUnlockConditionTypeName(unlockCondition.getType())}
+                        {NameHelper.getUnlockConditionTypeName(unlockCondition.type)}
                     </div>
                 </div>
                 {isExpanded && (
                     <div className="padding-l-t left-border">
-                        {unlockCondition.getType() === UnlockConditionType.Address && (
+                        {unlockCondition.type === UnlockConditionType.Address && (
                             <Address
                                 address={(unlockCondition as AddressUnlockCondition).getAddress()}
                             />
                         )}
-                        {unlockCondition.getType() === UnlockConditionType.StorageDepositReturn && (
+                        {unlockCondition.type === UnlockConditionType.StorageDepositReturn && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Return address
@@ -104,7 +104,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 </div>
                             </React.Fragment>
                         )}
-                        {unlockCondition.getType() === UnlockConditionType.Timelock &&
+                        {unlockCondition.type === UnlockConditionType.Timelock &&
                             (unlockCondition as TimelockUnlockCondition).getUnixTime() && (
                                 <React.Fragment>
                                     <div className="card--label">
@@ -117,7 +117,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     </div>
                                 </React.Fragment>
                             )}
-                        {unlockCondition.getType() === UnlockConditionType.Expiration && (
+                        {unlockCondition.type === UnlockConditionType.Expiration && (
                             <React.Fragment>
                                 <Address
                                     address={(unlockCondition as ExpirationUnlockCondition).getReturnAddress()}
@@ -136,17 +136,17 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 )}
                             </React.Fragment>
                         )}
-                        {unlockCondition.getType() === UnlockConditionType.GovernorAddress && (
+                        {unlockCondition.type === UnlockConditionType.GovernorAddress && (
                             <Address
                                 address={(unlockCondition as GovernorAddressUnlockCondition).getAddress()}
                             />
                         )}
-                        {unlockCondition.getType() === UnlockConditionType.ImmutableAliasAddress && (
+                        {unlockCondition.type === UnlockConditionType.ImmutableAliasAddress && (
                             <Address
                                 address={(unlockCondition as ImmutableAliasAddressUnlockCondition).getAddress()}
                             />
                         )}
-                        {unlockCondition.getType() === UnlockConditionType.StateControllerAddress && (
+                        {unlockCondition.type === UnlockConditionType.StateControllerAddress && (
                             <Address
                                 address={(unlockCondition as StateControllerAddressUnlockCondition).getAddress()}
                             />

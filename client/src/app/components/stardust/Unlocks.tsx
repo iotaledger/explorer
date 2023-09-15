@@ -45,9 +45,9 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                     <div>
                         {
                             unlocks.map((unlock, idx) => (
-                                unlock.getType() === UnlockType.Signature ?
+                                unlock.type === UnlockType.Signature ?
                                     <div key={idx} className="unlocks-card margin-l-t">
-                                        {displayUnlocksTypeAndIndex(unlock.getType(), idx)}
+                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
                                         <div className="unlocks-card--row">
                                             <span className="label">Public Key:</span>
                                             <div className="value public-key">
@@ -62,7 +62,7 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                                         </div>
                                     </div> :
                                     <div key={idx} className="unlocks-card margin-l-t">
-                                        {displayUnlocksTypeAndIndex((unlock as ReferenceUnlock).getType(), idx)}
+                                        {displayUnlocksTypeAndIndex((unlock as ReferenceUnlock).type, idx)}
                                         <div className="unlocks-card--row">
                                             <span className="label">References unlock at index:</span>
                                             <span className="value">{(unlock as ReferenceUnlock).reference}</span>

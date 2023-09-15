@@ -56,7 +56,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
 
             const immutableFeatures = (foundryDetails?.output as FoundryOutput).getImmutableFeatures();
             const metadataFeature = immutableFeatures?.find(
-                feature => feature.getType() === FeatureType.Metadata
+                feature => feature.type === FeatureType.Metadata
             ) as MetadataFeature;
 
             if (isMounted && metadataFeature) {

@@ -133,7 +133,7 @@ export class NameHelper {
             return payloadType;
         }
 
-        switch (block.payload?.getType()) {
+        switch (block.payload?.type) {
             case PayloadType.TaggedData:
                 payloadType = "Data";
                 break;

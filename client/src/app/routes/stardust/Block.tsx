@@ -49,13 +49,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     );
 
     useEffect(() => {
-        if (block?.payload?.getType() === PayloadType.Transaction) {
+        if (block?.payload?.type === PayloadType.Transaction) {
             const tsxId = Utils.transactionId(
                 block.payload as TransactionPayload
             );
             setTransactionId(tsxId);
         }
-        if (block?.payload?.getType() === PayloadType.Milestone) {
+        if (block?.payload?.type === PayloadType.Milestone) {
             const mId = Utils.milestoneId(block.payload as MilestonePayload);
             setMilestoneId(mId);
         }
@@ -65,8 +65,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     const isMarketed = isMarketedNetwork(network);
     const blockInstance = block ? plainToInstance(IBlock, block) : undefined;
-    const isMilestoneBlock = blockInstance?.payload?.getType() === PayloadType.Milestone;
-    const isTransactionBlock = blockInstance?.payload?.getType() === PayloadType.Transaction;
+    const isMilestoneBlock = blockInstance?.payload?.type === PayloadType.Milestone;
+    const isTransactionBlock = blockInstance?.payload?.type === PayloadType.Transaction;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = isBlockLoading ||
         isInputsAndOutputsLoading ||
@@ -74,7 +74,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         isMilestoneReferencedBlockLoading;
     const milestoneIndex = isMilestoneBlock ? (blockInstance.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
-    switch (block?.payload?.getType()) {
+    switch (block?.payload?.type) {
         case PayloadType.Milestone:
             pageTitle = `Milestone Block ${milestoneIndex}`;
             break;
@@ -203,7 +203,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 </div>
             )}
-            {block?.payload?.getType() === PayloadType.Transaction &&
+            {block?.payload?.type === PayloadType.Transaction &&
                 transferTotal !== null && (
                     <div className="section--data">
                         <div className="label">

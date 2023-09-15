@@ -59,10 +59,10 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
         const foundryId = apiClient.outputDetails({ network, outputId }).then(
             response => {
                 const details = response.output;
-                if (aliasAddress?.hex && !response.error && details?.output?.getType() === OutputType.Foundry) {
+                if (aliasAddress?.hex && !response.error && details?.output?.type === OutputType.Foundry) {
                     const output = details.output as FoundryOutput;
                     const serialNumber = output.getSerialNumber();
-                    const tokenSchemeType = output.getTokenScheme().getType();
+                    const tokenSchemeType = output.getTokenScheme().type;
                     const tokenId = Utils.computeTokenId(
                         aliasAddress.hex,
                         serialNumber,

@@ -76,13 +76,13 @@ class Output extends Component<OutputProps, OutputState> {
         const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
 
         const specialUnlockCondition = (
-            output.getType() !== OutputType.Treasury && isSpecialCondition) && (
+            output.type !== OutputType.Treasury && isSpecialCondition) && (
                 (output as CommonOutput).getUnlockConditions().map((unlockCondition, idx) => (
                     <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
                         <span className="material-icons unlock-condition-icon">
-                            {unlockCondition.getType() === UnlockConditionType.StorageDepositReturn && "arrow_back"}
-                            {unlockCondition.getType() === UnlockConditionType.Expiration && "hourglass_bottom"}
-                            {unlockCondition.getType() === UnlockConditionType.Timelock && "schedule"}
+                            {unlockCondition.type === UnlockConditionType.StorageDepositReturn && "arrow_back"}
+                            {unlockCondition.type === UnlockConditionType.Expiration && "hourglass_bottom"}
+                            {unlockCondition.type === UnlockConditionType.Timelock && "schedule"}
                         </span>
                     </Tooltip>
                 ))
@@ -101,7 +101,7 @@ class Output extends Component<OutputProps, OutputState> {
                         type="button"
                         className="output-type--name color"
                     >
-                        {NameHelper.getOutputTypeName(output.getType())}
+                        {NameHelper.getOutputTypeName(output.type)}
                     </button>
                     <div className="output-id--link">
                         (
@@ -141,7 +141,7 @@ class Output extends Component<OutputProps, OutputState> {
                 {outputHeader}
                 {isExpanded && (
                     <div className="output padding-l-t left-border">
-                        {output.getType() === OutputType.Alias && (
+                        {output.type === OutputType.Alias && (
                             <React.Fragment>
                                 <div className="card--label">Alias address:</div>
                                 <div className="card--value">
@@ -169,7 +169,7 @@ class Output extends Component<OutputProps, OutputState> {
                             </React.Fragment>
                         )}
 
-                        {output.getType() === OutputType.Nft && (
+                        {output.type === OutputType.Nft && (
                             <React.Fragment>
                                 <div className="card--label">Nft address:</div>
                                 <div className="card--value">
@@ -182,7 +182,7 @@ class Output extends Component<OutputProps, OutputState> {
                             </React.Fragment>
                         )}
 
-                        {output.getType() === OutputType.Foundry && (
+                        {output.type === OutputType.Foundry && (
                             <React.Fragment>
                                 <div className="card--label">Foundry id:</div>
                                 <div className="card--value">
@@ -198,9 +198,9 @@ class Output extends Component<OutputProps, OutputState> {
                                 <div className="card--value row">{(output as FoundryOutput).getSerialNumber()}</div>
                                 <div className="card--label">Token scheme type:</div>
                                 <div className="card--value row">
-                                    {(output as FoundryOutput).getTokenScheme().getType()}
+                                    {(output as FoundryOutput).getTokenScheme().type}
                                 </div>
-                                {(output as FoundryOutput).getTokenScheme().getType() === TokenSchemeType.Simple && (
+                                {(output as FoundryOutput).getTokenScheme().type === TokenSchemeType.Simple && (
                                     <React.Fragment>
                                         <div className="card--label">Minted tokens:</div>
                                         <div className="card--value row">
@@ -229,7 +229,7 @@ class Output extends Component<OutputProps, OutputState> {
                         )}
 
                         {/* all output types except Treasury have common output conditions */}
-                        {output.getType() !== OutputType.Treasury && (
+                        {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).getUnlockConditions().map((unlockCondition, idx) => (
                                     <UnlockCondition
@@ -247,7 +247,7 @@ class Output extends Component<OutputProps, OutputState> {
                                         isParticipationEventMetadata={isParticipationOutput}
                                     />
                                 ))}
-                                {output.getType() === OutputType.Alias && (
+                                {output.type === OutputType.Alias && (
                                     (output as AliasOutput)
                                         .getImmutableFeatures()?.map((immutableFeature, idx) => (
                                             <Feature
@@ -258,7 +258,7 @@ class Output extends Component<OutputProps, OutputState> {
                                             />
                                         ))
                                 )}
-                                {output.getType() === OutputType.Nft && (
+                                {output.type === OutputType.Nft && (
                                     (output as NftOutput)
                                         .getImmutableFeatures()?.map((immutableFeature, idx) => (
                                             <Feature
@@ -269,7 +269,7 @@ class Output extends Component<OutputProps, OutputState> {
                                             />
                                         ))
                                 )}
-                                {output.getType() === OutputType.Foundry && (
+                                {output.type === OutputType.Foundry && (
                                     (output as FoundryOutput)
                                         .getImmutableFeatures()?.map((immutableFeature, idx) => (
                                             <Feature
@@ -305,11 +305,11 @@ class Output extends Component<OutputProps, OutputState> {
         let address: string = "";
         let addressType: number = 0;
 
-        if (output.getType() === OutputType.Alias) {
+        if (output.type === OutputType.Alias) {
             const aliasId = TransactionsHelper.buildIdHashForNft((output as AliasOutput).getAliasId(), outputId);
             address = aliasId;
             addressType = AddressType.Alias;
-        } else if (output.getType() === OutputType.Nft) {
+        } else if (output.type === OutputType.Nft) {
             const nftId = TransactionsHelper.buildIdHashForAlias((output as NftOutput).getNftId(), outputId);
             address = nftId;
             addressType = AddressType.Nft;
@@ -328,13 +328,13 @@ class Output extends Component<OutputProps, OutputState> {
      */
     private buildFoundryId(): string | undefined {
         const output = this.props.output;
-        if (output.getType() === OutputType.Foundry) {
+        if (output.type === OutputType.Foundry) {
             const foundryOutput = output as FoundryOutput;
             const unlockConditions = foundryOutput.getUnlockConditions();
             const immutableAliasUnlockCondition = unlockConditions[0] as ImmutableAliasAddressUnlockCondition;
             const aliasId = (immutableAliasUnlockCondition.getAddress() as AliasAddress).getAliasId();
             const serialNumber = (output as FoundryOutput).getSerialNumber();
-            const tokenSchemeType = (output as FoundryOutput).getTokenScheme().getType();
+            const tokenSchemeType = (output as FoundryOutput).getTokenScheme().type;
 
             return Utils.computeTokenId(
                 aliasId,
@@ -350,7 +350,7 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The tooltip content.
      */
     private getSpecialUnlockConditionContent(unlockCondition: IUnlockCondition): React.ReactNode {
-        if (unlockCondition.getType() === UnlockConditionType.StorageDepositReturn) {
+        if (unlockCondition.type === UnlockConditionType.StorageDepositReturn) {
             const storageDepositReturnUC = unlockCondition as StorageDepositReturnUnlockCondition;
             return (
                 <React.Fragment>
@@ -358,7 +358,7 @@ class Output extends Component<OutputProps, OutputState> {
                     <span>Return Amount: {storageDepositReturnUC.amount} glow</span>
                 </React.Fragment>
             );
-        } else if (unlockCondition.getType() === UnlockConditionType.Expiration) {
+        } else if (unlockCondition.type === UnlockConditionType.Expiration) {
             const expirationUnlockCondition = unlockCondition as ExpirationUnlockCondition;
             const time = DateHelper.format(DateHelper.milliseconds(expirationUnlockCondition.getUnixTime()));
             return (
@@ -367,7 +367,7 @@ class Output extends Component<OutputProps, OutputState> {
                     <span>Time: {time} </span>
                 </React.Fragment>
             );
-        } else if (unlockCondition.getType() === UnlockConditionType.Timelock) {
+        } else if (unlockCondition.type === UnlockConditionType.Timelock) {
             const timelockUnlockCondition = unlockCondition as TimelockUnlockCondition;
             const time = DateHelper.format(DateHelper.milliseconds(timelockUnlockCondition.getUnixTime()));
             return (
@@ -386,12 +386,12 @@ class Output extends Component<OutputProps, OutputState> {
     private hasSpecialCondition(): boolean {
         let specialUnlockConditionExists = false;
 
-        if (this.props.output.getType() !== OutputType.Treasury) {
+        if (this.props.output.type !== OutputType.Treasury) {
             const commonOutput = this.props.output as CommonOutput;
             specialUnlockConditionExists = commonOutput.getUnlockConditions().some(condition =>
-                condition.getType() === UnlockConditionType.StorageDepositReturn ||
-                condition.getType() === UnlockConditionType.Expiration ||
-                condition.getType() === UnlockConditionType.Timelock
+                condition.type === UnlockConditionType.StorageDepositReturn ||
+                condition.type === UnlockConditionType.Expiration ||
+                condition.type === UnlockConditionType.Timelock
             );
         }
         return specialUnlockConditionExists;

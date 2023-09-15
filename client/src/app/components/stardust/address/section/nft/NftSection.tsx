@@ -35,7 +35,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                 if (
                     outputResponse &&
                     !outputResponse.metadata.isSpent &&
-                    outputResponse.output.getType() === OutputType.Nft
+                    outputResponse.output.type === OutputType.Nft
                 ) {
                     const outputId = Utils.computeOutputId(
                         outputResponse.metadata.transactionId,
@@ -45,16 +45,16 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     const nftOutput = outputResponse.output as NftOutput;
                     const nftId = TransactionsHelper.buildIdHashForNft(nftOutput.getNftId(), outputId);
                     const metadataFeature = nftOutput.getImmutableFeatures()?.find(
-                        feature => feature.getType() === FeatureType.Metadata
+                        feature => feature.type === FeatureType.Metadata
                     ) as MetadataFeature;
 
                     const issuerFeature = nftOutput.getImmutableFeatures()?.find(
-                        feature => feature.getType() === FeatureType.Issuer
+                        feature => feature.type === FeatureType.Issuer
                     ) as IssuerFeature;
 
                     let issuerId = null;
                     if (issuerFeature) {
-                        switch (issuerFeature.getIssuer().getType()) {
+                        switch (issuerFeature.getIssuer().type) {
                             case AddressType.Ed25519:
                                 issuerId = (issuerFeature.getIssuer() as Ed25519Address).getPubKeyHash();
                                 break;

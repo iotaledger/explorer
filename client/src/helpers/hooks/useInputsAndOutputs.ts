@@ -35,7 +35,7 @@ export function useInputsAndOutputs(network: string, block: Block | null):
 
     useEffect(() => {
         setIsLoading(true);
-        if (block?.payload?.getType() === PayloadType.Transaction) {
+        if (block?.payload?.type === PayloadType.Transaction) {
             // eslint-disable-next-line no-void
             void (async () => {
                 const { inputs, unlocks, outputs, transferTotal } =

@@ -38,15 +38,15 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
         let receiptMilestoneOption: ReceiptMilestoneOption | null = null;
         let protocolParamsMilestoneOption: ProtocolParamsMilestoneOption | null = null;
 
-        if (options?.some((option => option.getType() === MilestoneOptionType.Receipt))) {
+        if (options?.some((option => option.type === MilestoneOptionType.Receipt))) {
             receiptMilestoneOption = options.find(
-                option => option.getType() === MilestoneOptionType.Receipt
+                option => option.type === MilestoneOptionType.Receipt
             ) as ReceiptMilestoneOption;
         }
 
-        if (options?.some((option => option.getType() === MilestoneOptionType.ProtocolParams))) {
+        if (options?.some((option => option.type === MilestoneOptionType.ProtocolParams))) {
             protocolParamsMilestoneOption = options.find(
-                option => option.getType() === MilestoneOptionType.ProtocolParams
+                option => option.type === MilestoneOptionType.ProtocolParams
             ) as ProtocolParamsMilestoneOption;
         }
 

@@ -49,16 +49,16 @@ export function useNftDetails(network: string, nftId: string | null):
                         const output = response.nftDetails?.output as NftOutput;
 
                         const metadataFeature = output?.getImmutableFeatures()?.find(
-                            feature => feature.getType() === FeatureType.Metadata
+                            feature => feature.type === FeatureType.Metadata
                         ) as MetadataFeature;
 
                         const issuerFeature = output?.getImmutableFeatures()?.find(
-                            feature => feature.getType() === FeatureType.Issuer
+                            feature => feature.type === FeatureType.Issuer
                         ) as IssuerFeature;
 
                         let issuerId = null;
                         if (issuerFeature) {
-                            switch (issuerFeature.getIssuer().getType()) {
+                            switch (issuerFeature.getIssuer().type) {
                                 case AddressType.Ed25519: {
                                     const ed25519Address = issuerFeature.getIssuer() as Ed25519Address;
                                     issuerId = ed25519Address.getPubKeyHash();

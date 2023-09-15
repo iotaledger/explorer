@@ -26,7 +26,7 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
     { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, history, isLinksDisabled }
 ) => {
     if (
-        block.payload?.getType() === PayloadType.Transaction &&
+        block.payload?.type === PayloadType.Transaction &&
         inputs && unlocks && outputs && transferTotal !== undefined
     ) {
         const transactionPayload = block.payload as ITransactionPayload;
@@ -44,7 +44,7 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
                     />
                 </div>
                 {
-                    transactionEssence.payload?.getType() === PayloadType.TaggedData &&
+                    transactionEssence.payload?.type === PayloadType.TaggedData &&
                     <div className="section">
                         <TaggedDataPayload
                             network={network}
@@ -56,7 +56,7 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
             </React.Fragment>
         );
     } else if (
-        block.payload?.getType() === PayloadType.Milestone
+        block.payload?.type === PayloadType.Milestone
     ) {
         return (
             <MilestonePayload
@@ -67,7 +67,7 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
             />
         );
     } else if (
-        block.payload?.getType() === PayloadType.TaggedData
+        block.payload?.type === PayloadType.TaggedData
     ) {
         return (
             <div className="section">

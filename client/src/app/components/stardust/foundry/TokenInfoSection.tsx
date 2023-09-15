@@ -23,7 +23,7 @@ interface TokenInfoSectionProps {
 const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenScheme, tokenMetadata }) => {
     const [isWhitelisted] = useTokenRegistryNativeTokenCheck(tokenId);
 
-    if (tokenScheme.getType() !== TokenSchemeType.Simple) {
+    if (tokenScheme.type !== TokenSchemeType.Simple) {
         return null;
     }
 
@@ -99,7 +99,7 @@ const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenSchem
                     </div>
                     <div className="value code row middle">
                         <span className="margin-r-t">
-                            {tokenScheme.getType()}
+                            {tokenScheme.type}
                         </span>
                     </div>
                 </div>

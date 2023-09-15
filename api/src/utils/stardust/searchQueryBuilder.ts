@@ -202,7 +202,7 @@ export class SearchQueryBuilder {
                 const result = Utils.parseBech32Address(q);
                 if (result) {
                     bech32 = q;
-                    addressType = result.getType();
+                    addressType = result.type;
                     hex = HexHelper.addPrefix(result.toString());
                     hexNoPrefix = HexHelper.stripPrefix(result.toString());
                 }

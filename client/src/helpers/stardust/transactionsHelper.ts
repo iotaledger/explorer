@@ -43,7 +43,7 @@ export class TransactionsHelper {
         let transferTotal = 0;
         let sortedOutputs: IOutput[] = [];
 
-        if (block?.payload?.getType() === PayloadType.Transaction) {
+        if (block?.payload?.type === PayloadType.Transaction) {
             const payload: TransactionPayload = block.payload as TransactionPayload;
             const transactionId = Utils.transactionId(payload);
 
@@ -55,7 +55,7 @@ export class TransactionsHelper {
                 const unlock = payload.unlocks[i];
                 let signatureUnlock: SignatureUnlock;
 
-                if (unlock.getType() === UnlockType.Signature) {
+                if (unlock.type === UnlockType.Signature) {
                     signatureUnlock = unlock as SignatureUnlock;
                 } else {
                     let refUnlockIdx = i;
@@ -86,7 +86,7 @@ export class TransactionsHelper {
                 const address = unlockAddresses[i];
                 const input = payloadEssence.inputs[i];
 
-                if (input.getType() === InputType.UTXO) {
+                if (input.type === InputType.UTXO) {
                     const utxoInput = input as UTXOInput;
                     isGenesis = utxoInput.transactionId === GENESIS_HASH;
 
@@ -123,7 +123,7 @@ export class TransactionsHelper {
             for (let i = 0; i < payloadEssence.outputs.length; i++) {
                 const outputId = Utils.computeOutputId(transactionId, i);
 
-                if (payloadEssence.outputs[i].getType() === OutputType.Treasury) {
+                if (payloadEssence.outputs[i].type === OutputType.Treasury) {
                     const output = payloadEssence.outputs[i] as TreasuryOutput;
 
                     outputs.push({
@@ -135,7 +135,7 @@ export class TransactionsHelper {
                     const output = payloadEssence.outputs[i] as CommonOutput;
 
                     const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
-                        output.getUnlockConditions(), _bechHrp, output.getType()
+                        output.getUnlockConditions(), _bechHrp, output.type
                     );
 
                     const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
@@ -237,11 +237,11 @@ export class TransactionsHelper {
 
     public static computeStorageRentBalance(outputs: Output[], rentStructure: IRent): number {
         const outputsWithoutSdruc = outputs.filter(output => {
-            if (output.getType() === OutputType.Treasury) {
+            if (output.type === OutputType.Treasury) {
                 return false;
             }
             const hasStorageDepositUnlockCondition = (output as CommonOutput).getUnlockConditions().some(
-                uc => uc.getType() === UnlockConditionType.StorageDepositReturn
+                uc => uc.type === UnlockConditionType.StorageDepositReturn
             );
 
             return !hasStorageDepositUnlockCondition;
@@ -260,9 +260,9 @@ export class TransactionsHelper {
      * @returns true if participation event output.
      */
     public static isParticipationEventOutput(output: Output): boolean {
-        if (output.getType() === OutputType.Basic) {
+        if (output.type === OutputType.Basic) {
             const tagFeature = (output as BasicOutput).getFeatures()?.find(
-                feature => feature.getType() === FeatureType.Tag
+                feature => feature.type === FeatureType.Tag
             ) as TagFeature;
 
             if (tagFeature) {
@@ -298,22 +298,22 @@ export class TransactionsHelper {
 
         if (outputType === OutputType.Basic || outputType === OutputType.Nft) {
             unlockCondition = unlockConditions?.filter(
-                ot => ot.getType() === UnlockConditionType.Address
+                ot => ot.type === UnlockConditionType.Address
             ).map(ot => ot as AddressUnlockCondition)[0];
         } else if (outputType === OutputType.Alias) {
-            if (unlockConditions.some(ot => ot.getType() === UnlockConditionType.StateControllerAddress)) {
+            if (unlockConditions.some(ot => ot.type === UnlockConditionType.StateControllerAddress)) {
                 unlockCondition = unlockConditions?.filter(
-                    ot => ot.getType() === UnlockConditionType.StateControllerAddress
+                    ot => ot.type === UnlockConditionType.StateControllerAddress
                 ).map(ot => ot as StateControllerAddressUnlockCondition)[0];
             }
-            if (unlockConditions.some(ot => ot.getType() === UnlockConditionType.GovernorAddress)) {
+            if (unlockConditions.some(ot => ot.type === UnlockConditionType.GovernorAddress)) {
                 unlockCondition = unlockConditions?.filter(
-                    ot => ot.getType() === UnlockConditionType.GovernorAddress
+                    ot => ot.type === UnlockConditionType.GovernorAddress
                 ).map(ot => ot as GovernorAddressUnlockCondition)[0];
             }
         } else if (outputType === OutputType.Foundry) {
             unlockCondition = unlockConditions?.filter(
-                ot => ot.getType() === UnlockConditionType.ImmutableAliasAddress
+                ot => ot.type === UnlockConditionType.ImmutableAliasAddress
             ).map(ot => ot as ImmutableAliasAddressUnlockCondition)[0];
         }
 

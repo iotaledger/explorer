@@ -29,8 +29,8 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
             const theTokens: IToken[] = [];
             for (const outputResponse of outputs) {
                 const output = outputResponse.output;
-                if (output.getType() === OutputType.Basic || output.getType() === OutputType.Alias ||
-                    output.getType() === OutputType.Foundry || output.getType() === OutputType.Nft) {
+                if (output.type === OutputType.Basic || output.type === OutputType.Alias ||
+                    output.type === OutputType.Foundry || output.type === OutputType.Nft) {
                     for (const token of (output as CommonOutput).nativeTokens ?? []) {
                         const existingToken = theTokens.find(t => t.id === token.id);
                         if (existingToken) {
