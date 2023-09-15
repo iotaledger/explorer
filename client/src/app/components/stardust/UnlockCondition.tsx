@@ -3,7 +3,7 @@ import {
     ImmutableAliasAddressUnlockCondition, INodeInfoBaseToken,
     StateControllerAddressUnlockCondition, StorageDepositReturnUnlockCondition,
     TimelockUnlockCondition, UnlockConditionType
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { DateHelper } from "../../../helpers/dateHelper";

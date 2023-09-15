@@ -1,6 +1,6 @@
 import {
     MilestonePayload, PayloadType, TransactionPayload, Utils, Block as IBlock
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import { plainToInstance } from "class-transformer";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -64,7 +64,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
-    const blockInstance = block ? plainToInstance(IBlock, block) : undefined;
+    const blockInstance = plainToInstance(IBlock, block);
     const isMilestoneBlock = blockInstance?.payload?.type === PayloadType.Milestone;
     const isTransactionBlock = blockInstance?.payload?.type === PayloadType.Transaction;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
@@ -72,7 +72,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         isInputsAndOutputsLoading ||
         isBlockMetadataLoading ||
         isMilestoneReferencedBlockLoading;
-    const milestoneIndex = isMilestoneBlock ? (blockInstance.payload as MilestonePayload).index : undefined;
+    const milestoneIndex = isMilestoneBlock ? (blockInstance?.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {
         case PayloadType.Milestone:
@@ -294,7 +294,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
-                                milestone={blockInstance.payload as MilestonePayload}
+                                milestone={blockInstance?.payload as MilestonePayload}
                             />
                         )}
                     </div>

@@ -4,7 +4,7 @@ import {
     Ed25519Address,
     FeatureType,
     HexEncodedString, IssuerFeature, MetadataFeature, NftAddress, NftOutput
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";

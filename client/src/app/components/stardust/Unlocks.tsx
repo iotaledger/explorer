@@ -1,4 +1,4 @@
-import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/iota.js-stardust";
+import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/iota.js-stardust/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";

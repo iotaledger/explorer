@@ -1,4 +1,4 @@
-import { OutputType, HexEncodedString, FoundryOutput, Utils } from "@iota/iota.js-stardust";
+import { OutputType, HexEncodedString, FoundryOutput, Utils } from "@iota/iota.js-stardust/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";

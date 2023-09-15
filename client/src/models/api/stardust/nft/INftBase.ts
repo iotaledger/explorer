@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
+import { HexEncodedString } from "@iota/iota.js-stardust/web";
 
 export interface INftBase {
     /**

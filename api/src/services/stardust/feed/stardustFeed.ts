@@ -68,7 +68,6 @@ export class StardustFeed {
         const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
         if (this._mqttClient && nodeInfoService) {
-            // this._mqttClient.listen.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
             const nodeInfo = nodeInfoService.getNodeInfo();
             this.networkProtocolVersion = nodeInfo.protocolVersion;
 
@@ -181,7 +180,6 @@ export class StardustFeed {
         void this._mqttClient.listenMqtt(["milestones"], (_, result) => {
             try {
                 const parsedResult: { topic: string; payload: string } = JSON.parse(result);
-                logger.info(parsedResult);
                 const milestonePayload: MilestonePayload = parsePayload(
                     JSON.parse(parsedResult.payload)
                 ) as MilestonePayload;

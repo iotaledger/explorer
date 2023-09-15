@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
+import init from "@iota/iota.js-stardust/web";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
@@ -31,7 +32,10 @@ import { TokenRegistryClient } from "./services/stardust/tokenRegistryClient";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
 
-initialiseServices().then(() => {
+initialiseServices().then(async () => {
+    // load the wasm
+    await init("/iota_sdk_wasm_bg.wasm");
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const container = document.querySelector("#root")!;
     const root = createRoot(container);

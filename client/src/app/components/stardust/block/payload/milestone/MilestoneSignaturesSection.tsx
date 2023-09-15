@@ -1,4 +1,4 @@
-import { Ed25519Signature } from "@iota/iota.js-stardust";
+import { Ed25519Signature } from "@iota/iota.js-stardust/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { ReactComponent as DropdownIcon } from "../../../../../../assets/dropdown-arrow.svg";

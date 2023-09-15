@@ -1,4 +1,4 @@
-import { AliasOutput } from "@iota/iota.js-stardust";
+import { AliasOutput } from "@iota/iota.js-stardust/web";
 import React from "react";
 import DataToggle from "../../../../DataToggle";
 

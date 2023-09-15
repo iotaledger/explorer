@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust/web";
 import { buildShimmerClaimedStats } from "./ShimmerClaimedUtils";
 
 const TOKEN_INFO: INodeInfoBaseToken = {

@@ -1,4 +1,4 @@
-import { IOutputsResponse } from "@iota/iota.js-stardust";
+import { IOutputsResponse } from "@iota/iota.js-stardust/web";
 import { IResponse } from "../IResponse";
 
 export interface IFoundriesResponse extends IResponse {

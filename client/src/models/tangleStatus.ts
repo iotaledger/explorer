@@ -1,4 +1,4 @@
-import { CONFLICT_REASON_STRINGS, IBlockMetadata } from "@iota/iota.js-stardust";
+import { CONFLICT_REASON_STRINGS, IBlockMetadata } from "@iota/iota.js-stardust/web";
 
 export type TangleStatus =
     "unknown" |

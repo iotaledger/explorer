@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust/web";
 import React, { Component, ReactNode } from "react";
 import { Bech32AddressHelper } from "../../../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../../../helpers/stardust/valueFormatHelper";

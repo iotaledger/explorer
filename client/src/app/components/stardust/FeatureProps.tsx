@@ -1,4 +1,4 @@
-import { Feature } from "@iota/iota.js-stardust";
+import { Feature } from "@iota/iota.js-stardust/web";
 
 export interface FeatureProps {
     /**

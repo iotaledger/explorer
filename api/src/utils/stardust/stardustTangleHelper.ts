@@ -81,6 +81,8 @@ export class StardustTangleHelper {
             network
         );
 
+        logger.info(`GOT BLOCK: ${JSON.stringify(block)}`);
+
         if (!block) {
             return { error: `Couldn't find block with id ${blockId}` };
         }
@@ -107,7 +109,7 @@ export class StardustTangleHelper {
         blockId = HexHelper.addPrefix(blockId);
         const metadata = await this.tryFetchNodeThenPermanode<string, IBlockMetadata>(
             blockId,
-            "blockMetadata",
+            "getBlockMetadata",
             network
         );
 
@@ -159,7 +161,7 @@ export class StardustTangleHelper {
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputDetailsResponse> {
         const outputResponse = await this.tryFetchNodeThenPermanode<string, OutputResponse>(
             outputId,
-            "output",
+            "getOutput",
             network
         );
 
@@ -209,7 +211,7 @@ export class StardustTangleHelper {
     ): Promise<IMilestoneDetailsResponse | undefined> {
         const milestonePayload = await this.tryFetchNodeThenPermanode<string, MilestonePayload>(
             milestoneId,
-            "milestoneById",
+            "getMilestoneById",
             network
         );
 
@@ -237,7 +239,7 @@ export class StardustTangleHelper {
     ): Promise<IMilestoneDetailsResponse | undefined> {
         const milestonePayload = await this.tryFetchNodeThenPermanode<number, MilestonePayload>(
             milestoneIndex,
-            "milestoneByIndex",
+            "getMilestoneByIndex",
             network
         );
 
@@ -271,7 +273,7 @@ export class StardustTangleHelper {
         do {
             const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
                 { addressBech32, cursor },
-                "basicOutputs",
+                "basicOutputIds",
                 network
             );
 
@@ -301,7 +303,7 @@ export class StardustTangleHelper {
         do {
             const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
                 { stateControllerBech32: addressBech32, cursor },
-                "aliases",
+                "aliasOutputIds",
                 network
             );
 
@@ -331,7 +333,7 @@ export class StardustTangleHelper {
         do {
             const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
                 { addressBech32, cursor },
-                "nfts",
+                "nftOutputIds",
                 network
             );
 
@@ -355,14 +357,14 @@ export class StardustTangleHelper {
         network: INetwork,
         aliasId: string
     ): Promise<IAliasResponse | undefined> {
-        const aliasOutput = await this.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+        const aliasOutputId = await this.tryFetchNodeThenPermanode<string, string>(
             aliasId,
-            "alias",
+            "aliasOutputId",
             network
         );
 
-        if (aliasOutput?.items.length > 0) {
-            const outputResponse = await this.outputDetails(network, aliasOutput.items[0]);
+        if (aliasOutputId) {
+            const outputResponse = await this.outputDetails(network, aliasOutputId);
 
             return !outputResponse.error ?
                 { aliasDetails: outputResponse.output } :
@@ -385,7 +387,7 @@ export class StardustTangleHelper {
         try {
             const response = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
                 { aliasAddressBech32: aliasAddress },
-                "foundries",
+                "foundryOutputIds",
                 network
             );
 
@@ -409,14 +411,14 @@ export class StardustTangleHelper {
         network: INetwork,
         foundryId: string
     ): Promise<IFoundryResponse | undefined> {
-        const foundryOutput = await this.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+        const foundryOutputId = await this.tryFetchNodeThenPermanode<string, string>(
             foundryId,
-            "foundry",
+            "foundryOutputId",
             network
         );
 
-        if (foundryOutput?.items.length > 0) {
-            const outputResponse = await this.outputDetails(network, foundryOutput.items[0]);
+        if (foundryOutputId) {
+            const outputResponse = await this.outputDetails(network, foundryOutputId);
 
             return !outputResponse.error ?
                 { foundryDetails: outputResponse.output } :
@@ -437,14 +439,14 @@ export class StardustTangleHelper {
         nftId: string
     ): Promise<INftDetailsResponse | undefined> {
         try {
-            const nftOutputs = await this.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+            const nftOutputId = await this.tryFetchNodeThenPermanode<string, string>(
                 nftId,
-                "nft",
+                "nftOutputId",
                 network
             );
 
-            if (nftOutputs?.items.length > 0) {
-                const outputResponse = await this.outputDetails(network, nftOutputs.items[0]);
+            if (nftOutputId) {
+                const outputResponse = await this.outputDetails(network, nftOutputId);
 
                 return !outputResponse.error ?
                     { nftDetails: outputResponse.output } :
@@ -475,7 +477,7 @@ export class StardustTangleHelper {
                 IOutputsResponse
             >(
                 { tagHex: encodedTag, pageSize, cursor },
-                "basicOutputs",
+                "basicOutputIds",
                 network
             );
 
@@ -505,7 +507,7 @@ export class StardustTangleHelper {
             const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
                 Record<string, unknown>,
                 IOutputsResponse
-            >({ tagHex: encodedTag, pageSize, cursor }, "nfts", network);
+            >({ tagHex: encodedTag, pageSize, cursor }, "nftOutputIds", network);
 
             if (nftOutputIdsResponse?.items.length > 0) {
                 return { outputs: nftOutputIdsResponse };

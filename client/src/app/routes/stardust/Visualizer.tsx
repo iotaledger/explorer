@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { CONFLICT_REASON_STRINGS, ConflictReason } from "@iota/iota.js-stardust";
+import { CONFLICT_REASON_STRINGS, ConflictReason } from "@iota/iota.js-stardust/web";
 import { Converter } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { useContext, useRef, useState } from "react";

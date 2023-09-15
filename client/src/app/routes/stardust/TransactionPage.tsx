@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/iota.js-stardust";
+import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/iota.js-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import metadataInfoMessage from "../../../assets/modals/stardust/block/metadata.json";
@@ -36,7 +36,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     const [block, isIncludedBlockLoading, blockError] = useTransactionIncludedBlock(network, transactionId);
     const [inputs, unlocks, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
     const [includedBlockId, setIncludedBlockId] = useState<string | null>(null);
-    const [tangleNetworkId, setTangleNetworkId] = useState<number | undefined>();
+    const [tangleNetworkId, setTangleNetworkId] = useState<string | undefined>();
     const [inputsCommitment, setInputsCommitment] = useState<string | undefined>();
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);

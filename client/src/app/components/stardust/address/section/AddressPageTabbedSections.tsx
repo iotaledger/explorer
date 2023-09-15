@@ -1,4 +1,4 @@
-import { AddressType } from "@iota/iota.js-stardust";
+import { AddressType } from "@iota/iota.js-stardust/web";
 import React from "react";
 import nativeTokensMessage from "../../../../../assets/modals/stardust/address/assets-in-wallet.json";
 import associatedOuputsMessage from "../../../../../assets/modals/stardust/address/associated-outputs.json";

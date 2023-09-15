@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
+import { HexEncodedString } from "@iota/iota.js-stardust/web";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";

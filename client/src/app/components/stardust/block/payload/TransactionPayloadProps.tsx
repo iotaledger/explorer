@@ -1,4 +1,4 @@
-import { Unlock } from "@iota/iota.js-stardust";
+import { Unlock } from "@iota/iota.js-stardust/web";
 import { IInput } from "../../../../../models/api/stardust/IInput";
 import { IOutput } from "../../../../../models/api/stardust/IOutput";
 

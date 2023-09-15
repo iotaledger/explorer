@@ -1,4 +1,4 @@
-import { Output } from "@iota/iota.js-stardust";
+import { Output } from "@iota/iota.js-stardust/web";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 export interface IOutput {

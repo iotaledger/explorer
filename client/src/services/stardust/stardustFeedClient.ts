@@ -8,7 +8,7 @@ import {
     TaggedDataPayload,
     TransactionPayload,
     Utils
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";

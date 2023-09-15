@@ -1,4 +1,4 @@
-import { Block, MilestonePayload } from "@iota/iota.js-stardust";
+import { Block, MilestonePayload } from "@iota/iota.js-stardust/web";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
 type IFeedBlockUpdate = Block;

@@ -1,4 +1,4 @@
-import { Block, OutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
+import { Block, OutputResponse, IOutputsResponse } from "@iota/iota.js-stardust/web";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 import { IResponse } from "../IResponse";
 import { IAnalyticStats } from "../stats/IAnalyticStats";

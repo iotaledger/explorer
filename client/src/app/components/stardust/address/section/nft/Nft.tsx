@@ -1,4 +1,4 @@
-import { NftAddress } from "@iota/iota.js-stardust";
+import { NftAddress } from "@iota/iota.js-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import nftSchemeIRC27 from "../../../../../../assets/schemas/nft-schema-IRC27.json";

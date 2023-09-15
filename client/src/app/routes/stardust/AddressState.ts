@@ -2,7 +2,7 @@ import { Bech32Helper } from "@iota/iota.js";
 import {
     HexEncodedString, AliasOutput, MetadataFeature, OutputResponse,
     OutputType, AddressType, Output, BasicOutput, FeatureType
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";

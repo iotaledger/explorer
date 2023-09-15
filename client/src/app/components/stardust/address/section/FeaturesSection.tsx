@@ -1,4 +1,4 @@
-import { AliasOutput, FoundryOutput, NftOutput } from "@iota/iota.js-stardust";
+import { AliasOutput, FoundryOutput, NftOutput } from "@iota/iota.js-stardust/web";
 import { optional } from "@ruffy/ts-optional";
 import React from "react";
 import Feature from "../../Feature";

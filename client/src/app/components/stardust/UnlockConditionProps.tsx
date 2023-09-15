@@ -1,4 +1,4 @@
-import { UnlockCondition } from "@iota/iota.js-stardust";
+import { UnlockCondition } from "@iota/iota.js-stardust/web";
 
 export interface UnlockConditionProps {
     /**

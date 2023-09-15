@@ -1,4 +1,4 @@
-import { FeatureType, IssuerFeature, MetadataFeature, SenderFeature, TagFeature } from "@iota/iota.js-stardust";
+import { FeatureType, IssuerFeature, MetadataFeature, SenderFeature, TagFeature } from "@iota/iota.js-stardust/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";

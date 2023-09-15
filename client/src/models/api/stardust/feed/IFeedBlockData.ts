@@ -1,4 +1,4 @@
-import { HexEncodedString, MilestonePayload } from "@iota/iota.js-stardust";
+import { HexEncodedString, MilestonePayload } from "@iota/iota.js-stardust/web";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
 interface IFeedBlockProperties {

@@ -1,4 +1,4 @@
-import { AddressType, Utils } from "@iota/iota.js-stardust";
+import { AddressType, Utils } from "@iota/iota.js-stardust/web";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";

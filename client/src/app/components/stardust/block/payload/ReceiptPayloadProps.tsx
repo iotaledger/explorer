@@ -1,4 +1,4 @@
-import { ReceiptMilestoneOption } from "@iota/iota.js-stardust";
+import { ReceiptMilestoneOption } from "@iota/iota.js-stardust/web";
 import * as H from "history";
 
 export interface ReceiptPayloadProps {

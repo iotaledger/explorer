@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/iota.js-stardust";
+import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/iota.js-stardust/web";
 import { Converter } from "@iota/util.js-stardust";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";

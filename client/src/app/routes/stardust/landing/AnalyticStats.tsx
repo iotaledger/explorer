@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/iota.js-stardust/web";
 import React from "react";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";

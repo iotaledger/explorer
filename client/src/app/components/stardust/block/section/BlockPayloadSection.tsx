@@ -1,7 +1,7 @@
 import {
     Block, PayloadType, Unlock, TransactionPayload as ITransactionPayload,
     MilestonePayload as IMilestonePayload, RegularTransactionEssence, TaggedDataPayload as ITaggedDataPayload
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import * as H from "history";
 import React from "react";
 import { IInput } from "../../../../../models/api/stardust/IInput";

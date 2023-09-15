@@ -5,7 +5,7 @@ import {
     StorageDepositReturnUnlockCondition,
     TimelockUnlockCondition,
     TokenSchemeType, UnlockCondition as IUnlockCondition, UnlockConditionType, Utils
-} from "@iota/iota.js-stardust";
+} from "@iota/iota.js-stardust/web";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";

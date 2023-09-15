@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
+import { HexEncodedString } from "@iota/iota.js-stardust/web";
 import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
