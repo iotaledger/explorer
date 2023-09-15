@@ -6,6 +6,6 @@ export interface IToken {
     /**
      * The amount of the Native Token.
      */
-    amount: number;
+    amount: bigint;
 }
 

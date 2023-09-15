@@ -1,6 +1,7 @@
 import {
-    MilestonePayload, PayloadType, TransactionPayload, Utils
+    MilestonePayload, PayloadType, TransactionPayload, Utils, Block as IBlock
 } from "@iota/iota.js-stardust";
+import { plainToInstance } from "class-transformer";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
@@ -63,14 +64,15 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
-    const isMilestoneBlock = block?.payload?.getType() === PayloadType.Milestone;
-    const isTransactionBlock = block?.payload?.getType() === PayloadType.Transaction;
+    const blockInstance = block ? plainToInstance(IBlock, block) : undefined;
+    const isMilestoneBlock = blockInstance?.payload?.getType() === PayloadType.Milestone;
+    const isTransactionBlock = blockInstance?.payload?.getType() === PayloadType.Transaction;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = isBlockLoading ||
         isInputsAndOutputsLoading ||
         isBlockMetadataLoading ||
         isMilestoneReferencedBlockLoading;
-    const milestoneIndex = isMilestoneBlock ? (block.payload as MilestonePayload).index : undefined;
+    const milestoneIndex = isMilestoneBlock ? (blockInstance.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.getType()) {
         case PayloadType.Milestone:
@@ -292,7 +294,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
-                                milestone={block.payload as MilestonePayload}
+                                milestone={blockInstance.payload as MilestonePayload}
                             />
                         )}
                     </div>

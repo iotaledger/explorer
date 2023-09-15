@@ -31,12 +31,12 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                 const output = outputResponse.output;
                 if (output.getType() === OutputType.Basic || output.getType() === OutputType.Alias ||
                     output.getType() === OutputType.Foundry || output.getType() === OutputType.Nft) {
-                    for (const token of (output as CommonOutput).getNativeTokens() ?? []) {
+                    for (const token of (output as CommonOutput).nativeTokens ?? []) {
                         const existingToken = theTokens.find(t => t.id === token.id);
                         if (existingToken) {
-                            existingToken.amount += Number(token.amount);
+                            existingToken.amount += token.amount;
                         } else {
-                            theTokens.push({ id: token.id, amount: Number.parseInt(token.amount, 16) });
+                            theTokens.push({ id: token.id, amount: token.amount });
                         }
                     }
                 }

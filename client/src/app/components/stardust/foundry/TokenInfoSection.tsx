@@ -29,9 +29,9 @@ const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenSchem
 
     const simpleTokenScheme = tokenScheme as SimpleTokenScheme;
 
-    const maximumSupply = formatNumberWithCommas(simpleTokenScheme.getMaximumSupply());
-    const mintedTokens = formatNumberWithCommas(simpleTokenScheme.getMintedTokens());
-    const meltedTokens = formatNumberWithCommas(simpleTokenScheme.getMeltedTokens());
+    const maximumSupply = formatNumberWithCommas(simpleTokenScheme.maximumSupply);
+    const mintedTokens = formatNumberWithCommas(simpleTokenScheme.mintedTokens);
+    const meltedTokens = formatNumberWithCommas(simpleTokenScheme.meltedTokens);
 
     return (
         <div className="token-info">

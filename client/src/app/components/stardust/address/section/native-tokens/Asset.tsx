@@ -88,7 +88,7 @@ const Asset: React.FC<AssetProps> = (
                         link={`/${network}/foundry/${token?.id}`}
                     />
                 </td>
-                <td>{token.amount ?? "-"}</td>
+                <td>{token.amount.toString() ?? "-"}</td>
             </tr>
         ) : (
             <div className="asset-card">
@@ -123,7 +123,7 @@ const Asset: React.FC<AssetProps> = (
                 </div>
                 <div className="field">
                     <div className="label">Quantity</div>
-                    <div className="value">{token.amount ?? "-"}</div>
+                    <div className="value">{token.amount.toString() ?? "-"}</div>
                 </div>
             </div>
         )

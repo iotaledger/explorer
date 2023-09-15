@@ -40,9 +40,9 @@ export function formatAmount(
  * @returns {string} The formatted number as a string, with commas separating thousands.
  */
 export function formatNumberWithCommas(
-    value: string | number
+    value: bigint
 ): string {
-    return BigInt(value).toLocaleString("en", { useGrouping: true });
+    return value.toLocaleString("en", { useGrouping: true });
 }
 
 /**

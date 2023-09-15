@@ -355,7 +355,7 @@ class Output extends Component<OutputProps, OutputState> {
             return (
                 <React.Fragment>
                     <span>Storage Deposit Return Unlock Condition</span> <br />
-                    <span>Return Amount: {storageDepositReturnUC.getAmount()} glow</span>
+                    <span>Return Amount: {storageDepositReturnUC.amount} glow</span>
                 </React.Fragment>
             );
         } else if (unlockCondition.getType() === UnlockConditionType.Expiration) {

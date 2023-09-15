@@ -47,7 +47,7 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
                 const timestampBooked = metadata.milestoneTimestampBooked * 1000;
                 const dateCreated = DateHelper.formatShort(Number(timestampBooked));
                 const ago = moment(timestampBooked).fromNow();
-                const amount = output.getAmount();
+                const amount = output.amount;
                 loadedOutputItems.push({ outputId, dateCreated, ago, amount });
             }
         }

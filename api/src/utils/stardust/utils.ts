@@ -1,5 +1,4 @@
 import { Block, Client, CommonOutput, IOutputsResponse, MilestonePayload, Utils } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
 import bigInt, { BigInteger } from "big-integer";
 
 /**
@@ -53,7 +52,7 @@ export async function addressBalance(
                 if (Array.isArray(nativeTokenOutput.getNativeTokens())) {
                     for (const token of nativeTokenOutput.getNativeTokens()) {
                         nativeTokens[token.id] = nativeTokens[token.id] ?? bigInt(0);
-                        nativeTokens[token.id] = nativeTokens[token.id].add(HexHelper.toBigInt256(token.amount));
+                        nativeTokens[token.id] = nativeTokens[token.id].add(token.amount);
                     }
                 }
             }

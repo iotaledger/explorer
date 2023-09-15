@@ -92,7 +92,7 @@ export class TransactionsHelper {
 
                     const outputId = Utils.computeOutputId(
                         utxoInput.transactionId,
-                        utxoInput.transactionInputIndex
+                        utxoInput.transactionOutputIndex
                     );
 
                     const response = await apiClient.outputDetails({ network, outputId });
@@ -108,6 +108,8 @@ export class TransactionsHelper {
 
                     inputs.push({
                         ...utxoInput,
+                        // TODO-sdk Rename the field
+                        transactionInputIndex: utxoInput.transactionOutputIndex,
                         amount,
                         isGenesis,
                         outputId,

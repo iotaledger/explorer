@@ -1,5 +1,7 @@
 /* eslint-disable unicorn/prefer-top-level-await */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+// needed for features from @iota/sdk which use reflection (decorators)
+import "reflect-metadata";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";

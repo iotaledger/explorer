@@ -128,7 +128,7 @@ export class StardustFeed {
     private connect() {
         logger.info("[StardustFeed] Connecting upstream feed!");
         // eslint-disable-next-line no-void
-        void this._mqttClient.listen(["blocks"], (_, result) => {
+        void this._mqttClient.listenMqtt(["blocks"], (_, result) => {
             try {
                 const block: Block = JSON.parse(result);
                 const update: Partial<IFeedUpdate> = {
@@ -143,7 +143,7 @@ export class StardustFeed {
         });
 
         // eslint-disable-next-line no-void
-        void this._mqttClient.listen(["block-metadata/referenced"], (_, result) => {
+        void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, result) => {
             const metadata: IBlockMetadata = JSON.parse(result);
             // update cache
             let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
@@ -178,13 +178,13 @@ export class StardustFeed {
         });
 
         // eslint-disable-next-line no-void
-        void this._mqttClient.listen(["milestones"], (_, result) => {
-            const parsedResult: { topic: string; payload: string } = JSON.parse(result);
-            logger.info(parsedResult);
-            const milestonePayload: MilestonePayload = parsePayload(JSON.parse(parsedResult.payload)) as MilestonePayload;
-            // const milestonePayload = parsedResult.payload;
-
+        void this._mqttClient.listenMqtt(["milestones"], (_, result) => {
             try {
+                const parsedResult: { topic: string; payload: string } = JSON.parse(result);
+                logger.info(parsedResult);
+                const milestonePayload: MilestonePayload = parsePayload(
+                    JSON.parse(parsedResult.payload)
+                ) as MilestonePayload;
                 const milestoneId = Utils.milestoneId(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
