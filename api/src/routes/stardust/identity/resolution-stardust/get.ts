@@ -1,5 +1,5 @@
 import { IotaDID, IotaDocument, IotaIdentityClient } from "@iota/identity-wasm-0.7/node";
-import { Client } from "@iota/iota-client-wasm/node";
+import { Client } from "@iota/sdk-wasm/node";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IIdentityStardustResolveRequest } from "../../../../models/api/stardust/identity/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../../../models/api/stardust/identity/IIdentityStardustResolveResponse";
@@ -10,12 +10,12 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 /**
  * Starudust resolution of DID Documents.
  *
- * @param config The configuration.
+ * @param _config The configuration.
  * @param request The request.
  * @returns Resolved document or error.
  */
 export async function get(
-    config: IConfiguration,
+    _config: IConfiguration,
     request: IIdentityStardustResolveRequest
 ): Promise<IIdentityStardustResolveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
@@ -27,14 +27,19 @@ export async function get(
 
     try {
         const resolvedDocument = await resolveIdentity(providerUrl, request.did);
+        const governorAddress = resolvedDocument.metadataGovernorAddress();
+        const stateControllerAddress = resolvedDocument.metadataStateControllerAddress();
 
         // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         const document = resolvedDocument.toJSON() as any;
 
         return {
-            document,
-            governorAddress: document.meta.governorAddress,
-            stateControllerAddress: document.meta.stateControllerAddress
+            document: {
+                doc: document,
+                meta: resolvedDocument.metadata().toJSON()
+            },
+            governorAddress,
+            stateControllerAddress
         };
     } catch (e) {
         return {
@@ -51,7 +56,7 @@ export async function get(
  * @returns Resolved document.
  */
 async function resolveIdentity(apiEndpoint: string, did: string): Promise<IotaDocument> {
-    const client = await Client.new({
+    const client = new Client({
         primaryNode: apiEndpoint
     });
 

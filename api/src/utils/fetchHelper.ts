@@ -80,14 +80,17 @@ export class FetchHelper {
 
     /**
      * Convert request to curl format.
-     * @param endpoint The endpoint.
+     * @param baseUrl The baseUrl.
+     * @param path The path.
      * @param method The method.
      * @param headers The headers.
      * @param req The request.
      * @returns The curl command.
      */
     public static convertToCurl(
-        endpoint: string, method: string, headers: { [id: string]: string }, req?: unknown): string {
+        baseUrl: string, path: string, method: string, headers: { [id: string]: string }, req?: unknown): string {
+        const endpoint = `${baseUrl.replace(/\/$/, "")}${path.length > 0 ? `/${path.replace(/^\//, "")}` : ""}`;
+
         const curl = [`curl ${endpoint} \\`];
         curl.push(`-X ${method.toUpperCase()} \\`);
         for (const header in headers) {

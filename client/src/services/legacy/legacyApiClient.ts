@@ -3,8 +3,8 @@ import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IAddressGetRequest } from "../../models/api/legacy/IAddressGetRequest";
 import { IAddressGetResponse } from "../../models/api/legacy/IAddressGetResponse";
-import { ITransactionActionRequest } from "../../models/api/legacy/ITransactionActionRequest";
-import { ITransactionActionResponse } from "../../models/api/legacy/ITransactionActionResponse";
+import { IMilestoneGetRequest } from "../../models/api/legacy/IMilestoneGetRequest";
+import { IMilestoneGetResponse } from "../../models/api/legacy/IMilestoneGetResponse";
 import { ITransactionsGetRequest } from "../../models/api/legacy/ITransactionsGetRequest";
 import { ITransactionsGetResponse } from "../../models/api/legacy/ITransactionsGetResponse";
 import { ITrytesRetrieveRequest } from "../../models/api/legacy/ITrytesRetrieveRequest";
@@ -40,9 +40,17 @@ export class LegacyApiClient extends ApiClient {
      */
     public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
         return this.callApi<unknown, IStatsGetResponse>(
-            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-            "get"
-        );
+            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`, "get");
+    }
+
+    /**
+     * Find milestones from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async milestoneGet(request: IMilestoneGetRequest): Promise<IMilestoneGetResponse> {
+        return this.callApi<unknown, IMilestoneGetResponse>(
+            `milestones/${request.network}/${request.milestoneIndex}`, "get");
     }
 
     /**
@@ -71,23 +79,11 @@ export class LegacyApiClient extends ApiClient {
     }
 
     /**
-     * Perform tangle operation on hash.
-     * @param request The request to send.
-     * @returns The response from the request.
-     */
-    public async transactionAction(request: ITransactionActionRequest): Promise<ITransactionActionResponse> {
-        return this.callApi<unknown, ITransactionActionResponse>(
-            `transactions/${request.network}/${request.hash}/action/${request.action}`,
-            "get"
-        );
-    }
-
-    /**
      * Perform tangle operation on address.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
-        return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.hash}`, "get");
+        return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.address}`, "get");
     }
 }

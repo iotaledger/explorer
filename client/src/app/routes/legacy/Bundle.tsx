@@ -32,14 +32,12 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
     constructor(props: RouteComponentProps<BundleRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(
-            `tangle-cache-${LEGACY}`
-        );
+        this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
 
         let bundle;
-        if (this.props.match.params.hash.length === 81 &&
-            TrytesHelper.isTrytes(this.props.match.params.hash)) {
-            bundle = props.match.params.hash;
+        if (this.props.match.params.bundle.length === 81 &&
+            TrytesHelper.isTrytes(this.props.match.params.bundle)) {
+            bundle = props.match.params.bundle;
         }
 
         this.state = {
@@ -61,15 +59,15 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
         if (this.state.bundle) {
             window.scrollTo(0, 0);
 
-            const { hashes } = await this._tangleCacheService.findTransactionHashes(
+            const { txHashes } = await this._tangleCacheService.findTransactionHashes(
                 this.props.match.params.network,
-                "bundles",
-                this.props.match.params.hash
+                "bundle",
+                this.props.match.params.bundle
             );
 
             const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(
                 this.props.match.params.network,
-                hashes
+                txHashes
             );
 
             const confirmationStates = bundleGroupsPlain.map(bg => bg[0].confirmationState);
@@ -176,7 +174,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                 status: ""
             });
         } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.hash}`);
+            this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.bundle}`);
         }
     }
 

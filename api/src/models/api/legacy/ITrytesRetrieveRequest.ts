@@ -7,5 +7,5 @@ export interface ITrytesRetrieveRequest {
     /**
      * The hashes to look for.
      */
-    hashes: string[];
+    txHashes: string[];
 }

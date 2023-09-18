@@ -1,4 +1,4 @@
-FROM node:16-alpine3.14
+FROM node:16-alpine
 RUN apk add -U --no-cache git nginx
 
 # Working DIR

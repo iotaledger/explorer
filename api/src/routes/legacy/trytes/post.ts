@@ -27,7 +27,7 @@ export async function post(
         return {};
     }
 
-    const { trytes, milestoneIndexes } = await LegacyTangleHelper.getTrytes(networkConfig, request.hashes);
+    const { trytes, milestoneIndexes } = await LegacyTangleHelper.getTrytes(networkConfig, request.txHashes);
 
     return {
         trytes,
