@@ -62,7 +62,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 network={network}
                                 outputId={outputId}
                                 output={output}
-                                amount={Number(output.getAmount())}
+                                amount={Number(output.amount)}
                                 showCopyAmount={true}
                                 isPreExpanded={true}
                             />

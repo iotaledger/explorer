@@ -12,26 +12,26 @@ interface FeaturesSectionProps {
 
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({ output }) => (
     <React.Fragment>
-        {optional(output?.getFeatures()).nonEmpty() && (
+        {optional(output?.features).nonEmpty() && (
             <div className="section">
                 <div className="section--header row row--tablet-responsive middle space-between">
                     <div className="row middle">
                         <h2>Features</h2>
                     </div>
                 </div>
-                {output?.getFeatures()?.map((feature, idx) => (
+                {output?.features?.map((feature, idx) => (
                     <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
                 ))}
             </div>
         )}
-        {optional(output?.getImmutableFeatures()).nonEmpty() && (
+        {optional(output?.immutableFeatures).nonEmpty() && (
             <div className="section">
                 <div className="section--header row row--tablet-responsive middle space-between">
                     <div className="row middle">
                         <h2>Immutable features</h2>
                     </div>
                 </div>
-                {output?.getImmutableFeatures()?.map((feature, idx) => (
+                {output?.immutableFeatures?.map((feature, idx) => (
                     <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={true} />
                 ))}
             </div>

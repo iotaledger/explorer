@@ -24,7 +24,7 @@ const Asset: React.FC<AssetProps> = (
 
     useEffect(() => {
         if (isWhitelisted && foundryDetails) {
-            const immutableFeatures = (foundryDetails?.output as FoundryOutput).getImmutableFeatures();
+            const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
 
             const metadata = immutableFeatures?.find(
                 feature => feature.type === FeatureType.Metadata
@@ -40,7 +40,7 @@ const Asset: React.FC<AssetProps> = (
         const validator = new JsonSchemaValidator();
 
         try {
-            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.getData())) as ITokenMetadata;
+            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.data)) as ITokenMetadata;
             const result = validator.validate(tokenInfo, tokenSchemeIRC30);
 
             if (result.valid) {

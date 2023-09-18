@@ -43,26 +43,26 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     );
 
                     const nftOutput = outputResponse.output as NftOutput;
-                    const nftId = TransactionsHelper.buildIdHashForNft(nftOutput.getNftId(), outputId);
-                    const metadataFeature = nftOutput.getImmutableFeatures()?.find(
+                    const nftId = TransactionsHelper.buildIdHashForNft(nftOutput.nftId, outputId);
+                    const metadataFeature = nftOutput.immutableFeatures?.find(
                         feature => feature.type === FeatureType.Metadata
                     ) as MetadataFeature;
 
-                    const issuerFeature = nftOutput.getImmutableFeatures()?.find(
+                    const issuerFeature = nftOutput.immutableFeatures?.find(
                         feature => feature.type === FeatureType.Issuer
                     ) as IssuerFeature;
 
                     let issuerId = null;
                     if (issuerFeature) {
-                        switch (issuerFeature.getIssuer().type) {
+                        switch (issuerFeature.address.type) {
                             case AddressType.Ed25519:
-                                issuerId = (issuerFeature.getIssuer() as Ed25519Address).getPubKeyHash();
+                                issuerId = (issuerFeature.address as Ed25519Address).pubKeyHash;
                                 break;
                             case AddressType.Alias:
-                                issuerId = (issuerFeature.getIssuer() as AliasAddress).getAliasId();
+                                issuerId = (issuerFeature.address as AliasAddress).aliasId;
                                 break;
                             case AddressType.Nft:
-                                issuerId = (issuerFeature.getIssuer() as NftAddress).getNftId();
+                                issuerId = (issuerFeature.address as NftAddress).nftId;
                                 break;
                             default:
                                 break;
@@ -72,7 +72,7 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     theNfts.push({
                         nftId,
                         issuerId,
-                        metadata: metadataFeature?.getData() ?? undefined
+                        metadata: metadataFeature?.data ?? undefined
                     });
                 }
             }

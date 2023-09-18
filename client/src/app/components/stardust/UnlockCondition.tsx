@@ -72,7 +72,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                     <div className="padding-l-t left-border">
                         {unlockCondition.type === UnlockConditionType.Address && (
                             <Address
-                                address={(unlockCondition as AddressUnlockCondition).getAddress()}
+                                address={(unlockCondition as AddressUnlockCondition).address}
                             />
                         )}
                         {unlockCondition.type === UnlockConditionType.StorageDepositReturn && (
@@ -82,7 +82,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                 </div>
                                 <Address
                                     address={
-                                        (unlockCondition as StorageDepositReturnUnlockCondition).getReturnAddress()
+                                        (unlockCondition as StorageDepositReturnUnlockCondition).returnAddress
                                     }
                                 />
                                 <div className="card--label">
@@ -95,7 +95,7 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                     >
                                         {formatAmount(
                                             Number(
-                                                (unlockCondition as StorageDepositReturnUnlockCondition).getAmount()
+                                                (unlockCondition as StorageDepositReturnUnlockCondition).amount
                                             ),
                                             tokenInfo,
                                             !isFormattedBalance
@@ -105,14 +105,14 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                             </React.Fragment>
                         )}
                         {unlockCondition.type === UnlockConditionType.Timelock &&
-                            (unlockCondition as TimelockUnlockCondition).getUnixTime() && (
+                            (unlockCondition as TimelockUnlockCondition).unixTime && (
                                 <React.Fragment>
                                     <div className="card--label">
                                         Unix time
                                     </div>
                                     <div className="card--value row">
                                         {DateHelper.formatShort(
-                                            (unlockCondition as TimelockUnlockCondition).getUnixTime() * 1000
+                                            (unlockCondition as TimelockUnlockCondition).unixTime * 1000
                                         )}
                                     </div>
                                 </React.Fragment>
@@ -120,16 +120,16 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                         {unlockCondition.type === UnlockConditionType.Expiration && (
                             <React.Fragment>
                                 <Address
-                                    address={(unlockCondition as ExpirationUnlockCondition).getReturnAddress()}
+                                    address={(unlockCondition as ExpirationUnlockCondition).returnAddress}
                                 />
-                                {(unlockCondition as ExpirationUnlockCondition).getUnixTime() && (
+                                {(unlockCondition as ExpirationUnlockCondition).unixTime && (
                                     <React.Fragment>
                                         <div className="card--label">
                                             Unix time
                                         </div>
                                         <div className="card--value row">
                                             {DateHelper.formatShort(
-                                                (unlockCondition as ExpirationUnlockCondition).getUnixTime() * 1000
+                                                (unlockCondition as ExpirationUnlockCondition).unixTime * 1000
                                             )}
                                         </div>
                                     </React.Fragment>
@@ -138,17 +138,17 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                         )}
                         {unlockCondition.type === UnlockConditionType.GovernorAddress && (
                             <Address
-                                address={(unlockCondition as GovernorAddressUnlockCondition).getAddress()}
+                                address={(unlockCondition as GovernorAddressUnlockCondition).address}
                             />
                         )}
                         {unlockCondition.type === UnlockConditionType.ImmutableAliasAddress && (
                             <Address
-                                address={(unlockCondition as ImmutableAliasAddressUnlockCondition).getAddress()}
+                                address={(unlockCondition as ImmutableAliasAddressUnlockCondition).address}
                             />
                         )}
                         {unlockCondition.type === UnlockConditionType.StateControllerAddress && (
                             <Address
-                                address={(unlockCondition as StateControllerAddressUnlockCondition).getAddress()}
+                                address={(unlockCondition as StateControllerAddressUnlockCondition).address}
                             />
                         )}
                     </div>

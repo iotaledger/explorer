@@ -68,7 +68,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
                                                 network={network}
                                                 outputId={item.outputId}
                                                 output={item.outputDetails.output}
-                                                amount={Number(item.outputDetails.output.getAmount())}
+                                                amount={Number(item.outputDetails.output.amount)}
                                                 showCopyAmount={true}
                                                 isPreExpanded={false}
                                             />
@@ -110,7 +110,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
                                                 network={network}
                                                 outputId={item.outputId}
                                                 output={item.outputDetails.output}
-                                                amount={Number(item.outputDetails.output.getAmount())}
+                                                amount={Number(item.outputDetails.output.amount)}
                                                 showCopyAmount={true}
                                                 isPreExpanded={false}
                                             />

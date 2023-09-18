@@ -10,7 +10,7 @@ interface AliasStateSectionProps {
 }
 
 const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => {
-    const stateMetadata = output?.getStateMetadata();
+    const stateMetadata = output?.stateMetadata;
 
     return (
         <div className="section">
@@ -18,7 +18,7 @@ const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => {
                 <div>
                     <div className="label">State Index</div>
                     <div className="value row middle margin-t-t">
-                        <span className="margin-r-t">{output?.getStateIndex()}</span>
+                        <span className="margin-r-t">{output?.stateIndex}</span>
                     </div>
                 </div>
                 {stateMetadata && (

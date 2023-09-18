@@ -54,15 +54,15 @@ export class Bech32AddressHelper {
 
         if (address.type === AddressType.Ed25519) {
             hex = HexHelper.stripPrefix(
-                (address as Ed25519Address).getPubKeyHash()
+                (address as Ed25519Address).pubKeyHash
             );
         } else if (address.type === AddressType.Alias) {
             hex = HexHelper.stripPrefix(
-                (address as AliasAddress).getAliasId()
+                (address as AliasAddress).aliasId
             );
         } else if (address.type === AddressType.Nft) {
             hex = HexHelper.stripPrefix(
-                (address as NftAddress).getNftId()
+                (address as NftAddress).nftId
             );
         }
 

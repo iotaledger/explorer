@@ -30,18 +30,18 @@ const Feature: React.FC<FeatureProps> = (
                 <div className="padding-l-t left-border">
                     {feature.type === FeatureType.Sender && (
                         <Address
-                            address={(feature as SenderFeature).getSender()}
+                            address={(feature as SenderFeature).address}
                         />
                     )}
                     {feature.type === FeatureType.Issuer && (
                         <Address
-                            address={(feature as IssuerFeature).getIssuer()}
+                            address={(feature as IssuerFeature).address}
                         />
                     )}
                     {feature.type === FeatureType.Metadata && (
                         <div className="card--value row">
                             <DataToggle
-                                sourceData={(feature as MetadataFeature).getData()}
+                                sourceData={(feature as MetadataFeature).data}
                                 withSpacedHex={true}
                                 isParticipationEventMetadata={isParticipationEventMetadata}
                             />
@@ -49,9 +49,9 @@ const Feature: React.FC<FeatureProps> = (
                     )}
                     {feature.type === FeatureType.Tag && (
                         <div>
-                            {(feature as TagFeature).getTag() && (
+                            {(feature as TagFeature).tag && (
                                 <DataToggle
-                                    sourceData={(feature as TagFeature).getTag()}
+                                    sourceData={(feature as TagFeature).tag}
                                     withSpacedHex={true}
                                 />
                             )}

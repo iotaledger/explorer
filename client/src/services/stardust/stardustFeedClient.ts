@@ -295,7 +295,7 @@ export class StardustFeedClient {
                 for (const output of transactionEssence.outputs) {
                     if (output.type === OutputType.Basic) {
                         const basicOutput = output as BasicOutput;
-                        value += Number(basicOutput.getAmount());
+                        value += Number(basicOutput.amount);
                     }
                 }
 

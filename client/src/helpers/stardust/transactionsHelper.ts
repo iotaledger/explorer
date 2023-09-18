@@ -103,7 +103,7 @@ export class TransactionsHelper {
                             output: details.output,
                             metadata: details.metadata
                         };
-                        amount = Number(details.output.getAmount());
+                        amount = Number(details.output.amount);
                     }
 
                     inputs.push({
@@ -129,13 +129,13 @@ export class TransactionsHelper {
                     outputs.push({
                         id: outputId,
                         output,
-                        amount: Number(payloadEssence.outputs[i].getAmount())
+                        amount: Number(payloadEssence.outputs[i].amount)
                     });
                 } else {
                     const output = payloadEssence.outputs[i] as CommonOutput;
 
                     const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
-                        output.getUnlockConditions(), _bechHrp, output.type
+                        output.unlockConditions, _bechHrp, output.type
                     );
 
                     const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
@@ -144,7 +144,7 @@ export class TransactionsHelper {
                         remainderOutputs.push({
                             id: outputId,
                             address,
-                            amount: Number(payloadEssence.outputs[i].getAmount()),
+                            amount: Number(payloadEssence.outputs[i].amount),
                             isRemainder,
                             output
                         });
@@ -152,14 +152,14 @@ export class TransactionsHelper {
                         outputs.push({
                             id: outputId,
                             address,
-                            amount: Number(payloadEssence.outputs[i].getAmount()),
+                            amount: Number(payloadEssence.outputs[i].amount),
                             isRemainder,
                             output
                         });
                     }
 
                     if (!isRemainder) {
-                        transferTotal += Number(payloadEssence.outputs[i].getAmount());
+                        transferTotal += Number(payloadEssence.outputs[i].amount);
                     }
                 }
             }
@@ -240,7 +240,7 @@ export class TransactionsHelper {
             if (output.type === OutputType.Treasury) {
                 return false;
             }
-            const hasStorageDepositUnlockCondition = (output as CommonOutput).getUnlockConditions().some(
+            const hasStorageDepositUnlockCondition = (output as CommonOutput).unlockConditions.some(
                 uc => uc.type === UnlockConditionType.StorageDepositReturn
             );
 
@@ -261,12 +261,12 @@ export class TransactionsHelper {
      */
     public static isParticipationEventOutput(output: Output): boolean {
         if (output.type === OutputType.Basic) {
-            const tagFeature = (output as BasicOutput).getFeatures()?.find(
+            const tagFeature = (output as BasicOutput).features?.find(
                 feature => feature.type === FeatureType.Tag
             ) as TagFeature;
 
             if (tagFeature) {
-                return tagFeature.getTag() === HEX_PARTICIPATE;
+                return tagFeature.tag === HEX_PARTICIPATE;
             }
         }
         return false;
@@ -317,8 +317,8 @@ export class TransactionsHelper {
             ).map(ot => ot as ImmutableAliasAddressUnlockCondition)[0];
         }
 
-        if (unlockCondition?.getAddress()) {
-            address = Bech32AddressHelper.buildAddress(_bechHrp, unlockCondition?.getAddress());
+        if (unlockCondition?.address) {
+            address = Bech32AddressHelper.buildAddress(_bechHrp, unlockCondition?.address);
         }
 
         return address;

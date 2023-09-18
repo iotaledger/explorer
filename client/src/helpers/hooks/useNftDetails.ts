@@ -48,30 +48,30 @@ export function useNftDetails(network: string, nftId: string | null):
                     if (!response?.error) {
                         const output = response.nftDetails?.output as NftOutput;
 
-                        const metadataFeature = output?.getImmutableFeatures()?.find(
+                        const metadataFeature = output?.immutableFeatures?.find(
                             feature => feature.type === FeatureType.Metadata
                         ) as MetadataFeature;
 
-                        const issuerFeature = output?.getImmutableFeatures()?.find(
+                        const issuerFeature = output?.immutableFeatures?.find(
                             feature => feature.type === FeatureType.Issuer
                         ) as IssuerFeature;
 
                         let issuerId = null;
                         if (issuerFeature) {
-                            switch (issuerFeature.getIssuer().type) {
+                            switch (issuerFeature.address.type) {
                                 case AddressType.Ed25519: {
-                                    const ed25519Address = issuerFeature.getIssuer() as Ed25519Address;
-                                    issuerId = ed25519Address.getPubKeyHash();
+                                    const ed25519Address = issuerFeature.address as Ed25519Address;
+                                    issuerId = ed25519Address.pubKeyHash;
                                     break;
                                 }
                                 case AddressType.Alias: {
-                                    const aliasAddress = issuerFeature.getIssuer() as AliasAddress;
-                                    issuerId = aliasAddress.getAliasId();
+                                    const aliasAddress = issuerFeature.address as AliasAddress;
+                                    issuerId = aliasAddress.aliasId;
                                     break;
                                 }
                                 case AddressType.Nft: {
-                                    const nftAddress = issuerFeature.getIssuer() as NftAddress;
-                                    issuerId = nftAddress.getNftId();
+                                    const nftAddress = issuerFeature.address as NftAddress;
+                                    issuerId = nftAddress.nftId;
                                     break;
                                 }
                                 default:
@@ -80,7 +80,7 @@ export function useNftDetails(network: string, nftId: string | null):
                         }
 
                         if (isMounted) {
-                            setNftMetadata(metadataFeature?.getData() ?? null);
+                            setNftMetadata(metadataFeature?.data ?? null);
                             setNftOutput(output);
                             setNftIssuerId(issuerId);
                         }

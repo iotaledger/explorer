@@ -170,12 +170,12 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
                 if (outputResponse.output.type === OutputType.Basic &&
                     TransactionsHelper.isParticipationEventOutput(outputResponse.output)
                 ) {
-                    const metadataFeature = (outputResponse.output as BasicOutput).getFeatures()?.find(
+                    const metadataFeature = (outputResponse.output as BasicOutput).features?.find(
                         feature => feature.type === FeatureType.Metadata
                     ) as MetadataFeature;
 
                     if (metadataFeature) {
-                        const readStream = new ReadStream(Converter.hexToBytes(metadataFeature.getData()));
+                        const readStream = new ReadStream(Converter.hexToBytes(metadataFeature.data));
                         const newParticipations = deserializeParticipationEventMetadata(readStream);
                         foundParticipations = [...foundParticipations, ...newParticipations];
                     }

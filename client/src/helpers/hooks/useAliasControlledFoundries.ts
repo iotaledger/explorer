@@ -61,8 +61,8 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
                 const details = response.output;
                 if (aliasAddress?.hex && !response.error && details?.output?.type === OutputType.Foundry) {
                     const output = details.output as FoundryOutput;
-                    const serialNumber = output.getSerialNumber();
-                    const tokenSchemeType = output.getTokenScheme().type;
+                    const serialNumber = output.serialNumber;
+                    const tokenSchemeType = output.tokenScheme.type;
                     const tokenId = Utils.computeTokenId(
                         aliasAddress.hex,
                         serialNumber,
