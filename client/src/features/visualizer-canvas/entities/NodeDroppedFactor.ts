@@ -43,7 +43,10 @@ export class NodeDroppedFactor {
 
     public getNodes = () => {
         const allowedNumber = this.getAllowedNumberOfNodes();
-        return randomSubset(this.allIncomeNodes, allowedNumber.uiNodesNumber);
+        return randomSubset(
+            this.allIncomeNodes,
+            allowedNumber.uiNodesNumber
+        ).filter(Boolean);
     };
 
     public addIncomeNode = (node: NetworkNode) => {
