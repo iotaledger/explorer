@@ -79,7 +79,10 @@ export class StardustFeedClient {
         const theNetworkConfig = networkService.get(networkId);
 
         if (!theNetworkConfig) {
-            console.error("[FeedClient] Couldn't initialize client for network", networkId);
+            console.error(
+                "[FeedClient] Couldn't initialize client for network",
+                networkId
+            );
         } else {
             this._networkConfig = theNetworkConfig;
         }
@@ -94,9 +97,14 @@ export class StardustFeedClient {
      */
     public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
-        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
+        onMetadataUpdatedCallback?: (metadataUpdate: {
+            [id: string]: IFeedBlockMetadata;
+        }) => void
     ) {
-        this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
+        this.socket = io(this.endpoint, {
+            upgrade: true,
+            transports: ["websocket"]
+        });
 
         // If reconnect fails then also try polling mode.
         this.socket.on("reconnect_attempt", () => {
@@ -106,41 +114,55 @@ export class StardustFeedClient {
         });
 
         try {
-            if (!this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
+            if (
+                !this.blockSubscriptionId &&
+                this._networkConfig?.network &&
+                this.socket
+            ) {
                 const subscribeRequest: IFeedSubscribeRequest = {
                     network: this._networkConfig.network,
                     feedSelect: "block"
                 };
 
-                this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
-                    } else {
-                        console.log(
-                            "Failed subscribing to feed",
-                            this._networkConfig?.network,
-                            subscribeResponse.error
-                        );
+                this.socket.on(
+                    "subscribe",
+                    (subscribeResponse: IFeedSubscribeResponse) => {
+                        if (!subscribeResponse.error) {
+                            this.blockSubscriptionId =
+                                subscribeResponse.subscriptionId;
+                        } else {
+                            console.log(
+                                "Failed subscribing to feed",
+                                this._networkConfig?.network,
+                                subscribeResponse.error
+                            );
+                        }
                     }
-                });
+                );
                 this.socket.on("block", async (update: IFeedUpdate) => {
                     if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.blockMetadata) {
-                            const existingBlockData = this.latestBlocks.get(update.blockMetadata?.blockId) ?? null;
+                            const existingBlockData =
+                                this.latestBlocks.get(
+                                    update.blockMetadata?.blockId
+                                ) ?? null;
                             if (existingBlockData) {
                                 existingBlockData.metadata = {
                                     ...existingBlockData.metadata,
                                     ...update.blockMetadata.metadata
                                 };
 
-                                onMetadataUpdatedCallback?.(
-                                    { [existingBlockData.blockId]: existingBlockData.metadata }
-                                );
+                                onMetadataUpdatedCallback?.({
+                                    [existingBlockData.blockId]:
+                                        existingBlockData.metadata
+                                });
                             }
                         }
 
                         if (update.block) {
-                            const block: IFeedBlockData = this.unmarshalBlock(update.block);
+                            const block: IFeedBlockData = this.unmarshalBlock(
+                                update.block
+                            );
 
                             if (!this.latestBlocks.has(block.blockId)) {
                                 this.latestBlocks.set(block.blockId, block);
@@ -161,7 +183,36 @@ export class StardustFeedClient {
                 this.socket.emit("subscribe", subscribeRequest);
             }
         } catch (error) {
-            console.log("Failed subscribing to block feed", this._networkConfig?.network, error);
+            console.log(
+                "Failed subscribing to block feed",
+                this._networkConfig?.network,
+                error
+            );
+        }
+    }
+
+    public replayAttack(cb: (block: any) => void) {
+        this.socket = io(this.endpoint, {
+            upgrade: true,
+            transports: ["websocket"]
+        });
+        try {
+            if (this.socket) {
+                this.socket.on("replayAttack", (block: any) => {
+                    console.log("replayAttack from websocket");
+                    cb(block);
+                });
+
+                this.socket.on("replayAttackEnd", () => {
+                    console.log("replayAttackEnd from websocket");
+                    // this.socket?.disconnect();
+                    // this.subscribeBlocks();
+                });
+
+                this.socket.emit("replayAttack");
+            }
+        } catch {
+            console.error("[FeedClient] Could not replay attack");
         }
     }
 
@@ -172,7 +223,10 @@ export class StardustFeedClient {
     public subscribeMilestones(
         onMilestoneCallback?: (milestoneData: IFeedMilestoneData) => void
     ) {
-        this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
+        this.socket = io(this.endpoint, {
+            upgrade: true,
+            transports: ["websocket"]
+        });
 
         // If reconnect fails then also try polling mode.
         this.socket.on("reconnect_attempt", () => {
@@ -182,7 +236,11 @@ export class StardustFeedClient {
         });
 
         try {
-            if (!this.milestoneSubscriptionId && this._networkConfig?.network && this.socket) {
+            if (
+                !this.milestoneSubscriptionId &&
+                this._networkConfig?.network &&
+                this.socket
+            ) {
                 const subscribeRequest: IFeedSubscribeRequest = {
                     network: this._networkConfig.network,
                     feedSelect: "milestone"
@@ -190,26 +248,38 @@ export class StardustFeedClient {
 
                 this.socket.emit("subscribe", subscribeRequest);
 
-                this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
-                    } else {
-                        console.log(
-                            "Failed subscribing to feed",
-                            this._networkConfig?.network,
-                            subscribeResponse.error
-                        );
+                this.socket.on(
+                    "subscribe",
+                    (subscribeResponse: IFeedSubscribeResponse) => {
+                        if (!subscribeResponse.error) {
+                            this.milestoneSubscriptionId =
+                                subscribeResponse.subscriptionId;
+                        } else {
+                            console.log(
+                                "Failed subscribing to feed",
+                                this._networkConfig?.network,
+                                subscribeResponse.error
+                            );
+                        }
                     }
-                });
+                );
 
                 this.socket.on("milestone", async (update: IFeedUpdate) => {
-                    if (update.subscriptionId === this.milestoneSubscriptionId && update.milestone) {
+                    if (
+                        update.subscriptionId ===
+                            this.milestoneSubscriptionId &&
+                        update.milestone
+                    ) {
                         onMilestoneCallback?.(update.milestone);
                     }
                 });
             }
         } catch (error) {
-            console.log("Failed subscribing to milestone feed", this._networkConfig?.network, error);
+            console.log(
+                "Failed subscribing to milestone feed",
+                this._networkConfig?.network,
+                error
+            );
         }
     }
 
@@ -219,14 +289,18 @@ export class StardustFeedClient {
     public async unsubscribeBlocks(): Promise<boolean> {
         let success = false;
         try {
-            if (this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
+            if (
+                this.blockSubscriptionId &&
+                this._networkConfig?.network &&
+                this.socket
+            ) {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkConfig.network,
                     subscriptionId: this.blockSubscriptionId,
                     feedSelect: "block"
                 };
 
-                this.socket.on("unsubscribe", () => { });
+                this.socket.on("unsubscribe", () => {});
                 this.socket.emit("unsubscribe", unsubscribeRequest);
                 success = true;
             }
@@ -248,14 +322,18 @@ export class StardustFeedClient {
     public async unsubscribeMilestones(): Promise<boolean> {
         let success = false;
         try {
-            if (this.milestoneSubscriptionId && this._networkConfig?.network && this.socket) {
+            if (
+                this.milestoneSubscriptionId &&
+                this._networkConfig?.network &&
+                this.socket
+            ) {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkConfig.network,
                     subscriptionId: this.milestoneSubscriptionId,
                     feedSelect: "milestone"
                 };
 
-                this.socket.on("unsubscribe", () => { });
+                this.socket.on("unsubscribe", () => {});
                 this.socket.emit("unsubscribe", unsubscribeRequest);
                 success = true;
             }
@@ -282,7 +360,8 @@ export class StardustFeedClient {
 
         let value;
         let transactionId;
-        let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
+        let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" =
+            "None";
         const properties: { [key: string]: unknown } = {};
         let block: IBlock | null = null;
 
@@ -310,7 +389,9 @@ export class StardustFeedClient {
                 payloadType = "Milestone";
                 properties.index = block.payload.index;
                 properties.timestamp = block.payload.timestamp;
-                properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
+                properties.milestoneId = milestoneIdFromMilestonePayload(
+                    block.payload
+                );
             } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
                 payloadType = "TaggedData";
                 properties.tag = block.payload.tag;

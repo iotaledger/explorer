@@ -20,15 +20,14 @@ import {
     KONVA_SHIFT_DURATION,
     NODE_SIZE_DEFAULT,
     SCALE_DEFAULT,
-    THRESHOLD_SHIFT_PX
+    THRESHOLD_SHIFT_PX,
 } from "./lib/constants";
 import "./worker";
 import {
-    WorkerType,
-    WorkerUpdateFull,
-    WorkerUpdateNodes,
-    WorkerUpdateShift
+    WorkerType, WorkerUpdateFull, WorkerUpdateNodes, WorkerUpdateShift,
 } from "./lib/types";
+import { ServiceFactory } from "../../factories/serviceFactory";
+import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 
 interface ParentNode {
     id: number;
@@ -60,8 +59,6 @@ export const VisualizerCanvas: React.FC<
     const stageRef = useRef<Konva.Stage>(null);
     const nodesLayerRef = useRef<Konva.Layer>(null);
     const workerRef = useRef(null);
-    window.st = stageRef;
-    window.nd = nodesLayerRef;
 
     /**
      * Custom hooks
@@ -255,7 +252,7 @@ export const VisualizerCanvas: React.FC<
 
         nodesLayerRef.current.batchDraw();
 
-        console.log("--- end", Date.now() - start, "ms");
+        // console.log("--- end", Date.now() - start, "ms");
     };
 
     /**
@@ -286,34 +283,54 @@ export const VisualizerCanvas: React.FC<
         });
     }, [stageWidth, stageHeight]);
 
+    const onReplay = async () => {
+        const feedService = ServiceFactory.get<StardustFeedClient>(
+            `feed-${network}`
+        );
+
+        // await feedService.unsubscribeBlocks();
+        feedService.replayAttack((block) => {
+            console.log(block);
+        });
+    };
+
     return (
-        <Wrapper
-            blocksCount={0}
-            filter=""
-            isActive={false}
-            network={network}
-            networkConfig={networkConfig}
-            onChangeFilter={() => {}}
-            selectNode={() => {}}
-            selectedFeedItem={null}
-            toggleActivity={() => {}}
-        >
-            <div
-                ref={divWrapRef}
-                style={{ width: "100%", height: "100%", minHeight: 600 }}
+        <>
+            <button type="button" onClick={onReplay}>
+                Replay attack
+            </button>
+            <Wrapper
+                blocksCount={0}
+                filter=""
+                isActive={false}
+                network={network}
+                networkConfig={networkConfig}
+                onChangeFilter={() => {}}
+                selectNode={() => {}}
+                selectedFeedItem={null}
+                toggleActivity={() => {}}
             >
-                <Stage
-                    // onWheel={handleWheel}
-                    // draggable
-                    // onMouseDown={handleMouseDown}
-                    // onMouseUp={handleMouseUp}
-                    // onMouseMove={handleMouseMove}
-                    ref={stageRef}
+                <div
+                    ref={divWrapRef}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        minHeight: 600
+                    }}
                 >
-                    <FastLayer ref={nodesLayerRef} />
-                </Stage>
-            </div>
-        </Wrapper>
+                    <Stage
+                        // onWheel={handleWheel}
+                        // draggable
+                        // onMouseDown={handleMouseDown}
+                        // onMouseUp={handleMouseUp}
+                        // onMouseMove={handleMouseMove}
+                        ref={stageRef}
+                    >
+                        <FastLayer ref={nodesLayerRef} />
+                    </Stage>
+                </div>
+            </Wrapper>
+        </>
     );
 };
 
