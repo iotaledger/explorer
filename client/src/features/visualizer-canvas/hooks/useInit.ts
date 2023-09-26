@@ -5,7 +5,6 @@ import { SCALE_DEFAULT } from "../lib/constants";
 
 export const useInit = (
     stageRef: RefObject<Konva.Stage>,
-    nodesLayerRef: RefObject<Konva.Layer>
 ) => {
     const [isInit, setIsInit] = useState(false);
     const { width, height, ref: divWrapRef } = useResizeDetector();
