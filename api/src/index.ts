@@ -109,12 +109,12 @@ socketServer.on("connection", socket => {
     socket.on("replayAttack", async (data: INetworkBoundGetRequest) => {
         logger.debug(`Socket::ReplayAttack [${socket.id}]`);
 
-        const maxIterations = 5;
+        const maxIterations = 500;
 
         for (let i = 0; i < maxIterations; i++) {
             console.log(`Iteration: ${i}`);
             socket.emit("replayAttack", {foo: 'bar'});
-            await delay(1000); // Delay of 1 second for each iteration
+            await delay(100); // Delay of 1 second for each iteration
         }
         socket.emit("replayAttackEnd");
     });

@@ -23,6 +23,7 @@ import {
     WorkerUpdateShift,
     WorkerUpdateZoom
 } from "./lib/types";
+import "./worker";
 
 // interface ParentNode {
 //     id: number;
@@ -41,7 +42,15 @@ import {
 //     nodes: Node[];
 // }
 
-export const Drawer = ({ network, refOnNewBlock }: { network: string; refOnNewBlock: React.RefObject<any> }) => {
+export const Drawer = ({
+    network,
+    refOnNewBlock,
+    isVisible = true
+}: {
+    network: string;
+    refOnNewBlock: React.RefObject<any>;
+    isVisible: boolean;
+}) => {
     /**
      * References
      */
@@ -61,6 +70,7 @@ export const Drawer = ({ network, refOnNewBlock }: { network: string; refOnNewBl
      */
     const onNewBlock = (block: IFeedBlockData & { timestamp: number }) => {
         if (nodesLayerRef.current && workerRef.current) {
+            console.log('--- block', block);
             block.timestamp = Date.now();
 
             workerRef.current.postMessage({
@@ -89,15 +99,15 @@ export const Drawer = ({ network, refOnNewBlock }: { network: string; refOnNewBl
             opacity: 0
         });
 
-        konvaNode.on("click", e => {
+        konvaNode.on("click", (e) => {
             console.log("click", e);
         });
-        konvaNode.on("mouseenter", e => {
+        konvaNode.on("mouseenter", (e) => {
             e.currentTarget.to({
                 opacity: 0.5
             });
         });
-        konvaNode.on("mouseleave", e => {
+        konvaNode.on("mouseleave", (e) => {
             setTimeout(() => {
                 e.currentTarget.to({
                     opacity: 1
@@ -298,7 +308,8 @@ export const Drawer = ({ network, refOnNewBlock }: { network: string; refOnNewBl
             style={{
                 width: "100%",
                 height: "100%",
-                minHeight: 600
+                minHeight: 600,
+                visibility: isVisible ? "visible" : "hidden"
             }}
         >
             <Stage
