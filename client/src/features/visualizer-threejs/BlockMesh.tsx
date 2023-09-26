@@ -44,7 +44,7 @@ const BlockMesh: React.FC<BlockMeshProps> = ({ id, position, color }) => {
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
         >
-            <circleGeometry args={[10]} />
+            <sphereGeometry args={[10]} />
             <meshPhongMaterial color={hovered ? "hotpink" : color} />
         </mesh>
     );
