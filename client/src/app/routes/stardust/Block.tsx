@@ -64,15 +64,14 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
-    const blockInstance = plainToInstance(IBlock, block);
-    const isMilestoneBlock = blockInstance?.payload?.type === PayloadType.Milestone;
-    const isTransactionBlock = blockInstance?.payload?.type === PayloadType.Transaction;
+    const isMilestoneBlock = block?.payload?.type === PayloadType.Milestone;
+    const isTransactionBlock = block?.payload?.type === PayloadType.Transaction;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = isBlockLoading ||
         isInputsAndOutputsLoading ||
         isBlockMetadataLoading ||
         isMilestoneReferencedBlockLoading;
-    const milestoneIndex = isMilestoneBlock ? (blockInstance?.payload as MilestonePayload).index : undefined;
+    const milestoneIndex = isMilestoneBlock ? (block?.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {
         case PayloadType.Milestone:
@@ -294,7 +293,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
-                                milestone={blockInstance?.payload as MilestonePayload}
+                                milestone={block?.payload as MilestonePayload}
                             />
                         )}
                     </div>

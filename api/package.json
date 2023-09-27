@@ -33,7 +33,7 @@
         "@iota/identity-wasm-0.4": "npm:@iota/identity-wasm@^0.4.3",
         "@iota/identity-wasm-0.7": "npm:@iota/identity-wasm@^0.7.0-alpha.6",
         "@iota/iota.js-chrysalis": "npm:@iota/iota.js@^1.8.6",
-        "@iota/iota.js-stardust": "npm:@iota/sdk@1.0.11",
+        "@iota/iota.js-stardust": "npm:@iota/sdk@1.1.0-rc.1",
         "@iota/mqtt.js": "^1.8.6",
         "@iota/mqtt.js-stardust": "npm:@iota/mqtt.js@2.0.0-rc.3",
         "@iota/util.js": "^1.8.6",
