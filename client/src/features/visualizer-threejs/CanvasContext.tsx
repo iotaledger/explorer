@@ -1,3 +1,4 @@
+import { Instances } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import React from "react";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
@@ -34,7 +35,12 @@ const CanvasContext: React.FC<CanvasContextProps> = ({ network }) => {
     console.log("block on screen N:", blocks.length);
 
     return (
-        <>
+        <Instances
+            limit={2500}
+            range={2500}
+        >
+            <sphereGeometry args={[10]} />
+            <meshPhongMaterial />
             {
                 blocks.map(block => (
                     <BlockMesh
@@ -45,7 +51,7 @@ const CanvasContext: React.FC<CanvasContextProps> = ({ network }) => {
                     />
                 ))
             }
-        </>
+        </Instances>
     );
 };
 

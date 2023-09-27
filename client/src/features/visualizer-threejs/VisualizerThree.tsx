@@ -1,4 +1,4 @@
-import { CameraControls, OrthographicCamera } from "@react-three/drei";
+import { CameraControls, OrthographicCamera, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -16,6 +16,9 @@ const VisualizerThree: React.FC<
 }) => {
         const [networkConfig] = useNetworkConfig(network);
 
+        const controlsEnabled = true;
+        const statsEnabled = true;
+
         return (
             <Wrapper
                 blocksCount={0}
@@ -32,18 +35,19 @@ const VisualizerThree: React.FC<
                     <OrthographicCamera
                         makeDefault
                         zoom={3}
-                        near={1}
-                        far={1000}
-                        position={[0, 0, 1]}
+                        near={0.1}
+                        far={4000}
+                        position={[0, 0, 200]}
                     />
                     <color attach="background" args={["#f2f2f2"]} />
                     <ambientLight />
                     <directionalLight position={[100, 100, 50]} />
                     <CanvasContext network={network} />
+                    {controlsEnabled && <CameraControls makeDefault />}
+                    {statsEnabled && <Stats showPanel={0} className="stats" />}
                 </Canvas>
             </Wrapper>
         );
-        // <CameraControls makeDefault />
     };
 
 export default VisualizerThree;
