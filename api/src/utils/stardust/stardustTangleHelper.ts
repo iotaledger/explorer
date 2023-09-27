@@ -81,8 +81,6 @@ export class StardustTangleHelper {
             network
         );
 
-        logger.info(`GOT BLOCK: ${JSON.stringify(block)}`);
-
         if (!block) {
             return { error: `Couldn't find block with id ${blockId}` };
         }

@@ -1,4 +1,5 @@
-import { Block, Client, IBlockMetadata, MilestonePayload, parsePayload, Utils } from "@iota/iota.js-stardust";
+import { Block, Client, IBlockMetadata, MilestonePayload, Utils } from "@iota/iota.js-stardust";
+import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
@@ -127,9 +128,9 @@ export class StardustFeed {
     private connect() {
         logger.info("[StardustFeed] Connecting upstream feed!");
         // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["blocks"], (_, result) => {
+        void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
             try {
-                const block: Block = JSON.parse(result);
+                const block: Block = this.parseMqttPayloadMessage(Block, message);
                 const update: Partial<IFeedUpdate> = {
                     block
                 };
@@ -142,8 +143,9 @@ export class StardustFeed {
         });
 
         // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, result) => {
-            const metadata: IBlockMetadata = JSON.parse(result);
+        void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, message) => {
+            const parsed: { topic: string; payload: string } = JSON.parse(message);
+            const metadata: IBlockMetadata = JSON.parse(parsed.payload);
             // update cache
             let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
             currentEntry = !currentEntry ? {
@@ -177,12 +179,9 @@ export class StardustFeed {
         });
 
         // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["milestones"], (_, result) => {
+        void this._mqttClient.listenMqtt(["milestones"], (_, message) => {
             try {
-                const parsedResult: { topic: string; payload: string } = JSON.parse(result);
-                const milestonePayload: MilestonePayload = parsePayload(
-                    JSON.parse(parsedResult.payload)
-                ) as MilestonePayload;
+                const milestonePayload: MilestonePayload = this.parseMqttPayloadMessage(MilestonePayload, message);
                 const milestoneId = Utils.milestoneId(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
@@ -268,6 +267,20 @@ export class StardustFeed {
             if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
                 this.latestMilestonesCache.pop();
             }
+        }
+    }
+
+    private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
+        try {
+            const message: { topic: string; payload: string } = JSON.parse(serializedMessage);
+            const payload: T = plainToInstance<T, Record<string, unknown>>(
+                cls,
+                JSON.parse(message.payload) as Record<string, unknown>
+            );
+
+            return payload;
+        } catch (error) {
+            logger.warn(`[FeedClient] Failed to parse mqtt payload. ${error}`);
         }
     }
 
