@@ -110,7 +110,12 @@ socketServer.on("connection", socket => {
         logger.debug(`Socket::ReplayAttack [${socket.id}]`);
 
         const maxIterations = 500;
+        const list = [];
 
+        // block.timestamp
+        // currentTimestamp
+        // nextTimestamp
+        // diff
         for (let i = 0; i < maxIterations; i++) {
             console.log(`Iteration: ${i}`);
             socket.emit("replayAttack", {foo: 'bar'});
