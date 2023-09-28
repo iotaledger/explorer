@@ -2,19 +2,19 @@ import { Instances } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import React, { useEffect } from "react";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import BlockMesh from "./BlockMesh";
 import { colors } from "./constants";
 import { useBlockStore } from "./store";
 import { randomIntFromInterval } from "./utils";
-import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
-import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
+import { UpdateListenerReturn, useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 
 interface CanvasContextProps {
     network: string;
-    refOnNewBlock: React.RefObject<TFeedBlockAdd>;
+    setOnNewBlock: UpdateListenerReturn<TFeedBlockAdd>["setOnNewBlock"];
 }
 
-const CanvasContext: React.FC<CanvasContextProps> = ({ network, refOnNewBlock }) => {
+const CanvasContext: React.FC<CanvasContextProps> = ({ network, setOnNewBlock }) => {
     const { blocks, addBlock } = useBlockStore();
     const viewport = useThree(state => state.viewport);
 
@@ -35,8 +35,7 @@ const CanvasContext: React.FC<CanvasContextProps> = ({ network, refOnNewBlock })
 
 
     useEffect(() => {
-        // @ts-expect-error current is read-only
-        refOnNewBlock.current = onNewBlock;
+        setOnNewBlock(onNewBlock);
     }, []);
 
     console.log("block on screen N:", blocks.length);
