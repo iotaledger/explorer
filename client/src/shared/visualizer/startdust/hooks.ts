@@ -1,10 +1,7 @@
 import React, { useEffect } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { StardustFeedClient } from "../../../services/stardust/stardustFeedClient";
-import {
-    TFeedBlockMetadataUpdate,
-    TFeedBlockAdd
-} from "../../../shared/visualizer/startdust/types";
+import { TFeedBlockAdd, TFeedBlockMetadataUpdate } from "./types";
 
 export const useUpdateListener = (
     network: string,
@@ -15,13 +12,13 @@ export const useUpdateListener = (
         const feedService = ServiceFactory.get<StardustFeedClient>(
             `feed-${network}`
         );
-
+        console.log('--- ', handlerNewBlock?.current);
         if (feedService && handlerNewBlock?.current) {
             feedService.subscribeBlocks(
                 handlerNewBlock.current,
                 handlerUpdateBlock
             );
         }
-    }, [handlerNewBlock]);
+    }, [handlerNewBlock, handlerNewBlock?.current]);
     return {};
 };

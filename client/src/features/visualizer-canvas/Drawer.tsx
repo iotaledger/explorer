@@ -24,6 +24,7 @@ import {
     WorkerUpdateZoom
 } from "./lib/types";
 import "./worker";
+import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 
 // interface ParentNode {
 //     id: number;
@@ -48,7 +49,7 @@ export const Drawer = ({
     isVisible = true
 }: {
     network: string;
-    refOnNewBlock: React.RefObject<any>;
+    refOnNewBlock: React.RefObject<TFeedBlockAdd>;
     isVisible: boolean;
 }) => {
     /**

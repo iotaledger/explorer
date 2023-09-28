@@ -7,8 +7,9 @@ import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 import { Drawer } from "./Drawer";
-import { useUpdateListener } from "./hooks/useUpdateListener";
+
 
 export const VisualizerCanvas: React.FC<
     RouteComponentProps<VisualizerRouteProps>

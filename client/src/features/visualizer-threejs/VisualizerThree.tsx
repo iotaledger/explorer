@@ -6,7 +6,9 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import CanvasContext from "./CanvasContext";
-import { useUpdateListener } from "../visualizer-canvas/hooks/useUpdateListener";
+
+import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
+import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 
 const VisualizerThree: React.FC<
     RouteComponentProps<VisualizerRouteProps>
@@ -16,7 +18,7 @@ const VisualizerThree: React.FC<
     }
 }) => {
         const [networkConfig] = useNetworkConfig(network);
-        const streamOnNewBlock = useRef(null);
+        const streamOnNewBlock = useRef<TFeedBlockAdd>(null);
         const replayAttackOnNewBlock = useRef(null);
 
         useUpdateListener(network, streamOnNewBlock);
@@ -47,7 +49,10 @@ const VisualizerThree: React.FC<
                     <color attach="background" args={["#f2f2f2"]} />
                     <ambientLight />
                     <directionalLight position={[100, 100, 50]} />
-                    <CanvasContext network={network} />
+                    <CanvasContext
+                        network={network}
+                        refOnNewBlock={streamOnNewBlock}
+                    />
                     {controlsEnabled && <CameraControls makeDefault />}
                     {statsEnabled && <Stats showPanel={0} className="stats" />}
                 </Canvas>
