@@ -110,8 +110,8 @@ export class Nodes {
     public getZoom() {
         const max = Math.max(...Object.keys(this.yPositions).map(Number));
         const r = 240 / max;
-        console.log("--- r", r);
-        return 240 / max;
+        // console.log("--- r", r);
+        return 240 / max * 0.7;
     }
 
     private addToShiftMap(node: WorkerNode, shift: number) {

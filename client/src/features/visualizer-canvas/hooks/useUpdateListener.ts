@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
 import { IFeedBlockMetadata } from "../../../models/api/stardust/feed/IFeedBlockMetadata";
@@ -11,7 +11,7 @@ export type TBlockMetaUpdate = (metadataUpdate: {
 
 export const useUpdateListener = (
     network: string,
-    handlerNewBlock?: TBlockAdd,
+    handlerNewBlock?: React.RefObject<TBlockAdd>,
     handlerUpdateBlock?: TBlockMetaUpdate
 ) => {
     useEffect(() => {
@@ -19,9 +19,9 @@ export const useUpdateListener = (
             `feed-${network}`
         );
 
-        if (feedService) {
-            feedService.subscribeBlocks(handlerNewBlock, handlerUpdateBlock);
+        if (feedService && handlerNewBlock?.current) {
+            feedService.subscribeBlocks(handlerNewBlock.current, handlerUpdateBlock);
         }
-    }, []);
+    }, [handlerNewBlock]);
     return {};
 };
