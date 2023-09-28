@@ -18,10 +18,11 @@ const VisualizerThree: React.FC<
     }
 }) => {
         const [networkConfig] = useNetworkConfig(network);
-        const streamOnNewBlock = useRef(null);
+        const streamOnNewBlock = useRef<TFeedBlockAdd | null>(null);
         const replayAttackOnNewBlock = useRef(null);
 
-        const {setOnNewBlock} = useUpdateListener(network, streamOnNewBlock);
+        // @ts-ignore
+        const { setOnNewExists } = useUpdateListener(network, streamOnNewBlock?.current);
 
         const controlsEnabled = true;
         const statsEnabled = true;
@@ -51,7 +52,8 @@ const VisualizerThree: React.FC<
                     <directionalLight position={[100, 100, 50]} />
                     <CanvasContext
                         network={network}
-                        setOnNewBlock={setOnNewBlock}
+                        refOnNewBlock={streamOnNewBlock}
+                        setOnNewExists={setOnNewExists}
                     />
                     {controlsEnabled && <CameraControls makeDefault />}
                     {statsEnabled && <Stats showPanel={0} className="stats" />}

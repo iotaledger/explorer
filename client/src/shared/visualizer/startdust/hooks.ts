@@ -4,9 +4,9 @@ import { StardustFeedClient } from "../../../services/stardust/stardustFeedClien
 import { TFeedBlockAdd, TFeedBlockMetadataUpdate } from "./types";
 
 
-export interface UpdateListenerReturn<T> {
-    onNewBlock?: TFeedBlockAdd;
-    setOnNewBlock: React.Dispatch<React.SetStateAction<T | TFeedBlockAdd | undefined>>;
+export interface UpdateListenerReturn {
+    onNewExists: boolean;
+    setOnNewExists: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -18,26 +18,23 @@ export interface UpdateListenerReturn<T> {
 */
 export const useUpdateListener = (
     network: string,
-    handlerNewBlock?: React.RefObject<TFeedBlockAdd>,
+    handlerNewBlock?: TFeedBlockAdd,
     handlerUpdateBlock?: TFeedBlockMetadataUpdate
-): UpdateListenerReturn<() => void> => {
-    const [onNewBlock, setOnNewBlock] = React.useState<TFeedBlockAdd>();
-    
-    console.log('--- onNewBlock', onNewBlock);
-
+): UpdateListenerReturn => {
+    const [onNewExists, setOnNewExists] = React.useState<boolean>(false);
     useEffect(() => {
         const feedService = ServiceFactory.get<StardustFeedClient>(
             `feed-${network}`
         );
-        if (feedService && onNewBlock) {
+        if (feedService && onNewExists && handlerNewBlock) {
             feedService.subscribeBlocks(
-                onNewBlock,
+                handlerNewBlock,
                 handlerUpdateBlock
             );
         }
-    }, [onNewBlock]);
+    }, [onNewExists]);
     return {
-        onNewBlock,
-        setOnNewBlock
+        onNewExists,
+        setOnNewExists
     };
 };

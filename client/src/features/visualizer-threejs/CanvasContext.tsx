@@ -1,20 +1,21 @@
 import { Instances } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import React, { useEffect } from "react";
+import React, { useEffect, RefObject, MutableRefObject } from "react";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import BlockMesh from "./BlockMesh";
 import { colors } from "./constants";
 import { useBlockStore } from "./store";
 import { randomIntFromInterval } from "./utils";
-import { UpdateListenerReturn, useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 
 interface CanvasContextProps {
     network: string;
-    setOnNewBlock: UpdateListenerReturn<TFeedBlockAdd>["setOnNewBlock"];
+    refOnNewBlock: MutableRefObject<TFeedBlockAdd | null>;
+    setOnNewExists: UpdateListenerReturn["setOnNewExists"];
 }
 
-const CanvasContext: React.FC<CanvasContextProps> = ({ network, setOnNewBlock }) => {
+const CanvasContext: React.FC<CanvasContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const { blocks, addBlock } = useBlockStore();
     const viewport = useThree(state => state.viewport);
 
@@ -35,7 +36,9 @@ const CanvasContext: React.FC<CanvasContextProps> = ({ network, setOnNewBlock })
 
 
     useEffect(() => {
-        setOnNewBlock(onNewBlock);
+        // Set handler for new block
+        refOnNewBlock.current = onNewBlock;
+        setOnNewExists(true);
     }, []);
 
     console.log("block on screen N:", blocks.length);
