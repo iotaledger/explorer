@@ -1,7 +1,7 @@
 /* eslint-disable no-warning-comments */
 import {
     OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
-    HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter
+    HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
 } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -270,8 +270,8 @@ export class StardustTangleHelper {
         let outputIds: string[] = [];
 
         do {
-            const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32, cursor },
+            const outputIdsResponse = await this.tryFetchNodeThenPermanode<QueryParameter[], IOutputsResponse>(
+                [{ address: addressBech32 }, { cursor: cursor ?? "" }],
                 "basicOutputIds",
                 network
             );
@@ -300,8 +300,8 @@ export class StardustTangleHelper {
         let outputIds: string[] = [];
 
         do {
-            const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { stateControllerBech32: addressBech32, cursor },
+            const outputIdsResponse = await this.tryFetchNodeThenPermanode<AliasQueryParameter[], IOutputsResponse>(
+                [{ stateController: addressBech32 }, { cursor: cursor ?? "" }],
                 "aliasOutputIds",
                 network
             );
@@ -330,8 +330,8 @@ export class StardustTangleHelper {
         let outputIds: string[] = [];
 
         do {
-            const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32, cursor },
+            const outputIdsResponse = await this.tryFetchNodeThenPermanode<NftQueryParameter[], IOutputsResponse>(
+                [{ address: addressBech32 }, { cursor: cursor ?? "" }],
                 "nftOutputIds",
                 network
             );
@@ -384,8 +384,8 @@ export class StardustTangleHelper {
         aliasAddress: string
     ): Promise<IFoundriesResponse | undefined> {
         try {
-            const response = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { aliasAddressBech32: aliasAddress },
+            const response = await this.tryFetchNodeThenPermanode<FoundryQueryParameter[], IOutputsResponse>(
+                [{ aliasAddress }],
                 "foundryOutputIds",
                 network
             );
