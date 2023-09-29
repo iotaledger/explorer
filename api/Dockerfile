@@ -1,10 +1,7 @@
 FROM node:16.20.2-bullseye
 
 ## Include the build tools for any npm packages that rebuild
-RUN deb  http://deb.debian.org/debian  stretch main
-RUN deb-src  http://deb.debian.org/debian  stretch main
-RUN apt update
-RUN apt install git curl python3 build-base cmake
+RUN apt install git curl python3
 
 # Working DIR
 WORKDIR /usr/src/app
