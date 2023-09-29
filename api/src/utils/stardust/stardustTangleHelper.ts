@@ -550,7 +550,7 @@ export class StardustTangleHelper {
     public static async participationEventDetails(
         network: INetwork, eventId: string
     ): Promise<IParticipationEventResponse | undefined> {
-        const basePluginPath: string = "participation/v1/";
+        const basePluginPath: string = "api/participation/v1/";
         const method = "GET";
         const methodPath: string = `events/${eventId}`;
         const info = await this.nodePluginFetch<IParticipationEventInfo>(
@@ -649,17 +649,15 @@ export class StardustTangleHelper {
         const client = new Client({ nodes: [provider] });
 
         try {
-            const response: string = await client.callPluginRoute(
+            const response: S = await client.callPluginRoute(
                 basePluginPath,
                 method,
                 methodPath,
                 queryParams,
                 request
-            );
+            ) as S;
 
-            const result: S = JSON.parse(response);
-
-            return result;
+            return response;
         } catch { }
 
         return null;
