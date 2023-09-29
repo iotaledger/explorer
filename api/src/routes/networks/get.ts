@@ -15,10 +15,10 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
 
     return {
         networks: all
-            // Only return networks that are not hidden
+            // Only return networks that are not hidden and enabled
             // and copy the fields needed by the client
             // as we don't want to expose all the information
-            .filter(n => !n.isHidden).map(n => ({
+            .filter(n => !n.isHidden && n.isEnabled).map(n => ({
                 network: n.network,
                 label: n.label,
                 protocolVersion: n.protocolVersion,

@@ -1,7 +1,6 @@
 import {
-    MilestonePayload, PayloadType, TransactionPayload, Utils, Block as IBlock
+    MilestonePayload, PayloadType, TransactionPayload, Utils
 } from "@iota/iota.js-stardust/web";
-import { plainToInstance } from "class-transformer";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
