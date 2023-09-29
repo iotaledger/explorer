@@ -4,7 +4,7 @@ FROM node:16-alpine
 RUN apk --no-cache add git curl python3 build-base cmake
 
 # Get Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Working DIR
