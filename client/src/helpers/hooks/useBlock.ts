@@ -26,6 +26,7 @@ export function useBlock(network: string, blockId: string | null):
 
     useEffect(() => {
         setIsLoading(true);
+        setBlock(null);
         if (blockId) {
             // eslint-disable-next-line no-void
             void (async () => {
