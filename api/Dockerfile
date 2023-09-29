@@ -1,11 +1,11 @@
 FROM node:16-alpine
 
 ## Include the build tools for any npm packages that rebuild
-RUN apk --no-cache add git curl python3 build-base cmake bash
+RUN apk --no-cache add git curl python3 build-base cmake
 
 # Get Rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Working DIR
 WORKDIR /usr/src/app
