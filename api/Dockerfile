@@ -1,11 +1,10 @@
-FROM node:16-alpine
+FROM node:16.20.2-bullseye
 
 ## Include the build tools for any npm packages that rebuild
-RUN apk --no-cache add git curl python3 build-base cmake
-
-# Get Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+RUN deb  http://deb.debian.org/debian  stretch main
+RUN deb-src  http://deb.debian.org/debian  stretch main
+RUN apt update
+RUN apt install git curl python3 build-base cmake
 
 # Working DIR
 WORKDIR /usr/src/app
