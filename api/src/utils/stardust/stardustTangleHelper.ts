@@ -1,6 +1,7 @@
 /* eslint-disable no-warning-comments */
 import {
-    OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse, HexEncodedString, Block, Utils
+    OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
+    HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter
 } from "@iota/iota.js-stardust";
 import { HexHelper } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -470,11 +471,12 @@ export class StardustTangleHelper {
         cursor?: string
     ): Promise<IBasicOutputsResponse | undefined> {
         try {
+            const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
             const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
-                Record<string, unknown>,
+                QueryParameter[],
                 IOutputsResponse
             >(
-                { tagHex: encodedTag, pageSize, cursor },
+                params,
                 "basicOutputIds",
                 network
             );
@@ -502,10 +504,15 @@ export class StardustTangleHelper {
         cursor?: string
     ): Promise<INftOutputsResponse | undefined> {
         try {
+            const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
             const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
-                Record<string, unknown>,
+                NftQueryParameter[],
                 IOutputsResponse
-            >({ tagHex: encodedTag, pageSize, cursor }, "nftOutputIds", network);
+            >(
+                params,
+                "nftOutputIds",
+                network
+            );
 
             if (nftOutputIdsResponse?.items.length > 0) {
                 return { outputs: nftOutputIdsResponse };
