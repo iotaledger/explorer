@@ -1,7 +1,11 @@
-FROM node:16.20.2-bullseye
+FROM node:16-alpine
 
 ## Include the build tools for any npm packages that rebuild
-RUN apt install git curl python3 build-base cmake
+RUN apk --no-cache add git curl python3 build-base cmake bash
+
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
 
 # Working DIR
 WORKDIR /usr/src/app
