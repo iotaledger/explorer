@@ -13,7 +13,7 @@ COPY . ./
 ARG CONFIG_ID
 
 # Install all packages necessary for compilation, build, then remove the devDependencies
-RUN npm install
+RUN npm install --loglevel verbose
 RUN npm run build-compile
 RUN npm run build-config
 RUN npm prune --production
