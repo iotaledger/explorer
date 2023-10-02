@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { isShimmerNetwork } from "../helpers/networkHelper";
+import { isShimmerUiTheme } from "../helpers/networkHelper";
 import { scrollToTop } from "../helpers/pageUtils";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
@@ -47,15 +47,17 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     const networkConfig = networks.find(n => n.network === network);
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
     const currentNetwork = networkConfig?.network;
-    const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
+    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetwork, nodeInfo);
     scrollToTop();
 
+    const body = document.querySelector("body");
     if (isShimmer) {
-        const body = document.querySelector("body");
         body?.classList.add("shimmer");
+    } else {
+        body?.classList.remove("shimmer");
     }
 
     const routes = buildAppRoutes(

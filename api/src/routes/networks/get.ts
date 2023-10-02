@@ -26,6 +26,7 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
                 coordinatorSecurityLevel: n.coordinatorSecurityLevel,
                 isEnabled: n.isEnabled,
                 showMarket: n.showMarket,
+                uiTheme: n.uiTheme,
                 hasStatisticsSupport: (
                     Boolean(n.analyticsInfluxDbEndpoint) &&
                     Boolean(n.analyticsInfluxDbDatabase) &&

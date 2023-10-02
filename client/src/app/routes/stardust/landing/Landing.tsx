@@ -6,7 +6,7 @@ import { useChronicleAnalytics } from "../../../../helpers/hooks/useChronicleAna
 import { useCurrencyService } from "../../../../helpers/hooks/useCurrencyService";
 import { useNetworkConfig } from "../../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../../helpers/hooks/useNetworkStats";
-import { isShimmerNetwork } from "../../../../helpers/networkHelper";
+import { isShimmerUiTheme } from "../../../../helpers/networkHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import AnalyticStats from "./AnalyticStats";
@@ -24,11 +24,11 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
     const [networkAnalytics] = useChronicleAnalytics(network);
     const [price, marketCap] = useCurrencyService();
 
-    const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
+    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
 
     return (
         <div className="landing-stardust">
-            <div className={classNames("header-wrapper", { "shimmer": isShimmer })}>
+            <div className={classNames("header-wrapper", { "shimmer": isShimmer }, { "iota": !isShimmer })}>
                 <div className="inner">
                     <div className="header">
                         <div className="header--title">
