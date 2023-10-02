@@ -22,7 +22,7 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
     const [networkConfig] = useNetworkConfig(network);
     const [blocksPerSecond, , confirmedBlocksPerSecondPercent] = useNetworkStats(network);
     const [networkAnalytics] = useChronicleAnalytics(network);
-    const [price, marketCap] = useCurrencyService();
+    const [price, marketCap] = useCurrencyService(network === "mainnet");
 
     const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
 
@@ -36,6 +36,7 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
                             <div className="network-name"><h1>{networkConfig.label}</h1></div>
                         </div>
                         <InfoBox
+                            baseToken={tokenInfo.unit}
                             itemsPerSecond={blocksPerSecond}
                             confirmedItemsPerSecondPercent={confirmedBlocksPerSecondPercent}
                             marketCapCurrency={marketCap}
