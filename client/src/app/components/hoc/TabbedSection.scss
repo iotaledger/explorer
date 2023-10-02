@@ -37,7 +37,7 @@
 
             &.active {
                 color: var(--link-color);
-                border-bottom: 3px solid var(--link-color);
+                border-bottom: 3px solid var(--tabbed-section-tab-active);
                 padding-bottom: 21px;
 
                 @include tablet-down {
