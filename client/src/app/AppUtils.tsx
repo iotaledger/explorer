@@ -2,12 +2,14 @@ import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import { INetwork } from "../models/config/INetwork";
 import { ALPHANET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
+import { IOTA_UI, Theme } from "../models/config/uiTheme";
 import { IReducedNodeInfo } from "../services/nodeInfoService";
 import NetworkContext from "./context/NetworkContext";
 
 export const networkContextWrapper = (
     currentNetwork: string | undefined,
-    nodeInfo: IReducedNodeInfo | null
+    nodeInfo: IReducedNodeInfo | null,
+    uiTheme: Theme | undefined
 ) => function withNetworkContext(wrappedComponent: ReactNode) {
     return currentNetwork && nodeInfo ? (
         <NetworkContext.Provider value={{
@@ -15,7 +17,8 @@ export const networkContextWrapper = (
             tokenInfo: nodeInfo.baseToken,
             bech32Hrp: nodeInfo.bech32Hrp,
             protocolVersion: nodeInfo.protocolVersion,
-            rentStructure: nodeInfo.rentStructure
+            rentStructure: nodeInfo.rentStructure,
+            uiTheme: uiTheme ?? IOTA_UI
         }}
         >
             {wrappedComponent}
