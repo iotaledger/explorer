@@ -21,6 +21,7 @@
   --expanded-color: #{$gray-7};
   --light-bg: #{$gray-1};
   --link-color: #{$blue-5};
+  --link-highlight: #{$blue-5};
   --input-border-color: #d9e1ef;
   --input-focus-border-color: #{$gray-7};
   --modal-color: #{$gray-7};
@@ -113,6 +114,7 @@
 
   body.shimmer {
     --link-color: #{$mint-green-7};
+    --link-highlight: #{$main-green-highlight};
     --header-bg: #f2f6f9;
   }
 

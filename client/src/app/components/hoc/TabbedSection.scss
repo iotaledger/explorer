@@ -36,9 +36,9 @@
             }
 
             &.active {
-                color: $mint-green-6;
+                color: var(--link-color);
+                border-bottom: 3px solid var(--link-color);
                 padding-bottom: 21px;
-                border-bottom: 3px solid $mint-green-6;
 
                 @include tablet-down {
                     padding-bottom: 13px;
