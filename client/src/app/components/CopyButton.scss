@@ -19,7 +19,7 @@
     &:hover {
       text-decoration: none!important;
       span {
-        color: $main-green-highlight!important;
+        color: var(--link-highlight)!important;
       }
     }
 

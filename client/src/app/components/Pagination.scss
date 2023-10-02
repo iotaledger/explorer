@@ -29,12 +29,12 @@
             cursor: default;
         }
         &:hover {
-            background-color: $mint-green-1;
+            background-color: var(--pagination-bg-hover-color);
             cursor: pointer;
         }
 
         &.selected {
-            background-color: $mint-green-6;
+            background-color: var(--pagination-bg-selected-color);
             color: var(--pagination-selected-color);
         }
 

@@ -38,8 +38,10 @@
   --message-tree-bg: #{$gray-2};
   --visualizer-bg: #{$white};
   --pagination-color: #{$gray-6};
+  --pagination-bg-hover-color: #b1d9fd;
+  --pagination-bg-selected-color: #3ca2ff;
   --pagination-selected-color: #{$white};
-  --pagination-arrrow-color: #{$gray-8};
+  --pagination-arrow-color: #{$gray-8};
   --pagination-disabled-color: #{$gray-5};
   --search-svg: #{$gray-6};
   --identity-added: #e6ffed;
@@ -120,6 +122,8 @@
     --link-highlight: #{$main-green-highlight};
     --associated-outputs-tabs-active: #{$mint-green-1};
     --tabbed-section-tab-active: #{$mint-green-7};
+    --pagination-bg-hover-color: #{$mint-green-1};
+    --pagination-bg-selected-color: #{$mint-green-6};
     --header-bg: #f2f6f9;
     --amount-color: #{$mint-green-7};
   }

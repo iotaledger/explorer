@@ -52,7 +52,7 @@
       @include font-size(12px);
 
       margin-left: 5px;
-      color: $main-green-highlight;
+      color: var(--link-highlight);
       font-family: $inter;
       font-weight: normal;
       text-decoration: none;
@@ -87,7 +87,7 @@
       cursor: pointer;
 
       &.selected {
-        border-bottom: 2px solid $main-green-highlight;
+        border-bottom: 2px solid var(--link-highlight);
         color: $white;
         font-weight: bold;
       }

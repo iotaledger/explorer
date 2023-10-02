@@ -59,7 +59,7 @@
     cursor: pointer;
 
     &:hover {
-      color: $main-green-highlight;
+      color: var(--link-highlight);
       text-decoration: underline;
     }
 
@@ -85,7 +85,7 @@
     cursor: pointer;
 
     &:hover {
-      color: $main-green-highlight;
+      color: var(--link-highlight);
       text-decoration: underline;
     }
 
@@ -256,7 +256,7 @@
     cursor: pointer;
 
     &:hover {
-      color: $main-green-highlight;
+      color: var(--link-highlight);
     }
 
     &:disabled {
@@ -421,7 +421,7 @@
       cursor: pointer;
 
       &:hover {
-        color: $main-green-highlight;
+        color: var(--link-highlight);
         text-decoration: underline;
       }
 

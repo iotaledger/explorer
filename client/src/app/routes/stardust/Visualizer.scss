@@ -60,7 +60,7 @@
       z-index: 1;
       margin: 5px;
       background-color: $white;
-      color: $main-green-highlight;
+      color: var(--link-highlight);
       font-family: $metropolis;
       word-break: break-all;
     }
@@ -77,7 +77,7 @@
         color: var(--header-icon-color);
 
         &:hover {
-          color: $main-green-highlight;
+          color: var(--link-highlight);
         }
       }
     }
