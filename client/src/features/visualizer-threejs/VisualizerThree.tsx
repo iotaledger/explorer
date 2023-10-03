@@ -6,6 +6,7 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import CanvasContext from "./CanvasContext";
+import EmitterContext from "./EmitterContext";
 
 const VisualizerThree: React.FC<
     RouteComponentProps<VisualizerRouteProps>
@@ -42,7 +43,7 @@ const VisualizerThree: React.FC<
                     <color attach="background" args={["#f2f2f2"]} />
                     <ambientLight />
                     <directionalLight position={[100, 100, 50]} />
-                    <CanvasContext network={network} />
+                    <EmitterContext network={network} />
                     {controlsEnabled && <CameraControls makeDefault />}
                     {statsEnabled && <Stats showPanel={0} className="stats" />}
                 </Canvas>
