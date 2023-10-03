@@ -1,3 +1,5 @@
+export const THRESHOLD_PX_Y = 10;
+
 export const colors = [
     "#F0F4FF",
     "#E0EAFF",
@@ -10,4 +12,3 @@ export const colors = [
     "#0000DB",
     "#0101AB"
 ];
-

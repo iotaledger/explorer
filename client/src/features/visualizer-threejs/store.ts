@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { colors } from "./constants";
-import { randomIntFromInterval } from "./utils";
+
+import { randomIntFromInterval } from "../../shared/visualizer/common/utils";
+import { colors } from "../../shared/visualizer/common/constants";
 
 interface BlockState {
     id: string;

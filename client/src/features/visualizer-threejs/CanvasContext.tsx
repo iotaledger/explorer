@@ -5,9 +5,9 @@ import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import BlockMesh from "./BlockMesh";
-import { colors } from "./constants";
 import { useBlockStore } from "./store";
-import { randomIntFromInterval } from "./utils";
+import { getGenerateY, randomIntFromInterval, timer } from "../../shared/visualizer/common/utils";
+import { colors } from "../../shared/visualizer/common/constants";
 
 interface CanvasContextProps {
     network: string;
@@ -15,20 +15,30 @@ interface CanvasContextProps {
     setOnNewExists: UpdateListenerReturn["setOnNewExists"];
 }
 
+const timerDiff = timer(250);
+
 const CanvasContext: React.FC<CanvasContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const { blocks, addBlock } = useBlockStore();
     const viewport = useThree(state => state.viewport);
 
     const canvasWidth = viewport.width;
     const canvasHeight = viewport.height;
+    const generateY = getGenerateY({ withRandom: true });
 
     const onNewBlock = (blockData: IFeedBlockData) => {
+        const secondsFromStart = timerDiff();
+
+        const Y = generateY(secondsFromStart);
+        const X = randomIntFromInterval(50, 80);
+        const Z = randomIntFromInterval(-50, -150);
+
+
         addBlock({
             id: blockData.blockId,
             position: [
-                randomIntFromInterval(180, 210),
-                randomIntFromInterval(-50, 50),
-                randomIntFromInterval(-50, -150)
+                X,
+                Y,
+                Z
             ],
             color: colors[randomIntFromInterval(0, colors.length - 1)]
         });
@@ -41,14 +51,14 @@ const CanvasContext: React.FC<CanvasContextProps> = ({ network, refOnNewBlock, s
         setOnNewExists(true);
     }, []);
 
-    console.log("block on screen N:", blocks.length);
+    // console.log("block on screen N:", blocks.length);
 
     return (
         <Instances
             limit={2500}
             range={2500}
         >
-            <sphereGeometry args={[10]} />
+            <sphereGeometry args={[3]} />
             <meshPhongMaterial />
             {
                 blocks.map(block => (

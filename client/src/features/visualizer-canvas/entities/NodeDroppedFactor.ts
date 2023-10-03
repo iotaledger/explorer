@@ -1,7 +1,29 @@
 import { DATA_SENDER_TIME_INTERVAL, SECOND } from "../lib/constants";
-import { randomSubset } from "../lib/heplers";
 import { NetworkNode } from "../lib/types";
 
+/**
+ * Generates a random subset of k elements from the given array.
+ *
+ * Utilizes a partial Fisher-Yates shuffle for efficiency (O(k)).
+ *
+ * @param arr Original array
+ * @param k Size of subset to return
+ * @returns Random subset of k elements
+ */
+export function randomSubset<T>(arr: T[], k: number) {
+    const n = arr.length;
+    const subset = arr.slice();
+    for (let i = 0; i < k; i++) {
+        const randIdx = i + Math.floor(Math.random() * (n - i));
+        [subset[i], subset[randIdx]] = [subset[randIdx], subset[i]];
+    }
+    return subset.slice(0, k);
+}
+
+
+/**
+ * Class for calculation how much nodes we can show on the screen.
+ */
 export class NodeDroppedFactor {
     public allIncomeNodes: NetworkNode[] = [];
 

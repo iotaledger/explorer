@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import React, { useRef, useState } from "react";
 import * as Three from "three";
 import { useBlockStore } from "./store";
+import { wiggleEffect } from "../../shared/visualizer/common/utils";
 
 interface BlockMeshProps {
     id: string;
@@ -19,7 +20,10 @@ const BlockMesh: React.FC<BlockMeshProps> = ({ id, position, color }) => {
     useFrame((_, delta) => {
         if (ref.current) {
             // ref.current.rotation.x += delta;
-            ref.current.position.x -= delta * 80;
+            const xWiggle = wiggleEffect(0.5);
+            const yWiggle = wiggleEffect(0.5);
+            ref.current.position.x -= delta * 80 + xWiggle;
+            ref.current.position.y -= yWiggle;
 
             // unhardcode the cutpoint
             if (ref.current.position?.x < -300) {

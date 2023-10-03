@@ -1,13 +1,8 @@
 // @ts-nocheck
 import { IFeedBlockData } from "../../../models/api/stardust/feed/IFeedBlockData";
-import { THRESHOLD_PX } from "../../visualizer-webgl/layout";
-import {
-    colors,
-    NODE_SIZE_DEFAULT,
-    NODE_SIZE_INCREMENT,
-    THRESHOLD_PX_X
-} from "./constants";
+import { NODE_SIZE_DEFAULT, NODE_SIZE_INCREMENT } from "./constants";
 import { IFeedBlockLocal, Link, PositionMap } from "./types";
+import { colors } from "../../../shared/visualizer/common/constants";
 
 /**
  *
@@ -22,25 +17,13 @@ export function colorBasedOnChildrenCount(radius: number) {
     return colors[childrenNumber];
 }
 
-/**
- * Generates a random subset of k elements from the given array.
- *
- * Utilizes a partial Fisher-Yates shuffle for efficiency (O(k)).
- *
- * @param arr Original array
- * @param k Size of subset to return
- * @returns Random subset of k elements
- */
-export function randomSubset<T>(arr: T[], k: number) {
-    const n = arr.length;
-    const subset = arr.slice();
-    for (let i = 0; i < k; i++) {
-        const randIdx = i + Math.floor(Math.random() * (n - i));
-        [subset[i], subset[randIdx]] = [subset[randIdx], subset[i]];
-    }
-    return subset.slice(0, k);
-}
 
+/**
+ * Calculate diff between timestamps using threshold
+ * @param startTimestamp
+ * @param endTimestamp
+ * @param threshold
+ */
 export const calculateShiftDiff = (
     startTimestamp: number,
     endTimestamp: number,
@@ -65,41 +48,6 @@ export const batchDataCounter = () => {
         }
         return false;
     };
-};
-
-/**
- * Y coordinate generator from zero coordinate to top and bottom
- */
-export function* yCoordinateGenerator(): Generator<number> {
-    let count = 0;
-    let isPositive = true;
-
-    yield 0; // Initial value
-
-    while (true) {
-        // @ts-expect-error any type
-        const reset = yield isPositive ? count : -count;
-
-        if (reset) {
-            count = 0;
-            isPositive = true;
-        } else {
-            // Alternate between positive and negative
-            isPositive = !isPositive;
-
-            // Increase count after generating both a positive and negative pair
-            if (!isPositive) {
-                count++;
-            }
-        }
-    }
-}
-
-export const generateX = (shift: number) => {
-    const randomNumber = Math.floor(Math.random() * THRESHOLD_PX) + 1;
-
-    const shiftWithThreshold = (shift ?? 0) * THRESHOLD_PX_X;
-    return shiftWithThreshold + randomNumber;
 };
 
 /**

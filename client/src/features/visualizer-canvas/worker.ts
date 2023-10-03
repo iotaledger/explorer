@@ -1,12 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
+import { colors } from "../../shared/visualizer/common/constants";
+import { generateXbyShift, getGenerateY } from "../../shared/visualizer/common/utils";
 import { DataSender } from "./entities/DataSender";
 import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
 import { Nodes, WorkerNode } from "./entities/Nodes";
 import { Shift } from "./entities/Shift";
-import { colors, NODE_SIZE_DEFAULT, THRESHOLD_PX_Y } from "./lib/constants";
-import { yCoordinateGenerator, generateX } from "./lib/heplers";
+import { NODE_SIZE_DEFAULT } from "./lib/constants";
 import { WorkerType } from "./lib/types";
 import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
 
@@ -21,10 +22,6 @@ const shiftInstance = new Shift();
 const dataSenderInstance = new DataSender();
 const ndfInstance = new NodeDroppedFactor();
 
-const getYCoordinate = yCoordinateGenerator();
-
-let currentShift = 0;
-
 // eslint-disable-next-line no-warning-comments
 // TODO we need to collect updates like change size, color, position and return it in batch
 
@@ -32,18 +29,11 @@ let currentShift = 0;
  * generate coordinates for node
  * @param shift
  */
+const generateY = getGenerateY();
 const getCoordinates = (shift: number) => {
-    let Y = getYCoordinate.next().value;
-    if (!currentShift || currentShift !== shift) {
-        Y = getYCoordinate.next(true).value;
-    }
-
-    const X = generateX(shift);
-
-    // update shift locally
-    currentShift = shift;
-
-    return { x: X, y: Y * THRESHOLD_PX_Y };
+    const y = generateY(shift);
+    const x = generateXbyShift(shift);
+    return { x, y };
 };
 
 ctx.addEventListener(
