@@ -9,11 +9,7 @@
     flex-direction: column;
 
     .header-wrapper.iota {
-        position: relative;
-        z-index: 0;
         padding: 0 $inner-padding;
-        overflow: hidden;
-        background: var(--header-bg);
 
         @include desktop-down {
             padding: 0;
@@ -62,12 +58,6 @@
     }
 
     .header-wrapper.shimmer {
-        flex-direction: column;
-        position: relative;
-        z-index: 0;
-        overflow: hidden;
-        background: var(--header-bg);
-
         &::after,
         &::before {
             content: "";
@@ -92,6 +82,11 @@
     }
 
     .header-wrapper {
+        position: relative;
+        z-index: 0;
+        overflow: hidden;
+        background: var(--header-bg);
+
         .inner {
             position: relative;
             display: flex;
@@ -165,7 +160,7 @@
 
     .feeds-wrapper {
         display: flex;
-        background: var(--shimmer-feeds-bg);
+        background: var(--feeds-bg);
         justify-content: center;
         padding: 0 $inner-padding 44px;
 

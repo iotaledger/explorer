@@ -51,7 +51,7 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
                     tokenInfo={tokenInfo}
                 />
             </div>
-            <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
+            <div className={classNames("wrapper feeds-wrapper")}>
                 <div className="inner">
                     <div className="feeds-section">
                         <div className="row wrap feeds">

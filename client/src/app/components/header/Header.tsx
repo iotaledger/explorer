@@ -64,7 +64,7 @@ class Header extends Component<HeaderProps, HeaderState> {
         const isMarketed = isMarketedNetwork(currentNetwork?.network);
 
         return (
-            <header className={classNames({ "shimmer-header-bg": isShimmerUi }, { "full-height": this.state.show })}>
+            <header className={classNames({ "full-height": this.state.show })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
