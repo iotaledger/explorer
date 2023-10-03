@@ -15,6 +15,10 @@
         overflow: hidden;
         background: var(--header-bg);
 
+        @include desktop-down {
+            padding: 0;
+        }
+
         &::after,
         &::before {
             content: "";

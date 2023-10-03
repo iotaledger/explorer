@@ -18,7 +18,6 @@
     }
 
     @include tablet-down {
-        grid-template-rows: repeat(3, 97px);
         grid-auto-columns: minmax(0, 1fr);
         backdrop-filter: none;
         padding: 0;
@@ -26,14 +25,13 @@
     }
 
     @include phone-down {
-        grid-template-rows: repeat(3, 79px);
+        grid-template-rows: repeat(2, 79px);
     }
 
     .info-box {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         width: 100%;
         height: 100%;
         padding: 24px;
