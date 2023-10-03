@@ -18,6 +18,7 @@
     }
 
     @include tablet-down {
+        grid-template-rows: repeat(2, 97px);
         grid-auto-columns: minmax(0, 1fr);
         backdrop-filter: none;
         padding: 0;
