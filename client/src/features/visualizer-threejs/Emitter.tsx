@@ -1,17 +1,21 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useRef } from "react";
+import React, { MutableRefObject, useEffect, useRef } from "react";
 import { Box3 } from "three";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { useUpdateListener } from "../visualizer-canvas/hooks/useUpdateListener";
-import { colors } from "./constants";
+import { colors } from "../../shared/visualizer/common/constants";
+import { randomIntFromInterval } from "../../shared/visualizer/common/utils";
+import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
+import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import { useBlockStore } from "./store";
-import { randomIntFromInterval } from "./utils";
+
 
 interface EmitterProps {
     network: string;
+    refOnNewBlock: MutableRefObject<TFeedBlockAdd | null>;
+    setOnNewExists: UpdateListenerReturn["setOnNewExists"];
 }
 
-const Emitter: React.FC<EmitterProps> = ({ network }) => {
+const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const ref = useRef<THREE.Mesh>(null);
     const { addBlock } = useBlockStore();
     const viewport = useThree(state => state.viewport);
@@ -32,7 +36,6 @@ const Emitter: React.FC<EmitterProps> = ({ network }) => {
             });
         }
     };
-    useUpdateListener(network, onNewBlock);
 
     useFrame((_, delta) => {
         if (ref.current) {
@@ -42,6 +45,12 @@ const Emitter: React.FC<EmitterProps> = ({ network }) => {
             // ref.current.position.y = 100 * Math.sin(-1000 * ref.current.position.x);
         }
     });
+
+    useEffect(() => {
+        // Set handler for new block
+        refOnNewBlock.current = onNewBlock;
+        setOnNewExists(true);
+    }, []);
 
     return (
         <mesh

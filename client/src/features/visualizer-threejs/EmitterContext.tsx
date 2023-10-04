@@ -1,15 +1,19 @@
 import { Instances } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import React from "react";
+import React, { MutableRefObject } from "react";
+import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
+import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import Emitter from "./Emitter";
 import Sphere from "./Sphere";
 import { useBlockStore } from "./store";
 
 interface EmitterContextProps {
     network: string;
+    refOnNewBlock: MutableRefObject<TFeedBlockAdd | null>;
+    setOnNewExists: UpdateListenerReturn["setOnNewExists"];
 }
 
-const EmitterContext: React.FC<EmitterContextProps> = ({ network }) => {
+const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const { blocks } = useBlockStore();
     const get = useThree(state => state.get);
     const viewport = useThree(state => state.viewport);
@@ -24,9 +28,14 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network }) => {
         }
     });
 
+
     return (
         <>
-            <Emitter network={network} />
+            <Emitter
+                network={network}
+                refOnNewBlock={refOnNewBlock}
+                setOnNewExists={setOnNewExists}
+            />
             <Instances
                 limit={2500}
                 range={2500}

@@ -51,12 +51,16 @@ const VisualizerThree: React.FC<
                     <color attach="background" args={["#f2f2f2"]} />
                     <ambientLight />
                     <directionalLight position={[100, 100, 50]} />
-                    <EmitterContext network={network} />
-                    <CanvasContext
+                    <EmitterContext
                         network={network}
                         refOnNewBlock={streamOnNewBlock}
                         setOnNewExists={setOnNewExists}
                     />
+                    {/* <CanvasContext */}
+                    {/*     network={network} */}
+                    {/*     refOnNewBlock={streamOnNewBlock} */}
+                    {/*     setOnNewExists={setOnNewExists} */}
+                    {/* /> */}
                     {controlsEnabled && <CameraControls makeDefault />}
                     {statsEnabled && <Stats showPanel={0} className="stats" />}
                 </Canvas>

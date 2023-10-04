@@ -1,13 +1,13 @@
 import { Instances } from "@react-three/drei";
-import { useThree } from "@react-three/fiber";
-import React, { useEffect, RefObject, MutableRefObject } from "react";
+// import { useThree } from "@react-three/fiber";
+import React, { useEffect, MutableRefObject } from "react";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { colors } from "../../shared/visualizer/common/constants";
+import { getGenerateY, randomIntFromInterval, timer } from "../../shared/visualizer/common/utils";
 import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import BlockMesh from "./BlockMesh";
 import { useBlockStore } from "./store";
-import { getGenerateY, randomIntFromInterval, timer } from "../../shared/visualizer/common/utils";
-import { colors } from "../../shared/visualizer/common/constants";
 
 interface CanvasContextProps {
     network: string;
@@ -16,17 +16,20 @@ interface CanvasContextProps {
 }
 
 const timerDiff = timer(250);
+// const t1 = new Date();
 
 const CanvasContext: React.FC<CanvasContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const { blocks, addBlock } = useBlockStore();
-    const viewport = useThree(state => state.viewport);
+    // const viewport = useThree(state => state.viewport);
 
-    const canvasWidth = viewport.width;
-    const canvasHeight = viewport.height;
+    // const canvasWidth = viewport.width;
+    // const canvasHeight = viewport.height;
     const generateY = getGenerateY({ withRandom: true });
 
     const onNewBlock = (blockData: IFeedBlockData) => {
         const secondsFromStart = timerDiff();
+        console.log(secondsFromStart);
+
 
         const Y = generateY(secondsFromStart);
         const X = randomIntFromInterval(50, 80);
