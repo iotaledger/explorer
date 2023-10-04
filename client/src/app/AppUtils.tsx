@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import { INetwork } from "../models/config/INetwork";
-import { ALPHANET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
+import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
 import { IOTA_UI, Theme } from "../models/config/uiTheme";
 import { IReducedNodeInfo } from "../services/nodeInfoService";
 import NetworkContext from "./context/NetworkContext";
@@ -85,6 +85,7 @@ export const buildMetaLabel = (network: NetworkType | undefined): string => {
     switch (network) {
         case MAINNET:
         case LEGACY_MAINNET:
+        case CHRYSALIS_MAINNET:
         case DEVNET:
             metaLabel = "IOTA Tangle Explorer";
             break;

@@ -1,5 +1,5 @@
 import {
-    ALPHANET, CUSTOM, DEVNET, LEGACY_MAINNET,
+    ALPHANET, CHRYSALIS_MAINNET, CUSTOM, DEVNET, LEGACY_MAINNET,
     MAINNET, NetworkType, SHIMMER, TESTNET
 } from "../models/config/networkType";
 import { SHIMMER_UI, Theme } from "../models/config/uiTheme";
@@ -13,18 +13,20 @@ export const getNetworkOrder = (networkType: NetworkType) => {
     switch (networkType) {
         case MAINNET:
             return 0;
-        case SHIMMER:
+        case CHRYSALIS_MAINNET:
             return 1;
-        case TESTNET:
+        case SHIMMER:
             return 2;
-        case ALPHANET:
+        case TESTNET:
             return 3;
-        case LEGACY_MAINNET:
+        case ALPHANET:
             return 4;
-        case DEVNET:
+        case LEGACY_MAINNET:
             return 5;
-        default:
+        case DEVNET:
             return 6;
+        default:
+            return 7;
     }
 };
 
