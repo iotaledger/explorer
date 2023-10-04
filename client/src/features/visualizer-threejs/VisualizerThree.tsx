@@ -6,6 +6,7 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import CanvasContext from "./CanvasContext";
+import EmitterContext from "./EmitterContext";
 
 import { useUpdateListener, UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
@@ -50,6 +51,7 @@ const VisualizerThree: React.FC<
                     <color attach="background" args={["#f2f2f2"]} />
                     <ambientLight />
                     <directionalLight position={[100, 100, 50]} />
+                    <EmitterContext network={network} />
                     <CanvasContext
                         network={network}
                         refOnNewBlock={streamOnNewBlock}
