@@ -59,7 +59,7 @@
       }
 
       &.selected {
-        border-bottom: 2px solid $main-green-highlight;
+        border-bottom: 2px solid var(--link-highlight);
         color: $white;
         font-weight: bold;
       }

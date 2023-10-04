@@ -37,7 +37,7 @@
         }
 
         &:hover {
-            color: $main-green-highlight;
+            color: var(--link-highlight);
         }
 
         &:disabled {

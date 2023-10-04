@@ -1,5 +1,6 @@
 import { NetworkType } from "./networkType";
 import { ProtocolVersion } from "./protocolVersion";
+import { Theme } from "./uiTheme";
 
 /**
  * Definition of network configuration.
@@ -129,6 +130,11 @@ export interface INetwork {
      * Show the market figures.
      */
     showMarket?: boolean;
+
+    /**
+     * Set the UI theme.
+     */
+    uiTheme?: Theme;
 
     /**
      * An example for an Identity DID address.

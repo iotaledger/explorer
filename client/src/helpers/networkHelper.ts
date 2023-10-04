@@ -1,5 +1,8 @@
-import { ALPHANET, CUSTOM, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
-import { ProtocolVersion, STARDUST } from "../models/config/protocolVersion";
+import {
+    ALPHANET, CUSTOM, DEVNET, LEGACY_MAINNET,
+    MAINNET, NetworkType, SHIMMER, TESTNET
+} from "../models/config/networkType";
+import { SHIMMER_UI, Theme } from "../models/config/uiTheme";
 
 /**
  * Helper function to determine network order based on network type.
@@ -25,8 +28,8 @@ export const getNetworkOrder = (networkType: NetworkType) => {
     }
 };
 
-export const isShimmerNetwork = (protocol: ProtocolVersion | string | undefined) => {
-    if (protocol === STARDUST) {
+export const isShimmerUiTheme = (uiTheme: Theme | string | undefined) => {
+    if (uiTheme === SHIMMER_UI) {
         return true;
     }
 
