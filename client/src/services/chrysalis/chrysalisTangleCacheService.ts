@@ -4,8 +4,8 @@ import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iot
 import { mamFetch, MamMode } from "@iota/mam.js";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
-import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionHistoryRequest } from "../../models/api/chrysalis/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../models/api/chrysalis/ITransactionHistoryResponse";
 import { CHRYSALIS } from "../../models/config/protocolVersion";
 import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 import { ChrysalisApiStreamsV0Client } from "../chrysalis/chrysalisApiStreamsV0Client";
@@ -220,30 +220,28 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
      * @param skipCache Skip looking in the cache.
      * @returns The transactions response.
      */
-    public async transactionsDetails(
-        request: ITransactionsDetailsRequest,
+    public async transactionsHistory(
+        request: ITransactionHistoryRequest,
         skipCache: boolean = false
-    ): Promise<ITransactionsDetailsResponse | undefined> {
+    ): Promise<ITransactionHistoryResponse | undefined> {
         if (!this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
             ?.data?.transactionHistory || skipCache) {
             const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
-            const response = await apiClient.transactionsDetails(request);
+            const response = await apiClient.transactionHistory(request);
 
-            if (response?.transactionHistory?.transactions) {
-                const cachedTransaction =
+            if (response?.history) {
+                const cachedHistory =
                     this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
-                        ?.data?.transactionHistory?.transactionHistory.transactions ?? [];
+                        ?.data?.transactionHistory?.history ?? [];
 
                 this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`] = {
                     data: {
                         transactionHistory: {
                             ...response,
-                            transactionHistory: {
-                                ...response.transactionHistory,
-                                transactions:
-                                    [...cachedTransaction, ...response.transactionHistory.transactions],
-                                state: response.transactionHistory.state
-                            }
+                            history: [
+                                ...cachedHistory,
+                                ...response.history
+                            ]
                         }
                     },
                     cached: Date.now()

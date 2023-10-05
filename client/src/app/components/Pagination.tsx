@@ -48,6 +48,12 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
      */
     public componentDidMount(): void {
         super.componentDidMount();
+        this.setState(
+            { paginationRange: this.updatePaginationRange() },
+            () => this.setState(
+                { lastPage: this.state.paginationRange[this.state.paginationRange.length - 1] as number }
+            )
+        );
         window.addEventListener("resize", this.resize.bind(this));
         this.resize();
     }

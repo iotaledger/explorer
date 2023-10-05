@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
-import { ITransaction, ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionHistoryResponse, ITransactionHistoryItem } from "../../../models/api/chrysalis/ITransactionHistoryResponse";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 
 
@@ -68,7 +68,7 @@ export interface AddrState {
     /**
      * List of transactions of an address.
      */
-    transactionHistory?: ITransactionsDetailsResponse;
+    transactionHistory?: ITransactionHistoryResponse;
 
     /**
      * Current page in transaction history table.
@@ -83,7 +83,7 @@ export interface AddrState {
     /**
      * Page size in transaction history table.
      */
-    currentPageTransactions: ITransaction[];
+    currentPageTransactions: ITransactionHistoryItem[];
 
     /**
      * Toggle balance between raw and formatted amount.
