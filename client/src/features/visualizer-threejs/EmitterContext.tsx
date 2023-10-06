@@ -1,6 +1,7 @@
 import { Instances } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { MutableRefObject } from "react";
+import { NODE_SIZE_DEFAULT } from "../../shared/visualizer/common/constants";
 import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import Emitter from "./Emitter";
@@ -23,7 +24,6 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
-            // console.log("emitterObj pos updateing?:", emitterObj.position.x);
             camera.position.x = emitterObj.position.x - (canvasWidth / 2) + 100;
         }
     });
@@ -41,7 +41,7 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
                 range={2500}
                 frustumCulled={false}
             >
-                <sphereGeometry args={[10]} />
+                <sphereGeometry args={[NODE_SIZE_DEFAULT]} />
                 <meshPhongMaterial />
                 {
                     blocks.map(block => (

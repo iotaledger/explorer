@@ -1,15 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
-import { colors } from "../../shared/visualizer/common/constants";
-import { generateXbyShift, getGenerateY } from "../../shared/visualizer/common/utils";
+import { colors, NODE_SIZE_DEFAULT } from "../../../shared/visualizer/common/constants";
+import { generateXbyShift, getGenerateY } from "../../../shared/visualizer/common/utils";
 import { DataSender } from "./entities/DataSender";
 import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
 import { Nodes, WorkerNode } from "./entities/Nodes";
 import { Shift } from "./entities/Shift";
-import { NODE_SIZE_DEFAULT } from "./lib/constants";
-import { WorkerType } from "./lib/types";
-import { WorkerEventOnNode, WorkerEventSetStageWidth } from "./worker.types";
+import { WorkerReq, WorkerType } from "./worker.types";
 
 /**
  * Initialize constants for worker
@@ -21,9 +19,6 @@ const nodesInstance = new Nodes();
 const shiftInstance = new Shift();
 const dataSenderInstance = new DataSender();
 const ndfInstance = new NodeDroppedFactor();
-
-// eslint-disable-next-line no-warning-comments
-// TODO we need to collect updates like change size, color, position and return it in batch
 
 /**
  * generate coordinates for node
@@ -38,7 +33,7 @@ const getCoordinates = (shift: number) => {
 
 ctx.addEventListener(
     "message",
-    (e: MessageEvent<WorkerEventOnNode | WorkerEventSetStageWidth>) => {
+    (e: MessageEvent<WorkerReq>) => {
         if (!e.data || e.data?.type?.startsWith("webpack")) {
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
         }
@@ -52,7 +47,7 @@ ctx.addEventListener(
             return;
         }
 
-        const { type, data } = e.data as WorkerEventOnNode;
+        const { type, data } = e.data as WorkerReq;
 
         // timestamp doesn't attach on hot reload
         if (!data?.timestamp) {
@@ -77,7 +72,6 @@ ctx.addEventListener(
 
             for (const node of nodes) {
                 const { x, y } = getCoordinates(rightShiftVisible);
-                const random = Math.floor(Math.random() * colors.length);
                 const yMultiplier =
                     1 + ndfInstance.getAllowedNumberOfNodes().percent * 2;
 
@@ -93,10 +87,6 @@ ctx.addEventListener(
                 nodesInstance.updateParents(node);
             }
             ndfInstance.clearIncomeNodes();
-            // eslint-disable-next-line no-warning-comments
-            // TODO detect number of noder per second here
-            // eslint-disable-next-line no-warning-comments
-            // TODO crop number of nodes depends on nodes per second here
             ctx.postMessage({
                 type: WorkerType.Full,
                 payload: {
@@ -107,11 +97,6 @@ ctx.addEventListener(
             });
             nodesInstance.clearUpdates();
         }
-
-        // if (timestamps.length > 1000) {
-        //     ctx.postMessage(timestamps);
-        //     timestamps.length = 0;
-        // }
     }
 );
 

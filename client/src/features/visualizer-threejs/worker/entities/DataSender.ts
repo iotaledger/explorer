@@ -1,4 +1,4 @@
-import { DATA_SENDER_TIME_INTERVAL } from "../lib/constants";
+import { DATA_SENDER_TIME_INTERVAL } from "../../../../shared/visualizer/common/constants";
 
 export class DataSender {
     private lastSentTimestamp: number = 0;

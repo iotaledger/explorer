@@ -5,11 +5,10 @@ import { RouteComponentProps } from "react-router-dom";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
-import CanvasContext from "./CanvasContext";
-import EmitterContext from "./EmitterContext";
 
-import { useUpdateListener, UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
+import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
+import EmitterContext from "./EmitterContext";
 
 const VisualizerThree: React.FC<
     RouteComponentProps<VisualizerRouteProps>
@@ -20,8 +19,6 @@ const VisualizerThree: React.FC<
 }) => {
         const [networkConfig] = useNetworkConfig(network);
         const streamOnNewBlock = useRef<TFeedBlockAdd | null>(null);
-        const replayAttackOnNewBlock = useRef(null);
-
         // @ts-ignore
         const { setOnNewExists } = useUpdateListener(network, streamOnNewBlock?.current);
 
@@ -44,7 +41,7 @@ const VisualizerThree: React.FC<
                     <OrthographicCamera
                         makeDefault
                         zoom={3}
-                        near={0.1}
+                        near={1}
                         far={4000}
                         position={[0, 0, 200]}
                     />
@@ -56,11 +53,6 @@ const VisualizerThree: React.FC<
                         refOnNewBlock={streamOnNewBlock}
                         setOnNewExists={setOnNewExists}
                     />
-                    {/* <CanvasContext */}
-                    {/*     network={network} */}
-                    {/*     refOnNewBlock={streamOnNewBlock} */}
-                    {/*     setOnNewExists={setOnNewExists} */}
-                    {/* /> */}
                     {controlsEnabled && <CameraControls makeDefault />}
                     {statsEnabled && <Stats showPanel={0} className="stats" />}
                 </Canvas>

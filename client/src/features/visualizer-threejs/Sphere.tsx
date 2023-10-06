@@ -26,8 +26,6 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color }) => {
             camera &&
             ref.current.position?.x < camera.position.x - canvasWidth
         ) {
-            // console.log("current x", ref.current.position?.x);
-            // console.log("canvasWidth", canvasWidth);
             removeBlock(id);
         }
     });

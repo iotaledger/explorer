@@ -1,4 +1,9 @@
-export const THRESHOLD_PX_Y = 10;
+// steps
+export const STEP_Y_PX = 10;
+export const STEP_X_PX = 100;
+export const STEP_CAMERA_SHIFT_PX = 100;
+// nodes
+export const NODE_SIZE_DEFAULT = 5;
 
 export const colors = [
     "#F0F4FF",
@@ -12,3 +17,6 @@ export const colors = [
     "#0000DB",
     "#0101AB"
 ];
+export const NODE_SIZE_INCREMENT = 3;
+export const SECOND = 1000;
+export const DATA_SENDER_TIME_INTERVAL = 500;

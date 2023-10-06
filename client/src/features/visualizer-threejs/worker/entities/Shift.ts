@@ -1,7 +1,5 @@
-import {
-    DATA_SENDER_TIME_INTERVAL,
-    THRESHOLD_SHIFT_PX
-} from "../lib/constants";
+
+import { DATA_SENDER_TIME_INTERVAL, STEP_CAMERA_SHIFT_PX } from "../../../../shared/visualizer/common/constants";
 
 export class Shift {
     public startTimestamp?: number;
@@ -56,7 +54,7 @@ export class Shift {
 
     public calculateLeftShift() {
         // max number of shift visible on screen
-        const max = Math.floor(this.stageWidth / THRESHOLD_SHIFT_PX) + 1;
+        const max = Math.floor(this.stageWidth / STEP_CAMERA_SHIFT_PX) + 1;
 
         this.leftShiftVisible = this.rightShiftVisible - max; // technicaly feature works, but scaling is not correct
         return this.leftShiftVisible;

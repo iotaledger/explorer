@@ -1,6 +1,5 @@
-import { THRESHOLD_PX_Y } from "./constants";
-import { THRESHOLD_PX } from "../../../features/visualizer-webgl/layout";
-import { THRESHOLD_PX_X } from "../../../features/visualizer-canvas/lib/constants";
+import { STEP_X_PX, STEP_Y_PX } from "./constants";
+
 
 /**
  * Generates a random number within a specified range.
@@ -114,11 +113,11 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
         }
 
         if (withRandom) {
-            const randomNumber = randomNumberFromInterval(0, THRESHOLD_PX_Y / 10);
+            const randomNumber = randomNumberFromInterval(0, STEP_Y_PX / 10);
             Y += randomNumber;
         }
 
-        return Y * THRESHOLD_PX_Y;
+        return Y * STEP_Y_PX;
     };
 };
 
@@ -127,9 +126,9 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
  * @param shift
  */
 export const generateXbyShift = (shift: number) => {
-    const randomNumber = Math.floor(Math.random() * THRESHOLD_PX) + 1;
+    const randomNumber = Math.floor(Math.random() * STEP_X_PX) + 1;
 
-    const shiftWithThreshold = (shift ?? 0) * THRESHOLD_PX_X;
+    const shiftWithThreshold = (shift ?? 0) * STEP_X_PX;
     return shiftWithThreshold + randomNumber;
 };
 

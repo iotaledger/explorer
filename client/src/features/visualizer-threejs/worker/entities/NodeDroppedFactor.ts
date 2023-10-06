@@ -1,5 +1,5 @@
-import { DATA_SENDER_TIME_INTERVAL, SECOND } from "../lib/constants";
-import { NetworkNode } from "../lib/types";
+import { DATA_SENDER_TIME_INTERVAL, SECOND } from "../../../../shared/visualizer/common/constants";
+import { NetworkNode } from "../worker.types";
 
 /**
  * Generates a random subset of k elements from the given array.

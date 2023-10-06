@@ -1,6 +1,9 @@
-import { NODE_SIZE_INCREMENT } from "../lib/constants";
-import { colorBasedOnChildrenCount } from "../lib/heplers";
-import { NetworkNode } from "../lib/types";
+import {
+    colors,
+    NODE_SIZE_DEFAULT,
+    NODE_SIZE_INCREMENT
+} from "../../../../shared/visualizer/common/constants";
+import { NetworkNode } from "../worker.types";
 
 export interface WorkerNode {
     id: string;
@@ -57,7 +60,7 @@ export class Nodes {
 
                 if (parentNode) {
                     parentNode.radius += NODE_SIZE_INCREMENT;
-                    parentNode.color = colorBasedOnChildrenCount(
+                    parentNode.color = this.colorBasedOnChildrenCount(
                         parentNode.radius
                     );
                     this.updates.modify.push(parentNode);
@@ -109,8 +112,6 @@ export class Nodes {
 
     public getZoom() {
         const max = Math.max(...Object.keys(this.yPositions).map(Number));
-        const r = 240 / max;
-        // console.log("--- r", r);
         return 240 / max * 0.7;
     }
 
@@ -139,4 +140,14 @@ export class Nodes {
             this.yPositions[Y] -= 1;
         }
     }
+
+    private colorBasedOnChildrenCount(radius: number) {
+        const childrenNumber = (radius - NODE_SIZE_DEFAULT) / NODE_SIZE_INCREMENT;
+
+        if (childrenNumber > colors.length) {
+            return colors[colors.length - 1];
+        }
+        return colors[childrenNumber];
+    }
 }
+
