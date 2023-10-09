@@ -1,6 +1,6 @@
 import { CameraControls, OrthographicCamera, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
@@ -22,11 +22,29 @@ const VisualizerThree: React.FC<
         const streamOnNewBlock = useRef<TFeedBlockAdd | null>(null);
         // @ts-ignore
         const { setOnNewExists } = useUpdateListener(network, streamOnNewBlock?.current);
-        const {zoom} = useBlockStore();
+        const camera = useRef<THREE.OrthographicCamera>(null);
+    // @ts-ignore
+        const canvasRef = useRef<any>(null);
         const controlsEnabled = true;
         const statsEnabled = true;
 
 
+        useEffect(() => {
+            if (camera?.current) {
+                // @ts-ignore
+                window.camera = camera.current;
+                // @ts-ignore
+                window.canvasRef = canvasRef.current;
+                setTimeout(() => {
+                    if (!camera.current) return;
+                    console.log('--- test');
+                    camera.current.zoom = 1;
+                    camera.current.updateProjectionMatrix();
+                    // camera.current.zoom = 2;
+                }, 1000);
+                camera.current.updateProjectionMatrix();
+            }
+        }, [camera?.current]);
 
         return (
             <Wrapper
@@ -40,10 +58,11 @@ const VisualizerThree: React.FC<
                 selectedFeedItem={null}
                 toggleActivity={() => { }}
             >
-                <Canvas>
+                <Canvas ref={canvasRef}>
                     <OrthographicCamera
+                        ref={camera}
                         makeDefault
-                        zoom={zoom}
+                        zoom={3}
                         near={1}
                         far={4000}
                         position={[0, 0, 200]}
