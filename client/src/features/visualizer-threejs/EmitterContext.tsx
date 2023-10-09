@@ -15,7 +15,7 @@ interface EmitterContextProps {
 }
 
 const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
-    const { blocks } = useBlockStore();
+    const { blocks, blockOptions } = useBlockStore();
     const get = useThree(state => state.get);
     const viewport = useThree(state => state.viewport);
     const canvasWidth = viewport.width;
@@ -49,7 +49,8 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
                             key={block.id}
                             id={block.id}
                             position={block.position}
-                            color={block.color}
+                            color={blockOptions[block.id].color}
+                            scale={blockOptions[block.id].scale}
                         />
                     ))
                 }

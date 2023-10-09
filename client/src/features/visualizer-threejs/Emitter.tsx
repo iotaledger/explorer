@@ -19,7 +19,7 @@ const timerDiff = timer(250);
 
 const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const ref = useRef<THREE.Mesh>(null);
-    const { addBlock } = useBlockStore();
+    const { addBlock, addParents } = useBlockStore();
     const viewport = useThree(state => state.viewport);
     const canvasWidth = viewport.width;
     const generateY = getGenerateY({ withRandom: true });
@@ -38,9 +38,13 @@ const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExist
                     randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
                     Y,
                     randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
-                ],
-                color: colors[randomIntFromInterval(0, colors.length - 1)]
+                ]
+            }, {
+                color: colors[randomIntFromInterval(0, colors.length - 1)],
+                scale: 1
             });
+
+            addParents(blockData.blockId, blockData.parents ?? []);
         }
     };
 

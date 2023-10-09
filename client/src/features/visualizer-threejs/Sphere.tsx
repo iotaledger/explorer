@@ -7,9 +7,10 @@ interface SphereProps {
     id: string;
     position: [x: number, y: number, z: number];
     color: string;
+    scale: number;
 }
 
-const Sphere: React.FC<SphereProps> = ({ id, position, color }) => {
+const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
     const { removeBlock } = useBlockStore();
     const ref = useRef<THREE.Mesh>(null);
     const get = useThree(state => state.get);
@@ -37,7 +38,7 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color }) => {
             position={position}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
-            scale={clicked ? 1.5 : 1}
+            scale={scale}
             onClick={() => click(!clicked)}
             color={hovered ? "red" : color}
         />
