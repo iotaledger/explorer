@@ -19,7 +19,7 @@ const timerDiff = timer(250);
 
 const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const ref = useRef<THREE.Mesh>(null);
-    const { addBlock, addParents } = useBlockStore();
+    const { addBlock, addParents, addYPosition, checkZoom } = useBlockStore();
     const viewport = useThree(state => state.viewport);
     const canvasWidth = viewport.width;
     const generateY = getGenerateY({ withRandom: true });
@@ -32,19 +32,21 @@ const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExist
 
             const Y = generateY(secondsFromStart);
 
+            const position: [number, number, number] = [
+                randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
+                Y,
+                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
+            ];
             addBlock({
                 id: blockData.blockId,
-                position: [
-                    randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                    Y,
-                    randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
-                ]
+                position
             }, {
                 color: colors[randomIntFromInterval(0, colors.length - 1)],
                 scale: 1
             });
-
             addParents(blockData.blockId, blockData.parents ?? []);
+            addYPosition(Y);
+            checkZoom();
         }
     };
 

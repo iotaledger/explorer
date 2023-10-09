@@ -9,6 +9,7 @@ import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import EmitterContext from "./EmitterContext";
+import { useBlockStore } from "./store";
 
 const VisualizerThree: React.FC<
     RouteComponentProps<VisualizerRouteProps>
@@ -21,9 +22,11 @@ const VisualizerThree: React.FC<
         const streamOnNewBlock = useRef<TFeedBlockAdd | null>(null);
         // @ts-ignore
         const { setOnNewExists } = useUpdateListener(network, streamOnNewBlock?.current);
-
+        const {zoom} = useBlockStore();
         const controlsEnabled = true;
         const statsEnabled = true;
+
+
 
         return (
             <Wrapper
@@ -40,7 +43,7 @@ const VisualizerThree: React.FC<
                 <Canvas>
                     <OrthographicCamera
                         makeDefault
-                        zoom={3}
+                        zoom={zoom}
                         near={1}
                         far={4000}
                         position={[0, 0, 200]}

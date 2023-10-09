@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { getScaleMultiplier } from "../../shared/visualizer/common/utils";
 
 interface BlockState {
     id: string;
@@ -15,11 +16,20 @@ interface BlockStoreState {
     addBlock: (newBlock: BlockState, options: BlockOptions) => void;
     removeBlock: (blockId: string) => void;
     addParents: (blockId: string, parents: string[]) => void;
+
+    yPositions: { [k: number]: number };
+    addYPosition: (blockY: number) => void;
+    removeYPosition: (blockY: number) => void;
+
+    zoom: number;
+    checkZoom: () => void;
 }
 
 export const useBlockStore = create<BlockStoreState>(set => ({
     blocks: [],
     blockOptions: {},
+    yPositions: {},
+    zoom: 3,
     addBlock: (newBlock, options) => {
         set(state => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
@@ -56,6 +66,47 @@ export const useBlockStore = create<BlockStoreState>(set => ({
                     ...state.blockOptions
                 }
             };
+        });
+    },
+    addYPosition: blockY => {
+        const Y = Math.floor(Math.abs(blockY));
+
+        set(state => {
+            const nextYPositions = { ...state.yPositions };
+
+            const prevYCount = nextYPositions[Y] || 0;
+            nextYPositions[Y] = prevYCount + 1;
+            return {
+                ...state,
+                yPositions: nextYPositions
+            };
+        });
+    },
+    removeYPosition: blockY => {
+        const Y = Math.floor(Math.abs(blockY));
+
+        set(state => {
+            const nextYPositions = { ...state.yPositions };
+            const current = nextYPositions[Y];
+            if (current === 1) {
+                delete nextYPositions[Y];
+            } else {
+                nextYPositions[Y] -= 1;
+            }
+            return {
+                ...state,
+                yPositions: nextYPositions
+            };
+        });
+    },
+    checkZoom: () => {
+        set(state => {
+            const yPositions = Object.keys(state.yPositions).map(Number);
+            const multiplier = getScaleMultiplier(yPositions);
+            return {
+                ...state,
+                zoom: multiplier,
+            }
         });
     }
 }));

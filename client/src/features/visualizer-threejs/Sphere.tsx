@@ -11,7 +11,7 @@ interface SphereProps {
 }
 
 const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
-    const { removeBlock } = useBlockStore();
+    const { removeBlock, removeYPosition } = useBlockStore();
     const ref = useRef<THREE.Mesh>(null);
     const get = useThree(state => state.get);
     const viewport = useThree(state => state.viewport);
@@ -28,6 +28,7 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
             ref.current.position?.x < camera.position.x - canvasWidth
         ) {
             removeBlock(id);
+            removeYPosition(position[1]);
         }
     });
 

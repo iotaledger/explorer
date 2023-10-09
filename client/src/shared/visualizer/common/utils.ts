@@ -140,3 +140,13 @@ export const wiggleEffect = (max: number) => {
     }
     return 0;
 };
+
+
+export const getScaleMultiplier = (yCoordinates: number[]) => {
+    const VISIBLE_HEIGHT = 210;
+    const max = Math.max(...yCoordinates);
+    const multiplier = VISIBLE_HEIGHT / max;
+
+    // return multiplier > 3 ? 3 : multiplier;
+    return multiplier;
+};
