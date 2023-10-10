@@ -1,6 +1,6 @@
 import { Instances } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { MutableRefObject } from "react";
+import React, { MutableRefObject, useEffect, useState } from "react";
 import { NODE_SIZE_DEFAULT } from "../../shared/visualizer/common/constants";
 import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
@@ -17,7 +17,9 @@ interface EmitterContextProps {
 const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
     const { blocks, blockOptions } = useBlockStore();
     const get = useThree(state => state.get);
+    const cameraState = useThree(state => state.camera);
     const viewport = useThree(state => state.viewport);
+    const [zoom, setZoom] = useState(3);
     const canvasWidth = viewport.width;
 
     useFrame(() => {
@@ -27,6 +29,21 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
             camera.position.x = emitterObj.position.x - (canvasWidth / 2) + 100;
         }
     });
+
+    useEffect(() => {
+        setTimeout(() => {
+            setZoom(2);
+        }, 2000);
+    }, []);
+
+    useEffect(() => {
+        if (cameraState) {
+            cameraState.zoom = zoom;
+            cameraState.updateProjectionMatrix();
+            // @ts-ignore
+            window.c = cameraState;
+        }
+    }, [cameraState, zoom]);
 
 
     return (

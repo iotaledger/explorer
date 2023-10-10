@@ -29,22 +29,19 @@ const VisualizerThree: React.FC<
         const statsEnabled = true;
 
 
-        useEffect(() => {
-            if (camera?.current) {
-                // @ts-ignore
-                window.camera = camera.current;
-                // @ts-ignore
-                window.canvasRef = canvasRef.current;
-                setTimeout(() => {
-                    if (!camera.current) return;
-                    console.log('--- test');
-                    camera.current.zoom = 1;
-                    camera.current.updateProjectionMatrix();
-                    // camera.current.zoom = 2;
-                }, 1000);
-                camera.current.updateProjectionMatrix();
-            }
-        }, [camera?.current]);
+        // useEffect(() => {
+        //     if (camera?.current) {
+        //         // @ts-ignore
+        //         window.camera = camera.current;
+        //         // @ts-ignore
+        //         window.canvasRef = canvasRef.current;
+        //         setTimeout(() => {
+        //             if (!camera.current) return;
+        //             camera.current.zoom = 1;
+        //             camera.current.updateProjectionMatrix();
+        //         }, 1000);
+        //     }
+        // }, [camera?.current]);
 
         return (
             <Wrapper
@@ -60,9 +57,10 @@ const VisualizerThree: React.FC<
             >
                 <Canvas ref={canvasRef}>
                     <OrthographicCamera
+                        name={"mainCamera"}
                         ref={camera}
                         makeDefault
-                        zoom={3}
+                        // zoom={3}
                         near={1}
                         far={4000}
                         position={[0, 0, 200]}
@@ -75,7 +73,7 @@ const VisualizerThree: React.FC<
                         refOnNewBlock={streamOnNewBlock}
                         setOnNewExists={setOnNewExists}
                     />
-                    {controlsEnabled && <CameraControls makeDefault />}
+                    {/* {controlsEnabled && <CameraControls makeDefault />} */}
                     {statsEnabled && <Stats showPanel={0} className="stats" />}
                 </Canvas>
             </Wrapper>
