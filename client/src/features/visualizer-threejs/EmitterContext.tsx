@@ -15,7 +15,7 @@ interface EmitterContextProps {
 }
 
 const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
-    const { blocks, blockOptions } = useBlockStore();
+    const { blocks, blockOptions, zoom: zoomStore } = useBlockStore();
     const get = useThree(state => state.get);
     const cameraState = useThree(state => state.camera);
     const viewport = useThree(state => state.viewport);
@@ -26,15 +26,18 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
+
+            if (emitterObj.position.x < 100) {
+                console.log('--- ', emitterObj.position.x);
+            }
             camera.position.x = emitterObj.position.x - (canvasWidth / 2) + 100;
         }
     });
 
     useEffect(() => {
-        setTimeout(() => {
-            setZoom(2);
-        }, 2000);
-    }, []);
+        // console.log('--- zoomStore', zoomStore);
+        setZoom(zoomStore);
+    }, [zoomStore]);
 
     useEffect(() => {
         if (cameraState) {

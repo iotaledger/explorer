@@ -62,6 +62,8 @@ const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExist
         setOnNewExists(true);
     }, []);
 
+    console.log('--- render emitter');
+
     return (
         <mesh
             ref={ref}
