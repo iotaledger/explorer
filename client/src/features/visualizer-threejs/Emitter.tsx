@@ -23,6 +23,7 @@ const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExist
     const { addBlock, addParents, addYPosition, checkZoom } = useBlockStore();
     const viewport = useThree(state => state.viewport);
     const canvasWidth = viewport.width;
+    // console.log("--- canvasWidth", canvasWidth);
     const generateY = getGenerateY({ withRandom: true });
 
     const onNewBlock = (blockData: IFeedBlockData) => {
@@ -62,8 +63,6 @@ const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExist
         refOnNewBlock.current = onNewBlock;
         setOnNewExists(true);
     }, []);
-
-    // console.log('--- render emitter');
 
     return (
         <mesh

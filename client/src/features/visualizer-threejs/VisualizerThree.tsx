@@ -6,7 +6,7 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 
-import { useElementSize } from "../../shared/hooks/useElementSize";
+// import { useElementSize } from "../../shared/hooks/useElementSize";
 import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import EmitterContext from "./EmitterContext";
@@ -17,19 +17,36 @@ const VisualizerThree: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
         params: { network }
     }
 }) => {
+    const setDimensions = useBlockStore(s => s.setDimensions);
     const [networkConfig] = useNetworkConfig(network);
     const streamOnNewBlock = useRef<TFeedBlockAdd | null>(null);
     const { setOnNewExists } = useUpdateListener(
         network,
         streamOnNewBlock?.current
     );
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    // const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [canvasRef, { width, height }] = useElementSize<HTMLCanvasElement>();
+    useEffect(() => {
+        const canvas = canvasRef.current;
 
-    console.log("--- width, height", width, height);
-    // @ts-expect-error TODO: fix this
-    window.canvasRef = canvasRef;
+        if (!canvas) {
+            return;
+        }
+
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                setDimensions(width, height);
+            }
+        });
+
+        resizeObserver.observe(canvas);
+
+        return () => {
+            resizeObserver.unobserve(canvas);
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     const statsEnabled = true;
 
@@ -45,7 +62,16 @@ const VisualizerThree: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
             selectedFeedItem={null}
             toggleActivity={() => {}}
         >
-            <Canvas ref={canvasRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
+            <Canvas
+                ref={canvasRef}
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%"
+                }}
+            >
                 <OrthographicCamera
                     name="mainCamera"
                     makeDefault

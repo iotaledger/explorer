@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { ZOOM_DEFAULT } from "../../shared/visualizer/common/constants";
 import { getScaleMultiplier } from "../../shared/visualizer/common/utils";
 
 interface BlockState {
@@ -23,15 +24,20 @@ interface BlockStoreState {
 
     zoom: number;
     checkZoom: () => void;
+
+    dimensions: { width: number; height: number };
+    setDimensions: (width: number, height: number) => void;
 }
 
-export const useBlockStore = create<BlockStoreState>((set) => ({
+export const useBlockStore = create<BlockStoreState>(set => ({
     blocks: [],
     blockOptions: {},
     yPositions: {},
     zoom: 3,
+    dimensions: { width: 0, height: 0 },
+
     addBlock: (newBlock, options) => {
-        set((state) => {
+        set(state => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
             return {
                 blocks: [...state.blocks, newBlock],
@@ -43,17 +49,17 @@ export const useBlockStore = create<BlockStoreState>((set) => ({
         });
     },
     removeBlock: (blockId: string) => {
-        set((state) => {
+        set(state => {
             const nextBlockOptions = { ...state.blockOptions };
             delete nextBlockOptions[blockId];
             return {
-                blocks: [...state.blocks.filter((b) => b.id !== blockId)],
+                blocks: [...state.blocks.filter(b => b.id !== blockId)],
                 blockOptions: nextBlockOptions
             };
         });
     },
     addParents: (blockId, parents) => {
-        set((state) => {
+        set(state => {
             for (const parentId of parents) {
                 const foundParent = state.blockOptions[parentId];
                 if (foundParent) {
@@ -68,10 +74,10 @@ export const useBlockStore = create<BlockStoreState>((set) => ({
             };
         });
     },
-    addYPosition: (blockY) => {
+    addYPosition: blockY => {
         const Y = Math.floor(Math.abs(blockY));
 
-        set((state) => {
+        set(state => {
             const nextYPositions = { ...state.yPositions };
 
             const prevYCount = nextYPositions[Y] || 0;
@@ -82,10 +88,10 @@ export const useBlockStore = create<BlockStoreState>((set) => ({
             };
         });
     },
-    removeYPosition: (blockY) => {
+    removeYPosition: blockY => {
         const Y = Math.floor(Math.abs(blockY));
 
-        set((state) => {
+        set(state => {
             const nextYPositions = { ...state.yPositions };
             const current = nextYPositions[Y];
             if (current === 1) {
@@ -100,13 +106,21 @@ export const useBlockStore = create<BlockStoreState>((set) => ({
         });
     },
     checkZoom: () => {
-        set((state) => {
+        set(state => {
             const yPositions = Object.keys(state.yPositions).map(Number);
-            const multiplier = getScaleMultiplier(yPositions);
+            const multiplier = getScaleMultiplier(yPositions, state.dimensions.height);
+
             return {
                 ...state,
                 zoom: multiplier
             };
         });
+    },
+    setDimensions: (width, height) => {
+        set(state => ({
+                ...state,
+                dimensions: { width, height }
+            })
+        );
     }
 }));

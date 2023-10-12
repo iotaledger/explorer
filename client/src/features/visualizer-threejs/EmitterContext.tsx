@@ -1,7 +1,6 @@
 import { Instances } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
-import React, { MutableRefObject, useEffect, useState } from "react";
+import React, { MutableRefObject, useEffect } from "react";
 import { NODE_SIZE_DEFAULT } from "../../shared/visualizer/common/constants";
 import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
@@ -20,47 +19,23 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
     const get = useThree(state => state.get);
     const cameraState = useThree(state => state.camera);
     const viewport = useThree(state => state.viewport);
-    const scene = useThree(state => state.scene);
-    const [zoom, setZoom] = useState(3);
     const canvasWidth = viewport.width;
 
-    // useEffect(() => {
-    //     // scene.a
-    //     const geometry = new THREE.SphereGeometry(15, 32, 16);
-    //     const material = new THREE.MeshBasicMaterial({
-    //         color: 0xffff00
-    //     });
-    //     const sphere = new THREE.Mesh(geometry, material);
-    //     scene.add(sphere);
-    // }, []);
-
-    // useFrame(() => {
-    //     const camera = get().camera;
-    //     const emitterObj = get().scene.getObjectByName("emitter");
-    //     if (camera && emitterObj) {
-    //
-    //         // if (emitterObj.position.x < 100) {
-    //         //     // console.log('--- ', emitterObj.position.x);
-    //         // }
-    //         camera.position.x = emitterObj.position.x - (canvasWidth / 2) + 100;
-    //     }
-    // });
-
-    useEffect(() => {
-        // console.log('--- zoomStore', zoomStore);
-        setZoom(zoomStore);
-    }, [zoomStore]);
+    useFrame(() => {
+        const camera = get().camera;
+        const emitterObj = get().scene.getObjectByName("emitter");
+        if (camera && emitterObj) {
+            camera.position.x = emitterObj.position.x - (canvasWidth / 2) + 100;
+        }
+    });
 
     useEffect(() => {
         if (cameraState) {
-            // cameraState.zoom = zoom;
-            // cameraState.updateProjectionMatrix();
-            // @ts-ignore
-            // window.c = cameraState;
+            cameraState.zoom = zoomStore;
+            cameraState.updateProjectionMatrix();
         }
-    }, [cameraState, zoom]);
+    }, [cameraState, zoomStore]);
 
-    // console.log('--- blocks', blocks.length);
     return (
         <>
             <Emitter

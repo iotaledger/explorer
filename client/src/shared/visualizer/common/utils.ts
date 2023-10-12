@@ -1,4 +1,4 @@
-import { STEP_X_PX, STEP_Y_PX } from "./constants";
+import { STEP_X_PX, STEP_Y_PX, ZOOM_DEFAULT } from "./constants";
 
 
 /**
@@ -51,6 +51,7 @@ export function generateCoordinateGrid(
 
 /**
  * Measure how much seconds passed from the start of the timer.
+ * @param msCounter
  * @returns - function that returns seconds from the start of the timer.
  */
 export const timer = (msCounter: number = 1000) => {
@@ -142,11 +143,14 @@ export const wiggleEffect = (max: number) => {
 };
 
 
-export const getScaleMultiplier = (yCoordinates: number[]) => {
-    const VISIBLE_HEIGHT = 210;
-    const max = Math.max(...yCoordinates);
-    const multiplier = VISIBLE_HEIGHT / max;
+export const getScaleMultiplier = (yCoordinates: number[], canvasHeight: number) => {
+    const MAGIC_MULTIPLIER = 1.5;
+    const PADDING_MULTIPLIER = 0.8;
+    const MIN_Y_COORDINATE = 60; // This value need to prevent dragging on init
+    const maxYCoordinate = Math.max(...yCoordinates);
+    const yCoordinate = maxYCoordinate > MIN_Y_COORDINATE ? maxYCoordinate : MIN_Y_COORDINATE;
+    const nodesHeight = yCoordinate * ZOOM_DEFAULT * MAGIC_MULTIPLIER;
+    const multiplier = canvasHeight / nodesHeight;
 
-    // return multiplier > 3 ? 3 : multiplier;
-    return multiplier;
+    return multiplier * PADDING_MULTIPLIER;
 };
