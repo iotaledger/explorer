@@ -25,13 +25,13 @@ interface BlockStoreState {
     checkZoom: () => void;
 }
 
-export const useBlockStore = create<BlockStoreState>(set => ({
+export const useBlockStore = create<BlockStoreState>((set) => ({
     blocks: [],
     blockOptions: {},
     yPositions: {},
     zoom: 3,
     addBlock: (newBlock, options) => {
-        set(state => {
+        set((state) => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
             return {
                 blocks: [...state.blocks, newBlock],
@@ -43,17 +43,17 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         });
     },
     removeBlock: (blockId: string) => {
-        set(state => {
+        set((state) => {
             const nextBlockOptions = { ...state.blockOptions };
             delete nextBlockOptions[blockId];
             return {
-                blocks: [...state.blocks.filter(b => b.id !== blockId)],
+                blocks: [...state.blocks.filter((b) => b.id !== blockId)],
                 blockOptions: nextBlockOptions
             };
         });
     },
     addParents: (blockId, parents) => {
-        set(state => {
+        set((state) => {
             for (const parentId of parents) {
                 const foundParent = state.blockOptions[parentId];
                 if (foundParent) {
@@ -68,10 +68,10 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             };
         });
     },
-    addYPosition: blockY => {
+    addYPosition: (blockY) => {
         const Y = Math.floor(Math.abs(blockY));
 
-        set(state => {
+        set((state) => {
             const nextYPositions = { ...state.yPositions };
 
             const prevYCount = nextYPositions[Y] || 0;
@@ -82,10 +82,10 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             };
         });
     },
-    removeYPosition: blockY => {
+    removeYPosition: (blockY) => {
         const Y = Math.floor(Math.abs(blockY));
 
-        set(state => {
+        set((state) => {
             const nextYPositions = { ...state.yPositions };
             const current = nextYPositions[Y];
             if (current === 1) {
@@ -100,13 +100,13 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         });
     },
     checkZoom: () => {
-        set(state => {
+        set((state) => {
             const yPositions = Object.keys(state.yPositions).map(Number);
             const multiplier = getScaleMultiplier(yPositions);
             return {
                 ...state,
-                zoom: multiplier,
-            }
+                zoom: multiplier
+            };
         });
     }
 }));

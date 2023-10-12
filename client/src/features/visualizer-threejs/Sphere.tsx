@@ -11,7 +11,6 @@ interface SphereProps {
 }
 
 
-
 const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
     const { removeBlock, removeYPosition } = useBlockStore();
     const ref = useRef<THREE.Mesh>(null);
@@ -24,7 +23,6 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
 
     useFrame(() => {
         const camera = get().camera;
-        console.log('--- ref.current', ref.current);
         if (
             ref.current &&
             camera &&
