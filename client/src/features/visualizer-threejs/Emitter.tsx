@@ -1,5 +1,6 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { MutableRefObject, useEffect, useRef } from "react";
+import * as THREE from "three";
 import { Box3 } from "three";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { colors } from "../../shared/visualizer/common/constants";
@@ -62,7 +63,7 @@ const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExist
         setOnNewExists(true);
     }, []);
 
-    console.log('--- render emitter');
+    // console.log('--- render emitter');
 
     return (
         <mesh

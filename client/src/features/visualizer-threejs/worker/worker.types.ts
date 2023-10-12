@@ -9,10 +9,14 @@ export type WorkerEventType =
 
 export type NetworkNode = IFeedBlockData;
 
-export interface WorkerReq {
+
+
+export interface _WorkerReq {
     type: WorkerEventType;
     data: NetworkNode & { timestamp: number };
 }
+
+// export type Wor
 
 export enum WorkerType {
     Full = "Full",

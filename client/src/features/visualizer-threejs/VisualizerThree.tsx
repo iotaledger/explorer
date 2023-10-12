@@ -43,6 +43,11 @@ const VisualizerThree: React.FC<
         //     }
         // }, [camera?.current]);
 
+        // console.log('--- canvasRef', canvasRef);
+
+        // @ts-ignore
+        window.c = canvasRef;
+
         return (
             <Wrapper
                 blocksCount={0}

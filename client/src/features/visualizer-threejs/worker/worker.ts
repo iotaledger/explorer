@@ -7,7 +7,7 @@ import { DataSender } from "./entities/DataSender";
 import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
 import { Nodes, WorkerNode } from "./entities/Nodes";
 import { Shift } from "./entities/Shift";
-import { WorkerReq, WorkerType } from "./worker.types";
+import { _WorkerReq, WorkerType } from "./worker.types";
 
 /**
  * Initialize constants for worker
@@ -33,7 +33,7 @@ const getCoordinates = (shift: number) => {
 
 ctx.addEventListener(
     "message",
-    (e: MessageEvent<WorkerReq>) => {
+    (e: MessageEvent<_WorkerReq>) => {
         if (!e.data || e.data?.type?.startsWith("webpack")) {
             return; // Ignore the message if it's from Webpack. In other case we'll have an infinite loop
         }
@@ -47,7 +47,7 @@ ctx.addEventListener(
             return;
         }
 
-        const { type, data } = e.data as WorkerReq;
+        const { type, data } = e.data as _WorkerReq;
 
         // timestamp doesn't attach on hot reload
         if (!data?.timestamp) {
