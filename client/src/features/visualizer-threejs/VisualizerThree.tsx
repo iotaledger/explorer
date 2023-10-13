@@ -1,4 +1,4 @@
-import { CameraControls, OrthographicCamera, Stats } from "@react-three/drei";
+import { OrthographicCamera, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -6,7 +6,6 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 
-// import { useElementSize } from "../../shared/hooks/useElementSize";
 import { useUpdateListener } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import EmitterContext from "./EmitterContext";
@@ -77,13 +76,12 @@ const VisualizerThree: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
                     makeDefault
                     near={1}
                     far={4000}
-                    position={[0, 0, 200]}
+                    position={[0, 0, 1500]}
                 />
                 <color attach="background" args={["#f2f2f2"]} />
                 <ambientLight />
                 <directionalLight position={[100, 100, 50]} />
                 <EmitterContext
-                    network={network}
                     refOnNewBlock={streamOnNewBlock}
                     setOnNewExists={setOnNewExists}
                 />

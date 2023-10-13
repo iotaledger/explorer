@@ -9,12 +9,11 @@ import Sphere from "./Sphere";
 import { useBlockStore } from "./store";
 
 interface EmitterContextProps {
-    network: string;
     refOnNewBlock: MutableRefObject<TFeedBlockAdd | null>;
     setOnNewExists: UpdateListenerReturn["setOnNewExists"];
 }
 
-const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
+const EmitterContext: React.FC<EmitterContextProps> = ({ refOnNewBlock, setOnNewExists }) => {
     const { blocks, blockOptions, zoom: zoomStore } = useBlockStore();
     const get = useThree(state => state.get);
     const cameraState = useThree(state => state.camera);
@@ -25,7 +24,7 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
-            camera.position.x = emitterObj.position.x - (canvasWidth / 2) + 100;
+            camera.position.x = emitterObj.position.x - (canvasWidth / 2);
         }
     });
 
@@ -39,7 +38,6 @@ const EmitterContext: React.FC<EmitterContextProps> = ({ network, refOnNewBlock,
     return (
         <>
             <Emitter
-                network={network}
                 refOnNewBlock={refOnNewBlock}
                 setOnNewExists={setOnNewExists}
             />

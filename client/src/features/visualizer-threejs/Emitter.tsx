@@ -9,21 +9,18 @@ import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
 import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
 import { useBlockStore } from "./store";
 
-
 interface EmitterProps {
-    network: string;
     refOnNewBlock: MutableRefObject<TFeedBlockAdd | null>;
     setOnNewExists: UpdateListenerReturn["setOnNewExists"];
 }
+
 const timerDiff = timer(250);
 
-
-const Emitter: React.FC<EmitterProps> = ({ network, refOnNewBlock, setOnNewExists }) => {
+const Emitter: React.FC<EmitterProps> = ({ refOnNewBlock, setOnNewExists }) => {
     const ref = useRef<THREE.Mesh>(null);
     const { addBlock, addParents, addYPosition, checkZoom } = useBlockStore();
     const viewport = useThree(state => state.viewport);
     const canvasWidth = viewport.width;
-    // console.log("--- canvasWidth", canvasWidth);
     const generateY = getGenerateY({ withRandom: true });
 
     const onNewBlock = (blockData: IFeedBlockData) => {

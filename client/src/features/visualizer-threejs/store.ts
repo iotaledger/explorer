@@ -33,7 +33,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     blocks: [],
     blockOptions: {},
     yPositions: {},
-    zoom: 3,
+    zoom: 4,
     dimensions: { width: 0, height: 0 },
 
     addBlock: (newBlock, options) => {
@@ -58,7 +58,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             };
         });
     },
-    addParents: (blockId, parents) => {
+    addParents: parents => {
         set(state => {
             for (const parentId of parents) {
                 const foundParent = state.blockOptions[parentId];

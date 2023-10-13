@@ -10,7 +10,6 @@ interface SphereProps {
     scale: number;
 }
 
-
 const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
     const { removeBlock, removeYPosition } = useBlockStore();
     const ref = useRef<THREE.Mesh>(null);
