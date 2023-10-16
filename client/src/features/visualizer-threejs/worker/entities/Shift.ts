@@ -1,5 +1,5 @@
 
-import { DATA_SENDER_TIME_INTERVAL, STEP_CAMERA_SHIFT_PX } from "../../../../shared/visualizer/common/constants";
+import { DATA_SENDER_TIME_INTERVAL, STEP_CAMERA_SHIFT_PX } from "../../constants";
 
 export class Shift {
     public startTimestamp?: number;

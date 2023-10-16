@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { ZOOM_DEFAULT } from "../../shared/visualizer/common/constants";
-import { getScaleMultiplier } from "../../shared/visualizer/common/utils";
+import { ZOOM_DEFAULT } from "./constants";
+import { getScaleMultiplier } from "./utils";
 
 interface BlockState {
     id: string;

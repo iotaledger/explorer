@@ -11,14 +11,14 @@ interface SphereProps {
 }
 
 const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
-    const { removeBlock, removeYPosition } = useBlockStore();
+    const { removeBlock, removeYPosition, dimensions } = useBlockStore();
     const ref = useRef<THREE.Mesh>(null);
     const get = useThree(state => state.get);
     const viewport = useThree(state => state.viewport);
     const [hovered, hover] = useState(false);
     const [clicked, click] = useState(false);
 
-    const canvasWidth = viewport.width;
+    const canvasWidth = dimensions.width;
 
     useFrame(() => {
         const camera = get().camera;

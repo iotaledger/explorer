@@ -1,4 +1,4 @@
-import { DATA_SENDER_TIME_INTERVAL, SECOND } from "../../../../shared/visualizer/common/constants";
+import { DATA_SENDER_TIME_INTERVAL, SECOND } from "../../constants";
 import { NetworkNode } from "../worker.types";
 
 /**

@@ -1,65 +1,52 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { MutableRefObject, useEffect, useRef } from "react";
-import * as THREE from "three";
+import React, { RefObject, Dispatch, forwardRef, SetStateAction, useEffect, useRef } from "react";
 import { Box3 } from "three";
+import * as THREE from "three";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { colors } from "../../shared/visualizer/common/constants";
-import { getGenerateY, randomIntFromInterval, timer } from "../../shared/visualizer/common/utils";
-import { UpdateListenerReturn } from "../../shared/visualizer/startdust/hooks";
-import { TFeedBlockAdd } from "../../shared/visualizer/startdust/types";
+import { colors } from "./constants";
 import { useBlockStore } from "./store";
+import { TFeedBlockAdd } from "./types";
+import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 
 interface EmitterProps {
-    refOnNewBlock: MutableRefObject<TFeedBlockAdd | null>;
-    setOnNewExists: UpdateListenerReturn["setOnNewExists"];
+    setRunSubscription: Dispatch<SetStateAction<boolean>>;
+    ref: RefObject<THREE.Mesh>;
 }
 
-const timerDiff = timer(250);
 
-const Emitter: React.FC<EmitterProps> = ({ refOnNewBlock, setOnNewExists }) => {
-    const ref = useRef<THREE.Mesh>(null);
-    const { addBlock, addParents, addYPosition, checkZoom } = useBlockStore();
+const Emitter = ({ setRunSubscription, ref }: EmitterProps) => {
+    // const ref = useRef<THREE.Mesh>(null);
+
+
+    useEffect(() => {
+        if (ref?.current) {
+            setRunSubscription(true);
+        }
+    }, [ref]);
+
+
+    /**
+     * Camera shift
+     */
+    const get = useThree(state => state.get);
     const viewport = useThree(state => state.viewport);
     const canvasWidth = viewport.width;
-    const generateY = getGenerateY({ withRandom: true });
-
-    const onNewBlock = (blockData: IFeedBlockData) => {
-        const emitterObj = ref.current;
-        if (emitterObj) {
-            const emitterBox = new Box3().setFromObject(emitterObj);
-            const secondsFromStart = timerDiff();
-
-            const Y = generateY(secondsFromStart);
-
-            const position: [number, number, number] = [
-                randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                Y,
-                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
-            ];
-            addBlock({
-                id: blockData.blockId,
-                position
-            }, {
-                color: colors[randomIntFromInterval(0, colors.length - 1)],
-                scale: 1
-            });
-            addParents(blockData.blockId, blockData.parents ?? []);
-            addYPosition(Y);
-            checkZoom();
-        }
-    };
-
-    useFrame((_, delta) => {
-        if (ref.current) {
-            ref.current.position.x += delta * 80;
+    useFrame(() => {
+        const camera = get().camera;
+        const emitterObj = get().scene.getObjectByName("emitter");
+        if (camera && emitterObj) {
+            camera.position.x = emitterObj.position.x - (canvasWidth / 2);
         }
     });
 
-    useEffect(() => {
-        // Set handler for new block
-        refOnNewBlock.current = onNewBlock;
-        setOnNewExists(true);
-    }, []);
+    /**
+     * Emitter shift
+     */
+    useFrame((_, delta) => {
+        if (ref?.current) {
+            ref.current.position.x += delta * 80;
+        }
+    });
 
     return (
         <mesh
@@ -72,5 +59,4 @@ const Emitter: React.FC<EmitterProps> = ({ refOnNewBlock, setOnNewExists }) => {
         </mesh>
     );
 };
-
 export default Emitter;
