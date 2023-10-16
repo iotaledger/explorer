@@ -1,28 +1,18 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { RefObject, Dispatch, forwardRef, SetStateAction, useEffect, useRef } from "react";
-import { Box3 } from "three";
+import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
-import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { colors } from "./constants";
-import { useBlockStore } from "./store";
-import { TFeedBlockAdd } from "./types";
-import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 
 interface EmitterProps {
-    setRunSubscription: Dispatch<SetStateAction<boolean>>;
-    ref: RefObject<THREE.Mesh>;
+    setRunListeners: Dispatch<SetStateAction<boolean>>;
+    emitterRef: RefObject<THREE.Mesh>;
 }
 
-
-const Emitter = ({ setRunSubscription, ref }: EmitterProps) => {
-    // const ref = useRef<THREE.Mesh>(null);
-
-
+const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
     useEffect(() => {
-        if (ref?.current) {
-            setRunSubscription(true);
+        if (emitterRef?.current) {
+            setRunListeners(true);
         }
-    }, [ref]);
+    }, [emitterRef]);
 
 
     /**
@@ -43,14 +33,14 @@ const Emitter = ({ setRunSubscription, ref }: EmitterProps) => {
      * Emitter shift
      */
     useFrame((_, delta) => {
-        if (ref?.current) {
-            ref.current.position.x += delta * 80;
+        if (emitterRef?.current) {
+            emitterRef.current.position.x += delta * 80;
         }
     });
 
     return (
         <mesh
-            ref={ref}
+            ref={emitterRef}
             name="emitter"
             position={[(canvasWidth / 2) - 100, 0, 0]}
         >

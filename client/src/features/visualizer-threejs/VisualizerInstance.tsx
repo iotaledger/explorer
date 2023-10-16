@@ -1,5 +1,5 @@
 import { OrthographicCamera, Stats } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
@@ -15,7 +15,6 @@ import { colors } from "./constants";
 import Emitter from "./Emitter";
 import Spheres from "./Spheres";
 import { useBlockStore } from "./store";
-import { TFeedBlockAdd } from "./types";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 
 const features = {
@@ -32,18 +31,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const setDimensions = useBlockStore(s => s.setDimensions);
     const [networkConfig] = useNetworkConfig(network);
     const generateY = getGenerateY({ withRandom: true });
-    const { addBlock, addParents, addYPosition, checkZoom } = useBlockStore();
+
+    // Note: to prevent rerender each store update - call methods separate.
+    const addBlock = useBlockStore(s => s.addBlock);
+    const addParents = useBlockStore(s => s.addParents);
+    const addYPosition = useBlockStore(s => s.addYPosition);
+    const checkZoom = useBlockStore(s => s.checkZoom);
     const emitterRef = useRef<THREE.Mesh>(null);
-    // const streamOnNewBlock = useRef<TFeedBlockAdd | null>(null);
-    // const { setOnNewExists } = useUpdateListener(
-    //     network,
-    //     streamOnNewBlock?.current
-    // );
-
-    useEffect(() => {
-
-    }, [emitterRef.current]);
-
 
     /**
      * Control width and height of canvas
@@ -75,7 +69,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     /**
      * Subscribe to updates
      */
-    const [runSubscription, setRunSubscription] = React.useState<boolean>(false);
+    const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
 
     const onNewBlock = (blockData: IFeedBlockData) => {
@@ -105,16 +99,19 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     };
 
     useEffect(() => {
+        if (!runListeners) {
+            return;
+        }
         const feedService = ServiceFactory.get<StardustFeedClient>(
             `feed-${network}`
         );
 
         if (
-            feedService && runSubscription
+            feedService && runListeners
         ) {
             feedService.subscribeBlocks(onNewBlock, () => {});
         }
-    }, [onNewBlock]);
+    }, [runListeners]);
 
     return (
         <Wrapper
@@ -141,7 +138,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <color attach="background" args={["#f2f2f2"]} />
                 <ambientLight />
                 <directionalLight position={[100, 100, 50]} />
-                <Emitter ref={emitterRef} setRunSubscription={setRunSubscription} />
+                <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
                 <Spheres />
                 {/* {controlsEnabled && <CameraControls makeDefault />} */}
                 {features.statsEnabled && <Stats showPanel={0} className="stats" />}

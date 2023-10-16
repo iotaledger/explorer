@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { ZOOM_DEFAULT } from "./constants";
 import { getScaleMultiplier } from "./utils";
 
 interface BlockState {
