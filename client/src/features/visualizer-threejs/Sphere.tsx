@@ -1,6 +1,7 @@
-import { Instance } from "@react-three/drei";
+import { Instance, Sphere as ThreeSphere } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { useBlockStore } from "./store";
 
 interface SphereProps {
@@ -11,31 +12,15 @@ interface SphereProps {
 }
 
 const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
-    const removeBlock = useBlockStore(s => s.removeBlock);
-    const removeYPosition = useBlockStore(s => s.removeYPosition);
-    const dimensions = useBlockStore(s => s.dimensions);
-
     const ref = useRef<THREE.Mesh>(null);
-    const get = useThree(state => state.get);
     const [hovered, hover] = useState(false);
     const [clicked, click] = useState(false);
 
-    const canvasWidth = dimensions.width;
-
-    useFrame(() => {
-        const camera = get().camera;
-        if (
-            ref.current &&
-            camera &&
-            ref.current.position?.x < camera.position.x - canvasWidth
-        ) {
-            removeBlock(id);
-            removeYPosition(position[1]);
-        }
-    });
 
     return (
-        <Instance
+        <ThreeSphere
+            args={[5]}
+            material={new THREE.MeshPhongMaterial({ color })}
             ref={ref}
             name={id}
             position={position}
@@ -43,7 +28,6 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
             onPointerOut={() => hover(false)}
             scale={scale}
             onClick={() => click(!clicked)}
-            color={hovered ? "red" : color}
         />
     );
 };
