@@ -11,8 +11,9 @@ import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { colors } from "./constants";
+import { colors, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
+import { LeftPoint } from "./LeftPoint";
 import Spheres from "./Spheres";
 import { useBlockStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
@@ -85,6 +86,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 Y,
                 randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
             ];
+            return;
             addBlock({
                 id: blockData.blockId,
                 position
@@ -134,10 +136,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                     near={1}
                     far={4000}
                     position={[0, 0, 1500]}
+                    zoom={ZOOM_DEFAULT}
                 />
                 <color attach="background" args={["#f2f2f2"]} />
                 <ambientLight />
                 <directionalLight position={[100, 100, 50]} />
+                <LeftPoint />
                 <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
                 <Spheres />
                 {/* {controlsEnabled && <CameraControls makeDefault />} */}

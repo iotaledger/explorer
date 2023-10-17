@@ -7,7 +7,7 @@ export const NODE_SIZE_DEFAULT = 5;
 export const NODE_SIZE_INCREMENT = 3;
 
 // zoom
-export const ZOOM_DEFAULT = 4;
+export const ZOOM_DEFAULT = 2;
 
 export const SECOND = 1000;
 export const DATA_SENDER_TIME_INTERVAL = 500;

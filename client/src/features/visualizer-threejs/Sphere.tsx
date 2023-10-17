@@ -30,6 +30,7 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
         ) {
             removeBlock(id);
             removeYPosition(position[1]);
+            ref.current.remove();
         }
     });
 

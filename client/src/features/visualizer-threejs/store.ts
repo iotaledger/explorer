@@ -24,6 +24,7 @@ interface BlockStoreState {
 
     zoom: number;
     checkZoom: () => void;
+    setZoom: (zoom: number) => void;
 
     dimensions: { width: number; height: number };
     setDimensions: (width: number, height: number) => void;
@@ -115,6 +116,12 @@ export const useBlockStore = create<BlockStoreState>(set => ({
                 zoom: multiplier
             };
         });
+    },
+    setZoom: zoom => {
+        set(state => ({
+            ...state,
+            zoom
+        }));
     },
     setDimensions: (width, height) => {
         set(state => ({

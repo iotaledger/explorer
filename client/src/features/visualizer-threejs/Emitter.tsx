@@ -26,7 +26,8 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
-            camera.position.x = emitterObj.position.x - (canvasWidth / 2);
+            // console.log('--- camera', camera.);
+            // camera.position.x = emitterObj.position.x - (canvasWidth / 2);
         }
     });
 
@@ -35,7 +36,7 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
      */
     useFrame((_, delta) => {
         if (emitterRef?.current) {
-            emitterRef.current.position.x += delta * 80;
+            // emitterRef.current.position.x += delta * 80;
         }
     });
 
@@ -43,7 +44,7 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
         <mesh
             ref={emitterRef}
             name="emitter"
-            position={[(canvasWidth / 2) - 100, 0, 0]}
+            position={[0, 0, 0]}
         >
             <boxGeometry args={[30, 150, 150]} />
             <meshPhongMaterial transparent={true} opacity={0.6} />
