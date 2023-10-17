@@ -26,7 +26,6 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
-            // console.log('--- camera', camera.);
             // camera.position.x = emitterObj.position.x - (canvasWidth / 2);
         }
     });

@@ -14,7 +14,7 @@ const Spheres = () => {
     const blocks = useBlockStore(s => s.blocks);
     const blockOptions = useBlockStore(s => s.blockOptions);
     // const get = useThree(state => state.get);
-    const scene = useThree(state => state.scene);
+    // const scene = useThree(state => state.scene);
     // const removeBlock = useBlockStore(s => s.removeBlock);
     // const removeYPosition = useBlockStore(s => s.removeYPosition);
 
