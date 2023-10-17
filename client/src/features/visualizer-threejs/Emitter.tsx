@@ -1,9 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
-import { ZOOM_DEFAULT } from "./constants";
 import { useBorderPositions } from "./hooks/useBorderPositions";
-import { useBlockStore } from "./store";
 
 interface EmitterProps {
     setRunListeners: Dispatch<SetStateAction<boolean>>;
