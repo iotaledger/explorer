@@ -1,8 +1,8 @@
 import { Instance } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import * as THREE from "three";
-import { ZOOM_DEFAULT } from "./constants";
+import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useBlockStore } from "./store";
 
 interface SphereProps {
@@ -13,9 +13,10 @@ interface SphereProps {
 }
 
 const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
+    const zoom = useBlockStore(s => s.zoom);
     const removeBlock = useBlockStore(s => s.removeBlock);
     const removeYPosition = useBlockStore(s => s.removeYPosition);
-    const canvasWidth = useThree(state => state.viewport.width);
+    const { halfScreenWidth } = useBorderPositions();
     const ref = useRef<THREE.Mesh>(null);
     const get = useThree(state => state.get);
     const [hovered, hover] = useState(false);
@@ -23,10 +24,12 @@ const Sphere: React.FC<SphereProps> = ({ id, position, color, scale }) => {
 
     useFrame(() => {
         const camera = get().camera;
+        const PADDING_AFTER_OUT_OF_SCREEN = 50 / zoom;
+        const LEFT_BORDER = camera.position.x - halfScreenWidth - PADDING_AFTER_OUT_OF_SCREEN;
         if (
             ref.current &&
             camera &&
-            ref.current.position?.x < camera.position.x - canvasWidth
+            ref.current.position?.x < LEFT_BORDER
         ) {
             removeBlock(id);
             removeYPosition(position[1]);

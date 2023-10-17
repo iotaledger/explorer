@@ -2,6 +2,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
 import { ZOOM_DEFAULT } from "./constants";
+import { useBorderPositions } from "./hooks/useBorderPositions";
+import { useBlockStore } from "./store";
 
 interface EmitterProps {
     setRunListeners: Dispatch<SetStateAction<boolean>>;
@@ -19,14 +21,14 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
     /**
      * Camera shift
      */
+    const { halfScreenWidth } = useBorderPositions();
     const get = useThree(state => state.get);
-    const canvasWidth = useThree(state => state.viewport.width);
-
     useFrame(() => {
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
-            // camera.position.x = emitterObj.position.x - (canvasWidth / 2);
+            const EMITTER_PADDING_RIGHT = 150;
+            camera.position.x = emitterObj.position.x - halfScreenWidth + EMITTER_PADDING_RIGHT;
         }
     });
 
@@ -35,7 +37,8 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
      */
     useFrame((_, delta) => {
         if (emitterRef?.current) {
-            // emitterRef.current.position.x += delta * 80;
+            const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
+            emitterRef.current.position.x += delta * DELTA_MULTIPLIER;
         }
     });
 
