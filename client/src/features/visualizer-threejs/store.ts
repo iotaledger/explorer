@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { ZOOM_DEFAULT } from "../../shared/visualizer/common/constants";
-import { getScaleMultiplier } from "../../shared/visualizer/common/utils";
+import { ZOOM_DEFAULT } from "./constants";
+import { getScaleMultiplier } from "./utils";
 
 interface BlockState {
     id: string;
@@ -24,6 +24,7 @@ interface BlockStoreState {
 
     zoom: number;
     checkZoom: () => void;
+    setZoom: (zoom: number) => void;
 
     dimensions: { width: number; height: number };
     setDimensions: (width: number, height: number) => void;
@@ -33,7 +34,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     blocks: [],
     blockOptions: {},
     yPositions: {},
-    zoom: 4,
+    zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
 
     addBlock: (newBlock, options) => {
@@ -115,6 +116,12 @@ export const useBlockStore = create<BlockStoreState>(set => ({
                 zoom: multiplier
             };
         });
+    },
+    setZoom: zoom => {
+        set(state => ({
+            ...state,
+            zoom
+        }));
     },
     setDimensions: (width, height) => {
         set(state => ({

@@ -2,7 +2,7 @@ import {
     colors,
     NODE_SIZE_DEFAULT,
     NODE_SIZE_INCREMENT
-} from "../../../../shared/visualizer/common/constants";
+} from "../../constants";
 import { NetworkNode } from "../worker.types";
 
 export interface WorkerNode {

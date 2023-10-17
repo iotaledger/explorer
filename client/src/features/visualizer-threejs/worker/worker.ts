@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
-import { colors, NODE_SIZE_DEFAULT } from "../../../shared/visualizer/common/constants";
-import { generateXbyShift, getGenerateY } from "../../../shared/visualizer/common/utils";
+import { colors, NODE_SIZE_DEFAULT } from "../constants";
+import { generateXbyShift, getGenerateY } from "../utils";
 import { DataSender } from "./entities/DataSender";
 import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
 import { Nodes, WorkerNode } from "./entities/Nodes";
@@ -47,7 +47,7 @@ ctx.addEventListener(
             return;
         }
 
-        const { type, data } = e.data as _WorkerReq;
+        const { type, data } = e.data;
 
         // timestamp doesn't attach on hot reload
         if (!data?.timestamp) {
