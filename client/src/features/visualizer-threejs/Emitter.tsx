@@ -1,6 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
+import { ZOOM_DEFAULT } from "./constants";
 
 interface EmitterProps {
     setRunListeners: Dispatch<SetStateAction<boolean>>;
@@ -19,8 +20,8 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
      * Camera shift
      */
     const get = useThree(state => state.get);
-    const viewport = useThree(state => state.viewport);
-    const canvasWidth = viewport.width;
+    const canvasWidth = useThree(state => state.viewport.width);
+
     useFrame(() => {
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");

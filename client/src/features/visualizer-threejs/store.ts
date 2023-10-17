@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { ZOOM_DEFAULT } from "./constants";
 import { getScaleMultiplier } from "./utils";
 
 interface BlockState {
@@ -32,7 +33,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     blocks: [],
     blockOptions: {},
     yPositions: {},
-    zoom: 4,
+    zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
 
     addBlock: (newBlock, options) => {
