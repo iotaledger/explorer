@@ -2,6 +2,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
 import { useBorderPositions } from "./hooks/useBorderPositions";
+import { useBlockStore } from "./store";
 
 interface EmitterProps {
     setRunListeners: Dispatch<SetStateAction<boolean>>;
@@ -9,6 +10,8 @@ interface EmitterProps {
 }
 
 const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
+    const isPlaying = useBlockStore(state => state.isPlaying);
+
     useEffect(() => {
         if (emitterRef?.current) {
             setRunListeners(true);
@@ -22,6 +25,9 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
     const { halfScreenWidth } = useBorderPositions();
     const get = useThree(state => state.get);
     useFrame(() => {
+        if (!isPlaying) {
+            return;
+        }
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
@@ -34,6 +40,9 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
      * Emitter shift
      */
     useFrame((_, delta) => {
+        if (!isPlaying) {
+            return;
+        }
         if (emitterRef?.current) {
             const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
             emitterRef.current.position.x += delta * DELTA_MULTIPLIER;

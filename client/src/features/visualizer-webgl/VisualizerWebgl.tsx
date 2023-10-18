@@ -30,13 +30,13 @@ const VisualizerWebgl: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
         <Wrapper
             blocksCount={blocksCount}
             filter={filter}
-            isActive={isActive}
+            isPlaying={isActive}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={(e) => setFilter(e.target.value)}
+            onChangeFilter={e => setFilter(e.target.value)}
             selectNode={selectNode}
             selectedFeedItem={selectedFeedItem}
-            toggleActivity={toggleActivity}
+            setIsPlaying={toggleActivity}
         >
             <div
                 className="viva"

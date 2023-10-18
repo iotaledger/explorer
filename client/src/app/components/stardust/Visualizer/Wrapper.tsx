@@ -11,23 +11,23 @@ export const Wrapper = ({
     blocksCount,
     children,
     filter,
-    isActive,
+    isPlaying,
     network,
     networkConfig,
     onChangeFilter,
     selectNode,
     selectedFeedItem,
-    toggleActivity
+    setIsPlaying
 }: {
     blocksCount: number;
     children: React.ReactNode; filter: string;
-    isActive: boolean;
+    isPlaying: boolean;
     network: string;
     networkConfig: INetwork;
     onChangeFilter: React.ChangeEventHandler<HTMLInputElement>;
     selectNode: TSelectNode;
     selectedFeedItem: TSelectFeedItem;
-    toggleActivity: () => void;
+    setIsPlaying: (isPlaying: boolean) => void;
 }) => (
     <div className="visualizer-stardust">
         <div className="row middle">
@@ -52,8 +52,8 @@ export const Wrapper = ({
             {children}
             <div className="action-panel-container">
                 <div className="card">
-                    <button className="pause-button" type="button" onClick={() => toggleActivity()}>
-                        {isActive
+                    <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
+                        {isPlaying
                                 ? <span className="material-icons">pause</span>
                                 : <span className="material-icons">play_arrow</span>}
                     </button>
