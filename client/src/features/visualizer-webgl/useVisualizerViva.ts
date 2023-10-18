@@ -14,10 +14,10 @@ import { customLayout, THRESHOLD_PX } from "./layout";
 import { VivaNode } from "./vivagraph-layout.types";
 
 const MAX_ITEMS: number = 2500;
-const EDGE_COLOR_LIGHT: number = 0xb3b3b3cc;
-const EDGE_COLOR_DARK: number = 0xffffff33;
-const EDGE_COLOR_CONFIRMING: number = 0xff5aaaff;
-const EDGE_COLOR_CONFIRMED_BY: number = 0x0000ffff;
+const EDGE_COLOR_LIGHT: number = 0xB3B3B3CC;
+const EDGE_COLOR_DARK: number = 0xFFFFFF33;
+const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
+const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
 const COLOR_PENDING: string = "0xbbbbbb";
 const COLOR_REFERENCED: string = "0x61e884";
 const COLOR_CONFLICTING: string = "0xff8b5c";
@@ -102,7 +102,7 @@ export function useVisualizerViva(
 
             graphics.current.setNodeProgram(buildNodeShader());
 
-            graphics.current.node((node) =>
+            graphics.current.node(node =>
                 calculateNodeStyle(
                     node,
                     testForHighlight(highlightNodesRegEx(), node.id, node.data)
@@ -121,7 +121,7 @@ export function useVisualizerViva(
             );
 
             // If click to node
-            events.click((node) => selectNode(node));
+            events.click(node => selectNode(node));
 
             // events.dblClick(node => {
             //     window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
@@ -369,7 +369,7 @@ export function useVisualizerViva(
             }
 
             const reattached = selectedFeedItem?.reattachments?.find(
-                (item) => item.blockId === node.data?.feedItem.blockId
+                item => item.blockId === node.data?.feedItem.blockId
             );
             if (
                 selectedFeedItem?.blockId === node.data?.feedItem.blockId ||
@@ -436,15 +436,16 @@ export function useVisualizerViva(
 
     /**
      * The pause button was clicked
+     * @param isPlaying
      */
-    function toggleActivity(): void {
-        if (isActive) {
+    function setIsPlaying(isPlaying: boolean): void {
+        if (isPlaying) {
             renderer.current?.pause();
         } else {
             renderer.current?.resume();
         }
 
-        setIsActive(!isActive);
+        setIsActive(isPlaying);
     }
 
     /**
@@ -578,11 +579,11 @@ export function useVisualizerViva(
     }
 
     return {
-        toggleActivity,
+        setIsPlaying,
         selectNode,
         filter,
         setFilter,
-        isActive,
+        isPlaying: isActive,
         blocksCount: itemCount,
         selectedFeedItem,
         isFormatAmountsFull,

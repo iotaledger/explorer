@@ -25,6 +25,7 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
     const { halfScreenWidth } = useBorderPositions();
     const get = useThree(state => state.get);
     useFrame(() => {
+        console.log("--- useFrame");
         if (!isPlaying) {
             return;
         }

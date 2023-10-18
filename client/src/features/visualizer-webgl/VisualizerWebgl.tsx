@@ -14,11 +14,11 @@ const VisualizerWebgl: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     const graphElement = useRef<HTMLDivElement | null>(null);
 
     const {
-        toggleActivity,
+        setIsPlaying,
         selectNode,
         filter,
         setFilter,
-        isActive,
+        isPlaying,
         blocksCount,
         selectedFeedItem,
         // isFormatAmountsFull,
@@ -30,13 +30,13 @@ const VisualizerWebgl: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
         <Wrapper
             blocksCount={blocksCount}
             filter={filter}
-            isPlaying={isActive}
+            isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
             onChangeFilter={e => setFilter(e.target.value)}
             selectNode={selectNode}
             selectedFeedItem={selectedFeedItem}
-            setIsPlaying={toggleActivity}
+            setIsPlaying={setIsPlaying}
         >
             <div
                 className="viva"
