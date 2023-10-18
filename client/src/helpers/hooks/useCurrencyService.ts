@@ -87,7 +87,7 @@ export function useCurrencyService(isIota: boolean): [
                     ) : "--"
             );
         }
-    }, [currency, currencyData]);
+    }, [isIota, currency, currencyData]);
 
     return [price, marketCap];
 }
