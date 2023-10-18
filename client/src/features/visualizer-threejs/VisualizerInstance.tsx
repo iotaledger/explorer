@@ -32,12 +32,38 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const [networkConfig] = useNetworkConfig(network);
     const generateY = getGenerateY({ withRandom: true });
 
+    const [runListeners, setRunListeners] = React.useState<boolean>(false);
+
     // Note: to prevent rerender each store update - call methods separate.
     const addBlock = useBlockStore(s => s.addBlock);
     const addParents = useBlockStore(s => s.addParents);
     const addYPosition = useBlockStore(s => s.addYPosition);
     const checkZoom = useBlockStore(s => s.checkZoom);
+    const setIsPlaying = useBlockStore(s => s.setIsPlaying);
+    const isPlaying = useBlockStore(s => s.isPlaying);
+
     const emitterRef = useRef<THREE.Mesh>(null);
+    const feedServiceRef = useRef<StardustFeedClient | null>(null);
+
+    /**
+     * Control play/pause
+     */
+    useEffect(() => {
+        // eslint-disable-next-line no-void
+        void (async () => {
+            if (!runListeners || !feedServiceRef?.current) {
+                return;
+            }
+
+            if (isPlaying) {
+                feedServiceRef.current.subscribeBlocks(onNewBlock, () => {});
+                setIsPlaying(true);
+            } else {
+                await feedServiceRef.current.unsubscribeBlocks();
+                setIsPlaying(false);
+            }
+        })();
+    }, [feedServiceRef?.current, isPlaying, runListeners]);
 
     /**
      * Control width and height of canvas
@@ -68,10 +94,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     /**
      * Subscribe to updates
+     * @param blockData
      */
-    const [runListeners, setRunListeners] = React.useState<boolean>(false);
-
-
     const onNewBlock = (blockData: IFeedBlockData) => {
         const emitterObj = emitterRef.current;
         if (emitterObj && blockData) {
@@ -103,28 +127,23 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
-        const feedService = ServiceFactory.get<StardustFeedClient>(
+        feedServiceRef.current = ServiceFactory.get<StardustFeedClient>(
             `feed-${network}`
         );
-
-        if (
-            feedService && runListeners
-        ) {
-            feedService.subscribeBlocks(onNewBlock, () => {});
-        }
+        setIsPlaying(true);
     }, [runListeners]);
 
     return (
         <Wrapper
             blocksCount={0}
             filter=""
-            isActive={true}
+            isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
             onChangeFilter={() => {}}
             selectNode={() => {}}
             selectedFeedItem={null}
-            toggleActivity={() => {}}
+            setIsPlaying={setIsPlaying}
         >
             <Canvas
                 ref={canvasRef}

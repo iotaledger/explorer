@@ -7,11 +7,11 @@ export type TSelectNode = (node?: Viva.Graph.INode<INodeData, unknown>) => void;
 export type TSelectFeedItem = IFeedBlockData | null;
 
 export interface IVisualizerHookReturn {
-    toggleActivity: () => void;
+    setIsPlaying: (isPlaying: boolean) => void;
     selectNode: (node?: Viva.Graph.INode<INodeData, unknown>) => void;
     filter: string;
     setFilter: React.Dispatch<React.SetStateAction<string>>;
-    isActive: boolean;
+    isPlaying: boolean;
     blocksCount: number;
     selectedFeedItem: IFeedBlockData | null;
     isFormatAmountsFull: boolean | null;

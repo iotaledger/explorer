@@ -28,6 +28,9 @@ interface BlockStoreState {
 
     dimensions: { width: number; height: number };
     setDimensions: (width: number, height: number) => void;
+
+    isPlaying: boolean;
+    setIsPlaying: (isPlaying: boolean) => void;
 }
 
 export const useBlockStore = create<BlockStoreState>(set => ({
@@ -36,6 +39,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
+    isPlaying: false,
 
     addBlock: (newBlock, options) => {
         set(state => {
@@ -129,5 +133,11 @@ export const useBlockStore = create<BlockStoreState>(set => ({
                 dimensions: { width, height }
             })
         );
+    },
+    setIsPlaying: isPlaying => {
+        set(state => ({
+            ...state,
+            isPlaying
+        }));
     }
 }));
