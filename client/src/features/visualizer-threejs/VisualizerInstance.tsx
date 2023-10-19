@@ -46,6 +46,25 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const feedServiceRef = useRef<StardustFeedClient | null>(null);
 
     /**
+     * Pause on tab or window change
+     */
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                return feedSubscriptionStop();
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.addEventListener("blur", feedSubscriptionStop);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("blur", feedSubscriptionStop);
+        };
+    }, []);
+
+    /**
      * Control play/pause
      */
     useEffect(() => {
@@ -56,11 +75,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             }
 
             if (isPlaying) {
-                feedServiceRef.current.subscribeBlocks(onNewBlock, () => {});
-                setIsPlaying(true);
+                feedSubscriptionStart();
             } else {
-                await feedServiceRef.current.unsubscribeBlocks();
-                setIsPlaying(false);
+                await feedSubscriptionStop();
             }
         })();
     }, [feedServiceRef?.current, isPlaying, runListeners]);
@@ -132,6 +149,23 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         );
         setIsPlaying(true);
     }, [runListeners]);
+
+
+    const feedSubscriptionStart = () => {
+        if (!feedServiceRef.current) {
+            return;
+        }
+        feedServiceRef.current.subscribeBlocks(onNewBlock, () => {});
+        setIsPlaying(true);
+    };
+
+    const feedSubscriptionStop = async () => {
+        if (!feedServiceRef.current) {
+            return;
+        }
+        await feedServiceRef.current.unsubscribeBlocks();
+        setIsPlaying(false);
+    };
 
     return (
         <Wrapper
