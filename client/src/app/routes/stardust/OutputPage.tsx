@@ -11,6 +11,7 @@ import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
 import TruncatedId from "../../components/stardust/TruncatedId";
+import Tooltip from "../../components/Tooltip";
 import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
 
@@ -46,10 +47,11 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
         transactionIdSpent, milestoneIndexBooked, milestoneTimestampBooked
     } = outputMetadata ?? {};
 
-    const transctionLink = milestoneIndexBooked &&
-        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked) ?
-            `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
-            `/${network}/transaction/${transactionId}`;
+    const isTransactionFromStardustGenesis = milestoneIndexBooked &&
+        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked);
+    const transctionLink = isTransactionFromStardustGenesis ?
+        `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
+        `/${network}/transaction/${transactionId}`;
 
     return (output &&
         <div className="output-page">
@@ -103,7 +105,17 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="label">
                                     Transaction ID
                                 </div>
-                                <div className="value code highlight">
+                                <div className="value code highlight row middle">
+                                    {isTransactionFromStardustGenesis && (
+                                        <Tooltip
+                                            tooltipContent="This link opens the transaction on Chrysalis Mainnet"
+                                            childrenClass="row middle"
+                                        >
+                                            <span className="material-icons">
+                                                warning
+                                            </span>
+                                        </Tooltip>
+                                    )}
                                     <TruncatedId
                                         id={transactionId}
                                         link={transctionLink}

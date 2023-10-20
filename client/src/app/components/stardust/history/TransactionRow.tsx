@@ -7,6 +7,7 @@ import { TransactionsHelper } from "../../../../helpers/stardust/transactionsHel
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { CHRYSALIS_MAINNET } from "../../../../models/config/networkType";
 import NetworkContext from "../../../context/NetworkContext";
+import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
@@ -34,15 +35,27 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
         </span>
     );
 
-    const transctionLink = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex) ?
-            `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
-            `/${network}/transaction/${transactionId}`;
+    const isTransactionFromStardustGenesis = milestoneIndex &&
+        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
+    const transactionLink = isTransactionFromStardustGenesis ?
+        `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
+        `/${network}/transaction/${transactionId}`;
 
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
             <td className="transaction-id">
-                <Link to={transctionLink} className="row center margin-r-t">
+                <Link to={transactionLink} className="row center margin-r-t">
                     <TruncatedId id={transactionId} />
+                    {isTransactionFromStardustGenesis && (
+                        <Tooltip
+                            tooltipContent="This link opens the transaction on Chrysalis Mainnet"
+                            childrenClass="row middle"
+                        >
+                            <span className="material-icons" style={{ fontSize: "14px" }}>
+                                warning
+                            </span>
+                        </Tooltip>
+                    )}
                 </Link>
             </td>
             <td className="row center output-id">
