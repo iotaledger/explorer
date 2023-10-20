@@ -5,7 +5,7 @@ import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM } from "../../../models/config/networkType";
+import { CHRYSALIS_MAINNET, CUSTOM } from "../../../models/config/networkType";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
 import { getFilterFieldDefaults } from "../../../models/services/filterField";
@@ -92,6 +92,89 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
+        if (this.state.networkConfig.network === CHRYSALIS_MAINNET) {
+            return (
+                <div className="landing-chrysalis">
+                    <div className="wrapper header-wrapper">
+                        <div className="inner">
+                            <div className="header">
+                                <div className="header--title">
+                                    <h2>{this.state.networkConfig.isEnabled ? "Explore network" : ""}</h2>
+                                    <div className="row space-between wrap">
+                                        <h1>{this.state.networkConfig.label}</h1>
+                                    </div>
+                                </div>
+                                {this.state.networkConfig.isEnabled && (
+                                    <div className="row space-between info-boxes">
+                                        <div className="info-box">
+                                            <span className="info-box--title">Messages per sec
+                                            </span>
+                                            <div className="info-box--value">
+                                                <span className="download-rate">
+                                                    {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "0"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="info-box">
+                                            <span className="info-box--title">Inclusion rate</span>
+                                            <span className="info-box--value">
+                                                {this.state.confirmedItemsPerSecondPercent}
+                                            </span>
+                                        </div>
+                                        {this.state.networkConfig.showMarket && (
+                                            <div className="info-box">
+                                                <span className="info-box--title">IOTA Market Cap</span>
+                                                <span className="info-box--value">{this.state.marketCapCurrency}</span>
+                                            </div>
+                                        )}
+                                        {this.state.networkConfig.showMarket && (
+                                            <div className="info-box">
+                                                <span className="info-box--title">Price / MI</span>
+                                                <span className="info-box--value">
+                                                    {this.state.priceCurrency}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="wrapper feeds-wrapper">
+                        <div className="inner">
+                            <div className="card margin-t-m">
+                                <div
+                                    className="card--value card--value__no-margin description col row middle"
+                                    style={{ whiteSpace: "nowrap" }}
+                                >
+                                    <p>
+                                        <span>This network is superseded by </span>
+                                        <Link to="/mainnet" className="button">Mainnet (stardust)</Link>.
+                                    </p>
+                                    <p>
+                                        <span>
+                                            It can only be used to browse historic data before milestone 7669900
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            {
+                                !this.state.networkConfig.isEnabled && (
+                                    <div className="card margin-t-m">
+                                        <div className="card--content description">
+                                            {this.state.networkConfig.isEnabled === undefined
+                                                ? "This network is not recognised."
+                                                : "This network is currently disabled in explorer."}
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div >
+                    </div >
+                </div >
+
+            );
+        }
         const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
             this._networkConfig.network !== CUSTOM;
 
