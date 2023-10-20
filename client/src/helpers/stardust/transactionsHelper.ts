@@ -19,6 +19,7 @@ import bigInt from "big-integer";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
+import { MAINNET } from "../../models/config/networkType";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
@@ -34,6 +35,11 @@ interface TransactionInputsAndOutputsResponse {
  * The hex encoded word PARTICIPATE.
  */
 const HEX_PARTICIPATE = "0x5041525449434950415445";
+
+/**
+ * The stardust genesis milestone.
+ */
+export const STARDUST_GENESIS_MILESTONE = 7669900;
 
 export class TransactionsHelper {
     public static async getInputsAndOutputs(block: IBlock | undefined, network: string,
@@ -259,6 +265,16 @@ export class TransactionsHelper {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if transaction is from IOTA Stardust Genesis
+     * @param network The network.
+     * @param milestoneIndex The milestone index of the IOTA stardust genesis.
+     * @returns true if transaction is from IOTA stardust genesis.
+     */
+    public static isTransactionFromIotaStardustGenesis(network: string, milestoneIndex: number): boolean {
+        return network === MAINNET && milestoneIndex === STARDUST_GENESIS_MILESTONE;
     }
 
     private static bechAddressFromAddressUnlockCondition(
