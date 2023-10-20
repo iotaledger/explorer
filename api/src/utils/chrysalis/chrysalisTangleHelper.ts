@@ -1,6 +1,7 @@
 import { Blake2b } from "@iota/crypto.js";
 import { Bech32Helper, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js-chrysalis";
 import { Converter, WriteStream } from "@iota/util.js";
+import { HexHelper } from "@iota/util.js-stardust";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/chrysalis/ITransactionHistoryRequest";
@@ -46,7 +47,7 @@ export class ChrysalisTangleHelper {
             userName: user,
             password
         });
-        const queryLower = query.toLowerCase();
+        const queryLower = HexHelper.stripPrefix(query.toLowerCase());
 
         try {
             // If the query starts with did:iota: then lookup a Decentralized identifier
