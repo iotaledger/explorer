@@ -3,13 +3,25 @@ import moment from "moment";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { DateHelper } from "../../../../helpers/dateHelper";
+import { TransactionsHelper } from "../../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { CHRYSALIS_MAINNET } from "../../../../models/config/networkType";
 import NetworkContext from "../../../context/NetworkContext";
 import TruncatedId from "../TruncatedId";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
-    { outputId, transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts, darkBackgroundRow }
+    {
+        outputId,
+        transactionId,
+        date,
+        milestoneIndex,
+        value,
+        isSpent,
+        isFormattedAmounts,
+        setIsFormattedAmounts,
+        darkBackgroundRow
+    }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
     const outputIdTransaction = outputId.slice(0, -4);
@@ -22,10 +34,14 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
         </span>
     );
 
+    const transctionLink = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex) ?
+            `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
+            `/${network}/transaction/${transactionId}`;
+
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
             <td className="transaction-id">
-                <Link to={`/${network}/transaction/${transactionId}`} className="row center margin-r-t">
+                <Link to={transctionLink} className="row center margin-r-t">
                     <TruncatedId id={transactionId} />
                 </Link>
             </td>

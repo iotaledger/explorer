@@ -15,6 +15,11 @@ export interface ITransactionEntryProps {
     date: number;
 
     /**
+     * The milestone index of the transaction.
+     */
+    milestoneIndex: number;
+
+    /**
      * The transaction amount.
      */
     value: number;

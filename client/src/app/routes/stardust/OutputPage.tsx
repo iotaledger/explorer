@@ -3,7 +3,9 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { useOutputDetails } from "../../../helpers/hooks/useOutputDetails";
+import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { formatSpecialBlockId } from "../../../helpers/stardust/valueFormatHelper";
+import { CHRYSALIS_MAINNET } from "../../../models/config/networkType";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
@@ -43,6 +45,11 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
         blockId, transactionId, outputIndex, isSpent, milestoneIndexSpent, milestoneTimestampSpent,
         transactionIdSpent, milestoneIndexBooked, milestoneTimestampBooked
     } = outputMetadata ?? {};
+
+    const transctionLink = milestoneIndexBooked &&
+        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked) ?
+            `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
+            `/${network}/transaction/${transactionId}`;
 
     return (output &&
         <div className="output-page">
@@ -99,7 +106,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (
                                 <div className="value code highlight">
                                     <TruncatedId
                                         id={transactionId}
-                                        link={`/${network}/transaction/${transactionId}`}
+                                        link={transctionLink}
                                         showCopyButton
                                     />
                                 </div>
