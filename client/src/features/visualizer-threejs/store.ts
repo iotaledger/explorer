@@ -31,6 +31,9 @@ interface BlockStoreState {
 
     isPlaying: boolean;
     setIsPlaying: (isPlaying: boolean) => void;
+
+    bps: number;
+    setBps: (bps: number) => void;
 }
 
 export const useBlockStore = create<BlockStoreState>(set => ({
@@ -40,6 +43,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
     isPlaying: false,
+    bps: 0,
 
     addBlock: (newBlock, options) => {
         set(state => {
@@ -138,6 +142,13 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         set(state => ({
             ...state,
             isPlaying
+        }));
+    },
+
+    setBps: bps => {
+        set(state => ({
+            ...state,
+            bps
         }));
     }
 }));

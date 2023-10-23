@@ -16,6 +16,7 @@ import Emitter from "./Emitter";
 import Spheres from "./Spheres";
 import { useBlockStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
+import { BPSCounter } from "./worker/entities/BPSCounter";
 
 const features = {
     statsEnabled: true
@@ -33,6 +34,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const generateY = getGenerateY({ withRandom: true });
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
+    const setBps = useBlockStore(s => s.setBps);
+    const [bpsCounter] = React.useState(new BPSCounter(bps => {
+        setBps(bps);
+    }));
 
     // Note: to prevent rerender each store update - call methods separate.
     const addBlock = useBlockStore(s => s.addBlock);
@@ -127,6 +132,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
             ];
 
+            bpsCounter.addBlock();
+            if (!bpsCounter.getBPS()) {
+                bpsCounter.start();
+            }
+
             addBlock({
                 id: blockData.blockId,
                 position
@@ -148,6 +158,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             `feed-${network}`
         );
         setIsPlaying(true);
+
+        return () => {
+            bpsCounter.stop();
+        };
     }, [runListeners]);
 
 
@@ -156,6 +170,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             return;
         }
         feedServiceRef.current.subscribeBlocks(onNewBlock, () => {});
+        bpsCounter.start();
         setIsPlaying(true);
     };
 
@@ -164,6 +179,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             return;
         }
         await feedServiceRef.current.unsubscribeBlocks();
+        bpsCounter.stop();
         setIsPlaying(false);
     };
 
