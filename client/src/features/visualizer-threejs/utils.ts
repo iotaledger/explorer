@@ -47,8 +47,7 @@ export const timer = (msCounter: number = 1000) => {
  * @returns {Generator<number>} - Y coordinate generator
  */
 export function* yCoordinateGenerator(): Generator<number> {
-    let count = 0.25;
-    const increaseTo = 0.25;
+    let count = 0;
     let isPositive = true;
 
     yield 0; // Initial value
@@ -57,7 +56,7 @@ export function* yCoordinateGenerator(): Generator<number> {
         const reset = yield isPositive ? count : -count;
 
         if (reset) {
-            count = 0.25;
+            count = 0;
             isPositive = true;
         } else {
             // Alternate between positive and negative
@@ -65,7 +64,7 @@ export function* yCoordinateGenerator(): Generator<number> {
 
             // Increase count after generating both a positive and negative pair
             if (!isPositive) {
-                count += increaseTo;
+                count++;
             }
         }
     }
@@ -73,12 +72,31 @@ export function* yCoordinateGenerator(): Generator<number> {
 
 const getMaxYPosition = (bps: number) => {
     const blocksPerTick = bps / (SECOND / TIME_DIFF_COUNTER);
-    const maxYPerTick = blocksPerTick / 2; // divide 2 because we have values more than 0 and less
+    const maxYPerTick = blocksPerTick * STEP_Y_PX / 2; // divide 2 because we have values more than 0 and less
 
     return {
         blocksPerTick,
         maxYPerTick: maxYPerTick > 0 ? maxYPerTick : 1
     };
+};
+const checkRules = (y: number, prev: number[]) => {
+    let passAllChecks = true;
+    if (prev.length === 0) {
+        return true;
+    }
+
+    const nearRadius = 10;
+    const near = prev.some(prevY => {
+        const top = prevY + nearRadius;
+        const bottom = prevY - nearRadius;
+        return y < top && y > bottom;
+    });
+
+    if (near) {
+        passAllChecks = false;
+    }
+
+    return passAllChecks;
 };
 /**
  * Create generator for Y coordinate
@@ -89,37 +107,43 @@ const getMaxYPosition = (bps: number) => {
 export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shift: number, bps: number) => number => {
     let currentShift = 1;
     const generator = yCoordinateGenerator();
-    // const LOW_BPS_LIMIT_BOTTOM = -7 * STEP_Y_PX;
+    const prevY: number[] = [];
+    const limitPrevY = 5;
     const LIMIT_BPS = 48;
     const { maxYPerTick: defaultMaxYPerTick } = getMaxYPosition(LIMIT_BPS);
 
     return (shift: number, bps: number) => {
         shift += 1; // This hack needs to avoid Y = 0 on the start of graph.
         let Y = generator.next().value as number;
-        let lowBpsMultiplier = 1;
         if (!currentShift || currentShift !== shift) {
             Y = generator.next(true).value as number;
             // update shift locally
             currentShift = shift;
         }
 
-
         if (bps < LIMIT_BPS) {
-            const { maxYPerTick: currentMaxYPerTick } = getMaxYPosition(bps);
-            const coefficient = defaultMaxYPerTick / currentMaxYPerTick;
+            let randomY = randomNumberFromInterval(-defaultMaxYPerTick, defaultMaxYPerTick);
 
-            // console.log("---", bps);
-            lowBpsMultiplier = coefficient;
+            // check if not match with last value (and not near);
+            let passAllChecks = checkRules(randomY, prevY);
+            while (!passAllChecks) {
+                randomY = randomNumberFromInterval(-defaultMaxYPerTick, defaultMaxYPerTick);
+                passAllChecks = checkRules(randomY, prevY);
+            }
+
+            prevY.push(randomY);
+            if (prevY.length > limitPrevY) {
+                prevY.shift();
+            }
+            return randomY;
         }
 
         if (withRandom) {
             const randomNumber = randomNumberFromInterval(0, STEP_Y_PX / 20);
-            // Y += randomNumber;
+            Y += randomNumber;
         }
 
-        console.log("--- Y", Y);
-
-        return Y * STEP_Y_PX * lowBpsMultiplier;
+        return Y * STEP_Y_PX;
     };
 };
 
