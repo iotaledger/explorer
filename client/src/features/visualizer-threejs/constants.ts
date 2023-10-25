@@ -9,6 +9,8 @@ export const NODE_SIZE_INCREMENT = 3;
 // zoom
 export const ZOOM_DEFAULT = 3;
 
+// timers
+export const TIME_DIFF_COUNTER = 250;
 export const SECOND = 1000;
 export const DATA_SENDER_TIME_INTERVAL = 500;
 

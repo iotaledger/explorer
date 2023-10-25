@@ -1,4 +1,4 @@
-import { STEP_X_PX, STEP_Y_PX, ZOOM_DEFAULT } from "./constants";
+import { STEP_X_PX, STEP_Y_PX, ZOOM_DEFAULT, TIME_DIFF_COUNTER, SECOND } from "./constants";
 
 
 /**
@@ -47,7 +47,8 @@ export const timer = (msCounter: number = 1000) => {
  * @returns {Generator<number>} - Y coordinate generator
  */
 export function* yCoordinateGenerator(): Generator<number> {
-    let count = 0;
+    let count = 0.25;
+    const increaseTo = 0.25;
     let isPositive = true;
 
     yield 0; // Initial value
@@ -56,7 +57,7 @@ export function* yCoordinateGenerator(): Generator<number> {
         const reset = yield isPositive ? count : -count;
 
         if (reset) {
-            count = 0;
+            count = 0.25;
             isPositive = true;
         } else {
             // Alternate between positive and negative
@@ -64,38 +65,61 @@ export function* yCoordinateGenerator(): Generator<number> {
 
             // Increase count after generating both a positive and negative pair
             if (!isPositive) {
-                count++;
+                count += increaseTo;
             }
         }
     }
 }
 
+const getMaxYPosition = (bps: number) => {
+    const blocksPerTick = bps / (SECOND / TIME_DIFF_COUNTER);
+    const maxYPerTick = blocksPerTick / 2; // divide 2 because we have values more than 0 and less
 
+    return {
+        blocksPerTick,
+        maxYPerTick: maxYPerTick > 0 ? maxYPerTick : 1
+    };
+};
 /**
  * Create generator for Y coordinate
  * @param root0 - .
  * @param root0.withRandom - .
  * @returns - function that returns Y coordinate
  */
-export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shift: number) => number => {
+export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shift: number, bps: number) => number => {
     let currentShift = 1;
     const generator = yCoordinateGenerator();
+    // const LOW_BPS_LIMIT_BOTTOM = -7 * STEP_Y_PX;
+    const LIMIT_BPS = 48;
+    const { maxYPerTick: defaultMaxYPerTick } = getMaxYPosition(LIMIT_BPS);
 
-    return (shift: number) => {
+    return (shift: number, bps: number) => {
         shift += 1; // This hack needs to avoid Y = 0 on the start of graph.
         let Y = generator.next().value as number;
+        let lowBpsMultiplier = 1;
         if (!currentShift || currentShift !== shift) {
             Y = generator.next(true).value as number;
             // update shift locally
             currentShift = shift;
         }
 
-        if (withRandom) {
-            const randomNumber = randomNumberFromInterval(0, STEP_Y_PX / 10);
-            Y += randomNumber;
+
+        if (bps < LIMIT_BPS) {
+            const { maxYPerTick: currentMaxYPerTick } = getMaxYPosition(bps);
+            const coefficient = defaultMaxYPerTick / currentMaxYPerTick;
+
+            // console.log("---", bps);
+            lowBpsMultiplier = coefficient;
         }
 
-        return Y * STEP_Y_PX;
+        if (withRandom) {
+            const randomNumber = randomNumberFromInterval(0, STEP_Y_PX / 20);
+            // Y += randomNumber;
+        }
+
+        console.log("--- Y", Y);
+
+        return Y * STEP_Y_PX * lowBpsMultiplier;
     };
 };
 

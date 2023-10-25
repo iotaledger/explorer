@@ -11,7 +11,7 @@ import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { colors, ZOOM_DEFAULT } from "./constants";
+import { colors, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import Spheres from "./Spheres";
 import { useBlockStore } from "./store";
@@ -22,7 +22,7 @@ const features = {
     statsEnabled: true
 };
 
-const timerDiff = timer(250);
+const timerDiff = timer(TIME_DIFF_COUNTER);
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
@@ -124,7 +124,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             const emitterBox = new Box3().setFromObject(emitterObj);
             const secondsFromStart = timerDiff();
 
-            const Y = generateY(secondsFromStart);
+            const Y = generateY(secondsFromStart, bpsCounter.getBPS());
 
             const position: [number, number, number] = [
                 randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
