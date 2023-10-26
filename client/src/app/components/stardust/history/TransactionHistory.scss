@@ -78,7 +78,7 @@
                 }
 
                 &.amount {
-                    color: $mint-green-7;
+                    color: var(--amount-color);
                     @include font-size(16px, 21px);
                     font-weight: 700;
 
@@ -136,7 +136,7 @@
 
         &:hover {
             button {
-                color: $main-green-highlight;
+                color: var(--link-highlight);
             }
         }
 

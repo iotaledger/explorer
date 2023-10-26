@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../factories/serviceFactory";
-import { isShimmerNetwork } from "../helpers/networkHelper";
+import { isShimmerUiTheme } from "../helpers/networkHelper";
 import { scrollToTop } from "../helpers/pageUtils";
 import { INetwork } from "../models/config/INetwork";
 import { MAINNET } from "../models/config/networkType";
@@ -46,16 +46,18 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 
     const networkConfig = networks.find(n => n.network === network);
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
-    const currentNetwork = networkConfig?.network;
-    const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
+    const currentNetworkName = networkConfig?.network;
+    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
     const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
-    const withNetworkContext = networkContextWrapper(currentNetwork, nodeInfo);
+    const withNetworkContext = networkContextWrapper(currentNetworkName, nodeInfo, networkConfig?.uiTheme);
     scrollToTop();
 
+    const body = document.querySelector("body");
     if (isShimmer) {
-        const body = document.querySelector("body");
         body?.classList.add("shimmer");
+    } else {
+        body?.classList.remove("shimmer");
     }
 
     const routes = buildAppRoutes(
@@ -63,7 +65,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
         withNetworkContext
     );
 
-    const metaLabel = buildMetaLabel(currentNetwork);
+    const metaLabel = buildMetaLabel(currentNetworkName);
     const faviconHelmet = getFaviconHelmet(isShimmer);
 
     return (
@@ -76,14 +78,14 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
             </Helmet>
             {faviconHelmet}
             <Header
-                rootPath={`/${networkConfig?.isEnabled ? currentNetwork : ""}`}
+                rootPath={`/${networkConfig?.isEnabled ? currentNetworkName : ""}`}
                 currentNetwork={networkConfig}
                 networks={networks}
                 action={action}
                 history={history}
                 search={
                     <SearchInput
-                        onSearch={query => history.push(`/${currentNetwork}/search/${query}`)}
+                        onSearch={query => history.push(`/${currentNetworkName}/search/${query}`)}
                         protocolVersion={networkConfig?.protocolVersion ?? STARDUST}
                     />
                 }
@@ -110,9 +112,9 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                     )}
             </div>
             {isShimmer ? (
-                <ShimmerFooter dynamic={getFooterItems(currentNetwork ?? "", networks, identityResolverEnabled)} />
+                <ShimmerFooter dynamic={getFooterItems(currentNetworkName ?? "", networks, identityResolverEnabled)} />
             ) : (
-                <Footer dynamic={getFooterItems(currentNetwork ?? "", networks, identityResolverEnabled)} />
+                <Footer dynamic={getFooterItems(currentNetworkName ?? "", networks, identityResolverEnabled)} />
             )}
             <Disclaimer />
         </div>

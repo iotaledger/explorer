@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { ITransactionsDetailsRequest } from "../../../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionHistoryRequest } from "../../../models/api/chrysalis/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../../models/api/chrysalis/ITransactionHistoryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { CHRYSALIS } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -15,8 +15,8 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  */
 export async function get(
     config: IConfiguration,
-    request: ITransactionsDetailsRequest
-): Promise<{ transactionHistory: ITransactionsDetailsResponse } | unknown> {
+    request: ITransactionHistoryRequest
+): Promise<ITransactionHistoryResponse | unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -26,7 +26,8 @@ export async function get(
     if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {};
     }
-    return {
-        transactionHistory: await ChrysalisTangleHelper.transactionsDetails(networkConfig, request)
-    };
+
+    const transactionHistory = await ChrysalisTangleHelper.transactionHistory(networkConfig, request);
+
+    return transactionHistory;
 }

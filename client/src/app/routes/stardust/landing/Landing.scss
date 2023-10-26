@@ -8,13 +8,56 @@
     display: flex;
     flex-direction: column;
 
-    .header-wrapper.shimmer {
-        flex-direction: column;
-        position: relative;
-        z-index: 0;
-        overflow: hidden;
-        background: var(--shimmer-header-bg);
+    .header-wrapper.iota {
+        padding: 0 $inner-padding;
 
+        @include desktop-down {
+            padding: 0;
+        }
+
+        &::after,
+        &::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: 250px;
+            height: 200px;
+        }
+
+        &::before {
+            right: 50%;
+            transform: translateX(300%);
+            background: var(--bubble-2);
+            background-repeat: no-repeat;
+            background-size: contain;
+
+            @include desktop-down {
+                top: 200px;
+                right: -130px;
+                bottom: inherit;
+                transform: none;
+            }
+        }
+
+        &::after {
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-100%);
+            background: var(--bubble-1);
+            background-repeat: no-repeat;
+            background-size: contain;
+
+            @include desktop-down {
+                top: 0;
+                bottom: inherit;
+                left: 0;
+                transform: translate(-130px, -40px);
+            }
+        }
+
+    }
+
+    .header-wrapper.shimmer {
         &::after,
         &::before {
             content: "";
@@ -36,6 +79,13 @@
                 transform: none;
             }
         }
+    }
+
+    .header-wrapper {
+        position: relative;
+        z-index: 0;
+        overflow: hidden;
+        background: var(--header-bg);
 
         .inner {
             position: relative;
@@ -108,9 +158,9 @@
         }
     }
 
-    .feeds-wrapper.shimmer {
+    .feeds-wrapper {
         display: flex;
-        background: var(--shimmer-feeds-bg);
+        background: var(--feeds-bg);
         justify-content: center;
         padding: 0 $inner-padding 44px;
 

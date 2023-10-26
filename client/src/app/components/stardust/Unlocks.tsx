@@ -51,13 +51,13 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                                         <div className="unlocks-card--row">
                                             <span className="label">Public Key:</span>
                                             <div className="value public-key">
-                                                <TruncatedId id={(unlock as SignatureUnlock).signature.publicKey} />
+                                                <TruncatedId id={(unlock as SignatureUnlock).signature.publicKey} showCopyButton />
                                             </div>
                                         </div>
                                         <div className="unlocks-card--row">
                                             <span className="label">Signature:</span>
                                             <div className="value signature">
-                                                <TruncatedId id={(unlock as SignatureUnlock).signature.signature} />
+                                                <TruncatedId id={(unlock as SignatureUnlock).signature.signature} showCopyButton />
                                             </div>
                                         </div>
                                     </div> :

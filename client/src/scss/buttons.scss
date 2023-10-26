@@ -22,7 +22,7 @@ button {
   }
 
   &:focus {
-    box-shadow: 0 0 3px 0 $main-green-highlight;
+    box-shadow: 0 0 3px 0 var(--link-highlight);
   }
 
   &:-moz-focusring {

@@ -108,7 +108,7 @@
     cursor: pointer;
 
     &:hover {
-      color: $main-green-highlight;
+      color: var(--link-highlight);
       text-decoration: underline;
     }
 

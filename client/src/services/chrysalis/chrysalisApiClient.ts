@@ -5,8 +5,8 @@ import { IMilestoneDetailsResponse } from "../../models/api/chrysalis/IMilestone
 import { IOutputDetailsResponse } from "../../models/api/chrysalis/IOutputDetailsResponse";
 import { ISearchRequest } from "../../models/api/chrysalis/ISearchRequest";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
-import { ITransactionsDetailsRequest } from "../../models/api/chrysalis/ITransactionsDetailsRequest";
-import { ITransactionsDetailsResponse } from "../../models/api/chrysalis/ITransactionsDetailsResponse";
+import { ITransactionHistoryRequest } from "../../models/api/chrysalis/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "../../models/api/chrysalis/ITransactionHistoryResponse";
 import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
 import { IIdentityDidHistoryRequest } from "../../models/api/IIdentityDidHistoryRequest";
 import { IIdentityDidHistoryResponse } from "../../models/api/IIdentityDidHistoryResponse";
@@ -72,14 +72,14 @@ export class ChrysalisApiClient extends ApiClient {
     }
 
     /**
-     * Get the transaction history details of an address.
+     * Get the transaction history of an address.
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async transactionsDetails(request: ITransactionsDetailsRequest): Promise<ITransactionsDetailsResponse> {
-        const { network, address, query } = request;
-        return this.callApi<unknown, ITransactionsDetailsResponse>(
-            `transactionhistory/${network}/${address}${query ? FetchHelper.urlParams(query) : ""}`,
+    public async transactionHistory(request: ITransactionHistoryRequest): Promise<ITransactionHistoryResponse> {
+        const { network, address, ...params } = request;
+        return this.callApi<unknown, ITransactionHistoryResponse>(
+            `transactionhistory/${network}/${address}${params ? FetchHelper.urlParams(params) : ""}`,
             "get"
         );
     }

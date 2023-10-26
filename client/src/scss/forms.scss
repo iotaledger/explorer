@@ -96,7 +96,7 @@ input {
   font-family: $inter;
 
   &:focus {
-    box-shadow: 0 0 3px 0 $main-green-highlight;
+    box-shadow: 0 0 3px 0 var(--link-highlight);
   }
 
   &:-moz-focusring {
@@ -119,7 +119,7 @@ button {
   outline: none;
 
   &:focus {
-    box-shadow: 0 0 3px 0 $main-green-highlight;
+    box-shadow: 0 0 3px 0 var(--link-highlight);
   }
 
   &:-moz-focusring {
@@ -160,8 +160,8 @@ button {
     cursor: pointer;
 
     &.selected {
-      border-color: $main-green-highlight;
-      background-color: $main-green-highlight;
+      border-color: var(--link-highlight);
+      background-color: var(--link-highlight);
       color: $white;
       font-weight: 600;
     }
@@ -172,7 +172,7 @@ button {
     }
 
     &:focus {
-      box-shadow: 0 0 3px 0 $main-green-highlight;
+      box-shadow: 0 0 3px 0 var(--link-highlight);
     }
 
     &:-moz-focusring {

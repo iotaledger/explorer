@@ -8,7 +8,7 @@ import mainLegacyMessage from "../../../assets/modals/legacy/search/main-header.
 import mainStardustMessage from "../../../assets/modals/stardust/search/main-header.json";
 import { ReactComponent as ShimmerLogo } from "../../../assets/shimmer-logo-header.svg";
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { isMarketedNetwork, isShimmerNetwork } from "../../../helpers/networkHelper";
+import { isMarketedNetwork, isShimmerUiTheme } from "../../../helpers/networkHelper";
 import { CHRYSALIS, LEGACY, STARDUST } from "../../../models/config/protocolVersion";
 import { SettingsService } from "../../../services/settingsService";
 import FiatSelector from "../FiatSelector";
@@ -60,11 +60,11 @@ class Header extends Component<HeaderProps, HeaderState> {
      */
     public render(): ReactNode {
         const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
-        const isShimmer = isShimmerNetwork(currentNetwork?.protocolVersion);
+        const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
         const isMarketed = isMarketedNetwork(currentNetwork?.network);
 
         return (
-            <header className={classNames({ "shimmer-header-bg": isShimmer }, { "full-height": this.state.show })}>
+            <header className={classNames({ "full-height": this.state.show })}>
                 <nav className="inner">
                     <div className="inner--main">
                         <div className="inner-wrapper">
@@ -74,7 +74,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                 className="logo-image--wrapper"
                             >
                                 {
-                                    isShimmer ?
+                                    isShimmerUi ?
                                         <React.Fragment>
                                             <div className="shimmer-logo">
                                                 <ShimmerLogo />
@@ -100,55 +100,57 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         {page.label}
                                     </Link>
                                 ))}
-                            <div className="utilities--wrapper">
-                                <div
-                                    className={classNames("utilities--dropdown", {
+                            {utilities && utilities?.length > 0 && (
+                                <div className="utilities--wrapper">
+                                    <div
+                                        className={classNames("utilities--dropdown", {
+                                            opened: this.state.isUtilitiesExpanded
+                                        })}
+                                        onClick={() =>
+                                            this.setState({
+                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
+                                                isNetworkSwitcherExpanded: false
+                                            })}
+                                    >
+                                        <div className="label">Utilities</div>
+                                        <div className="icon">
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className={classNames("header--expanded", {
                                         opened: this.state.isUtilitiesExpanded
                                     })}
-                                    onClick={() =>
-                                        this.setState({
-                                            isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
-                                            isNetworkSwitcherExpanded: false
-                                        })}
-                                >
-                                    <div className="label">Utilities</div>
-                                    <div className="icon">
-                                        <span className="material-icons">
-                                            expand_more
-                                        </span>
+                                    >
+                                        <div className="utilities">
+                                            <div className="utilities--label">Utilities</div>
+                                            {utilities?.map(utility => (
+                                                <div key={utility.url} className="utilities--item">
+                                                    <Link
+                                                        to={utility.url}
+                                                        onClick={() =>
+                                                            this.setState({ isUtilitiesExpanded: false })}
+                                                        className={classNames(
+                                                            { "active-item": utility.url === window.location.pathname }
+                                                        )}
+                                                    >
+                                                        {utility.label}
+                                                    </Link>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
+                                    {this.state.isUtilitiesExpanded && (
+                                        <div
+                                            className="header--expanded--shield"
+                                            onClick={() =>
+                                                this.setState({ isUtilitiesExpanded: false })}
+                                        />
+                                    )}
                                 </div>
-
-                                <div className={classNames("header--expanded", {
-                                    opened: this.state.isUtilitiesExpanded
-                                })}
-                                >
-                                    <div className="utilities">
-                                        <div className="utilities--label">Utilities</div>
-                                        {utilities?.map(utility => (
-                                            <div key={utility.url} className="utilities--item">
-                                                <Link
-                                                    to={utility.url}
-                                                    onClick={() =>
-                                                        this.setState({ isUtilitiesExpanded: false })}
-                                                    className={classNames(
-                                                        { "active-item": utility.url === window.location.pathname }
-                                                    )}
-                                                >
-                                                    {utility.label}
-                                                </Link>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {this.state.isUtilitiesExpanded && (
-                                    <div
-                                        className="header--expanded--shield"
-                                        onClick={() =>
-                                            this.setState({ isUtilitiesExpanded: false })}
-                                    />
-                                )}
-                            </div>
+                            )}
                             {/* ----- Only visible in mobile ----- */}
                             {isMarketed && (
                                 <div className="mobile-fiat">

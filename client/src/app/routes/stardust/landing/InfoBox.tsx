@@ -3,6 +3,7 @@ import { NumberHelper } from "../../../../helpers/numberHelper";
 import "./InfoBox.scss";
 
 interface InfoBoxProps {
+    baseToken: string;
     itemsPerSecond: string;
     confirmedItemsPerSecondPercent: string;
     marketCapCurrency: string;
@@ -11,7 +12,7 @@ interface InfoBoxProps {
 }
 
 const InfoBox: React.FC<InfoBoxProps> = (
-    { itemsPerSecond, confirmedItemsPerSecondPercent, marketCapCurrency, priceCurrency, showMarket }
+    { baseToken, itemsPerSecond, confirmedItemsPerSecondPercent, marketCapCurrency, priceCurrency, showMarket }
 ) => (
     <div className="main-info-boxes">
         <div className="info-box">
@@ -31,7 +32,7 @@ const InfoBox: React.FC<InfoBoxProps> = (
         </div>
         {showMarket && (
             <div className="info-box">
-                <span className="info-box--title">SMR Market Cap</span>
+                <span className="info-box--title">{baseToken ?? ""} Market Cap</span>
                 <span className="info-box--value">{marketCapCurrency}</span>
             </div>
         )}

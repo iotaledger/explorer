@@ -1,5 +1,6 @@
 import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
 import { createContext } from "react";
+import { IOTA_UI } from "../../models/config/uiTheme";
 
 /**
  * The network context object.
@@ -25,6 +26,10 @@ interface INetworkContextProps {
      * The rent structure of the network.
      */
     rentStructure: IRent;
+    /**
+     * The UI theme to use.
+     */
+    uiTheme: string;
 }
 
 const defaultState = {
@@ -43,7 +48,8 @@ const defaultState = {
       vByteCost: -1,
       vByteFactorData: -1,
       vByteFactorKey: -1
-  }
+  },
+  uiTheme: IOTA_UI
 };
 
 const networkContext = createContext<INetworkContextProps>(defaultState);
