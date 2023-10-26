@@ -1,9 +1,9 @@
 import { OutputResponse } from "@iota/iota.js-stardust/web";
-import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { HexHelper } from "../stardust/hexHelper";
 import { useIsMounted } from "./useIsMounted";
 
 interface IOutputDetails {

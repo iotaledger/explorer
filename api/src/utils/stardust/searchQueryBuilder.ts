@@ -1,6 +1,7 @@
 import { Bech32Helper } from "@iota/iota.js-chrysalis";
 import { AddressType, HexEncodedString, Utils } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+import { Converter } from "../convertUtils";
+import { HexHelper } from "../hexHelper";
 
 interface QueryDetails {
     /**
@@ -216,7 +217,6 @@ export class SearchQueryBuilder {
             addressType = AddressType.Ed25519;
             bech32 = Bech32Helper.toBech32(AddressType.Ed25519, Converter.hexToBytes(hex), hrp);
         }
-
 
         return {
             bech32,

@@ -3,7 +3,6 @@ import {
     HexEncodedString, AliasOutput, MetadataFeature, OutputResponse,
     OutputType, AddressType, Output, BasicOutput, FeatureType
 } from "@iota/iota.js-stardust/web";
-import { Converter, ReadStream } from "@iota/util.js-stardust";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";
@@ -16,7 +15,9 @@ import { useNftDetails } from "../../../helpers/hooks/useNftDetails";
 import { IEventDetails, useParticipationEventDetails } from "../../../helpers/hooks/useParticipationEventDetails";
 import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { Converter } from "../../../helpers/stardust/convertUtils";
 import { deserializeParticipationEventMetadata } from "../../../helpers/stardust/participationUtils";
+import { ReadStream } from "../../../helpers/stardust/readStreamUtils";
 import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
 import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
 import { IParticipation } from "../../../models/api/stardust/participation/IParticipation";

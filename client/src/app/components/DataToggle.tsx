@@ -1,13 +1,14 @@
 import { HexEncodedString } from "@iota/iota.js-stardust/web";
-import { Converter, ReadStream } from "@iota/util.js-stardust";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { Converter } from "../../helpers/stardust/convertUtils";
 import { deserializeParticipationEventMetadata } from "../../helpers/stardust/participationUtils";
+import { ReadStream } from "../../helpers/stardust/readStreamUtils";
 import { TextHelper } from "../../helpers/textHelper";
 import CopyButton from "./CopyButton";
-import "./DataToggle.scss";
 import { DataToggleProps } from "./DataToggleProps";
 import JsonViewer from "./JsonViewer";
+import "./DataToggle.scss";
 
 interface DataToggleOption {
     /**

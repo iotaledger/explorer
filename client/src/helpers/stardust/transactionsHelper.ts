@@ -9,13 +9,13 @@ import {
     TagFeature,
     TransactionPayload, TreasuryOutput, Unlock, UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
 } from "@iota/iota.js-stardust/web";
-import { HexHelper } from "@iota/util.js-stardust";
 import bigInt from "big-integer";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
+import { HexHelper } from "./hexHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];

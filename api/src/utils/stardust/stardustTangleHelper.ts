@@ -3,7 +3,6 @@ import {
     OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
     HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
 } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
@@ -26,6 +25,7 @@ import { IParticipationEventResponse } from "../../models/api/stardust/participa
 import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
+import { HexHelper } from "../hexHelper";
 import { SearchExecutor } from "./searchExecutor";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
 import { addressBalance, blockIdFromMilestonePayload } from "./utils";

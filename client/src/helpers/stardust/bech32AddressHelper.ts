@@ -1,7 +1,8 @@
 import { Bech32Helper } from "@iota/iota.js";
 import { Address, AddressType, AliasAddress, Ed25519Address, NftAddress } from "@iota/iota.js-stardust/web";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
+import { Converter } from "./convertUtils";
+import { HexHelper } from "./hexHelper";
 
 export class Bech32AddressHelper {
     /**

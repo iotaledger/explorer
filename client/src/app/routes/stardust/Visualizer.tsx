@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { CONFLICT_REASON_STRINGS, ConflictReason } from "@iota/iota.js-stardust/web";
-import { Converter } from "@iota/util.js-stardust";
+import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/iota.js-stardust/web";
 import classNames from "classnames";
 import React, { useContext, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
@@ -165,9 +164,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                                     <React.Fragment>
                                         <div className="card--label">Tag</div>
                                         <div className="card--value truncate">
-                                            {Converter.hexToUtf8(
-                                                properties.tag
-                                            )}
+                                            {hexToUtf8(properties.tag)}
                                         </div>
                                         <div className="card--label">Hex</div>
                                         <div className="card--value truncate">

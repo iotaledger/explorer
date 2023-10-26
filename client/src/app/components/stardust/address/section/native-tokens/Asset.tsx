@@ -1,12 +1,12 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/iota.js-stardust/web";
-import { Converter } from "@iota/util.js-stardust";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import tokenSchemeIRC30 from "../../../../../../assets/schemas/token-schema-IRC30.json";
 import { useFoundryDetails } from "../../../../../../helpers/hooks/useFoundryDetails";
 import { useTokenRegistryNativeTokenCheck } from "../../../../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
+import { Converter } from "../../../../../../helpers/stardust/convertUtils";
 import { ITokenMetadata } from "../../../../../../models/api/stardust/foundry/ITokenMetadata";
 import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
