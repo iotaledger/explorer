@@ -1,4 +1,4 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
+import { Blake2b } from "./crypto";
 import { ReadStream } from "./readStreamUtils";
 
 /**
