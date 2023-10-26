@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/iota.js-stardust/web";
+import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import metadataInfoMessage from "../../../assets/modals/stardust/block/metadata.json";

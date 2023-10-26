@@ -1,4 +1,4 @@
-import { AddressType } from "@iota/iota.js-stardust/web";
+import { AddressType } from "@iota/sdk-wasm/web";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";

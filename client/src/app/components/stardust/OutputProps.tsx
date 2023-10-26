@@ -1,4 +1,4 @@
-import { Output } from "@iota/iota.js-stardust/web";
+import { Output } from "@iota/sdk-wasm/web";
 
 export interface OutputProps {
     /**

@@ -1,4 +1,4 @@
-import { ConflictReason } from "@iota/iota.js-stardust/web";
+import { ConflictReason } from "@iota/sdk-wasm/web";
 
 export interface IFeedBlockMetadata {
     /**

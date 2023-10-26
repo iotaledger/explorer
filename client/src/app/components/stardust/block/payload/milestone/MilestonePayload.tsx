@@ -1,6 +1,6 @@
 import {
     MilestoneOptionType, MilestonePayload as IMilestonePayload, ProtocolParamsMilestoneOption, ReceiptMilestoneOption
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
 import { DateHelper } from "../../../../../../helpers/dateHelper";
 import AsyncComponent from "../../../../AsyncComponent";

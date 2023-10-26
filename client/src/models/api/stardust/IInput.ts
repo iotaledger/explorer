@@ -1,4 +1,4 @@
-import { HexEncodedString, OutputResponse } from "@iota/iota.js-stardust/web";
+import { HexEncodedString, OutputResponse } from "@iota/sdk-wasm/web";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 export interface IInput {

@@ -1,4 +1,4 @@
-import { MilestonePayload } from "@iota/iota.js-stardust/web";
+import { MilestonePayload } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useMilestoneDetails } from "../../../../helpers/hooks/useMilestoneDetails";

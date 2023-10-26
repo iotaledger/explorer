@@ -1,4 +1,4 @@
-import { Block, Client, CommonOutput, IOutputsResponse, MilestonePayload, Utils } from "@iota/iota.js-stardust";
+import { Block, Client, CommonOutput, IOutputsResponse, MilestonePayload, Utils } from "@iota/sdk";
 import bigInt, { BigInteger } from "big-integer";
 
 /**

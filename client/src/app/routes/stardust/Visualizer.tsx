@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/iota.js-stardust/web";
+import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useContext, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";

@@ -1,5 +1,5 @@
 import { Bech32Helper } from "@iota/iota.js-chrysalis";
-import { AddressType, HexEncodedString, Utils } from "@iota/iota.js-stardust";
+import { AddressType, HexEncodedString, Utils } from "@iota/sdk";
 import { Converter } from "../convertUtils";
 import { HexHelper } from "../hexHelper";
 

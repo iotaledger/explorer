@@ -1,6 +1,6 @@
 import {
     Client, IOutputsResponse, QueryParameter, AliasQueryParameter, FoundryQueryParameter, NftQueryParameter, AddressType
-} from "@iota/iota.js-stardust";
+} from "@iota/sdk";
 import { AssociationType } from "../../models/api/stardust/IAssociationsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";

@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent } from "@iota/iota.js-stardust/web";
+import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
 import { createContext } from "react";
 
 /**

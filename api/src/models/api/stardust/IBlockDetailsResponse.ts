@@ -1,4 +1,4 @@
-import { IBlockMetadata } from "@iota/iota.js-stardust";
+import { IBlockMetadata } from "@iota/sdk";
 import { IResponse } from "../IResponse";
 
 export interface IBlockDetailsResponse extends IResponse {

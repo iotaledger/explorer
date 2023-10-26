@@ -1,6 +1,6 @@
 import {
     MilestonePayload, PayloadType, TransactionPayload, Utils
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";

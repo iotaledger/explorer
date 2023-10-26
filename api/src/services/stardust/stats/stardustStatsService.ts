@@ -1,5 +1,5 @@
 /* eslint-disable no-void */
-import { Client } from "@iota/iota.js-stardust";
+import { Client } from "@iota/sdk";
 import logger from "../../../logger";
 import { BaseStatsService } from "./baseStatsService";
 

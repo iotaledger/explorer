@@ -1,4 +1,4 @@
-import { OutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
+import { OutputResponse, IOutputsResponse } from "@iota/sdk";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { SearchQuery } from "./searchQueryBuilder";

@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";

@@ -1,6 +1,6 @@
 import {
     OutputType, OutputResponse, CommonOutput
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import { IToken } from "../../../../../../models/api/stardust/foundry/IToken";
 import Pagination from "../../../../Pagination";

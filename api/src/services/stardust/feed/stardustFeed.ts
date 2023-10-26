@@ -1,4 +1,4 @@
-import { Block, Client, IBlockMetadata, MilestonePayload, Utils } from "@iota/iota.js-stardust";
+import { Block, Client, IBlockMetadata, MilestonePayload, Utils } from "@iota/sdk";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";

@@ -1,4 +1,4 @@
-import { Block } from "@iota/iota.js-stardust/web";
+import { Block } from "@iota/sdk-wasm/web";
 import { IResponse } from "../../IResponse";
 
 export interface IBlockResponse extends IResponse {

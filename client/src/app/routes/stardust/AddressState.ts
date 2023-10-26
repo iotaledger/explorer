@@ -2,7 +2,7 @@ import { Bech32Helper } from "@iota/iota.js";
 import {
     HexEncodedString, AliasOutput, MetadataFeature, OutputResponse,
     OutputType, AddressType, Output, BasicOutput, FeatureType
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useAddressAliasOutputs } from "../../../helpers/hooks/useAddressAliasOutputs";

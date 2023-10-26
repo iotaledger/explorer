@@ -1,4 +1,4 @@
-import { Block, MilestonePayload } from "@iota/iota.js-stardust/web";
+import { Block, MilestonePayload } from "@iota/sdk-wasm/web";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
 type IFeedBlockUpdate = Block;

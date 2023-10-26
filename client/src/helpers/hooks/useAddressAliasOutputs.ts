@@ -1,4 +1,4 @@
-import { OutputResponse } from "@iota/iota.js-stardust/web";
+import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";

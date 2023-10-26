@@ -2,7 +2,7 @@
 import {
     OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
     HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
-} from "@iota/iota.js-stardust";
+} from "@iota/sdk";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";

@@ -8,7 +8,7 @@ import {
     StateControllerAddressUnlockCondition,
     TagFeature,
     TransactionPayload, TreasuryOutput, Unlock, UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import bigInt from "big-integer";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";

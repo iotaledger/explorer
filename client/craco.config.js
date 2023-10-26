@@ -37,7 +37,7 @@ module.exports = {
                 new CopyWebPlugin({
                     patterns: [
                         {
-                            from: 'node_modules/@iota/iota.js-stardust/web/wasm/iota_sdk_wasm_bg.wasm',
+                            from: 'node_modules/@iota/sdk-wasm/web/wasm/iota_sdk_wasm_bg.wasm',
                             to: 'iota_sdk_wasm_bg.wasm'
                         }
                     ]

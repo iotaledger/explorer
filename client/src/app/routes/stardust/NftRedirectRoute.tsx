@@ -1,4 +1,4 @@
-import { AddressType } from "@iota/iota.js-stardust/web";
+import { AddressType } from "@iota/sdk-wasm/web";
 import React, { useContext } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";

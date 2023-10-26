@@ -1,7 +1,7 @@
 import {
     AddressType, AliasAddress, Ed25519Address, FeatureType, IssuerFeature, MetadataFeature,
     NftAddress, NftOutput, OutputResponse, OutputType, Utils
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../../../../helpers/stardust/transactionsHelper";

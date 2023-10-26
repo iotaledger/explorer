@@ -1,4 +1,4 @@
-import { LedgerInclusionState } from "@iota/iota.js-stardust/web";
+import { LedgerInclusionState } from "@iota/sdk-wasm/web";
 import React, { Component, ReactNode } from "react";
 
 interface InclusionStateProps {

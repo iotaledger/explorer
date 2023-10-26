@@ -1,4 +1,4 @@
-import { OutputResponse } from "@iota/iota.js-stardust/web";
+import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { OUTPUT_LIST_TABS } from "../../app/routes/stardust/OutputList";

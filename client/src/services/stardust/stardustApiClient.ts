@@ -1,4 +1,4 @@
-import { IOutputsResponse } from "@iota/iota.js-stardust/web";
+import { IOutputsResponse } from "@iota/sdk-wasm/web";
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IIdentityStardustResolveRequest } from "../../models/api/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../models/api/IIdentityStardustResolveResponse";

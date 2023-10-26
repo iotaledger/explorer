@@ -1,6 +1,6 @@
 import {
     AddressType, AliasAddress, FeatureType, FoundryOutput, ImmutableAliasAddressUnlockCondition, MetadataFeature
-} from "@iota/iota.js-stardust/web";
+} from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";

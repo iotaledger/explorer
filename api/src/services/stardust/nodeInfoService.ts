@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent, Client } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk";
 import { NodeInfoError } from "../../errors/nodeInfoError";
 import { INetwork } from "../../models/db/INetwork";
 
