@@ -15,6 +15,7 @@ interface BlockStoreState {
     blocks: BlockState[];
     blockOptions: { [k: string]: BlockOptions };
     addBlock: (newBlock: BlockState, options: BlockOptions) => void;
+    removeBlocks: (blockId: string[]) => void;
     removeBlock: (blockId: string) => void;
     addParents: (blockId: string, parents: string[]) => void;
 
@@ -46,6 +47,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     bps: 0,
 
     addBlock: (newBlock, options) => {
+        console.log("--- tst");
         set(state => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
             return {
@@ -54,6 +56,18 @@ export const useBlockStore = create<BlockStoreState>(set => ({
                     ...state.blockOptions,
                     [newBlock.id]: { ...prevBlockOptions, ...options }
                 }
+            };
+        });
+    },
+    removeBlocks: (blockIds: string[]) => {
+        set(state => {
+            const nextBlockOptions = { ...state.blockOptions };
+            for (const blockId of blockIds) {
+                delete nextBlockOptions[blockId];
+            }
+            return {
+                blocks: [...state.blocks.filter(b => !blockIds.includes(b.id))],
+                blockOptions: nextBlockOptions
             };
         });
     },
