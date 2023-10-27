@@ -1,5 +1,5 @@
-import { Client as StardustMqttClient } from "@iota/sdk";
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
+import { Client as StardustMqttClient } from "@iota/sdk";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";

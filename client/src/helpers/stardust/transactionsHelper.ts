@@ -293,7 +293,7 @@ export class TransactionsHelper {
 
         return Utils.blockId(block);
     }
-  
+
     /**
      * Check if transaction is from IOTA Stardust Genesis
      * @param network The network.
