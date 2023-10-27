@@ -47,7 +47,6 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     bps: 0,
 
     addBlock: (newBlock, options) => {
-        console.log("--- tst");
         set(state => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
             return {

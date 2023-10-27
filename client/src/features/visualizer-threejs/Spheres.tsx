@@ -1,26 +1,80 @@
 import { Instances } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { NODE_SIZE_DEFAULT } from "./constants";
+import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import Sphere from "./Sphere";
 import { useBlockStore } from "./store";
 
 const Spheres = () => {
     const blocks = useBlockStore(s => s.blocks);
+    const removeYPosition = useBlockStore(s => s.removeYPosition);
+    const removeBlock = useBlockStore(s => s.removeBlock);
     const removeBlocks = useBlockStore(s => s.removeBlocks);
-    const blockOptions = useBlockStore(s => s.blockOptions);
+    const get = useThree(state => state.get);
     const scene = useThree(state => state.scene);
+    const blockOptions = useBlockStore(s => s.blockOptions);
+    const zoom = useBlockStore(s => s.zoom);
+    const { halfScreenWidth } = useBorderPositions();
+    const clearBlocksRef = useRef<() => void>();
     useZoomDynamic();
 
+
+    const st = useThree(state => state);
+
+
+    const clearBlocks = () => {
+        const children = get().scene.children;
+        const camera = get().camera;
+
+        if (!camera) {
+            return;
+        }
+
+
+        for (const child of children) {
+            if (child.type === "Mesh") {
+                const position = child.position;
+                const id = child.name;
+                const PADDING_AFTER_OUT_OF_SCREEN = 150 / zoom;
+                const LEFT_BORDER = camera.position.x - halfScreenWidth - PADDING_AFTER_OUT_OF_SCREEN;
+                const x = position.x;
+                const y = position.y;
+                if (x < LEFT_BORDER) {
+                    removeBlock(id);
+                    removeYPosition(y);
+                    child.removeFromParent();
+                }
+            }
+        }
+    };
+
+    clearBlocksRef.current = clearBlocks; // always store the latest clearBlocks function to the ref
+
+
+    useEffect(() => {
+        // @ts-expect-error
+        window.st = st;
+        const intervalCallback = () => {
+            if (clearBlocksRef.current) {
+                clearBlocksRef.current();
+            }
+        };
+        const timer = setInterval(intervalCallback, 500);
+
+        return () => clearInterval(timer);
+    }, []);
+
+    /**
+     * Add spheres
+     */
     useEffect(() => {
         if (blocks.length === 0) {
             return;
         }
 
-
-        const start = performance.now();
         const addedIds = [];
         const spheres = [];
         for (const block of blocks) {
@@ -31,31 +85,14 @@ const Spheres = () => {
             const sphere = new THREE.Mesh(geometry, material);
             const [x, y, z] = block.position;
             sphere.position.set(x, y, z);
+            sphere.name = block.id;
             spheres.push(sphere);
             addedIds.push(block.id);
         }
         scene.add(...spheres);
         removeBlocks(addedIds);
-        const end = performance.now();
-
-        console.log("add block in another way", end - start); // one render - ~6ms;
     }, [blocks]);
 
-    const blocksMemo = useMemo(() => {
-        const start = performance.now();
-        const allBlocks = blocks.map((block, index) => (
-            <Sphere
-                key={block.id}
-                id={block.id}
-                position={block.position}
-                color={blockOptions[block.id].color}
-                scale={blockOptions[block.id].scale}
-            />
-            ));
-        const end = performance.now();
-        console.log("blocksMemo", end - start); // one render - ~6ms;
-        return allBlocks;
-    }, [blocks]);
 
     return (
         <Instances
@@ -65,7 +102,6 @@ const Spheres = () => {
         >
             <sphereGeometry args={[NODE_SIZE_DEFAULT]} />
             <meshPhongMaterial />
-            {}
         </Instances>
     );
 };
