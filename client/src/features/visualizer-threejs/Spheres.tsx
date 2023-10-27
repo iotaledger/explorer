@@ -1,5 +1,5 @@
 import { Instances } from "@react-three/drei";
-import React from "react";
+import React, { useMemo } from "react";
 import { NODE_SIZE_DEFAULT } from "./constants";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import Sphere from "./Sphere";
@@ -10,6 +10,22 @@ const Spheres = () => {
     const blockOptions = useBlockStore(s => s.blockOptions);
     useZoomDynamic();
 
+    const blocksMemo = useMemo(() => {
+        const start = performance.now();
+        const allBlocks = blocks.map((block, index) => (
+            <Sphere
+                key={block.id}
+                id={block.id}
+                position={block.position}
+                color={blockOptions[block.id].color}
+                scale={blockOptions[block.id].scale}
+            />
+            ));
+        const end = performance.now();
+        console.log("blocksMemo", end - start); // one render - ~6ms;
+        return allBlocks;
+    }, [blocks]);
+
     return (
         <Instances
             limit={2500}
@@ -19,15 +35,7 @@ const Spheres = () => {
             <sphereGeometry args={[NODE_SIZE_DEFAULT]} />
             <meshPhongMaterial />
             {
-                    blocks.map(block => (
-                        <Sphere
-                            key={block.id}
-                            id={block.id}
-                            position={block.position}
-                            color={blockOptions[block.id].color}
-                            scale={blockOptions[block.id].scale}
-                        />
-                    ))
+                blocksMemo
                 }
         </Instances>
     );
