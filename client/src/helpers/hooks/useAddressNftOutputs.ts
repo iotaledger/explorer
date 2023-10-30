@@ -1,4 +1,4 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
@@ -13,10 +13,10 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useAddressNftOutputs(
     network: string, addressBech32: string | null
-): [IOutputResponse[] | null, boolean] {
+): [OutputResponse[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [outputs, setOutputs] = useState<IOutputResponse[] | null>(null);
+    const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

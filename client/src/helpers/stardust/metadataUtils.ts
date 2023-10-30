@@ -1,5 +1,4 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { HexEncodedString, hexToUtf8 } from "@iota/sdk-wasm/web";
 import * as jsonschema from "jsonschema";
 /**
  * Tries to parse hex data into metadata.
@@ -10,7 +9,7 @@ import * as jsonschema from "jsonschema";
 export function tryParseMetadata<S>(metadataHex: HexEncodedString, schema: jsonschema.Schema): S | null {
     const validator = new jsonschema.Validator();
     try {
-        const json: unknown = JSON.parse(Converter.hexToUtf8(metadataHex));
+        const json: unknown = JSON.parse(hexToUtf8(metadataHex));
         const result = validator.validate(json, schema);
 
         if (result.valid) {

@@ -1,4 +1,4 @@
-import { IAliasOutput, IFoundryOutput, INftOutput } from "@iota/iota.js-stardust";
+import { AliasOutput, FoundryOutput, NftOutput } from "@iota/sdk-wasm/web";
 import { optional } from "@ruffy/ts-optional";
 import React from "react";
 import Feature from "../../Feature";
@@ -7,7 +7,7 @@ interface FeaturesSectionProps {
     /**
      * The Output
      */
-    output?: INftOutput | IAliasOutput | IFoundryOutput;
+    output?: NftOutput | AliasOutput | FoundryOutput;
 }
 
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({ output }) => (

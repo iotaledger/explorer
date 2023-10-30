@@ -1,4 +1,4 @@
-import { HexEncodedString, IMilestonePayload } from "@iota/iota.js-stardust";
+import { HexEncodedString, MilestonePayload } from "@iota/sdk-wasm/web";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
 interface IFeedBlockProperties {
@@ -50,6 +50,6 @@ export interface IFeedMilestoneData {
     blockId: string;
     milestoneId: string;
     milestoneIndex: number;
-    payload: IMilestonePayload;
+    payload: MilestonePayload;
     timestamp: number;
 }

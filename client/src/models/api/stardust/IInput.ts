@@ -1,7 +1,15 @@
-import { IOutputResponse, IUTXOInput } from "@iota/iota.js-stardust";
+import { HexEncodedString, OutputResponse } from "@iota/sdk-wasm/web";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
-interface IInputExtension {
+export interface IInput {
+    /**
+     * The transaction Id.
+     */
+    transactionId: HexEncodedString;
+    /**
+     * The input index.
+     */
+    transactionInputIndex: number;
     /**
      * The output id.
      */
@@ -9,7 +17,7 @@ interface IInputExtension {
     /**
      * The output used as input.
      */
-    output?: IOutputResponse;
+    output?: OutputResponse;
     /**
      * The transaction address details.
      */
@@ -23,6 +31,4 @@ interface IInputExtension {
      */
     isGenesis: boolean;
 }
-
-export type IInput = IUTXOInput & IInputExtension;
 

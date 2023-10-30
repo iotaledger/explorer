@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import BigDecimal from "../../../../helpers/bigDecimal";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 

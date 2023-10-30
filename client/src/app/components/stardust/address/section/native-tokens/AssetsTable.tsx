@@ -1,7 +1,6 @@
 import {
-    ALIAS_OUTPUT_TYPE, BASIC_OUTPUT_TYPE,
-    FOUNDRY_OUTPUT_TYPE, IOutputResponse, NFT_OUTPUT_TYPE
-} from "@iota/iota.js-stardust";
+    OutputType, OutputResponse, CommonOutput
+} from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import { IToken } from "../../../../../../models/api/stardust/foundry/IToken";
 import Pagination from "../../../../Pagination";
@@ -10,7 +9,7 @@ import "./AssetsTable.scss";
 
 interface AssetsTableProps {
     networkId: string;
-    outputs: IOutputResponse[] | null;
+    outputs: OutputResponse[] | null;
     setTokenCount?: (count: number) => void;
 }
 
@@ -30,14 +29,14 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
             const theTokens: IToken[] = [];
             for (const outputResponse of outputs) {
                 const output = outputResponse.output;
-                if (output.type === BASIC_OUTPUT_TYPE || output.type === ALIAS_OUTPUT_TYPE ||
-                    output.type === FOUNDRY_OUTPUT_TYPE || output.type === NFT_OUTPUT_TYPE) {
-                    for (const token of output.nativeTokens ?? []) {
+                if (output.type === OutputType.Basic || output.type === OutputType.Alias ||
+                    output.type === OutputType.Foundry || output.type === OutputType.Nft) {
+                    for (const token of (output as CommonOutput).nativeTokens ?? []) {
                         const existingToken = theTokens.find(t => t.id === token.id);
                         if (existingToken) {
-                            existingToken.amount += Number(token.amount);
+                            existingToken.amount += token.amount;
                         } else {
-                            theTokens.push({ id: token.id, amount: Number.parseInt(token.amount, 16) });
+                            theTokens.push({ id: token.id, amount: token.amount });
                         }
                     }
                 }

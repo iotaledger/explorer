@@ -1,10 +1,7 @@
 import {
-    ALIAS_ADDRESS_TYPE,
-    ED25519_ADDRESS_TYPE,
-    IIssuerFeature, IMetadataFeature, IOutputResponse,
-    ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_ADDRESS_TYPE, NFT_OUTPUT_TYPE, TransactionHelper
-} from "@iota/iota.js-stardust";
-
+    AddressType, AliasAddress, Ed25519Address, FeatureType, IssuerFeature, MetadataFeature,
+    NftAddress, NftOutput, OutputResponse, OutputType, Utils
+} from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../../../../helpers/stardust/transactionsHelper";
@@ -15,7 +12,7 @@ import Nft from "./Nft";
 interface NftSectionProps {
     network: string;
     bech32Address?: string;
-    outputs: IOutputResponse[] | null;
+    outputs: OutputResponse[] | null;
     setNftCount?: (count: number) => void;
 }
 
@@ -38,37 +35,37 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                 if (
                     outputResponse &&
                     !outputResponse.metadata.isSpent &&
-                    outputResponse.output.type === NFT_OUTPUT_TYPE
+                    outputResponse.output.type === OutputType.Nft
                 ) {
-                    const outputId = TransactionHelper.outputIdFromTransactionData(
+                    const outputId = Utils.computeOutputId(
                         outputResponse.metadata.transactionId,
                         outputResponse.metadata.outputIndex
                     );
 
-                    const nftOutput = outputResponse.output;
-                    const nftId = TransactionsHelper.buildIdHashForAliasOrNft(nftOutput.nftId, outputId);
+                    const nftOutput = outputResponse.output as NftOutput;
+                    const nftId = TransactionsHelper.buildIdHashForNft(nftOutput.nftId, outputId);
                     const metadataFeature = nftOutput.immutableFeatures?.find(
-                        feature => feature.type === METADATA_FEATURE_TYPE
-                    ) as IMetadataFeature;
+                        feature => feature.type === FeatureType.Metadata
+                    ) as MetadataFeature;
 
                     const issuerFeature = nftOutput.immutableFeatures?.find(
-                        feature => feature.type === ISSUER_FEATURE_TYPE
-                    ) as IIssuerFeature;
+                        feature => feature.type === FeatureType.Issuer
+                    ) as IssuerFeature;
 
                     let issuerId = null;
                     if (issuerFeature) {
                         switch (issuerFeature.address.type) {
-                            case ED25519_ADDRESS_TYPE:
-                                issuerId = issuerFeature.address.pubKeyHash;
-                            break;
-                            case ALIAS_ADDRESS_TYPE:
-                                issuerId = issuerFeature.address.aliasId;
-                            break;
-                            case NFT_ADDRESS_TYPE:
-                                issuerId = issuerFeature.address.nftId;
-                            break;
+                            case AddressType.Ed25519:
+                                issuerId = (issuerFeature.address as Ed25519Address).pubKeyHash;
+                                break;
+                            case AddressType.Alias:
+                                issuerId = (issuerFeature.address as AliasAddress).aliasId;
+                                break;
+                            case AddressType.Nft:
+                                issuerId = (issuerFeature.address as NftAddress).nftId;
+                                break;
                             default:
-                            break;
+                                break;
                         }
                     }
 

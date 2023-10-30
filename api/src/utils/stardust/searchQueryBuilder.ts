@@ -1,5 +1,7 @@
-import { ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, HexEncodedString, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+import { Bech32Helper } from "@iota/iota.js-chrysalis";
+import { AddressType, HexEncodedString, Utils } from "@iota/sdk";
+import { Converter } from "../convertUtils";
+import { HexHelper } from "../hexHelper";
 
 interface QueryDetails {
     /**
@@ -146,7 +148,7 @@ export class SearchQueryBuilder {
                 queryDetails.hex && queryDetails.hexNoPrefix &&
                 Converter.isHex(queryDetails.hex, true) &&
                 queryDetails.hexNoPrefix.length === 76 &&
-                Number.parseInt(queryDetails.hexNoPrefix.slice(0, 2), 16) === ALIAS_ADDRESS_TYPE
+                Number.parseInt(queryDetails.hexNoPrefix.slice(0, 2), 16) === AddressType.Alias
             ) {
                 foundryId = queryDetails.hex;
             } else if (
@@ -158,8 +160,8 @@ export class SearchQueryBuilder {
 
             // also perform a tag search
             const maybeTag = Converter.isHex(this.query, true) ?
-                    HexHelper.addPrefix(this.query) :
-                    Converter.utf8ToHex(this.query, true);
+                HexHelper.addPrefix(this.query) :
+                Converter.utf8ToHex(this.query, true);
             if (maybeTag.length < 66) {
                 tag = maybeTag;
             }
@@ -198,16 +200,12 @@ export class SearchQueryBuilder {
             isBech32 = true;
 
             try {
-                const result = Bech32Helper.fromBech32(q, hrp);
+                const result = Utils.parseBech32Address(q);
                 if (result) {
                     bech32 = q;
-                    addressType = result.addressType;
-                    hex = HexHelper.addPrefix(
-                        Converter.bytesToHex(result.addressBytes)
-                    );
-                    hexNoPrefix = HexHelper.stripPrefix(
-                        Converter.bytesToHex(result.addressBytes)
-                    );
+                    addressType = result.type;
+                    hex = HexHelper.addPrefix(result.toString());
+                    hexNoPrefix = HexHelper.stripPrefix(result.toString());
                 }
             } catch { }
         }
@@ -216,10 +214,9 @@ export class SearchQueryBuilder {
             // We assume it's a hex
             hex = HexHelper.addPrefix(q);
             hexNoPrefix = HexHelper.stripPrefix(q);
-            addressType = ED25519_ADDRESS_TYPE;
-            bech32 = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, Converter.hexToBytes(hex), hrp);
+            addressType = AddressType.Ed25519;
+            bech32 = Bech32Helper.toBech32(AddressType.Ed25519, Converter.hexToBytes(hex), hrp);
         }
-
 
         return {
             bech32,
@@ -237,11 +234,11 @@ export class SearchQueryBuilder {
      * @returns The label.
      */
     private typeLabel(addressType?: number): string | undefined {
-        if (addressType === ED25519_ADDRESS_TYPE) {
+        if (addressType === AddressType.Ed25519) {
             return "Ed25519";
-        } else if (addressType === ALIAS_ADDRESS_TYPE) {
+        } else if (addressType === AddressType.Alias) {
             return "Alias";
-        } else if (addressType === NFT_ADDRESS_TYPE) {
+        } else if (addressType === AddressType.Nft) {
             return "NFT";
         }
     }

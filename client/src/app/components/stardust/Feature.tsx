@@ -1,4 +1,4 @@
-import { ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, SENDER_FEATURE_TYPE, TAG_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import { FeatureType, IssuerFeature, MetadataFeature, SenderFeature, TagFeature } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
@@ -28,30 +28,30 @@ const Feature: React.FC<FeatureProps> = (
             </div>
             {isExpanded && (
                 <div className="padding-l-t left-border">
-                    {feature.type === SENDER_FEATURE_TYPE && (
+                    {feature.type === FeatureType.Sender && (
                         <Address
-                            address={feature.address}
+                            address={(feature as SenderFeature).address}
                         />
                     )}
-                    {feature.type === ISSUER_FEATURE_TYPE && (
+                    {feature.type === FeatureType.Issuer && (
                         <Address
-                            address={feature.address}
+                            address={(feature as IssuerFeature).address}
                         />
                     )}
-                    {feature.type === METADATA_FEATURE_TYPE && (
+                    {feature.type === FeatureType.Metadata && (
                         <div className="card--value row">
                             <DataToggle
-                                sourceData={feature.data}
+                                sourceData={(feature as MetadataFeature).data}
                                 withSpacedHex={true}
                                 isParticipationEventMetadata={isParticipationEventMetadata}
                             />
                         </div>
                     )}
-                    {feature.type === TAG_FEATURE_TYPE && (
+                    {feature.type === FeatureType.Tag && (
                         <div>
-                            {feature.tag && (
+                            {(feature as TagFeature).tag && (
                                 <DataToggle
-                                    sourceData={feature.tag}
+                                    sourceData={(feature as TagFeature).tag}
                                     withSpacedHex={true}
                                 />
                             )}

@@ -1,4 +1,4 @@
-import { TokenSchemeTypes } from "@iota/iota.js-stardust";
+import { SimpleTokenScheme, TokenScheme, TokenSchemeType } from "@iota/sdk-wasm/web";
 import React from "react";
 import { useTokenRegistryNativeTokenCheck } from "../../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
 import { formatNumberWithCommas } from "../../../../helpers/stardust/valueFormatHelper";
@@ -13,7 +13,7 @@ interface TokenInfoSectionProps {
     /**
      * The token scheme for the foundry.
      */
-    tokenScheme: TokenSchemeTypes;
+    tokenScheme: TokenScheme;
     /**
      * The IRC standard metadata.
      */
@@ -23,9 +23,16 @@ interface TokenInfoSectionProps {
 const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenScheme, tokenMetadata }) => {
     const [isWhitelisted] = useTokenRegistryNativeTokenCheck(tokenId);
 
-    const maximumSupply = formatNumberWithCommas(tokenScheme.maximumSupply);
-    const mintedTokens = formatNumberWithCommas(tokenScheme.mintedTokens);
-    const meltedTokens = formatNumberWithCommas(tokenScheme.meltedTokens);
+    if (tokenScheme.type !== TokenSchemeType.Simple) {
+        return null;
+    }
+
+    const simpleTokenScheme = tokenScheme as SimpleTokenScheme;
+
+    const maximumSupply = formatNumberWithCommas(simpleTokenScheme.maximumSupply);
+    const mintedTokens = formatNumberWithCommas(simpleTokenScheme.mintedTokens);
+    const meltedTokens = formatNumberWithCommas(simpleTokenScheme.meltedTokens);
+
     return (
         <div className="token-info">
             <div className="section no-border-bottom padding-b-0">

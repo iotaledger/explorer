@@ -1,6 +1,8 @@
-import { AddressTypes, ALIAS_ADDRESS_TYPE, Bech32Helper, ED25519_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
-import { Converter, HexHelper } from "@iota/util.js-stardust";
+import { Bech32Helper } from "@iota/iota.js";
+import { Address, AddressType, AliasAddress, Ed25519Address, NftAddress } from "@iota/sdk-wasm/web";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
+import { Converter } from "./convertUtils";
+import { HexHelper } from "./hexHelper";
 
 export class Bech32AddressHelper {
     /**
@@ -10,7 +12,7 @@ export class Bech32AddressHelper {
      * @param typeHint The type of the address.
      * @returns The parts of the address.
      */
-    public static buildAddress(hrp: string, address: string | AddressTypes, typeHint?: number): IBech32AddressDetails {
+    public static buildAddress(hrp: string, address: string | Address, typeHint?: number): IBech32AddressDetails {
         return typeof address === "string"
             ? this.buildAddressFromString(hrp, address, typeHint)
             : this.buildAddressFromTypes(hrp, address);
@@ -36,7 +38,7 @@ export class Bech32AddressHelper {
         if (!bech32) {
             // We assume this is hex and either use the hint or assume ed25519 for now
             hex = address;
-            type = typeHint ?? ED25519_ADDRESS_TYPE;
+            type = typeHint ?? AddressType.Ed25519;
             bech32 = Bech32Helper.toBech32(type, Converter.hexToBytes(hex), hrp);
         }
 
@@ -48,20 +50,20 @@ export class Bech32AddressHelper {
         };
     }
 
-    private static buildAddressFromTypes(hrp: string, address: AddressTypes): IBech32AddressDetails {
+    private static buildAddressFromTypes(hrp: string, address: Address): IBech32AddressDetails {
         let hex: string = "";
 
-        if (address.type === ED25519_ADDRESS_TYPE) {
+        if (address.type === AddressType.Ed25519) {
             hex = HexHelper.stripPrefix(
-                address.pubKeyHash
+                (address as Ed25519Address).pubKeyHash
             );
-        } else if (address.type === ALIAS_ADDRESS_TYPE) {
+        } else if (address.type === AddressType.Alias) {
             hex = HexHelper.stripPrefix(
-                address.aliasId
+                (address as AliasAddress).aliasId
             );
-        } else if (address.type === NFT_ADDRESS_TYPE) {
+        } else if (address.type === AddressType.Nft) {
             hex = HexHelper.stripPrefix(
-                address.nftId
+                (address as NftAddress).nftId
             );
         }
 
@@ -74,11 +76,11 @@ export class Bech32AddressHelper {
      * @returns The label.
      */
     private static typeLabel(addressType?: number): string | undefined {
-        if (addressType === ED25519_ADDRESS_TYPE) {
+        if (addressType === AddressType.Ed25519) {
             return "Ed25519";
-        } else if (addressType === ALIAS_ADDRESS_TYPE) {
+        } else if (addressType === AddressType.Alias) {
             return "Alias";
-        } else if (addressType === NFT_ADDRESS_TYPE) {
+        } else if (addressType === AddressType.Nft) {
             return "NFT";
         }
     }

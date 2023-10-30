@@ -1,11 +1,11 @@
-import { blockIdFromMilestonePayload, IBlockMetadata, milestoneIdFromMilestonePayload } from "@iota/iota.js-stardust";
-import { IMqttClient } from "@iota/mqtt.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { Block, Client, IBlockMetadata, MilestonePayload, Utils } from "@iota/sdk";
+import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
 import { IFeedUpdate } from "../../../models/api/stardust/feed/IFeedUpdate";
 import { ILatestMilestone } from "../../../models/api/stardust/milestone/ILatestMilestonesResponse";
+import { blockIdFromMilestonePayload } from "../../../utils/stardust/utils";
 import { NodeInfoService } from "../nodeInfoService";
 
 const CACHE_TRIM_INTERVAL_MS = 60000;
@@ -35,7 +35,7 @@ export class StardustFeed {
     /**
      * Mqtt service for data (upstream).
      */
-    private readonly _mqttClient: IMqttClient;
+    private readonly _mqttClient: Client;
 
     /**
      * The latest milestones.
@@ -65,11 +65,10 @@ export class StardustFeed {
         this.blockSubscribers = {};
         this.milestoneSubscribers = {};
         this.blockMetadataCache = new Map();
-        this._mqttClient = ServiceFactory.get<IMqttClient>(`mqtt-${networkId}`);
+        this._mqttClient = ServiceFactory.get<Client>(`mqtt-${networkId}`);
         const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
         if (this._mqttClient && nodeInfoService) {
-            this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Stardust status changed (${data.state})`));
             const nodeInfo = nodeInfoService.getNodeInfo();
             this.networkProtocolVersion = nodeInfo.protocolVersion;
 
@@ -127,55 +126,63 @@ export class StardustFeed {
      * Connects the callbacks for upstream data.
      */
     private connect() {
-        this._mqttClient.blocksRaw(
-            (_: string, block: Uint8Array) => {
-                const serializedBlock = Converter.bytesToHex(block);
-
-                const update: Partial<IFeedUpdate> = {
-                    block: serializedBlock
-                };
-
-                // eslint-disable-next-line no-void
-                void this.broadcastBlock(update);
-            });
-
-        this._mqttClient.blocksReferenced(
-            (_: string, metadata: IBlockMetadata) => {
-                // update cache
-                let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
-                currentEntry = !currentEntry ? {
-                    milestone: metadata.milestoneIndex,
-                    referenced: metadata.referencedByMilestoneIndex,
-                    solid: metadata.isSolid,
-                    conflicting: metadata.ledgerInclusionState === "conflicting",
-                    conflictReason: metadata.conflictReason,
-                    included: metadata.ledgerInclusionState === "included"
-                } : {
-                    ...currentEntry,
-                    milestone: metadata.milestoneIndex,
-                    referenced: metadata.referencedByMilestoneIndex,
-                    solid: metadata.isSolid,
-                    conflicting: metadata.ledgerInclusionState === "conflicting",
-                    conflictReason: metadata.conflictReason,
-                    included: metadata.ledgerInclusionState === "included"
-                };
-
-                this.blockMetadataCache.set(metadata.blockId, currentEntry);
-
-                const update: Partial<IFeedUpdate> = {
-                    blockMetadata: {
-                        blockId: metadata.blockId,
-                        metadata: currentEntry
-                    }
-                };
-
-                // eslint-disable-next-line no-void
-                void this.broadcastBlock(update);
-            });
-
-        this._mqttClient.milestone(async (_, milestonePayload) => {
+        logger.info("[StardustFeed] Connecting upstream feed!");
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
             try {
-                const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
+                const block: Block = this.parseMqttPayloadMessage(Block, message);
+                const update: Partial<IFeedUpdate> = {
+                    block
+                };
+
+                // eslint-disable-next-line no-void
+                void this.broadcastBlock(update);
+            } catch {
+                logger.error("[FeedClient]: Failed broadcasting block downstream.");
+            }
+        });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, message) => {
+            const parsed: { topic: string; payload: string } = JSON.parse(message);
+            const metadata: IBlockMetadata = JSON.parse(parsed.payload);
+            // update cache
+            let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
+            currentEntry = !currentEntry ? {
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                conflictReason: metadata.conflictReason,
+                included: metadata.ledgerInclusionState === "included"
+            } : {
+                ...currentEntry,
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                conflictReason: metadata.conflictReason,
+                included: metadata.ledgerInclusionState === "included"
+            };
+
+            this.blockMetadataCache.set(metadata.blockId, currentEntry);
+
+            const update: Partial<IFeedUpdate> = {
+                blockMetadata: {
+                    blockId: metadata.blockId,
+                    metadata: currentEntry
+                }
+            };
+
+            // eslint-disable-next-line no-void
+            void this.broadcastBlock(update);
+        });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listenMqtt(["milestones"], (_, message) => {
+            try {
+                const milestonePayload: MilestonePayload = this.parseMqttPayloadMessage(MilestonePayload, message);
+                const milestoneId = Utils.milestoneId(milestonePayload);
                 const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
                 const milestoneIndex = milestonePayload.index;
                 const timestamp = milestonePayload.timestamp;
@@ -195,8 +202,8 @@ export class StardustFeed {
 
                 // eslint-disable-next-line no-void
                 void this.broadcastMilestone(update);
-            } catch (err) {
-                logger.error(`[FeedClient] Mqtt milestone callback failed: ${err}`);
+            } catch (err: unknown) {
+                logger.error(`[FeedClient] Mqtt milestone callback failed: ${JSON.stringify(err)}`);
             }
         });
     }
@@ -260,6 +267,20 @@ export class StardustFeed {
             if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
                 this.latestMilestonesCache.pop();
             }
+        }
+    }
+
+    private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
+        try {
+            const message: { topic: string; payload: string } = JSON.parse(serializedMessage);
+            const payload: T = plainToInstance<T, Record<string, unknown>>(
+                cls,
+                JSON.parse(message.payload) as Record<string, unknown>
+            );
+
+            return payload;
+        } catch (error) {
+            logger.warn(`[FeedClient] Failed to parse mqtt payload. ${error}`);
         }
     }
 

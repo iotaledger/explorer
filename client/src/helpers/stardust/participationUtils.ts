@@ -1,5 +1,5 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
-import { ReadStream } from "@iota/util.js-stardust";
+import { Blake2b } from "./crypto";
+import { ReadStream } from "./readStreamUtils";
 
 /**
  * The length of the participation event id.

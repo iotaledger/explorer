@@ -1,10 +1,8 @@
 /* eslint-disable no-warning-comments */
 import {
-    addressBalance, IOutputResponse, SingleNodeClient,
-    IndexerPluginClient, blockIdFromMilestonePayload, milestoneIdFromMilestonePayload,
-    IBlockMetadata, IMilestonePayload, IOutputsResponse, deserializeBlock, HexEncodedString
-} from "@iota/iota.js-stardust";
-import { HexHelper, ReadStream } from "@iota/util.js-stardust";
+    OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
+    HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
+} from "@iota/sdk";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
@@ -27,8 +25,10 @@ import { IParticipationEventResponse } from "../../models/api/stardust/participa
 import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
+import { HexHelper } from "../hexHelper";
 import { SearchExecutor } from "./searchExecutor";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
+import { addressBalance, blockIdFromMilestonePayload } from "./utils";
 
 /**
  * Helper functions for use with tangle.
@@ -43,8 +43,8 @@ export class StardustTangleHelper {
     public static async addressDetails(
         network: INetwork, addressBech32: string
     ): Promise<IAddressDetailsWithBalance | undefined> {
-        const { bechHrp, provider, user, password } = network;
-        const node = new SingleNodeClient(provider, { userName: user, password });
+        const { bechHrp, provider } = network;
+        const node = new Client({ nodes: [provider] });
         const searchQuery: SearchQuery = new SearchQueryBuilder(addressBech32, bechHrp).build();
 
         if (!searchQuery.address) {
@@ -52,6 +52,7 @@ export class StardustTangleHelper {
         }
 
         try {
+            // Using ported balance from iota.js until it is added to iota-sdk https://github.com/iotaledger/iota-sdk/issues/604
             const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
 
             if (addressBalanceDetails) {
@@ -75,26 +76,25 @@ export class StardustTangleHelper {
      */
     public static async block(network: INetwork, blockId: string): Promise<IBlockResponse> {
         blockId = HexHelper.addPrefix(blockId);
-        const blockRaw = await this.tryFetchNodeThenPermanode<string, Uint8Array>(
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(
             blockId,
-            "blockRaw",
+            "getBlock",
             network
         );
 
-        if (!blockRaw) {
+        if (!block) {
             return { error: `Couldn't find block with id ${blockId}` };
         }
 
         try {
-            const block = deserializeBlock(new ReadStream(blockRaw));
             if (block && Object.keys(block).length > 0) {
                 return {
                     block
                 };
             }
         } catch (e) {
-            logger.error(`Block deserialization failed for block with block id ${blockId}. Cause: ${e}`);
-            return { error: "Block deserialization failed." };
+            logger.error(`Failed fetching block with block id ${blockId}. Cause: ${e}`);
+            return { error: "Block fetch failed." };
         }
     }
 
@@ -108,7 +108,7 @@ export class StardustTangleHelper {
         blockId = HexHelper.addPrefix(blockId);
         const metadata = await this.tryFetchNodeThenPermanode<string, IBlockMetadata>(
             blockId,
-            "blockMetadata",
+            "getBlockMetadata",
             network
         );
 
@@ -130,25 +130,24 @@ export class StardustTangleHelper {
         transactionId: string
     ): Promise<ITransactionDetailsResponse> {
         transactionId = HexHelper.addPrefix(transactionId);
-        const blockRaw = await this.tryFetchNodeThenPermanode<string, Uint8Array>(
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(
             transactionId,
-            "transactionIncludedBlockRaw",
+            "getIncludedBlock",
             network
         );
 
-        if (!blockRaw) {
+        if (!block) {
             return { error: `Couldn't find block from transaction id ${transactionId}` };
         }
 
         try {
-            const block = deserializeBlock(new ReadStream(blockRaw));
             if (block && Object.keys(block).length > 0) {
                 return {
                     block
                 };
             }
         } catch (e) {
-            logger.error(`Block deserialization failed for block with transaction id ${transactionId}. Cause: ${e}`);
+            logger.error(`Failed fetching block with transaction id ${transactionId}. Cause: ${e}`);
         }
     }
 
@@ -159,9 +158,9 @@ export class StardustTangleHelper {
      * @returns The item details.
      */
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputDetailsResponse> {
-        const outputResponse = await this.tryFetchNodeThenPermanode<string, IOutputResponse>(
+        const outputResponse = await this.tryFetchNodeThenPermanode<string, OutputResponse>(
             outputId,
-            "output",
+            "getOutput",
             network
         );
 
@@ -176,9 +175,9 @@ export class StardustTangleHelper {
      * @param outputIds The output ids to get the details.
      * @returns The item details.
      */
-    public static async outputsDetails(network: INetwork, outputIds: string[]): Promise<IOutputResponse[]> {
+    public static async outputsDetails(network: INetwork, outputIds: string[]): Promise<OutputResponse[]> {
         const promises: Promise<IOutputDetailsResponse>[] = [];
-        const outputResponses: IOutputResponse[] = [];
+        const outputResponses: OutputResponse[] = [];
 
         for (const outputId of outputIds) {
             const promise = this.outputDetails(network, outputId);
@@ -209,9 +208,9 @@ export class StardustTangleHelper {
     public static async milestoneDetailsById(
         network: INetwork, milestoneId: string
     ): Promise<IMilestoneDetailsResponse | undefined> {
-        const milestonePayload = await this.tryFetchNodeThenPermanode<string, IMilestonePayload>(
+        const milestonePayload = await this.tryFetchNodeThenPermanode<string, MilestonePayload>(
             milestoneId,
-            "milestoneById",
+            "getMilestoneById",
             network
         );
 
@@ -237,9 +236,9 @@ export class StardustTangleHelper {
     public static async milestoneDetailsByIndex(
         network: INetwork, milestoneIndex: number
     ): Promise<IMilestoneDetailsResponse | undefined> {
-        const milestonePayload = await this.tryFetchNodeThenPermanode<number, IMilestonePayload>(
+        const milestonePayload = await this.tryFetchNodeThenPermanode<number, MilestonePayload>(
             milestoneIndex,
-            "milestoneByIndex",
+            "getMilestoneByIndex",
             network
         );
 
@@ -248,7 +247,7 @@ export class StardustTangleHelper {
             const protocolVersion = nodeInfoService.getNodeInfo().protocolVersion;
 
             const blockId = blockIdFromMilestonePayload(protocolVersion, milestonePayload);
-            const milestoneId = milestoneIdFromMilestonePayload(milestonePayload);
+            const milestoneId = Utils.milestoneId(milestonePayload);
 
             return {
                 blockId,
@@ -271,11 +270,10 @@ export class StardustTangleHelper {
         let outputIds: string[] = [];
 
         do {
-            const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32, cursor },
-                "basicOutputs",
-                network,
-                true
+            const outputIdsResponse = await this.tryFetchNodeThenPermanode<QueryParameter[], IOutputsResponse>(
+                [{ address: addressBech32 }, { cursor: cursor ?? "" }],
+                "basicOutputIds",
+                network
             );
 
             outputIds = outputIds.concat(outputIdsResponse.items);
@@ -302,11 +300,10 @@ export class StardustTangleHelper {
         let outputIds: string[] = [];
 
         do {
-            const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { stateControllerBech32: addressBech32, cursor },
-                "aliases",
-                network,
-                true
+            const outputIdsResponse = await this.tryFetchNodeThenPermanode<AliasQueryParameter[], IOutputsResponse>(
+                [{ stateController: addressBech32 }, { cursor: cursor ?? "" }],
+                "aliasOutputIds",
+                network
             );
 
             outputIds = outputIds.concat(outputIdsResponse.items);
@@ -333,11 +330,10 @@ export class StardustTangleHelper {
         let outputIds: string[] = [];
 
         do {
-            const outputIdsResponse = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { addressBech32, cursor },
-                "nfts",
-                network,
-                true
+            const outputIdsResponse = await this.tryFetchNodeThenPermanode<NftQueryParameter[], IOutputsResponse>(
+                [{ address: addressBech32 }, { cursor: cursor ?? "" }],
+                "nftOutputIds",
+                network
             );
 
             outputIds = outputIds.concat(outputIdsResponse.items);
@@ -360,15 +356,14 @@ export class StardustTangleHelper {
         network: INetwork,
         aliasId: string
     ): Promise<IAliasResponse | undefined> {
-        const aliasOutput = await this.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+        const aliasOutputId = await this.tryFetchNodeThenPermanode<string, string>(
             aliasId,
-            "alias",
-            network,
-            true
+            "aliasOutputId",
+            network
         );
 
-        if (aliasOutput?.items.length > 0) {
-            const outputResponse = await this.outputDetails(network, aliasOutput.items[0]);
+        if (aliasOutputId) {
+            const outputResponse = await this.outputDetails(network, aliasOutputId);
 
             return !outputResponse.error ?
                 { aliasDetails: outputResponse.output } :
@@ -389,11 +384,10 @@ export class StardustTangleHelper {
         aliasAddress: string
     ): Promise<IFoundriesResponse | undefined> {
         try {
-            const response = await this.tryFetchNodeThenPermanode<Record<string, unknown>, IOutputsResponse>(
-                { aliasAddressBech32: aliasAddress },
-                "foundries",
-                network,
-                true
+            const response = await this.tryFetchNodeThenPermanode<FoundryQueryParameter[], IOutputsResponse>(
+                [{ aliasAddress }],
+                "foundryOutputIds",
+                network
             );
 
             if (response) {
@@ -416,15 +410,14 @@ export class StardustTangleHelper {
         network: INetwork,
         foundryId: string
     ): Promise<IFoundryResponse | undefined> {
-        const foundryOutput = await this.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+        const foundryOutputId = await this.tryFetchNodeThenPermanode<string, string>(
             foundryId,
-            "foundry",
-            network,
-            true
+            "foundryOutputId",
+            network
         );
 
-        if (foundryOutput?.items.length > 0) {
-            const outputResponse = await this.outputDetails(network, foundryOutput.items[0]);
+        if (foundryOutputId) {
+            const outputResponse = await this.outputDetails(network, foundryOutputId);
 
             return !outputResponse.error ?
                 { foundryDetails: outputResponse.output } :
@@ -445,15 +438,14 @@ export class StardustTangleHelper {
         nftId: string
     ): Promise<INftDetailsResponse | undefined> {
         try {
-            const nftOutputs = await this.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+            const nftOutputId = await this.tryFetchNodeThenPermanode<string, string>(
                 nftId,
-                "nft",
-                network,
-                true
+                "nftOutputId",
+                network
             );
 
-            if (nftOutputs?.items.length > 0) {
-                const outputResponse = await this.outputDetails(network, nftOutputs.items[0]);
+            if (nftOutputId) {
+                const outputResponse = await this.outputDetails(network, nftOutputId);
 
                 return !outputResponse.error ?
                     { nftDetails: outputResponse.output } :
@@ -479,10 +471,15 @@ export class StardustTangleHelper {
         cursor?: string
     ): Promise<IBasicOutputsResponse | undefined> {
         try {
+            const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
             const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
-                Record<string, unknown>,
+                QueryParameter[],
                 IOutputsResponse
-            >({ tagHex: encodedTag, pageSize, cursor }, "basicOutputs", network, true);
+            >(
+                params,
+                "basicOutputIds",
+                network
+            );
 
             if (basicOutputIdsResponse?.items.length > 0) {
                 return { outputs: basicOutputIdsResponse };
@@ -507,10 +504,15 @@ export class StardustTangleHelper {
         cursor?: string
     ): Promise<INftOutputsResponse | undefined> {
         try {
+            const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
             const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
-                Record<string, unknown>,
+                NftQueryParameter[],
                 IOutputsResponse
-            >({ tagHex: encodedTag, pageSize, cursor }, "nfts", network, true);
+            >(
+                params,
+                "nftOutputIds",
+                network
+            );
 
             if (nftOutputIdsResponse?.items.length > 0) {
                 return { outputs: nftOutputIdsResponse };
@@ -548,16 +550,16 @@ export class StardustTangleHelper {
     public static async participationEventDetails(
         network: INetwork, eventId: string
     ): Promise<IParticipationEventResponse | undefined> {
-        const basePluginPath: string = "participation/v1/";
-        const method = "get";
+        const basePluginPath: string = "api/participation/v1/";
+        const method = "GET";
         const methodPath: string = `events/${eventId}`;
-        const info = await this.nodePluginFetch<unknown, IParticipationEventInfo>(
+        const info = await this.nodePluginFetch<IParticipationEventInfo>(
             network,
             basePluginPath,
             method,
             methodPath
         );
-        const status = await this.nodePluginFetch<unknown, IParticipationEventStatus>(
+        const status = await this.nodePluginFetch<IParticipationEventStatus>(
             network,
             basePluginPath,
             method,
@@ -592,25 +594,18 @@ export class StardustTangleHelper {
      * @param args The argument(s) to pass to the fetch calls.
      * @param methodName The function to call on the client.
      * @param network The network config in context.
-     * @param isIndexerCall The boolean flag for indexer api instead of core api.
      * @returns The results or null if call(s) failed.
      */
     public static async tryFetchNodeThenPermanode<A, R>(
         args: A,
         methodName: string,
-        network: INetwork,
-        isIndexerCall: boolean = false
+        network: INetwork
     ): Promise<R> | null {
         const {
-            provider, user, password, permaNodeEndpoint,
-            permaNodeEndpointUser, permaNodeEndpointPassword, disableApiFallback
+            provider, permaNodeEndpoint, disableApiFallback
         } = network;
         const isFallbackEnabled = !disableApiFallback;
-        const node = !isIndexerCall ?
-        new SingleNodeClient(provider, { userName: user, password }) :
-        new IndexerPluginClient(
-            new SingleNodeClient(provider, { userName: user, password })
-            );
+        const node = new Client({ nodes: [provider] });
 
         try {
             // try fetch from node
@@ -619,17 +614,7 @@ export class StardustTangleHelper {
         } catch { }
 
         if (permaNodeEndpoint && isFallbackEnabled) {
-            const permanode = !isIndexerCall ?
-                new SingleNodeClient(
-                    permaNodeEndpoint,
-                    { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-                ) :
-                new IndexerPluginClient(
-                    new SingleNodeClient(
-                        permaNodeEndpoint,
-                        { userName: permaNodeEndpointUser, password: permaNodeEndpointPassword }
-                    )
-                );
+            const permanode = new Client({ nodes: [permaNodeEndpoint] });
 
             try {
                 // try fetch from permanode (chronicle)
@@ -651,26 +636,28 @@ export class StardustTangleHelper {
      * @param request The request object.
      * @returns The response object.
      */
-    private static async nodePluginFetch<T, S>(
+    private static async nodePluginFetch<S>(
         network: INetwork,
         basePluginPath: string,
-        method: "get" | "post" | "delete",
+        method: "GET" | "POST",
         methodPath: string,
         queryParams?: string[],
-        request?: T
+        request?: string
     ): Promise<S> | null {
-        const { provider, user, password } = network;
+        const { provider } = network;
 
-        const client = new SingleNodeClient(provider, { userName: user, password });
+        const client = new Client({ nodes: [provider] });
+
         try {
-            const result: S = await client.pluginFetch<T, S>(
+            const response: S = await client.callPluginRoute(
                 basePluginPath,
                 method,
                 methodPath,
                 queryParams,
                 request
-            );
-            return result;
+            ) as S;
+
+            return response;
         } catch { }
 
         return null;

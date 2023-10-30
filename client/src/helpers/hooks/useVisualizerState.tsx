@@ -1,4 +1,3 @@
-import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -8,6 +7,7 @@ import { INodeData } from "../../models/graph/stardust/INodeData";
 import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
+import { Converter } from "../stardust/convertUtils";
 
 const MAX_ITEMS: number = 2500;
 const FEED_PROBE_THRESHOLD: number = 3000;

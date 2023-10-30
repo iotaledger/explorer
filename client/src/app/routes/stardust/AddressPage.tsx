@@ -1,4 +1,4 @@
-import { ALIAS_ADDRESS_TYPE, NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { AddressType } from "@iota/sdk-wasm/web";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";
@@ -54,9 +54,9 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (
     const addressType = bech32AddressDetails.type;
 
     let addressMessage = addressMainHeaderInfo;
-    if (addressType === ALIAS_ADDRESS_TYPE) {
+    if (addressType === AddressType.Alias) {
         addressMessage = aliasMainHeaderInfo;
-    } else if (addressType === NFT_ADDRESS_TYPE) {
+    } else if (addressType === AddressType.Nft) {
         addressMessage = nftMainHeaderInfo;
     }
 

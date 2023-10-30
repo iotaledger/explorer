@@ -1,4 +1,4 @@
-import { IMilestonePayload } from "@iota/iota.js-stardust";
+import { MilestonePayload } from "@iota/sdk";
 import { IResponse } from "../../IResponse";
 
 export interface IMilestoneDetailsResponse extends IResponse {
@@ -13,5 +13,5 @@ export interface IMilestoneDetailsResponse extends IResponse {
     /**
      * The milestone data.
      */
-    milestone?: IMilestonePayload;
+    milestone?: MilestonePayload;
 }

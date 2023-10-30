@@ -1,9 +1,9 @@
-import { OutputTypes, IOutputMetadataResponse } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
+import { Output, IOutputMetadataResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { HexHelper } from "../stardust/hexHelper";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -14,14 +14,14 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useOutputDetails(network: string, outputId: string | null):
     [
-        OutputTypes | null,
+        Output | null,
         IOutputMetadataResponse | null,
         boolean,
         string?
     ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [output, setOutput] = useState<OutputTypes | null>(null);
+    const [output, setOutput] = useState<Output | null>(null);
     const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(null);
     const [error, setError] = useState<string>();
     const [isLoading, setIsLoading] = useState<boolean>(true);

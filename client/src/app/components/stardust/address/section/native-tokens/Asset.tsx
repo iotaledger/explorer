@@ -1,12 +1,12 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { IFoundryOutput, IMetadataFeature, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
-import { Converter } from "@iota/util.js-stardust";
+import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/sdk-wasm/web";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import tokenSchemeIRC30 from "../../../../../../assets/schemas/token-schema-IRC30.json";
 import { useFoundryDetails } from "../../../../../../helpers/hooks/useFoundryDetails";
 import { useTokenRegistryNativeTokenCheck } from "../../../../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
+import { Converter } from "../../../../../../helpers/stardust/convertUtils";
 import { ITokenMetadata } from "../../../../../../models/api/stardust/foundry/ITokenMetadata";
 import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
@@ -24,11 +24,11 @@ const Asset: React.FC<AssetProps> = (
 
     useEffect(() => {
         if (isWhitelisted && foundryDetails) {
-            const immutableFeatures = (foundryDetails?.output as IFoundryOutput).immutableFeatures;
+            const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
 
             const metadata = immutableFeatures?.find(
-                feature => feature.type === METADATA_FEATURE_TYPE
-            ) as IMetadataFeature;
+                feature => feature.type === FeatureType.Metadata
+            ) as MetadataFeature;
 
             if (metadata) {
                 updateTokenInfo(metadata);
@@ -36,7 +36,7 @@ const Asset: React.FC<AssetProps> = (
         }
     }, [isWhitelisted, foundryDetails]);
 
-    const updateTokenInfo = (metadata: IMetadataFeature): void => {
+    const updateTokenInfo = (metadata: MetadataFeature): void => {
         const validator = new JsonSchemaValidator();
 
         try {
@@ -88,7 +88,7 @@ const Asset: React.FC<AssetProps> = (
                         link={`/${network}/foundry/${token?.id}`}
                     />
                 </td>
-                <td>{token.amount ?? "-"}</td>
+                <td>{token.amount.toString() ?? "-"}</td>
             </tr>
         ) : (
             <div className="asset-card">
@@ -123,7 +123,7 @@ const Asset: React.FC<AssetProps> = (
                 </div>
                 <div className="field">
                     <div className="label">Quantity</div>
-                    <div className="value">{token.amount ?? "-"}</div>
+                    <div className="value">{token.amount.toString() ?? "-"}</div>
                 </div>
             </div>
         )

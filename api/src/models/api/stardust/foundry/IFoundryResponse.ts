@@ -1,10 +1,10 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { OutputResponse } from "@iota/sdk";
 import { IResponse } from "../IResponse";
 
 export interface IFoundryResponse extends IResponse {
     /**
      * The foundry details response.
      */
-    foundryDetails?: IOutputResponse;
+    foundryDetails?: OutputResponse;
 }
 

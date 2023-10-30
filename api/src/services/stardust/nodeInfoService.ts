@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent, SingleNodeClient } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk";
 import { NodeInfoError } from "../../errors/nodeInfoError";
 import { INetwork } from "../../models/db/INetwork";
 
@@ -53,13 +53,13 @@ export class NodeInfoService {
 
     public init(): void {
         const endpoint = this._network.provider;
-        const apiClient = new SingleNodeClient(endpoint);
-        apiClient.info().then(nodeInfo => {
+        const apiClient = new Client({ nodes: [endpoint] });
+        apiClient.getInfo().then(response => {
             this._nodeInfo = {
-                baseToken: nodeInfo.baseToken,
-                protocolVersion: nodeInfo.protocol.version,
-                bech32Hrp: nodeInfo.protocol.bech32Hrp,
-                rentStructure: nodeInfo.protocol.rentStructure
+                baseToken: response.nodeInfo.baseToken,
+                protocolVersion: response.nodeInfo.protocol.version,
+                bech32Hrp: response.nodeInfo.protocol.bech32Hrp,
+                rentStructure: response.nodeInfo.protocol.rentStructure
             };
         }).catch(err => {
             throw new NodeInfoError(`Failed to fetch node info for "${this._network.network}" with error:\n${err}`);

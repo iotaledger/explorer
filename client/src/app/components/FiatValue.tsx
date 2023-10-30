@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
 import NetworkContext from "../context/NetworkContext";
 import Currency from "./Currency";
