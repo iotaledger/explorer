@@ -5,11 +5,10 @@ import * as THREE from "three";
 import { NODE_SIZE_DEFAULT } from "./constants";
 import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
-import Sphere from "./Sphere";
 import { useBlockStore } from "./store";
 
 const Spheres = () => {
-    const blocks = useBlockStore(s => s.blocks);
+    const blocksToAdd = useBlockStore(s => s.blocksToAdd);
     const removeYPosition = useBlockStore(s => s.removeYPosition);
     const removeBlock = useBlockStore(s => s.removeBlock);
     const removeBlocks = useBlockStore(s => s.removeBlocks);
@@ -20,7 +19,7 @@ const Spheres = () => {
     const { halfScreenWidth } = useBorderPositions();
     const clearBlocksRef = useRef<() => void>();
     useZoomDynamic();
-
+    console.log("--- blockOptions", Object.keys(blockOptions).length);
 
     const st = useThree(state => state);
 
@@ -32,7 +31,6 @@ const Spheres = () => {
         if (!camera) {
             return;
         }
-
 
         for (const child of children) {
             if (child.type === "Mesh") {
@@ -71,13 +69,13 @@ const Spheres = () => {
      * Add spheres
      */
     useEffect(() => {
-        if (blocks.length === 0) {
+        if (blocksToAdd.length === 0) {
             return;
         }
 
         const addedIds = [];
         const spheres = [];
-        for (const block of blocks) {
+        for (const block of blocksToAdd) {
             const geometry = new THREE.SphereGeometry(NODE_SIZE_DEFAULT * blockOptions[block.id].scale, 32, 16);
             const material = new THREE.MeshPhongMaterial({
                 color: blockOptions[block.id].color
@@ -91,7 +89,7 @@ const Spheres = () => {
         }
         scene.add(...spheres);
         removeBlocks(addedIds);
-    }, [blocks]);
+    }, [blocksToAdd]);
 
 
     return (

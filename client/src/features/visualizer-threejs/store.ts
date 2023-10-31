@@ -12,11 +12,13 @@ interface BlockOptions {
     scale: number;
 }
 interface BlockStoreState {
-    blocks: BlockState[];
-    blockOptions: { [k: string]: BlockOptions };
+    blocksToAdd: BlockState[];
     addBlock: (newBlock: BlockState, options: BlockOptions) => void;
-    removeBlocks: (blockId: string[]) => void;
     removeBlock: (blockId: string) => void;
+    removeBlocks: (blockIds: string[]) => void;
+
+    blocksForUpdate: BlockState[];
+    blockOptions: { [k: string]: BlockOptions };
     addParents: (blockId: string, parents: string[]) => void;
 
     yPositions: { [k: number]: number };
@@ -38,7 +40,8 @@ interface BlockStoreState {
 }
 
 export const useBlockStore = create<BlockStoreState>(set => ({
-    blocks: [],
+    blocksToAdd: [],
+    blocksForUpdate: [],
     blockOptions: {},
     yPositions: {},
     zoom: ZOOM_DEFAULT,
@@ -50,7 +53,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         set(state => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
             return {
-                blocks: [...state.blocks, newBlock],
+                blocksToAdd: [...state.blocksToAdd, newBlock],
                 blockOptions: {
                     ...state.blockOptions,
                     [newBlock.id]: { ...prevBlockOptions, ...options }
@@ -59,23 +62,17 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         });
     },
     removeBlocks: (blockIds: string[]) => {
-        set(state => {
-            const nextBlockOptions = { ...state.blockOptions };
-            for (const blockId of blockIds) {
-                delete nextBlockOptions[blockId];
-            }
-            return {
-                blocks: [...state.blocks.filter(b => !blockIds.includes(b.id))],
-                blockOptions: nextBlockOptions
-            };
-        });
+        set(state => ({
+                ...state,
+                blocksToAdd: [...state.blocksToAdd.filter(b => !blockIds.includes(b.id))]
+            }));
     },
     removeBlock: (blockId: string) => {
         set(state => {
             const nextBlockOptions = { ...state.blockOptions };
             delete nextBlockOptions[blockId];
             return {
-                blocks: [...state.blocks.filter(b => b.id !== blockId)],
+                blocksToAdd: [...state.blocksToAdd.filter(b => b.id !== blockId)],
                 blockOptions: nextBlockOptions
             };
         });
