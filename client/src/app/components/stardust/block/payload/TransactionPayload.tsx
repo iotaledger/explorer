@@ -1,4 +1,6 @@
 import React, { ReactNode } from "react";
+import { TransactionPayloadProps } from "./TransactionPayloadProps";
+import { TransactionPayloadState } from "./TransactionPayloadState";
 import transactionPayloadMessage from "../../../../../assets/modals/stardust/block/transaction-payload.json";
 import NetworkContext from "../../../../context/NetworkContext";
 import AsyncComponent from "../../../AsyncComponent";
@@ -6,8 +8,6 @@ import Modal from "../../../Modal";
 import Input from "../../Input";
 import Output from "../../Output";
 import Unlocks from "../../Unlocks";
-import { TransactionPayloadProps } from "./TransactionPayloadProps";
-import { TransactionPayloadState } from "./TransactionPayloadState";
 import "./TransactionPayload.scss";
 
 /**

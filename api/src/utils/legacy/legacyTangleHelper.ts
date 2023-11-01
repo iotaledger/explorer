@@ -50,14 +50,14 @@ export class LegacyTangleHelper {
                 hashes = response.txHashes;
                 cursor.node = hashes.length;
 
-                if (limit !== undefined) {
+                if (limit === undefined) {
+                    cursor.hasMore = hashes.length === 5000;
+                } else {
                     cursor.hasMore = hashes.length > limit;
                     if (hashes.length > limit) {
                         // If there is a limit then remove any additional
                         hashes = hashes.slice(0, limit);
                     }
-                } else {
-                    cursor.hasMore = hashes.length === 5000;
                 }
             }
         } catch (err) {

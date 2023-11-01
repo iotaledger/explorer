@@ -1,11 +1,11 @@
 import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { useIsMounted } from "./useIsMounted";
 
 interface IOutputDetailsMap {
     [outputId: string]: OutputResponse;
@@ -97,7 +97,7 @@ export function useAddressHistory(
                             // Ensure that entries with equal timestamp, but different isSpent,
                             // have the spending before the depositing
                             if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                                return !a.isSpent ? -1 : 1;
+                                return a.isSpent ? 1 : -1;
                             }
                             return 1;
                         });

@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import AsyncComponent from "../AsyncComponent";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import { NativeTokenProps } from "./NativeTokenProps";
 import { NativeTokenState } from "./NativeTokenState";
+import AsyncComponent from "../AsyncComponent";
 
 /**
  * Component which will display a native token.

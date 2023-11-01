@@ -13,9 +13,9 @@ import { d3FormatSpecifier, getSubunitThreshold, noDataView, useChartWrapperSize
 import "./RangeBarChart.scss";
 
 interface IRangeBarChartProps {
-    data: IDistributionEntry[] | null;
-    yField: "addressCount" | "totalBalance";
-    yLabel: string;
+    readonly data: IDistributionEntry[] | null;
+    readonly yField: "addressCount" | "totalBalance";
+    readonly yLabel: string;
 }
 
 export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLabel }) => {

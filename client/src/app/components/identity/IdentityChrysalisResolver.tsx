@@ -2,6 +2,10 @@ import { IMessageMetadata } from "@iota/iota.js";
 import React, { Fragment, ReactNode } from "react";
 import { HiDownload } from "react-icons/hi";
 import { RouteComponentProps } from "react-router-dom";
+import { IdentityChrysalisResolverProps } from "./IdentityChrysalisResolverProps";
+import { IdentityChrysalisResolverState } from "./IdentityChrysalisResolverState";
+import IdentityHistory from "./IdentityHistory";
+import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
 import contentMessage from "../../../assets/modals/identity-resolver/content.json";
 import welcomeMessage from "../../../assets/modals/identity-resolver/welcome.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
@@ -18,10 +22,6 @@ import CopyButton from "../CopyButton";
 import JsonViewer from "../JsonViewer";
 import Modal from "../Modal";
 import Spinner from "../Spinner";
-import { IdentityChrysalisResolverProps } from "./IdentityChrysalisResolverProps";
-import { IdentityChrysalisResolverState } from "./IdentityChrysalisResolverState";
-import IdentityHistory from "./IdentityHistory";
-import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
 
 class IdentityChrysalisResolver extends AsyncComponent<
     RouteComponentProps<IdentityChrysalisResolverProps>,

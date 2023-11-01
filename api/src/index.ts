@@ -31,7 +31,7 @@ const configAllowedHeaders: string | undefined =
 if (Array.isArray(config.allowedDomains)) {
     for (const dom of config.allowedDomains) {
         if (dom.indexOf("*") > 0) {
-            configAllowedDomains.push(new RegExp(dom.replace(/\*/g, "(.*)")));
+            configAllowedDomains.push(new RegExp(dom.replaceAll("*", "(.*)")));
         } else {
             configAllowedDomains.push(dom);
         }

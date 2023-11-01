@@ -1,6 +1,7 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { LandingState } from "./LandingState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
@@ -15,7 +16,6 @@ import FeedMilestoneInfo from "../../components/FeedMilestoneInfo";
 import Feeds from "../../components/legacy/Feeds";
 import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
-import { LandingState } from "./LandingState";
 
 /**
  * Component which will show the landing page.
@@ -459,7 +459,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._isMounted && this._networkConfig) {
             const settings = this._settingsService.get();
 
-            settings.filters = settings.filters ?? {};
+            settings.filters ??= {};
             settings.filters[this._networkConfig?.network] = {
                 valuesFilter: this.state.valuesFilter,
                 valueMinimum: this.state.valueMinimum,

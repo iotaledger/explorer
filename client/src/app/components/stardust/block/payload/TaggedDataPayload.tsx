@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
-import DataToggle from "../../../DataToggle";
 import { TaggedDataPayloadProps } from "./TaggedDataPayloadProps";
 import { TaggedDataPayloadState } from "./TaggedDataPayloadState";
+import DataToggle from "../../../DataToggle";
 
 /**
  * Component which will display a indexation payload.

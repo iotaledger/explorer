@@ -3,6 +3,7 @@ import {
 } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { BlockProps } from "./BlockProps";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
 import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
 import milestonePayloadInfo from "../../../assets/modals/stardust/block/milestone-payload.json";
@@ -29,7 +30,6 @@ import BlockPayloadSection from "../../components/stardust/block/section/BlockPa
 import ReferencedBlocksSection from "../../components/stardust/block/section/referenced-blocks/ReferencedBlocksSection";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
-import { BlockProps } from "./BlockProps";
 import "./Block.scss";
 
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
@@ -73,17 +73,21 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const milestoneIndex = isMilestoneBlock ? (block?.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {
-        case PayloadType.Milestone:
+        case PayloadType.Milestone: {
             pageTitle = `Milestone Block ${milestoneIndex}`;
             break;
-        case PayloadType.Transaction:
+        }
+        case PayloadType.Transaction: {
             pageTitle = "Transaction Block";
             break;
-        case PayloadType.TaggedData:
+        }
+        case PayloadType.TaggedData: {
             pageTitle = "Data Block";
             break;
-        default:
+        }
+        default: {
             break;
+        }
     }
 
     if (blockError) {
@@ -144,7 +148,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         );
     }
 
-    const blockContent = !block ? null : (
+    const blockContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
                 <div className="row middle">
@@ -266,7 +270,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 {tabbedSections}
             </TabbedSection>
         </React.Fragment >
-    );
+    ) : null;
 
     return (
         <div className="block">

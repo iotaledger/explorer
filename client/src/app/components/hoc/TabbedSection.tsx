@@ -40,16 +40,16 @@ interface TabbedSectionProps {
     /**
      * An object with properties being the tabs to render (values are the tab labels).
      */
-    tabsEnum: Record<string, string>;
+    readonly tabsEnum: Record<string, string>;
     /**
      * The components the render for each selected tab. Must have the same size and ordering as the
      * corresponding 'tabsEnum' prop.
      */
-    children: React.ReactElement[];
+    readonly children: React.ReactElement[];
     /**
      * Optional additional configuration for each tab.
      */
-    tabOptions?: TabOptions;
+    readonly tabOptions?: TabOptions;
 }
 
 // eslint-disable-next-line jsdoc/require-param
@@ -66,7 +66,7 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const [selectedTab, setSelectedTab] = useState<number>(0);
-    const TABS: string[] = [...Object.values(tabsEnum)];
+    const TABS: string[] = Object.values(tabsEnum);
 
     useEffect(() => {
         const tab = searchParams.get("tab");
@@ -86,23 +86,23 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
         <div className="tabbed-section--tabs-wrapper">
             {TABS.map((tab, idx) => {
                 const isDisabled = tabOptions ?
-                    (tabOptions[tab]?.disabled !== undefined ? tabOptions[tab].disabled : false)
+                    (tabOptions[tab]?.disabled === undefined ? false : tabOptions[tab].disabled)
                     : false;
 
                 const counter = tabOptions ?
-                    (tabOptions[tab]?.counter !== undefined ? tabOptions[tab].counter : 0)
+                    (tabOptions[tab]?.counter === undefined ? 0 : tabOptions[tab].counter)
                     : 0;
 
                 const isLoading = tabOptions ?
-                    (tabOptions[tab]?.isLoading !== undefined ? tabOptions[tab].isLoading : false)
+                    (tabOptions[tab]?.isLoading === undefined ? false : tabOptions[tab].isLoading)
                     : false;
 
                 const infoContent = tabOptions ?
-                    (tabOptions[tab]?.infoContent !== undefined ? tabOptions[tab].infoContent : undefined)
+                    (tabOptions[tab]?.infoContent === undefined ? undefined : tabOptions[tab].infoContent)
                     : undefined;
 
                 const hidden = tabOptions ?
-                    (tabOptions[tab]?.hidden !== undefined ? tabOptions[tab].hidden : false)
+                    (tabOptions[tab]?.hidden === undefined ? false : tabOptions[tab].hidden)
                     : false;
 
                 return (

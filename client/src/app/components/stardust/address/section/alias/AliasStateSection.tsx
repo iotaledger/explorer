@@ -6,7 +6,7 @@ interface AliasStateSectionProps {
     /**
      * The Alias Output
      */
-    output: AliasOutput | null;
+    readonly output: AliasOutput | null;
 }
 
 const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => {

@@ -6,7 +6,7 @@ import TruncatedId from "../TruncatedId";
 import "./RichestAddresses.scss";
 
 interface IRichestAddressesProps {
-    data: IRichAddress[] | null;
+    readonly data: IRichAddress[] | null;
 }
 
 export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => {

@@ -2,8 +2,8 @@ import React from "react";
 import "./NotFound.scss";
 
 interface NotFoundProps {
-    query: string;
-    searchTarget: string;
+    readonly query: string;
+    readonly searchTarget: string;
 }
 
 const NotFound: React.FC<NotFoundProps> = ({ query, searchTarget }) => (

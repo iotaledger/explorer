@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { ClipboardHelper } from "../../helpers/clipboardHelper";
-import "./CopyButton.scss";
 import { CopyButtonProps } from "./CopyButtonProps";
 import { CopyButtonState } from "./CopyButtonState";
+import { ClipboardHelper } from "../../helpers/clipboardHelper";
+import "./CopyButton.scss";
 
 /**
  * Component which will display a copy button.
@@ -28,7 +28,11 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
     public render(): ReactNode {
         return (
             <div className="copy-button">
-                {!this.state.active ? (
+                {this.state.active ? (
+                    <div className="copy-button--message">
+                        <span className="material-icons">done</span>
+                    </div>
+                ) : (
                     <button
                         type="button"
                         className={classNames("copy-button-btn", { "copy-button-btn--active": this.state.active })}
@@ -38,10 +42,6 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
                             content_copy
                         </span>
                     </button>
-                ) : (
-                    <div className="copy-button--message">
-                        <span className="material-icons">done</span>
-                    </div>
                 )}
             </div>
         );

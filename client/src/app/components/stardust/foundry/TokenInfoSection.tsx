@@ -9,15 +9,15 @@ interface TokenInfoSectionProps {
     /**
      * The token id.
      */
-    tokenId: string;
+    readonly tokenId: string;
     /**
      * The token scheme for the foundry.
      */
-    tokenScheme: TokenScheme;
+    readonly tokenScheme: TokenScheme;
     /**
      * The IRC standard metadata.
      */
-    tokenMetadata?: ITokenMetadata | null;
+    readonly tokenMetadata?: ITokenMetadata | null;
 }
 
 const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenScheme, tokenMetadata }) => {

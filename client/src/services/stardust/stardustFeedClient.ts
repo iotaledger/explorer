@@ -77,10 +77,10 @@ export class StardustFeedClient {
         const networkService = ServiceFactory.get<NetworkService>("network");
         const theNetworkConfig = networkService.get(networkId);
 
-        if (!theNetworkConfig) {
-            console.error("[FeedClient] Couldn't initialize client for network", networkId);
-        } else {
+        if (theNetworkConfig) {
             this._networkConfig = theNetworkConfig;
+        } else {
+            console.error("[FeedClient] Couldn't initialize client for network", networkId);
         }
 
         this.setupCacheTrimJob();
@@ -112,14 +112,14 @@ export class StardustFeedClient {
                 };
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
-                    } else {
+                    if (subscribeResponse.error) {
                         console.log(
                             "Failed subscribing to feed",
                             this._networkConfig?.network,
                             subscribeResponse.error
                         );
+                    } else {
+                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
                 this.socket.on("block", async (update: IFeedUpdate) => {
@@ -190,14 +190,14 @@ export class StardustFeedClient {
                 this.socket.emit("subscribe", subscribeRequest);
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
-                    } else {
+                    if (subscribeResponse.error) {
                         console.log(
                             "Failed subscribing to feed",
                             this._networkConfig?.network,
                             subscribeResponse.error
                         );
+                    } else {
+                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
 

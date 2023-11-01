@@ -1,14 +1,14 @@
 import React from "react";
+import ChartLegend from "./ChartLegend";
 import Modal from "../../Modal";
 import { ModalData } from "../../ModalProps";
-import ChartLegend from "./ChartLegend";
 import "./ChartHeader.scss";
 
 interface ChartHeaderProps {
-    title?: string;
-    info?: ModalData;
-    disabled?: boolean;
-    legend?: {
+    readonly title?: string;
+    readonly info?: ModalData;
+    readonly disabled?: boolean;
+    readonly legend?: {
         labels: string[];
         colors: string[];
     };

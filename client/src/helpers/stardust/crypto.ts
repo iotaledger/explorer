@@ -70,7 +70,7 @@ export class Blake2b {
      * The context for the current hash.
      * @internal
      */
-    private _context: {
+    private readonly _context: {
         b: Uint8Array;
         h: Uint32Array;
         t: number;

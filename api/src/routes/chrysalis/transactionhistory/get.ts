@@ -16,7 +16,7 @@ import { ValidationHelper } from "../../../utils/validationHelper";
 export async function get(
     config: IConfiguration,
     request: ITransactionHistoryRequest
-): Promise<ITransactionHistoryResponse | unknown> {
+): Promise<ITransactionHistoryResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");

@@ -1,6 +1,6 @@
-import { IResponse } from "../../IResponse";
 import { IParticipationEventInfo } from "./IParticipationEventInfo";
 import { IParticipationEventStatus } from "./IParticipationEventStatus";
+import { IResponse } from "../../IResponse";
 
 export interface IParticipationEventResponse extends IResponse {
     /**

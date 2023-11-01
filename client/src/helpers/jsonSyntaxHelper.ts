@@ -8,10 +8,10 @@ export class JsonSyntaxHelper {
      */
     public static syntaxHighlight(json: string): string {
         return json
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(
+            .replaceAll('&', "&amp;")
+            .replaceAll('<', "&lt;")
+            .replaceAll('>', "&gt;")
+            .replaceAll(
                 // eslint-disable-next-line max-len
                 /("(\\u[\dA-Za-z]{4}|\\[^u]|[^"\\])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[Ee][+-]?\d+)?)/g,
                 match => {

@@ -1,4 +1,9 @@
 import React, { useContext } from "react";
+import ChartInfoPanel from "./ChartInfoPanel";
+import BarChart from "./charts/BarChart";
+import LineChart from "./charts/LineChart";
+import StackedBarChart from "./charts/StackedBarChart";
+import StackedLineChart from "./charts/StackedLineChart";
 import graphMessages from "../../../../assets/modals/stardust/statistics/graphs.json";
 import { useChartsState } from "../../../../helpers/hooks/useChartsState";
 import { idGenerator } from "../../../../helpers/stardust/statisticsUtils";
@@ -6,11 +11,6 @@ import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { COMMAS_REGEX } from "../../../routes/stardust/landing/ShimmerClaimedUtils";
 import Modal from "../../Modal";
-import ChartInfoPanel from "./ChartInfoPanel";
-import BarChart from "./charts/BarChart";
-import LineChart from "./charts/LineChart";
-import StackedBarChart from "./charts/StackedBarChart";
-import StackedLineChart from "./charts/StackedLineChart";
 
 export const InfluxChartsTab: React.FC = () => {
     const { tokenInfo } = useContext(NetworkContext);

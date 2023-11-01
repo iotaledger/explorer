@@ -1,6 +1,9 @@
 import classNames from "classnames";
 import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import AnalyticStats from "./AnalyticStats";
+import InfoBox from "./InfoBox";
+import MilestoneFeed from "./MilestoneFeed";
 import { useBlockFeed } from "../../../../helpers/hooks/useBlockFeed";
 import { useChronicleAnalytics } from "../../../../helpers/hooks/useChronicleAnalytics";
 import { useCurrencyService } from "../../../../helpers/hooks/useCurrencyService";
@@ -9,9 +12,6 @@ import { useNetworkStats } from "../../../../helpers/hooks/useNetworkStats";
 import { isShimmerUiTheme } from "../../../../helpers/networkHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
-import AnalyticStats from "./AnalyticStats";
-import InfoBox from "./InfoBox";
-import MilestoneFeed from "./MilestoneFeed";
 import "./Landing.scss";
 
 export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (

@@ -1,14 +1,14 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import ReactDiffViewer from "react-diff-viewer";
-import { DownloadHelper } from "../../../helpers/downloadHelper";
-import { IdentityHelper } from "../../../helpers/identityHelper";
-import { JsonSyntaxHelper } from "../../../helpers/jsonSyntaxHelper";
 import IdentityCompareDropdown from "./IdentityCompareDropdown";
 import "./IdentityJsonCompare.scss";
 import { IdentityJsonCompareProps } from "./IdentityJsonCompareProps";
 import { IdentityJsonCompareState } from "./IdentityJsonCompareState";
 import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
+import { DownloadHelper } from "../../../helpers/downloadHelper";
+import { IdentityHelper } from "../../../helpers/identityHelper";
+import { JsonSyntaxHelper } from "../../../helpers/jsonSyntaxHelper";
 
 class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJsonCompareState> {
     constructor(props: IdentityJsonCompareProps) {

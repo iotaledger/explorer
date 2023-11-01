@@ -4,10 +4,10 @@ import Spinner from "../../../../Spinner";
 import "./ImagePlaceholder.scss";
 
 interface ImagePlaceholderProps {
-    message: string;
-    color?: string;
-    compact?: boolean;
-    isLoading?: boolean;
+    readonly message: string;
+    readonly color?: string;
+    readonly compact?: boolean;
+    readonly isLoading?: boolean;
 }
 
 export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({ message, color, compact, isLoading }) => (

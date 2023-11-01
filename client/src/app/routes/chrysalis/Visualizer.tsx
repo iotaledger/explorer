@@ -4,6 +4,8 @@ import { Converter } from "@iota/util.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Viva from "vivagraphjs";
+import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
+import Modal from "./../../components/Modal";
 import { buildNodeShader } from "../../../helpers/nodeShader";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
 import { IFeedItem } from "../../../models/feed/IFeedItem";
@@ -12,8 +14,6 @@ import { INodeData } from "../../../models/graph/INodeData";
 import Feeds from "../../components/chrysalis/Feeds";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerState } from "../VisualizerState";
-import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
-import Modal from "./../../components/Modal";
 import "./Visualizer.scss";
 
 /**

@@ -1,5 +1,7 @@
 import React, { Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { IdentityStardustResolverProps } from "./IdentityStardustResolverProps";
+import { IdentityStardustResolverState } from "./IdentityStardustResolverState";
 import welcomeMessage from "../../../assets/modals/identity-resolver/welcome.json";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
@@ -10,8 +12,6 @@ import CopyButton from "../CopyButton";
 import JsonViewer from "../JsonViewer";
 import Modal from "../Modal";
 import Spinner from "../Spinner";
-import { IdentityStardustResolverProps } from "./IdentityStardustResolverProps";
-import { IdentityStardustResolverState } from "./IdentityStardustResolverState";
 
 class IdentityStardustResolver extends AsyncComponent<
     RouteComponentProps<IdentityStardustResolverProps>,

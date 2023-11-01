@@ -100,12 +100,15 @@ export class IpfsClient {
     private static typeOf(link: IIpfsLink) {
         switch (link.Type) {
             case 1:
-            case 5:
+            case 5: {
                 return "dir";
-            case 2:
+            }
+            case 2: {
                 return "file";
-            default:
+            }
+            default: {
                 return "file";
+            }
         }
     }
 }

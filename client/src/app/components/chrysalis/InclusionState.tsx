@@ -5,7 +5,7 @@ interface InclusionStateProps {
     /**
      * The inclusion state.
      */
-    state?: LedgerInclusionState;
+    readonly state?: LedgerInclusionState;
 }
 
 /**

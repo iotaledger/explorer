@@ -2,13 +2,13 @@ import {
     MilestoneOptionType, MilestonePayload as IMilestonePayload, ProtocolParamsMilestoneOption, ReceiptMilestoneOption
 } from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
+import { MilestonePayloadProps } from "./MilestonePayloadProps";
+import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
 import { DateHelper } from "../../../../../../helpers/dateHelper";
 import AsyncComponent from "../../../../AsyncComponent";
 import DataToggle from "../../../../DataToggle";
 import TruncatedId from "../../../TruncatedId";
 import ReceiptPayload from "../ReceiptPayload";
-import { MilestonePayloadProps } from "./MilestonePayloadProps";
-import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
 import "./MilestonePayload.scss";
 
 /**

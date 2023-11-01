@@ -2,15 +2,15 @@ import {
     OutputType, OutputResponse, CommonOutput
 } from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
+import Asset from "./Asset";
 import { IToken } from "../../../../../../models/api/stardust/foundry/IToken";
 import Pagination from "../../../../Pagination";
-import Asset from "./Asset";
 import "./AssetsTable.scss";
 
 interface AssetsTableProps {
-    networkId: string;
-    outputs: OutputResponse[] | null;
-    setTokenCount?: (count: number) => void;
+    readonly networkId: string;
+    readonly outputs: OutputResponse[] | null;
+    readonly setTokenCount?: (count: number) => void;
 }
 
 const TOKEN_PAGE_SIZE: number = 10;

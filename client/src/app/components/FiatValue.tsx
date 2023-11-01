@@ -1,10 +1,11 @@
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
-import NetworkContext from "../context/NetworkContext";
 import Currency from "./Currency";
-import "./CurrencyButton.scss";
 import { FiatValueProps } from "./FiatValueProps";
 import { FiatValueState } from "./FiatValueState";
+import NetworkContext from "../context/NetworkContext";
+import "./CurrencyButton.scss";
+
 /**
  * Component which will display a fiat value.
  */

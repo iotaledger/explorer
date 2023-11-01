@@ -3,6 +3,11 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import mainHeaderMessage from "./../../../assets/modals/chrysalis/address/main-header.json";
+import transactionHistoryMessage from "./../../../assets/modals/chrysalis/address/transaction-history.json";
+import Transaction from "./../../components/chrysalis/Transaction";
+import Modal from "./../../components/Modal";
+import { AddrState } from "./AddrState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
 import { DateHelper } from "../../../helpers/dateHelper";
@@ -19,11 +24,6 @@ import Icon from "../../components/Icon";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import { AddressRouteProps } from "../AddressRouteProps";
-import mainHeaderMessage from "./../../../assets/modals/chrysalis/address/main-header.json";
-import transactionHistoryMessage from "./../../../assets/modals/chrysalis/address/transaction-history.json";
-import Transaction from "./../../components/chrysalis/Transaction";
-import Modal from "./../../components/Modal";
-import { AddrState } from "./AddrState";
 import "./Addr.scss";
 
 /**

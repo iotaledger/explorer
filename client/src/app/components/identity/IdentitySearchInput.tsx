@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import AsyncComponent from "../AsyncComponent";
-import "./IdentitySearchInput.scss";
 import { IdentitySearchInputProps } from "./IdentitySearchInputProps";
 import { IdentitySearchInputState } from "./IdentitySearchInputState";
+import AsyncComponent from "../AsyncComponent";
+import "./IdentitySearchInput.scss";
 
 /**
  * Component which will show the search input page.

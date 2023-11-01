@@ -1,8 +1,8 @@
 import React from "react";
 
 interface ChartTooltipProps {
-    label: string;
-    value: string | number;
+    readonly label: string;
+    readonly value: string | number;
 }
 
 const ChartInfoPanel: React.FC<ChartTooltipProps> = ({ label, value }) =>

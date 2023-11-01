@@ -2,7 +2,7 @@ import React, { useCallback, useLayoutEffect, useState } from "react";
 import "./ChartTooltip.scss";
 
 interface ChartTooltipProps {
-    tooltipRef: React.RefObject<HTMLDivElement>;
+    readonly tooltipRef: React.RefObject<HTMLDivElement>;
 }
 
 const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {

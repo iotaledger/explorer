@@ -1,29 +1,29 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociations } from "./AssociatedOutputsUtils";
+import AssociationSection from "./AssociationSection";
 import { useAssociatedOutputs } from "../../../../../../helpers/hooks/useAssociatedOutputs";
 import { IBech32AddressDetails } from "../../../../../../models/api/IBech32AddressDetails";
 import { AssociationType, IAssociation } from "../../../../../../models/api/stardust/IAssociationsResponse";
-import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociations } from "./AssociatedOutputsUtils";
-import AssociationSection from "./AssociationSection";
 import "./AssociatedOutputs.scss";
 
 interface AssociatedOutputsProps {
     /**
      * The network in context.
      */
-    network: string;
+    readonly network: string;
     /**
      * Address details
      */
-    addressDetails: IBech32AddressDetails;
+    readonly addressDetails: IBech32AddressDetails;
     /**
      * Callback setter to report the associated outputs count.
      */
-    setOutputCount?: (count: number) => void;
+    readonly setOutputCount?: (count: number) => void;
     /**
      * Callback setter to report if the component is loading outputs.
      */
-    setIsLoading?: (isLoading: boolean) => void;
+    readonly setIsLoading?: (isLoading: boolean) => void;
 }
 
 const AssociatedOutputs: React.FC<AssociatedOutputsProps> = (

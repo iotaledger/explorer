@@ -10,13 +10,13 @@ import {
     TransactionPayload, TreasuryOutput, Unlock, UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
 } from "@iota/sdk-wasm/web";
 import bigInt from "big-integer";
+import { HexHelper } from "./hexHelper";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
 import { IOutput } from "../../models/api/stardust/IOutput";
 import { MAINNET } from "../../models/config/networkType";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
-import { HexHelper } from "./hexHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];
@@ -224,9 +224,9 @@ export class TransactionsHelper {
      * @returns The BLAKE2b-256 hash for Alias Id.
      */
     public static buildIdHashForAlias(aliasId: string, outputId: string): string {
-        return !HexHelper.toBigInt256(aliasId).eq(bigInt.zero) ?
-            aliasId :
-            Utils.computeAliasId(outputId);
+        return HexHelper.toBigInt256(aliasId).eq(bigInt.zero) ?
+            Utils.computeAliasId(outputId) :
+            aliasId;
     }
 
     /**
@@ -236,9 +236,9 @@ export class TransactionsHelper {
      * @returns The BLAKE2b-256 hash for Nft Id.
      */
     public static buildIdHashForNft(nftId: string, outputId: string): string {
-        return !HexHelper.toBigInt256(nftId).eq(bigInt.zero) ?
-            nftId :
-            Utils.computeNftId(outputId);
+        return HexHelper.toBigInt256(nftId).eq(bigInt.zero) ?
+            Utils.computeNftId(outputId) :
+            nftId;
     }
 
     public static computeStorageRentBalance(outputs: Output[], rentStructure: IRent): number {

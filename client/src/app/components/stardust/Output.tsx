@@ -1,3 +1,4 @@
+/* eslint-disable react/static-property-placement */
 import {
     AddressType, AliasAddress, AliasOutput,
     CommonOutput, ExpirationUnlockCondition, FoundryOutput, ImmutableAliasAddressUnlockCondition,
@@ -9,6 +10,13 @@ import {
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import Feature from "./Feature";
+import NativeToken from "./NativeToken";
+import { OutputProps } from "./OutputProps";
+import { OutputState } from "./OutputState";
+import TruncatedId from "./TruncatedId";
+import UnlockCondition from "./UnlockCondition";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
@@ -18,14 +26,7 @@ import NetworkContext from "../../context/NetworkContext";
 import CopyButton from "../CopyButton";
 import DataToggle from "../DataToggle";
 import Tooltip from "../Tooltip";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import Feature from "./Feature";
-import NativeToken from "./NativeToken";
-import { OutputProps } from "./OutputProps";
-import { OutputState } from "./OutputState";
-import TruncatedId from "./TruncatedId";
 import "./Output.scss";
-import UnlockCondition from "./UnlockCondition";
 
 /**
  * Component which will display an output.

@@ -1,6 +1,7 @@
 import { AddressType } from "@iota/sdk-wasm/web";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { useAddressPageState } from "./AddressState";
 import addressMainHeaderInfo from "../../../assets/modals/stardust/address/main-header.json";
 import aliasMainHeaderInfo from "../../../assets/modals/stardust/alias/main-header.json";
 import nftMainHeaderInfo from "../../../assets/modals/stardust/nft/main-header.json";
@@ -11,7 +12,6 @@ import AddressBalance from "../../components/stardust/address/AddressBalance";
 import Bech32Address from "../../components/stardust/address/Bech32Address";
 import { AddressPageTabbedSections } from "../../components/stardust/address/section/AddressPageTabbedSections";
 import { AddressRouteProps } from "../AddressRouteProps";
-import { useAddressPageState } from "./AddressState";
 import "./AddressPage.scss";
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = (

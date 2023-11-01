@@ -49,18 +49,18 @@ export async function initServices(config: IConfiguration) {
     for (const networkConfig of enabledNetworks) {
         if (networkConfig.feedEndpoint) {
             switch (networkConfig.protocolVersion) {
-                case LEGACY:
+                case LEGACY: {
                     initLegacyServices(networkConfig);
                     break;
-
-                case CHRYSALIS:
+                }
+                case CHRYSALIS: {
                     initChrysalisServices(networkConfig);
                     break;
-
-                case STARDUST:
+                }
+                case STARDUST: {
                     initStardustServices(networkConfig);
                     break;
-
+                }
                 default:
             }
         }

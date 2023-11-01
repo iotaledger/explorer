@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import CopyButton from "../CopyButton";
 
 interface TruncatedIdProps {
-    id: string;
-    link?: string;
-    showCopyButton?: boolean;
+    readonly id: string;
+    readonly link?: string;
+    readonly showCopyButton?: boolean;
 }
 
 const TruncatedId: React.FC<TruncatedIdProps> = ({ id, link, showCopyButton }) => {

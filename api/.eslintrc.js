@@ -183,7 +183,7 @@ module.exports = {
             "error"
         ],
         "@typescript-eslint/no-parameter-properties": [
-            "error"
+            "off"
         ],
         "@typescript-eslint/no-require-imports": [
             "error"
@@ -261,7 +261,7 @@ module.exports = {
             "error"
         ],
         "@typescript-eslint/prefer-nullish-coalescing": [
-            "error"
+            "off",
         ],
         "@typescript-eslint/prefer-optional-chain": [
             "error"

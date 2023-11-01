@@ -13,7 +13,7 @@ export class IdentityDiffStorageService {
     }
 
     public static get instance() {
-        return this._instance || (this._instance = new this());
+        return (this._instance ||= new this());
     }
 
     /**

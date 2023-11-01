@@ -3,6 +3,7 @@ import {
 } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
+import { FoundryProps } from "./FoundryProps";
 import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
 import foundryMainHeaderInfo from "../../../assets/modals/stardust/foundry/main-header.json";
 import tokenSchemeIRC30 from "../../../assets/schemas/token-schema-IRC30.json";
@@ -24,7 +25,6 @@ import AssetsTable from "../../components/stardust/address/section/native-tokens
 import TokenInfoSection from "../../components/stardust/foundry/TokenInfoSection";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
-import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
 
 enum FOUNDRY_PAGE_TABS {

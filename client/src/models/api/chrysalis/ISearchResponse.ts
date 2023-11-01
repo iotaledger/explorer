@@ -1,6 +1,6 @@
 import { IAddressResponse, IMessage, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
-import { IResponse } from "../IResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
+import { IResponse } from "../IResponse";
 export interface ISearchResponse extends IResponse {
     /**
      * Message if it was found.

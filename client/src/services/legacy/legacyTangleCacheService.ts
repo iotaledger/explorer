@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* eslint-disable logical-assignment-operators */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { mamFetch, MamMode } from "@iota/mam-legacy";
 import { asTransactionObject } from "@iota/transaction-converter";
@@ -90,7 +91,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
             if (!response.error) {
                 if ((response.txHashes && response.txHashes.length > 0)) {
                     txHashes = response.txHashes ?? [];
-                    hashType = hashType ?? response.mode;
+                    hashType ??= response.mode;
                     cursor = response.cursor ?? {};
 
                     if (findCache && hashType) {
@@ -106,7 +107,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                 }
             } else if (response.error.includes("Timeout")) {
                 txHashes = response.txHashes ?? [];
-                hashType = hashType ?? response.mode;
+                hashType ??= response.mode;
             }
         }
 
