@@ -139,7 +139,18 @@ const Spheres = () => {
             <meshPhongMaterial />
             <Merged meshes={[
                 new THREE.Mesh(
-                    new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16),
+                    new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(
+                        new Float32Array([
+                            -1, -1, 1, // v0
+                            1, -1, 1, // v1
+                            1, 1, 1, // v2
+
+                            1, 1, 1, // v3
+                            -1, 1, 1, // v4
+                            -1, -1, 1 // v5
+                        ]),
+                        3
+                    )),
                     new THREE.MeshPhongMaterial()
                 )
             ]}
