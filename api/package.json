@@ -32,13 +32,13 @@
         "@iota/identity-wasm-0.4": "npm:@iota/identity-wasm@^0.4.3",
         "@iota/identity-wasm-0.7": "npm:@iota/identity-wasm@^0.7.0-alpha.6",
         "@iota/iota.js-chrysalis": "npm:@iota/iota.js@^1.8.6",
-        "@iota/sdk": "1.1.1",
         "@iota/mqtt.js": "^1.8.6",
+        "@iota/sdk": "1.1.1",
+        "@iota/sdk-wasm": "^1.0.4",
         "@iota/util.js": "^1.8.6",
         "@iota/validators": "^1.0.0-beta.30",
         "@types/moment": "^2.13.0",
         "@types/node-cron": "^3.0.2",
-        "abort-controller": "^3.0.0",
         "aws-sdk": "^2.1205.0",
         "big-integer": "^1.6.51",
         "compression": "^1.7.4",
@@ -52,8 +52,7 @@
         "socket.io": "^4.5.0",
         "uuid": "^8.3.2",
         "winston": "^3.8.2",
-        "zeromq": "^5.2.8",
-        "@iota/sdk-wasm": "^1.0.4"
+        "zeromq": "^5.2.8"
     },
     "devDependencies": {
         "@types/cors": "^2.8.12",
