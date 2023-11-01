@@ -109,7 +109,7 @@
         "@svgr/webpack": "$@svgr/webpack"
     },
     "engines": {
-        "node": ">=14 <=16.20.2"
+        "node": ">=16 <=16.20.2"
     },
     "browserslist": [
         ">0.2%",
