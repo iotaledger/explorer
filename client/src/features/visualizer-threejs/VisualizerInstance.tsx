@@ -119,6 +119,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * @param blockData
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
+        console.log("--- on new block");
         const emitterObj = emitterRef.current;
         if (emitterObj && blockData) {
             const emitterBox = new Box3().setFromObject(emitterObj);
