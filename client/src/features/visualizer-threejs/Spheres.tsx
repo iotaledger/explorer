@@ -77,8 +77,7 @@ const Spheres = () => {
     const geometry = useMemo(() => new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16), []);
 
     useEffect(() => {
-        return;
-        if (blocksToAdd.length < 10) {
+        if (blocksToAdd.length === 0) {
             return;
         }
 
@@ -89,9 +88,9 @@ const Spheres = () => {
             const size = NODE_SIZE_DEFAULT * scale;
             const [x, y, z] = block.position;
             const material = new THREE.MeshPhongMaterial({
-                color: blockOptions[block.id].color
+                color
             });
-            const sphere = new THREE.Mesh(new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16), material);
+            const sphere = new THREE.Mesh(geometry, material);
             sphere.position.set(x, y, z);
             sphere.name = block.id;
             spheres.push(sphere);
@@ -101,13 +100,6 @@ const Spheres = () => {
         removeBlocks(addedIds);
     }, [blocksToAdd]);
 
-    const meshes = useMemo(() => [
-            new THREE.Mesh(
-                new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 16, 8),
-                new THREE.MeshPhongMaterial()
-            )
-        ], []);
-
     return (
         <Instances
             limit={2500}
@@ -116,31 +108,8 @@ const Spheres = () => {
         >
             <sphereGeometry args={[NODE_SIZE_DEFAULT]} />
             <meshPhongMaterial />
-            <Merged meshes={meshes}>
-                {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
-                {/* @ts-expect-error some error */}
-                {Sphere => (
-                    <>
-                        {blocksToAdd.map(b => <Sphere key={b.id} position={b.position} color={blockOptions[b.id].color} />)}
-                    </>
-                )}
-            </Merged>
         </Instances>
     );
 };
-
-/**
- *
- * @param root0
- * @param root0.position
- */
-// function SphereObj({ position, ...props }: { position: [number, number, number] }) {
-//     const geometry = new THREE.SphereGeometry(1, 32, 16);
-//     const object = new THREE.InstancedMesh(geometry, new THREE.MeshPhongMaterial({ color: "red" }), 1);
-//     object.position.x = position[0];
-//     object.position.y = position[1];
-//     object.position.z = position[2];
-//     return object;
-// }
 
 export default Spheres;
