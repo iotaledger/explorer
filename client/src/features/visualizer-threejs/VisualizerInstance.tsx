@@ -1,5 +1,6 @@
 import { OrthographicCamera, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Perf, usePerf, PerfHeadless } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
@@ -24,11 +25,20 @@ const features = {
 
 const timerDiff = timer(TIME_DIFF_COUNTER);
 
+const PerfHook = () =>
+    // getPerf() is also available for non-reactive way
+
+    <PerfHeadless />;
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
         params: { network }
     }
 }) => {
+    // Performance monitoring start
+    // const p = usePerf(s => s);
+    // console.log(p, p.getReport());
+    // Performance monitoring end
+
     const setDimensions = useBlockStore(s => s.setDimensions);
     const [networkConfig] = useNetworkConfig(network);
     const generateY = getGenerateY({ withRandom: true });
@@ -119,7 +129,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * @param blockData
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
-        console.log("--- on new block");
         const emitterObj = emitterRef.current;
         if (emitterObj && blockData) {
             const emitterBox = new Box3().setFromObject(emitterObj);
@@ -214,6 +223,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <Spheres />
                 {/* {controlsEnabled && <CameraControls makeDefault />} */}
                 {features.statsEnabled && <Stats showPanel={0} className="stats" />}
+                <Perf />
             </Canvas>
         </Wrapper>
     );

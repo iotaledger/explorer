@@ -12,9 +12,9 @@ const Spheres = () => {
     const blocksToAdd = useBlockStore(s => s.blocksToAdd);
     const removeYPosition = useBlockStore(s => s.removeYPosition);
     const removeBlock = useBlockStore(s => s.removeBlock);
-    // const removeBlocks = useBlockStore(s => s.removeBlocks);
+    const removeBlocks = useBlockStore(s => s.removeBlocks);
     const get = useThree(state => state.get);
-    // const scene = useThree(state => state.scene);
+    const scene = useThree(state => state.scene);
     const blockOptions = useBlockStore(s => s.blockOptions);
     const zoom = useBlockStore(s => s.zoom);
     const { halfScreenWidth } = useBorderPositions();
@@ -22,7 +22,12 @@ const Spheres = () => {
     // const [meshes, setMeshes] = useState([]);
     useZoomDynamic();
 
-    // const st = useThree(state => state);
+    const st = useThree(state => state);
+
+    useEffect(() => {
+        // @ts-expect-error
+        window.st = st;
+    }, [st]);
 
 
     const clearBlocks = () => {
@@ -64,70 +69,44 @@ const Spheres = () => {
         return () => clearInterval(timer);
     }, []);
 
+    console.log("---", blocksToAdd.length);
+
     /**
      * Add spheres
      */
-    // useEffect(() => {
-    //     if (blocksToAdd.length < 10) {
-    //         return;
-    //     }
-    //
-    //     const addedIds = [];
-    //     const spheres = [];
-    //     for (const block of blocksToAdd) {
-    //         const { color, scale } = blockOptions[block.id];
-    //         const size = NODE_SIZE_DEFAULT * scale;
-    //         const [x, y, z] = block.position;
-    //         const s = new THREE.Sphere(new THREE.Vector3(x, y, z), size);
-    //         const boundedGeometry = new THREE.BufferGeometry();
-    //         // new THREE.BufferGeometry().b
-    //         // const geometry = new THREE.SphereGeometry(size, 32, 16);
-    //         // const material = new THREE.MeshPhongMaterial({
-    //         //     color: blockOptions[block.id].color
-    //         // });
-    //         const sphere = new THREE.InstancedMesh(geometry, material);
-    //         // sphere.position.set(x, y, z);
-    //         // sphere.name = block.id;
-    //         // spheres.push(sphere);
-    //         // addedIds.push(block.id);
-    //     }
-    //     // new THREE.BufferGeometry().boundingSphere(spheres);
-    //     // @ts-expect-error
-    //     setMeshes(spheres);
-    //     // scene.add(...spheres);
-    //     // removeBlocks(addedIds);
-    // }, [blocksToAdd]);
+    const geometry = useMemo(() => new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16), []);
 
-    // const meshes = useMemo(() => {}, []);
+    useEffect(() => {
+        return;
+        if (blocksToAdd.length < 10) {
+            return;
+        }
 
-    const meshesMemo = useMemo(() => blocksToAdd.map(block => {
+        const addedIds = [];
+        const spheres = [];
+        for (const block of blocksToAdd) {
             const { color, scale } = blockOptions[block.id];
             const size = NODE_SIZE_DEFAULT * scale;
             const [x, y, z] = block.position;
             const material = new THREE.MeshPhongMaterial({
-                color
+                color: blockOptions[block.id].color
             });
-            const geometry = new THREE.SphereGeometry(size, 32, 16);
-            const sphere = new THREE.InstancedMesh(geometry, material, 1);
+            const sphere = new THREE.Mesh(new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16), material);
             sphere.position.set(x, y, z);
-            return sphere;
-        }), [blocksToAdd]);
+            sphere.name = block.id;
+            spheres.push(sphere);
+            addedIds.push(block.id);
+        }
+        scene.add(...spheres);
+        removeBlocks(addedIds);
+    }, [blocksToAdd]);
 
-    // const blocksMemo = useMemo(() => {
-    //         const start = performance.now();
-    //         const allBlocks = blocksToAdd.map((block, index) => (
-    //             <Sphere
-    //                 key={block.id}
-    //                 id={block.id}
-    //                 position={block.position}
-    //                 color={blockOptions[block.id].color}
-    //                 scale={blockOptions[block.id].scale}
-    //             />
-    //         ));
-    //         const end = performance.now();
-    //         console.log("blocksMemo", end - start); // one render - ~6ms;
-    //         return allBlocks;
-    //     }, [blocksToAdd]);
+    const meshes = useMemo(() => [
+            new THREE.Mesh(
+                new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 16, 8),
+                new THREE.MeshPhongMaterial()
+            )
+        ], []);
 
     return (
         <Instances
@@ -137,24 +116,7 @@ const Spheres = () => {
         >
             <sphereGeometry args={[NODE_SIZE_DEFAULT]} />
             <meshPhongMaterial />
-            <Merged meshes={[
-                new THREE.Mesh(
-                    new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(
-                        new Float32Array([
-                            -1, -1, 1, // v0
-                            1, -1, 1, // v1
-                            1, 1, 1, // v2
-
-                            1, 1, 1, // v3
-                            -1, 1, 1, // v4
-                            -1, -1, 1 // v5
-                        ]),
-                        3
-                    )),
-                    new THREE.MeshPhongMaterial()
-                )
-            ]}
-            >
+            <Merged meshes={meshes}>
                 {/* eslint-disable-next-line @typescript-eslint/no-shadow */}
                 {/* @ts-expect-error some error */}
                 {Sphere => (
