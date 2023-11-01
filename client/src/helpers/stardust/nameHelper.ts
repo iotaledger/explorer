@@ -22,18 +22,24 @@ export class NameHelper {
      */
     public static getOutputTypeName(type: number): string {
         switch (type) {
-            case OutputType.Basic:
+            case OutputType.Basic: {
                 return "Basic";
-            case OutputType.Alias:
+            }
+            case OutputType.Alias: {
                 return "Alias";
-            case OutputType.Foundry:
+            }
+            case OutputType.Foundry: {
                 return "Foundry";
-            case OutputType.Nft:
+            }
+            case OutputType.Nft: {
                 return "NFT";
-            case OutputType.Treasury:
+            }
+            case OutputType.Treasury: {
                 return "Treasury";
-            default:
+            }
+            default: {
                 return "Unknown";
+            }
         }
     }
 
@@ -44,16 +50,21 @@ export class NameHelper {
      */
     public static getUnlockTypeName(type: number): string {
         switch (type) {
-            case UnlockType.Alias:
+            case UnlockType.Alias: {
                 return "Alias Unlock";
-            case UnlockType.Nft:
+            }
+            case UnlockType.Nft: {
                 return "NFT Unlock";
-            case UnlockType.Signature:
+            }
+            case UnlockType.Signature: {
                 return "Signature Unlock";
-            case UnlockType.Reference:
+            }
+            case UnlockType.Reference: {
                 return "Reference Unlock";
-            default:
+            }
+            default: {
                 return "Unknown Unlock";
+            }
         }
     }
 
@@ -134,21 +145,26 @@ export class NameHelper {
         }
 
         switch (block.payload?.type) {
-            case PayloadType.TaggedData:
+            case PayloadType.TaggedData: {
                 payloadType = "Data";
                 break;
-            case PayloadType.Transaction:
+            }
+            case PayloadType.Transaction: {
                 payloadType = "Transaction";
                 break;
-            case PayloadType.Milestone:
+            }
+            case PayloadType.Milestone: {
                 payloadType = "Milestone";
                 break;
-            case PayloadType.TreasuryTransaction:
+            }
+            case PayloadType.TreasuryTransaction: {
                 payloadType = "Treasury Transaction";
                 break;
-            default:
+            }
+            default: {
                 payloadType = "No payload";
                 break;
+            }
         }
 
         return payloadType;

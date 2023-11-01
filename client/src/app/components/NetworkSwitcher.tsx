@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
+import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
+import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
+import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 import { getNetworkOrder } from "../../helpers/networkHelper";
 import { MAINNET } from "../../models/config/networkType";
 import { CHRYSALIS, LEGACY, STARDUST } from "../../models/config/protocolVersion";
-import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
-import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
 import "./NetworkSwitcher.scss";
-import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 
 const PROTOCOL_VERIONS_TO_LABEL = {
     [LEGACY]: "Legacy",

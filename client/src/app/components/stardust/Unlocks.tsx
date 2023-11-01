@@ -1,12 +1,12 @@
 import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useState } from "react";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import TruncatedId from "./TruncatedId";
+import { NameHelper } from "../../../helpers/stardust/nameHelper";
 
 interface IUnlocksProps {
-    unlocks: Unlock[];
+    readonly unlocks: Unlock[];
 }
 
 const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {

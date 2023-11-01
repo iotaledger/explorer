@@ -2,6 +2,8 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { HeaderProps } from "./HeaderProps";
+import { HeaderState } from "./HeaderState";
 import { ReactComponent as Logo } from "../../../assets/logo-header.svg";
 import mainChrysalisMessage from "../../../assets/modals/chrysalis/search/main-header.json";
 import mainLegacyMessage from "../../../assets/modals/legacy/search/main-header.json";
@@ -15,8 +17,6 @@ import FiatSelector from "../FiatSelector";
 import "./Header.scss";
 import Modal from "../Modal";
 import NetworkSwitcher from "../NetworkSwitcher";
-import { HeaderProps } from "./HeaderProps";
-import { HeaderState } from "./HeaderState";
 
 /**
  * Component which will show the header.

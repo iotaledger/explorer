@@ -1,6 +1,8 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { BundleRouteProps } from "./BundleRouteProps";
+import { BundleState } from "./BundleState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
@@ -13,8 +15,6 @@ import CopyButton from "../../components/CopyButton";
 import Currency from "../../components/Currency";
 import Spinner from "../../components/Spinner";
 import "./Bundle.scss";
-import { BundleRouteProps } from "./BundleRouteProps";
-import { BundleState } from "./BundleState";
 
 /**
  * Component which will show the bundle page.

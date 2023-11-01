@@ -7,7 +7,7 @@ interface FeaturesSectionProps {
     /**
      * The Output
      */
-    output?: NftOutput | AliasOutput | FoundryOutput;
+    readonly output?: NftOutput | AliasOutput | FoundryOutput;
 }
 
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({ output }) => (

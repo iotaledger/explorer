@@ -82,24 +82,27 @@ async function initialiseServices(): Promise<void> {
     if (networks.length > 0) {
         for (const netConfig of networks) {
             switch (netConfig.protocolVersion) {
-                case LEGACY:
+                case LEGACY: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new LegacyFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
-                case CHRYSALIS:
+                }
+                case CHRYSALIS: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
-                case STARDUST:
+                }
+                case STARDUST: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
+                }
                 default:
             }
         }

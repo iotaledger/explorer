@@ -3,12 +3,12 @@ import { NumberHelper } from "../../../../helpers/numberHelper";
 import "./InfoBox.scss";
 
 interface InfoBoxProps {
-    baseToken: string;
-    itemsPerSecond: string;
-    confirmedItemsPerSecondPercent: string;
-    marketCapCurrency: string;
-    priceCurrency: string;
-    showMarket: boolean;
+    readonly baseToken: string;
+    readonly itemsPerSecond: string;
+    readonly confirmedItemsPerSecondPercent: string;
+    readonly marketCapCurrency: string;
+    readonly priceCurrency: string;
+    readonly showMarket: boolean;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = (

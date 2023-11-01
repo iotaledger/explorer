@@ -82,9 +82,9 @@ export class CurrencyService {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState?.coinStats !== undefined ?
-                    currentState :
-                    CurrencyService.INITIAL_STATE;
+                currentState = currentState?.coinStats === undefined ?
+                    CurrencyService.INITIAL_STATE :
+                    currentState;
 
                 const lastFixerUpdate = currentState?.lastFixerUpdate > 0 ?
                     new Date(currentState.lastFixerUpdate) :
@@ -137,7 +137,9 @@ export class CurrencyService {
         currentState: ICurrencyState,
         date: string
     ): Promise<void> {
-        if ((this._config.fixerApiKey || "FIXER-API-KEY") !== "FIXER-API-KEY") {
+        if ((this._config.fixerApiKey || "FIXER-API-KEY") === "FIXER-API-KEY") {
+            logger.warn("Fixer Api key NOT FOUND!");
+        } else {
             logger.verbose(`[Fixer API] Updating Currency Rates (${date})...`);
 
             const fixerClient = new FixerClient(this._config.fixerApiKey);
@@ -150,8 +152,6 @@ export class CurrencyService {
                 currentState.fiatExchangeRatesEur = data.rates;
                 currentState.lastFixerUpdate = Date.now();
             }
-        } else {
-            logger.warn("Fixer Api key NOT FOUND!");
         }
     }
 

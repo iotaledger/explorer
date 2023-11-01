@@ -32,7 +32,7 @@ export async function init(config: IConfiguration): Promise<string[]> {
         log += `Failed\n${err.toString()}\n`;
     }
 
-    log += !log.includes("Failed") ? "Initialization Succeeded" : "Initialization Failed";
+    log += log.includes("Failed") ? "Initialization Failed" : "Initialization Succeeded";
 
     return log.split("\n");
 }

@@ -11,15 +11,15 @@ import TaggedDataPayload from "../payload/TaggedDataPayload";
 import TransactionPayload from "../payload/TransactionPayload";
 
 interface BlockPayloadSectionProps {
-    network: string;
-    protocolVersion: number;
-    block: Block;
-    inputs?: IInput[];
-    unlocks?: Unlock[];
-    outputs?: IOutput[];
-    transferTotal?: number;
-    history: H.History;
-    isLinksDisabled: boolean;
+    readonly network: string;
+    readonly protocolVersion: number;
+    readonly block: Block;
+    readonly inputs?: IInput[];
+    readonly unlocks?: Unlock[];
+    readonly outputs?: IOutput[];
+    readonly transferTotal?: number;
+    readonly history: H.History;
+    readonly isLinksDisabled: boolean;
 }
 
 const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (

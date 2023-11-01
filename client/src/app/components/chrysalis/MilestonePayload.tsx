@@ -1,15 +1,15 @@
 /* eslint-disable max-len */
 import React, { ReactNode } from "react";
+import milestoneMessage from "./../../../assets/modals/chrysalis/message/milestone-payload.json";
+import { MilestonePayloadProps } from "./MilestonePayloadProps";
+import { MilestonePayloadState } from "./MilestonePayloadState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Modal from "../../components/Modal";
-import milestoneMessage from "./../../../assets/modals/chrysalis/message/milestone-payload.json";
 import "./MilestonePayload.scss";
-import { MilestonePayloadProps } from "./MilestonePayloadProps";
-import { MilestonePayloadState } from "./MilestonePayloadState";
 
 /**
  * Component which will display a milestone payload.

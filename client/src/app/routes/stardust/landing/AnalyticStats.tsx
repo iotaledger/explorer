@@ -1,14 +1,14 @@
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React from "react";
+import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
-import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
-    analytics: IAnalyticStats | null;
-    circulatingSupply: number | undefined;
-    tokenInfo: INodeInfoBaseToken;
+    readonly analytics: IAnalyticStats | null;
+    readonly circulatingSupply: number | undefined;
+    readonly tokenInfo: INodeInfoBaseToken;
 }
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (

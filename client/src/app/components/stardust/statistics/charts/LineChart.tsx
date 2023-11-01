@@ -24,12 +24,12 @@ import {
 import "./Chart.scss";
 
 interface LineChartProps {
-    chartId: string;
-    title?: string;
-    info?: ModalData;
-    data: { [name: string]: number; time: number }[];
-    label?: string;
-    color: string;
+    readonly chartId: string;
+    readonly title?: string;
+    readonly info?: ModalData;
+    readonly data: { [name: string]: number; time: number }[];
+    readonly label?: string;
+    readonly color: string;
 }
 
 const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label, color }) => {
@@ -70,7 +70,7 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
 
             // X
             const x = scaleTime()
-                .domain([dates[0], dates[dates.length - 1]])
+                .domain([dates[0], dates.at(-1) ?? dates[0]])
                 .range([0, INNER_WIDTH]);
             const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
@@ -170,12 +170,12 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
                     return;
                 }
                 const extent = event.selection;
-                if (!extent) {
-                    x.domain([dates[0], dates[dates.length - 1]]);
-                } else {
+                if (extent) {
                     x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     brushSelection.call(brush.move, null);
+                } else {
+                    x.domain([dates[0], dates.at(-1) ?? dates[0]]);
                 }
 
                 const selectedData = computeDataIncludedInSelection(x, data);
@@ -197,7 +197,7 @@ const LineChart: React.FC<LineChartProps> = ({ chartId, title, info, data, label
 
             // double click reset
             svg.on("dblclick", () => {
-                x.domain([dates[0], dates[dates.length - 1]]);
+                x.domain([dates[0], dates.at(-1) ?? dates[0]]);
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));

@@ -1,3 +1,4 @@
+import { IIdentityDiffHistoryResponse } from ".././../models/api/IIdentityDiffHistoryResponse";
 import { FetchHelper } from "../../helpers/fetchHelper";
 import { IMessageDetailsRequest } from "../../models/api/chrysalis/IMessageDetailsRequest";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
@@ -18,7 +19,6 @@ import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IOutputDetailsRequest } from "../../models/api/IOutputDetailsRequest";
 import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
-import { IIdentityDiffHistoryResponse } from ".././../models/api/IIdentityDiffHistoryResponse";
 import { ApiClient } from "../apiClient";
 
 /**

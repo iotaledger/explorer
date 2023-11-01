@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import OutputPageProps from "./OutputPageProps";
 import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { useOutputDetails } from "../../../helpers/hooks/useOutputDetails";
@@ -12,7 +13,6 @@ import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import Tooltip from "../../components/Tooltip";
-import OutputPageProps from "./OutputPageProps";
 import "./OutputPage.scss";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = (

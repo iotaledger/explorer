@@ -88,7 +88,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
 
         return () => {
             if ((graphElement.current?.children?.length ?? 0) > 0) {
-                graphElement.current?.removeChild(graphElement.current.children[0]);
+                graphElement.current?.children[0]?.remove();
             }
             graph.current = null;
             graphics.current = null;

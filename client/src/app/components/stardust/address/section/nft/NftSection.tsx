@@ -3,17 +3,17 @@ import {
     NftAddress, NftOutput, OutputResponse, OutputType, Utils
 } from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
+import Nft from "./Nft";
 import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
 import { TransactionsHelper } from "../../../../../../helpers/stardust/transactionsHelper";
 import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
 import Pagination from "../../../../Pagination";
-import Nft from "./Nft";
 
 interface NftSectionProps {
-    network: string;
-    bech32Address?: string;
-    outputs: OutputResponse[] | null;
-    setNftCount?: (count: number) => void;
+    readonly network: string;
+    readonly bech32Address?: string;
+    readonly outputs: OutputResponse[] | null;
+    readonly setNftCount?: (count: number) => void;
 }
 
 const PAGE_SIZE = 10;
@@ -55,17 +55,21 @@ const NftSection: React.FC<NftSectionProps> = ({ network, bech32Address, outputs
                     let issuerId = null;
                     if (issuerFeature) {
                         switch (issuerFeature.address.type) {
-                            case AddressType.Ed25519:
+                            case AddressType.Ed25519: {
                                 issuerId = (issuerFeature.address as Ed25519Address).pubKeyHash;
                                 break;
-                            case AddressType.Alias:
+                            }
+                            case AddressType.Alias: {
                                 issuerId = (issuerFeature.address as AliasAddress).aliasId;
                                 break;
-                            case AddressType.Nft:
+                            }
+                            case AddressType.Nft: {
                                 issuerId = (issuerFeature.address as NftAddress).nftId;
                                 break;
-                            default:
+                            }
+                            default: {
                                 break;
+                            }
                         }
                     }
 

@@ -8,8 +8,8 @@ import "./DownloadModal.scss";
 import "react-datetime/css/react-datetime.css";
 
 interface DownloadModalProps {
-    network: string;
-    address: string;
+    readonly network: string;
+    readonly address: string;
 }
 
 const DOWNLOAD_INFO = "History will be downloaded from present date up to target date.";
@@ -88,16 +88,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                     />
                                 </div>
                             </div>
-                            {!isDownloading ? (
-                                <button
-                                    className="confirm-button"
-                                    type="button"
-                                    disabled={date === null}
-                                    onClick={onDownload}
-                                >
-                                    Confirm
-                                </button>
-                            ) : (
+                            {isDownloading ? (
                                 <button
                                     className="confirm-button"
                                     type="button"
@@ -106,6 +97,15 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                     <div className="spinner-container">
                                         <Spinner compact={true} />
                                     </div>
+                                </button>
+                            ) : (
+                                <button
+                                    className="confirm-button"
+                                    type="button"
+                                    disabled={date === null}
+                                    onClick={onDownload}
+                                >
+                                    Confirm
                                 </button>
                             )}
                         </div>

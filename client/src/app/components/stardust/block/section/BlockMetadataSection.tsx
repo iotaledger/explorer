@@ -5,12 +5,12 @@ import InclusionState from "../../InclusionState";
 import TruncatedId from "../../TruncatedId";
 
 interface BlockMetadataSectionProps {
-    network: string;
-    metadata?: IBlockMetadata;
-    metadataError?: string;
-    blockChildren?: HexEncodedString[] | null;
-    conflictReason?: string;
-    isLinksDisabled: boolean;
+    readonly network: string;
+    readonly metadata?: IBlockMetadata;
+    readonly metadataError?: string;
+    readonly blockChildren?: HexEncodedString[] | null;
+    readonly conflictReason?: string;
+    readonly isLinksDisabled: boolean;
 }
 
 const BlockMetadataSection: React.FC<BlockMetadataSectionProps> = (

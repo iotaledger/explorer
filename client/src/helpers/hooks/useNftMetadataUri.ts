@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getIPFSHash, getIpfsUri } from "../stardust/ipfsHelper";
 import { useIsMounted } from "./useIsMounted";
+import { getIPFSHash, getIpfsUri } from "../stardust/ipfsHelper";
 
 /**
  * Get the correct nft metadata image uri

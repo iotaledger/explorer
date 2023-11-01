@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import { Bech32Helper } from "@iota/iota.js-chrysalis";
 import { AddressType, HexEncodedString, Utils } from "@iota/sdk";
 import { Converter } from "../convertUtils";

@@ -1,4 +1,6 @@
 import React, { ReactNode } from "react";
+import { FooterProps } from "./FooterProps";
+import { FooterState } from "./FooterState";
 import { ReactComponent as DiscordIcon } from "../../../assets/discord.svg";
 import { ReactComponent as GithubIcon } from "../../../assets/github.svg";
 import { ReactComponent as Logo } from "../../../assets/shimmer-footer-bg.svg";
@@ -6,8 +8,6 @@ import { ReactComponent as TwitterIcon } from "../../../assets/twitter.svg";
 import { FoundationDataHelper } from "../../../helpers/foundationDataHelper";
 import "./ShimmerFooter.scss";
 import AsyncComponent from "../AsyncComponent";
-import { FooterProps } from "./FooterProps";
-import { FooterState } from "./FooterState";
 
 /**
  * Component which will show the footer.

@@ -6,15 +6,15 @@ import {
 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import Address from "./address/Address";
+import { UnlockConditionProps } from "./UnlockConditionProps";
+import { UnlockConditionState } from "./UnlockConditionState";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import Address from "./address/Address";
-import { UnlockConditionProps } from "./UnlockConditionProps";
-import { UnlockConditionState } from "./UnlockConditionState";
 
 /**
  * Component which will display an unlock condition.

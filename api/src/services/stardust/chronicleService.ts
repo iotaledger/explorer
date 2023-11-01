@@ -236,7 +236,7 @@ export class ChronicleService {
 
             result.items.sort((a, b) => {
                 if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                    return !a.isSpent ? -1 : 1;
+                    return a.isSpent ? 1 : -1;
                 }
                 return 1;
             });

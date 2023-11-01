@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-first-prop-new-line */
 import React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
-import { CHRYSALIS, LEGACY, STARDUST } from "../models/config/protocolVersion";
 import { AddressRouteProps } from "./routes/AddressRouteProps";
 import ChrysalisAddress from "./routes/chrysalis/Addr";
 import ChrysalisIndexed from "./routes/chrysalis/Indexed";
@@ -40,6 +39,7 @@ import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import { CHRYSALIS, LEGACY, STARDUST } from "../models/config/protocolVersion";
 
 /**
  * Generator for keys in routes. Gives an incremented value on every next().

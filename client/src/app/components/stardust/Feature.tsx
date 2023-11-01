@@ -1,11 +1,11 @@
 import { FeatureType, IssuerFeature, MetadataFeature, SenderFeature, TagFeature } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useState } from "react";
+import Address from "./address/Address";
+import { FeatureProps } from "./FeatureProps";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import DataToggle from "../DataToggle";
-import Address from "./address/Address";
-import { FeatureProps } from "./FeatureProps";
 
 const Feature: React.FC<FeatureProps> = (
     { feature, isImmutable, isPreExpanded, isParticipationEventMetadata }

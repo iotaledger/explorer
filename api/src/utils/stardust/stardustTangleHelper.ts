@@ -3,6 +3,9 @@ import {
     OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
     HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
 } from "@iota/sdk";
+import { SearchExecutor } from "./searchExecutor";
+import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
+import { addressBalance, blockIdFromMilestonePayload } from "./utils";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
@@ -26,9 +29,6 @@ import { IParticipationEventStatus } from "../../models/api/stardust/participati
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { HexHelper } from "../hexHelper";
-import { SearchExecutor } from "./searchExecutor";
-import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
-import { addressBalance, blockIdFromMilestonePayload } from "./utils";
 
 /**
  * Helper functions for use with tangle.
@@ -365,9 +365,9 @@ export class StardustTangleHelper {
         if (aliasOutputId) {
             const outputResponse = await this.outputDetails(network, aliasOutputId);
 
-            return !outputResponse.error ?
-                { aliasDetails: outputResponse.output } :
-                { error: outputResponse.error };
+            return outputResponse.error ?
+                { error: outputResponse.error } :
+                { aliasDetails: outputResponse.output };
         }
 
         return { message: "Alias output not found" };
@@ -419,9 +419,9 @@ export class StardustTangleHelper {
         if (foundryOutputId) {
             const outputResponse = await this.outputDetails(network, foundryOutputId);
 
-            return !outputResponse.error ?
-                { foundryDetails: outputResponse.output } :
-                { error: outputResponse.error };
+            return outputResponse.error ?
+                { error: outputResponse.error } :
+                { foundryDetails: outputResponse.output };
         }
 
         return { message: "Foundry output not found" };
@@ -447,9 +447,9 @@ export class StardustTangleHelper {
             if (nftOutputId) {
                 const outputResponse = await this.outputDetails(network, nftOutputId);
 
-                return !outputResponse.error ?
-                    { nftDetails: outputResponse.output } :
-                    { error: outputResponse.error };
+                return outputResponse.error ?
+                    { error: outputResponse.error } :
+                    { nftDetails: outputResponse.output };
             }
 
             return { message: "Nft output not found" };

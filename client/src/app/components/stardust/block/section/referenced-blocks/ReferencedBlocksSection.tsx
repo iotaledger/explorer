@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import ReferencedBlocksSectionRow from "./ReferencedBlocksSectionRow";
 import Pagination from "../../../../Pagination";
 import Spinner from "../../../../Spinner";
-import ReferencedBlocksSectionRow from "./ReferencedBlocksSectionRow";
 import "./ReferencedBlocksSection.scss";
 
 interface ReferencedBlocksSectionProps {
-    blockIds?: string[];
+    readonly blockIds?: string[];
 }
 
 const PAGE_SIZE: number = 10;

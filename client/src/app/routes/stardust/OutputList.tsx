@@ -1,10 +1,10 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
+import OutputListProps from "./OutputListProps";
 import { useTaggedOutputs } from "../../../helpers/hooks/useTaggedOutputs";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Pagination from "../../components/Pagination";
 import Output from "../../components/stardust/Output";
-import OutputListProps from "./OutputListProps";
 import "./OutputList.scss";
 
 const OUTPUTS_OVER_LIMIT_MESSAGE = "There are more than 100 outputs with this tag, only the first 100 are shown.";
@@ -83,7 +83,11 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
                                             onPageChange={page => setPageNumberBasic(page)}
                                         />
                                     )}
-                                    {!basicOutputLimitReached ? (
+                                    {basicOutputLimitReached ? hasMoreBasicOutputs && (
+                                        <div className="card outputs-over-limit">
+                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
+                                        </div>
+                                    ) : (
                                         <div className="card load-more--button">
                                             <button
                                                 type="button"
@@ -92,10 +96,6 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
                                             >
                                                 Load more...
                                             </button>
-                                        </div>
-                                    ) : hasMoreBasicOutputs && (
-                                        <div className="card outputs-over-limit">
-                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
                                         </div>
                                     )}
                                 </div>
@@ -125,7 +125,11 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
                                             onPageChange={page => setPageNumberNft(page)}
                                         />
                                     )}
-                                    {!nftOutputLimitReached ? (
+                                    {nftOutputLimitReached ? hasMoreNftOutputs && (
+                                        <div className="card outputs-over-limit">
+                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
+                                        </div>
+                                    ) : (
                                         <div className="card load-more--button">
                                             <button
                                                 type="button"
@@ -134,10 +138,6 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
                                             >
                                                 Load more...
                                             </button>
-                                        </div>
-                                    ) : hasMoreNftOutputs && (
-                                        <div className="card outputs-over-limit">
-                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
                                         </div>
                                     )}
                                 </div>

@@ -11,22 +11,30 @@ import { SHIMMER_UI, Theme } from "../models/config/uiTheme";
  */
 export const getNetworkOrder = (networkType: NetworkType) => {
     switch (networkType) {
-        case MAINNET:
+        case MAINNET: {
             return 0;
-        case CHRYSALIS_MAINNET:
+        }
+        case CHRYSALIS_MAINNET: {
             return 1;
-        case SHIMMER:
+        }
+        case SHIMMER: {
             return 2;
-        case TESTNET:
+        }
+        case TESTNET: {
             return 3;
-        case ALPHANET:
+        }
+        case ALPHANET: {
             return 4;
-        case LEGACY_MAINNET:
+        }
+        case LEGACY_MAINNET: {
             return 5;
-        case DEVNET:
+        }
+        case DEVNET: {
             return 6;
-        default:
+        }
+        default: {
             return 7;
+        }
     }
 };
 

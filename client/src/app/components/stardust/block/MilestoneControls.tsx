@@ -7,7 +7,7 @@ import NetworkContext from "../../../context/NetworkContext";
 import "./MilestoneControls.scss";
 
 interface MilestoneControlProps {
-    milestone: MilestonePayload;
+    readonly milestone: MilestonePayload;
 }
 
 const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {

@@ -1207,7 +1207,7 @@ module.exports = {
         "react/jsx-props-no-spreading": [
             "off"
         ],
-        "react/jsx-sort-default-props": [
+        "react/sort-default-props": [
             2
         ],
         "react/jsx-sort-props": [

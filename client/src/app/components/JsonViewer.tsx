@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from "react";
+import { JsonViewerProps } from "./JsonViewerProps";
 import { JsonSyntaxHelper } from "../../helpers/jsonSyntaxHelper";
 import "./JsonViewer.scss";
-import { JsonViewerProps } from "./JsonViewerProps";
 
 /**
  * Component which will display json formatted.

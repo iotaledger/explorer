@@ -1,5 +1,12 @@
 import { AddressType } from "@iota/sdk-wasm/web";
 import React from "react";
+import AliasFoundriesSection from "./alias/AliasFoundriesSection";
+import AliasStateSection from "./alias/AliasStateSection";
+import AssociatedOutputs from "./association/AssociatedOutputs";
+import AssetsTable from "./native-tokens/AssetsTable";
+import NftMetadataSection from "./nft/NftMetadataSection";
+import NftSection from "./nft/NftSection";
+import VotingSection from "./voting/VotingSection";
 import nativeTokensMessage from "../../../../../assets/modals/stardust/address/assets-in-wallet.json";
 import associatedOuputsMessage from "../../../../../assets/modals/stardust/address/associated-outputs.json";
 import addressNftsMessage from "../../../../../assets/modals/stardust/address/nfts-in-wallet.json";
@@ -11,13 +18,6 @@ import votingMessage from "../../../../../assets/modals/stardust/participation/m
 import { IAddressState } from "../../../../routes/stardust/AddressState";
 import TabbedSection from "../../../hoc/TabbedSection";
 import TransactionHistory from "../../history/TransactionHistory";
-import AliasFoundriesSection from "./alias/AliasFoundriesSection";
-import AliasStateSection from "./alias/AliasStateSection";
-import AssociatedOutputs from "./association/AssociatedOutputs";
-import AssetsTable from "./native-tokens/AssetsTable";
-import NftMetadataSection from "./nft/NftMetadataSection";
-import NftSection from "./nft/NftSection";
-import VotingSection from "./voting/VotingSection";
 
 enum DEFAULT_TABS {
     Transactions = "Transactions",
@@ -107,14 +107,14 @@ const buildNftAddressTabsOptions = (
 });
 
 interface IAddressPageTabbedSectionsProps {
-    network: string;
-    addressPageState: IAddressState;
-    setTransactionHistoryLoading: (isLoading: boolean) => void;
-    setTransactionHistoryDisabled: (isDisabled: boolean) => void;
-    setTokenCount: (count: number) => void;
-    setNftCount: (count: number) => void;
-    setAssociatedOutputsCount: (count: number) => void;
-    setAssociatedOutputsLoading: (isLoading: boolean) => void;
+    readonly network: string;
+    readonly addressPageState: IAddressState;
+    readonly setTransactionHistoryLoading: (isLoading: boolean) => void;
+    readonly setTransactionHistoryDisabled: (isDisabled: boolean) => void;
+    readonly setTokenCount: (count: number) => void;
+    readonly setNftCount: (count: number) => void;
+    readonly setAssociatedOutputsCount: (count: number) => void;
+    readonly setAssociatedOutputsLoading: (isLoading: boolean) => void;
 }
 
 export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps> = (
@@ -188,7 +188,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />
     ];
 
-    const aliasAddressSections = addressType !== AddressType.Alias ? null : [
+    const aliasAddressSections = addressType === AddressType.Alias ? [
         <AliasStateSection
             key={`alias-state-${addressBech32}`}
             output={aliasOutput}
@@ -198,16 +198,16 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             network={network}
             foundries={aliasFoundries}
         />
-    ];
+    ] : null;
 
-    const nftAddressSections = addressType !== AddressType.Nft ? null : [
+    const nftAddressSections = addressType === AddressType.Nft ? [
         <NftMetadataSection
             key={`nft-meta-${addressBech32}`}
             network={network}
             nft={nft}
             isLoading={isNftDetailsLoading}
         />
-    ];
+    ] : null;
 
     let tabEnums = DEFAULT_TABS;
     const defaultTabsOptions = buildDefaultTabsOptions(
@@ -219,7 +219,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     let tabbedSections = defaultSections;
 
     switch (addressType) {
-        case AddressType.Alias:
+        case AddressType.Alias: {
             tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
             tabOptions = {
@@ -233,7 +233,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             };
             tabbedSections = [...(aliasAddressSections ?? []), ...defaultSections];
             break;
-        case AddressType.Nft:
+        }
+        case AddressType.Nft: {
             tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
             tabOptions = {
@@ -245,8 +246,10 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             };
             tabbedSections = [...(nftAddressSections ?? []), ...defaultSections];
             break;
-        default:
+        }
+        default: {
             break;
+        }
     }
 
     return (

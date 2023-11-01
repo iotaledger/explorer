@@ -1,6 +1,7 @@
 import { Units, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { LandingState } from "./LandingState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { NumberHelper } from "../../../helpers/numberHelper";
 import { RouteBuilder } from "../../../helpers/routeBuilder";
@@ -13,9 +14,8 @@ import { IFilterSettings } from "../../../models/services/IFilterSettings";
 import { NetworkService } from "../../../services/networkService";
 import Feeds from "../../components/chrysalis/Feeds";
 import FeedMilestoneInfo from "../../components/FeedMilestoneInfo";
-import "./Landing.scss";
 import { LandingRouteProps } from "../LandingRouteProps";
-import { LandingState } from "./LandingState";
+import "./Landing.scss";
 
 /**
  * Component which will show the landing page.
@@ -544,10 +544,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     private updateMinimum(min: string): void {
         const val = Number.parseFloat(min);
 
-        if (!Number.isNaN(val)) {
-            this.setState({ valueMinimum: val.toString() }, async () => this.updateFilters());
-        } else {
+        if (Number.isNaN(val)) {
             this.setState({ valueMinimum: "" });
+        } else {
+            this.setState({ valueMinimum: val.toString() }, async () => this.updateFilters());
         }
     }
 
@@ -558,10 +558,10 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     private updateMaximum(max: string): void {
         const val = Number.parseFloat(max);
 
-        if (!Number.isNaN(val)) {
-            this.setState({ valueMaximum: val.toString() }, async () => this.updateFilters());
-        } else {
+        if (Number.isNaN(val)) {
             this.setState({ valueMaximum: "" });
+        } else {
+            this.setState({ valueMaximum: val.toString() }, async () => this.updateFilters());
         }
     }
 
@@ -572,7 +572,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         if (this._isMounted && this._networkConfig) {
             const settings = this._settingsService.get();
 
-            settings.filters = settings.filters ?? {};
+            settings.filters ??= {};
             settings.filters[this._networkConfig?.network] = {
                 valuesFilter: this.state.valuesFilter,
                 valueMinimum: this.state.valueMinimum,

@@ -3,6 +3,8 @@ import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/sdk-wa
 import classNames from "classnames";
 import React, { useContext, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
@@ -14,8 +16,6 @@ import BlockTangleState from "../../components/stardust/block/BlockTangleState";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
 import "./Visualizer.scss";
 
 export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (

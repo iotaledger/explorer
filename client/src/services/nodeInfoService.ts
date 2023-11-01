@@ -1,9 +1,9 @@
 import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
+import { StardustApiClient } from "./stardust/stardustApiClient";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INodeInfoResponse } from "../models/api/stardust/INodeInfoResponse";
 import { STARDUST } from "../models/config/protocolVersion";
 import { NetworkService } from "../services/networkService";
-import { StardustApiClient } from "./stardust/stardustApiClient";
 
 /**
  * The reduced node info fields relevant for Explorer.

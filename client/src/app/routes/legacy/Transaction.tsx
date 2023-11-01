@@ -6,6 +6,8 @@ import { asTransactionTrytes } from "@iota/transaction-converter";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { TransactionRouteProps } from "./TransactionRouteProps";
+import { TransactionState } from "./TransactionState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
@@ -20,8 +22,6 @@ import CurrencyButton from "../../components/CurrencyButton";
 import JsonViewer from "../../components/JsonViewer";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
-import { TransactionRouteProps } from "./TransactionRouteProps";
-import { TransactionState } from "./TransactionState";
 import "./Transaction.scss";
 
 /**
@@ -662,9 +662,9 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 this._timerId = setInterval(async () => this.checkConfirmation(), 10000);
                             }
 
-                            const isBundleValidState = !isConsistent
-                                ? "consistency"
-                                : (isBundleValid ? "valid" : "invalid");
+                            const isBundleValidState = isConsistent
+                                ? (isBundleValid ? "valid" : "invalid")
+                                : "consistency";
 
                             let isBundleValidMessage = "Valid";
                             if (isBundleValidState !== "valid") {

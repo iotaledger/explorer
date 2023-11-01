@@ -1,10 +1,9 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import AsyncComponent from "../components/AsyncComponent";
-
-import "./Pagination.scss";
 import { PaginationProps } from "./PaginationProps";
 import { PaginationState } from "./PaginationState";
+import AsyncComponent from "../components/AsyncComponent";
+import "./Pagination.scss";
 
 /**
  * Component which will display pagination.
@@ -37,7 +36,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
             this.setState(
                 { paginationRange: this.updatePaginationRange() },
                 () => this.setState(
-                    { lastPage: this.state.paginationRange[this.state.paginationRange.length - 1] as number }
+                    { lastPage: this.state.paginationRange.at(-1) as number }
                 )
             );
         }
@@ -51,7 +50,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         this.setState(
             { paginationRange: this.updatePaginationRange() },
             () => this.setState(
-                { lastPage: this.state.paginationRange[this.state.paginationRange.length - 1] as number }
+                { lastPage: this.state.paginationRange.at(-1) as number }
             )
         );
         window.addEventListener("resize", this.resize.bind(this));

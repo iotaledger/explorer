@@ -1,16 +1,16 @@
 /* eslint-disable no-void */
 import React, { useEffect, useState } from "react";
-import { useAddressHistory } from "../../../../helpers/hooks/useAddressHistory";
-import DownloadModal from "../DownloadModal";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
+import { useAddressHistory } from "../../../../helpers/hooks/useAddressHistory";
+import DownloadModal from "../DownloadModal";
 import "./TransactionHistory.scss";
 
 interface TransactionHistoryProps {
-    network: string;
-    address?: string;
-    setLoading: (isLoadin: boolean) => void;
-    setDisabled?: (isDisabled: boolean) => void;
+    readonly network: string;
+    readonly address?: string;
+    readonly setLoading: (isLoadin: boolean) => void;
+    readonly setDisabled?: (isDisabled: boolean) => void;
 }
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (

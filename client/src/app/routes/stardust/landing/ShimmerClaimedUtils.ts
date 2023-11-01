@@ -18,7 +18,7 @@ export const buildShimmerClaimedStats = (
         3 :
         (bigInt < Math.pow(10, tokenInfo.decimals + 2) ? 2 : 0);
     claimedFinal = formatAmount(Number(claimedFinal), tokenInfo, formatFull, decimals);
-    claimedFinal = claimedFinal.replace(COMMAS_REGEX, ",");
+    claimedFinal = claimedFinal.replaceAll(COMMAS_REGEX, ",");
 
     const claimedPercentBd = new BigDecimal("100", 2).multiply(
         claimedBd.toString()

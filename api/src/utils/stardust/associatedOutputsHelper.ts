@@ -63,6 +63,7 @@ export class AssociatedOutputsHelper {
             )
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (this.addressDetails.type === AddressType.Alias && this.addressDetails.hex) {
             const aliasId = this.addressDetails.hex;
             promises.push(
@@ -120,6 +121,7 @@ export class AssociatedOutputsHelper {
             )
         );
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (this.addressDetails.type === AddressType.Nft && this.addressDetails.hex) {
             const nftId = this.addressDetails.hex;
             promises.push(
@@ -202,17 +204,17 @@ export class AssociatedOutputsHelper {
 
                 if (typeof response === "string") {
                     const outputIds = associationToOutputIds.get(association);
-                    if (!outputIds) {
-                        associationToOutputIds.set(association, [response]);
-                    } else {
+                    if (outputIds) {
                         associationToOutputIds.set(association, outputIds.concat([response]));
+                    } else {
+                        associationToOutputIds.set(association, [response]);
                     }
                 } else if (response.items.length > 0) {
                     const outputIds = associationToOutputIds.get(association);
-                    if (!outputIds) {
-                        associationToOutputIds.set(association, response.items);
-                    } else {
+                    if (outputIds) {
                         associationToOutputIds.set(association, outputIds.concat(response.items));
+                    } else {
+                        associationToOutputIds.set(association, response.items);
                     }
 
                     cursor = response.cursor;

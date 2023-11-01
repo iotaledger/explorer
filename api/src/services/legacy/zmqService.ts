@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { v4 } from "uuid";
 import zmq from "zeromq";
 import logger from "../../logger";

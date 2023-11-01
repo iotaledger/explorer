@@ -13,15 +13,15 @@ interface AddressBalanceProps {
      * Will either contain the balance computed from iota.js highlevel funcion addressBalance,
      * or the totalBalance amount if data from chronicle was available (representing trivial + conditional balance).
      */
-    balance: number;
+    readonly balance: number;
     /**
      * The trivially unlockable portion of the balance, fetched from chronicle.
      */
-    spendableBalance: number | null;
+    readonly spendableBalance: number | null;
     /**
      * The storage rent balance.
      */
-    storageRentBalance: number | null;
+    readonly storageRentBalance: number | null;
 }
 
 const CONDITIONAL_BALANCE_INFO =
@@ -80,9 +80,9 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
     );
 
     const isMarketed = isMarketedNetwork(network);
-    const conditionalBalance = spendableBalance !== null ?
-        balance - spendableBalance :
-        undefined;
+    const conditionalBalance = spendableBalance === null ?
+        undefined :
+        balance - spendableBalance;
     const shouldShowExtendedBalance = conditionalBalance !== undefined && spendableBalance !== undefined;
 
     return (

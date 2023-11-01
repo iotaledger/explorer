@@ -2,6 +2,8 @@ import { Converter } from "@iota/util.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { IndexedRouteProps } from "./IndexedRouteProps";
+import { IndexedState } from "./IndexedState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
 import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
@@ -10,8 +12,6 @@ import AsyncComponent from "../../components/AsyncComponent";
 import DataToggle from "../../components/DataToggle";
 import Spinner from "../../components/Spinner";
 import "./Indexed.scss";
-import { IndexedRouteProps } from "./IndexedRouteProps";
-import { IndexedState } from "./IndexedState";
 
 /**
  * Component which will show the indexes page.

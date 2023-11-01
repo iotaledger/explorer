@@ -2,6 +2,7 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
 import { ReactComponent as DropdownIcon } from "../../../../../../assets/dropdown-arrow.svg";
 import { DateHelper } from "../../../../../../helpers/dateHelper";
 import { useOutputsDetails } from "../../../../../../helpers/hooks/useOutputsDetails";
@@ -11,11 +12,10 @@ import NetworkContext from "../../../../../context/NetworkContext";
 import Spinner from "../../../../Spinner";
 import "./AssociationSection.scss";
 import TruncatedId from "../../../TruncatedId";
-import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
 
 interface IAssociatedSectionProps {
-    association: AssociationType;
-    outputIds: string[] | undefined;
+    readonly association: AssociationType;
+    readonly outputIds: string[] | undefined;
 }
 
 interface IOutputTableItem {

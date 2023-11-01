@@ -2,6 +2,8 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { TagRouteProps } from "./TagRouteProps";
+import { TagState } from "./TagState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
@@ -13,8 +15,6 @@ import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
-import { TagRouteProps } from "./TagRouteProps";
-import { TagState } from "./TagState";
 import "./Tag.scss";
 
 /**

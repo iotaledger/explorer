@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+    getNftImageContent, isSupportedImageFormat, loadingImagePlaceholder, MESSAGE_NFT_SCHEMA_STANDARD,
+    unsupportedImageFormatPlaceholder
+} from "./NftMetadataUtils";
 import nftSchemeIRC27 from "../../../../../../assets/schemas/nft-schema-IRC27.json";
 import { useNftMetadataUri } from "../../../../../../helpers/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "../../../../../../helpers/hooks/useTokenRegistryNftCheck";
@@ -9,27 +13,23 @@ import { INftImmutableMetadata } from "../../../../../../models/api/stardust/nft
 import DataToggle from "../../../../DataToggle";
 import JsonViewer from "../../../../JsonViewer";
 import TruncatedId from "../../../TruncatedId";
-import {
-    getNftImageContent, isSupportedImageFormat, loadingImagePlaceholder, MESSAGE_NFT_SCHEMA_STANDARD,
-    unsupportedImageFormatPlaceholder
-} from "./NftMetadataUtils";
 import "./NftMetadataSection.scss";
 
 interface NftMetadataSectionProps {
     /**
      * The network in context.
      */
-    network: string;
+    readonly network: string;
 
     /**
      * The nft.
      */
-    nft: INftBase;
+    readonly nft: INftBase;
 
     /**
      * Is nft output loading.
      */
-    isLoading: boolean;
+    readonly isLoading: boolean;
 }
 
 const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, isLoading }) => {

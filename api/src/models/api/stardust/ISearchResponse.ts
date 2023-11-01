@@ -1,8 +1,8 @@
 import { Block, OutputResponse } from "@iota/sdk";
-import { IResponse } from "../IResponse";
 import { IBech32AddressDetails } from "./IBech32AddressDetails";
 import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./milestone/IMilestoneDetailsResponse";
+import { IResponse } from "../IResponse";
 
 export interface ISearchResponse extends IResponse {
     /**

@@ -2,6 +2,7 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { ITransactionEntryProps } from "./TransactionEntryProps";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { TransactionsHelper } from "../../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
@@ -9,7 +10,6 @@ import { CHRYSALIS_MAINNET } from "../../../../models/config/networkType";
 import NetworkContext from "../../../context/NetworkContext";
 import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
-import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
     {
@@ -64,10 +64,10 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                 </Link>
                 <span className="highlight">{outputIdIndex}</span>
             </td>
-            {date !== 0 ? (
-                <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
-            ) : (
+            {date === 0 ? (
                 <td className="date">Genesis</td>
+            ) : (
+                <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
             )}
             <td className={classNames("amount", { "negative": isSpent })}>{valueView}</td>
         </tr>

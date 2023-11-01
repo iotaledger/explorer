@@ -22,13 +22,13 @@ import {
 import "./Chart.scss";
 
 interface StackedBarChartProps {
-    chartId: string;
-    title?: string;
-    info?: ModalData;
-    subgroups: string[];
-    groupLabels?: string[];
-    colors: string[];
-    data: { [name: string]: number; time: number }[];
+    readonly chartId: string;
+    readonly title?: string;
+    readonly info?: ModalData;
+    readonly subgroups: string[];
+    readonly groupLabels?: string[];
+    readonly colors: string[];
+    readonly data: { [name: string]: number; time: number }[];
 }
 
 const StackedBarChart: React.FC<StackedBarChartProps> = ({
@@ -90,7 +90,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             // X
             const x = scaleTime()
-                .domain([groups[0], groups[groups.length - 1]])
+                .domain([groups[0], groups.at(-1) ?? groups[0]])
                 .range([0, INNER_WIDTH]);
             const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
@@ -147,12 +147,12 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     return;
                 }
                 const extent = event.selection;
-                if (!extent) {
-                    x.domain([groups[0], groups[groups.length - 1]]);
-                } else {
+                if (extent) {
                     x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
                     // eslint-disable-next-line @typescript-eslint/unbound-method
                     brushSelection.call(brush.move, null);
+                } else {
+                    x.domain([groups[0], groups.at(-1) ?? groups[0]]);
                 }
 
                 const selectedData = computeDataIncludedInSelection(x, data);
@@ -184,7 +184,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             // double click reset
             svg.on("dblclick", () => {
-                x.domain([groups[0], groups[groups.length - 1]]);
+                x.domain([groups[0], groups.at(-1) ?? groups[0]]);
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));

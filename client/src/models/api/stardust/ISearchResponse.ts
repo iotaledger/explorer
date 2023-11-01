@@ -1,14 +1,14 @@
 import { Block, OutputResponse, IOutputsResponse } from "@iota/sdk-wasm/web";
-import { IBech32AddressDetails } from "../IBech32AddressDetails";
-import { IResponse } from "../IResponse";
-import { IAnalyticStats } from "../stats/IAnalyticStats";
-import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
 import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
+import { IBech32AddressDetails } from "../IBech32AddressDetails";
+import { IResponse } from "../IResponse";
+import { IAnalyticStats } from "../stats/IAnalyticStats";
+import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 
 export interface ISearchResponse extends IResponse {
     /**

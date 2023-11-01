@@ -148,7 +148,8 @@ export class StardustFeed {
             const metadata: IBlockMetadata = JSON.parse(parsed.payload);
             // update cache
             let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
-            currentEntry = !currentEntry ? {
+            currentEntry = currentEntry ? {
+                ...currentEntry,
                 milestone: metadata.milestoneIndex,
                 referenced: metadata.referencedByMilestoneIndex,
                 solid: metadata.isSolid,
@@ -156,7 +157,6 @@ export class StardustFeed {
                 conflictReason: metadata.conflictReason,
                 included: metadata.ledgerInclusionState === "included"
             } : {
-                ...currentEntry,
                 milestone: metadata.milestoneIndex,
                 referenced: metadata.referencedByMilestoneIndex,
                 solid: metadata.isSolid,

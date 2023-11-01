@@ -4,9 +4,9 @@ import React, { useRef } from "react";
 import "./Tooltip.scss";
 
 interface TooltipProps {
-    tooltipContent: string | React.ReactNode;
-    children: React.ReactNode;
-    childrenClass?: string;
+    readonly tooltipContent: string | React.ReactNode;
+    readonly children: React.ReactNode;
+    readonly childrenClass?: string;
 }
 
 /**

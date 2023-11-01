@@ -6,7 +6,7 @@ import { ReactComponent as KeyIcon } from "../../../../../../assets/key-icon.svg
 import "./MilestoneSignaturesSection.scss";
 
 interface MilestoneSignaturesProps {
-    signatures: Ed25519Signature[];
+    readonly signatures: Ed25519Signature[];
 }
 
 const MilestoneSignaturesSection: React.FC<MilestoneSignaturesProps> = ({ signatures }) => {
