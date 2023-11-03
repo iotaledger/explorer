@@ -6,7 +6,6 @@ export const SHIMMER = "shimmer";
 const TESTNET = "testnet";
 const ALPHANET = "alphanet";
 const CUSTOM = "custom";
-const PRIVATE = "private";
 
 const networkTypes = [
     LEGACY_MAINNET,
@@ -15,8 +14,7 @@ const networkTypes = [
     SHIMMER,
     TESTNET,
     ALPHANET,
-    CUSTOM,
-    PRIVATE
+    CUSTOM
 ] as const;
 
 /**

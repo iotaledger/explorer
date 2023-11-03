@@ -12,8 +12,7 @@ import { _WorkerReq, WorkerType } from "./worker.types";
 /**
  * Initialize constants for worker
  */
-// @ts-expect-error type any
-const ctx: Worker = self as any;
+const ctx: Worker = self as never;
 
 const nodesInstance = new Nodes();
 const shiftInstance = new Shift();
@@ -47,7 +46,7 @@ ctx.addEventListener(
             return;
         }
 
-        const { type, data } = e.data;
+        const { data } = e.data;
 
         // timestamp doesn't attach on hot reload
         if (!data?.timestamp) {
@@ -72,8 +71,7 @@ ctx.addEventListener(
 
             for (const node of nodes) {
                 const { x, y } = getCoordinates(rightShiftVisible);
-                const yMultiplier =
-                    1 + ndfInstance.getAllowedNumberOfNodes().percent * 2;
+                const yMultiplier = 1 + (ndfInstance.getAllowedNumberOfNodes().percent * 2);
 
                 const calculatedNode: WorkerNode = {
                     id: node?.blockId,

@@ -608,6 +608,9 @@ export function useVisualizerStateVivaWithAncorsPoc(
         });
     }
 
+    /**
+     * Style for edges and decide if edge selected;
+     */
     function styleAncors(): void {
         for (const ancorId of [ANCOR_TOP_1, ANCOR_TOP_2, ANCOR_TOP_3, ANCOR_BOTTOM_1, ANCOR_BOTTOM_2, ANCOR_BOTTOM_3]) {
             const node = graph.current?.getNode(ancorId);

@@ -14,7 +14,8 @@ export class Shift {
 
     /**
      * Calculate last shift;
-     * @param timestamp
+     * @param timestamp - time of current tick
+     * @returns - number of shift
      */
     public calculateRightShift(timestamp: number) {
         if (!this.startTimestamp) {
@@ -42,7 +43,7 @@ export class Shift {
 
     /**
      * We need to know stage width to calculate visible shift
-     * @param width
+     * @param width - width of stage that need to be set
      */
     public setStageWidth(width: number) {
         this.stageWidth = width;

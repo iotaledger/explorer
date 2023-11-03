@@ -55,26 +55,21 @@ function* keyGenerator(count: number): IterableIterator<number> {
 
 const buildAppRoutes = (
     protocolVersion: string,
-    withNetworkContext: (
-        wrappedComponent: React.ReactNode
-    ) => JSX.Element | null
+    withNetworkContext: (wrappedComponent: React.ReactNode) => JSX.Element | null
 ) => {
     const keys = keyGenerator(0);
 
     const commonRoutes = [
-        <Route
-            path="/:network/streams/0/:hash?/:mode?/:key?"
+        <Route path="/:network/streams/0/:hash?/:mode?/:key?"
             key={keys.next().value}
             component={(props: RouteComponentProps<StreamsV0RouteProps>) => (
                 <StreamsV0 {...props} />
             )}
         />,
-        <Route
-            path="/:network/identity-resolver/:did?"
+        <Route path="/:network/identity-resolver/:did?"
             key={keys.next().value}
             component={(props: RouteComponentProps<IdentityResolverProps>) => (
-                <IdentityResolver
-                    {...props}
+                <IdentityResolver {...props}
                     protocolVersion={protocolVersion}
                 />
             )}
@@ -82,51 +77,43 @@ const buildAppRoutes = (
     ];
 
     const legacyRoutes = [
-        <Route
-            exact
-            path="/:network"
+        <Route exact path="/:network"
             key={keys.next().value}
             component={(props: RouteComponentProps<LandingRouteProps>) => (
                 <LegacyLanding {...props} />
             )}
         />,
-        <Route
-            path="/:network/visualizer/"
+        <Route path="/:network/visualizer/"
             key={keys.next().value}
             component={(props: RouteComponentProps<VisualizerRouteProps>) => (
                 <LegacyVisualizer {...props} />
             )}
         />,
-        <Route
-            path="/:network/search/:query?"
+        <Route path="/:network/search/:query?"
             key={keys.next().value}
             component={(props: RouteComponentProps<SearchRouteProps>) => (
                 <LegacySearch {...props} />
             )}
         />,
-        <Route
-            path="/:network/address/:address"
+        <Route path="/:network/address/:address"
             key={keys.next().value}
-            component={(
-                props: RouteComponentProps<LegacyAddressRouteProps>
-            ) => <LegacyAddress {...props} />}
+            component={(props: RouteComponentProps<LegacyAddressRouteProps>) => (
+                <LegacyAddress {...props} />
+            )}
         />,
-        <Route
-            path="/:network/transaction/:txHash"
+        <Route path="/:network/transaction/:txHash"
             key={keys.next().value}
-            component={(
-                props: RouteComponentProps<LegacyTransactionRouteProps>
-            ) => <LegacyTransaction {...props} />}
+            component={(props: RouteComponentProps<LegacyTransactionRouteProps>) => (
+                <LegacyTransaction {...props} />
+            )}
         />,
-        <Route
-            path="/:network/tag/:tag"
+        <Route path="/:network/tag/:tag"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyTagRouteProps>) => (
                 <LegacyTag {...props} />
             )}
         />,
-        <Route
-            path="/:network/bundle/:bundle"
+        <Route path="/:network/bundle/:bundle"
             key={keys.next().value}
             component={(props: RouteComponentProps<LegacyBundleRouteProps>) => (
                 <LegacyBundle {...props} />
@@ -135,105 +122,86 @@ const buildAppRoutes = (
     ];
 
     const chrysalisRoutes = [
-        <Route
-            exact
-            path="/:network"
+        <Route exact path="/:network"
             key={keys.next().value}
             component={(props: RouteComponentProps<LandingRouteProps>) => (
                 <ChrysalisLanding {...props} />
             )}
         />,
-        <Route
-            path="/:network/search/:query?"
+        <Route path="/:network/search/:query?"
             key={keys.next().value}
             component={(props: RouteComponentProps<SearchRouteProps>) => (
                 <ChrysalisSearch {...props} />
             )}
         />,
-        <Route
-            path="/:network/visualizer/"
+        <Route path="/:network/visualizer/"
             key={keys.next().value}
             component={(props: RouteComponentProps<VisualizerRouteProps>) => (
                 <ChrysalisVisualizer {...props} />
             )}
         />,
-        <Route
-            path="/:network/message/:messageId"
+        <Route path="/:network/message/:messageId"
             key={keys.next().value}
             component={(props: RouteComponentProps<ChrysalisMessageProps>) => (
                 <ChrysalisMessage {...props} />
             )}
         />,
-        <Route
-            path="/:network/addr/:address"
+        <Route path="/:network/addr/:address"
             key={keys.next().value}
             component={(props: RouteComponentProps<AddressRouteProps>) => (
                 <ChrysalisAddress {...props} />
             )}
         />,
-        <Route
-            path="/:network/indexed/:index"
+        <Route path="/:network/indexed/:index"
             key={keys.next().value}
-            component={(
-                props: RouteComponentProps<ChrysalisIndexedRouteProps>
-            ) => <ChrysalisIndexed {...props} />}
+            component={(props: RouteComponentProps<ChrysalisIndexedRouteProps>) => (
+                <ChrysalisIndexed {...props} />
+            )}
         />
     ];
 
     const stardustRoutes = [
-        <Route
-            exact
-            path="/:network"
+        <Route exact path="/:network"
             key={keys.next().value}
             component={StardustLanding}
         />,
-        <Route
-            path="/:network/visualizer/"
+        <Route path="/:network/visualizer/"
             key={keys.next().value}
             component={StardustVisualizer}
         />,
-        <Route
-            path="/:network/search/:query?"
+        <Route path="/:network/search/:query?"
             key={keys.next().value}
             component={StardustSearch}
         />,
-        <Route
-            path="/:network/addr/:address"
+        <Route path="/:network/addr/:address"
             key={keys.next().value}
             component={StardustAddressPage}
         />,
-        <Route
-            path="/:network/nft/:nftId"
+        <Route path="/:network/nft/:nftId"
             key={keys.next().value}
             component={NftRedirectRoute}
         />,
-        <Route
-            path="/:network/block/:blockId"
+        <Route path="/:network/block/:blockId"
             key={keys.next().value}
             component={StardustBlock}
         />,
-        <Route
-            path="/:network/transaction/:transactionId"
+        <Route path="/:network/transaction/:transactionId"
             key={keys.next().value}
             component={StardustTransactionPage}
         />,
-        <Route
-            path="/:network/output/:outputId"
+        <Route path="/:network/output/:outputId"
             key={keys.next().value}
             component={StardustOutputPage}
         />,
-        <Route
-            path="/:network/outputs"
+        <Route path="/:network/outputs"
             key={keys.next().value}
             component={StardustOutputList}
         />,
-        <Route
-            path="/:network/foundry/:foundryId"
+        <Route path="/:network/foundry/:foundryId"
             key={keys.next().value}
             component={StardustFoundry}
         />,
-        <Route
-            path="/:network/statistics"
+        <Route path="/:network/statistics"
             key={keys.next().value}
             component={StardustStatisticsPage}
         />
@@ -242,9 +210,15 @@ const buildAppRoutes = (
     return (
         <Switch>
             {commonRoutes}
-            {protocolVersion === LEGACY && legacyRoutes}
-            {protocolVersion === CHRYSALIS && chrysalisRoutes}
-            {protocolVersion === STARDUST && withNetworkContext(stardustRoutes)}
+            {protocolVersion === LEGACY && (
+                legacyRoutes
+            )}
+            {protocolVersion === CHRYSALIS && (
+                chrysalisRoutes
+            )}
+            {protocolVersion === STARDUST && (
+                withNetworkContext(stardustRoutes)
+            )}
         </Switch>
     );
 };

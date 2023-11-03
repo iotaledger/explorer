@@ -29,18 +29,18 @@ export const COLOR_SEARCH_RESULT: string = "0xC061E8";
  * @param graphElement The div element ref to hook the graph
  * @returns Milestones and latestMilestonIndex
  */
-export function useVisualizerState(network: string, graphElement: React.MutableRefObject<HTMLDivElement | null>): [
-    (() => void),
-    TSelectNode,
-    string,
-    React.Dispatch<React.SetStateAction<string>>,
-    boolean,
-    number,
-    TSelectFeedItem,
-    (boolean | null),
-    React.Dispatch<React.SetStateAction<boolean | null>>,
-    number | null
-] {
+function useVisualizerState(network: string, graphElement: React.MutableRefObject<HTMLDivElement | null>): {
+    toggleActivity: () => void;
+    selectNode: TSelectNode;
+    filter: string;
+    setFilter: React.Dispatch<React.SetStateAction<string>>;
+    isActive: boolean;
+    itemCount: number;
+    selectedFeedItem: TSelectFeedItem;
+    isFormatAmountsFull: boolean | null;
+    setIsFormatAmountsFull: React.Dispatch<React.SetStateAction<boolean | null>>;
+    lastClick: number | null;
+} {
     const [settingsService] = useState<SettingsService>(ServiceFactory.get<SettingsService>("settings"));
     const [darkMode, setDarkMode] = useState<boolean | null>(
         settingsService.get().darkMode ?? null
@@ -539,7 +539,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         setDarkMode(dMode);
     }
 
-    return [
+    return {
         toggleActivity,
         selectNode,
         filter,
@@ -549,7 +549,8 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         selectedFeedItem,
         isFormatAmountsFull,
         setIsFormatAmountsFull,
-        lastClick.current
-    ];
+        lastClick: lastClick.current
+    };
 }
 
+export default useVisualizerState;
