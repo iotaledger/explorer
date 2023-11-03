@@ -21,8 +21,6 @@ const VisualizerWebgl: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
         isPlaying,
         blocksCount,
         selectedFeedItem,
-        // isFormatAmountsFull,
-        // setIsFormatAmountsFull,
         lastClick
     } = useVisualizerViva(network, graphElement);
 

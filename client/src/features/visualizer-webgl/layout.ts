@@ -48,7 +48,6 @@ class Rect {
 }
 
 const createCoordinateGenerator = (n: number = 36) => {
-    const currentX: number | null = null;
     const listOfCoordinates = generateCoordinateGrid(-800, 800, n);
 
     let filledPositions = new Set<number>([]);
@@ -78,7 +77,7 @@ export const THRESHOLD_PX = 250;
  * @param startTime - timestamp for correct work.
  * @param numberOfNodes
  */
-export const placeNodeCallback = (numberOfNodes: number) => {
+export let placeNodeCallback = (numberOfNodes: number) => {
     const y = generateY();
     return { x: numberOfNodes * THRESHOLD_PX, y };
 };
@@ -237,7 +236,6 @@ export function customLayout(
         // @ts-expect-error wrong type
         placeNode: (newPlaceNodeCallbackOrNode) => {
             if (typeof newPlaceNodeCallbackOrNode === "function") {
-                // @ts-expect-error wrong type
                 placeNodeCallback = newPlaceNodeCallbackOrNode;
                 updateNodePositions();
                 // @ts-expect-error wrong type
