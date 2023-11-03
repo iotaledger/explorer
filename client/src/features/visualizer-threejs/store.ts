@@ -8,20 +8,21 @@ interface BlockState {
     position: [x: number, y: number, z: number];
 }
 
-interface BlockOptions {
+interface BlockColor {
     color: Color;
-    scale: number;
 }
 
 interface BlockStoreState {
     blocksToAdd: BlockState[];
-    addBlock: (newBlock: BlockState, options: BlockOptions) => void;
+    addBlock: (newBlock: BlockState, blockColor: BlockColor) => void;
     removeBlock: (blockId: string) => void;
     removeBlocks: (blockIds: string[]) => void;
 
-    blocksForUpdate: BlockState[];
-    blockOptions: { [k: string]: BlockOptions };
-    addParents: (blockId: string, parents: string[]) => void;
+    blockColors: { [k: string]: BlockColor };
+
+    blocksToScaleQueue: string[];
+    enqueueBlocksToScale: (blockId: string, parents: string[]) => void;
+    clearBlocksToScaleQueue: () => void;
 
     yPositions: { [k: number]: number };
     addYPosition: (blockY: number) => void;
@@ -43,8 +44,8 @@ interface BlockStoreState {
 
 export const useBlockStore = create<BlockStoreState>(set => ({
     blocksToAdd: [],
-    blocksForUpdate: [],
-    blockOptions: {},
+    blockColors: {},
+    blocksToScaleQueue: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
@@ -52,48 +53,49 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     bps: 0,
     addBlock: (newBlock, options) => {
         set(state => {
-            const prevBlockOptions = state.blockOptions[newBlock.id] || {};
+            const prevBlockColors = state.blockColors[newBlock.id] || {};
             return {
                 blocksToAdd: [...state.blocksToAdd, newBlock],
-                blockOptions: {
-                    ...state.blockOptions,
-                    [newBlock.id]: { ...prevBlockOptions, ...options }
+                blockColors: {
+                    ...state.blockColors,
+                    [newBlock.id]: { ...prevBlockColors, ...options }
                 }
             };
         });
     },
     removeBlocks: (blockIds: string[]) => {
         set(state => ({
-                ...state,
-                blocksToAdd: [...state.blocksToAdd.filter(b => !blockIds.includes(b.id))]
-            }));
+            ...state,
+            blocksToAdd: [...state.blocksToAdd.filter(b => !blockIds.includes(b.id))]
+        }));
     },
     removeBlock: (blockId: string) => {
         set(state => {
-            const nextBlockOptions = { ...state.blockOptions };
-            delete nextBlockOptions[blockId];
+            const nextBlockColors = { ...state.blockColors };
+            delete nextBlockColors[blockId];
             return {
                 blocksToAdd: [...state.blocksToAdd.filter(b => b.id !== blockId)],
-                blockOptions: nextBlockOptions
+                blockOptions: nextBlockColors
             };
         });
     },
-    addParents: parents => {
-        set(state => {
-            for (const parentId of parents) {
-                const foundParent = state.blockOptions[parentId];
+    enqueueBlocksToScale: (_: string, parents) => {
+        if (parents.length > 0) {
+            set(state => {
+                const nextScalesToUpdate = [...state.blocksToScaleQueue, ...parents];
 
-                if (foundParent) {
-                    foundParent.scale += 0.1;
-                }
-            }
-            return {
-                ...state,
-                blockOptions: {
-                    ...state.blockOptions
-                }
-            };
-        });
+                return {
+                    ...state,
+                    blocksToScaleQueue: nextScalesToUpdate
+                };
+            });
+        }
+    },
+    clearBlocksToScaleQueue: () => {
+        set(state => ({
+            ...state,
+            blocksToScaleQueue: []
+        }));
     },
     addYPosition: blockY => {
         const Y = Math.floor(Math.abs(blockY));
@@ -145,9 +147,9 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     },
     setDimensions: (width, height) => {
         set(state => ({
-                ...state,
-                dimensions: { width, height }
-            })
+            ...state,
+            dimensions: { width, height }
+        })
         );
     },
     setIsPlaying: isPlaying => {
@@ -163,3 +165,4 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         }));
     }
 }));
+
