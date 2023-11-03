@@ -1,3 +1,4 @@
+import { Color } from "three";
 import { create } from "zustand";
 import { ZOOM_DEFAULT } from "./constants";
 import { getScaleMultiplier } from "./utils";
@@ -8,9 +9,10 @@ interface BlockState {
 }
 
 interface BlockOptions {
-    color: string;
+    color: Color;
     scale: number;
 }
+
 interface BlockStoreState {
     blocksToAdd: BlockState[];
     addBlock: (newBlock: BlockState, options: BlockOptions) => void;
@@ -48,7 +50,6 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     dimensions: { width: 0, height: 0 },
     isPlaying: false,
     bps: 0,
-
     addBlock: (newBlock, options) => {
         set(state => {
             const prevBlockOptions = state.blockOptions[newBlock.id] || {};
@@ -81,6 +82,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         set(state => {
             for (const parentId of parents) {
                 const foundParent = state.blockOptions[parentId];
+
                 if (foundParent) {
                     foundParent.scale += 0.1;
                 }
@@ -154,7 +156,6 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             isPlaying
         }));
     },
-
     setBps: bps => {
         set(state => ({
             ...state,

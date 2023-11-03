@@ -1,6 +1,5 @@
 import { STEP_X_PX, STEP_Y_PX, ZOOM_DEFAULT, TIME_DIFF_COUNTER, SECOND } from "./constants";
 
-
 /**
  * Generates a random number within a specified range.
  *
@@ -28,7 +27,7 @@ export const randomIntFromInterval = (min: number, max: number) => {
 
 /**
  * Measure how much seconds passed from the start of the timer.
- * @param msCounter
+ * @param msCounter The interval
  * @returns - function that returns seconds from the start of the timer.
  */
 export const timer = (msCounter: number = 1000) => {
@@ -37,6 +36,7 @@ export const timer = (msCounter: number = 1000) => {
     return () => {
         const currentTime = new Date();
         const diff = currentTime.getTime() - start.getTime();
+
         return Math.floor(diff / msCounter);
     };
 };
@@ -98,6 +98,7 @@ const checkRules = (y: number, prev: number[]) => {
 
     return passAllChecks;
 };
+
 /**
  * Create generator for Y coordinate
  * @param root0 - .
@@ -149,7 +150,8 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
 
 /**
  * Generator for coordinate X. It returns coordinate based on shift.
- * @param shift
+ * @param shift The shift value
+ * @returns The X axis value
  */
 export const generateXbyShift = (shift: number) => {
     const randomNumber = Math.floor(Math.random() * STEP_X_PX) + 1;
@@ -166,7 +168,6 @@ export const wiggleEffect = (max: number) => {
     }
     return 0;
 };
-
 
 export const getScaleMultiplier = (yCoordinates: number[], canvasHeight: number) => {
     const MAGIC_MULTIPLIER = 1.5;
