@@ -28,7 +28,7 @@ export const randomIntFromInterval = (min: number, max: number) => {
 
 /**
  * Measure how much seconds passed from the start of the timer.
- * @param msCounter
+ * @param msCounter - milliseconds counter
  * @returns - function that returns seconds from the start of the timer.
  */
 export const timer = (msCounter: number = 1000) => {
@@ -149,7 +149,8 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
 
 /**
  * Generator for coordinate X. It returns coordinate based on shift.
- * @param shift
+ * @param shift - number of ticks. Each tick depends on time in constants.ts
+ * @returns number - X coordinate
  */
 export const generateXbyShift = (shift: number) => {
     const randomNumber = Math.floor(Math.random() * STEP_X_PX) + 1;

@@ -74,8 +74,8 @@ const generateY = createCoordinateGenerator(40);
 export const THRESHOLD_PX = 250;
 /**
  * Function for generation positions;
- * @param startTime - timestamp for correct work.
- * @param numberOfNodes
+ * @param numberOfNodes - shift for x coordinate
+ * @returns coordinates - object with x and y coordinates
  */
 export let placeNodeCallback = (numberOfNodes: number) => {
     const y = generateY();
