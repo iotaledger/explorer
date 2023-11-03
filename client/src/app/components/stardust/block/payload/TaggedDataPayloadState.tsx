@@ -1,8 +1,8 @@
 export interface TaggedDataPayloadState {
     /**
-     * Hex view of index.
+     * Hex view of tag.
      */
-    hexIndex: string;
+    hexTag: string;
 
     /**
      * Hex view of data.
