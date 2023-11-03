@@ -113,15 +113,15 @@ export class StardustFeedClient {
                 };
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                        if (!subscribeResponse.error) {
-                            this.blockSubscriptionId = subscribeResponse.subscriptionId;
-                        } else {
-                            console.log(
-                                "Failed subscribing to feed",
-                                this._networkConfig?.network,
-                                subscribeResponse.error
-                            );
-                        }
+                    if (!subscribeResponse.error) {
+                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
+                    } else {
+                        console.log(
+                            "Failed subscribing to feed",
+                            this._networkConfig?.network,
+                            subscribeResponse.error
+                        );
+                    }
                 });
                 this.socket.on("block", async (update: IFeedUpdate) => {
                     if (update.subscriptionId === this.blockSubscriptionId) {
@@ -215,8 +215,7 @@ export class StardustFeedClient {
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (!subscribeResponse.error) {
-                        this.milestoneSubscriptionId =
-                            subscribeResponse.subscriptionId;
+                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
                     } else {
                         console.log(
                             "Failed subscribing to feed",

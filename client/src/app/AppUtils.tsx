@@ -113,19 +113,21 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
                 rel="manifest" href={`${publicUrl}/favicon/${folder}/site.webmanifest`} data-react-helmet="true"
             />
             <link
-                rel="apple-touch-icon" sizes="180x180" href={`${publicUrl}/favicon/${folder}/favicon-180x180.png`}
-                data-react-helmet="true"
+                rel="apple-touch-icon"
+                sizes="180x180"
+                href={`${publicUrl}/favicon/${folder}/favicon-180x180.png`} data-react-helmet="true"
             />
             <link
-                rel="icon" type="image/png" sizes="32x32" href={`${publicUrl}/favicon/${folder}/favicon-32x32.png`}
-                data-react-helmet="true"
+                rel="icon"
+                type="image/png"
+                sizes="32x32"
+                href={`${publicUrl}/favicon/${folder}/favicon-32x32.png`} data-react-helmet="true"
             />
             <link
                 rel="icon"
                 type="image/png"
                 sizes="16x16"
-                href={`${publicUrl}/favicon/${folder}/favicon-16x16.png`}
-                data-react-helmet="true"
+                href={`${publicUrl}/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true"
             />
         </Helmet>
     );
