@@ -10,7 +10,6 @@ export type WorkerEventType =
 export type NetworkNode = IFeedBlockData;
 
 
-
 export interface _WorkerReq {
     type: WorkerEventType;
     data: NetworkNode & { timestamp: number };

@@ -135,8 +135,6 @@ export class StardustFeed {
                     block: serializedBlock
                 };
 
-                // console.log('--- update', block);
-
                 // eslint-disable-next-line no-void
                 void this.broadcastBlock(update);
             });
@@ -171,7 +169,6 @@ export class StardustFeed {
                     }
                 };
 
-                // console.log('--- update', update);
                 // eslint-disable-next-line no-void
                 void this.broadcastBlock(update);
             });
@@ -209,7 +206,6 @@ export class StardustFeed {
      * @param payload The data payload (without subscriptionId).
      */
     private async broadcastBlock(payload: Partial<IFeedUpdate>) {
-        // console.log('--- payload', payload);
         for (const subscriptionId in this.blockSubscribers) {
             try {
                 logger.debug(`Broadcasting block to subscriber ${subscriptionId}`);

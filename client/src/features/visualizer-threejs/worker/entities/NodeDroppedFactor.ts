@@ -85,7 +85,4 @@ export class NodeDroppedFactor {
         this.allIncomeNodes = [];
         this.allIncomeNodesLength = 0;
     };
-
-    // current node count need to be no more than 50;
-    // if prev value was less than min - check current to not allow more than 50
 }

@@ -11,7 +11,6 @@ import { INodeData } from "../../models/graph/stardust/INodeData";
 import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { customLayout, THRESHOLD_PX } from "./layout";
-import { VivaNode } from "./vivagraph-layout.types";
 
 const MAX_ITEMS: number = 2500;
 const EDGE_COLOR_LIGHT: number = 0xB3B3B3CC;
@@ -52,7 +51,6 @@ export function useVisualizerViva(
         INodeData,
         unknown
     > | null>(null);
-    const nodesDictionary = useRef<{ [id: string]: IFeedBlockData }>({});
 
     useEffect(() => {
         console.log("Setup!");
@@ -158,24 +156,6 @@ export function useVisualizerViva(
                 x: graphElement.current.clientWidth / 2,
                 y: graphElement.current.clientHeight / 2
             });
-            // for (let i = 0; i < 12; i++) {
-            //     renderer.current.zoomOut();
-            // }
-            const pixelsPerSecond = 15;
-            const intervalMilliseconds = 100;
-            // 60 frames per second, which corresponds to roughly 16.67 milliseconds per frame
-            const pixelsPerInterval =
-                (pixelsPerSecond / 60) * (intervalMilliseconds / 16.67);
-
-            // setTimeout(() => {
-            //     console.log("--- Timeout", renderer.current);
-            //     renderer.current?.zoomOut();
-            // }, 3000);
-            // setInterval(() => {
-            //     // update the graph's position
-            //     centerX += pixelsPerInterval;
-            //     renderer.current?.moveTo(centerX, centerY);
-            // }, 50);
         }
     }
 
@@ -211,8 +191,6 @@ export function useVisualizerViva(
                             numberOfNodes * THRESHOLD_PX,
                             0
                         );
-                        const gr = renderer.current;
-                        // console.log("--- rg", gr);
                         if (newBlock.parents) {
                             const addedParents: string[] = [];
                             for (let i = 0; i < newBlock.parents.length; i++) {
@@ -241,13 +219,10 @@ export function useVisualizerViva(
                 [id: string]: IFeedBlockMetadata;
             }) => {
                 if (graph.current) {
-                    const highlightRegEx = highlightNodesRegEx();
-
                     for (const blockId in updatedMetadata) {
                         const node = graph.current.getNode(blockId);
 
-                        // console.log("--- node", node);
-                        if (node && node.data) {
+                        if (node?.data) {
                             node.data.feedItem.metadata = {
                                 ...node.data.feedItem.metadata,
                                 ...updatedMetadata[blockId]
@@ -436,7 +411,7 @@ export function useVisualizerViva(
 
     /**
      * The pause button was clicked
-     * @param isPlaying
+     * @param isPlaying True if playing.
      */
     function setIsPlaying(isPlaying: boolean): void {
         if (isPlaying) {

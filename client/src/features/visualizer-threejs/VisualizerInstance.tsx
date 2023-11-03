@@ -116,7 +116,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     /**
      * Subscribe to updates
-     * @param blockData
+     * @param blockData - one income block for adding.
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
         const emitterObj = emitterRef.current;

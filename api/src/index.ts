@@ -91,7 +91,11 @@ const sockets: {
     [socketId: string]: string;
 } = {};
 
-function delay(ms) {
+/**
+ * Delay function
+ * @param ms milliseconds
+ */
+async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -106,19 +110,14 @@ socketServer.on("connection", socket => {
         socket.emit("subscribe", response);
     });
 
-    socket.on("replayAttack", async (data: INetworkBoundGetRequest) => {
+    socket.on("replayAttack", async () => {
         logger.debug(`Socket::ReplayAttack [${socket.id}]`);
 
         const maxIterations = 500;
-        const list = [];
 
-        // block.timestamp
-        // currentTimestamp
-        // nextTimestamp
-        // diff
         for (let i = 0; i < maxIterations; i++) {
             console.log(`Iteration: ${i}`);
-            socket.emit("replayAttack", {foo: 'bar'});
+            socket.emit("replayAttack", { foo: "bar" });
             await delay(100); // Delay of 1 second for each iteration
         }
         socket.emit("replayAttackEnd");

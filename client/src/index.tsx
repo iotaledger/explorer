@@ -73,7 +73,6 @@ async function initialiseServices(): Promise<void> {
 
     const networks = networkService.networks();
 
-    console.log("--- networks", networks);
     if (networks.length > 0) {
         for (const netConfig of networks) {
             switch (netConfig.protocolVersion) {
