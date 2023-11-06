@@ -6,23 +6,18 @@ import { getScaleMultiplier } from "./utils";
 interface BlockState {
     id: string;
     position: [x: number, y: number, z: number];
-}
-
-interface BlockColor {
     color: Color;
 }
 
 interface BlockStoreState {
-    blocksToAdd: BlockState[];
-    addBlock: (newBlock: BlockState, blockColor: BlockColor) => void;
-    removeBlock: (blockId: string) => void;
-    removeBlocks: (blockIds: string[]) => void;
+    // Queue for "add block" operation to the canvas
+    blockQueue: BlockState[];
+    addToBlockQueue: (newBlock: BlockState) => void;
+    removeFromBlockQueue: (blockIds: string[]) => void;
 
-    blockColors: { [k: string]: BlockColor };
-
-    blocksToScaleQueue: string[];
-    enqueueBlocksToScale: (blockId: string, parents: string[]) => void;
-    clearBlocksToScaleQueue: () => void;
+    scaleQueue: string[];
+    addToScaleQueue: (blockId: string, parents: string[]) => void;
+    removeFromScaleQueue: () => void;
 
     yPositions: { [k: number]: number };
     addYPosition: (blockY: number) => void;
@@ -43,58 +38,41 @@ interface BlockStoreState {
 }
 
 export const useBlockStore = create<BlockStoreState>(set => ({
-    blocksToAdd: [],
+    blockQueue: [],
     blockColors: {},
-    blocksToScaleQueue: [],
+    scaleQueue: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
     isPlaying: false,
     bps: 0,
-    addBlock: (newBlock, options) => {
-        set(state => {
-            const prevBlockColors = state.blockColors[newBlock.id] || {};
-            return {
-                blocksToAdd: [...state.blocksToAdd, newBlock],
-                blockColors: {
-                    ...state.blockColors,
-                    [newBlock.id]: { ...prevBlockColors, ...options }
-                }
-            };
-        });
-    },
-    removeBlocks: (blockIds: string[]) => {
+    addToBlockQueue: newBlockData => {
         set(state => ({
-            ...state,
-            blocksToAdd: [...state.blocksToAdd.filter(b => !blockIds.includes(b.id))]
+            blockQueue: [...state.blockQueue, newBlockData]
         }));
     },
-    removeBlock: (blockId: string) => {
-        set(state => {
-            const nextBlockColors = { ...state.blockColors };
-            delete nextBlockColors[blockId];
-            return {
-                blocksToAdd: [...state.blocksToAdd.filter(b => b.id !== blockId)],
-                blockOptions: nextBlockColors
-            };
-        });
+    removeFromBlockQueue: (blockIds: string[]) => {
+        set(state => ({
+            ...state,
+            blockQueue: [...state.blockQueue.filter(b => !blockIds.includes(b.id))]
+        }));
     },
-    enqueueBlocksToScale: (_: string, parents) => {
+    addToScaleQueue: (_: string, parents) => {
         if (parents.length > 0) {
             set(state => {
-                const nextScalesToUpdate = [...state.blocksToScaleQueue, ...parents];
+                const nextScalesToUpdate = [...state.scaleQueue, ...parents];
 
                 return {
                     ...state,
-                    blocksToScaleQueue: nextScalesToUpdate
+                    scaleQueue: nextScalesToUpdate
                 };
             });
         }
     },
-    clearBlocksToScaleQueue: () => {
+    removeFromScaleQueue: () => {
         set(state => ({
             ...state,
-            blocksToScaleQueue: []
+            scaleQueue: []
         }));
     },
     addYPosition: blockY => {

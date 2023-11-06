@@ -17,11 +17,10 @@ export const useRenderTangle = () => {
     const blockIdToIndex = useRef<Map<string, number>>(new Map());
 
     const scene = useThree(state => state.scene);
-    const blocksToAdd = useBlockStore(s => s.blocksToAdd);
-    const removeBlocks = useBlockStore(s => s.removeBlocks);
-    const blockColors = useBlockStore(s => s.blockColors);
-    const blocksToScaleQueue = useBlockStore(s => s.blocksToScaleQueue);
-    const clearBlocksToScaleQueue = useBlockStore(s => s.clearBlocksToScaleQueue);
+    const blockQueue = useBlockStore(s => s.blockQueue);
+    const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
+    const scaleQueue = useBlockStore(s => s.scaleQueue);
+    const clearBlocksToScaleQueue = useBlockStore(s => s.removeFromScaleQueue);
 
     useZoomDynamic();
 
@@ -51,8 +50,8 @@ export const useRenderTangle = () => {
     }, [mainMeshRef]);
 
     useEffect(() => {
-        if (blocksToScaleQueue.length > 0) {
-            for (const blockIdToScale of blocksToScaleQueue) {
+        if (scaleQueue.length > 0) {
+            for (const blockIdToScale of scaleQueue) {
                 const indexToUpdate = blockIdToIndex.current.get(blockIdToScale);
 
                 if (indexToUpdate) {
@@ -67,20 +66,21 @@ export const useRenderTangle = () => {
             }
 
             mainMeshRef.current.instanceMatrix.needsUpdate = true;
+
             clearBlocksToScaleQueue();
         }
-    }, [blocksToScaleQueue]);
+    }, [scaleQueue]);
 
     useEffect(() => {
-        if (blocksToAdd.length === 0) {
+        if (blockQueue.length === 0) {
             return;
         }
 
         const addedIds = [];
 
-        for (const block of blocksToAdd) {
-            const { color } = blockColors[block.id];
+        for (const block of blockQueue) {
             const [x, y, z] = block.position;
+            const color = block.color;
 
             SPHERE_OBJECT.position.set(x, y, z);
             SPHERE_OBJECT.updateMatrix();
@@ -108,7 +108,7 @@ export const useRenderTangle = () => {
         mainMeshRef.current.instanceMatrix.needsUpdate = true;
         mainMeshRef.current.computeBoundingSphere();
 
-        removeBlocks(addedIds);
-    }, [blocksToAdd]);
+        removeFromBlockQueue(addedIds);
+    }, [blockQueue]);
 };
 

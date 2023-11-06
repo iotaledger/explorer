@@ -43,14 +43,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     }));
 
     // Note: to prevent rerender each store update - call methods separate.
-    const addBlock = useBlockStore(s => s.addBlock);
-    const enqueueBlocksToScale = useBlockStore(s => s.enqueueBlocksToScale);
+    const addBlock = useBlockStore(s => s.addToBlockQueue);
+    const addToScaleQueue = useBlockStore(s => s.addToScaleQueue);
     const addYPosition = useBlockStore(s => s.addYPosition);
     const checkZoom = useBlockStore(s => s.checkZoom);
     const setIsPlaying = useBlockStore(s => s.setIsPlaying);
 
     const isPlaying = useBlockStore(s => s.isPlaying);
-    const blockCount = useBlockStore(s => s.blockColors);
+    // const blockCount = useBlockStore(s => s.blockColors);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | null>(null);
@@ -144,11 +144,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             addBlock({
                 id: blockData.blockId,
-                position
-            }, {
+                position,
                 color: COLORS[randomIntFromInterval(0, COLORS.length - 1)]
             });
-            enqueueBlocksToScale(blockData.blockId, blockData.parents ?? []);
+
+            addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
             checkZoom();
         }
@@ -188,7 +188,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     return (
         <Wrapper
-            blocksCount={Object.keys(blockCount).length}
+            // blocksCount={Object.keys(blockCount).length}
+            blocksCount={0}
             filter=""
             isPlaying={isPlaying}
             network={network}
