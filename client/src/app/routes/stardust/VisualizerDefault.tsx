@@ -4,7 +4,6 @@ import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import useVisualizerState from "../../../helpers/hooks/useVisualizerState";
 import { Wrapper } from "../../components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
-import "./Visualizer.scss";
 
 export const VisualizerDefault: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
     { match: { params: { network } } }

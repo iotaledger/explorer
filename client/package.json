@@ -98,6 +98,7 @@
         "eslint-plugin-unicorn": "^43.0.2",
         "node-polyfill-webpack-plugin": "^2.0.1",
         "npm-run-all": "^4.1.5",
+        "r3f-perf": "^7.1.2",
         "react-scripts": "^5.0.1",
         "sass": "^1.54.6",
         "stream-browserify": "^3.0.0",

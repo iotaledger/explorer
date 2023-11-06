@@ -1,5 +1,4 @@
 import {
-    colors,
     NODE_SIZE_DEFAULT,
     NODE_SIZE_INCREMENT
 } from "../../constants";
@@ -60,9 +59,9 @@ export class Nodes {
 
                 if (parentNode) {
                     parentNode.radius += NODE_SIZE_INCREMENT;
-                    parentNode.color = this.colorBasedOnChildrenCount(
-                        parentNode.radius
-                    );
+                    // parentNode.color = this.colorBasedOnChildrenCount(
+                    //     parentNode.radius
+                    // );
                     this.updates.modify.push(parentNode);
                 }
             }
@@ -141,13 +140,13 @@ export class Nodes {
         }
     }
 
-    private colorBasedOnChildrenCount(radius: number) {
-        const childrenNumber = (radius - NODE_SIZE_DEFAULT) / NODE_SIZE_INCREMENT;
-
-        if (childrenNumber > colors.length) {
-            return colors[colors.length - 1];
-        }
-        return colors[childrenNumber];
-    }
+    // private colorBasedOnChildrenCount(radius: number) {
+    //     const childrenNumber = (radius - NODE_SIZE_DEFAULT) / NODE_SIZE_INCREMENT;
+    //
+    //     if (childrenNumber > colors.length) {
+    //         return colors[colors.length - 1];
+    //     }
+    //     return colors[childrenNumber];
+    // }
 }
 

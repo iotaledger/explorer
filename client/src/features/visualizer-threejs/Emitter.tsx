@@ -3,14 +3,17 @@ import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
 import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useBlockStore } from "./store";
+import { useRenderTangle } from "./useRenderTangle";
 
 interface EmitterProps {
     setRunListeners: Dispatch<SetStateAction<boolean>>;
     emitterRef: RefObject<THREE.Mesh>;
 }
 
-const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
+const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: EmitterProps) => {
     const isPlaying = useBlockStore(state => state.isPlaying);
+    const get = useThree(state => state.get);
+    const { halfScreenWidth } = useBorderPositions();
 
     useEffect(() => {
         if (emitterRef?.current) {
@@ -18,12 +21,6 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
         }
     }, [emitterRef]);
 
-
-    /**
-     * Camera shift
-     */
-    const { halfScreenWidth } = useBorderPositions();
-    const get = useThree(state => state.get);
     useFrame(() => {
         if (!isPlaying) {
             return;
@@ -48,6 +45,9 @@ const Emitter = ({ setRunListeners, emitterRef }: EmitterProps) => {
             emitterRef.current.position.x += delta * DELTA_MULTIPLIER;
         }
     });
+
+    // The Tangle rendering hook
+    useRenderTangle();
 
     return (
         <mesh

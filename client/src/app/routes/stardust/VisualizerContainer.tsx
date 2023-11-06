@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import VisualizerThree from "../../../features/visualizer-threejs/VisualizerMain";
+import VisualizerThree from "../../../features/visualizer-threejs/VisualizerInstance";
 import { VisualizerRouteProps } from "../VisualizerRouteProps";
 import { VisualizerDefault } from "./VisualizerDefault";
+import "./Visualizer.scss";
 
 enum Views {
     "default" = "default",
@@ -17,6 +18,7 @@ export const VisualizerContainer: React.FC<
     if (currentView === Views.default) {
         return <VisualizerDefault {...props} />;
     }
+
     if (currentView === Views.three) {
         return <VisualizerThree {...props} />;
     }

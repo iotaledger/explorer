@@ -1,5 +1,6 @@
-import { OrthographicCamera, Stats } from "@react-three/drei";
+import { CameraControls, OrthographicCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
@@ -11,15 +12,16 @@ import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { colors, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
+import { COLORS, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
-import Spheres from "./Spheres";
 import { useBlockStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 import { BPSCounter } from "./worker/entities/BPSCounter";
+import "./VisualizerThree.scss";
 
 const features = {
-    statsEnabled: true
+    statsEnabled: true,
+    cameraControls: true
 };
 
 const timerDiff = timer(TIME_DIFF_COUNTER);
@@ -34,18 +36,21 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const generateY = getGenerateY({ withRandom: true });
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
+
     const setBps = useBlockStore(s => s.setBps);
     const [bpsCounter] = React.useState(new BPSCounter(bps => {
         setBps(bps);
     }));
 
     // Note: to prevent rerender each store update - call methods separate.
-    const addBlock = useBlockStore(s => s.addBlock);
-    const addParents = useBlockStore(s => s.addParents);
+    const addBlock = useBlockStore(s => s.addToBlockQueue);
+    const addToScaleQueue = useBlockStore(s => s.addToScaleQueue);
     const addYPosition = useBlockStore(s => s.addYPosition);
     const checkZoom = useBlockStore(s => s.checkZoom);
     const setIsPlaying = useBlockStore(s => s.setIsPlaying);
+
     const isPlaying = useBlockStore(s => s.isPlaying);
+    const indexToBlockId = useBlockStore(s => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | null>(null);
@@ -116,7 +121,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     /**
      * Subscribe to updates
-     * @param blockData - one income block for adding.
+     * @param blockData The new block data
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
         const emitterObj = emitterRef.current;
@@ -139,12 +144,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             addBlock({
                 id: blockData.blockId,
-                position
-            }, {
-                color: colors[randomIntFromInterval(0, colors.length - 1)],
-                scale: 1
+                position,
+                color: COLORS[randomIntFromInterval(0, COLORS.length - 1)]
             });
-            addParents(blockData.blockId, blockData.parents ?? []);
+
+            addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
             checkZoom();
         }
@@ -164,12 +168,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         };
     }, [runListeners]);
 
-
     const feedSubscriptionStart = () => {
         if (!feedServiceRef.current) {
             return;
         }
-        feedServiceRef.current.subscribeBlocks(onNewBlock, () => {});
+        feedServiceRef.current.subscribeBlocks(onNewBlock, () => { });
         bpsCounter.start();
         setIsPlaying(true);
     };
@@ -185,19 +188,17 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     return (
         <Wrapper
-            blocksCount={0}
+            blocksCount={indexToBlockId.length}
             filter=""
             isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={() => {}}
-            selectNode={() => {}}
+            onChangeFilter={() => { }}
+            selectNode={() => { }}
             selectedFeedItem={null}
             setIsPlaying={setIsPlaying}
         >
-            <Canvas
-                ref={canvasRef}
-            >
+            <Canvas ref={canvasRef}>
                 <OrthographicCamera
                     name="mainCamera"
                     makeDefault
@@ -210,9 +211,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <ambientLight />
                 <directionalLight position={[100, 100, 50]} />
                 <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
-                <Spheres />
-                {/* {controlsEnabled && <CameraControls makeDefault />} */}
-                {features.statsEnabled && <Stats showPanel={0} className="stats" />}
+                {features.cameraControls && <CameraControls makeDefault />}
+                {features.statsEnabled && <Perf />}
             </Canvas>
         </Wrapper>
     );

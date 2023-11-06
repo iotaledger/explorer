@@ -1,3 +1,4 @@
+import { Color } from "three";
 import { create } from "zustand";
 import { ZOOM_DEFAULT } from "./constants";
 import { getScaleMultiplier } from "./utils";
@@ -5,18 +6,23 @@ import { getScaleMultiplier } from "./utils";
 interface BlockState {
     id: string;
     position: [x: number, y: number, z: number];
+    color: Color;
 }
 
-interface BlockOptions {
-    color: string;
-    scale: number;
-}
 interface BlockStoreState {
-    blocks: BlockState[];
-    blockOptions: { [k: string]: BlockOptions };
-    addBlock: (newBlock: BlockState, options: BlockOptions) => void;
-    removeBlock: (blockId: string) => void;
-    addParents: (blockId: string, parents: string[]) => void;
+    // Queue for "add block" operation to the canvas
+    blockQueue: BlockState[];
+    addToBlockQueue: (newBlock: BlockState) => void;
+    removeFromBlockQueue: (blockIds: string[]) => void;
+
+    scaleQueue: string[];
+    addToScaleQueue: (blockId: string, parents: string[]) => void;
+    removeFromScaleQueue: () => void;
+
+    // Map of blockId to index in Tangle 'InstancedMesh'
+    blockIdToIndex: Map<string, number>;
+    indexToBlockId: string[];
+    updateBlockIdToIndex: (blockId: string, index: number) => void;
 
     yPositions: { [k: number]: number };
     addYPosition: (blockY: number) => void;
@@ -37,49 +43,59 @@ interface BlockStoreState {
 }
 
 export const useBlockStore = create<BlockStoreState>(set => ({
-    blocks: [],
-    blockOptions: {},
+    blockQueue: [],
+    scaleQueue: [],
+    blockIdToIndex: new Map(),
+    indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
     isPlaying: false,
     bps: 0,
+    addToBlockQueue: newBlockData => {
+        set(state => ({
+            blockQueue: [...state.blockQueue, newBlockData]
+        }));
+    },
+    removeFromBlockQueue: (blockIds: string[]) => {
+        set(state => ({
+            ...state,
+            blockQueue: [...state.blockQueue.filter(b => !blockIds.includes(b.id))]
+        }));
+    },
+    addToScaleQueue: (_: string, parents) => {
+        if (parents.length > 0) {
+            set(state => {
+                const nextScalesToUpdate = [...state.scaleQueue, ...parents];
 
-    addBlock: (newBlock, options) => {
-        set(state => {
-            const prevBlockOptions = state.blockOptions[newBlock.id] || {};
-            return {
-                blocks: [...state.blocks, newBlock],
-                blockOptions: {
-                    ...state.blockOptions,
-                    [newBlock.id]: { ...prevBlockOptions, ...options }
-                }
-            };
-        });
+                return {
+                    ...state,
+                    scaleQueue: nextScalesToUpdate
+                };
+            });
+        }
     },
-    removeBlock: (blockId: string) => {
-        set(state => {
-            const nextBlockOptions = { ...state.blockOptions };
-            delete nextBlockOptions[blockId];
-            return {
-                blocks: [...state.blocks.filter(b => b.id !== blockId)],
-                blockOptions: nextBlockOptions
-            };
-        });
+    removeFromScaleQueue: () => {
+        set(state => ({
+            ...state,
+            scaleQueue: []
+        }));
     },
-    addParents: parents => {
+    updateBlockIdToIndex: (blockId: string, index: number) => {
         set(state => {
-            for (const parentId of parents) {
-                const foundParent = state.blockOptions[parentId];
-                if (foundParent) {
-                    foundParent.scale += 0.1;
-                }
+            state.blockIdToIndex.set(blockId, index);
+            const nextIndexToBlockId = [...state.indexToBlockId];
+
+            // Clean up map from old blockIds
+            if (nextIndexToBlockId[index]) {
+                state.blockIdToIndex.delete(nextIndexToBlockId[index]);
             }
+
+            nextIndexToBlockId[index] = blockId;
+
             return {
                 ...state,
-                blockOptions: {
-                    ...state.blockOptions
-                }
+                indexToBlockId: nextIndexToBlockId
             };
         });
     },
@@ -133,9 +149,9 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     },
     setDimensions: (width, height) => {
         set(state => ({
-                ...state,
-                dimensions: { width, height }
-            })
+            ...state,
+            dimensions: { width, height }
+        })
         );
     },
     setIsPlaying: isPlaying => {
@@ -144,7 +160,6 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             isPlaying
         }));
     },
-
     setBps: bps => {
         set(state => ({
             ...state,
@@ -152,3 +167,4 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         }));
     }
 }));
+
