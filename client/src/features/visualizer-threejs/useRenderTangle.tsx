@@ -1,26 +1,27 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { NODE_SIZE_DEFAULT } from "./constants";
+import { NODE_SIZE_DEFAULT, MAX_BLOCK_INSTANCES } from "./constants";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useBlockStore } from "./store";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_OBJECT = new THREE.Object3D();
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
-const MAX_INSTANCES = 5000;
 
 export const useRenderTangle = () => {
-    const mainMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_INSTANCES));
+    const mainMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
-    const blockIdToIndex = useRef<Map<string, number>>(new Map());
 
     const scene = useThree(state => state.scene);
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
     const scaleQueue = useBlockStore(s => s.scaleQueue);
     const clearBlocksToScaleQueue = useBlockStore(s => s.removeFromScaleQueue);
+
+    const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
+    const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
 
     useZoomDynamic();
 
@@ -52,7 +53,7 @@ export const useRenderTangle = () => {
     useEffect(() => {
         if (scaleQueue.length > 0) {
             for (const blockIdToScale of scaleQueue) {
-                const indexToUpdate = blockIdToIndex.current.get(blockIdToScale);
+                const indexToUpdate = blockIdToIndex.get(blockIdToScale);
 
                 if (indexToUpdate) {
                     mainMeshRef.current.getMatrixAt(indexToUpdate, SPHERE_OBJECT.matrix);
@@ -85,14 +86,14 @@ export const useRenderTangle = () => {
             SPHERE_OBJECT.position.set(x, y, z);
             SPHERE_OBJECT.updateMatrix();
 
-            blockIdToIndex.current.set(block.id, objectIndexRef.current);
+            updateBlockIdToIndex(block.id, objectIndexRef.current);
 
             mainMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_OBJECT.matrix);
             mainMeshRef.current.setColorAt(objectIndexRef.current, color);
 
             // Reuses old indexes when MAX_INSTANCES is reached
             // This also makes it so that old nodes are removed
-            if (objectIndexRef.current < MAX_INSTANCES) {
+            if (objectIndexRef.current < MAX_BLOCK_INSTANCES - 1) {
                 objectIndexRef.current += 1;
             } else {
                 objectIndexRef.current = 0;

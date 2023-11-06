@@ -19,6 +19,11 @@ interface BlockStoreState {
     addToScaleQueue: (blockId: string, parents: string[]) => void;
     removeFromScaleQueue: () => void;
 
+    // Map of blockId to index in Tangle 'InstancedMesh'
+    blockIdToIndex: Map<string, number>;
+    indexToBlockId: string[];
+    updateBlockIdToIndex: (blockId: string, index: number) => void;
+
     yPositions: { [k: number]: number };
     addYPosition: (blockY: number) => void;
     removeYPosition: (blockY: number) => void;
@@ -39,8 +44,9 @@ interface BlockStoreState {
 
 export const useBlockStore = create<BlockStoreState>(set => ({
     blockQueue: [],
-    blockColors: {},
     scaleQueue: [],
+    blockIdToIndex: new Map(),
+    indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     dimensions: { width: 0, height: 0 },
@@ -74,6 +80,24 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             ...state,
             scaleQueue: []
         }));
+    },
+    updateBlockIdToIndex: (blockId: string, index: number) => {
+        set(state => {
+            state.blockIdToIndex.set(blockId, index);
+            const nextIndexToBlockId = [...state.indexToBlockId];
+
+            // Clean up map from old blockIds
+            if (nextIndexToBlockId[index]) {
+                state.blockIdToIndex.delete(nextIndexToBlockId[index]);
+            }
+
+            nextIndexToBlockId[index] = blockId;
+
+            return {
+                ...state,
+                indexToBlockId: nextIndexToBlockId
+            };
+        });
     },
     addYPosition: blockY => {
         const Y = Math.floor(Math.abs(blockY));

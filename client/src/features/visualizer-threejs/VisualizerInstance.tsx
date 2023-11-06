@@ -50,7 +50,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const setIsPlaying = useBlockStore(s => s.setIsPlaying);
 
     const isPlaying = useBlockStore(s => s.isPlaying);
-    // const blockCount = useBlockStore(s => s.blockColors);
+    const indexToBlockId = useBlockStore(s => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | null>(null);
@@ -188,8 +188,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     return (
         <Wrapper
-            // blocksCount={Object.keys(blockCount).length}
-            blocksCount={0}
+            blocksCount={indexToBlockId.length}
             filter=""
             isPlaying={isPlaying}
             network={network}
