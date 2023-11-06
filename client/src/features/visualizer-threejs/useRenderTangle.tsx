@@ -1,6 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { Matrix4, Object3D } from "three";
 import { NODE_SIZE_DEFAULT, MAX_BLOCK_INSTANCES } from "./constants";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useBlockStore } from "./store";
@@ -8,6 +9,8 @@ import { useBlockStore } from "./store";
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_OBJECT = new THREE.Object3D();
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
+
+const SCALE_INCREMENT = 0.1;
 
 export const useRenderTangle = () => {
     const mainMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
@@ -56,13 +59,19 @@ export const useRenderTangle = () => {
                 const indexToUpdate = blockIdToIndex.get(blockIdToScale);
 
                 if (indexToUpdate) {
-                    mainMeshRef.current.getMatrixAt(indexToUpdate, SPHERE_OBJECT.matrix);
-                    let [xScale, yScale, zScale] = SPHERE_OBJECT.scale;
-                    xScale += 0.1;
-                    yScale += 0.1;
-                    zScale += 0.1;
-                    SPHERE_OBJECT.matrix.scale(new THREE.Vector3(xScale, yScale, zScale));
-                    mainMeshRef.current.setMatrixAt(indexToUpdate, SPHERE_OBJECT.matrix);
+                    const blockMatrix = new Matrix4();
+                    mainMeshRef.current.getMatrixAt(indexToUpdate, blockMatrix);
+
+                    const blockObj = new Object3D();
+                    blockObj.applyMatrix4(blockMatrix);
+
+                    blockObj.scale.setScalar(
+                        blockObj.scale.x + SCALE_INCREMENT
+                    );
+
+                    blockObj.updateMatrix();
+
+                    mainMeshRef.current.setMatrixAt(indexToUpdate, blockObj.matrix);
                 }
             }
 
