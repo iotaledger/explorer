@@ -1,4 +1,3 @@
-import { Converter } from "@iota/util.js-stardust";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IBasicOutputsResponse } from "../../../../models/api/stardust/basic/IBasicOutputsResponse";
 import { ITaggedOutputsRequest } from "../../../../models/api/stardust/ITaggedOutputsRequest";
@@ -6,6 +5,7 @@ import { INftOutputsResponse } from "../../../../models/api/stardust/nft/INftOut
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
+import { Converter } from "../../../../utils/convertUtils";
 import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ICurrencySettings } from "../../models/services/ICurrencySettings";
 import { CurrencyService } from "../../services/currencyService";
-import { useIsMounted } from "./useIsMounted";
 
 /**
  * Hook into Currency Service
+ * @param isIota Is the base currency Iota.
  * @returns The current currency and currecny data.
  */
-export function useCurrencyService(): [
+export function useCurrencyService(isIota: boolean): [
     string,
     string
 ] {
@@ -59,10 +60,15 @@ export function useCurrencyService(): [
 
     useEffect(() => {
         if (currencyData) {
+            const coinPrice = isIota ? currencyData?.coinStats?.iota.price : currencyData?.coinStats?.shimmer.price;
+            const coinMarketCap = isIota ?
+                currencyData?.coinStats?.iota.marketCap :
+                currencyData?.coinStats?.shimmer.marketCap;
+
             setMarketCap(
-                currencyData.coinStats?.shimmer?.marketCap ?
+                coinMarketCap ?
                     currencyService.convertFiatBase(
-                        currencyData.coinStats.shimmer.marketCap,
+                        coinMarketCap,
                         currencyData,
                         true,
                         2,
@@ -71,9 +77,9 @@ export function useCurrencyService(): [
                     ) : "--"
             );
             setPrice(
-                currencyData.coinStats?.shimmer?.price ?
+                coinPrice ?
                     currencyService.convertFiatBase(
-                        currencyData.coinStats.shimmer.price,
+                        coinPrice,
                         currencyData,
                         true,
                         3,
@@ -81,7 +87,7 @@ export function useCurrencyService(): [
                     ) : "--"
             );
         }
-    }, [currency, currencyData]);
+    }, [isIota, currency, currencyData]);
 
     return [price, marketCap];
 }

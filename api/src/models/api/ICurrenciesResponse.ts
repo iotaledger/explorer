@@ -1,6 +1,6 @@
-import { ICoinStats } from "../db/ICurrencyState";
 import { IResponse } from "./IResponse";
 import { ISignedResponse } from "./ISignedResponse";
+import { ICoinStats } from "../db/ICurrencyState";
 
 export interface ICurrenciesResponse extends IResponse, ISignedResponse {
     /**

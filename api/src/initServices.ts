@@ -1,5 +1,5 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
-import { MqttClient as StardustMqttClient } from "@iota/mqtt.js-stardust";
+import { Client as StardustMqttClient } from "@iota/sdk";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -49,18 +49,18 @@ export async function initServices(config: IConfiguration) {
     for (const networkConfig of enabledNetworks) {
         if (networkConfig.feedEndpoint) {
             switch (networkConfig.protocolVersion) {
-                case LEGACY:
+                case LEGACY: {
                     initLegacyServices(networkConfig);
                     break;
-
-                case CHRYSALIS:
+                }
+                case CHRYSALIS: {
                     initChrysalisServices(networkConfig);
                     break;
-
-                case STARDUST:
+                }
+                case STARDUST: {
                     initStardustServices(networkConfig);
                     break;
-
+                }
                 default:
             }
         }
@@ -169,8 +169,8 @@ function initStardustServices(networkConfig: INetwork): void {
     );
 
     ServiceFactory.register(
-        `mqtt-${networkConfig.network}`, () => new StardustMqttClient(
-            networkConfig.feedEndpoint.split(";"))
+        `mqtt-${networkConfig.network}`,
+        () => new StardustMqttClient({ nodes: [networkConfig.feedEndpoint], brokerOptions: { useWs: true } })
     );
 
     ServiceFactory.register(

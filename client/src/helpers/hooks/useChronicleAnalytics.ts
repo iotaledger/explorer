@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { useIsMounted } from "./useIsMounted";
 
 /**
  * Constant in minutes to perform the chronicle analytics refresh.

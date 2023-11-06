@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
@@ -6,8 +7,8 @@ import { useBlockStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
 
 interface EmitterProps {
-    setRunListeners: Dispatch<SetStateAction<boolean>>;
-    emitterRef: RefObject<THREE.Mesh>;
+    readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
+    readonly emitterRef: RefObject<THREE.Mesh>;
 }
 
 const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: EmitterProps) => {

@@ -60,7 +60,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     removeFromBlockQueue: (blockIds: string[]) => {
         set(state => ({
             ...state,
-            blockQueue: [...state.blockQueue.filter(b => !blockIds.includes(b.id))]
+            blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
         }));
     },
     addToScaleQueue: (_: string, parents) => {

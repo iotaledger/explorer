@@ -3,6 +3,8 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { AddressRouteProps } from "./AddressRouteProps";
+import { AddressState } from "./AddressState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { TrytesHelper } from "../../../helpers/trytesHelper";
@@ -16,8 +18,6 @@ import CopyButton from "../../components/CopyButton";
 import CurrencyButton from "../../components/CurrencyButton";
 import Spinner from "../../components/Spinner";
 import ValueButton from "../../components/ValueButton";
-import { AddressRouteProps } from "./AddressRouteProps";
-import { AddressState } from "./AddressState";
 import "./Address.scss";
 
 /**

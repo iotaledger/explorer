@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { TransactionHelper, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js-stardust";
+import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { TransactionPageProps } from "./TransactionPageProps";
 import metadataInfoMessage from "../../../assets/modals/stardust/block/metadata.json";
 import transactionPayloadMessage from "../../../assets/modals/stardust/transaction/main-header.json";
 import { useBlockChildren } from "../../../helpers/hooks/useBlockChildren";
@@ -21,7 +22,6 @@ import BlockMetadataSection from "../../components/stardust/block/section/BlockM
 import InclusionState from "../../components/stardust/InclusionState";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
-import { TransactionPageProps } from "./TransactionPageProps";
 import "./TransactionPage.scss";
 
 enum TRANSACTION_PAGE_TABS {
@@ -43,10 +43,12 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     useEffect(() => {
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            setIncludedBlockId(TransactionHelper.calculateBlockId(block));
-            setTangleNetworkId(block.payload.essence.networkId);
-            setInputsCommitment(block.payload.essence.inputsCommitment);
+        if (block?.payload?.type === PayloadType.Transaction) {
+            const transactionPayload = block.payload as ITransactionPayload;
+            const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
+            setIncludedBlockId(Utils.blockId(block));
+            setTangleNetworkId(transactionEssence.networkId);
+            setInputsCommitment(transactionEssence.inputsCommitment);
         }
     }, [block]);
 
@@ -78,7 +80,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
         );
     }
 
-    const transactionContent = !block ? null : (
+    const transactionContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
                 <div className="row middle">
@@ -267,7 +269,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
                 </div>
             </TabbedSection>
         </React.Fragment>
-    );
+    ) : null;
 
     return (
         <div className="transaction-page">

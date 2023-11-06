@@ -1,15 +1,14 @@
-import { Blake2b } from "@iota/crypto.js-stardust";
 import {
-    BASIC_OUTPUT_TYPE,
-    deserializeBlock,
-    IBlock,
-    milestoneIdFromMilestonePayload,
-    MILESTONE_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE,
-    TransactionHelper
-} from "@iota/iota.js-stardust";
-import { Converter, ReadStream } from "@iota/util.js-stardust";
+    BasicOutput,
+    Block,
+    MilestonePayload,
+    OutputType,
+    PayloadType,
+    RegularTransactionEssence,
+    TaggedDataPayload,
+    TransactionPayload,
+    Utils
+} from "@iota/sdk-wasm/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
@@ -78,10 +77,10 @@ export class StardustFeedClient {
         const networkService = ServiceFactory.get<NetworkService>("network");
         const theNetworkConfig = networkService.get(networkId);
 
-        if (!theNetworkConfig) {
-            console.error("[FeedClient] Couldn't initialize client for network", networkId);
-        } else {
+        if (theNetworkConfig) {
             this._networkConfig = theNetworkConfig;
+        } else {
+            console.error("[FeedClient] Couldn't initialize client for network", networkId);
         }
 
         this.setupCacheTrimJob();
@@ -113,14 +112,14 @@ export class StardustFeedClient {
                 };
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
-                    } else {
+                    if (subscribeResponse.error) {
                         console.log(
                             "Failed subscribing to feed",
                             this._networkConfig?.network,
                             subscribeResponse.error
                         );
+                    } else {
+                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
                 this.socket.on("block", async (update: IFeedUpdate) => {
@@ -140,7 +139,7 @@ export class StardustFeedClient {
                         }
 
                         if (update.block) {
-                            const block: IFeedBlockData = this.unmarshalBlock(update.block);
+                            const block: IFeedBlockData = this.buildFeedBlockData(update.block);
 
                             if (!this.latestBlocks.has(block.blockId)) {
                                 this.latestBlocks.set(block.blockId, block);
@@ -214,14 +213,14 @@ export class StardustFeedClient {
                 this.socket.emit("subscribe", subscribeRequest);
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
-                    if (!subscribeResponse.error) {
-                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
-                    } else {
+                    if (subscribeResponse.error) {
                         console.log(
                             "Failed subscribing to feed",
                             this._networkConfig?.network,
                             subscribeResponse.error
                         );
+                    } else {
+                        this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
 
@@ -295,48 +294,47 @@ export class StardustFeedClient {
     }
 
     /**
-     * Deserialize the block into block data object.
-     * @param serializedBlock The item source.
+     * Build the block data object.
+     * @param block The item source.
      * @returns The feed item.
      */
-    private unmarshalBlock(serializedBlock: string): IFeedBlockData {
-        const bytes = Converter.hexToBytes(serializedBlock);
-        const blockId = Converter.bytesToHex(Blake2b.sum256(bytes), true);
+    private buildFeedBlockData(block: Block): IFeedBlockData {
+        const blockId = Utils.blockId(block);
 
         let value;
         let transactionId;
         let payloadType: "Transaction" | "TaggedData" | "Milestone" | "None" = "None";
         const properties: { [key: string]: unknown } = {};
-        let block: IBlock | null = null;
 
         try {
-            block = deserializeBlock(new ReadStream(bytes));
-            if (block.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                transactionId = Converter.bytesToHex(
-                    TransactionHelper.getTransactionPayloadHash(block.payload),
-                    true
-                );
+            if (block.payload?.type === PayloadType.Transaction) {
+                const transactionPayload = block.payload as TransactionPayload;
+                const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
+                transactionId = Utils.transactionId(transactionPayload);
                 properties.transactionId = transactionId;
                 payloadType = "Transaction";
                 value = 0;
 
-                for (const output of block.payload.essence.outputs) {
-                    if (output.type === BASIC_OUTPUT_TYPE) {
-                        value += Number(output.amount);
+                for (const output of transactionEssence.outputs) {
+                    if (output.type === OutputType.Basic) {
+                        const basicOutput = output as BasicOutput;
+                        value += Number(basicOutput.amount);
                     }
                 }
 
-                if (block.payload.essence.payload) {
-                    properties.tag = block.payload.essence.payload.tag;
+                if (transactionEssence.payload?.type === PayloadType.TaggedData) {
+                    properties.tag = (transactionEssence.payload as TaggedDataPayload).tag;
                 }
-            } else if (block.payload?.type === MILESTONE_PAYLOAD_TYPE) {
+            } else if (block.payload?.type === PayloadType.Milestone) {
+                const milestonePayload = block.payload as MilestonePayload;
                 payloadType = "Milestone";
-                properties.index = block.payload.index;
-                properties.timestamp = block.payload.timestamp;
-                properties.milestoneId = milestoneIdFromMilestonePayload(block.payload);
-            } else if (block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE) {
+                properties.index = milestonePayload.index;
+                properties.timestamp = milestonePayload.timestamp;
+                properties.milestoneId = Utils.milestoneId(milestonePayload);
+            } else if (block.payload?.type === PayloadType.TaggedData) {
+                const taggedDataPayload = block.payload as TaggedDataPayload;
                 payloadType = "TaggedData";
-                properties.tag = block.payload.tag;
+                properties.tag = taggedDataPayload.tag;
             }
         } catch (err) {
             console.error(err);

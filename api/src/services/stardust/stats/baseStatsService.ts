@@ -40,7 +40,7 @@ export abstract class BaseStatsService implements IStatsService {
      * @returns The statistics for the network.
      */
     public getStats(): IStatistics {
-        return this._statistics[this._statistics.length - 1];
+        return this._statistics.at(-1);
     }
 
     /**

@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { StreamsV0RouteProps } from "./StreamsV0RouteProps";
+import { StreamsV0State } from "./StreamsV0State";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { TrytesHelper } from "../../helpers/trytesHelper";
 import { CHRYSALIS } from "../../models/config/protocolVersion";
@@ -10,8 +12,6 @@ import CopyButton from "../components/CopyButton";
 import JsonViewer from "../components/JsonViewer";
 import Spinner from "../components/Spinner";
 import "./StreamsV0.scss";
-import { StreamsV0RouteProps } from "./StreamsV0RouteProps";
-import { StreamsV0State } from "./StreamsV0State";
 
 /**
  * Component which will show the streams v0 page.

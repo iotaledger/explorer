@@ -1,6 +1,10 @@
 import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import mainHeaderMessage from "./../../../assets/modals/chrysalis/message/main-header.json";
+import metadataMessage from "./../../../assets/modals/chrysalis/message/metadata.json";
+import treeMessage from "./../../../assets/modals/chrysalis/message/tree.json";
+import { MessageState } from "./MessageState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { TransactionsHelper } from "../../../helpers/chrysalis/transactionsHelper";
 import { CHRYSALIS } from "../../../models/config/protocolVersion";
@@ -22,11 +26,7 @@ import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import Switcher from "../../components/Switcher";
 import { MessageProps } from "../chrysalis/MessageProps";
-import mainHeaderMessage from "./../../../assets/modals/chrysalis/message/main-header.json";
-import metadataMessage from "./../../../assets/modals/chrysalis/message/metadata.json";
-import treeMessage from "./../../../assets/modals/chrysalis/message/tree.json";
 import "./Message.scss";
-import { MessageState } from "./MessageState";
 /**
  * Component which will show the message page.
  */

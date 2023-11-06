@@ -6,7 +6,7 @@ import { IParticipationEventQuestion } from "../../../../../../models/api/stardu
 import "./VotingEvent.scss";
 
 interface VotingEventProps {
-    event: IEventDetails;
+    readonly event: IEventDetails;
 }
 
 const VotingEvent: React.FC<VotingEventProps> = ({ event }) => {

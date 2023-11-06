@@ -1,25 +1,25 @@
-import { IBlock, IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
-import { IBech32AddressDetails } from "../IBech32AddressDetails";
-import { IResponse } from "../IResponse";
-import { IAnalyticStats } from "../stats/IAnalyticStats";
-import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
+import { Block, OutputResponse, IOutputsResponse } from "@iota/sdk-wasm/web";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";
 import { IInfluxDailyResponse } from "./influx/IInfluxDailyResponse";
 import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 import { ITransactionHistoryResponse } from "./ITransactionHistoryResponse";
+import { IBech32AddressDetails } from "../IBech32AddressDetails";
+import { IResponse } from "../IResponse";
+import { IAnalyticStats } from "../stats/IAnalyticStats";
+import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 
 export interface ISearchResponse extends IResponse {
     /**
      * Block if it was found.
      */
-    block?: IBlock;
+    block?: Block;
 
     /**
      * The transaction included block.
      */
-    transactionBlock?: IBlock;
+    transactionBlock?: Block;
 
     /**
      * Address details.
@@ -29,12 +29,12 @@ export interface ISearchResponse extends IResponse {
     /**
      * Output if it was found (block will also be populated).
      */
-    output?: IOutputResponse;
+    output?: OutputResponse;
 
     /**
      * The addres UTXOs.
      */
-    addressOutputs?: IOutputResponse[];
+    addressOutputs?: OutputResponse[];
 
     /**
      * Basic and/or Nft tagged output ids.
@@ -59,7 +59,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Alias details.
      */
-    aliasDetails?: IOutputResponse;
+    aliasDetails?: OutputResponse;
 
     /**
      * Foundry id if it was found.
@@ -69,7 +69,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Foundry details.
      */
-    foundryDetails?: IOutputResponse;
+    foundryDetails?: OutputResponse;
 
     /**
      * Nft id if it was found.
@@ -84,7 +84,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Nft details.
      */
-    nftDetails?: IOutputResponse;
+    nftDetails?: OutputResponse;
 
     /**
      * Foundry outputs.

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import {
-    MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE, milestoneIdFromMilestonePayload, IMilestonePayload
-} from "@iota/iota.js-stardust";
+    MilestonePayload, PayloadType, TransactionPayload, Utils
+} from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { BlockProps } from "./BlockProps";
 import mainHeaderMessage from "../../../assets/modals/stardust/block/main-header.json";
 import metadataInfo from "../../../assets/modals/stardust/block/metadata.json";
 import milestonePayloadInfo from "../../../assets/modals/stardust/block/milestone-payload.json";
@@ -31,8 +30,6 @@ import BlockPayloadSection from "../../components/stardust/block/section/BlockPa
 import ReferencedBlocksSection from "../../components/stardust/block/section/referenced-blocks/ReferencedBlocksSection";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
-import { TransactionsHelper } from "./../../../helpers/stardust/transactionsHelper";
-import { BlockProps } from "./BlockProps";
 import "./Block.scss";
 
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
@@ -51,14 +48,14 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     );
 
     useEffect(() => {
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-            const tsxId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
-                block.payload
+        if (block?.payload?.type === PayloadType.Transaction) {
+            const tsxId = Utils.transactionId(
+                block.payload as TransactionPayload
             );
             setTransactionId(tsxId);
         }
-        if (block?.payload?.type === MILESTONE_PAYLOAD_TYPE) {
-            const mId = milestoneIdFromMilestonePayload(block.payload);
+        if (block?.payload?.type === PayloadType.Milestone) {
+            const mId = Utils.milestoneId(block.payload as MilestonePayload);
             setMilestoneId(mId);
         }
     }, [block]);
@@ -66,27 +63,31 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
 
     const isMarketed = isMarketedNetwork(network);
-    const isMilestoneBlock = block?.payload?.type === MILESTONE_PAYLOAD_TYPE;
-    const isTransactionBlock = block?.payload?.type === TRANSACTION_PAYLOAD_TYPE;
+    const isMilestoneBlock = block?.payload?.type === PayloadType.Milestone;
+    const isTransactionBlock = block?.payload?.type === PayloadType.Transaction;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
     const isLoading = isBlockLoading ||
         isInputsAndOutputsLoading ||
         isBlockMetadataLoading ||
         isMilestoneReferencedBlockLoading;
-    const milestoneIndex = isMilestoneBlock ? (block.payload as IMilestonePayload).index : undefined;
+    const milestoneIndex = isMilestoneBlock ? (block?.payload as MilestonePayload).index : undefined;
     let pageTitle = "Block";
     switch (block?.payload?.type) {
-        case MILESTONE_PAYLOAD_TYPE:
+        case PayloadType.Milestone: {
             pageTitle = `Milestone Block ${milestoneIndex}`;
             break;
-        case TRANSACTION_PAYLOAD_TYPE:
+        }
+        case PayloadType.Transaction: {
             pageTitle = "Transaction Block";
             break;
-        case TAGGED_DATA_PAYLOAD_TYPE:
+        }
+        case PayloadType.TaggedData: {
             pageTitle = "Data Block";
             break;
-        default:
+        }
+        default: {
             break;
+        }
     }
 
     if (blockError) {
@@ -147,7 +148,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         );
     }
 
-    const blockContent = !block ? null : (
+    const blockContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
                 <div className="row middle">
@@ -204,7 +205,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 </div>
             )}
-            {block?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+            {block?.payload?.type === PayloadType.Transaction &&
                 transferTotal !== null && (
                     <div className="section--data">
                         <div className="label">
@@ -269,7 +270,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 {tabbedSections}
             </TabbedSection>
         </React.Fragment >
-    );
+    ) : null;
 
     return (
         <div className="block">
@@ -289,13 +290,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 hasConflicts={isLinksDisabled}
                                 conflictReason={conflictReason}
                                 onClick={metadata?.referencedByMilestoneIndex
-                                    ? (blockId: string) => history.push(`/${network}/block/${blockId}`)
+                                    ? (theBlockId: string) => history.push(`/${network}/block/${theBlockId}`)
                                     : undefined}
                             />
                         </div>
                         {isMilestoneBlock && (
                             <MilestoneControls
-                                milestone={block.payload as IMilestonePayload}
+                                milestone={block?.payload as MilestonePayload}
                             />
                         )}
                     </div>

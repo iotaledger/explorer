@@ -1,19 +1,19 @@
-import { IBlock, IOutputResponse } from "@iota/iota.js-stardust";
-import { IResponse } from "../IResponse";
+import { Block, OutputResponse } from "@iota/sdk";
 import { IBech32AddressDetails } from "./IBech32AddressDetails";
 import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 import { IMilestoneDetailsResponse } from "./milestone/IMilestoneDetailsResponse";
+import { IResponse } from "../IResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
      * Block if it was found.
      */
-    block?: IBlock;
+    block?: Block;
 
     /**
      * Transaction included block.
      */
-    transactionBlock?: IBlock;
+    transactionBlock?: Block;
 
     /**
      * Address details.
@@ -23,7 +23,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Output if it was found (block will also be populated).
      */
-    output?: IOutputResponse;
+    output?: OutputResponse;
 
     /**
      * Basic and/or Nft tagged output ids.

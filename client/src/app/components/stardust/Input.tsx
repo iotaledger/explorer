@@ -1,25 +1,25 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { TransactionHelper } from "@iota/iota.js-stardust";
+import { Utils } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useContext, useState } from "react";
 import { useHistory, Link } from "react-router-dom";
+import Bech32Address from "./address/Bech32Address";
+import Output from "./Output";
 import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import { IInput } from "../../../models/api/stardust/IInput";
 import NetworkContext from "../../context/NetworkContext";
-import Bech32Address from "./address/Bech32Address";
-import Output from "./Output";
 
 interface InputProps {
     /**
      * The inputs.
      */
-    input: IInput;
+    readonly input: IInput;
     /**
      * The network in context.
      */
-    network: string;
+    readonly network: string;
 }
 
 /**
@@ -77,13 +77,13 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                         </Link>
                     </div>
                     <div className="card--label"> Transaction Output Index</div>
-                    <div className="card--value">{input.transactionOutputIndex}</div>
+                    <div className="card--value">{input.transactionInputIndex}</div>
                 </React.Fragment>)}
         </React.Fragment>
     );
 
-    const outputId = TransactionHelper.outputIdFromTransactionData(
-        input.transactionId, input.transactionOutputIndex
+    const outputId = Utils.computeOutputId(
+        input.transactionId, input.transactionInputIndex
     );
 
     return input.output ?

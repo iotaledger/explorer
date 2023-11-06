@@ -9,8 +9,8 @@ import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
 
 interface Props {
-    blockId: string;
-    isTable?: boolean;
+    readonly blockId: string;
+    readonly isTable?: boolean;
 }
 
 const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {

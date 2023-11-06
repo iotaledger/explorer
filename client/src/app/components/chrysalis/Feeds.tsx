@@ -1,4 +1,5 @@
 import { RouteComponentProps } from "react-router-dom";
+import { FeedsState } from "./FeedsState";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { INetwork } from "../../../models/config/INetwork";
 import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
@@ -10,7 +11,6 @@ import { ChrysalisFeedClient } from "../../../services/chrysalis/chrysalisFeedCl
 import { NetworkService } from "../../../services/networkService";
 import { SettingsService } from "../../../services/settingsService";
 import Currency from "../Currency";
-import { FeedsState } from "./FeedsState";
 
 /**
  * Component which will be the base for feeds components.

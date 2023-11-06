@@ -1,11 +1,11 @@
 import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
+import MessageTangleState from "./MessageTangleState";
 import Spinner from "../../components/Spinner";
-import "./Transaction.scss";
 import { TransactionProps } from "../TransactionProps";
 import { TransactionState } from "../TransactionState";
-import MessageTangleState from "./MessageTangleState";
+import "./Transaction.scss";
 
 /**
  * Component which will display a transaction.
@@ -46,7 +46,7 @@ class Transaction extends Component<TransactionProps, TransactionState> {
                             : <Spinner />}
                     </td>
                     <td className={`amount ${this.props.amount && this.props.amount < 0 ? "negative" : "positive"}`}>
-                        {this.props.amount !== undefined ? UnitsHelper.formatBest(this.props.amount ?? 0) : <Spinner />}
+                        {this.props.amount === undefined ? <Spinner /> : UnitsHelper.formatBest(this.props.amount ?? 0)}
                     </td>
                 </tr>
             ) : (

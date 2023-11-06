@@ -1,4 +1,3 @@
-import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
 import { TSelectFeedItem, TSelectNode } from "../../app/types/visualizer.types";
@@ -9,6 +8,7 @@ import { INodeData } from "../../models/graph/stardust/INodeData";
 import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
+import { Converter } from "../stardust/convertUtils";
 
 export const MAX_ITEMS: number = 2500;
 export const FEED_PROBE_THRESHOLD: number = 3000;
@@ -89,7 +89,7 @@ function useVisualizerState(network: string, graphElement: React.MutableRefObjec
 
         return () => {
             if ((graphElement.current?.children?.length ?? 0) > 0) {
-                graphElement.current?.removeChild(graphElement.current.children[0]);
+                graphElement.current?.children[0]?.remove();
             }
             graph.current = null;
             graphics.current = null;

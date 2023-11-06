@@ -1,20 +1,20 @@
-import { HexHelper } from "@iota/util.js-stardust";
 import React from "react";
 import { Link } from "react-router-dom";
+import MilestoneFeedAnalyics from "./MilestoneFeedAnalytics";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
+import { HexHelper } from "../../../../helpers/stardust/hexHelper";
 import { INetwork } from "../../../../models/config/INetwork";
 import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
 import TruncatedId from "../../../components/stardust/TruncatedId";
-import MilestoneFeedAnalyics from "./MilestoneFeedAnalytics";
 import "./MilestoneFeed.scss";
 
 const FEED_ITEMS_MAX = 10;
 
 interface MilestoneFeedProps {
-    networkConfig: INetwork;
-    milestones: IMilestoneFeedItem[];
-    latestMilestoneIndex?: number;
+    readonly networkConfig: INetwork;
+    readonly milestones: IMilestoneFeedItem[];
+    readonly latestMilestoneIndex?: number;
 }
 
 const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones, latestMilestoneIndex }) => {

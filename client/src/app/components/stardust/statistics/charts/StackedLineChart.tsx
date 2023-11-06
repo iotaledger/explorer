@@ -23,13 +23,13 @@ import {
 import "./Chart.scss";
 
 interface StackedLineChartProps {
-    chartId: string;
-    title?: string;
-    info?: ModalData;
-    subgroups: string[];
-    groupLabels?: string[];
-    colors: string[];
-    data: { [name: string]: number; time: number }[];
+    readonly chartId: string;
+    readonly title?: string;
+    readonly info?: ModalData;
+    readonly subgroups: string[];
+    readonly groupLabels?: string[];
+    readonly colors: string[];
+    readonly data: { [name: string]: number; time: number }[];
 }
 
 const StackedLineChart: React.FC<StackedLineChartProps> = ({
@@ -81,7 +81,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
             // X
             const x = scaleTime()
-                .domain([groups[0], groups[groups.length - 1]])
+                .domain([groups[0], groups.at(-1) ?? groups[0]])
                 .range([0, INNER_WIDTH]);
 
             const xAxisSelection = svg.append("g")
@@ -204,16 +204,16 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
                     return;
                 }
                 const extent = event.selection;
-                if (!extent) {
+                if (extent) {
+                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    brushSelection.call(brush.move, null);
+                } else {
                     if (!idleTimeout) {
                         idleTimeout = setTimeout(idled, 350);
                         return idleTimeout;
                     }
-                    x.domain([groups[0], groups[groups.length - 1]]);
-                } else {
-                    x.domain([x.invert(extent[0] as NumberValue), x.invert(extent[1] as NumberValue)]);
-                    // eslint-disable-next-line @typescript-eslint/unbound-method
-                    brushSelection.call(brush.move, null);
+                    x.domain([groups[0], groups.at(-1) ?? groups[0]]);
                 }
 
                 const selectedData = computeDataIncludedInSelection(x, data);
@@ -235,7 +235,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({
 
             // double click reset
             svg.on("dblclick", () => {
-                x.domain([groups[0], groups[groups.length - 1]]);
+                x.domain([groups[0], groups.at(-1) ?? groups[0]]);
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));

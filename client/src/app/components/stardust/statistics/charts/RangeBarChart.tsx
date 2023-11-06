@@ -5,6 +5,7 @@ import { format } from "d3-format";
 import { scaleBand, scaleLinear } from "d3-scale";
 import { BaseType, select } from "d3-selection";
 import React, { useCallback, useContext, useLayoutEffect, useRef } from "react";
+import { isShimmerUiTheme } from "../../../../../helpers/networkHelper";
 import { IDistributionEntry } from "../../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
 import NetworkContext from "../../../../context/NetworkContext";
 import ChartTooltip from "../ChartTooltip";
@@ -12,13 +13,13 @@ import { d3FormatSpecifier, getSubunitThreshold, noDataView, useChartWrapperSize
 import "./RangeBarChart.scss";
 
 interface IRangeBarChartProps {
-    data: IDistributionEntry[] | null;
-    yField: "addressCount" | "totalBalance";
-    yLabel: string;
+    readonly data: IDistributionEntry[] | null;
+    readonly yField: "addressCount" | "totalBalance";
+    readonly yLabel: string;
 }
 
 export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLabel }) => {
-    const { tokenInfo } = useContext(NetworkContext);
+    const { tokenInfo, uiTheme } = useContext(NetworkContext);
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
         if (chartWrapper !== null) {
@@ -29,6 +30,8 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
     const theSvg = useRef<SVGSVGElement>(null);
     const subunitThreshold = getSubunitThreshold(tokenInfo) ?? null;
     const buildTooltip = useTokenDistributionTooltip(data, tokenInfo);
+
+    const isShimmerUi = isShimmerUiTheme(uiTheme);
 
     useLayoutEffect(() => {
         if (data && data.length > 0 && wrapperWidth && wrapperHeight && subunitThreshold) {
@@ -115,7 +118,7 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                         Number(d[yField]) :
                         Number(d[yField]) / subunitThreshold
                 ))
-                .style("fill", "#14CABF");
+                .style("fill", isShimmerUi ? "#14CABF" : "#3ca2ff");
 
             // hidden hover areas
             svg.append("g")

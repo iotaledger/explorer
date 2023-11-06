@@ -4,14 +4,15 @@ import React, { useRef } from "react";
 import "./Tooltip.scss";
 
 interface TooltipProps {
-    tooltipContent: string | React.ReactNode;
-    children: React.ReactNode;
+    readonly tooltipContent: string | React.ReactNode;
+    readonly children: React.ReactNode;
+    readonly childrenClass?: string;
 }
 
 /**
  * Component to display a tooltip on hover.
  */
-const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent }) => {
+const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent, childrenClass }) => {
     const tooltip = useRef<HTMLDivElement>(null);
 
     const onEnter = () => {
@@ -28,17 +29,23 @@ const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent }) => {
         }
     };
 
+    const childrenClassname = childrenClass ? `children ${childrenClass}` : "children";
+
     return (
         <div className="tooltip">
             <div className="wrap" ref={tooltip}>
                 <div className="arrow" />
                 {tooltipContent}
             </div>
-            <div className="children" onMouseEnter={onEnter} onMouseLeave={onLeave}>
+            <div className={childrenClassname} onMouseEnter={onEnter} onMouseLeave={onLeave}>
                 {children}
             </div>
         </div>
     );
+};
+
+Tooltip.defaultProps = {
+    childrenClass: undefined
 };
 
 export default Tooltip;

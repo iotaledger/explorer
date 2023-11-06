@@ -1,12 +1,13 @@
+/* eslint-disable react/static-property-placement */
 /* eslint-disable max-len */
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React, { Component, ReactNode } from "react";
+import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
 import { Bech32AddressHelper } from "../../../../../helpers/stardust/bech32AddressHelper";
 import { formatAmount } from "../../../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../../context/NetworkContext";
 import { ReceiptPayloadState } from "../../../ReceiptPayloadState";
 import Bech32Address from "../../address/Bech32Address";
-import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
 
 /**
  * Component which will display a receipt payload.

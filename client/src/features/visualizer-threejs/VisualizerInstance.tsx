@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { CameraControls, OrthographicCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
@@ -5,6 +6,11 @@ import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
+import { COLORS, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
+import Emitter from "./Emitter";
+import { useBlockStore } from "./store";
+import { getGenerateY, randomIntFromInterval, timer } from "./utils";
+import { BPSCounter } from "./worker/entities/BPSCounter";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -12,11 +18,6 @@ import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { COLORS, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
-import Emitter from "./Emitter";
-import { useBlockStore } from "./store";
-import { getGenerateY, randomIntFromInterval, timer } from "./utils";
-import { BPSCounter } from "./worker/entities/BPSCounter";
 import "./VisualizerThree.scss";
 
 const features = {
@@ -59,7 +60,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * Pause on tab or window change
      */
     useEffect(() => {
-        const handleVisibilityChange = () => {
+        const handleVisibilityChange = async () => {
             if (document.hidden) {
                 return feedSubscriptionStop();
             }

@@ -1,3 +1,4 @@
+import { ZmqService } from "./zmqService";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedItemMetadata } from "../../models/api/legacy/IFeedItemMetadata";
 import { IFeedSubscriptionItem } from "../../models/api/legacy/IFeedSubscriptionItem";
@@ -6,7 +7,6 @@ import { IStatistics } from "../../models/services/IStatistics";
 import { IItemsService } from "../../models/services/legacy/IItemsService";
 import { ISn } from "../../models/zmq/ISn";
 import { ITxTrytes } from "../../models/zmq/ITxTrytes";
-import { ZmqService } from "./zmqService";
 
 /**
  * Class to handle transactions service.
@@ -167,7 +167,7 @@ export class LegacyItemsService implements IItemsService {
 
         const now = Date.now();
 
-        const start = this._ips.length > 0 ? this._ips[this._ips.length - 1].ts : now;
+        const start = this._ips.length > 0 ? this._ips.at(-1).ts : now;
         const end = this._ips.length > 0 ? this._ips[0].ts : now;
 
         const tps = this._ips;

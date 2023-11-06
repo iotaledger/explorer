@@ -1,9 +1,10 @@
+/* eslint-disable react/static-property-placement */
 import React, { Component, ReactNode } from "react";
+import { AddressProps } from "./AddressProps";
 import { Bech32AddressHelper } from "../../../../helpers/stardust/bech32AddressHelper";
 import { NameHelper } from "../../../../helpers/stardust/nameHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import TruncatedId from "../TruncatedId";
-import { AddressProps } from "./AddressProps";
 
 /**
  * Component which will display an address.

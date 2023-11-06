@@ -1,14 +1,16 @@
 import classNames from "classnames";
 import moment from "moment";
 import React, { useContext } from "react";
+import { ITransactionEntryProps } from "./TransactionEntryProps";
 import { DateHelper } from "../../../../helpers/dateHelper";
+import { TransactionsHelper } from "../../../../helpers/stardust/transactionsHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { CHRYSALIS_MAINNET } from "../../../../models/config/networkType";
 import NetworkContext from "../../../context/NetworkContext";
 import TruncatedId from "../TruncatedId";
-import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = (
-    { outputId, transactionId, date, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
+    { outputId, transactionId, date, milestoneIndex, value, isSpent, isFormattedAmounts, setIsFormattedAmounts }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
     const ago = moment(date * 1000).fromNow();
@@ -19,6 +21,12 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
         </span>
     );
 
+    const isTransactionFromStardustGenesis = milestoneIndex &&
+        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
+    const transactionLink = isTransactionFromStardustGenesis ?
+        `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
+        `/${network}/transaction/${transactionId}`;
+
     return (
         <div className="card">
             <div className="field">
@@ -28,7 +36,7 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
                 <div className="row card--value">
                     <TruncatedId
                         id={transactionId}
-                        link={`/${network}/transaction/${transactionId}`}
+                        link={transactionLink}
                     />
                 </div>
             </div>

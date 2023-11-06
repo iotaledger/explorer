@@ -1,4 +1,4 @@
-import { IEd25519Signature } from "@iota/iota.js-stardust";
+import { Ed25519Signature } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { ReactComponent as DropdownIcon } from "../../../../../../assets/dropdown-arrow.svg";
@@ -6,7 +6,7 @@ import { ReactComponent as KeyIcon } from "../../../../../../assets/key-icon.svg
 import "./MilestoneSignaturesSection.scss";
 
 interface MilestoneSignaturesProps {
-    signatures: IEd25519Signature[];
+    readonly signatures: Ed25519Signature[];
 }
 
 const MilestoneSignaturesSection: React.FC<MilestoneSignaturesProps> = ({ signatures }) => {

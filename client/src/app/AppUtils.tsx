@@ -1,13 +1,15 @@
 import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
-import { INetwork } from "../models/config/INetwork";
-import { ALPHANET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
-import { IReducedNodeInfo } from "../services/nodeInfoService";
 import NetworkContext from "./context/NetworkContext";
+import { INetwork } from "../models/config/INetwork";
+import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
+import { IOTA_UI, Theme } from "../models/config/uiTheme";
+import { IReducedNodeInfo } from "../services/nodeInfoService";
 
 export const networkContextWrapper = (
     currentNetwork: string | undefined,
-    nodeInfo: IReducedNodeInfo | null
+    nodeInfo: IReducedNodeInfo | null,
+    uiTheme: Theme | undefined
 ) => function withNetworkContext(wrappedComponent: ReactNode) {
     return currentNetwork && nodeInfo ? (
         <NetworkContext.Provider value={{
@@ -15,7 +17,8 @@ export const networkContextWrapper = (
             tokenInfo: nodeInfo.baseToken,
             bech32Hrp: nodeInfo.bech32Hrp,
             protocolVersion: nodeInfo.protocolVersion,
-            rentStructure: nodeInfo.rentStructure
+            rentStructure: nodeInfo.rentStructure,
+            uiTheme: uiTheme ?? IOTA_UI
         }}
         >
             {wrappedComponent}
@@ -27,7 +30,9 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
     const pages = [];
     if (networks.length > 0 && currentNetwork !== undefined) {
         pages.push({ label: "Explorer", url: `/${currentNetwork.network}/` });
-        pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+        if (currentNetwork.network !== CHRYSALIS_MAINNET) {
+            pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+        }
 
         if (currentNetwork.hasStatisticsSupport) {
             pages.push({ label: "Statistics", url: `/${currentNetwork.network}/statistics/` });
@@ -43,7 +48,7 @@ export const buildUtilities = (
     identityResolverEnabled: boolean
 ) => {
     const utilities = [];
-    if (networks.length > 0) {
+    if (networks.length > 0 && currentNetwork !== CHRYSALIS_MAINNET) {
         utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
         if (identityResolverEnabled) {
             utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
@@ -62,12 +67,15 @@ export const buildUtilities = (
  */
 export const getFooterItems = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
     if (networks.length > 0) {
-        const footerArray = networks.filter(network => network.isEnabled)
-            .map(n => ({ label: n.label, url: n.network.toString() }))
-            .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
-            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
+        let footerArray = networks.filter(network => network.isEnabled)
+            .map(n => ({ label: n.label, url: n.network.toString() }));
 
-        if (identityResolverEnabled) {
+        if (currentNetwork !== CHRYSALIS_MAINNET) {
+            footerArray = footerArray.concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
+                .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
+        }
+
+        if (identityResolverEnabled && currentNetwork !== CHRYSALIS_MAINNET) {
             footerArray.push({ label: "Identity Resolver", url: `${currentNetwork}/identity-resolver/` });
         }
 
@@ -82,20 +90,26 @@ export const buildMetaLabel = (network: NetworkType | undefined): string => {
     switch (network) {
         case MAINNET:
         case LEGACY_MAINNET:
-        case DEVNET:
+        case CHRYSALIS_MAINNET:
+        case DEVNET: {
             metaLabel = "IOTA Tangle Explorer";
             break;
-        case SHIMMER:
+        }
+        case SHIMMER: {
             metaLabel = "Shimmer Explorer";
             break;
-        case TESTNET:
+        }
+        case TESTNET: {
             metaLabel = "Testnet Explorer";
             break;
-        case ALPHANET:
+        }
+        case ALPHANET: {
             metaLabel = "Alphanet Explorer";
             break;
-        default:
+        }
+        default: {
             break;
+        }
     }
     return metaLabel;
 };

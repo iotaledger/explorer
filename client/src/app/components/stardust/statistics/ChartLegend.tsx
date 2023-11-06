@@ -2,8 +2,8 @@ import React from "react";
 import "./ChartLegend.scss";
 
 interface ChartLegendProps {
-    labels: string[];
-    colors: string[];
+    readonly labels: string[];
+    readonly colors: string[];
 }
 
 const ChartLegend: React.FC<ChartLegendProps> = ({ labels, colors }) => (

@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { useVisualizerViva } from "./useVisualizerViva";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
-import { useVisualizerViva } from "./useVisualizerViva";
 
 const VisualizerWebgl: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {

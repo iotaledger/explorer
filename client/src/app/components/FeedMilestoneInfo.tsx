@@ -3,8 +3,8 @@ import { useMilestoneInterval } from "../../helpers/hooks/useMilestoneInterval";
 import "./FeedMilestoneInfo.scss";
 
 interface FeedMilestoneInfoProps {
-    milestoneIndex?: number;
-    frequencyTarget?: number;
+    readonly milestoneIndex?: number;
+    readonly frequencyTarget?: number;
 }
 
 const FeedMilestoneInfo: React.FC<FeedMilestoneInfoProps> = ({ milestoneIndex, frequencyTarget }) => {

@@ -1,5 +1,5 @@
-import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 import * as identity from "@iota/identity-wasm/node";
+import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IIdentityDidHistoryRequest } from "../../../../models/api/chrysalis/identity/IIdentityDidHistoryRequest";
@@ -31,12 +31,11 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
     }
 
     const providerUrl = networkConfig.provider;
-    const permanodeUrl = networkConfig.permaNodeEndpoint;
 
     if (request.version === "legacy") {
-        return resolveLegacyHistory(request.did, providerUrl, permanodeUrl);
+        return resolveLegacyHistory(request.did, providerUrl);
     }
-    return resolveHistory(request.did, providerUrl, permanodeUrl);
+    return resolveHistory(request.did, providerUrl);
 }
 
 /**
@@ -86,20 +85,15 @@ async function resolveHistory(
 /**
  * @param did DID to be resolved.
  * @param nodeUrl url of the network node.
- * @param permaNodeUrl url of permanode.
  * @returns The response.
  */
 async function resolveLegacyHistory(
     did: string,
-    nodeUrl: string,
-    permaNodeUrl?: string
+    nodeUrl: string
 ): Promise<IIdentityDidHistoryResponse> {
     try {
         const config = new identityLegacy.Config();
         config.setNode(nodeUrl);
-        if (permaNodeUrl) {
-            config.setPermanode(permaNodeUrl);
-        }
 
         const client = identityLegacy.Client.fromConfig(config);
 

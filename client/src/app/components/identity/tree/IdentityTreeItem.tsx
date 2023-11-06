@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import moment from "moment";
 import React, { Component, Fragment, ReactNode } from "react";
+import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
+import { IdentityTreeItemState } from "./IdentityTreeItemState";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
 import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
@@ -8,8 +10,6 @@ import { IdentityDiffStorageService } from "../../../../services/identityDiffSto
 import { IdentityService } from "../../../../services/identityService";
 import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import "./IdentityTreeItem.scss";
-import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
-import { IdentityTreeItemState } from "./IdentityTreeItemState";
 
 const BACKWARDS_CURVED_LINE = (
     <div className="backward-curved-line fade-animation">
@@ -323,6 +323,6 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
 
     private removeEscapingBackslash(str: string) {
         // eslint-disable-next-line @typescript-eslint/quotes
-        return str.replace(/\\"/g, '"');
+        return str.replaceAll('\\"', '"');
     }
 }

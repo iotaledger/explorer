@@ -1,13 +1,14 @@
-import { HexEncodedString } from "@iota/iota.js-stardust";
-import { Converter, ReadStream } from "@iota/util.js-stardust";
+import { HexEncodedString } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { deserializeParticipationEventMetadata } from "../../helpers/stardust/participationUtils";
-import { TextHelper } from "../../helpers/textHelper";
 import CopyButton from "./CopyButton";
-import "./DataToggle.scss";
 import { DataToggleProps } from "./DataToggleProps";
 import JsonViewer from "./JsonViewer";
+import { Converter } from "../../helpers/stardust/convertUtils";
+import { deserializeParticipationEventMetadata } from "../../helpers/stardust/participationUtils";
+import { ReadStream } from "../../helpers/stardust/readStreamUtils";
+import { TextHelper } from "../../helpers/textHelper";
+import "./DataToggle.scss";
 
 interface DataToggleOption {
     /**
@@ -95,7 +96,7 @@ const DataToggle: React.FC<DataToggleProps> = (
                 ))}
                 <div className="data-toggle--tab margin-t-2">
                     <CopyButton copy={(content && activeOption?.label === "HEX") ?
-                        content.replace(/\s+/g, "") :
+                        content.replaceAll(/\s+/g, "") :
                         content}
                     />
                 </div>

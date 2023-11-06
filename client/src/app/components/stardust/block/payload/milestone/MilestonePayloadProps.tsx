@@ -1,4 +1,4 @@
-import { IMilestonePayload } from "@iota/iota.js-stardust";
+import { MilestonePayload } from "@iota/sdk-wasm/web";
 import * as H from "history";
 
 export interface MilestonePayloadProps {
@@ -10,7 +10,7 @@ export interface MilestonePayloadProps {
     /**
      * The milestone payload.
      */
-    milestonePayload: IMilestonePayload;
+    milestonePayload: MilestonePayload;
 
     /**
      * History for navigation.

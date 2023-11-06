@@ -1,10 +1,10 @@
-import { FeatureTypes } from "@iota/iota.js-stardust";
+import { Feature } from "@iota/sdk-wasm/web";
 
 export interface FeatureProps {
     /**
      * The feature.
      */
-    feature: FeatureTypes;
+    feature: Feature;
 
     /**
      * Is the feature pre-expanded.

@@ -1,4 +1,4 @@
-import { NFT_ADDRESS_TYPE } from "@iota/iota.js-stardust";
+import { AddressType } from "@iota/sdk-wasm/web";
 import React, { useContext } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
@@ -22,7 +22,7 @@ const NftRedirectRoute: React.FC<RouteComponentProps<NftRedirectRouteProps>> = (
     { match: { params: { network, nftId } } }
 ) => {
     const { bech32Hrp } = useContext(NetworkContext);
-    const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, nftId, NFT_ADDRESS_TYPE);
+    const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, nftId, AddressType.Nft);
     const redirectState = {
         addressDetails: nftAddress
     };

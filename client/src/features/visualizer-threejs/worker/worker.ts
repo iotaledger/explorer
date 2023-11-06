@@ -1,13 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 // import { generateCoordinateGrid } from "../../shared/visualizer/helpers";
-import { colors, NODE_SIZE_DEFAULT } from "../constants";
-import { generateXbyShift, getGenerateY } from "../utils";
 import { DataSender } from "./entities/DataSender";
 import { NodeDroppedFactor } from "./entities/NodeDroppedFactor";
 import { Nodes, WorkerNode } from "./entities/Nodes";
 import { Shift } from "./entities/Shift";
 import { _WorkerReq, WorkerType } from "./worker.types";
+import { colors, NODE_SIZE_DEFAULT } from "../constants";
+import { generateXbyShift, getGenerateY } from "../utils";
 
 /**
  * Initialize constants for worker

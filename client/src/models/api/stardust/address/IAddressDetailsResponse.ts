@@ -1,9 +1,9 @@
-import { IOutputResponse } from "@iota/iota.js-stardust";
+import { OutputResponse } from "@iota/sdk-wasm/web";
 import { IResponse } from "../../IResponse";
 
 export interface IAddressDetailsResponse extends IResponse {
     /**
      * The outputs data.
      */
-    outputs?: IOutputResponse[];
+    outputs?: OutputResponse[];
 }

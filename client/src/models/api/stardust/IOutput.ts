@@ -1,4 +1,4 @@
-import { OutputTypes } from "@iota/iota.js-stardust";
+import { Output } from "@iota/sdk-wasm/web";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 export interface IOutput {
@@ -13,7 +13,7 @@ export interface IOutput {
     /**
      * The output.
      */
-    output: OutputTypes;
+    output: Output;
     /**
      * The output amount.
      */

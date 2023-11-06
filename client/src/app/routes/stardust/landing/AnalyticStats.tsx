@@ -1,14 +1,14 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React from "react";
+import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
-import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
-    analytics: IAnalyticStats | null;
-    circulatingSupply: number | undefined;
-    tokenInfo: INodeInfoBaseToken;
+    readonly analytics: IAnalyticStats | null;
+    readonly circulatingSupply: number | undefined;
+    readonly tokenInfo: INodeInfoBaseToken;
 }
 
 const AnalyticStats: React.FC<AnalyticStatsProps> = (
@@ -33,19 +33,19 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
     return (
         analytics && !analytics.error ? (
             <div className="extended-info-boxes">
-                {totalAddresses && (
+                {totalAddresses !== undefined && (
                     <div className="info-box">
                         <span className="info-box--title">Total active Addresses</span>
                         <span className="info-box--value">{totalAddresses}</span>
                     </div>
                 )}
-                {claimedAndPercentLabels && (
+                {claimedAndPercentLabels !== undefined && (
                     <div className="info-box">
                         <span className="info-box--title">Rewards claimed</span>
                         <span className="info-box--value">{claimedAndPercentLabels[1]}</span>
                     </div>
                 )}
-                {claimedAndPercentLabels && (
+                {claimedAndPercentLabels !== undefined && (
                     <div className="info-box">
                         <span className="info-box--title">Total Shimmer claimed</span>
                         <span className="info-box--value">
@@ -53,19 +53,19 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = (
                         </span>
                     </div>
                 )}
-                {nftsCount && (
+                {nftsCount !== undefined && (
                     <div className="info-box">
                         <span className="info-box--title">NFTs minted</span>
                         <span className="info-box--value">{nftsCount}</span>
                     </div>
                 )}
-                {nativeTokensCount && (
+                {nativeTokensCount !== undefined && (
                     <div className="info-box">
                         <span className="info-box--title">Tokens created</span>
                         <span className="info-box--value">{nativeTokensCount}</span>
                     </div>
                 )}
-                {lockedStorageDepositValue && (
+                {lockedStorageDepositValue !== undefined && (
                     <div className="info-box">
                         <span className="info-box--title">Locked storage deposit</span>
                         <span className="info-box--value">

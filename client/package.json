@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "repository": {
         "type": "git",
@@ -21,13 +21,11 @@
         "@fontsource/ibm-plex-mono": "^4.5.12",
         "@fontsource/material-icons": "^4.5.4",
         "@iota/crypto.js": "^1.8.6",
-        "@iota/crypto.js-stardust": "npm:@iota/crypto.js@2.0.0-rc.2",
         "@iota/iota.js": "^1.8.6",
-        "@iota/iota.js-stardust": "npm:@iota/iota.js@2.0.0-rc.4",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.6.2",
+        "@iota/sdk-wasm": "1.1.1",
         "@iota/util.js": "^1.8.6",
-        "@iota/util.js-stardust": "npm:@iota/util.js@2.0.0-rc.2",
         "@react-three/drei": "^9.84.2",
         "@react-three/fiber": "^8.14.2",
         "classnames": "^2.3.1",
@@ -58,9 +56,11 @@
         "three": "^0.156.1",
         "universal-cookie": "^4.0.4",
         "vivagraphjs": "^0.12.0",
+        "wasm-loader": "^1.3.0",
         "zustand": "^4.4.1"
     },
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@babel/plugin-transform-typescript": "^7.18.12",
         "@craco/craco": "^7.0.0-alpha.7",
         "@ruffy/ts-optional": "^1.1.1",
@@ -88,6 +88,8 @@
         "@typescript-eslint/eslint-plugin": "^5.36.0",
         "@typescript-eslint/parser": "^5.36.0",
         "buffer": "^6.0.3",
+        "class-transformer": "^0.5.1",
+        "copy-webpack-plugin": "^11.0.0",
         "cross-env": "^7.0.3",
         "crypto-browserify": "^3.12.0",
         "eslint": "^8.1.0",
@@ -95,7 +97,7 @@
         "eslint-plugin-jsdoc": "^39.3.6",
         "eslint-plugin-react": "^7.31.1",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "eslint-plugin-unicorn": "^43.0.2",
+        "eslint-plugin-unicorn": "^49.0.0",
         "node-polyfill-webpack-plugin": "^2.0.1",
         "npm-run-all": "^4.1.5",
         "r3f-perf": "^7.1.2",
@@ -113,7 +115,7 @@
         "@svgr/webpack": "$@svgr/webpack"
     },
     "engines": {
-        "node": ">=14 <=16.16"
+        "node": ">=16 <=16.20.2"
     },
     "browserslist": [
         ">0.2%",

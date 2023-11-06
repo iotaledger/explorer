@@ -1,17 +1,17 @@
 import classNames from "classnames";
 import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import AnalyticStats from "./AnalyticStats";
+import InfoBox from "./InfoBox";
+import MilestoneFeed from "./MilestoneFeed";
 import { useBlockFeed } from "../../../../helpers/hooks/useBlockFeed";
 import { useChronicleAnalytics } from "../../../../helpers/hooks/useChronicleAnalytics";
 import { useCurrencyService } from "../../../../helpers/hooks/useCurrencyService";
 import { useNetworkConfig } from "../../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../../helpers/hooks/useNetworkStats";
-import { isShimmerNetwork } from "../../../../helpers/networkHelper";
+import { isShimmerUiTheme } from "../../../../helpers/networkHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
-import AnalyticStats from "./AnalyticStats";
-import InfoBox from "./InfoBox";
-import MilestoneFeed from "./MilestoneFeed";
 import "./Landing.scss";
 
 export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
@@ -22,13 +22,13 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
     const [networkConfig] = useNetworkConfig(network);
     const [blocksPerSecond, , confirmedBlocksPerSecondPercent] = useNetworkStats(network);
     const [networkAnalytics] = useChronicleAnalytics(network);
-    const [price, marketCap] = useCurrencyService();
+    const [price, marketCap] = useCurrencyService(network === "mainnet");
 
-    const isShimmer = isShimmerNetwork(networkConfig?.protocolVersion);
+    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
 
     return (
         <div className="landing-stardust">
-            <div className={classNames("header-wrapper", { "shimmer": isShimmer })}>
+            <div className={classNames("header-wrapper", { "shimmer": isShimmer }, { "iota": !isShimmer })}>
                 <div className="inner">
                     <div className="header">
                         <div className="header--title">
@@ -36,6 +36,7 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
                             <div className="network-name"><h1>{networkConfig.label}</h1></div>
                         </div>
                         <InfoBox
+                            baseToken={tokenInfo.unit}
                             itemsPerSecond={blocksPerSecond}
                             confirmedItemsPerSecondPercent={confirmedBlocksPerSecondPercent}
                             marketCapCurrency={marketCap}
@@ -50,7 +51,7 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
                     tokenInfo={tokenInfo}
                 />
             </div>
-            <div className={classNames("wrapper feeds-wrapper", { "shimmer": isShimmer })}>
+            <div className={classNames("wrapper feeds-wrapper")}>
                 <div className="inner">
                     <div className="feeds-section">
                         <div className="row wrap feeds">

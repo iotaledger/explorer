@@ -1,7 +1,7 @@
 import {
-    IBlock, IUTXOInput, MILESTONE_PAYLOAD_TYPE,
-    TAGGED_DATA_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnlockTypes
-} from "@iota/iota.js-stardust";
+    Block, PayloadType, Unlock, TransactionPayload as ITransactionPayload,
+    MilestonePayload as IMilestonePayload, RegularTransactionEssence, TaggedDataPayload as ITaggedDataPayload
+} from "@iota/sdk-wasm/web";
 import * as H from "history";
 import React from "react";
 import { IInput } from "../../../../../models/api/stardust/IInput";
@@ -11,64 +11,77 @@ import TaggedDataPayload from "../payload/TaggedDataPayload";
 import TransactionPayload from "../payload/TransactionPayload";
 
 interface BlockPayloadSectionProps {
-    network: string;
-    protocolVersion: number;
-    block: IBlock;
-    inputs?: (IUTXOInput & IInput)[];
-    unlocks?: UnlockTypes[];
-    outputs?: IOutput[];
-    transferTotal?: number;
-    history: H.History;
-    isLinksDisabled: boolean;
+    readonly network: string;
+    readonly protocolVersion: number;
+    readonly block: Block;
+    readonly inputs?: IInput[];
+    readonly unlocks?: Unlock[];
+    readonly outputs?: IOutput[];
+    readonly transferTotal?: number;
+    readonly history: H.History;
+    readonly isLinksDisabled: boolean;
 }
 
 const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
     { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, history, isLinksDisabled }
-) => (
-    <React.Fragment>
-        {block.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
-            inputs && unlocks && outputs && transferTotal !== undefined && (
-                <React.Fragment>
+) => {
+    if (
+        block.payload?.type === PayloadType.Transaction &&
+        inputs && unlocks && outputs && transferTotal !== undefined
+    ) {
+        const transactionPayload = block.payload as ITransactionPayload;
+        const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
+
+        return (
+            <React.Fragment>
+                <div className="section">
+                    <TransactionPayload
+                        network={network}
+                        inputs={inputs}
+                        unlocks={unlocks}
+                        outputs={outputs}
+                        isLinksDisabled={isLinksDisabled}
+                    />
+                </div>
+                {
+                    transactionEssence.payload?.type === PayloadType.TaggedData &&
                     <div className="section">
-                        <TransactionPayload
+                        <TaggedDataPayload
                             network={network}
-                            inputs={inputs}
-                            unlocks={unlocks}
-                            outputs={outputs}
-                            isLinksDisabled={isLinksDisabled}
+                            history={history}
+                            payload={transactionEssence.payload as ITaggedDataPayload}
                         />
                     </div>
-                    {
-                        block.payload.essence.payload &&
-                        <div className="section">
-                            <TaggedDataPayload
-                                network={network}
-                                history={history}
-                                payload={block.payload.essence.payload}
-                            />
-                        </div>
-                    }
-                </React.Fragment>
-            )}
-        {block.payload?.type === MILESTONE_PAYLOAD_TYPE && (
+                }
+            </React.Fragment>
+        );
+    } else if (
+        block.payload?.type === PayloadType.Milestone
+    ) {
+        return (
             <MilestonePayload
                 network={network}
                 history={history}
-                milestonePayload={block.payload}
+                milestonePayload={block.payload as IMilestonePayload}
                 protocolVersion={protocolVersion}
             />
-        )}
-        {block.payload?.type === TAGGED_DATA_PAYLOAD_TYPE && (
+        );
+    } else if (
+        block.payload?.type === PayloadType.TaggedData
+    ) {
+        return (
             <div className="section">
                 <TaggedDataPayload
                     network={network}
                     history={history}
-                    payload={block.payload}
+                    payload={block.payload as ITaggedDataPayload}
                 />
             </div>
-        )}
-    </React.Fragment>
-);
+        );
+    }
+
+    return null;
+};
 
 BlockPayloadSection.defaultProps = {
     inputs: undefined,

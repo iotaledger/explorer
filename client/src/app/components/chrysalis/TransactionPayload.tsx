@@ -3,16 +3,16 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import AsyncComponent from "../AsyncComponent";
-import CopyButton from "../CopyButton";
-import FiatValue from "../FiatValue";
-import Modal from "../Modal";
 import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
 import transactionPayloadMessage from "./../../../assets/modals/chrysalis/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";
 import { TransactionPayloadProps } from "./TransactionPayloadProps";
 import { TransactionPayloadState } from "./TransactionPayloadState";
+import AsyncComponent from "../AsyncComponent";
+import CopyButton from "../CopyButton";
+import FiatValue from "../FiatValue";
+import Modal from "../Modal";
 
 
 /**
@@ -102,9 +102,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             <span
                                                 className="margin-r-t"
                                                 onClick={() => this.setState({
-                                                    isInputBalanceFormatted: !this.state.isInputBalanceFormatted.includes(idx)
-                                                        ? [...this.state.isInputBalanceFormatted, idx]
-                                                        : this.state.isInputBalanceFormatted.filter(id => id !== idx)
+                                                    isInputBalanceFormatted: this.state.isInputBalanceFormatted.includes(idx)
+                                                        ? this.state.isInputBalanceFormatted.filter(id => id !== idx)
+                                                        : [...this.state.isInputBalanceFormatted, idx]
                                                 })}
                                             >
                                                 {this.state.isInputBalanceFormatted.includes(idx) ?
@@ -183,9 +183,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             <span
                                                 className="margin-r-t"
                                                 onClick={() => this.setState({
-                                                    isOutputBalanceFormatted: !this.state.isOutputBalanceFormatted.includes(idx) ?
-                                                        [...this.state.isOutputBalanceFormatted, idx] :
-                                                        this.state.isOutputBalanceFormatted.filter(id => id !== idx)
+                                                    isOutputBalanceFormatted: this.state.isOutputBalanceFormatted.includes(idx) ?
+                                                        this.state.isOutputBalanceFormatted.filter(id => id !== idx) :
+                                                        [...this.state.isOutputBalanceFormatted, idx]
                                                 })}
                                             >
                                                 {this.state.isOutputBalanceFormatted.includes(idx) ?

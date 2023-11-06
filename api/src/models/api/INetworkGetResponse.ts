@@ -1,6 +1,7 @@
+import { IResponse } from "./IResponse";
 import { NetworkType } from "../db/networkType";
 import { ProtocolVersion } from "../db/protocolVersion";
-import { IResponse } from "./IResponse";
+import { Theme } from "../db/uiTheme";
 
 export interface INetworkGetResponse extends IResponse {
     /**
@@ -46,6 +47,10 @@ interface INetworkView {
      * Show the market figures.
      */
     showMarket?: boolean;
+    /**
+     * Set the UI theme.
+     */
+    uiTheme?: Theme;
     /**
      * Has stardust statistics support (influx)
      */

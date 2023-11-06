@@ -1,16 +1,16 @@
 /* eslint-disable jsdoc/require-jsdoc */
-import { Converter } from "@iota/util.js-stardust";
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
+import { customLayout, THRESHOLD_PX } from "./layout";
 import { IVisualizerHookReturn } from "../../app/types/visualizer.types";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { buildNodeShader } from "../../helpers/nodeShader";
+import { Converter } from "../../helpers/stardust/convertUtils";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMetadata";
 import { INodeData } from "../../models/graph/stardust/INodeData";
 import { SettingsService } from "../../services/settingsService";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
-import { customLayout, THRESHOLD_PX } from "./layout";
 
 const MAX_ITEMS: number = 2500;
 const EDGE_COLOR_LIGHT: number = 0xB3B3B3CC;
@@ -58,9 +58,7 @@ export function useVisualizerViva(
 
         return () => {
             if ((graphElement.current?.children?.length ?? 0) > 0) {
-                graphElement.current?.removeChild(
-                    graphElement.current.children[0]
-                );
+                graphElement.current?.children[0].remove();
             }
             graph.current = null;
             graphics.current = null;
@@ -513,7 +511,7 @@ export function useVisualizerViva(
                         reattached?.blockId !== feedItem?.blockId &&
                         reattached?.properties?.transactionId &&
                         reattached?.properties.transactionId ===
-                            feedItem?.properties?.transactionId
+                        feedItem?.properties?.transactionId
                     ) {
                         feedItem.reattachments?.push(reattached);
                     }

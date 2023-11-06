@@ -1,9 +1,9 @@
-import { INodeInfoBaseToken } from "@iota/iota.js-stardust";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
+import { SettingsService } from "./settingsService";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { TrytesHelper } from "../helpers/trytesHelper";
 import { ICurrencySettings } from "../models/services/ICurrencySettings";
-import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
-import { SettingsService } from "./settingsService";
 
 /**
  * Class to handle currency settings.
@@ -150,7 +150,7 @@ export class CurrencyService {
                 }
 
                 converted += fiat.toFixed(numDigits).toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    .replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;
@@ -189,7 +189,7 @@ export class CurrencyService {
                 }
 
                 converted += fiat.toFixed(numDigits).toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    .replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
         return converted;
@@ -224,18 +224,18 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                if (extendToFindMax !== undefined) {
+                if (extendToFindMax === undefined) {
+                    converted += includeSuffix
+                        ? this.abbreviate(fiat, numDigits)
+                        : fiat
+                            .toFixed(numDigits)
+                            .replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
+                } else {
                     const regEx = new RegExp(`^-?\\d*\\.?0*\\d{0,${numDigits}}`);
                     const found = regEx.exec(fiat.toFixed(extendToFindMax));
                     if (found) {
                         converted += found[0];
                     }
-                } else {
-                    converted += includeSuffix
-                        ? this.abbreviate(fiat, numDigits)
-                        : fiat
-                            .toFixed(numDigits)
-                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
             }
         }
@@ -325,8 +325,9 @@ export class CurrencyService {
     ): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
-            if (!currencyResponse.error) {
-                if (!currencyResponse.coinStats || !currencyResponse.fiatExchangeRatesEur) {
+            if (currencyResponse.error) {
+                callback(false);
+            } else if (!currencyResponse.coinStats || !currencyResponse.fiatExchangeRatesEur) {
                     callback(false);
                 } else {
                     const settings = this._settingsService.get();
@@ -347,9 +348,6 @@ export class CurrencyService {
                             coinStats: settings.coinStats
                         });
                 }
-            } else {
-                callback(false);
-            }
         } catch (err) {
             callback(
                 false,

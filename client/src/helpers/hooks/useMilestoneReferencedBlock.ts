@@ -1,9 +1,9 @@
-import { HexHelper } from "@iota/util.js-stardust";
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { useIsMounted } from "./useIsMounted";
+import { HexHelper } from "../stardust/hexHelper";
 
 /**
  * Fetch the milestone referenced blocks

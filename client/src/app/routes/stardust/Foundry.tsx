@@ -1,6 +1,9 @@
-import { ALIAS_ADDRESS_TYPE, IAliasAddress, IFoundryOutput, IImmutableAliasUnlockCondition, IMetadataFeature, METADATA_FEATURE_TYPE } from "@iota/iota.js-stardust";
+import {
+    AddressType, AliasAddress, FeatureType, FoundryOutput, ImmutableAliasAddressUnlockCondition, MetadataFeature
+} from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
+import { FoundryProps } from "./FoundryProps";
 import nativeTokensMessage from "../../../assets/modals/stardust/address/assets-in-wallet.json";
 import foundryMainHeaderInfo from "../../../assets/modals/stardust/foundry/main-header.json";
 import tokenSchemeIRC30 from "../../../assets/schemas/token-schema-IRC30.json";
@@ -22,7 +25,6 @@ import AssetsTable from "../../components/stardust/address/section/native-tokens
 import TokenInfoSection from "../../components/stardust/foundry/TokenInfoSection";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
-import { FoundryProps } from "./FoundryProps";
 import "./Foundry.scss";
 
 enum FOUNDRY_PAGE_TABS {
@@ -40,22 +42,22 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
 
     const [foundryDetails, isFoundryDetailsLoading, foundryError] = useFoundryDetails(network, foundryId);
-    const [foundryOutput, setFoundryOutput] = useState<IFoundryOutput>();
+    const [foundryOutput, setFoundryOutput] = useState<FoundryOutput>();
     const [controllerAlias, setControllerAlias] = useState<string>();
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>();
     const [tokenCount, setTokenCount] = useState<number>(0);
 
     useEffect(() => {
         if (foundryDetails) {
-            const output = foundryDetails?.output as IFoundryOutput;
+            const output = foundryDetails?.output as FoundryOutput;
             const immutableAliasUnlockCondition =
-                output.unlockConditions[0] as IImmutableAliasUnlockCondition;
-            const aliasId = (immutableAliasUnlockCondition.address as IAliasAddress).aliasId;
+                output.unlockConditions[0] as ImmutableAliasAddressUnlockCondition;
+            const aliasId = (immutableAliasUnlockCondition.address as AliasAddress).aliasId;
 
-            const immutableFeatures = (foundryDetails?.output as IFoundryOutput).immutableFeatures;
+            const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
             const metadataFeature = immutableFeatures?.find(
-                feature => feature.type === METADATA_FEATURE_TYPE
-            ) as IMetadataFeature;
+                feature => feature.type === FeatureType.Metadata
+            ) as MetadataFeature;
 
             if (isMounted && metadataFeature) {
                 const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.data, tokenSchemeIRC30);
@@ -75,7 +77,7 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
         const balance = Number(foundryOutput.amount);
 
         const controllerAliasBech32 = controllerAlias ?
-            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, ALIAS_ADDRESS_TYPE) :
+            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, AddressType.Alias) :
             undefined;
 
         foundryContent = (

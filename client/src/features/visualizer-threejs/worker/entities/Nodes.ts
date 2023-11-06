@@ -1,5 +1,4 @@
 import {
-    NODE_SIZE_DEFAULT,
     NODE_SIZE_INCREMENT
 } from "../../constants";
 import { NetworkNode } from "../worker.types";

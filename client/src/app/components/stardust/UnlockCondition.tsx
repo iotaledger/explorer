@@ -1,19 +1,20 @@
 import {
-    ADDRESS_UNLOCK_CONDITION_TYPE, EXPIRATION_UNLOCK_CONDITION_TYPE, GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE,
-    IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE, STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE, TIMELOCK_UNLOCK_CONDITION_TYPE,
-    STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE, INodeInfoBaseToken
-} from "@iota/iota.js-stardust";
+    AddressUnlockCondition, ExpirationUnlockCondition, GovernorAddressUnlockCondition,
+    ImmutableAliasAddressUnlockCondition, INodeInfoBaseToken,
+    StateControllerAddressUnlockCondition, StorageDepositReturnUnlockCondition,
+    TimelockUnlockCondition, UnlockConditionType
+} from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
+import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import Address from "./address/Address";
+import { UnlockConditionProps } from "./UnlockConditionProps";
+import { UnlockConditionState } from "./UnlockConditionState";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
-import Address from "./address/Address";
-import { UnlockConditionProps } from "./UnlockConditionProps";
-import { UnlockConditionState } from "./UnlockConditionState";
 
 /**
  * Component which will display an unlock condition.
@@ -69,18 +70,20 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                 </div>
                 {isExpanded && (
                     <div className="padding-l-t left-border">
-                        {unlockCondition.type === ADDRESS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === UnlockConditionType.Address && (
                             <Address
-                                address={unlockCondition.address}
+                                address={(unlockCondition as AddressUnlockCondition).address}
                             />
                         )}
-                        {unlockCondition.type === STORAGE_DEPOSIT_RETURN_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === UnlockConditionType.StorageDepositReturn && (
                             <React.Fragment>
                                 <div className="card--label">
                                     Return address
                                 </div>
                                 <Address
-                                    address={unlockCondition.returnAddress}
+                                    address={
+                                        (unlockCondition as StorageDepositReturnUnlockCondition).returnAddress
+                                    }
                                 />
                                 <div className="card--label">
                                     Amount:
@@ -90,52 +93,62 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
                                         className="pointer margin-r-t"
                                         onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
                                     >
-                                        {formatAmount(Number(unlockCondition.amount), tokenInfo, !isFormattedBalance)}
+                                        {formatAmount(
+                                            Number(
+                                                (unlockCondition as StorageDepositReturnUnlockCondition).amount
+                                            ),
+                                            tokenInfo,
+                                            !isFormattedBalance
+                                        )}
                                     </span>
                                 </div>
                             </React.Fragment>
                         )}
-                        {unlockCondition.type === TIMELOCK_UNLOCK_CONDITION_TYPE &&
-                            unlockCondition.unixTime && (
+                        {unlockCondition.type === UnlockConditionType.Timelock &&
+                            (unlockCondition as TimelockUnlockCondition).unixTime && (
                                 <React.Fragment>
                                     <div className="card--label">
                                         Unix time
                                     </div>
                                     <div className="card--value row">
-                                        {DateHelper.formatShort(unlockCondition.unixTime * 1000)}
+                                        {DateHelper.formatShort(
+                                            (unlockCondition as TimelockUnlockCondition).unixTime * 1000
+                                        )}
                                     </div>
                                 </React.Fragment>
                             )}
-                        {unlockCondition.type === EXPIRATION_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === UnlockConditionType.Expiration && (
                             <React.Fragment>
                                 <Address
-                                    address={unlockCondition.returnAddress}
+                                    address={(unlockCondition as ExpirationUnlockCondition).returnAddress}
                                 />
-                                {unlockCondition.unixTime && (
+                                {(unlockCondition as ExpirationUnlockCondition).unixTime && (
                                     <React.Fragment>
                                         <div className="card--label">
                                             Unix time
                                         </div>
                                         <div className="card--value row">
-                                            {DateHelper.formatShort(unlockCondition.unixTime * 1000)}
+                                            {DateHelper.formatShort(
+                                                (unlockCondition as ExpirationUnlockCondition).unixTime * 1000
+                                            )}
                                         </div>
                                     </React.Fragment>
                                 )}
                             </React.Fragment>
                         )}
-                        {unlockCondition.type === GOVERNOR_ADDRESS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === UnlockConditionType.GovernorAddress && (
                             <Address
-                                address={unlockCondition.address}
+                                address={(unlockCondition as GovernorAddressUnlockCondition).address}
                             />
                         )}
-                        {unlockCondition.type === IMMUTABLE_ALIAS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === UnlockConditionType.ImmutableAliasAddress && (
                             <Address
-                                address={unlockCondition.address}
+                                address={(unlockCondition as ImmutableAliasAddressUnlockCondition).address}
                             />
                         )}
-                        {unlockCondition.type === STATE_CONTROLLER_ADDRESS_UNLOCK_CONDITION_TYPE && (
+                        {unlockCondition.type === UnlockConditionType.StateControllerAddress && (
                             <Address
-                                address={unlockCondition.address}
+                                address={(unlockCondition as StateControllerAddressUnlockCondition).address}
                             />
                         )}
                     </div>

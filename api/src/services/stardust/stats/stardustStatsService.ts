@@ -1,7 +1,7 @@
 /* eslint-disable no-void */
-import { SingleNodeClient } from "@iota/iota.js-stardust";
-import logger from "../../../logger";
+import { Client } from "@iota/sdk";
 import { BaseStatsService } from "./baseStatsService";
+import logger from "../../../logger";
 
 
 /**
@@ -13,16 +13,16 @@ export class StardustStatsService extends BaseStatsService {
      */
     protected async updateStatistics(): Promise<void> {
         try {
-            const client = new SingleNodeClient(this._networkConfiguration.provider);
-            const info = await client.info();
+            const client = new Client({ nodes: [this._networkConfiguration.provider] });
+            const response = await client.getInfo();
 
-            if (info) {
+            if (response) {
                 this._statistics.push({
-                    itemsPerSecond: info.metrics.blocksPerSecond,
-                    confirmedItemsPerSecond: info.metrics.referencedBlocksPerSecond,
-                    confirmationRate: info.metrics.referencedRate,
-                    latestMilestoneIndex: info.status.latestMilestone.index,
-                    latestMilestoneIndexTime: info.status.latestMilestone.timestamp * 1000
+                    itemsPerSecond: response.nodeInfo.metrics.blocksPerSecond,
+                    confirmedItemsPerSecond: response.nodeInfo.metrics.referencedBlocksPerSecond,
+                    confirmationRate: response.nodeInfo.metrics.referencedRate,
+                    latestMilestoneIndex: response.nodeInfo.status.latestMilestone.index,
+                    latestMilestoneIndexTime: response.nodeInfo.status.latestMilestone.timestamp * 1000
                 });
 
                 logger.debug(

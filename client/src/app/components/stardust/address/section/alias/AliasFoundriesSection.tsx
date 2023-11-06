@@ -5,8 +5,8 @@ import TruncatedId from "../../../TruncatedId";
 import "./AliasFoundriesSection.scss";
 
 interface AliasFoundriesSectionProps {
-    network: string;
-    foundries: string[] | null;
+    readonly network: string;
+    readonly foundries: string[] | null;
 }
 
 const PAGE_SIZE = 10;

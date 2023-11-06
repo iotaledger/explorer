@@ -14,13 +14,14 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
     let filterFields: FilterField[];
 
     switch (protocolVersion) {
-        case LEGACY:
+        case LEGACY: {
             filterFields = [
                 { label: "Zero only", isEnabled: true },
                 { label: "Non-zero only", isEnabled: true }
             ];
             break;
-        case STARDUST:
+        }
+        case STARDUST: {
             filterFields = [
                 { label: "Transaction", isEnabled: true },
                 { label: "Milestone", isEnabled: true },
@@ -28,8 +29,9 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
                 { label: "No payload", isEnabled: true }
             ];
             break;
+        }
         // COORDICIDE or CHRYSALIS
-        default:
+        default: {
             filterFields = [
                 { label: "Transaction", isEnabled: true },
                 { label: "Milestone", isEnabled: true },
@@ -37,6 +39,7 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
                 { label: "No payload", isEnabled: true }
             ];
             break;
+        }
     }
 
     return filterFields;

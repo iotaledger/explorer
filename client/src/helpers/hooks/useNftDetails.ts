@@ -1,13 +1,16 @@
 import {
-    ED25519_ADDRESS_TYPE, ALIAS_ADDRESS_TYPE, HexEncodedString, IIssuerFeature,
-    IMetadataFeature, INftOutput, ISSUER_FEATURE_TYPE, METADATA_FEATURE_TYPE, NFT_ADDRESS_TYPE
-} from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
+    AddressType,
+    AliasAddress,
+    Ed25519Address,
+    FeatureType,
+    HexEncodedString, IssuerFeature, MetadataFeature, NftAddress, NftOutput
+} from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { useIsMounted } from "./useIsMounted";
+import { HexHelper } from "../stardust/hexHelper";
 
 
 /**
@@ -18,14 +21,14 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useNftDetails(network: string, nftId: string | null):
     [
-        INftOutput | null,
+        NftOutput | null,
         HexEncodedString | null,
         string | null,
         boolean
     ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [nftOutput, setNftOutput] = useState<INftOutput | null>(null);
+    const [nftOutput, setNftOutput] = useState<NftOutput | null>(null);
     const [nftMetadata, setNftMetadata] = useState<HexEncodedString | null>(null);
     const [nftIssuerId, setNftIssuerId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -43,30 +46,37 @@ export function useNftDetails(network: string, nftId: string | null):
                     nftId: HexHelper.addPrefix(nftId)
                 }).then(response => {
                     if (!response?.error) {
-                        const output = response.nftDetails?.output as INftOutput;
+                        const output = response.nftDetails?.output as NftOutput;
 
                         const metadataFeature = output?.immutableFeatures?.find(
-                            feature => feature.type === METADATA_FEATURE_TYPE
-                        ) as IMetadataFeature;
+                            feature => feature.type === FeatureType.Metadata
+                        ) as MetadataFeature;
 
                         const issuerFeature = output?.immutableFeatures?.find(
-                            feature => feature.type === ISSUER_FEATURE_TYPE
-                        ) as IIssuerFeature;
+                            feature => feature.type === FeatureType.Issuer
+                        ) as IssuerFeature;
 
                         let issuerId = null;
                         if (issuerFeature) {
                             switch (issuerFeature.address.type) {
-                                case ED25519_ADDRESS_TYPE:
-                                    issuerId = issuerFeature.address.pubKeyHash;
+                                case AddressType.Ed25519: {
+                                    const ed25519Address = issuerFeature.address as Ed25519Address;
+                                    issuerId = ed25519Address.pubKeyHash;
                                     break;
-                                case ALIAS_ADDRESS_TYPE:
-                                    issuerId = issuerFeature.address.aliasId;
+                                }
+                                case AddressType.Alias: {
+                                    const aliasAddress = issuerFeature.address as AliasAddress;
+                                    issuerId = aliasAddress.aliasId;
                                     break;
-                                case NFT_ADDRESS_TYPE:
-                                    issuerId = issuerFeature.address.nftId;
+                                }
+                                case AddressType.Nft: {
+                                    const nftAddress = issuerFeature.address as NftAddress;
+                                    issuerId = nftAddress.nftId;
                                     break;
-                                default:
+                                }
+                                default: {
                                     break;
+                                }
                             }
                         }
 

@@ -21,6 +21,9 @@
   --expanded-color: #{$gray-7};
   --light-bg: #{$gray-1};
   --link-color: #{$blue-5};
+  --link-highlight: #{$blue-5};
+  --amount-color: #3ca2ff;
+  --tabbed-section-tab-active: #3ca2ff;
   --input-border-color: #d9e1ef;
   --input-focus-border-color: #{$gray-7};
   --modal-color: #{$gray-7};
@@ -35,19 +38,20 @@
   --message-tree-bg: #{$gray-2};
   --visualizer-bg: #{$white};
   --pagination-color: #{$gray-6};
+  --pagination-bg-hover-color: #b1d9fd;
+  --pagination-bg-selected-color: #3ca2ff;
   --pagination-selected-color: #{$white};
-  --pagination-arrrow-color: #{$gray-8};
+  --pagination-arrow-color: #{$gray-8};
   --pagination-disabled-color: #{$gray-5};
   --search-svg: #{$gray-6};
   --identity-added: #e6ffed;
   --identity-removed: #ffeef0;
   --mint-green-bg: #{$mint-green-6};
-  --shimmer-navbar-bg: rgb(255 255 255 / 20%);
-  --shimmer-header-bg: #f2f6f9;
   --shimmer-bg: url('../assets/header-bg-light.svg');
-  --shimmer-visualizer-bg: #{$white};
+  --stardust-visualizer-bg: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
+  --associated-outputs-tabs-active: #8ac7ff;
   --date-input-theme: light;
   --statistics-charts-tooltip-bg: #{$gray-2};
   --statistics-charts-axis: #{$gray-1};
@@ -96,12 +100,9 @@
     --identity-added: rgb(20 202 191 / 8%);
     --identity-removed: rgb(118 45 52 / 49%);
     --mint-green-bg: #{$mint-green-7};
-    --shimmer-body-background: #00121f;
-    --shimmer-navbar-bg: #00121f;
-    --shimmer-header-bg: #00121f;
-    --shimmer-feeds-bg: #00121f;
+    --feeds-bg: #00121f;
     --shimmer-bg: url('../assets/header-bg-dark.svg');
-    --shimmer-visualizer-bg: #0f202c;
+    --stardust-visualizer-bg: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;
     --date-input-theme: dark;
@@ -113,11 +114,21 @@
     --calendar-hover: #{$gray-7};
   }
 
-  body.shimmer.darkmode {
-    --body-background: #00121f;
+  body.shimmer {
+    --link-color: #{$mint-green-7};
+    --link-highlight: #{$main-green-highlight};
+    --associated-outputs-tabs-active: #{$mint-green-1};
+    --tabbed-section-tab-active: #{$mint-green-7};
+    --pagination-bg-hover-color: #{$mint-green-1};
+    --pagination-bg-selected-color: #{$mint-green-6};
+    --header-bg: #f2f6f9;
+    --navbar-bg: rgb(255 255 255 / 20%);
+    --amount-color: #{$mint-green-7};
   }
 
-  body .shimmer {
-    --link-color: #{$mint-green-7};
+  body.shimmer.darkmode {
+    --body-background: #00121f;
+    --header-bg: #00121f;
+    --navbar-bg: #00121f;
   }
 }

@@ -1,10 +1,10 @@
-import { FOUNDRY_OUTPUT_TYPE, HexEncodedString, TransactionHelper } from "@iota/iota.js-stardust";
+import { OutputType, HexEncodedString, FoundryOutput, Utils } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch Foundries controlled by Alias address
@@ -59,11 +59,11 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
         const foundryId = apiClient.outputDetails({ network, outputId }).then(
             response => {
                 const details = response.output;
-                if (aliasAddress?.hex && !response.error && details?.output?.type === FOUNDRY_OUTPUT_TYPE) {
-                    const output = details.output;
+                if (aliasAddress?.hex && !response.error && details?.output?.type === OutputType.Foundry) {
+                    const output = details.output as FoundryOutput;
                     const serialNumber = output.serialNumber;
                     const tokenSchemeType = output.tokenScheme.type;
-                    const tokenId = TransactionHelper.constructTokenId(
+                    const tokenId = Utils.computeTokenId(
                         aliasAddress.hex,
                         serialNumber,
                         tokenSchemeType

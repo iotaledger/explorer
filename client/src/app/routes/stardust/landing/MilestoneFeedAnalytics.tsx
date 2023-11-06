@@ -4,9 +4,9 @@ import { useMilestoneStats } from "../../../../helpers/hooks/useMilestoneStats";
 import Spinner from "../../../components/Spinner";
 
 interface MilestoneFeedAnalyicsProps {
-    network: string;
-    milestoneIndex: number;
-    blockId: string;
+    readonly network: string;
+    readonly milestoneIndex: number;
+    readonly blockId: string;
 }
 
 const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, milestoneIndex, blockId }) => {

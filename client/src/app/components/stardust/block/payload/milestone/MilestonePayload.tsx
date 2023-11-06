@@ -1,15 +1,14 @@
 import {
-    IMilestonePayload, IProtocolParamsMilestoneOption, IReceiptMilestoneOption,
-    PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE, RECEIPT_MILESTONE_OPTION_TYPE
-} from "@iota/iota.js-stardust";
+    MilestoneOptionType, MilestonePayload as IMilestonePayload, ProtocolParamsMilestoneOption, ReceiptMilestoneOption
+} from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
+import { MilestonePayloadProps } from "./MilestonePayloadProps";
+import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
 import { DateHelper } from "../../../../../../helpers/dateHelper";
 import AsyncComponent from "../../../../AsyncComponent";
 import DataToggle from "../../../../DataToggle";
 import TruncatedId from "../../../TruncatedId";
 import ReceiptPayload from "../ReceiptPayload";
-import { MilestonePayloadProps } from "./MilestonePayloadProps";
-import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
 import "./MilestonePayload.scss";
 
 /**
@@ -36,19 +35,19 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
             appliedMerkleRoot, metadata, options, signatures
         }: IMilestonePayload = milestonePayload;
 
-        let receiptMilestoneOption: IReceiptMilestoneOption | null = null;
-        let protocolParamsMilestoneOption: IProtocolParamsMilestoneOption | null = null;
+        let receiptMilestoneOption: ReceiptMilestoneOption | null = null;
+        let protocolParamsMilestoneOption: ProtocolParamsMilestoneOption | null = null;
 
-        if (options?.some((option => option.type === RECEIPT_MILESTONE_OPTION_TYPE))) {
+        if (options?.some((option => option.type === MilestoneOptionType.Receipt))) {
             receiptMilestoneOption = options.find(
-                option => option.type === RECEIPT_MILESTONE_OPTION_TYPE
-            ) as IReceiptMilestoneOption;
+                option => option.type === MilestoneOptionType.Receipt
+            ) as ReceiptMilestoneOption;
         }
 
-        if (options?.some((option => option.type === PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE))) {
+        if (options?.some((option => option.type === MilestoneOptionType.ProtocolParams))) {
             protocolParamsMilestoneOption = options.find(
-                option => option.type === PROTOCOL_PARAMETERS_MILESTONE_OPTION_TYPE
-            ) as IProtocolParamsMilestoneOption;
+                option => option.type === MilestoneOptionType.ProtocolParams
+            ) as ProtocolParamsMilestoneOption;
         }
 
         return (

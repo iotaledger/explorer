@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-export interface ITransactionsDetailsRequest {
+export interface ITransactionHistoryRequest {
     /**
      * The network to search on.
      */
@@ -13,10 +13,5 @@ export interface ITransactionsDetailsRequest {
     /**
      * Requested page size.
      */
-    page_size?: string;
-
-    /**
-     * The paging state, to be stored and re-used when retrieving additional records. Hex encoded.
-     */
-    state?: string;
+    pageSize?: string;
 }

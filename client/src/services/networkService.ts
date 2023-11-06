@@ -1,7 +1,7 @@
+import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { ServiceFactory } from "../factories/serviceFactory";
 import { INetwork } from "../models/config/INetwork";
 import { CHRYSALIS } from "../models/config/protocolVersion";
-import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 
 /**
  * Service to handle networks.

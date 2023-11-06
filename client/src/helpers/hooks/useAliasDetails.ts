@@ -1,10 +1,10 @@
-import { IAliasOutput } from "@iota/iota.js-stardust";
-import { HexHelper } from "@iota/util.js-stardust";
+import { AliasOutput } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { useIsMounted } from "./useIsMounted";
+import { HexHelper } from "../stardust/hexHelper";
 
 /**
  * Fetch alias output details
@@ -14,12 +14,12 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useAliasDetails(network: string, aliasId: string | null):
     [
-        IAliasOutput | null,
+        AliasOutput | null,
         boolean
     ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [aliasOutput, setAliasOutput] = useState<IAliasOutput | null>(null);
+    const [aliasOutput, setAliasOutput] = useState<AliasOutput | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -32,7 +32,7 @@ export function useAliasDetails(network: string, aliasId: string | null):
                     aliasId: HexHelper.addPrefix(aliasId)
                 }).then(response => {
                     if (!response?.error && isMounted) {
-                        const output = response.aliasDetails?.output as IAliasOutput;
+                        const output = response.aliasDetails?.output as AliasOutput;
 
                         setAliasOutput(output);
                     }

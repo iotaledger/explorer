@@ -1,5 +1,8 @@
 /* eslint-disable unicorn/prefer-top-level-await */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+// needed for features from @iota/sdk which use reflection (decorators)
+import "reflect-metadata";
+import init from "@iota/sdk-wasm/web";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
@@ -29,7 +32,10 @@ import { TokenRegistryClient } from "./services/stardust/tokenRegistryClient";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
 
-initialiseServices().then(() => {
+initialiseServices().then(async () => {
+    // load the wasm
+    await init("/iota_sdk_wasm_bg.wasm");
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const container = document.querySelector("#root")!;
     const root = createRoot(container);
@@ -76,24 +82,27 @@ async function initialiseServices(): Promise<void> {
     if (networks.length > 0) {
         for (const netConfig of networks) {
             switch (netConfig.protocolVersion) {
-                case LEGACY:
+                case LEGACY: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new LegacyFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
-                case CHRYSALIS:
+                }
+                case CHRYSALIS: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
-                case STARDUST:
+                }
+                case STARDUST: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
+                }
                 default:
             }
         }

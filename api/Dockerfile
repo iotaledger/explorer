@@ -1,7 +1,7 @@
-FROM node:16-alpine
+FROM node:16.20.2-bullseye
 
 ## Include the build tools for any npm packages that rebuild
-RUN apk --no-cache add git curl python3 build-base cmake
+RUN apt install git curl python3
 
 # Working DIR
 WORKDIR /usr/src/app

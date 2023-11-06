@@ -1,5 +1,6 @@
-import { IBlock, IUTXOInput, TRANSACTION_PAYLOAD_TYPE, UnlockTypes } from "@iota/iota.js-stardust";
+import { Block, Unlock, PayloadType } from "@iota/sdk-wasm/web";
 import { useContext, useEffect, useState } from "react";
+import { useIsMounted } from "./useIsMounted";
 import NetworkContext from "../../app/context/NetworkContext";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -7,7 +8,6 @@ import { IOutput } from "../../models/api/stardust/IOutput";
 import { STARDUST } from "../../models/config/protocolVersion";
 import { StardustApiClient } from "../../services/stardust/stardustApiClient";
 import { TransactionsHelper } from "../stardust/transactionsHelper";
-import { useIsMounted } from "./useIsMounted";
 
 /**
  * Fetch block inputs and outputs
@@ -15,10 +15,10 @@ import { useIsMounted } from "./useIsMounted";
  * @param block The block
  * @returns The inputs, unlocks, outputs, transfer total an a loading bool.
  */
-export function useInputsAndOutputs(network: string, block: IBlock | null):
+export function useInputsAndOutputs(network: string, block: Block | null):
     [
-        (IUTXOInput & IInput)[] | null,
-        UnlockTypes[] | null,
+        IInput[] | null,
+        Unlock[] | null,
         IOutput[] | null,
         number | null,
         boolean
@@ -26,8 +26,8 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const { bech32Hrp } = useContext(NetworkContext);
-    const [tsxInputs, setInputs] = useState<(IUTXOInput & IInput)[] | null>(null);
-    const [tsxUnlocks, setUnlocks] = useState<UnlockTypes[] | null>(null);
+    const [tsxInputs, setInputs] = useState<IInput[] | null>(null);
+    const [tsxUnlocks, setUnlocks] = useState<Unlock[] | null>(null);
     const [tsxOutputs, setOutputs] = useState<IOutput[] | null>(null);
     const [tsxTransferTotal, setTransferTotal] = useState<number | null>(null);
 
@@ -35,7 +35,7 @@ export function useInputsAndOutputs(network: string, block: IBlock | null):
 
     useEffect(() => {
         setIsLoading(true);
-        if (block?.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
+        if (block?.payload?.type === PayloadType.Transaction) {
             // eslint-disable-next-line no-void
             void (async () => {
                 const { inputs, unlocks, outputs, transferTotal } =

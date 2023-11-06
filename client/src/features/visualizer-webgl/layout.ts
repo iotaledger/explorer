@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-invalid-this */
 import Viva from "vivagraphjs";
-import { INodeData } from "../../models/graph/stardust/INodeData";
 import { VivaLink } from "./vivagraph-layout.types";
+import { INodeData } from "../../models/graph/stardust/INodeData";
 
 /**
  * Function for generating list of coordinates

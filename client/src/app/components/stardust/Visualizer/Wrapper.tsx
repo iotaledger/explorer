@@ -1,11 +1,11 @@
 import React from "react";
+import { KeyPanel } from "./KeyPanel";
+import { SelectedFeedInfo } from "./SelectedFeedInfo";
+import { StatsPanel } from "./StatsPanel";
 import mainHeader from "../../../../assets/modals/visualizer/main-header.json";
 import { INetwork } from "../../../../models/config/INetwork";
 import { TSelectFeedItem, TSelectNode } from "../../../types/visualizer.types";
 import Modal from "../../Modal";
-import { KeyPanel } from "./KeyPanel";
-import { SelectedFeedInfo } from "./SelectedFeedInfo";
-import { StatsPanel } from "./StatsPanel";
 
 export const Wrapper = ({
     blocksCount,
@@ -19,15 +19,15 @@ export const Wrapper = ({
     selectedFeedItem,
     setIsPlaying
 }: {
-    blocksCount: number;
-    children: React.ReactNode; filter: string;
-    isPlaying: boolean;
-    network: string;
-    networkConfig: INetwork;
-    onChangeFilter: React.ChangeEventHandler<HTMLInputElement>;
-    selectNode: TSelectNode;
-    selectedFeedItem: TSelectFeedItem;
-    setIsPlaying: (isPlaying: boolean) => void;
+    readonly blocksCount: number;
+    readonly children: React.ReactNode; readonly filter: string;
+    readonly isPlaying: boolean;
+    readonly network: string;
+    readonly networkConfig: INetwork;
+    readonly onChangeFilter: React.ChangeEventHandler<HTMLInputElement>;
+    readonly selectNode: TSelectNode;
+    readonly selectedFeedItem: TSelectFeedItem;
+    readonly setIsPlaying: (isPlaying: boolean) => void;
 }) => (
     <div className="visualizer-stardust">
         <div className="row middle">

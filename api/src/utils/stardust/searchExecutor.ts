@@ -1,8 +1,8 @@
-import { IOutputResponse, IOutputsResponse } from "@iota/iota.js-stardust";
-import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { INetwork } from "../../models/db/INetwork";
+import { OutputResponse, IOutputsResponse } from "@iota/sdk";
 import { SearchQuery } from "./searchQueryBuilder";
 import { StardustTangleHelper } from "./stardustTangleHelper";
+import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { INetwork } from "../../models/db/INetwork";
 
 /**
  * Performs the search from a SearchQuery object on a Stardust network.
@@ -125,7 +125,7 @@ export class SearchExecutor {
         if (searchQuery.output) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputResponse>(
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, OutputResponse>(
                         searchQuery.output,
                         "output",
                         network
@@ -151,8 +151,7 @@ export class SearchExecutor {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.aliasId,
                         "alias",
-                        network,
-                        true
+                        network
                     ).then(
                         aliasOutputs => {
                             if (aliasOutputs.items.length > 0) {
@@ -177,8 +176,7 @@ export class SearchExecutor {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.nftId,
                         "nft",
-                        network,
-                        true
+                        network
                     ).then(
                         nftOutputs => {
                             if (nftOutputs.items.length > 0) {
@@ -203,8 +201,7 @@ export class SearchExecutor {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.foundryId,
                         "foundry",
-                        network,
-                        true
+                        network
                     ).then(
                         foundryOutputs => {
                             if (foundryOutputs.items.length > 0) {
