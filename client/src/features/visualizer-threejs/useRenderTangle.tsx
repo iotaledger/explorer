@@ -51,13 +51,18 @@ export const useRenderTangle = () => {
     /**
      *
      */
-    const { scene, camera, raycaster, mouse } = useThree();
+    const { scene, camera, raycaster, mouse, gl } = useThree();
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
     const originalColorsRef = useRef<Map<number, THREE.Color | undefined>>(new Map());
 
     // Function to update the hover state based on the raycaster
     const updateHover = useCallback((event: PointerEvent) => {
-        const mousePointer = getMouseVecVector2(event, window);
+        const rect = gl.domElement.getBoundingClientRect();
+        const mousePointer = new THREE.Vector2();
+        mousePointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mousePointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        // const mousePointer = getMouseVecVector2(event, window);
         const getFirstValue = true;
 
         raycaster.setFromCamera(mousePointer, camera);
