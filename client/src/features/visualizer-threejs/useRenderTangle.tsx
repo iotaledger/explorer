@@ -12,13 +12,34 @@ const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
 
 const SCALE_INCREMENT = 0.1;
 
+export function getMouseVecVector2(event: PointerEvent, window: Window) {
+    const mousePointer = new THREE.Vector2();
+
+    mousePointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mousePointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    return mousePointer;
+}
+
+// @ts-expect-error: It's fine
+export function checkRayIntersections(mousePointer, camera, raycaster, scene, getFirstValue) {
+    raycaster.setFromCamera(mousePointer, camera);
+
+    console.log('--- raycaster', raycaster);
+    const intersects = raycaster.intersectObject(scene.children, true);
+
+    if (intersects.length > 0) {
+        return getFirstValue ? intersects[0] : intersects;
+    }
+
+    return null;
+}
+
 export const useRenderTangle = () => {
     const mainMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
 
-    const scene = useThree(state => state.scene);
-    const camera = useThree(state => state.camera);
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
     const scaleQueue = useBlockStore(s => s.scaleQueue);
@@ -27,40 +48,82 @@ export const useRenderTangle = () => {
     const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
 
+    /**
+     *
+     */
+    const { scene, camera, raycaster, mouse } = useThree();
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
+    const originalColorsRef = useRef<Map<number, THREE.Color | undefined>>(new Map());
 
-    console.log('--- hoveredInstanceId', hoveredInstanceId);
+    // Function to update the hover state based on the raycaster
+    const updateHover = useCallback((event: PointerEvent) => {
+        const mousePointer = getMouseVecVector2(event, window);
+        const getFirstValue = true;
 
-    const { raycaster, mouse } = useThree();
-
-
-    // @ts-expect-error: It's fine
-    const onPointerMove = useCallback((event) => {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-
-        const intersects = raycaster.intersectObject(mainMeshRef.current);
+        raycaster.setFromCamera(mousePointer, camera);
+        const intersects = raycaster.intersectObject(mainMeshRef.current as THREE.Object3D);
+        const firstIntersect = intersects[0];
 
         if (intersects.length > 0) {
-            const instanceId = intersects[0].instanceId;
-            // @ts-expect-error: It's fine
-            setHoveredInstanceId(instanceId);
-        } else {
-            setHoveredInstanceId(null);
-        }
-    }, [camera, mouse, raycaster]);
+            intersects.forEach(i => {
 
+                const color = new THREE.Color(0xff0000); // Red color
+                mainMeshRef.current.setColorAt(i.instanceId as number, color);
+                mainMeshRef.current.updateMatrix();
+            })
+        }
+        console.log('--- ', intersects);
+        // const intersections = checkRayIntersections(mousePointer, camera, raycaster, mainMeshRef.current, getFirstValue);
+
+
+        // Update the raycaster with the mouse position
+        // raycaster.setFromCamera(mouse, camera);
+
+        // if (intersects.length > 0) {
+        //     const instanceId = intersects[0].instanceId;
+        //     // @ts-expect-error: It's fine
+        //     // setHoveredInstanceId(instanceId);
+        //
+        //     // Change color to red on hover
+        //     // @ts-expect-error: It's fine
+        //     if (instanceId !== null && !originalColorsRef.current.has(instanceId)) {
+        //
+        //         originalColorsRef.current.set(instanceId, (mainMeshRef.current as THREE.InstancedMesh).getColorAt(instanceId));
+        //         // @ts-expect-error: It's fine
+        //         (mainMeshRef.current as THREE.InstancedMesh).setColorAt(instanceId, color);
+        //         // @ts-expect-error: It's fine
+        //         (mainMeshRef.current as THREE.InstancedMesh).instanceColor.needsUpdate = true;
+        //     }
+        // } else {
+        //     // Reset the color when not hovering
+        //     if (hoveredInstanceId !== null) {
+        //         const originalColor = originalColorsRef.current.get(hoveredInstanceId);
+        //         // @ts-ignore
+        //         if (originalColor) {
+        //             (mainMeshRef.current as THREE.InstancedMesh).setColorAt(hoveredInstanceId, originalColor);
+        //         // @ts-expect-error: It's fine
+        //             (mainMeshRef.current as THREE.InstancedMesh).instanceColor.needsUpdate = true;
+        //         }
+        //         originalColorsRef.current.delete(hoveredInstanceId);
+        //         setHoveredInstanceId(null);
+        //     }
+        // }
+    }, [camera, mouse, raycaster, hoveredInstanceId]);
+
+    // Attach the pointer move event listener to the canvas
     useEffect(() => {
-        document.addEventListener('pointermove', onPointerMove);
+        const handlePointerMove = (event: PointerEvent) => {
+            updateHover(event);
+        };
+
+        window.addEventListener('pointermove', handlePointerMove, false);
 
         return () => {
-            document.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointermove', handlePointerMove, false);
         };
-    }, [onPointerMove]);
+    }, [updateHover]);
 
-    useZoomDynamic();
+    // useZoomDynamic();
 
     const st = useThree(state => state);
 
