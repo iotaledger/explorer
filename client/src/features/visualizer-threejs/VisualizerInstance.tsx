@@ -151,7 +151,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
-            // checkZoom();
+            checkZoom();
         }
     };
 

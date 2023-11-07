@@ -1,8 +1,9 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Matrix4, Object3D } from "three";
 import { NODE_SIZE_DEFAULT, MAX_BLOCK_INSTANCES } from "./constants";
+import { useHover } from "./hooks/useHover";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useBlockStore } from "./store";
 
@@ -16,6 +17,9 @@ export const useRenderTangle = () => {
     const mainMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
+    const { scene } = useThree();
+
+    useHover({ mainMeshRef });
 
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
@@ -25,104 +29,7 @@ export const useRenderTangle = () => {
     const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
 
-    /**
-     *
-     */
-    const { scene, camera, raycaster, mouse, gl } = useThree();
-    const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
-    const originalColorsRef = useRef<Map<number | null, THREE.Color | undefined>>(new Map());
-
-    // Function to update the hover state based on the raycaster
-    const updateHover = useCallback((event: PointerEvent) => {
-
-        const rect = gl.domElement.getBoundingClientRect();
-        const mousePointer = new THREE.Vector2();
-        mousePointer.x = (((event.clientX - rect.left) / rect.width) * 2) - 1;
-        mousePointer.y = -(((event.clientY - rect.top) / rect.height) * 2) + 1;
-
-
-        raycaster.setFromCamera(mousePointer, camera);
-        const intersects = raycaster.intersectObject(mainMeshRef.current as THREE.Object3D);
-        const firstIntersect = intersects[0];
-
-        // Check if we have intersection. If yes, then we need to update the color of the intersected object
-        if (!firstIntersect) {
-            return;
-        }
-
-
-        const { instanceId } = firstIntersect;
-
-
-        // Restore the original color of the previously hovered instance
-        const originalColor = originalColorsRef.current.get(hoveredInstanceId);
-        if (instanceId !== hoveredInstanceId && hoveredInstanceId && originalColor) {
-            mainMeshRef.current.setColorAt(hoveredInstanceId, originalColor);
-            originalColorsRef.current.delete(hoveredInstanceId);
-        }
-
-        if (instanceId) {
-            const hoverColor = new THREE.Color(0xFF0000); // Red color
-            const currentColor = new THREE.Color();
-            mainMeshRef.current.getColorAt(instanceId, currentColor);
-            originalColorsRef.current.set(instanceId, currentColor);
-            mainMeshRef.current.setColorAt(instanceId, hoverColor);
-            setHoveredInstanceId(instanceId);
-        }
-
-        // Indicate that the instance colors need to be updated
-        if (mainMeshRef.current.instanceColor) {
-            mainMeshRef.current.instanceColor.needsUpdate = true;
-        }
-
-        // Update the raycaster with the mouse position
-        // raycaster.setFromCamera(mouse, camera);
-
-        // if (intersects.length > 0) {
-        //     const instanceId = intersects[0].instanceId;
-        //     // @ts-expect-error: It's fine
-        //     //
-        //
-        //     // Change color to red on hover
-        //     // @ts-expect-error: It's fine
-        //     if (instanceId !== null && !originalColorsRef.current.has(instanceId)) {
-        //
-        //         originalColorsRef.current.set(instanceId, );
-        //         // @ts-expect-error: It's fine
-        //         (mainMeshRef.current as THREE.InstancedMesh).setColorAt(instanceId, color);
-        //         // @ts-expect-error: It's fine
-        //         (mainMeshRef.current as THREE.InstancedMesh).instanceColor.needsUpdate = true;
-        //     }
-        // } else {
-        //     // Reset the color when not hovering
-        //     if (hoveredInstanceId !== null) {
-        //         const originalColor = originalColorsRef.current.get(hoveredInstanceId);
-        //         // @ts-ignore
-        //         if (originalColor) {
-        //             (mainMeshRef.current as THREE.InstancedMesh).setColorAt(hoveredInstanceId, originalColor);
-        //         // @ts-expect-error: It's fine
-        //             (mainMeshRef.current as THREE.InstancedMesh).instanceColor.needsUpdate = true;
-        //         }
-        //         originalColorsRef.current.delete(hoveredInstanceId);
-        //         setHoveredInstanceId(null);
-        //     }
-        // }
-    }, [camera, mouse, raycaster, hoveredInstanceId]);
-
-    // Attach the pointer move event listener to the canvas
-    useEffect(() => {
-        const handlePointerMove = (event: PointerEvent) => {
-            updateHover(event);
-        };
-
-        window.addEventListener("pointermove", handlePointerMove, false);
-
-        return () => {
-            window.removeEventListener("pointermove", handlePointerMove, false);
-        };
-    }, [updateHover]);
-
-    // useZoomDynamic();
+    useZoomDynamic();
 
     const st = useThree(state => state);
 

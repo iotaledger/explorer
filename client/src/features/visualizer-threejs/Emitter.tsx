@@ -22,30 +22,30 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
         }
     }, [emitterRef]);
 
-    // useFrame(() => {
-    //     if (!isPlaying) {
-    //         return;
-    //     }
-    //     const camera = get().camera;
-    //     const emitterObj = get().scene.getObjectByName("emitter");
-    //     if (camera && emitterObj) {
-    //         const EMITTER_PADDING_RIGHT = 150;
-    //         camera.position.x = emitterObj.position.x - halfScreenWidth + EMITTER_PADDING_RIGHT;
-    //     }
-    // });
+    useFrame(() => {
+        if (!isPlaying) {
+            return;
+        }
+        const camera = get().camera;
+        const emitterObj = get().scene.getObjectByName("emitter");
+        if (camera && emitterObj) {
+            const EMITTER_PADDING_RIGHT = 150;
+            camera.position.x = emitterObj.position.x - halfScreenWidth + EMITTER_PADDING_RIGHT;
+        }
+    });
 
     /**
      * Emitter shift
      */
-    // useFrame((_, delta) => {
-    //     if (!isPlaying) {
-    //         return;
-    //     }
-    //     if (emitterRef?.current) {
-    //         const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
-    //         emitterRef.current.position.x += delta * DELTA_MULTIPLIER;
-    //     }
-    // });
+    useFrame((_, delta) => {
+        if (!isPlaying) {
+            return;
+        }
+        if (emitterRef?.current) {
+            const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
+            emitterRef.current.position.x += delta * DELTA_MULTIPLIER;
+        }
+    });
 
     // The Tangle rendering hook
     useRenderTangle();
