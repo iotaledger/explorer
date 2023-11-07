@@ -1,6 +1,6 @@
 /* Source fiddle: https://jsfiddle.net/Ljvh5fbw/5/ */
 import { useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Color } from "three";
 import { useBlockStore } from "./store";
@@ -15,13 +15,15 @@ export const useRenderEdges = (
 
     const edgeQueue = useBlockStore(s => s.edgeQueue);
     const removeFromEdgeQueue = useBlockStore(s => s.removeFromEdgeQueue);
-    const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
 
-    const linePoints = useRef<number[]>([]);
+    const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
+    const blockIdToEdges = useBlockStore(s => s.blockIdToEdges);
+
+    const [linePoints, setLinePoints] = useState<number[]>([]);
     const indices = useRef<number[]>([]);
 
     useEffect(() => {
-        if (tangleMeshRef.current && edgesMeshRef.current) {
+        if (tangleMeshRef.current && edgeQueue.length > 0) {
             for (const edge of edgeQueue) {
                 const { fromBlockId, toBlockId } = edge;
 
@@ -44,27 +46,56 @@ export const useRenderEdges = (
                     tempObject.applyMatrix4(tempMatrix);
                     const toPoint = [...tempObject.position];
 
-                    linePoints.current = [...linePoints.current, ...fromPoint, ...toPoint];
-                    indices.current = [...indices.current, indices.current.length, indices.current.length + 1];
-
-                    const pointsBuffer = new THREE.Float32BufferAttribute([...linePoints.current], 3);
-                    edgesMeshRef.current.setAttribute("position", pointsBuffer);
-                    edgesMeshRef.current.setIndex(indices.current);
-
-                    const oldEdges = scene.getObjectByName("edges");
-                    oldEdges?.removeFromParent();
-
-                    const lineSegments = new THREE.LineSegments(edgesMeshRef.current, EDGE_MATERIAL);
-                    lineSegments.name = "edges";
-
-                    lineSegments.geometry.computeBoundingSphere();
-                    scene.add(lineSegments);
-
-                    removeFromEdgeQueue();
+                    const existing = blockIdToEdges.get(fromBlockId);
+                    if (existing) {
+                        // @ts-expect-error it is
+                        existing.toConnections.push(toPoint);
+                        blockIdToEdges.set(fromBlockId, existing);
+                    } else {
+                        // @ts-expect-error it is
+                        blockIdToEdges.set(fromBlockId, { from: fromPoint, toConnections: [[...toPoint]] });
+                    }
                 }
             }
+
+            const updatedLinePoints: number[] = [];
+            for (const entry of blockIdToEdges.values()) {
+                for (const connectionPoint of entry.toConnections) {
+                    updatedLinePoints.push(...connectionPoint);
+                    updatedLinePoints.push(...entry.from);
+                }
+            }
+
+            const newIndices = [];
+            for (let i = 0; i < updatedLinePoints.length / 3; i++) {
+                newIndices.push(i);
+            }
+
+            indices.current = newIndices;
+
+            setLinePoints(updatedLinePoints);
+            removeFromEdgeQueue();
         }
     }, [edgeQueue]);
+
+    useEffect(() => {
+        if (edgesMeshRef.current) {
+            // console.log("Updateing with line points", linePoints.length / 3);
+            const pointsBuffer = new THREE.Float32BufferAttribute(linePoints, 3);
+            edgesMeshRef.current.setAttribute("position", pointsBuffer);
+            edgesMeshRef.current.setIndex(indices.current);
+
+            const oldEdges = scene.getObjectByName("edges");
+            oldEdges?.removeFromParent();
+
+            const lineSegments = new THREE.LineSegments(edgesMeshRef.current, EDGE_MATERIAL);
+            lineSegments.name = "edges";
+
+            lineSegments.geometry.computeBoundingSphere();
+            lineSegments.frustumCulled = false;
+            scene.add(lineSegments);
+        }
+    }, [linePoints]);
 
     // simple example
     // useEffect(() => {

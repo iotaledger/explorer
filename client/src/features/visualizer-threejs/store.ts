@@ -14,6 +14,11 @@ interface Edge {
     toBlockId: string;
 }
 
+interface EdgeEntry {
+    from: number[];
+    toConnections: [x: number, y: number, z: number][];
+}
+
 interface BlockStoreState {
     // Queue for "add block" operation to the canvas
     blockQueue: BlockState[];
@@ -25,6 +30,7 @@ interface BlockStoreState {
     removeFromScaleQueue: () => void;
 
     edgeQueue: Edge[];
+    blockIdToEdges: Map<string, EdgeEntry>;
     addToEdgeQueue: (blockId: string, parents: string[]) => void;
     removeFromEdgeQueue: () => void;
 
@@ -55,6 +61,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     blockQueue: [],
     scaleQueue: [],
     edgeQueue: [],
+    blockIdToEdges: new Map(),
     blockIdToIndex: new Map(),
     indexToBlockId: [],
     yPositions: {},
@@ -98,7 +105,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
                 const nextEdgesQueue = [...state.edgeQueue];
 
                 for (const parentBlockId of parents) {
-                    nextEdgesQueue.push({ fromBlockId: blockId, toBlockId: parentBlockId });
+                    nextEdgesQueue.push({ fromBlockId: parentBlockId, toBlockId: blockId });
                 }
 
                 return {
@@ -119,9 +126,11 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             state.blockIdToIndex.set(blockId, index);
             const nextIndexToBlockId = [...state.indexToBlockId];
 
-            // Clean up map from old blockIds
             if (nextIndexToBlockId[index]) {
+                // Clean up map from old blockIds
                 state.blockIdToIndex.delete(nextIndexToBlockId[index]);
+                // Clean up old block edges
+                state.blockIdToEdges.delete(nextIndexToBlockId[index]);
             }
 
             nextIndexToBlockId[index] = blockId;
