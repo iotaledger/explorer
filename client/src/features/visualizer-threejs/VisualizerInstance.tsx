@@ -46,6 +46,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     // Note: to prevent rerender each store update - call methods separate.
     const addBlock = useBlockStore(s => s.addToBlockQueue);
     const addToScaleQueue = useBlockStore(s => s.addToScaleQueue);
+    const addToEdgeQueue = useBlockStore(s => s.addToEdgeQueue);
     const addYPosition = useBlockStore(s => s.addYPosition);
     const checkZoom = useBlockStore(s => s.checkZoom);
     const setIsPlaying = useBlockStore(s => s.setIsPlaying);
@@ -150,6 +151,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             });
 
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
+            addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
             checkZoom();
         }

@@ -1,9 +1,11 @@
 /* eslint-disable react/no-unknown-property */
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
+import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef } from "react";
 import * as THREE from "three";
+import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useBlockStore } from "./store";
+import { useRenderEdges } from "./useRenderEdges";
 import { useRenderTangle } from "./useRenderTangle";
 
 interface EmitterProps {
@@ -48,7 +50,16 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     });
 
     // The Tangle rendering hook
-    useRenderTangle();
+    const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
+    const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
+    const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
+    useRenderTangle(
+        tangleMeshRef
+    );
+
+    useRenderEdges(
+        tangleMeshRef
+    );
 
     return (
         <mesh
