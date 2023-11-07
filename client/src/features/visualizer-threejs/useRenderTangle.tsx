@@ -1,5 +1,5 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import { Matrix4, Object3D } from "three";
 import { NODE_SIZE_DEFAULT, MAX_BLOCK_INSTANCES } from "./constants";
@@ -18,6 +18,7 @@ export const useRenderTangle = () => {
     const clearBlocksRef = useRef<() => void>();
 
     const scene = useThree(state => state.scene);
+    const camera = useThree(state => state.camera);
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
     const scaleQueue = useBlockStore(s => s.scaleQueue);
@@ -25,6 +26,39 @@ export const useRenderTangle = () => {
 
     const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
+
+    const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
+
+    console.log('--- hoveredInstanceId', hoveredInstanceId);
+
+    const { raycaster, mouse } = useThree();
+
+
+    // @ts-expect-error: It's fine
+    const onPointerMove = useCallback((event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersects = raycaster.intersectObject(mainMeshRef.current);
+
+        if (intersects.length > 0) {
+            const instanceId = intersects[0].instanceId;
+            // @ts-expect-error: It's fine
+            setHoveredInstanceId(instanceId);
+        } else {
+            setHoveredInstanceId(null);
+        }
+    }, [camera, mouse, raycaster]);
+
+    useEffect(() => {
+        document.addEventListener('pointermove', onPointerMove);
+
+        return () => {
+            document.removeEventListener('pointermove', onPointerMove);
+        };
+    }, [onPointerMove]);
 
     useZoomDynamic();
 
