@@ -52,6 +52,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const setIsPlaying = useBlockStore(s => s.setIsPlaying);
 
     const isPlaying = useBlockStore(s => s.isPlaying);
+    const blockIdToPosition = useBlockStore(s => s.blockIdToPosition);
     const indexToBlockId = useBlockStore(s => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
@@ -149,6 +150,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 position,
                 color: COLORS[randomIntFromInterval(0, COLORS.length - 1)]
             });
+
+            blockIdToPosition.set(blockData.blockId, position);
 
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);

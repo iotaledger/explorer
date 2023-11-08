@@ -1,4 +1,7 @@
-/* Source fiddle: https://jsfiddle.net/Ljvh5fbw/5/ */
+/*
+ * See this fiddle for insight about LineSegments, Float32BufferAttribute and indices:
+ * https://jsfiddle.net/Ljvh5fbw/5/
+ */
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -7,80 +10,51 @@ import { useBlockStore } from "./store";
 
 const EDGE_MATERIAL = new THREE.LineBasicMaterial({ color: new Color("#d8dbdf"), transparent: true });
 
-export const useRenderEdges = (
-    tangleMeshRef: React.MutableRefObject<THREE.InstancedMesh>
-) => {
+export const useRenderEdges = (options: { enabled: boolean }) => {
     const edgesMeshRef = useRef(new THREE.BufferGeometry());
     const scene = useThree(state => state.scene);
 
     const edgeQueue = useBlockStore(s => s.edgeQueue);
     const removeFromEdgeQueue = useBlockStore(s => s.removeFromEdgeQueue);
 
-    const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
     const blockIdToEdges = useBlockStore(s => s.blockIdToEdges);
+    const blockIdToPosition = useBlockStore(s => s.blockIdToPosition);
 
     const [linePoints, setLinePoints] = useState<number[]>([]);
     const indices = useRef<number[]>([]);
 
+    // Processes the edgeQueue
     useEffect(() => {
-        if (tangleMeshRef.current && edgeQueue.length > 0) {
+        if (options.enabled && edgeQueue.length > 0) {
             for (const edge of edgeQueue) {
                 const { fromBlockId, toBlockId } = edge;
 
-                const fromIndex = blockIdToIndex.get(fromBlockId);
-                const toIndex = blockIdToIndex.get(toBlockId);
+                const fromPosition = blockIdToPosition.get(fromBlockId);
+                const toPosition = blockIdToPosition.get(toBlockId);
 
-                if (fromIndex && toIndex) {
-                    let tempMatrix = new THREE.Matrix4();
-                    let tempObject = new THREE.Object3D();
-
-                    tangleMeshRef.current.getMatrixAt(fromIndex, tempMatrix);
-                    tempObject.applyMatrix4(tempMatrix);
-
-                    const fromPoint = [...tempObject.position];
-
-                    tempMatrix = new THREE.Matrix4();
-                    tempObject = new THREE.Object3D();
-
-                    tangleMeshRef.current.getMatrixAt(toIndex, tempMatrix);
-                    tempObject.applyMatrix4(tempMatrix);
-                    const toPoint = [...tempObject.position];
-
+                if (fromPosition && toPosition) {
                     const existing = blockIdToEdges.get(fromBlockId);
+
                     if (existing) {
-                        // @ts-expect-error it is
-                        existing.toConnections.push(toPoint);
+                        existing.toPositions.push(toPosition);
                         blockIdToEdges.set(fromBlockId, existing);
                     } else {
-                        // @ts-expect-error it is
-                        blockIdToEdges.set(fromBlockId, { from: fromPoint, toConnections: [[...toPoint]] });
+                        blockIdToEdges.set(fromBlockId, { fromPosition, toPositions: [toPosition] });
                     }
                 }
             }
 
-            const updatedLinePoints: number[] = [];
-            for (const entry of blockIdToEdges.values()) {
-                for (const connectionPoint of entry.toConnections) {
-                    updatedLinePoints.push(...connectionPoint);
-                    updatedLinePoints.push(...entry.from);
-                }
-            }
+            const updatedPoints = rebuildPointsArray();
+            updateIndices(updatedPoints);
 
-            const newIndices = [];
-            for (let i = 0; i < updatedLinePoints.length / 3; i++) {
-                newIndices.push(i);
-            }
-
-            indices.current = newIndices;
-
-            setLinePoints(updatedLinePoints);
+            setLinePoints(updatedPoints);
             removeFromEdgeQueue(edgeQueue);
         }
-    }, [edgeQueue]);
+    }, [edgeQueue, options.enabled]);
 
+    // Re-draws the 'LineSegments' every time the linePoints change
     useEffect(() => {
-        if (edgesMeshRef.current) {
-            // console.log("Updateing with line points", linePoints.length / 3);
+        if (options.enabled && edgesMeshRef.current) {
             const pointsBuffer = new THREE.Float32BufferAttribute(linePoints, 3);
             edgesMeshRef.current.setAttribute("position", pointsBuffer);
             edgesMeshRef.current.setIndex(indices.current);
@@ -89,38 +63,42 @@ export const useRenderEdges = (
             oldEdges?.removeFromParent();
 
             const lineSegments = new THREE.LineSegments(edgesMeshRef.current, EDGE_MATERIAL);
-            lineSegments.name = "edges";
 
+            lineSegments.name = "edges";
             lineSegments.geometry.computeBoundingSphere();
             lineSegments.frustumCulled = false;
+
             scene.add(lineSegments);
         }
-    }, [linePoints]);
+    }, [linePoints, options.enabled]);
 
-    // simple example
-    // useEffect(() => {
-    //     if (edgesMeshRef.current) {
-    //         // Line made up of 2 points in 3d space
-    //         const lineOne = [-10, -10, -10, 20, 20, 200];
-    //         // Line made up of 2 points in 3d space
-    //         const lineTwo = [1, 1, 1, 1, 2, 2];
-    //
-    //         const indicies = [
-    //             0, 1,
-    //             2, 3
-    //         ];
-    //
-    //         const pointsBuffer = new THREE.Float32BufferAttribute([...lineOne, ...lineTwo], 3);
-    //
-    //         edgesMeshRef.current.setAttribute("position", pointsBuffer);
-    //         edgesMeshRef.current.setIndex(indicies);
-    //
-    //         const lineSegments = new THREE.LineSegments(edgesMeshRef.current, EDGE_MATERIAL);
-    //         lineSegments.name = "edges";
-    //
-    //         console.log("adding line");
-    //
-    //         scene.add(lineSegments);
-    //     }
-    // }, [edgesMeshRef]);
+    /**
+     * Computes the update points array from the blockIdToEdges map.
+     * For each from/to point of each edge it spreads the points into and array.
+     * @returns The new points array.
+     */
+    function rebuildPointsArray(): number[] {
+        const updatedLinePoints: number[] = [];
+        for (const blockEdge of blockIdToEdges.values()) {
+            for (const connectionPoint of blockEdge.toPositions) {
+                updatedLinePoints.push(...connectionPoint);
+                updatedLinePoints.push(...blockEdge.fromPosition);
+            }
+        }
+
+        return updatedLinePoints;
+    }
+
+    /**
+     * Updates the indices array based on the passed points array.
+     * @param points The points array.
+     */
+    function updateIndices(points: number[]): void {
+        const newIndices = [];
+        for (let i = 0; i < points.length / 3; i++) {
+            newIndices.push(i);
+        }
+
+        indices.current = newIndices;
+    }
 };

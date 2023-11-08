@@ -25,9 +25,7 @@ export const useRenderTangle = () => {
     const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
 
-    useRenderEdges(
-        tangleMeshRef
-    );
+    useRenderEdges({ enabled: true });
     useZoomDynamic();
 
     const st = useThree(state => state);

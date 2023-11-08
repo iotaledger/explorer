@@ -15,8 +15,8 @@ interface Edge {
 }
 
 interface EdgeEntry {
-    from: number[];
-    toConnections: [x: number, y: number, z: number][];
+    fromPosition: number[];
+    toPositions: [x: number, y: number, z: number][];
 }
 
 interface BlockStoreState {
@@ -30,12 +30,14 @@ interface BlockStoreState {
     removeFromScaleQueue: (blockIds: string[]) => void;
 
     edgeQueue: Edge[];
-    blockIdToEdges: Map<string, EdgeEntry>;
     addToEdgeQueue: (blockId: string, parents: string[]) => void;
     removeFromEdgeQueue: (edges: Edge[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
     blockIdToIndex: Map<string, number>;
+    blockIdToEdges: Map<string, EdgeEntry>;
+    blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
+
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
 
@@ -63,6 +65,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     edgeQueue: [],
     blockIdToEdges: new Map(),
     blockIdToIndex: new Map(),
+    blockIdToPosition: new Map(),
     indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
@@ -129,15 +132,16 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     updateBlockIdToIndex: (blockId: string, index: number) => {
         set(state => {
             state.blockIdToIndex.set(blockId, index);
-
-            const nextIndexToBlockId = [...state.indexToBlockId];
-            if (nextIndexToBlockId[index]) {
+            if (state.indexToBlockId[index]) {
                 // Clean up map from old blockIds
-                state.blockIdToIndex.delete(nextIndexToBlockId[index]);
+                state.blockIdToIndex.delete(state.indexToBlockId[index]);
                 // Clean up old block edges
-                state.blockIdToEdges.delete(nextIndexToBlockId[index]);
+                state.blockIdToEdges.delete(state.indexToBlockId[index]);
+                // Clean up old block position
+                state.blockIdToPosition.delete(state.indexToBlockId[index]);
             }
 
+            const nextIndexToBlockId = [...state.indexToBlockId];
             nextIndexToBlockId[index] = blockId;
 
             return {
