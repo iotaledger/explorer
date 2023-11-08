@@ -9,8 +9,7 @@ export const useHover = ({
 }) => {
     const { camera, raycaster, gl } = useThree();
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
-    const originalColorsRef = useRef<Map<number | null, THREE.Color | undefined>>(new Map());
-
+    const originalColorsRef = useRef<Map<number, THREE.Color>>(new Map());
 
     const updateHover = useCallback((event: PointerEvent) => {
         const rect = gl.domElement.getBoundingClientRect();
@@ -21,20 +20,27 @@ export const useHover = ({
         const intersects = raycaster.intersectObject(mainMeshRef.current as THREE.Object3D);
         const firstIntersect = intersects.length > 0 ? intersects[0] : null;
 
-        if (firstIntersect?.instanceId !== undefined && mainMeshRef.current?.instanceColor) {
+        const clearHoveredSpheres = () => {
+            const keys = originalColorsRef.current.keys();
+            for (const key of keys) {
+                const color = originalColorsRef.current.get(key);
+                if (color) {
+                    mainMeshRef.current.setColorAt(key, color);
+                    originalColorsRef.current.delete(key);
+                }
+            }
+        };
+
+        if (firstIntersect?.instanceId === undefined) {
+            clearHoveredSpheres();
+            setHoveredInstanceId(null);
+        } else {
             const { instanceId } = firstIntersect;
             const color = new THREE.Color(0xFF0000); // Red color
 
             // If we're hovering over a new instance, save the current color and set to red
             if (hoveredInstanceId !== instanceId) {
-                if (hoveredInstanceId !== null) {
-                    // Restore the original color of the previously hovered instance
-                    const originalColor = originalColorsRef.current.get(hoveredInstanceId);
-                    if (originalColor) {
-                        mainMeshRef.current.setColorAt(hoveredInstanceId, originalColor);
-                        originalColorsRef.current.delete(hoveredInstanceId);
-                    }
-                }
+                clearHoveredSpheres();
                 // Save the original color of the new hovered instance
                 const currentColor = new THREE.Color();
                 mainMeshRef.current.getColorAt(instanceId, currentColor);
@@ -44,14 +50,6 @@ export const useHover = ({
                 mainMeshRef.current.setColorAt(instanceId, color);
                 setHoveredInstanceId(instanceId);
             }
-        } else if (hoveredInstanceId !== null) {
-            // No intersection, restore the original color of the previously hovered instance
-            const originalColor = originalColorsRef.current.get(hoveredInstanceId);
-            if (originalColor) {
-                mainMeshRef.current.setColorAt(hoveredInstanceId, originalColor);
-                originalColorsRef.current.delete(hoveredInstanceId);
-            }
-            setHoveredInstanceId(null);
         }
 
         // Indicate that the instance colors need to be updated
