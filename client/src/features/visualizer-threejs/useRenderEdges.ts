@@ -10,7 +10,7 @@ import { useBlockStore } from "./store";
 
 const EDGE_MATERIAL = new THREE.LineBasicMaterial({ color: new Color("#d8dbdf"), transparent: true });
 
-export const useRenderEdges = (options: { enabled: boolean }) => {
+export const useRenderEdges = (edgeRenderingEnabled: boolean) => {
     const edgesMeshRef = useRef(new THREE.BufferGeometry());
     const scene = useThree(state => state.scene);
 
@@ -25,7 +25,7 @@ export const useRenderEdges = (options: { enabled: boolean }) => {
 
     // Processes the edgeQueue
     useEffect(() => {
-        if (options.enabled && edgeQueue.length > 0) {
+        if (edgeQueue.length > 0) {
             for (const edge of edgeQueue) {
                 const { fromBlockId, toBlockId } = edge;
 
@@ -50,11 +50,11 @@ export const useRenderEdges = (options: { enabled: boolean }) => {
             setLinePoints(updatedPoints);
             removeFromEdgeQueue(edgeQueue);
         }
-    }, [edgeQueue, options.enabled]);
+    }, [edgeQueue]);
 
     // Re-draws the 'LineSegments' every time the linePoints change
     useEffect(() => {
-        if (options.enabled && edgesMeshRef.current) {
+        if (edgeRenderingEnabled && edgesMeshRef.current) {
             const pointsBuffer = new THREE.Float32BufferAttribute(linePoints, 3);
             edgesMeshRef.current.setAttribute("position", pointsBuffer);
             edgesMeshRef.current.setIndex(indices.current);
@@ -69,8 +69,11 @@ export const useRenderEdges = (options: { enabled: boolean }) => {
             lineSegments.frustumCulled = false;
 
             scene.add(lineSegments);
+        } else {
+            const oldEdges = scene.getObjectByName("edges");
+            oldEdges?.removeFromParent();
         }
-    }, [linePoints, options.enabled]);
+    }, [linePoints, edgeRenderingEnabled]);
 
     /**
      * Computes the update points array from the blockIdToEdges map.

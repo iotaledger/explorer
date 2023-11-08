@@ -1,19 +1,22 @@
 /* eslint-disable react/no-unknown-property */
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef } from "react";
+import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
-import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useBlockStore } from "./store";
-import { useRenderEdges } from "./useRenderEdges";
 import { useRenderTangle } from "./useRenderTangle";
 
 interface EmitterProps {
     readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
     readonly emitterRef: RefObject<THREE.Mesh>;
+    readonly isEdgeRenderingEnabled: boolean;
 }
 
-const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: EmitterProps) => {
+const Emitter: React.FC<EmitterProps> = ({
+    setRunListeners,
+    emitterRef,
+    isEdgeRenderingEnabled
+}: EmitterProps) => {
     const isPlaying = useBlockStore(state => state.isPlaying);
     const get = useThree(state => state.get);
     const { halfScreenWidth } = useBorderPositions();
@@ -50,7 +53,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     });
 
     // The Tangle rendering hook
-    useRenderTangle();
+    useRenderTangle(isEdgeRenderingEnabled);
 
     return (
         <mesh
