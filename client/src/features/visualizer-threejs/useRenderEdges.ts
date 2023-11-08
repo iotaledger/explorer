@@ -74,7 +74,7 @@ export const useRenderEdges = (
             indices.current = newIndices;
 
             setLinePoints(updatedLinePoints);
-            removeFromEdgeQueue();
+            removeFromEdgeQueue(edgeQueue);
         }
     }, [edgeQueue]);
 

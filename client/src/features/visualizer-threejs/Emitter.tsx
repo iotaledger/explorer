@@ -50,16 +50,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     });
 
     // The Tangle rendering hook
-    const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
-    const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
-    const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
-    useRenderTangle(
-        tangleMeshRef
-    );
-
-    useRenderEdges(
-        tangleMeshRef
-    );
+    useRenderTangle();
 
     return (
         <mesh

@@ -27,12 +27,12 @@ interface BlockStoreState {
 
     scaleQueue: string[];
     addToScaleQueue: (blockId: string, parents: string[]) => void;
-    removeFromScaleQueue: () => void;
+    removeFromScaleQueue: (blockIds: string[]) => void;
 
     edgeQueue: Edge[];
     blockIdToEdges: Map<string, EdgeEntry>;
     addToEdgeQueue: (blockId: string, parents: string[]) => void;
-    removeFromEdgeQueue: () => void;
+    removeFromEdgeQueue: (edges: Edge[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
     blockIdToIndex: Map<string, number>;
@@ -92,11 +92,10 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             });
         }
     },
-    // TODO Add remove with specific Ids
-    removeFromScaleQueue: () => {
+    removeFromScaleQueue: (blockIds: string[]) => {
         set(state => ({
             ...state,
-            scaleQueue: []
+            scaleQueue: state.scaleQueue.filter(blockId => !blockIds.includes(blockId))
         }));
     },
     addToEdgeQueue: (blockId: string, parents: string[]) => {
@@ -115,17 +114,23 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             });
         }
     },
-    removeFromEdgeQueue: () => {
+    removeFromEdgeQueue: (edgesToRemove: Edge[]) => {
         set(state => ({
             ...state,
-            edgeQueue: []
+            edgeQueue: state.edgeQueue.filter(
+                edge => !edgesToRemove.some(
+                    edgeToRemove =>
+                        edgeToRemove.toBlockId === edge.toBlockId &&
+                        edgeToRemove.fromBlockId === edge.fromBlockId
+                )
+            )
         }));
     },
     updateBlockIdToIndex: (blockId: string, index: number) => {
         set(state => {
             state.blockIdToIndex.set(blockId, index);
-            const nextIndexToBlockId = [...state.indexToBlockId];
 
+            const nextIndexToBlockId = [...state.indexToBlockId];
             if (nextIndexToBlockId[index]) {
                 // Clean up map from old blockIds
                 state.blockIdToIndex.delete(nextIndexToBlockId[index]);
