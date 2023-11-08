@@ -46,6 +46,15 @@ export const useRenderTangle = (
     useEffect(() => {
         if (tangleMeshRef?.current) {
             tangleMeshRef.current.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+            // Set the scale of all instances to 0 to make then initially invisible
+            // We will set the scale back to one, as actual blocks are added
+            for (let i = 0; i < MAX_BLOCK_INSTANCES; i++) {
+                SPHERE_OBJECT.scale.setScalar(0);
+                SPHERE_OBJECT.updateMatrix();
+                tangleMeshRef.current.setMatrixAt(i, SPHERE_OBJECT.matrix);
+            }
+
             scene.add(tangleMeshRef.current);
         }
     }, [tangleMeshRef]);
@@ -90,6 +99,7 @@ export const useRenderTangle = (
             const color = block.color;
 
             SPHERE_OBJECT.position.set(x, y, z);
+            SPHERE_OBJECT.scale.setScalar(1);
             SPHERE_OBJECT.updateMatrix();
 
             updateBlockIdToIndex(block.id, objectIndexRef.current);
