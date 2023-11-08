@@ -2,16 +2,18 @@ import { useThree } from "@react-three/fiber";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import * as THREE from "three";
 
-export const useHover = ({
+export const useMouseMove = ({
     mainMeshRef
 }: {
     mainMeshRef: React.MutableRefObject<THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>>;
 }) => {
     const { camera, raycaster, gl } = useThree();
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
+    const [clickedInstanceId, setClickedInstanceId] = useState<number | null>(null);
     const originalColorsRef = useRef<Map<number, THREE.Color>>(new Map());
 
-    const updateHover = useCallback((event: PointerEvent) => {
+
+    const updateMouseMove = useCallback((cb: (newInstanceId: number | null) => void) => (event: PointerEvent) => {
         const rect = gl.domElement.getBoundingClientRect();
         const mousePointer = new THREE.Vector2();
         mousePointer.x = (((event.clientX - rect.left) / rect.width) * 2) - 1;
@@ -33,7 +35,7 @@ export const useHover = ({
 
         if (firstIntersect?.instanceId === undefined) {
             clearHoveredSpheres();
-            setHoveredInstanceId(null);
+            cb(null);
         } else {
             const { instanceId } = firstIntersect;
             const color = new THREE.Color(0xFF0000); // Red color
@@ -48,7 +50,7 @@ export const useHover = ({
 
                 // Set the new hovered instance color to red
                 mainMeshRef.current.setColorAt(instanceId, color);
-                setHoveredInstanceId(instanceId);
+                cb(instanceId);
             }
         }
 
@@ -56,18 +58,23 @@ export const useHover = ({
         if (mainMeshRef.current.instanceColor) {
             mainMeshRef.current.instanceColor.needsUpdate = true;
         }
-    }, [camera, raycaster, hoveredInstanceId]);
+    }, [camera, raycaster, hoveredInstanceId, clickedInstanceId]);
 
     // Attach the pointer move event listener to the canvas
     useEffect(() => {
-        const handlePointerMove = (event: PointerEvent) => {
-            updateHover(event);
+        const onHoverCallback = (newInstanceId: number | null) => {
+            setHoveredInstanceId(newInstanceId);
+        };
+        const onClickCallback = (newInstanceId: number | null) => {
+            setClickedInstanceId(newInstanceId);
         };
 
-        window.addEventListener("pointermove", handlePointerMove, false);
+        window.addEventListener("pointermove", updateMouseMove(onHoverCallback), false);
+        window.addEventListener("pointerdown", updateMouseMove(onClickCallback), false);
 
         return () => {
-            window.removeEventListener("pointermove", handlePointerMove, false);
+            window.removeEventListener("pointermove", updateMouseMove(onHoverCallback), false);
+            window.removeEventListener("pointerdown", updateMouseMove(onClickCallback), false);
         };
-    }, [updateHover]);
+    }, []);
 };

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Matrix4, Object3D } from "three";
 import { NODE_SIZE_DEFAULT, MAX_BLOCK_INSTANCES } from "./constants";
-import { useHover } from "./hooks/useHover";
+import { useMouseMove } from "./hooks/useMouseMove";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useBlockStore } from "./store";
 
@@ -19,7 +19,7 @@ export const useRenderTangle = () => {
     const clearBlocksRef = useRef<() => void>();
     const { scene } = useThree();
 
-    useHover({ mainMeshRef });
+    useMouseMove({ mainMeshRef });
 
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
