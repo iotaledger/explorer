@@ -3,9 +3,9 @@ import React, { useCallback, useState, useRef, useEffect } from "react";
 import * as THREE from "three";
 
 export const useMouseMove = ({
-    mainMeshRef
+    tangleMeshRef
 }: {
-    mainMeshRef: React.MutableRefObject<THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>>;
+    tangleMeshRef: React.MutableRefObject<THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>>;
 }) => {
     const { camera, raycaster, gl } = useThree();
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
@@ -19,7 +19,7 @@ export const useMouseMove = ({
         mousePointer.x = (((event.clientX - rect.left) / rect.width) * 2) - 1;
         mousePointer.y = -(((event.clientY - rect.top) / rect.height) * 2) + 1;
 
-        const intersects = raycaster.intersectObject(mainMeshRef.current as THREE.Object3D);
+        const intersects = raycaster.intersectObject(tangleMeshRef.current as THREE.Object3D);
         const firstIntersect = intersects.length > 0 ? intersects[0] : null;
 
         const clearHoveredSpheres = () => {
@@ -27,7 +27,7 @@ export const useMouseMove = ({
             for (const key of keys) {
                 const color = originalColorsRef.current.get(key);
                 if (color) {
-                    mainMeshRef.current.setColorAt(key, color);
+                    tangleMeshRef.current.setColorAt(key, color);
                     originalColorsRef.current.delete(key);
                 }
             }
@@ -45,18 +45,18 @@ export const useMouseMove = ({
                 clearHoveredSpheres();
                 // Save the original color of the new hovered instance
                 const currentColor = new THREE.Color();
-                mainMeshRef.current.getColorAt(instanceId, currentColor);
+                tangleMeshRef.current.getColorAt(instanceId, currentColor);
                 originalColorsRef.current.set(instanceId, currentColor);
 
                 // Set the new hovered instance color to red
-                mainMeshRef.current.setColorAt(instanceId, color);
+                tangleMeshRef.current.setColorAt(instanceId, color);
                 cb(instanceId);
             }
         }
 
         // Indicate that the instance colors need to be updated
-        if (mainMeshRef.current.instanceColor) {
-            mainMeshRef.current.instanceColor.needsUpdate = true;
+        if (tangleMeshRef.current.instanceColor) {
+            tangleMeshRef.current.instanceColor.needsUpdate = true;
         }
     }, [camera, raycaster, hoveredInstanceId, clickedInstanceId]);
 
