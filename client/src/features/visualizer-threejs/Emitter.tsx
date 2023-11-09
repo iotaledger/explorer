@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
 import { useBorderPositions } from "./hooks/useBorderPositions";
-import { useTangleStore, useConfigStore } from "./store";
+import { useConfigStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
 
 interface EmitterProps {
