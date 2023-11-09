@@ -12,9 +12,7 @@ const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
 const SPHERE_TEMP_OBJECT = new THREE.Object3D();
 const SCALE_INCREMENT = 0.1;
 
-export const useRenderTangle = (
-    isEdgeRenderingEnabled: boolean
-) => {
+export const useRenderTangle = () => {
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
@@ -28,7 +26,7 @@ export const useRenderTangle = (
     const blockIdToIndex = useTangleStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useTangleStore(s => s.updateBlockIdToIndex);
 
-    useRenderEdges(isEdgeRenderingEnabled);
+    useRenderEdges();
     useMouseMove({ tangleMeshRef });
     useZoomDynamic();
 

@@ -222,7 +222,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <Emitter
                     emitterRef={emitterRef}
                     setRunListeners={setRunListeners}
-                    isEdgeRenderingEnabled={isEdgeRenderingEnabled}
                 />
                 {features.cameraControls && <CameraControls makeDefault />}
                 {features.statsEnabled && <Perf />}

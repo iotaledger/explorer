@@ -9,13 +9,11 @@ import { useRenderTangle } from "./useRenderTangle";
 interface EmitterProps {
     readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
     readonly emitterRef: RefObject<THREE.Mesh>;
-    readonly isEdgeRenderingEnabled: boolean;
 }
 
 const Emitter: React.FC<EmitterProps> = ({
     setRunListeners,
-    emitterRef,
-    isEdgeRenderingEnabled
+    emitterRef
 }: EmitterProps) => {
     const isPlaying = useConfigStore(state => state.isPlaying);
     const get = useThree(state => state.get);
@@ -53,7 +51,7 @@ const Emitter: React.FC<EmitterProps> = ({
     });
 
     // The Tangle rendering hook
-    useRenderTangle(isEdgeRenderingEnabled);
+    useRenderTangle();
 
     return (
         <mesh
