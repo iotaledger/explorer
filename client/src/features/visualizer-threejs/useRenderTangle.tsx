@@ -2,6 +2,7 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
+import { useMouseMove } from "./hooks/useMouseMove";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useBlockStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
@@ -17,8 +18,8 @@ export const useRenderTangle = (
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
+    const { scene } = useThree();
 
-    const scene = useThree(state => state.scene);
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
     const scaleQueue = useBlockStore(s => s.scaleQueue);
@@ -28,6 +29,7 @@ export const useRenderTangle = (
     const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
 
     useRenderEdges(isEdgeRenderingEnabled);
+    useMouseMove({ tangleMeshRef });
     useZoomDynamic();
 
     const st = useThree(state => state);
