@@ -2,13 +2,13 @@
 import { CameraControls, OrthographicCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
 import { COLORS, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
-import { useBlockStore } from "./store";
+import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 import { BPSCounter } from "./worker/entities/BPSCounter";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
@@ -31,29 +31,30 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         params: { network }
     }
 }) => {
-    const [isEdgeRenderingEnabled, setEdgeRenderingEnabled] = useState(false);
-    const setDimensions = useBlockStore(s => s.setDimensions);
     const [networkConfig] = useNetworkConfig(network);
     const generateY = getGenerateY({ withRandom: true });
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
-    const setBps = useBlockStore(s => s.setBps);
+    const setBps = useTangleStore(s => s.setBps);
     const [bpsCounter] = React.useState(new BPSCounter(bps => {
         setBps(bps);
     }));
 
     // Note: to prevent rerender each store update - call methods separate.
-    const addBlock = useBlockStore(s => s.addToBlockQueue);
-    const addToScaleQueue = useBlockStore(s => s.addToScaleQueue);
-    const addToEdgeQueue = useBlockStore(s => s.addToEdgeQueue);
-    const addYPosition = useBlockStore(s => s.addYPosition);
-    const checkZoom = useBlockStore(s => s.checkZoom);
-    const setIsPlaying = useBlockStore(s => s.setIsPlaying);
-
-    const isPlaying = useBlockStore(s => s.isPlaying);
-    const blockIdToPosition = useBlockStore(s => s.blockIdToPosition);
-    const indexToBlockId = useBlockStore(s => s.indexToBlockId);
+    const isEdgeRenderingEnabled = useConfigStore(s => s.isEdgeRenderingEnabled);
+    const setEdgeRenderingEnabled = useConfigStore(s => s.setEdgeRenderingEnabled);
+    const canvasHeight = useConfigStore(s => s.dimensions.height);
+    const setDimensions = useConfigStore(s => s.setDimensions);
+    const isPlaying = useConfigStore(s => s.isPlaying);
+    const setIsPlaying = useConfigStore(s => s.setIsPlaying);
+    const addBlock = useTangleStore(s => s.addToBlockQueue);
+    const addToScaleQueue = useTangleStore(s => s.addToScaleQueue);
+    const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
+    const addYPosition = useTangleStore(s => s.addYPosition);
+    const checkZoom = useTangleStore(s => s.checkZoom);
+    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
+    const indexToBlockId = useTangleStore(s => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | null>(null);
@@ -156,7 +157,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
-            checkZoom();
+            checkZoom(canvasHeight);
         }
     };
 
@@ -221,7 +222,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <Emitter
                     emitterRef={emitterRef}
                     setRunListeners={setRunListeners}
-                    isEdgeRenderingEnabled={isEdgeRenderingEnabled}
                 />
                 {features.cameraControls && <CameraControls makeDefault />}
                 {features.statsEnabled && <Perf />}

@@ -1,13 +1,13 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect } from "react";
-import { useBlockStore } from "../store";
+import { useTangleStore } from "../store";
 
 export const useZoomDynamic = () => {
     /**
      * Zoom Changes
      */
     const cameraState = useThree(state => state.camera);
-    const zoomStore = useBlockStore(s => s.zoom);
+    const zoomStore = useTangleStore(s => s.zoom);
     useEffect(() => {
         if (cameraState) {
             cameraState.zoom = zoomStore;

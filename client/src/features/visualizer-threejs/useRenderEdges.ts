@@ -6,19 +6,21 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Color } from "three";
-import { useBlockStore } from "./store";
+import { useConfigStore, useTangleStore } from "./store";
 
 const EDGE_MATERIAL = new THREE.LineBasicMaterial({ color: new Color("#d8dbdf"), transparent: true });
 
-export const useRenderEdges = (edgeRenderingEnabled: boolean) => {
+export const useRenderEdges = () => {
     const edgesMeshRef = useRef(new THREE.BufferGeometry());
     const scene = useThree(state => state.scene);
 
-    const edgeQueue = useBlockStore(s => s.edgeQueue);
-    const removeFromEdgeQueue = useBlockStore(s => s.removeFromEdgeQueue);
+    const isEdgeRenderingEnabled = useConfigStore(s => s.isEdgeRenderingEnabled);
 
-    const blockIdToEdges = useBlockStore(s => s.blockIdToEdges);
-    const blockIdToPosition = useBlockStore(s => s.blockIdToPosition);
+    const edgeQueue = useTangleStore(s => s.edgeQueue);
+    const removeFromEdgeQueue = useTangleStore(s => s.removeFromEdgeQueue);
+
+    const blockIdToEdges = useTangleStore(s => s.blockIdToEdges);
+    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
 
     const [linePoints, setLinePoints] = useState<number[]>([]);
     const indices = useRef<number[]>([]);
@@ -54,7 +56,7 @@ export const useRenderEdges = (edgeRenderingEnabled: boolean) => {
 
     // Re-draws the 'LineSegments' every time the linePoints change
     useEffect(() => {
-        if (edgeRenderingEnabled && edgesMeshRef.current) {
+        if (isEdgeRenderingEnabled && edgesMeshRef.current) {
             const pointsBuffer = new THREE.Float32BufferAttribute(linePoints, 3);
             edgesMeshRef.current.setAttribute("position", pointsBuffer);
             edgesMeshRef.current.setIndex(indices.current);
@@ -73,7 +75,7 @@ export const useRenderEdges = (edgeRenderingEnabled: boolean) => {
             const oldEdges = scene.getObjectByName("edges");
             oldEdges?.removeFromParent();
         }
-    }, [linePoints, edgeRenderingEnabled]);
+    }, [linePoints, isEdgeRenderingEnabled]);
 
     /**
      * Computes the update points array from the blockIdToEdges map.
