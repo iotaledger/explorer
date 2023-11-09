@@ -1,19 +1,20 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { Matrix4, Object3D } from "three";
-import { NODE_SIZE_DEFAULT, MAX_BLOCK_INSTANCES } from "./constants";
+import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useBlockStore } from "./store";
+import { useRenderEdges } from "./useRenderEdges";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
-const SPHERE_OBJECT = new THREE.Object3D();
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
-
+const SPHERE_TEMP_OBJECT = new THREE.Object3D();
 const SCALE_INCREMENT = 0.1;
 
-export const useRenderTangle = () => {
-    const mainMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
+export const useRenderTangle = (
+    isEdgeRenderingEnabled: boolean
+) => {
+    const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
 
@@ -21,11 +22,12 @@ export const useRenderTangle = () => {
     const blockQueue = useBlockStore(s => s.blockQueue);
     const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
     const scaleQueue = useBlockStore(s => s.scaleQueue);
-    const clearBlocksToScaleQueue = useBlockStore(s => s.removeFromScaleQueue);
+    const removeFromScaleQueue = useBlockStore(s => s.removeFromScaleQueue);
 
     const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
 
+    useRenderEdges(isEdgeRenderingEnabled);
     useZoomDynamic();
 
     const st = useThree(state => state);
@@ -47,11 +49,20 @@ export const useRenderTangle = () => {
     }, []);
 
     useEffect(() => {
-        if (mainMeshRef.current) {
-            mainMeshRef.current.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-            scene.add(mainMeshRef.current);
+        if (tangleMeshRef?.current) {
+            tangleMeshRef.current.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+            // Set the scale of all instances to 0 to make then initially invisible
+            // We will set the scale back to one, as actual blocks are added
+            for (let i = 0; i < MAX_BLOCK_INSTANCES; i++) {
+                SPHERE_TEMP_OBJECT.scale.setScalar(0);
+                SPHERE_TEMP_OBJECT.updateMatrix();
+                tangleMeshRef.current.setMatrixAt(i, SPHERE_TEMP_OBJECT.matrix);
+            }
+
+            scene.add(tangleMeshRef.current);
         }
-    }, [mainMeshRef]);
+    }, [tangleMeshRef]);
 
     useEffect(() => {
         if (scaleQueue.length > 0) {
@@ -59,10 +70,10 @@ export const useRenderTangle = () => {
                 const indexToUpdate = blockIdToIndex.get(blockIdToScale);
 
                 if (indexToUpdate) {
-                    const blockMatrix = new Matrix4();
-                    mainMeshRef.current.getMatrixAt(indexToUpdate, blockMatrix);
+                    const blockMatrix = new THREE.Matrix4();
+                    tangleMeshRef.current.getMatrixAt(indexToUpdate, blockMatrix);
 
-                    const blockObj = new Object3D();
+                    const blockObj = new THREE.Object3D();
                     blockObj.applyMatrix4(blockMatrix);
 
                     blockObj.scale.setScalar(
@@ -71,13 +82,13 @@ export const useRenderTangle = () => {
 
                     blockObj.updateMatrix();
 
-                    mainMeshRef.current.setMatrixAt(indexToUpdate, blockObj.matrix);
+                    tangleMeshRef.current.setMatrixAt(indexToUpdate, blockObj.matrix);
                 }
             }
 
-            mainMeshRef.current.instanceMatrix.needsUpdate = true;
+            tangleMeshRef.current.instanceMatrix.needsUpdate = true;
 
-            clearBlocksToScaleQueue();
+            removeFromScaleQueue(scaleQueue);
         }
     }, [scaleQueue]);
 
@@ -92,13 +103,14 @@ export const useRenderTangle = () => {
             const [x, y, z] = block.position;
             const color = block.color;
 
-            SPHERE_OBJECT.position.set(x, y, z);
-            SPHERE_OBJECT.updateMatrix();
+            SPHERE_TEMP_OBJECT.position.set(x, y, z);
+            SPHERE_TEMP_OBJECT.scale.setScalar(1);
+            SPHERE_TEMP_OBJECT.updateMatrix();
 
             updateBlockIdToIndex(block.id, objectIndexRef.current);
 
-            mainMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_OBJECT.matrix);
-            mainMeshRef.current.setColorAt(objectIndexRef.current, color);
+            tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
+            tangleMeshRef.current.setColorAt(objectIndexRef.current, color);
 
             // Reuses old indexes when MAX_INSTANCES is reached
             // This also makes it so that old nodes are removed
@@ -111,12 +123,12 @@ export const useRenderTangle = () => {
             addedIds.push(block.id);
         }
 
-        if (mainMeshRef.current.instanceColor) {
-            mainMeshRef.current.instanceColor.needsUpdate = true;
+        if (tangleMeshRef.current.instanceColor) {
+            tangleMeshRef.current.instanceColor.needsUpdate = true;
         }
 
-        mainMeshRef.current.instanceMatrix.needsUpdate = true;
-        mainMeshRef.current.computeBoundingSphere();
+        tangleMeshRef.current.instanceMatrix.needsUpdate = true;
+        tangleMeshRef.current.computeBoundingSphere();
 
         removeFromBlockQueue(addedIds);
     }, [blockQueue]);
