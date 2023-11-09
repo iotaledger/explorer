@@ -2,7 +2,7 @@
 import { CameraControls, OrthographicCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
@@ -15,7 +15,6 @@ import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
-
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import "./VisualizerThree.scss";
@@ -32,6 +31,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         params: { network }
     }
 }) => {
+    const [isEdgeRenderingEnabled, setEdgeRenderingEnabled] = useState(false);
     const setDimensions = useBlockStore(s => s.setDimensions);
     const [networkConfig] = useNetworkConfig(network);
     const generateY = getGenerateY({ withRandom: true });
@@ -46,11 +46,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     // Note: to prevent rerender each store update - call methods separate.
     const addBlock = useBlockStore(s => s.addToBlockQueue);
     const addToScaleQueue = useBlockStore(s => s.addToScaleQueue);
+    const addToEdgeQueue = useBlockStore(s => s.addToEdgeQueue);
     const addYPosition = useBlockStore(s => s.addYPosition);
     const checkZoom = useBlockStore(s => s.checkZoom);
     const setIsPlaying = useBlockStore(s => s.setIsPlaying);
 
     const isPlaying = useBlockStore(s => s.isPlaying);
+    const blockIdToPosition = useBlockStore(s => s.blockIdToPosition);
     const indexToBlockId = useBlockStore(s => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
@@ -149,7 +151,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 color: COLORS[randomIntFromInterval(0, COLORS.length - 1)]
             });
 
+            blockIdToPosition.set(blockData.blockId, position);
+
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
+            addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
             checkZoom();
         }
@@ -198,6 +203,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             selectNode={() => { }}
             selectedFeedItem={null}
             setIsPlaying={setIsPlaying}
+            isEdgeRenderingEnabled={isEdgeRenderingEnabled}
+            setEdgeRenderingEnabled={checked => setEdgeRenderingEnabled(checked)}
         >
             <Canvas ref={canvasRef}>
                 <OrthographicCamera
@@ -211,7 +218,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <color attach="background" args={["#f2f2f2"]} />
                 <ambientLight />
                 <directionalLight position={[100, 100, 50]} />
-                <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
+                <Emitter
+                    emitterRef={emitterRef}
+                    setRunListeners={setRunListeners}
+                    isEdgeRenderingEnabled={isEdgeRenderingEnabled}
+                />
                 {features.cameraControls && <CameraControls makeDefault />}
                 {features.statsEnabled && <Perf />}
             </Canvas>

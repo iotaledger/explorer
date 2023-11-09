@@ -17,7 +17,9 @@ export const Wrapper = ({
     onChangeFilter,
     selectNode,
     selectedFeedItem,
-    setIsPlaying
+    setIsPlaying,
+    isEdgeRenderingEnabled,
+    setEdgeRenderingEnabled
 }: {
     readonly blocksCount: number;
     readonly children: React.ReactNode; readonly filter: string;
@@ -28,6 +30,8 @@ export const Wrapper = ({
     readonly selectNode: TSelectNode;
     readonly selectedFeedItem: TSelectFeedItem;
     readonly setIsPlaying: (isPlaying: boolean) => void;
+    readonly isEdgeRenderingEnabled?: boolean;
+    readonly setEdgeRenderingEnabled?: ((isEnabled: boolean) => void);
 }) => (
     <div className="visualizer-stardust">
         <div className="row middle">
@@ -54,10 +58,21 @@ export const Wrapper = ({
                 <div className="card">
                     <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
                         {isPlaying
-                                ? <span className="material-icons">pause</span>
-                                : <span className="material-icons">play_arrow</span>}
+                            ? <span className="material-icons">pause</span>
+                            : <span className="material-icons">play_arrow</span>}
                     </button>
                 </div>
+                {isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
+                    <div className="margin-l-t row middle">
+                        <h3>Show edges:</h3>
+                        <input
+                            type="checkbox"
+                            className="margin-l-t"
+                            checked={isEdgeRenderingEnabled}
+                            onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
+                        />
+                    </div>
+                )}
             </div>
         </div>
         <StatsPanel blocksCount={blocksCount} network={network} />
@@ -69,4 +84,10 @@ export const Wrapper = ({
         />
         <KeyPanel />
     </div>
-    );
+);
+
+Wrapper.defaultProps = {
+    isEdgeRenderingEnabled: undefined,
+    setEdgeRenderingEnabled: undefined
+};
+

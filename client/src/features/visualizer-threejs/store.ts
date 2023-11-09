@@ -9,6 +9,16 @@ interface BlockState {
     color: Color;
 }
 
+interface Edge {
+    fromBlockId: string;
+    toBlockId: string;
+}
+
+interface EdgeEntry {
+    fromPosition: number[];
+    toPositions: [x: number, y: number, z: number][];
+}
+
 interface BlockStoreState {
     // Queue for "add block" operation to the canvas
     blockQueue: BlockState[];
@@ -17,10 +27,17 @@ interface BlockStoreState {
 
     scaleQueue: string[];
     addToScaleQueue: (blockId: string, parents: string[]) => void;
-    removeFromScaleQueue: () => void;
+    removeFromScaleQueue: (blockIds: string[]) => void;
+
+    edgeQueue: Edge[];
+    addToEdgeQueue: (blockId: string, parents: string[]) => void;
+    removeFromEdgeQueue: (edges: Edge[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
     blockIdToIndex: Map<string, number>;
+    blockIdToEdges: Map<string, EdgeEntry>;
+    blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
+
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
 
@@ -45,7 +62,10 @@ interface BlockStoreState {
 export const useBlockStore = create<BlockStoreState>(set => ({
     blockQueue: [],
     scaleQueue: [],
+    edgeQueue: [],
+    blockIdToEdges: new Map(),
     blockIdToIndex: new Map(),
+    blockIdToPosition: new Map(),
     indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
@@ -63,7 +83,7 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
         }));
     },
-    addToScaleQueue: (_: string, parents) => {
+    addToScaleQueue: (_: string, parents: string[]) => {
         if (parents.length > 0) {
             set(state => {
                 const nextScalesToUpdate = [...state.scaleQueue, ...parents];
@@ -75,22 +95,53 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             });
         }
     },
-    removeFromScaleQueue: () => {
+    removeFromScaleQueue: (blockIds: string[]) => {
         set(state => ({
             ...state,
-            scaleQueue: []
+            scaleQueue: state.scaleQueue.filter(blockId => !blockIds.includes(blockId))
+        }));
+    },
+    addToEdgeQueue: (blockId: string, parents: string[]) => {
+        if (parents.length > 0) {
+            set(state => {
+                const nextEdgesQueue = [...state.edgeQueue];
+
+                for (const parentBlockId of parents) {
+                    nextEdgesQueue.push({ fromBlockId: parentBlockId, toBlockId: blockId });
+                }
+
+                return {
+                    ...state,
+                    edgeQueue: nextEdgesQueue
+                };
+            });
+        }
+    },
+    removeFromEdgeQueue: (edgesToRemove: Edge[]) => {
+        set(state => ({
+            ...state,
+            edgeQueue: state.edgeQueue.filter(
+                edge => !edgesToRemove.some(
+                    edgeToRemove =>
+                        edgeToRemove.toBlockId === edge.toBlockId &&
+                        edgeToRemove.fromBlockId === edge.fromBlockId
+                )
+            )
         }));
     },
     updateBlockIdToIndex: (blockId: string, index: number) => {
         set(state => {
             state.blockIdToIndex.set(blockId, index);
-            const nextIndexToBlockId = [...state.indexToBlockId];
-
-            // Clean up map from old blockIds
-            if (nextIndexToBlockId[index]) {
-                state.blockIdToIndex.delete(nextIndexToBlockId[index]);
+            if (state.indexToBlockId[index]) {
+                // Clean up map from old blockIds
+                state.blockIdToIndex.delete(state.indexToBlockId[index]);
+                // Clean up old block edges
+                state.blockIdToEdges.delete(state.indexToBlockId[index]);
+                // Clean up old block position
+                state.blockIdToPosition.delete(state.indexToBlockId[index]);
             }
 
+            const nextIndexToBlockId = [...state.indexToBlockId];
             nextIndexToBlockId[index] = blockId;
 
             return {
