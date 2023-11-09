@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
 import { useZoomDynamic } from "./hooks/useZoomDynamic";
-import { useBlockStore } from "./store";
+import { useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
@@ -20,13 +20,13 @@ export const useRenderTangle = (
     const clearBlocksRef = useRef<() => void>();
     const { scene } = useThree();
 
-    const blockQueue = useBlockStore(s => s.blockQueue);
-    const removeFromBlockQueue = useBlockStore(s => s.removeFromBlockQueue);
-    const scaleQueue = useBlockStore(s => s.scaleQueue);
-    const removeFromScaleQueue = useBlockStore(s => s.removeFromScaleQueue);
+    const blockQueue = useTangleStore(s => s.blockQueue);
+    const removeFromBlockQueue = useTangleStore(s => s.removeFromBlockQueue);
+    const scaleQueue = useTangleStore(s => s.scaleQueue);
+    const removeFromScaleQueue = useTangleStore(s => s.removeFromScaleQueue);
 
-    const blockIdToIndex = useBlockStore(s => s.blockIdToIndex);
-    const updateBlockIdToIndex = useBlockStore(s => s.updateBlockIdToIndex);
+    const blockIdToIndex = useTangleStore(s => s.blockIdToIndex);
+    const updateBlockIdToIndex = useTangleStore(s => s.updateBlockIdToIndex);
 
     useRenderEdges(isEdgeRenderingEnabled);
     useMouseMove({ tangleMeshRef });

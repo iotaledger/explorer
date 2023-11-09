@@ -1,7 +1,7 @@
 import { Color } from "three";
 import { create } from "zustand";
-import { ZOOM_DEFAULT } from "./constants";
-import { getScaleMultiplier } from "./utils";
+import { ZOOM_DEFAULT } from "../constants";
+import { getScaleMultiplier } from "../utils";
 
 interface BlockState {
     id: string;
@@ -19,7 +19,7 @@ interface EdgeEntry {
     toPositions: [x: number, y: number, z: number][];
 }
 
-interface BlockStoreState {
+interface TangleState {
     // Queue for "add block" operation to the canvas
     blockQueue: BlockState[];
     addToBlockQueue: (newBlock: BlockState) => void;
@@ -46,20 +46,14 @@ interface BlockStoreState {
     removeYPosition: (blockY: number) => void;
 
     zoom: number;
-    checkZoom: () => void;
+    checkZoom: (canvasHeight: number) => void;
     setZoom: (zoom: number) => void;
-
-    dimensions: { width: number; height: number };
-    setDimensions: (width: number, height: number) => void;
-
-    isPlaying: boolean;
-    setIsPlaying: (isPlaying: boolean) => void;
 
     bps: number;
     setBps: (bps: number) => void;
 }
 
-export const useBlockStore = create<BlockStoreState>(set => ({
+export const useTangleStore = create<TangleState>(set => ({
     blockQueue: [],
     scaleQueue: [],
     edgeQueue: [],
@@ -69,8 +63,6 @@ export const useBlockStore = create<BlockStoreState>(set => ({
     indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
-    dimensions: { width: 0, height: 0 },
-    isPlaying: false,
     bps: 0,
     addToBlockQueue: newBlockData => {
         set(state => ({
@@ -181,10 +173,10 @@ export const useBlockStore = create<BlockStoreState>(set => ({
             };
         });
     },
-    checkZoom: () => {
+    checkZoom: (canvasHeight: number) => {
         set(state => {
             const yPositions = Object.keys(state.yPositions).map(Number);
-            const multiplier = getScaleMultiplier(yPositions, state.dimensions.height);
+            const multiplier = getScaleMultiplier(yPositions, canvasHeight);
 
             return {
                 ...state,
@@ -196,19 +188,6 @@ export const useBlockStore = create<BlockStoreState>(set => ({
         set(state => ({
             ...state,
             zoom
-        }));
-    },
-    setDimensions: (width, height) => {
-        set(state => ({
-            ...state,
-            dimensions: { width, height }
-        })
-        );
-    },
-    setIsPlaying: isPlaying => {
-        set(state => ({
-            ...state,
-            isPlaying
         }));
     },
     setBps: bps => {

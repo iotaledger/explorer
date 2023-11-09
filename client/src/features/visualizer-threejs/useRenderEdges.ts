@@ -6,7 +6,7 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Color } from "three";
-import { useBlockStore } from "./store";
+import { useTangleStore } from "./store";
 
 const EDGE_MATERIAL = new THREE.LineBasicMaterial({ color: new Color("#d8dbdf"), transparent: true });
 
@@ -14,11 +14,11 @@ export const useRenderEdges = (edgeRenderingEnabled: boolean) => {
     const edgesMeshRef = useRef(new THREE.BufferGeometry());
     const scene = useThree(state => state.scene);
 
-    const edgeQueue = useBlockStore(s => s.edgeQueue);
-    const removeFromEdgeQueue = useBlockStore(s => s.removeFromEdgeQueue);
+    const edgeQueue = useTangleStore(s => s.edgeQueue);
+    const removeFromEdgeQueue = useTangleStore(s => s.removeFromEdgeQueue);
 
-    const blockIdToEdges = useBlockStore(s => s.blockIdToEdges);
-    const blockIdToPosition = useBlockStore(s => s.blockIdToPosition);
+    const blockIdToEdges = useTangleStore(s => s.blockIdToEdges);
+    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
 
     const [linePoints, setLinePoints] = useState<number[]>([]);
     const indices = useRef<number[]>([]);
