@@ -44,7 +44,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     // Note: to prevent rerender each store update - call methods separate.
     const isEdgeRenderingEnabled = useConfigStore(s => s.isEdgeRenderingEnabled);
     const setEdgeRenderingEnabled = useConfigStore(s => s.setEdgeRenderingEnabled);
-    const canvasHeight = useConfigStore(s => s.dimensions.height);
     const setDimensions = useConfigStore(s => s.setDimensions);
     const isPlaying = useConfigStore(s => s.isPlaying);
     const setIsPlaying = useConfigStore(s => s.setIsPlaying);
@@ -52,7 +51,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToScaleQueue = useTangleStore(s => s.addToScaleQueue);
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
-    const checkZoom = useTangleStore(s => s.checkZoom);
     const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
 
@@ -157,7 +155,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
-            checkZoom(canvasHeight);
         }
     };
 

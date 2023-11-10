@@ -1,7 +1,6 @@
 import { Color } from "three";
 import { create } from "zustand";
 import { ZOOM_DEFAULT } from "../constants";
-import { getScaleMultiplier } from "../utils";
 
 interface BlockState {
     id: string;
@@ -46,7 +45,6 @@ interface TangleState {
     removeYPosition: (blockY: number) => void;
 
     zoom: number;
-    checkZoom: (canvasHeight: number) => void;
     setZoom: (zoom: number) => void;
 
     bps: number;
@@ -170,17 +168,6 @@ export const useTangleStore = create<TangleState>(set => ({
             return {
                 ...state,
                 yPositions: nextYPositions
-            };
-        });
-    },
-    checkZoom: (canvasHeight: number) => {
-        set(state => {
-            const yPositions = Object.keys(state.yPositions).map(Number);
-            const multiplier = getScaleMultiplier(yPositions, canvasHeight);
-
-            return {
-                ...state,
-                zoom: multiplier
             };
         });
     },
