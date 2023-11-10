@@ -32,10 +32,6 @@ const Emitter: React.FC<EmitterProps> = ({
     }, [emitterRef]);
 
     useFrame(() => {
-        if (!isPlaying) {
-            return;
-        }
-
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
