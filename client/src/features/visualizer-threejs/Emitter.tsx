@@ -3,7 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import React, { RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
 import { useBorderPositions } from "./hooks/useBorderPositions";
-import { useConfigStore } from "./store";
+import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
 
 interface EmitterProps {
@@ -17,7 +17,13 @@ const Emitter: React.FC<EmitterProps> = ({
 }: EmitterProps) => {
     const isPlaying = useConfigStore(state => state.isPlaying);
     const get = useThree(state => state.get);
+    const currentZoom = useThree(state => state.camera.zoom);
+    const setZoom = useTangleStore(s => s.setZoom);
     const { halfScreenWidth } = useBorderPositions();
+
+    useEffect(() => {
+        setZoom(currentZoom);
+    }, [currentZoom]);
 
     useEffect(() => {
         if (emitterRef?.current) {
@@ -26,9 +32,6 @@ const Emitter: React.FC<EmitterProps> = ({
     }, [emitterRef]);
 
     useFrame(() => {
-        if (!isPlaying) {
-            return;
-        }
         const camera = get().camera;
         const emitterObj = get().scene.getObjectByName("emitter");
         if (camera && emitterObj) {
@@ -44,6 +47,7 @@ const Emitter: React.FC<EmitterProps> = ({
         if (!isPlaying) {
             return;
         }
+
         if (emitterRef?.current) {
             const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
             emitterRef.current.position.x += delta * DELTA_MULTIPLIER;

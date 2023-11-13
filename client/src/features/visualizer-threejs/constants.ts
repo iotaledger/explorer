@@ -12,7 +12,7 @@ export const NODE_SIZE_DEFAULT = 5;
 export const NODE_SIZE_INCREMENT = 3;
 
 // zoom
-export const ZOOM_DEFAULT = 3;
+export const ZOOM_DEFAULT = 2;
 
 // timers
 export const TIME_DIFF_COUNTER = 250;

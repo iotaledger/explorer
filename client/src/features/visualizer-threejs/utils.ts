@@ -1,4 +1,4 @@
-import { STEP_X_PX, STEP_Y_PX, ZOOM_DEFAULT, TIME_DIFF_COUNTER, SECOND } from "./constants";
+import { STEP_X_PX, STEP_Y_PX, TIME_DIFF_COUNTER, SECOND } from "./constants";
 
 /**
  * Generates a random number within a specified range.
@@ -167,16 +167,4 @@ export const wiggleEffect = (max: number) => {
         return randomNumberFromInterval(0 - max, max);
     }
     return 0;
-};
-
-export const getScaleMultiplier = (yCoordinates: number[], canvasHeight: number) => {
-    const MAGIC_MULTIPLIER = 1.5;
-    const PADDING_MULTIPLIER = 0.8;
-    const MIN_Y_COORDINATE = 60; // This value need to prevent dragging on init
-    const maxYCoordinate = Math.max(...yCoordinates);
-    const yCoordinate = maxYCoordinate > MIN_Y_COORDINATE ? maxYCoordinate : MIN_Y_COORDINATE;
-    const nodesHeight = yCoordinate * ZOOM_DEFAULT * MAGIC_MULTIPLIER;
-    const multiplier = canvasHeight / nodesHeight;
-
-    return multiplier * PADDING_MULTIPLIER;
 };

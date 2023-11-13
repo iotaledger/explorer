@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
-import { useZoomDynamic } from "./hooks/useZoomDynamic";
 import { useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
 
@@ -28,7 +27,6 @@ export const useRenderTangle = () => {
 
     useRenderEdges();
     useMouseMove({ tangleMeshRef });
-    useZoomDynamic();
 
     const st = useThree(state => state);
 
