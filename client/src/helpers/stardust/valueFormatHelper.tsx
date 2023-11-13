@@ -7,19 +7,22 @@ import Tooltip from "../../app/components/Tooltip";
  */
 const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
+
 /**
  * Format amount using passed base token info.
  * @param value The raw amount to format.
  * @param tokenInfo The token info configuration to use.
  * @param formatFull The should format the value to base unit flag.
  * @param decimalPlaces The decimal places to show.
+ * @param roundFuncName
  * @returns The formatted string.
  */
 export function formatAmount(
     value: number,
     tokenInfo: INodeInfoBaseToken,
     formatFull: boolean = false,
-    decimalPlaces: number = 2
+    decimalPlaces: number = 2,
+    roundFuncName: RoundFuncName = "floor"
 ): string {
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
@@ -27,12 +30,17 @@ export function formatAmount(
 
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
     // useMetricPrefix is broken cause it passes a float value to formatBest
+    const roundFuncMap: {[name in RoundFuncName]: RoundFunc} = {
+        floor: toFixedNoRound,
+        round: toFixedWithRound
+    };
     const amount = tokenInfo.useMetricPrefix
         ? UnitsHelper.formatBest(baseTokenValue)
-        : `${toFixedNoRound(baseTokenValue, decimalPlaces)} `;
-
+        : `${roundFuncMap[roundFuncName](baseTokenValue, decimalPlaces)} `;
         return `${amount}${tokenInfo.unit}`;
 }
+type RoundFuncName = "floor" | "round";
+type RoundFunc = (value: number, precision?: number) => number;
 
 /**
  * Formats a number by adding commas as thousands separators.
@@ -54,6 +62,15 @@ export function formatNumberWithCommas(
 function toFixedNoRound(value: number, precision: number = 2) {
     const factor = Math.pow(10, precision);
     return Math.floor(value * factor) / factor;
+}
+/**
+ *
+ * @param value
+ * @param precision
+ */
+function toFixedWithRound(value: number, precision: number = 2) {
+    const factor = Math.pow(10, precision);
+    return Math.round(value * factor) / factor;
 }
 
 /**
