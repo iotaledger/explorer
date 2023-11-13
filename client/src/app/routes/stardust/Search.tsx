@@ -4,6 +4,7 @@ import { Redirect, RouteComponentProps } from "react-router-dom";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { scrollToTop } from "../../../helpers/pageUtils";
 import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
+import { HexHelper } from "../../../helpers/stardust/hexHelper";
 import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
 import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
@@ -224,7 +225,18 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 query
                             });
 
-                            if (response && Object.keys(response).length > 0) {
+                            const isSearchResponseValid = response && Object.keys(response).length > 0;
+
+                            let foundryResponse;
+                            if (!isSearchResponseValid) {
+                                const foundryQuery = HexHelper.addPrefix(query);
+                                foundryResponse = await this._apiClient.foundryDetails({
+                                    network: this.props.match.params.network,
+                                    foundryId: foundryQuery
+                                });
+                            }
+
+                            if (isSearchResponseValid || foundryResponse?.foundryDetails) {
                                 let route = "";
                                 let routeParam = query;
                                 let redirectState = {};
@@ -263,6 +275,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.foundryId) {
                                     route = "foundry";
                                     routeParam = response.foundryId;
+                                } else if (foundryResponse?.foundryDetails) {
+                                    route = "foundry";
+                                    routeParam = query;
                                 } else if (response.nftId) {
                                     route = "addr";
                                     const nftAddress = this.buildAddressFromIdAndType(
