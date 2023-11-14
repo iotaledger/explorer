@@ -198,13 +198,13 @@ export class SearchExecutor {
         if (searchQuery.foundryId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(
                         searchQuery.foundryId,
-                        "foundry",
+                        "foundryOutputId",
                         network
                     ).then(
                         foundryOutputs => {
-                            if (foundryOutputs.items.length > 0) {
+                            if (foundryOutputs.length > 0) {
                                 promisesResult = {
                                     foundryId: searchQuery.foundryId
                                 };

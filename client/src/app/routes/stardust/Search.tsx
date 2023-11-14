@@ -225,18 +225,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 query
                             });
 
-                            const isSearchResponseValid = response && Object.keys(response).length > 0;
-
-                            let foundryResponse;
-                            if (!isSearchResponseValid) {
-                                const foundryQuery = HexHelper.addPrefix(query);
-                                foundryResponse = await this._apiClient.foundryDetails({
-                                    network: this.props.match.params.network,
-                                    foundryId: foundryQuery
-                                });
-                            }
-
-                            if (isSearchResponseValid || foundryResponse?.foundryDetails) {
+                            if (response && Object.keys(response).length > 0) {
                                 let route = "";
                                 let routeParam = query;
                                 let redirectState = {};
@@ -275,9 +264,6 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.foundryId) {
                                     route = "foundry";
                                     routeParam = response.foundryId;
-                                } else if (foundryResponse?.foundryDetails) {
-                                    route = "foundry";
-                                    routeParam = query;
                                 } else if (response.nftId) {
                                     route = "addr";
                                     const nftAddress = this.buildAddressFromIdAndType(
