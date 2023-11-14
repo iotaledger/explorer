@@ -203,8 +203,8 @@ export class SearchExecutor {
                         "foundryOutputId",
                         network
                     ).then(
-                        foundryOutputs => {
-                            if (foundryOutputs.length > 0) {
+                        foundryOutput => {
+                            if (foundryOutput) {
                                 promisesResult = {
                                     foundryId: searchQuery.foundryId
                                 };
