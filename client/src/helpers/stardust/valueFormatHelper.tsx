@@ -26,11 +26,7 @@ export function formatAmount(
     }
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
 
-    const formattedAmount = baseTokenValue < 1
-        ? baseTokenValue
-            .toLocaleString("en-US", { minimumFractionDigits: 6, maximumFractionDigits: 6, useGrouping: false })
-            .replace(/\.?0+$/, "")
-        : toFixedNoRound(baseTokenValue, decimalPlaces);
+    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces);
 
     // useMetricPrefix is broken cause it passes a float value to formatBest
     const amount = tokenInfo.useMetricPrefix
@@ -57,28 +53,22 @@ export function formatNumberWithCommas(
  * @returns The formatted amount.
  */
 function toFixedNoRound(value: number, precision: number = 2): string {
-    const strValue = value.toString();
-    const dotIndex = strValue.indexOf(".");
+    const valueString = `${value}`;
+    const [before, after] = valueString.split(".");
 
-    if (dotIndex === -1) { // No decimal point
-        return `${strValue}`;
+    if (!after) { // no decimal places
+        return valueString;
     }
 
-    // Calculate how many zeros need to be added
-    const numbersBeforeComma = strValue.slice(0, dotIndex);
-    let numbersAfterComma = strValue.slice(dotIndex + 1);
-
-    if (precision < 1) {
-        return numbersBeforeComma;
+    if (!precision) { // no precision
+        return before;
     }
 
-    const neededZeros = precision > numbersAfterComma.length;
-    if (neededZeros) {
-        numbersAfterComma = numbersAfterComma.padEnd(precision, "0");
-    } else {
-        numbersAfterComma = numbersAfterComma.slice(0, precision);
+    if (!Number(after.slice(0, precision))) { // avoid 0.00 situation
+        return `${before}.${after}`;
     }
-    return `${numbersBeforeComma}.${numbersAfterComma}`;
+
+    return `${before}.${after.slice(0, precision)}`;
 }
 
 /**

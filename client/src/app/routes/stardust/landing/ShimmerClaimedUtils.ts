@@ -17,7 +17,6 @@ export const buildShimmerClaimedStats = (
     const decimals = bigInt < Math.pow(10, tokenInfo.decimals) ?
         3 :
         (bigInt < Math.pow(10, tokenInfo.decimals + 2) ? 2 : 0);
-    console.log('--- ShimmerClaimedUtils', decimals, claimedFinal);
 
     claimedFinal = formatAmount(Number(claimedFinal), tokenInfo, formatFull, decimals);
     claimedFinal = claimedFinal.replaceAll(COMMAS_REGEX, ",");
