@@ -127,7 +127,7 @@ export class SearchExecutor {
                 new Promise((resolve, reject) => {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, OutputResponse>(
                         searchQuery.output,
-                        "outputIds",
+                        "getOutput",
                         network
                     ).then(
                         output => {
