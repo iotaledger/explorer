@@ -1,4 +1,4 @@
-import { OutputResponse, IOutputsResponse } from "@iota/sdk";
+import { OutputResponse } from "@iota/sdk";
 import { SearchQuery } from "./searchQueryBuilder";
 import { StardustTangleHelper } from "./stardustTangleHelper";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
