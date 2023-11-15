@@ -127,7 +127,7 @@ export class SearchExecutor {
                 new Promise((resolve, reject) => {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, OutputResponse>(
                         searchQuery.output,
-                        "output",
+                        "outputIds",
                         network
                     ).then(
                         output => {
@@ -150,7 +150,7 @@ export class SearchExecutor {
                 new Promise((resolve, reject) => {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.aliasId,
-                        "alias",
+                        "aliasOutputIds",
                         network
                     ).then(
                         aliasOutputs => {
@@ -175,7 +175,7 @@ export class SearchExecutor {
                 new Promise((resolve, reject) => {
                     StardustTangleHelper.tryFetchNodeThenPermanode<string, IOutputsResponse>(
                         searchQuery.nftId,
-                        "nft",
+                        "nftOutputIds",
                         network
                     ).then(
                         nftOutputs => {
