@@ -1,5 +1,6 @@
 /* eslint-disable no-warning-comments */
 import {
+    __ClientMethods__,
     OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
     HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
 } from "@iota/sdk";
@@ -29,6 +30,9 @@ import { IParticipationEventStatus } from "../../models/api/stardust/participati
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { HexHelper } from "../hexHelper";
+
+type NameType<T> = T extends { name: infer U } ? U : never;
+type ExtractedMethodNames = NameType<__ClientMethods__>;
 
 /**
  * Helper functions for use with tangle.
@@ -598,7 +602,7 @@ export class StardustTangleHelper {
      */
     public static async tryFetchNodeThenPermanode<A, R>(
         args: A,
-        methodName: string,
+        methodName: ExtractedMethodNames,
         network: INetwork
     ): Promise<R> | null {
         const {
