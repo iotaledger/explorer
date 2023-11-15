@@ -7,40 +7,38 @@ import Tooltip from "../../app/components/Tooltip";
  */
 const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-
 /**
  * Format amount using passed base token info.
  * @param value The raw amount to format.
  * @param tokenInfo The token info configuration to use.
  * @param formatFull The should format the value to base unit flag.
  * @param decimalPlaces The decimal places to show.
- * @param roundFuncName
  * @returns The formatted string.
  */
 export function formatAmount(
     value: number,
     tokenInfo: INodeInfoBaseToken,
     formatFull: boolean = false,
-    decimalPlaces: number = 2,
-    roundFuncName: RoundFuncName = "floor"
+    decimalPlaces: number = 2
 ): string {
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
 
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
+
+    const formattedAmount = baseTokenValue < 1
+        ? Number(baseTokenValue)
+            .toLocaleString("en-US", { minimumFractionDigits: 6, maximumFractionDigits: 6, useGrouping: false })
+            .replace(/\.?0+$/, "")
+        : toFixedNoRound(baseTokenValue, decimalPlaces);
+
     // useMetricPrefix is broken cause it passes a float value to formatBest
-    const roundFuncMap: {[name in RoundFuncName]: RoundFunc} = {
-        floor: toFixedNoRound,
-        round: toFixedWithRound
-    };
     const amount = tokenInfo.useMetricPrefix
         ? UnitsHelper.formatBest(baseTokenValue)
-        : `${roundFuncMap[roundFuncName](baseTokenValue, decimalPlaces)} `;
-        return `${amount}${tokenInfo.unit}`;
+        : `${formattedAmount} `;
+    return `${amount}${tokenInfo.unit}`;
 }
-type RoundFuncName = "floor" | "round";
-type RoundFunc = (value: number, precision?: number) => number;
 
 /**
  * Formats a number by adding commas as thousands separators.
@@ -59,18 +57,20 @@ export function formatNumberWithCommas(
  * @param precision The decimal places to show.
  * @returns The formatted amount.
  */
-function toFixedNoRound(value: number, precision: number = 2) {
-    const factor = Math.pow(10, precision);
-    return Math.floor(value * factor) / factor;
-}
-/**
- *
- * @param value
- * @param precision
- */
-function toFixedWithRound(value: number, precision: number = 2) {
-    const factor = Math.pow(10, precision);
-    return Math.round(value * factor) / factor;
+function toFixedNoRound(value: number, precision: number = 2): string {
+    const strValue = value.toString();
+    const dotIndex = strValue.indexOf(".");
+
+    if (dotIndex === -1) { // No decimal point
+        return `${strValue}.${"0".repeat(precision)}`;
+    }
+
+    // Calculate how many zeros need to be added
+    const existingDecimals = strValue.length - dotIndex - 1;
+    const neededZeros = precision - existingDecimals;
+
+    const paddedValue = strValue + "0".repeat(neededZeros > 0 ? neededZeros : 0);
+    return paddedValue.slice(0, dotIndex + precision + 1);
 }
 
 /**

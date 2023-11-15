@@ -129,7 +129,7 @@ class Output extends Component<OutputProps, OutputState> {
                                 e.stopPropagation();
                             }}
                         >
-                            {formatAmount(amount, tokenInfo, !isFormattedBalance, 2, "round")}
+                            {formatAmount(amount, tokenInfo, !isFormattedBalance)}
                         </span>
                     </div>
                 )}
