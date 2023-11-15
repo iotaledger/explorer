@@ -24,4 +24,10 @@ describe("valueFormatHelper tests", () => {
     it("Max Number", () => {
         expect(formatAmount(1450896407249092, tokenInfo)).toBe("1450896407.24 IOTA");
     });
+    it("Without numbers after comma", () => {
+        expect(formatAmount(1450896407249092, tokenInfo, false, 0)).toBe("1450896407 IOTA");
+    });
+    it("Without Less zero", () => {
+        expect(formatAmount(9999, tokenInfo, false, 0)).toBe("0.009 IOTA");
+    });
 });

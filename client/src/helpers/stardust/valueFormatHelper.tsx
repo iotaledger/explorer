@@ -24,11 +24,10 @@ export function formatAmount(
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
-
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
 
     const formattedAmount = baseTokenValue < 1
-        ? Number(baseTokenValue)
+        ? baseTokenValue
             .toLocaleString("en-US", { minimumFractionDigits: 6, maximumFractionDigits: 6, useGrouping: false })
             .replace(/\.?0+$/, "")
         : toFixedNoRound(baseTokenValue, decimalPlaces);
@@ -62,15 +61,24 @@ function toFixedNoRound(value: number, precision: number = 2): string {
     const dotIndex = strValue.indexOf(".");
 
     if (dotIndex === -1) { // No decimal point
-        return `${strValue}.${"0".repeat(precision)}`;
+        return `${strValue}`;
     }
 
     // Calculate how many zeros need to be added
-    const existingDecimals = strValue.length - dotIndex - 1;
-    const neededZeros = precision - existingDecimals;
+    const numbersBeforeComma = strValue.slice(0, dotIndex);
+    let numbersAfterComma = strValue.slice(dotIndex + 1);
 
-    const paddedValue = strValue + "0".repeat(neededZeros > 0 ? neededZeros : 0);
-    return paddedValue.slice(0, dotIndex + precision + 1);
+    if (precision < 1) {
+        return numbersBeforeComma;
+    }
+
+    const neededZeros = precision > numbersAfterComma.length;
+    if (neededZeros) {
+        numbersAfterComma = numbersAfterComma.padEnd(precision, "0");
+    } else {
+        numbersAfterComma = numbersAfterComma.slice(0, precision);
+    }
+    return `${numbersBeforeComma}.${numbersAfterComma}`;
 }
 
 /**
