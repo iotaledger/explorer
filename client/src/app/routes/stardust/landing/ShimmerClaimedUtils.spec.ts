@@ -15,6 +15,7 @@ describe("build shimmer stats", () => {
         let [claimed, percent] = buildShimmerClaimedStats("1", "100", TOKEN_INFO);
         expect(claimed).toBe("1 glow");
         expect(percent).toBe("1%");
+
         [claimed, percent] = buildShimmerClaimedStats("5", "100", TOKEN_INFO);
         expect(claimed).toBe("5 glow");
         expect(percent).toBe("5%");
