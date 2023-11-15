@@ -55,7 +55,6 @@ export function formatNumberWithCommas(
 function toFixedNoRound(value: number, precision: number = 2): string {
     const valueString = `${value}`;
     const [before, after] = valueString.split(".");
-
     if (!after) { // no decimal places
         return valueString;
     }
@@ -64,11 +63,12 @@ function toFixedNoRound(value: number, precision: number = 2): string {
         return before;
     }
 
-    if (!Number(after.slice(0, precision))) { // avoid 0.00 situation
+    const afterSliced = after.slice(0, precision);
+    if (!Number(afterSliced)) { // avoid 0.00 situation
         return `${before}.${after}`;
     }
 
-    return `${before}.${after.slice(0, precision)}`;
+    return `${before}.${afterSliced}`;
 }
 
 /**
