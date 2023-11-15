@@ -618,7 +618,9 @@ export class StardustTangleHelper {
         } catch { }
 
         if (permaNodeEndpoint && isFallbackEnabled) {
-            const permanode = new Client({ nodes: [permaNodeEndpoint] });
+            // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
+            // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
+            const permanode = new Client({ nodes: [permaNodeEndpoint], ignoreNodeHealth: true });
 
             try {
                 // try fetch from permanode (chronicle)
