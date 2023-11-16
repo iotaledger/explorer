@@ -123,7 +123,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                         <hr className="sep" />
                         <div className="row foundation-data">
                             <div className="margin-t-m">
-                                <LogoFooter />
+                                <LogoFooter title={'IOTA Foundation'} />
                             </div>
                             <section className="line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}
