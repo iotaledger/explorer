@@ -10,6 +10,7 @@ import {
     TransactionPayload, TreasuryOutput, Unlock, UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
 } from "@iota/sdk-wasm/web";
 import bigInt from "big-integer";
+import { Converter } from "./convertUtils";
 import { HexHelper } from "./hexHelper";
 import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
 import { IInput } from "../../models/api/stardust/IInput";
@@ -187,34 +188,11 @@ export class TransactionsHelper {
         items.sort((a: any, b: any) => {
             const firstIndex: string = a.id ? a.id.slice(-4) : a.outputId.slice(-4);
             const secondIndex: string = b.id ? b.id.slice(-4) : b.outputId.slice(-4);
-            const firstFormattedIndex = this.convertToBigEndian(firstIndex);
-            const secondFormattedIndex = this.convertToBigEndian(secondIndex);
+            const firstFormattedIndex = Converter.convertToBigEndian(firstIndex);
+            const secondFormattedIndex = Converter.convertToBigEndian(secondIndex);
 
             return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
         });
-    }
-
-    /**
-     * Convert little endian to big endian.
-     * @param index Output index in little endian format.
-     * @returns Output index in big endian format.
-     */
-    public static convertToBigEndian(index: string) {
-        const bigEndian = [];
-        let hexLength = index.length;
-
-        if (hexLength % 2 !== 0) {
-            index = "0".concat(index);
-            hexLength = index.length;
-        }
-
-        while (hexLength >= 0) {
-            const slicedBits = index.slice(hexLength - 2, hexLength);
-            bigEndian.push(slicedBits);
-            hexLength -= 2;
-        }
-
-        return bigEndian.join("");
     }
 
     /**

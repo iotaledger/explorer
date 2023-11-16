@@ -2,6 +2,7 @@ import { UnitsHelper } from "@iota/iota.js";
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React from "react";
 import Tooltip from "../../app/components/Tooltip";
+
 /**
  * The id of the Genesis block.
  */
@@ -24,14 +25,12 @@ export function formatAmount(
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
-    const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
 
+    const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
     const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces);
 
     // useMetricPrefix is broken cause it passes a float value to formatBest
-    const amount = tokenInfo.useMetricPrefix
-        ? UnitsHelper.formatBest(baseTokenValue)
-        : `${formattedAmount} `;
+    const amount = tokenInfo.useMetricPrefix ? UnitsHelper.formatBest(baseTokenValue) : `${formattedAmount} `;
     return `${amount}${tokenInfo.unit}`;
 }
 
@@ -54,21 +53,23 @@ export function formatNumberWithCommas(
  */
 function toFixedNoRound(value: number, precision: number = 2): string {
     const valueString = `${value}`;
-    const [before, after] = valueString.split(".");
-    if (!after) { // no decimal places
+    const [integer, fraction] = valueString.split(".");
+    if (!fraction) {
         return valueString;
     }
 
-    if (!precision) { // no precision
-        return before;
+    if (!precision) {
+        return integer;
     }
 
-    const afterSliced = after.slice(0, precision);
-    if (!Number(afterSliced)) { // avoid 0.00 situation
-        return `${before}.${after}`;
+    const truncatedFraction = fraction.slice(0, precision);
+
+    // avoid 0.00 case
+    if (!Number(truncatedFraction)) {
+        return `${integer}.${fraction}`;
     }
 
-    return `${before}.${afterSliced}`;
+    return `${integer}.${truncatedFraction}`;
 }
 
 /**
