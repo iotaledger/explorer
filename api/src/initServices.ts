@@ -148,11 +148,12 @@ function initChrysalisServices(networkConfig: INetwork): void {
     );
     ServiceFactory.register(
         `items-${networkConfig.network}`,
-        () => new ChrysalisItemsService(networkConfig.network));
-
+        () => new ChrysalisItemsService(networkConfig.network)
+    );
     ServiceFactory.register(
         `stats-${networkConfig.network}`,
-        () => new ChrysalisStatsService(networkConfig));
+        () => new ChrysalisStatsService(networkConfig)
+    );
 }
 
 /**
