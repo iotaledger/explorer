@@ -105,6 +105,15 @@ export const useRenderTangle = () => {
             SPHERE_TEMP_OBJECT.scale.setScalar(1);
             SPHERE_TEMP_OBJECT.updateMatrix();
 
+            // Check if id exists in list;
+            const latestIndexToBlockId = useTangleStore.getState().indexToBlockId;
+            const prevBlockId = latestIndexToBlockId[objectIndexRef.current];
+            if (prevBlockId) {
+                const blockMetadata = useTangleStore.getState().blockMetadata;
+                blockMetadata.delete(prevBlockId);
+            }
+
+
             updateBlockIdToIndex(block.id, objectIndexRef.current);
 
             tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);

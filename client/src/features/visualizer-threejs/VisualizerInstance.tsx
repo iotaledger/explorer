@@ -52,6 +52,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
     const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
+    const blockMetadata = useTangleStore(s => s.blockMetadata);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
@@ -151,6 +152,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             });
 
             blockIdToPosition.set(blockData.blockId, position);
+            blockMetadata.set(blockData.blockId, blockData);
 
             addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);

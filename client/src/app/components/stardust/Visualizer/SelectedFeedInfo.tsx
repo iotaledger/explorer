@@ -15,18 +15,21 @@ import { TSelectFeedItem, TSelectNode } from "../../../types/visualizer.types";
 import BlockTangleState from "../block/BlockTangleState";
 
 import TruncatedId from "../TruncatedId";
+import { useTangleStore } from "../../../../features/visualizer-threejs/store";
 
 export const SelectedFeedInfo = ({
     network,
-    selectedFeedItem,
     selectNode,
     networkConfig
 }: {
     readonly networkConfig: INetwork;
     readonly network: string;
-    readonly selectedFeedItem: TSelectFeedItem;
     readonly selectNode: TSelectNode;
 }) => {
+    const clickedInstanceId = useTangleStore(state => state.clickedInstanceId);
+    const setClickedInstanceId = useTangleStore(state => state.setClickedInstanceId);
+    const blockMetadata = useTangleStore(state => state.blockMetadata);
+
     const { tokenInfo } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
@@ -36,6 +39,7 @@ export const SelectedFeedInfo = ({
         conflictReason ? CONFLICT_REASON_STRINGS[conflictReason] : undefined
     );
 
+    const selectedFeedItem = !!clickedInstanceId ? blockMetadata?.get(clickedInstanceId) : undefined;
     const properties = selectedFeedItem?.properties;
 
     if (!selectedFeedItem) {
@@ -45,7 +49,7 @@ export const SelectedFeedInfo = ({
     return (
         <div className="info-panel card padding-m">
             <div className="row middle spread">
-                <button type="button" className="icon-button" onClick={() => selectNode()}>
+                <button type="button" className="icon-button" onClick={() => setClickedInstanceId(null)}>
                     <CloseIcon />
                 </button>
             </div>
