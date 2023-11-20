@@ -137,6 +137,8 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
                 state.blockIdToEdges.delete(state.indexToBlockId[index]);
                 // Clean up old block position
                 state.blockIdToPosition.delete(state.indexToBlockId[index]);
+                // Clean up old block metadata
+                state.blockMetadata.delete(state.indexToBlockId[index]);
             }
 
             const nextIndexToBlockId = [...state.indexToBlockId];
