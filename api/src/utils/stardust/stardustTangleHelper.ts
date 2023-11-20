@@ -4,9 +4,6 @@ import {
     OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
     HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
 } from "@iota/sdk";
-import { SearchExecutor } from "./searchExecutor";
-import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
-import { addressBalance, blockIdFromMilestonePayload } from "./utils";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
@@ -30,6 +27,9 @@ import { IParticipationEventStatus } from "../../models/api/stardust/participati
 import { INetwork } from "../../models/db/INetwork";
 import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 import { HexHelper } from "../hexHelper";
+import { SearchExecutor } from "./searchExecutor";
+import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
+import { addressBalance, blockIdFromMilestonePayload } from "./utils";
 
 type NameType<T> = T extends { name: infer U } ? U : never;
 type ExtractedMethodNames = NameType<__ClientMethods__>;

@@ -1,5 +1,5 @@
-import * as identity from "@iota/identity-wasm/node";
 import * as identityLegacy from "@iota/identity-wasm-0.4/node";
+import * as identity from "@iota/identity-wasm/node";
 
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IIdentityDidHistoryRequest } from "../../../../models/api/chrysalis/identity/IIdentityDidHistoryRequest";
@@ -25,7 +25,7 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
 
     if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
-            error: `Network is not supported. IOTA Identity only supports 
+            error: `Network is not supported. IOTA Identity only supports
             chrysalis phase 2 networks, such as the IOTA main network.`
         };
     }

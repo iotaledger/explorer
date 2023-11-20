@@ -1,6 +1,6 @@
-import { InfluxDbClient } from "./influxDbClient";
 import { IMilestoneAnalyticStats } from "../../../models/api/stats/IMilestoneAnalyticStats";
 import { ITimedEntry } from "../../../models/influx/IInfluxTimedEntries";
+import { InfluxDbClient } from "./influxDbClient";
 
 /**
  * Wrapper class around a InfluxDb client to access the cache data.

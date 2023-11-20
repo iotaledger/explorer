@@ -1,6 +1,6 @@
-import { ZmqService } from "./zmqService";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IFeedService } from "../../models/services/IFeedService";
+import { ZmqService } from "./zmqService";
 
 /**
  * Class to handle legacy Protocol Feed service.

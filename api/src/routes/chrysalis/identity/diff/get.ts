@@ -1,7 +1,5 @@
-import * as identity from "@iota/identity-wasm/node";
 import * as identityLegacy from "@iota/identity-wasm-0.4/node";
-import { IIdentityDiffHistoryRequest } from ".././../../../models/api/chrysalis/identity/IIdentityDiffHistoryRequest";
-import { IIdentityDiffHistoryResponse } from ".././../../../models/api/chrysalis/identity/IIdentityDiffHistoryResponse";
+import * as identity from "@iota/identity-wasm/node";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IIdentityDiffHistoryBody } from "../../../../models/api/chrysalis/identity/IIdentityDiffHistoryBody";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
@@ -9,6 +7,8 @@ import { CHRYSALIS } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { IdentityHelper } from "../../../../utils/chrysalis/identityHelper";
 import { ValidationHelper } from "../../../../utils/validationHelper";
+import { IIdentityDiffHistoryRequest } from ".././../../../models/api/chrysalis/identity/IIdentityDiffHistoryRequest";
+import { IIdentityDiffHistoryResponse } from ".././../../../models/api/chrysalis/identity/IIdentityDiffHistoryResponse";
 
 /**
  * @param config The configuration.

@@ -1,5 +1,5 @@
-import { ILatestDocument } from "./IIdentityLatestDocument";
 import { IResponse } from "../../IResponse";
+import { ILatestDocument } from "./IIdentityLatestDocument";
 
 export interface IIdentityDidResolveResponse extends IResponse{
 

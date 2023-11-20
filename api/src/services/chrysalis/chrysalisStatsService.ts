@@ -1,6 +1,6 @@
 import { SingleNodeClient } from "@iota/iota.js-chrysalis";
-import { BaseStatsService } from "./baseStatsService";
 import logger from "../../logger";
+import { BaseStatsService } from "./baseStatsService";
 
 /**
  * Class to handle stats service.

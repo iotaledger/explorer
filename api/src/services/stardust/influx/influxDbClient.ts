@@ -1,6 +1,20 @@
 import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";
+import logger from "../../../logger";
+import { INetwork } from "../../../models/db/INetwork";
+import { SHIMMER } from "../../../models/db/networkType";
+import {
+    DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache,
+    IInfluxMilestoneAnalyticsCache, initializeEmptyDailyCache
+} from "../../../models/influx/IInfluxDbCache";
+import {
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
+    IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
+    IStorageDepositDailyInflux, ITimedEntry, ITokensHeldPerOutputDailyInflux,
+    ITokensHeldWithUnlockConditionDailyInflux, ITokensTransferredDailyInflux, ITransactionsDailyInflux,
+    IUnclaimedGenesisOutputsDailyInflux, IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
+} from "../../../models/influx/IInfluxTimedEntries";
 import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY, ALIAS_ACTIVITY_DAILY_QUERY,
     TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY, BLOCK_DAILY_QUERY,
@@ -17,20 +31,6 @@ import {
     MILESTONE_STATS_QUERY,
     STORAGE_DEPOSIT_TOTAL_QUERY
 } from "./influxQueries";
-import logger from "../../../logger";
-import { INetwork } from "../../../models/db/INetwork";
-import { SHIMMER } from "../../../models/db/networkType";
-import {
-    DayKey, DAY_KEY_FORMAT, IInfluxAnalyticsCache, IInfluxDailyCache,
-    IInfluxMilestoneAnalyticsCache, initializeEmptyDailyCache
-} from "../../../models/influx/IInfluxDbCache";
-import {
-    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
-    IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
-    IStorageDepositDailyInflux, ITimedEntry, ITokensHeldPerOutputDailyInflux,
-    ITokensHeldWithUnlockConditionDailyInflux, ITokensTransferredDailyInflux, ITransactionsDailyInflux,
-    IUnclaimedGenesisOutputsDailyInflux, IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
-} from "../../../models/influx/IInfluxTimedEntries";
 
 /**
  * The collect graph data interval cron expression.

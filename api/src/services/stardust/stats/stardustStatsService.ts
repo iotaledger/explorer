@@ -1,7 +1,7 @@
 /* eslint-disable no-void */
 import { Client } from "@iota/sdk";
-import { BaseStatsService } from "./baseStatsService";
 import logger from "../../../logger";
+import { BaseStatsService } from "./baseStatsService";
 
 
 /**

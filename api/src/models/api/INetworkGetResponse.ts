@@ -1,7 +1,7 @@
-import { IResponse } from "./IResponse";
 import { NetworkType } from "../db/networkType";
 import { ProtocolVersion } from "../db/protocolVersion";
 import { Theme } from "../db/uiTheme";
+import { IResponse } from "./IResponse";
 
 export interface INetworkGetResponse extends IResponse {
     /**
