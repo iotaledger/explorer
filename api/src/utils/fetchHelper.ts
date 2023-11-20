@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-named-as-default
+import AbortController from "abort-controller";
 import fetch from "node-fetch";
 
 /**
@@ -37,7 +37,8 @@ export class FetchHelper {
                         controller.abort();
                     }
                 },
-                timeout);
+                timeout
+            );
         }
 
         try {
@@ -48,7 +49,8 @@ export class FetchHelper {
                     headers,
                     body: payload ? JSON.stringify(payload) : undefined,
                     signal: controller ? controller.signal : undefined
-                });
+                }
+            );
 
             const json = await res.json();
             return json as U;
