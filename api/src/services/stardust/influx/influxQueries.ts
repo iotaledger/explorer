@@ -6,6 +6,7 @@ export const BLOCK_DAILY_QUERY = {
             sum("tagged_data_count") AS "taggedData",
             sum("no_payload_count") AS "noPayload"
         FROM "stardust_block_activity"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -26,6 +27,7 @@ export const TRANSACTION_DAILY_QUERY = {
             sum("confirmed_count") AS "confirmed",
             sum("conflicting_count") AS "conflicting"
         FROM "stardust_block_activity"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -46,6 +48,7 @@ export const OUTPUTS_DAILY_QUERY = {
             last("foundry_count") AS "foundry",
             last("nft_count") AS "nft"
         FROM "stardust_ledger_outputs"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -68,6 +71,7 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
             last("foundry_amount") / 1000000 AS "foundy",
             last("nft_amount") / 1000000 AS "nft"
         FROM "stardust_ledger_outputs"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -87,6 +91,7 @@ export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
         SELECT
             last("address_with_balance_count") AS "addressesWithBalance"
         FROM "stardust_addresses"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -103,6 +108,7 @@ export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
         SELECT
             last("count") AS activeAddresses
         FROM "stardust_daily_active_addresses"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -119,6 +125,7 @@ export const TOKENS_TRANSFERRED_DAILY_QUERY = {
         SELECT
             sum("transferred_amount") / 1000000 AS "tokens"
         FROM "stardust_base_token_activity"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -138,6 +145,7 @@ export const ALIAS_ACTIVITY_DAILY_QUERY = {
             sum("alias_state_changed_count") AS "stateChanged",
             sum("alias_destroyed_count") AS "destroyed"
         FROM "stardust_output_activity"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -159,6 +167,7 @@ export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
             last("storage_deposit_return_count") AS "storageDepositReturn",
             last("expiration_count") AS "expiration"
         FROM "stardust_unlock_conditions"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -179,6 +188,7 @@ export const NFT_ACTIVITY_DAILY_QUERY = {
             sum("nft_transferred_count") AS "transferred",
             sum("nft_destroyed_count") AS "destroyed"
         FROM "stardust_output_activity"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -199,6 +209,7 @@ export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
             last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
             last("expiration_amount") / 1000000 AS "expiration"
         FROM "stardust_unlock_conditions"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -217,6 +228,7 @@ export const UNCLAIMED_TOKENS_DAILY_QUERY = {
         SELECT
             last("unclaimed_amount") / 1000000 AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -233,6 +245,7 @@ export const UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY = {
         SELECT
             last("unclaimed_count") AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -250,6 +263,7 @@ export const LEDGER_SIZE_DAILY_QUERY = {
             last("total_key_bytes") AS "keyBytes",
             last("total_data_bytes") AS "dataBytes"
         FROM "stardust_ledger_size"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
@@ -267,6 +281,7 @@ export const STORAGE_DEPOSIT_DAILY_QUERY = {
         SELECT
             last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
+        WHERE time < now() - 1d
         GROUP BY time(1d) fill(null)
     `,
     parameterized: `
