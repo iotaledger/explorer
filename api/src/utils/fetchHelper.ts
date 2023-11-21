@@ -1,5 +1,6 @@
 import AbortController from "abort-controller";
 import fetch from "node-fetch";
+import logger from "../logger";
 
 /**
  * Fetch from an endpoint.
@@ -25,6 +26,7 @@ export class FetchHelper {
     ): Promise<U> {
         headers = headers ?? {};
         headers["Content-Type"] = "application/json";
+        logger.verbose(`[fetchHelper] Request for json with path ${path}`);
 
         let controller: AbortController | undefined;
         let timerId: NodeJS.Timeout | undefined;
