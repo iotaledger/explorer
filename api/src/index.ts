@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import compression from "compression";
+import { randomUUID } from "crypto";
 import * as dotenv from "dotenv";
 dotenv.config();
 import express, { Application } from "express";
@@ -69,19 +70,25 @@ app.use((req, res, next) => {
         res,
         allowedDomains,
         allowedMethods,
-        allowedHeaders);
+        allowedHeaders
+    );
     next();
 });
 
 for (const route of routes) {
     app[route.method](route.path, async (req, res) => {
+        const uuid = randomUUID();
+        const start = Date.now();
+        logger.debug(`Executing route: '${route.path}' uuid: '${uuid}'`);
         await executeRoute(
             req,
             res,
             config,
             route,
             req.params,
-            config.verboseLogging);
+            config.verboseLogging
+        );
+        logger.debug(`Finished route uuid: '${uuid}' took: ${Date.now() - start}ms`);
     });
 }
 
