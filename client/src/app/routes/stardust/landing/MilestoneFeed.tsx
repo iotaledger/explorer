@@ -27,13 +27,16 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
     let highestIndex = 0;
     const milestonesToRender: IMilestoneFeedItem[] = [];
     for (const milestone of milestones) {
-        if (milestone.index > highestIndex) {
-            highestIndex = milestone.index;
-        }
+        if (!milestonesToRender.some(ms => ms.index === milestone.index)) {
+            if (milestone.index > highestIndex) {
+                highestIndex = milestone.index;
+            }
 
-        milestonesToRender.push(milestone);
-        if (milestonesToRender.length === FEED_ITEMS_MAX) {
-            break;
+            milestonesToRender.push(milestone);
+
+            if (milestonesToRender.length === FEED_ITEMS_MAX) {
+                break;
+            }
         }
     }
 
