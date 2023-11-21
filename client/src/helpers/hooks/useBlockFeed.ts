@@ -31,7 +31,7 @@ export function useBlockFeed(network: string): [
     const fetchLatestCachedMilestones = useCallback(async () => {
         if (apiClient) {
             const latestMilestones: ILatestMilestonesReponse = await apiClient.latestMilestones(network);
-            if (isMounted) {
+            if (isMounted && latestMilestones.milestones.length > 0) {
                 setMilestones(
                     latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
                 );
