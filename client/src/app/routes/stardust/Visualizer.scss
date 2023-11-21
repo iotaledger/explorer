@@ -149,12 +149,11 @@
 
   .info-panel {
       background: var(--body-background);
-      position: relative;
       display: flex;
       position: absolute;
       z-index: 2;
-      top: 100px;
-      left: 20px;
+      top: 150px;
+      right: 20px;
       width: 320px;
       overflow: visible;
 

@@ -1,6 +1,8 @@
 import { Color } from "three";
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 import { ZOOM_DEFAULT } from "../constants";
+import {IFeedBlockData} from "../../../models/api/stardust/feed/IFeedBlockData";
 
 interface BlockState {
     id: string;
@@ -36,6 +38,7 @@ interface TangleState {
     blockIdToIndex: Map<string, number>;
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
+    blockMetadata: Map<string, IFeedBlockData>;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
@@ -49,19 +52,24 @@ interface TangleState {
 
     bps: number;
     setBps: (bps: number) => void;
+
+    clickedInstanceId: string | null;
+    setClickedInstanceId: (instanceId: string | null) => void;
 }
 
-export const useTangleStore = create<TangleState>(set => ({
+export const useTangleStore = create<TangleState>()(devtools(set => ({
     blockQueue: [],
     scaleQueue: [],
     edgeQueue: [],
     blockIdToEdges: new Map(),
     blockIdToIndex: new Map(),
     blockIdToPosition: new Map(),
+    blockMetadata: new Map(),
     indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     bps: 0,
+    clickedInstanceId: null,
     addToBlockQueue: newBlockData => {
         set(state => ({
             blockQueue: [...state.blockQueue, newBlockData]
@@ -129,6 +137,8 @@ export const useTangleStore = create<TangleState>(set => ({
                 state.blockIdToEdges.delete(state.indexToBlockId[index]);
                 // Clean up old block position
                 state.blockIdToPosition.delete(state.indexToBlockId[index]);
+                // Clean up old block metadata
+                state.blockMetadata.delete(state.indexToBlockId[index]);
             }
 
             const nextIndexToBlockId = [...state.indexToBlockId];
@@ -182,6 +192,12 @@ export const useTangleStore = create<TangleState>(set => ({
             ...state,
             bps
         }));
+    },
+    setClickedInstanceId: clickedInstanceId => {
+        set(state => ({
+            ...state,
+            clickedInstanceId
+        }));
     }
-}));
+})));
 

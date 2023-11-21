@@ -1,6 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import * as THREE from "three";
+import { useTangleStore } from "../store";
 
 export const useMouseMove = ({
     tangleMeshRef
@@ -9,7 +10,8 @@ export const useMouseMove = ({
 }) => {
     const { camera, raycaster, gl } = useThree();
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
-    const [clickedInstanceId, setClickedInstanceId] = useState<number | null>(null);
+    const setClickedInstanceId = useTangleStore(s => s.setClickedInstanceId);
+    const clickedInstanceId = useTangleStore(s => s.clickedInstanceId);
     const originalColorsRef = useRef<Map<number, THREE.Color>>(new Map());
 
 
@@ -66,7 +68,11 @@ export const useMouseMove = ({
             setHoveredInstanceId(newInstanceId);
         };
         const onClickCallback = (newInstanceId: number | null) => {
-            setClickedInstanceId(newInstanceId);
+            if (!newInstanceId) return;
+
+            const latestIndexToBlockId = useTangleStore.getState().indexToBlockId;
+            const blockId = latestIndexToBlockId[newInstanceId];
+            setClickedInstanceId(blockId);
         };
 
         window.addEventListener("pointermove", updateMouseMove(onHoverCallback), false);

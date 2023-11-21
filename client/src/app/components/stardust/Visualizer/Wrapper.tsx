@@ -79,7 +79,6 @@ export const Wrapper = ({
         <SelectedFeedInfo
             networkConfig={networkConfig}
             network={network}
-            selectedFeedItem={selectedFeedItem}
             selectNode={selectNode}
         />
         <KeyPanel />
