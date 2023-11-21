@@ -5,7 +5,7 @@ import { ReactComponent as DiscordIcon } from "../../../assets/discord.svg";
 import { ReactComponent as GithubIcon } from "../../../assets/github.svg";
 import { ReactComponent as InstagramIcon } from "../../../assets/instagram.svg";
 import { ReactComponent as LinkedinIcon } from "../../../assets/linkedin.svg";
-import logoFooter from "../../../assets/logo-footer.svg";
+import { ReactComponent as LogoFooter } from "../../../assets/logo-footer.svg";
 import { ReactComponent as RedditIcon } from "../../../assets/reddit.svg";
 import { ReactComponent as TwitterIcon } from "../../../assets/twitter.svg";
 import { ReactComponent as YoutubeIcon } from "../../../assets/youtube.svg";
@@ -123,7 +123,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                         <hr className="sep" />
                         <div className="row foundation-data">
                             <div className="margin-t-m">
-                                <img src={logoFooter} alt="IOTA" />
+                                <LogoFooter title={'IOTA Foundation'} />
                             </div>
                             <section className="line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}
