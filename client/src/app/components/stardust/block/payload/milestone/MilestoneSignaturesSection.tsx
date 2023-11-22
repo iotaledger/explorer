@@ -1,8 +1,8 @@
 import { Ed25519Signature } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useState } from "react";
-import { ReactComponent as DropdownIcon } from "../../../../../../assets/dropdown-arrow.svg";
-import { ReactComponent as KeyIcon } from "../../../../../../assets/key-icon.svg";
+import DropdownIcon from "../../../../../../assets/dropdown-arrow.svg?react";
+import KeyIcon from "../../../../../../assets/key-icon.svg?react";
 import "./MilestoneSignaturesSection.scss";
 
 interface MilestoneSignaturesProps {

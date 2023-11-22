@@ -10,7 +10,7 @@ import {
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import DropdownIcon from "./../../../assets/dropdown-arrow.svg?react";
 import Feature from "./Feature";
 import NativeToken from "./NativeToken";
 import { OutputProps } from "./OutputProps";

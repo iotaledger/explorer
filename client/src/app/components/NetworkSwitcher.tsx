@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
-import { ReactComponent as DevnetIcon } from "./../../assets/devnet.svg";
-import { ReactComponent as MainnetIcon } from "./../../assets/mainnet.svg";
+import DevnetIcon from "./../../assets/devnet.svg?react";
+import MainnetIcon from "./../../assets/mainnet.svg?react";
 import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 import { getNetworkOrder } from "../../helpers/networkHelper";
 import { MAINNET } from "../../models/config/networkType";

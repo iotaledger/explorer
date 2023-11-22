@@ -1,7 +1,7 @@
 import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useState } from "react";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import DropdownIcon from "./../../../assets/dropdown-arrow.svg?react";
 import TruncatedId from "./TruncatedId";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 

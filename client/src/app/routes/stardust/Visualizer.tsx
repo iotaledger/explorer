@@ -3,9 +3,9 @@ import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/sdk-wa
 import classNames from "classnames";
 import React, { useContext, useRef, useState } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import DropdownIcon from "./../../../assets/dropdown-arrow.svg?react";
 import mainHeader from "./../../../assets/modals/visualizer/main-header.json";
-import { ReactComponent as CloseIcon } from "../../../assets/close.svg";
+import CloseIcon from "../../../assets/close.svg?react";
 import { DateHelper } from "../../../helpers/dateHelper";
 import { useNetworkConfig } from "../../../helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "../../../helpers/hooks/useNetworkStats";

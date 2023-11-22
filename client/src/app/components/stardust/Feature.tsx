@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import Address from "./address/Address";
 import { FeatureProps } from "./FeatureProps";
-import { ReactComponent as DropdownIcon } from "../../../assets/dropdown-arrow.svg";
+import DropdownIcon from "../../../assets/dropdown-arrow.svg?react";
 import { NameHelper } from "../../../helpers/stardust/nameHelper";
 import DataToggle from "../DataToggle";
 

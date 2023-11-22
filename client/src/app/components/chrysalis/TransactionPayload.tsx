@@ -3,7 +3,7 @@ import { UnitsHelper } from "@iota/iota.js";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ReactComponent as DropdownIcon } from "./../../../assets/dropdown-arrow.svg";
+import DropdownIcon from "./../../../assets/dropdown-arrow.svg?react";
 import transactionPayloadMessage from "./../../../assets/modals/chrysalis/message/transaction-payload.json";
 import Bech32Address from "./Bech32Address";
 import "./TransactionPayload.scss";

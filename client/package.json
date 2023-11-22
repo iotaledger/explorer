@@ -9,10 +9,12 @@
     },
     "license": "Apache-2.0",
     "scripts": {
-        "start": "cross-env PORT=3000 craco start",
+        "postinstall": "copyfiles -u 5 ./node_modules/@iota/sdk-wasm/web/wasm/iota_sdk_wasm_bg.wasm ./public",
+        "start": "vite",
+        "serve": "vite preview",
         "lint": "eslint src --ext .tsx,.ts",
         "sass-lint": "stylelint ./src/**/*.scss",
-        "build-internal": "craco build",
+        "build-internal": "vite build",
         "build": "run-s lint sass-lint build-internal",
         "test": "craco test"
     },
@@ -58,9 +60,7 @@
     "devDependencies": {
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@babel/plugin-transform-typescript": "^7.18.12",
-        "@craco/craco": "^7.0.0-alpha.7",
         "@ruffy/ts-optional": "^1.1.1",
-        "@svgr/webpack": "^6.3.1",
         "@types/bluebird": "^3.5.36",
         "@types/classnames": "^2.3.1",
         "@types/d3-array": "^3.0.3",
@@ -82,9 +82,11 @@
         "@types/react-router-dom": "^5.3.3",
         "@typescript-eslint/eslint-plugin": "^5.36.0",
         "@typescript-eslint/parser": "^5.36.0",
+        "@vitejs/plugin-react": "^4.2.0",
         "buffer": "^6.0.3",
         "class-transformer": "^0.5.1",
         "copy-webpack-plugin": "^11.0.0",
+        "copyfiles": "^2.4.1",
         "cross-env": "^7.0.3",
         "crypto-browserify": "^3.12.0",
         "eslint": "^8.1.0",
@@ -103,10 +105,9 @@
         "stylelint-config-sass-guidelines": "^9.0.1",
         "stylelint-config-standard-scss": "^5.0.0",
         "typescript": "^4.4.3",
-        "util": "^0.12.4"
-    },
-    "overrides": {
-        "@svgr/webpack": "$@svgr/webpack"
+        "util": "^0.12.4",
+        "vite": "^4.5.0",
+        "vite-plugin-svgr": "^4.2.0"
     },
     "engines": {
         "node": ">=16 <=16.20.2"

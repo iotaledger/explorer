@@ -3,7 +3,7 @@ import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
-import { ReactComponent as DropdownIcon } from "../../../../../../assets/dropdown-arrow.svg";
+import DropdownIcon from "../../../../../../assets/dropdown-arrow.svg?react";
 import { DateHelper } from "../../../../../../helpers/dateHelper";
 import { useOutputsDetails } from "../../../../../../helpers/hooks/useOutputsDetails";
 import { formatAmount } from "../../../../../../helpers/stardust/valueFormatHelper";
