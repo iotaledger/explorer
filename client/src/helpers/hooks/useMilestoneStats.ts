@@ -16,36 +16,31 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
         IMilestoneAnalyticStats | null,
         boolean
     ] {
-    const [milestoneStatsEnabled] = useState(false);
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (milestoneStatsEnabled) {
-            setIsLoading(true);
-            if (milestoneIndex) {
-                // eslint-disable-next-line no-void
-                void (async () => {
-                    apiClient.milestoneStats({
-                        network,
-                        milestoneIndex
-                    }).then(response => {
-                        if (isMounted) {
-                            setMilestoneStats(response ?? null);
-                        }
-                    }).finally(() => {
-                        setIsLoading(false);
-                    });
-                })();
-            } else {
-                setIsLoading(false);
-            }
+        setIsLoading(true);
+        if (milestoneIndex) {
+            // eslint-disable-next-line no-void
+            void (async () => {
+                apiClient.milestoneStats({
+                    network,
+                    milestoneIndex
+                }).then(response => {
+                    if (isMounted) {
+                        setMilestoneStats(response ?? null);
+                    }
+                }).finally(() => {
+                    setIsLoading(false);
+                });
+            })();
         } else {
             setIsLoading(false);
         }
-    }, [network, milestoneIndex, milestoneStatsEnabled]);
+    }, [network, milestoneIndex]);
 
     return [milestoneStats, isLoading];
 }
