@@ -78,9 +78,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                             <div className="card--value card--value__mono">
                                 <Bech32Address
                                     addressDetails={
-                                        {
-                                            bech32: 'asfasfd'
-                                        }
+                                        Bech32AddressHelper.buildAddress(bech32Hrp, f.address)
                                     }
                                     advancedMode={this.props.advancedMode}
                                     history={this.props.history}

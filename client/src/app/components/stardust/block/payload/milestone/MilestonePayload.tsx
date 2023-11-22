@@ -36,38 +36,6 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
         }: IMilestonePayload = milestonePayload;
 
         let receiptMilestoneOption: ReceiptMilestoneOption | null = null;
-        let reciptMilestoneMock: ReceiptMilestoneOption = {
-            migratedAt: 3851053,
-            final: true,
-            type: 1,
-            getType: () => 1,
-            funds: [
-                {
-                    "tailTransactionHash": "0x79d9a48b360ebdf45d13294cdaf4b1d08b4261cb26459e3314f58789b6f5d6c1ed94fc4a614a4aa2feee665d9d0f000000",
-                    "address": {
-                        "type": 0,
-                        getType: () => 0
-                    },
-                    "deposit": '9000000000'
-                }
-            ],
-            transaction: {
-                type: 1,
-                getType: () => 1,
-                input: {
-                    milestoneId: '',
-                    type: 1,
-                    getType: () => 1,
-                },
-                output: {
-                    amount: '34234',
-                    getAmount: () => BigInt(34234),
-                    type: 1,
-                    getType: () => 1,
-                }
-
-            }
-        };
         let protocolParamsMilestoneOption: ProtocolParamsMilestoneOption | null = null;
 
         if (options?.some((option => option.type === MilestoneOptionType.Receipt))) {
@@ -147,12 +115,12 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
                             </div>
                         </React.Fragment>
                     )}
-                    {true && (
+                    {receiptMilestoneOption && (
                         <div className="section">
                             <ReceiptPayload
                                 network={network}
                                 history={history}
-                                payload={reciptMilestoneMock}
+                                payload={receiptMilestoneOption}
                                 advancedMode={true}
                             />
                         </div>
