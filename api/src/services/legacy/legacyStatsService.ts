@@ -1,8 +1,8 @@
+import { LegacyItemsService } from "./legacyItemsService";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { INetwork } from "../../models/db/INetwork";
 import { BaseStatsService } from "../legacy/baseStatsService";
-import { LegacyItemsService } from "./legacyItemsService";
 
 /**
  * Class to handle stats service.

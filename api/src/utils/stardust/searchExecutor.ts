@@ -1,8 +1,8 @@
 import { OutputResponse } from "@iota/sdk";
-import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
-import { INetwork } from "../../models/db/INetwork";
 import { SearchQuery } from "./searchQueryBuilder";
 import { StardustTangleHelper } from "./stardustTangleHelper";
+import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
+import { INetwork } from "../../models/db/INetwork";
 
 /**
  * Performs the search from a SearchQuery object on a Stardust network.

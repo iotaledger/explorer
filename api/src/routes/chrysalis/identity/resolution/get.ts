@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 import * as identity from "@iota/identity-wasm/node";
+import * as identityLegacy from "@iota/identity-wasm-0.4/node";
 
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IIdentityDidResolveRequest } from "../../../../models/api/chrysalis/identity/IIdentityDidResolveRequest";

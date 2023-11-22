@@ -1,6 +1,6 @@
-import { IResponse } from "../IResponse";
 import { ITransactionsCursor } from "./ITransactionsCursor";
 import { TransactionsGetMode } from "./transactionsGetMode";
+import { IResponse } from "../IResponse";
 
 export interface ITransactionsGetResponse extends IResponse {
     /**
