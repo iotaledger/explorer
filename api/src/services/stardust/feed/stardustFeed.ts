@@ -71,7 +71,7 @@ export class StardustFeed {
         this.milestoneSubscribers = {};
         this.blockMetadataCache = new Map();
         this.network = networkId;
-        this._mqttClient = ServiceFactory.get<Client>(`mqtt-${networkId}`);
+        this._mqttClient = ServiceFactory.get<Client>(`client-${networkId}`);
         const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
         if (this._mqttClient && nodeInfoService) {

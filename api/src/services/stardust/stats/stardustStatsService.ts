@@ -1,5 +1,6 @@
 /* eslint-disable no-void */
 import { Client } from "@iota/sdk";
+import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { BaseStatsService } from "./baseStatsService";
 
@@ -13,7 +14,7 @@ export class StardustStatsService extends BaseStatsService {
      */
     protected async updateStatistics(): Promise<void> {
         try {
-            const client = new Client({ nodes: [this._networkConfiguration.provider] });
+            const client = ServiceFactory.get<Client>(`client-${this._networkConfiguration.network}`);
             const response = await client.getInfo();
 
             if (response) {

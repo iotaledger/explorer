@@ -1,5 +1,6 @@
 import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk";
 import { NodeInfoError } from "../../errors/nodeInfoError";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetwork } from "../../models/db/INetwork";
 
 /**
@@ -41,28 +42,32 @@ export class NodeInfoService {
     /**
      * Create a new instance of NodeInfoService.
      * @param network The network config.
+     * @param nodeInfo The fetched node info
      */
-    constructor(network: INetwork) {
+    private constructor(network: INetwork, nodeInfo: IReducedNodeInfo) {
         this._network = network;
-        this.init();
+        this._nodeInfo = nodeInfo;
     }
 
-    public getNodeInfo(): IReducedNodeInfo {
-        return this._nodeInfo;
-    }
+    public static async build(network: INetwork): Promise<NodeInfoService> {
+        const apiClient = ServiceFactory.get<Client>(`client-${network.network}`);
 
-    public init(): void {
-        const endpoint = this._network.provider;
-        const apiClient = new Client({ nodes: [endpoint] });
-        apiClient.getInfo().then(response => {
-            this._nodeInfo = {
+        try {
+            const response = await apiClient.getInfo();
+            const nodeInfo = {
                 baseToken: response.nodeInfo.baseToken,
                 protocolVersion: response.nodeInfo.protocol.version,
                 bech32Hrp: response.nodeInfo.protocol.bech32Hrp,
                 rentStructure: response.nodeInfo.protocol.rentStructure
             };
-        }).catch(err => {
-            throw new NodeInfoError(`Failed to fetch node info for "${this._network.network}" with error:\n${err}`);
-        });
+
+            return new NodeInfoService(network, nodeInfo);
+        } catch (err) {
+            throw new NodeInfoError(`Failed to fetch node info for "${network.network}" with error:\n${err}`);
+        }
+    }
+
+    public getNodeInfo(): IReducedNodeInfo {
+        return this._nodeInfo;
     }
 }

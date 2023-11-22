@@ -47,8 +47,8 @@ export class StardustTangleHelper {
     public static async addressDetails(
         network: INetwork, addressBech32: string
     ): Promise<IAddressDetailsWithBalance | undefined> {
-        const { bechHrp, provider } = network;
-        const node = new Client({ nodes: [provider] });
+        const { bechHrp } = network;
+        const client = ServiceFactory.get<Client>(`client-${network.network}`);
         const searchQuery: SearchQuery = new SearchQueryBuilder(addressBech32, bechHrp).build();
 
         if (!searchQuery.address) {
@@ -57,7 +57,7 @@ export class StardustTangleHelper {
 
         try {
             // Using ported balance from iota.js until it is added to iota-sdk https://github.com/iotaledger/iota-sdk/issues/604
-            const addressBalanceDetails = await addressBalance(node, searchQuery.address.bech32);
+            const addressBalanceDetails = await addressBalance(client, searchQuery.address.bech32);
 
             if (addressBalanceDetails) {
                 const addressDetails = {
@@ -605,26 +605,21 @@ export class StardustTangleHelper {
         methodName: ExtractedMethodNames,
         network: INetwork
     ): Promise<R> | null {
-        const {
-            provider, permaNodeEndpoint, disableApiFallback
-        } = network;
+        const { permaNodeEndpoint, disableApiFallback } = network;
         const isFallbackEnabled = !disableApiFallback;
-        const node = new Client({ nodes: [provider] });
+        const client = ServiceFactory.get<Client>(`client-${network.network}`);
 
         try {
             // try fetch from node
-            const result: Promise<R> = node[methodName](args);
+            const result: Promise<R> = client[methodName](args);
             return await result;
         } catch { }
 
         if (permaNodeEndpoint && isFallbackEnabled) {
-            // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
-            // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
-            const permanode = new Client({ nodes: [permaNodeEndpoint], ignoreNodeHealth: true });
-
+            const permanodeClient = ServiceFactory.get<Client>(`permanode-client-${network.network}`);
             try {
                 // try fetch from permanode (chronicle)
-                const result: Promise<R> = permanode[methodName](args);
+                const result: Promise<R> = permanodeClient[methodName](args);
                 return await result;
             } catch { }
         }
@@ -650,9 +645,7 @@ export class StardustTangleHelper {
         queryParams?: string[],
         request?: string
     ): Promise<S> | null {
-        const { provider } = network;
-
-        const client = new Client({ nodes: [provider] });
+        const client = ServiceFactory.get<Client>(`client-${network.network}`);
 
         try {
             const response: S = await client.callPluginRoute(
