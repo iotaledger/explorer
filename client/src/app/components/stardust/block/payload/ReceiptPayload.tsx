@@ -44,7 +44,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         return (
-            <div className="indexation-payload">
+            <div className="indexation-payload card">
                 <div className="card--header">
                     <h2>Receipt Payload</h2>
                 </div>
@@ -78,7 +78,9 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
                             <div className="card--value card--value__mono">
                                 <Bech32Address
                                     addressDetails={
-                                        Bech32AddressHelper.buildAddress(bech32Hrp, f.address)
+                                        {
+                                            bech32: 'asfasfd'
+                                        }
                                     }
                                     advancedMode={this.props.advancedMode}
                                     history={this.props.history}
