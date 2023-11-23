@@ -68,4 +68,4 @@ jobs:
     - name: Deploy to Server
       if: ${{ github.event.inputs.deployment }}
       run: |
-            ssh -o StrictHostKeyChecking=no updater@gateway.h.explorer-mainnet.iota.org "${{ env.DEPLOY_ENV }} ${{ env.VERSION }}"
+            ssh -o StrictHostKeyChecking=no updater@{{ secrets.EXPLORER_GATEWAY }} "${{ env.DEPLOY_ENV }} ${{ env.VERSION }}"
