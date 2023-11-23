@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { ViteAliases } from 'vite-aliases'
 import svgr from 'vite-plugin-svgr';
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig(() => {
     return {
@@ -20,6 +21,7 @@ export default defineConfig(() => {
             svgr({
                 include: "**/*.svg?react"
             }),
+            nodePolyfills()
         ],
     };
 });
