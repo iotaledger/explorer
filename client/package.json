@@ -12,7 +12,7 @@
     "scripts": {
         "postinstall": "copyfiles -u 5 ./node_modules/@iota/sdk-wasm/web/wasm/iota_sdk_wasm_bg.wasm ./public",
         "start": "vite",
-        "serve": "vite preview",
+        "preview": "vite preview",
         "lint": "eslint src --ext .tsx,.ts",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "vite build",
