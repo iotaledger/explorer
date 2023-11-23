@@ -38,7 +38,7 @@ jobs:
       run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
 
     - name: Set up Environment Variable
-      run: echo "DEPLOY_ENV=${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || github.ref == 'refs/heads/dev' && 'staging') }}" >> $GITHUB_ENV
+      run: echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
     - name: Build and push API Docker image
       uses: docker/build-push-action@v2
