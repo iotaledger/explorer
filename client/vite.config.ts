@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { ViteAliases } from 'vite-aliases'
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig(() => {
@@ -12,7 +13,7 @@ export default defineConfig(() => {
         },
         plugins: [
             react(),
-            // svgr options: https://react-svgr.com/docs/options/
+            ViteAliases(),
             svgr({
                 include: "**/*.svg?react"
             }),
