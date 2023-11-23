@@ -3,20 +3,21 @@ name: Deploy Workflow
 on:
   workflow_dispatch:
     inputs:
+      deployment:
+        type: boolean
+        description: 'Deploy after build?'
+        required: false
+        default: false
       environment:
         type: choice
         description: 'Select the environment to deploy to'
         options:
-          - prod
           - staging
-          - shimmer-prod
+          - prod
           - shimmer-staging
-        required: true
-      deployment:
-        type: boolean
-        description: 'Check to deploy to server'
+          - shimmer-prod
         required: false
-        default: false
+        default: staging
 
 jobs:
   build-and-deploy:
