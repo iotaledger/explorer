@@ -16,7 +16,7 @@
         "lint": "eslint src --ext .tsx,.ts",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "vite build",
-        "build": "run-s lint sass-lint build-internal",
+        "build": "run-s lint sass-lint build-internal"
     },
     "dependencies": {
         "@d3fc/d3fc-axis": "^3.0.6",
