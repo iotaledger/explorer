@@ -208,6 +208,7 @@ export abstract class InfluxDbClient {
      * Populates the dailyCache.
      */
     private async collectGraphsDaily() {
+        console.log('[InfluxDb] Collecting daily');
         logger.verbose(`[InfluxDb] Collecting daily stats for "${this._network.network}"`);
         this.updateCacheEntry<IBlocksDailyInflux>(
             BLOCK_DAILY_QUERY,
@@ -436,6 +437,8 @@ export abstract class InfluxDbClient {
             queryTemplate.parameterized :
             queryTemplate.full;
 
+        console.log('--- query', query);
+
         this.queryInflux<T>(query, fromNanoDate, this.getToNanoDate()).then(results => {
             for (const update of results) {
                 if (this.isAnyFieldNotNull<T>(update)) {
@@ -466,9 +469,14 @@ export abstract class InfluxDbClient {
      * @param to The ending Date to use in the query.
      */
     private async queryInflux<T>(query: string, from: INanoDate | null, to: INanoDate): Promise<IResults<T>> {
-        const params = from ?
-            { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } } :
-            undefined;
+        let params;
+
+        if (from) {
+            params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
+        }
+        if (to) {
+            params = { placeholders: { to: to.toNanoISOString() } };
+        }
         return this._client.query<T>(query, params);
     }
 
@@ -528,7 +536,7 @@ export abstract class InfluxDbClient {
      * @returns Current datetime as INanoDate.
      */
     private getToNanoDate(): INanoDate {
-        return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+        return toNanoDate((moment().startOf('day').valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
     /**
