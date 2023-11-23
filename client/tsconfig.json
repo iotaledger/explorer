@@ -15,7 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "/",
+    "baseUrl": "./",
     "paths": {
       "~app/*": [
         "src/app/*"

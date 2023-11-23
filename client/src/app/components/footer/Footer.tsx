@@ -9,7 +9,7 @@ import LogoFooter from "../../../assets/logo-footer.svg?react";
 import RedditIcon from "../../../assets/reddit.svg?react";
 import TwitterIcon from "../../../assets/twitter.svg?react";
 import YoutubeIcon from "../../../assets/youtube.svg?react";
-import { FoundationDataHelper } from "../../../helpers/foundationDataHelper";
+import { FoundationDataHelper } from "~helpers/foundationDataHelper";
 import AsyncComponent from "../AsyncComponent";
 import "./Footer.scss";
 
