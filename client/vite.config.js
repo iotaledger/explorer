@@ -13,7 +13,7 @@ export default defineConfig(() => {
         plugins: [
             react(),
             // svgr options: https://react-svgr.com/docs/options/
-            svgr({ svgrOptions: { icon: true } }),
+            svgr(),
         ],
     };
 });
