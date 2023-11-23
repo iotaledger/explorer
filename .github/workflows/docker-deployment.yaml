@@ -1,0 +1,71 @@
+name: Deploy Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment:
+        type: boolean
+        description: 'Deploy after build?'
+        required: false
+        default: false
+      environment:
+        type: choice
+        description: 'Select the environment to deploy to'
+        options:
+          - staging
+          - prod
+          - shimmer-staging
+          - shimmer-prod
+        required: false
+        default: staging
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.IOTALEDGER_DOCKER_USERNAME }}
+        password: ${{ secrets.IOTALEDGER_DOCKER_PASSWORD }}
+
+    - name: Get the version
+      id: get_version
+      run: echo "VERSION=$(git describe --tags)" >> $GITHUB_ENV
+
+    - name: Set up Environment Variable
+      run: echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+
+    - name: Build and push API Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ./api
+        file: ./api/Dockerfile
+        push: true
+        tags: iotaledger/explorer-api:${{ env.VERSION }}
+        no-cache: true
+
+    - name: Build and push Client Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: ./client
+        file: ./client/Dockerfile
+        push: true
+        tags: iotaledger/explorer-client:${{ env.VERSION }}
+        no-cache: true
+
+    - name: Add SSH key
+      uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key: ${{ secrets.UPDATER_SSH_PRIVATE_KEY }}
+
+    - name: Deploy to Server
+      if: ${{ github.event.inputs.deployment }}
+      run: |
+            ssh -o StrictHostKeyChecking=no updater@{{ secrets.EXPLORER_GATEWAY }} "${{ env.DEPLOY_ENV }} ${{ env.VERSION }}"
