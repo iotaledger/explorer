@@ -13,7 +13,9 @@ export default defineConfig(() => {
         plugins: [
             react(),
             // svgr options: https://react-svgr.com/docs/options/
-            svgr(),
+            svgr({
+                include: "**/*.svg?react"
+            }),
         ],
     };
 });

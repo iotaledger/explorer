@@ -508,7 +508,10 @@ module.exports = {
             "warn"
         ],
         "import/no-unresolved": [
-            "error"
+            "error",
+            {
+                "ignore": [ "\\.svg\\?react" ]
+            }
         ],
         "import/order": [
             "error",

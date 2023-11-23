@@ -14,13 +14,10 @@
     "jsx": "react-jsx",
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
-    "typeRoots": [
-      "./typings",
-      "./node_modules/@types"
-    ],
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src",
+    "vite-env.d.ts"
   ]
 }
