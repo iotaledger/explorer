@@ -17,7 +17,6 @@
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "vite build",
         "build": "run-s lint sass-lint build-internal",
-        "test": "craco test"
     },
     "dependencies": {
         "@d3fc/d3fc-axis": "^3.0.6",
