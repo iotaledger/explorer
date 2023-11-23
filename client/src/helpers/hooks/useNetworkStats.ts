@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
 /**
  * Periodicaly refresh network stats.

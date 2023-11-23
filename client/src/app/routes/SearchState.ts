@@ -1,4 +1,4 @@
-import { ProtocolVersion } from "../../models/config/protocolVersion";
+import { ProtocolVersion } from "~models/config/protocolVersion";
 
 export interface SearchState {
     /**

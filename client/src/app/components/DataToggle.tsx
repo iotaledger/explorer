@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import CopyButton from "./CopyButton";
 import { DataToggleProps } from "./DataToggleProps";
 import JsonViewer from "./JsonViewer";
-import { Converter } from "../../helpers/stardust/convertUtils";
-import { deserializeParticipationEventMetadata } from "../../helpers/stardust/participationUtils";
-import { ReadStream } from "../../helpers/stardust/readStreamUtils";
-import { TextHelper } from "../../helpers/textHelper";
+import { Converter } from "~helpers/stardust/convertUtils";
+import { deserializeParticipationEventMetadata } from "~helpers/stardust/participationUtils";
+import { ReadStream } from "~helpers/stardust/readStreamUtils";
+import { TextHelper } from "~helpers/textHelper";
 import "./DataToggle.scss";
 
 interface DataToggleOption {

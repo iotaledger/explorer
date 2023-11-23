@@ -6,9 +6,9 @@ import "./IdentityJsonCompare.scss";
 import { IdentityJsonCompareProps } from "./IdentityJsonCompareProps";
 import { IdentityJsonCompareState } from "./IdentityJsonCompareState";
 import IdentityMessageIdOverview from "./IdentityMsgIdOverview";
-import { DownloadHelper } from "../../../helpers/downloadHelper";
-import { IdentityHelper } from "../../../helpers/identityHelper";
-import { JsonSyntaxHelper } from "../../../helpers/jsonSyntaxHelper";
+import { DownloadHelper } from "~helpers/downloadHelper";
+import { IdentityHelper } from "~helpers/identityHelper";
+import { JsonSyntaxHelper } from "~helpers/jsonSyntaxHelper";
 
 class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJsonCompareState> {
     constructor(props: IdentityJsonCompareProps) {

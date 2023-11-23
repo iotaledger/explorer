@@ -1,4 +1,4 @@
-import { INetwork } from "../../models/config/INetwork";
+import { INetwork } from "~models/config/INetwork";
 
 /**
  * The props for the Header component.

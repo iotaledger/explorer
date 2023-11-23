@@ -6,8 +6,8 @@ import { timeDay, timeMonth, timeWeek, timeYear } from "d3-time";
 import { timeFormat } from "d3-time-format";
 import moment from "moment";
 import React, { useCallback, useEffect, useState } from "react";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
-import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
+import { IDistributionEntry } from "~models/api/stardust/chronicle/ITokenDistributionResponse";
 
 export const TRANSITIONS_DURATION_MS = 750;
 

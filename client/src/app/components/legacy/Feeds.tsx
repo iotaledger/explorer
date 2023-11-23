@@ -1,15 +1,15 @@
 import { RouteComponentProps } from "react-router-dom";
 import { FeedsState } from "./FeedsState";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { INetwork } from "../../../models/config/INetwork";
-import { CUSTOM, LEGACY_MAINNET } from "../../../models/config/networkType";
-import { LEGACY } from "../../../models/config/protocolVersion";
-import { IFeedItem } from "../../../models/feed/IFeedItem";
-import { IFeedItemMetadata } from "../../../models/feed/IFeedItemMetadata";
-import { LegacyApiClient } from "../../../services/legacy/legacyApiClient";
-import { LegacyFeedClient } from "../../../services/legacy/legacyFeedClient";
-import { NetworkService } from "../../../services/networkService";
-import { SettingsService } from "../../../services/settingsService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { INetwork } from "~models/config/INetwork";
+import { CUSTOM, LEGACY_MAINNET } from "~models/config/networkType";
+import { LEGACY } from "~models/config/protocolVersion";
+import { IFeedItem } from "~models/feed/IFeedItem";
+import { IFeedItemMetadata } from "~models/feed/IFeedItemMetadata";
+import { LegacyApiClient } from "~services/legacy/legacyApiClient";
+import { LegacyFeedClient } from "~services/legacy/legacyFeedClient";
+import { NetworkService } from "~services/networkService";
+import { SettingsService } from "~services/settingsService";
 import Currency from "../Currency";
 
 /**

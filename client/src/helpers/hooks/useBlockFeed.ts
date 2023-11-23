@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedMilestoneData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { ILatestMilestonesReponse } from "../../models/api/stardust/ILatestMilestonesReponse";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { IMilestoneFeedItem } from "../../models/IMilestoneFeedItem";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
-import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IFeedMilestoneData } from "~models/api/stardust/feed/IFeedBlockData";
+import { ILatestMilestonesReponse } from "~models/api/stardust/ILatestMilestonesReponse";
+import { STARDUST } from "~models/config/protocolVersion";
+import { IMilestoneFeedItem } from "~models/IMilestoneFeedItem";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
+import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
 
 const MAX_MILESTONE_ITEMS = 20;
 const FEED_PROBE_THRESHOLD: number = 10000;

@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import NetworkContext from "../../app/context/NetworkContext";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IAnalyticStats } from "../../models/api/stats/IAnalyticStats";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import NetworkContext from "~app/context/NetworkContext";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IAnalyticStats } from "~models/api/stats/IAnalyticStats";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData } from "../stardust/statisticsUtils";
 
 /**

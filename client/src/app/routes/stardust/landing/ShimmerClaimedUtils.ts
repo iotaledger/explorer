@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
-import BigDecimal from "../../../../helpers/bigDecimal";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import BigDecimal from "~helpers/bigDecimal";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 
 export const COMMAS_REGEX = /\B(?=(\d{3})+(?!\d))/g;
 

@@ -1,4 +1,4 @@
-import { IpfsClient } from "../../services/stardust/ipfsClient";
+import { IpfsClient } from "~services/stardust/ipfsClient";
 /**
  * The ipfs endpoint.
  */

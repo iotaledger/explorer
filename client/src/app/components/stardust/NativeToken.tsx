@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import DropdownIcon from "./../../../assets/dropdown-arrow.svg?react";
+import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { NativeTokenProps } from "./NativeTokenProps";
 import { NativeTokenState } from "./NativeTokenState";
 import AsyncComponent from "../AsyncComponent";

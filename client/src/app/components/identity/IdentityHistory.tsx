@@ -6,10 +6,10 @@ import { IdentityHistoryProps } from "./IdentityHistoryProps";
 import { IdentityHistoryState } from "./IdentityHistoryState";
 import IdentityJsonCompare from "./IdentityJsonCompare";
 import IdentityTree from "./tree/IdentityTree";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IIdentityMessageWrapper } from "../../../models/identity/IIdentityMessageWrapper";
-import { IdentityDiffStorageService } from "../../../services/identityDiffStorageService";
-import { IdentityService } from "../../../services/identityService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IIdentityMessageWrapper } from "~models/identity/IIdentityMessageWrapper";
+import { IdentityDiffStorageService } from "~services/identityDiffStorageService";
+import { IdentityService } from "~services/identityService";
 import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
 

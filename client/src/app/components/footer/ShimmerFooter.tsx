@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react";
 import { FooterProps } from "./FooterProps";
 import { FooterState } from "./FooterState";
-import DiscordIcon from "../../../assets/discord.svg?react";
-import GithubIcon from "../../../assets/github.svg?react";
-import Logo from "../../../assets/shimmer-footer-bg.svg?react";
-import TwitterIcon from "../../../assets/twitter.svg?react";
-import { FoundationDataHelper } from "../../../helpers/foundationDataHelper";
+import DiscordIcon from "~assets/discord.svg?react";
+import GithubIcon from "~assets/github.svg?react";
+import Logo from "~assets/shimmer-footer-bg.svg?react";
+import TwitterIcon from "~assets/twitter.svg?react";
+import { FoundationDataHelper } from "~helpers/foundationDataHelper";
 import "./ShimmerFooter.scss";
 import AsyncComponent from "../AsyncComponent";
 

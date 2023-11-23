@@ -1,8 +1,8 @@
 import {
     ALPHANET, CHRYSALIS_MAINNET, CUSTOM, DEVNET, LEGACY_MAINNET,
     MAINNET, NetworkType, SHIMMER, TESTNET
-} from "../models/config/networkType";
-import { SHIMMER_UI, Theme } from "../models/config/uiTheme";
+} from "~models/config/networkType";
+import { SHIMMER_UI, Theme } from "~models/config/uiTheme";
 
 /**
  * Helper function to determine network order based on network type.

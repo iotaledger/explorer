@@ -1,9 +1,9 @@
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { SettingsService } from "./settingsService";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { TrytesHelper } from "../helpers/trytesHelper";
-import { ICurrencySettings } from "../models/services/ICurrencySettings";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { TrytesHelper } from "~helpers/trytesHelper";
+import { ICurrencySettings } from "~models/services/ICurrencySettings";
 
 /**
  * Class to handle currency settings.

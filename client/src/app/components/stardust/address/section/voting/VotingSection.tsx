@@ -2,8 +2,8 @@ import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import VotingEvent from "./VotingEvent";
 import { VotingEventTab, buildVotingEventTabs } from "./VotingUtils";
-import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
-import { IEventDetails } from "../../../../../../helpers/hooks/useParticipationEventDetails";
+import { useIsMounted } from "~helpers/hooks/useIsMounted";
+import { IEventDetails } from "~helpers/hooks/useParticipationEventDetails";
 import Pagination from "../../../../Pagination";
 import "./VotingSection.scss";
 

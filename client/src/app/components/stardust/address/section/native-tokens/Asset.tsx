@@ -4,11 +4,11 @@ import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/sdk-wasm/web"
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import { AssetProps } from "./AssetProps";
-import tokenSchemeIRC30 from "../../../../../../assets/schemas/token-schema-IRC30.json";
-import { useFoundryDetails } from "../../../../../../helpers/hooks/useFoundryDetails";
-import { useTokenRegistryNativeTokenCheck } from "../../../../../../helpers/hooks/useTokenRegistryNativeTokenCheck";
-import { Converter } from "../../../../../../helpers/stardust/convertUtils";
-import { ITokenMetadata } from "../../../../../../models/api/stardust/foundry/ITokenMetadata";
+import tokenSchemeIRC30 from "~assets/schemas/token-schema-IRC30.json";
+import { useFoundryDetails } from "~helpers/hooks/useFoundryDetails";
+import { useTokenRegistryNativeTokenCheck } from "~helpers/hooks/useTokenRegistryNativeTokenCheck";
+import { Converter } from "~helpers/stardust/convertUtils";
+import { ITokenMetadata } from "~models/api/stardust/foundry/ITokenMetadata";
 import Spinner from "../../../../Spinner";
 import TruncatedId from "../../../TruncatedId";
 

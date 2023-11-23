@@ -1,5 +1,5 @@
-import { IIdentityDidHistoryResponse } from "../../../../models/api/IIdentityDidHistoryResponse";
-import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
+import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResponse";
+import { IIdentityMessageWrapper } from "~models/identity/IIdentityMessageWrapper";
 
 export interface IdentityTreeProps {
     network: string;

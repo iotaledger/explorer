@@ -3,12 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { mamFetch, MamMode } from "@iota/mam-legacy";
 import { asTransactionObject } from "@iota/transaction-converter";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { TrytesHelper } from "../../helpers/trytesHelper";
-import { ICachedTransaction } from "../../models/api/ICachedTransaction";
-import { ITransactionsCursor } from "../../models/api/legacy/ITransactionsCursor";
-import { TransactionsGetMode } from "../../models/api/legacy/transactionsGetMode";
-import { LEGACY } from "../../models/config/protocolVersion";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { TrytesHelper } from "~helpers/trytesHelper";
+import { ICachedTransaction } from "~models/api/ICachedTransaction";
+import { ITransactionsCursor } from "~models/api/legacy/ITransactionsCursor";
+import { TransactionsGetMode } from "~models/api/legacy/transactionsGetMode";
+import { LEGACY } from "~models/config/protocolVersion";
 import { LegacyApiClient } from "../legacy/legacyApiClient";
 import { LegacyApiStreamsV0Client } from "../legacy/legacyApiStreamsV0Client";
 import { TangleCacheService } from "../tangleCacheService";

@@ -17,6 +17,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": "./",
     "paths": {
+      "~/*": [
+        "src/*"
+      ],
       "~app/*": [
         "src/app/*"
       ],
@@ -37,9 +40,6 @@
       ],
       "~services/*": [
         "src/services/*"
-      ],
-      "~/*": [
-        "src/*"
       ]
     }
   },

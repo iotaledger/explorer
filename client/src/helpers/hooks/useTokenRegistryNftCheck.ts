@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import NetworkContext from "../../app/context/NetworkContext";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { TokenRegistryClient } from "../../services/stardust/tokenRegistryClient";
+import NetworkContext from "~app/context/NetworkContext";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
 
 /**
  * Use Token Registry NFT check hook

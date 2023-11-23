@@ -1,6 +1,6 @@
-import { FetchHelper } from "../helpers/fetchHelper";
-import { IRawResponse } from "../models/api/IRawResponse";
-import { IResponse } from "../models/api/IResponse";
+import { FetchHelper } from "~helpers/fetchHelper";
+import { IRawResponse } from "~models/api/IRawResponse";
+import { IResponse } from "~models/api/IResponse";
 
 /**
  * Class to handle api communications.

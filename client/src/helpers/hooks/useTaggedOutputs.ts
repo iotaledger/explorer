@@ -2,11 +2,11 @@ import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useIsMounted } from "./useIsMounted";
-import { OUTPUT_LIST_TABS } from "../../app/routes/stardust/OutputList";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { ITaggedOutputsResponse } from "../../models/api/stardust/ITaggedOutputsResponse";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { OUTPUT_LIST_TABS } from "~app/routes/stardust/OutputList";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ITaggedOutputsResponse } from "~models/api/stardust/ITaggedOutputsResponse";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
 interface OutputListLocationProps {
     outputIds: ITaggedOutputsResponse;

@@ -4,9 +4,9 @@ import {
 } from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import Nft from "./Nft";
-import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
-import { TransactionsHelper } from "../../../../../../helpers/stardust/transactionsHelper";
-import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
+import { useIsMounted } from "~helpers/hooks/useIsMounted";
+import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { INftBase } from "~models/api/stardust/nft/INftBase";
 import Pagination from "../../../../Pagination";
 
 interface NftSectionProps {

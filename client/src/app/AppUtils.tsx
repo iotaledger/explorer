@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import NetworkContext from "./context/NetworkContext";
-import { INetwork } from "../models/config/INetwork";
-import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
-import { IOTA_UI, Theme } from "../models/config/uiTheme";
-import { IReducedNodeInfo } from "../services/nodeInfoService";
+import { INetwork } from "~models/config/INetwork";
+import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "~models/config/networkType";
+import { IOTA_UI, Theme } from "~models/config/uiTheme";
+import { IReducedNodeInfo } from "~services/nodeInfoService";
 
 export const networkContextWrapper = (
     currentNetwork: string | undefined,

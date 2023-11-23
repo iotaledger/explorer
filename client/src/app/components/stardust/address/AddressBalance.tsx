@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
-import { isMarketedNetwork } from "../../../../helpers/networkHelper";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
+import { isMarketedNetwork } from "~helpers/networkHelper";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import CopyButton from "../../CopyButton";
 import FiatValue from "../../FiatValue";

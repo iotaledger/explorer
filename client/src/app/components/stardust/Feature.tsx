@@ -3,8 +3,8 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import Address from "./address/Address";
 import { FeatureProps } from "./FeatureProps";
-import DropdownIcon from "../../../assets/dropdown-arrow.svg?react";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
+import DropdownIcon from "~assets/dropdown-arrow.svg?react";
+import { NameHelper } from "~helpers/stardust/nameHelper";
 import DataToggle from "../DataToggle";
 
 const Feature: React.FC<FeatureProps> = (

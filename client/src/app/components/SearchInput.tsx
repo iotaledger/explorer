@@ -2,9 +2,9 @@ import React, { ReactNode } from "react";
 import AsyncComponent from "./AsyncComponent";
 import { SearchInputProps } from "./SearchInputProps";
 import { SearchInputState } from "./SearchInputState";
-import { NumberHelper } from "../../helpers/numberHelper";
-import { TrytesHelper } from "../../helpers/trytesHelper";
-import { LEGACY } from "../../models/config/protocolVersion";
+import { NumberHelper } from "~helpers/numberHelper";
+import { TrytesHelper } from "~helpers/trytesHelper";
+import { LEGACY } from "~models/config/protocolVersion";
 import "./SearchInput.scss";
 
 /**

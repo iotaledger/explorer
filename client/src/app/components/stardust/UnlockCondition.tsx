@@ -6,13 +6,13 @@ import {
 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { ReactNode } from "react";
-import DropdownIcon from "./../../../assets/dropdown-arrow.svg?react";
+import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import Address from "./address/Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
 import { UnlockConditionState } from "./UnlockConditionState";
-import { DateHelper } from "../../../helpers/dateHelper";
-import { NameHelper } from "../../../helpers/stardust/nameHelper";
-import { formatAmount } from "../../../helpers/stardust/valueFormatHelper";
+import { DateHelper } from "~helpers/dateHelper";
+import { NameHelper } from "~helpers/stardust/nameHelper";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
 import AsyncComponent from "../AsyncComponent";
 

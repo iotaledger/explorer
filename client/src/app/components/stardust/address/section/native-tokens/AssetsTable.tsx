@@ -3,7 +3,7 @@ import {
 } from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
-import { IToken } from "../../../../../../models/api/stardust/foundry/IToken";
+import { IToken } from "~models/api/stardust/foundry/IToken";
 import Pagination from "../../../../Pagination";
 import "./AssetsTable.scss";
 
