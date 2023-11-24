@@ -43,12 +43,16 @@ export async function unsubscribe(
                 itemsService.unsubscribe(request.subscriptionId);
             }
         } else if (networkConfig.protocolVersion === STARDUST) {
-            ValidationHelper.string(request.feedSelect, "feedSelect");
-            ValidationHelper.oneOf(request.feedSelect, ["block", "milestone"], "feedSelect");
             const service = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
+
             if (request.feedSelect === "block") {
                 service?.unsubscribeBlocks(request.subscriptionId);
+            } else if (request.feedSelect === "milestone") {
+                service?.unsubscribeMilestones(request.subscriptionId);
             } else {
+                // when unsubscribe comes from index.ts socket callback (broswer page reload)
+                // we don't have the feedSelect so unsubscribe both
+                service?.unsubscribeBlocks(request.subscriptionId);
                 service?.unsubscribeMilestones(request.subscriptionId);
             }
         } else {

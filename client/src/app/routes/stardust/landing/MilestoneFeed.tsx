@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import MilestoneFeedAnalyics from "./MilestoneFeedAnalytics";
-import { DateHelper } from "../../../../helpers/dateHelper";
-import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
-import { HexHelper } from "../../../../helpers/stardust/hexHelper";
-import { INetwork } from "../../../../models/config/INetwork";
-import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
+import { DateHelper } from "~helpers/dateHelper";
+import { useMilestoneInterval } from "~helpers/hooks/useMilestoneInterval";
+import { HexHelper } from "~helpers/stardust/hexHelper";
+import { INetwork } from "~models/config/INetwork";
+import { IMilestoneFeedItem } from "~models/IMilestoneFeedItem";
 import TruncatedId from "../../../components/stardust/TruncatedId";
 import "./MilestoneFeed.scss";
 
@@ -27,13 +27,16 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
     let highestIndex = 0;
     const milestonesToRender: IMilestoneFeedItem[] = [];
     for (const milestone of milestones) {
-        if (milestone.index > highestIndex) {
-            highestIndex = milestone.index;
-        }
+        if (!milestonesToRender.some(ms => ms.index === milestone.index)) {
+            if (milestone.index > highestIndex) {
+                highestIndex = milestone.index;
+            }
 
-        milestonesToRender.push(milestone);
-        if (milestonesToRender.length === FEED_ITEMS_MAX) {
-            break;
+            milestonesToRender.push(milestone);
+
+            if (milestonesToRender.length === FEED_ITEMS_MAX) {
+                break;
+            }
         }
     }
 

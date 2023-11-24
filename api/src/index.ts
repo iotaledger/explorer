@@ -31,7 +31,8 @@ const configAllowedHeaders: string | undefined =
 if (Array.isArray(config.allowedDomains)) {
     for (const dom of config.allowedDomains) {
         if (dom.indexOf("*") > 0) {
-            configAllowedDomains.push(new RegExp(dom.replaceAll("*", "(.*)")));
+            // eslint-disable-next-line unicorn/prefer-string-replace-all
+            configAllowedDomains.push(new RegExp(dom.replace(/\*/g, "(.*)")));
         } else {
             configAllowedDomains.push(dom);
         }

@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import NetworkContext from "./context/NetworkContext";
-import { INetwork } from "../models/config/INetwork";
-import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "../models/config/networkType";
-import { IOTA_UI, Theme } from "../models/config/uiTheme";
-import { IReducedNodeInfo } from "../services/nodeInfoService";
+import { INetwork } from "~models/config/INetwork";
+import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "~models/config/networkType";
+import { IOTA_UI, Theme } from "~models/config/uiTheme";
+import { IReducedNodeInfo } from "~services/nodeInfoService";
 
 export const networkContextWrapper = (
     currentNetwork: string | undefined,
@@ -115,33 +115,32 @@ export const buildMetaLabel = (network: NetworkType | undefined): string => {
 };
 
 export const getFaviconHelmet = (isShimmer: boolean) => {
-    const publicUrl = process.env.PUBLIC_URL;
     const folder = isShimmer ? "shimmer" : "iota";
 
     return (
         <Helmet>
             <link
-                rel="shortcut icon" href={`${publicUrl}/favicon/${folder}/favicon.ico`} data-react-helmet="true"
+                rel="shortcut icon" href={`/favicon/${folder}/favicon.ico`} data-react-helmet="true"
             />
             <link
-                rel="manifest" href={`${publicUrl}/favicon/${folder}/site.webmanifest`} data-react-helmet="true"
+                rel="manifest" href={`/favicon/${folder}/site.webmanifest`} data-react-helmet="true"
             />
             <link
                 rel="apple-touch-icon"
                 sizes="180x180"
-                href={`${publicUrl}/favicon/${folder}/favicon-180x180.png`} data-react-helmet="true"
+                href={`/favicon/${folder}/favicon-180x180.png`} data-react-helmet="true"
             />
             <link
                 rel="icon"
                 type="image/png"
                 sizes="32x32"
-                href={`${publicUrl}/favicon/${folder}/favicon-32x32.png`} data-react-helmet="true"
+                href={`/favicon/${folder}/favicon-32x32.png`} data-react-helmet="true"
             />
             <link
                 rel="icon"
                 type="image/png"
                 sizes="16x16"
-                href={`${publicUrl}/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true"
+                href={`/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true"
             />
         </Helmet>
     );

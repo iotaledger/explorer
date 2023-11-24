@@ -1,7 +1,7 @@
 import { Units } from "@iota/iota.js";
-import { INetwork } from "../../../models/config/INetwork";
-import { IFeedItem } from "../../../models/feed/IFeedItem";
-import { FilterField } from "../../../models/services/filterField";
+import { INetwork } from "~models/config/INetwork";
+import { IFeedItem } from "~models/feed/IFeedItem";
+import { FilterField } from "~models/services/filterField";
 import { FeedsState } from "../../components/chrysalis/FeedsState";
 import { CurrencyState } from "../../components/CurrencyState";
 

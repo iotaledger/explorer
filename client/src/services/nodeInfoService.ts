@@ -1,9 +1,9 @@
 import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
 import { StardustApiClient } from "./stardust/stardustApiClient";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { INodeInfoResponse } from "../models/api/stardust/INodeInfoResponse";
-import { STARDUST } from "../models/config/protocolVersion";
-import { NetworkService } from "../services/networkService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { INodeInfoResponse } from "~models/api/stardust/INodeInfoResponse";
+import { STARDUST } from "~models/config/protocolVersion";
+import { NetworkService } from "~services/networkService";
 
 /**
  * The reduced node info fields relevant for Explorer.
@@ -50,9 +50,9 @@ export class NodeInfoService {
      */
     public async buildCache(): Promise<void> {
         const networksService = ServiceFactory.get<NetworkService>("network");
-        const allNetworks = networksService.networks();
+        const stardustNetworks = networksService.networks().filter(n => n.protocolVersion === STARDUST);
 
-        for (const networkDetails of allNetworks) {
+        for (const networkDetails of stardustNetworks) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const network = networkDetails.network;
             const response: INodeInfoResponse = await apiClient.nodeInfo({ network });

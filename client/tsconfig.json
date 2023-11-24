@@ -14,14 +14,41 @@
     "jsx": "react-jsx",
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
-    "typeRoots": [
-      "./typings",
-      "./node_modules/@types"
-    ],
     "noFallthroughCasesInSwitch": true,
-    "lib": ["webworker", "dom", "esnext"]
+    "baseUrl": "./",
+    "paths": {
+      "~/*": [
+        "src/*"
+      ],
+      "~app/*": [
+        "src/app/*"
+      ],
+      "~assets/*": [
+        "src/assets/*"
+      ],
+      "~factories/*": [
+        "src/factories/*"
+      ],
+      "~helpers/*": [
+        "src/helpers/*"
+      ],
+      "~models/*": [
+        "src/models/*"
+      ],
+      "~scss/*": [
+        "src/scss/*"
+      ],
+      "~services/*": [
+        "src/services/*"
+      ],
+      "~features/*": [
+        "src/features/*"
+      ]
+    }
   },
   "include": [
-    "src"
+    "src",
+    "typings",
+    "vite-env.d.ts"
   ]
 }

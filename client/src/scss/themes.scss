@@ -8,8 +8,8 @@
   --navbar-bg: rgb(255 255 255 / 70%);
   --navbar-color: #{$gray-6};
   --header-bg: linear-gradient(360deg, #e1e9f9 0.06%, #f3f7ff 99.2%);
-  --bubble-1: url('../assets/bubble-1.svg');
-  --bubble-2: url('../assets/bubble-2.svg');
+  --bubble-1: url('~assets/bubble-1.svg');
+  --bubble-2: url('~assets/bubble-2.svg');
   --header-color: #{$gray-6};
   --type-color: #{$gray-7};
   --header-box-bg: rgb(255 255 255 / 60%);
@@ -47,7 +47,7 @@
   --identity-added: #e6ffed;
   --identity-removed: #ffeef0;
   --mint-green-bg: #{$mint-green-6};
-  --shimmer-bg: url('../assets/header-bg-light.svg');
+  --shimmer-bg: url('~assets/header-bg-light.svg');
   --stardust-visualizer-bg: #{$white};
   --transaction-history-dark-row: #{$gray-1};
   --associated-outputs-tabs-bg: #{$white};
@@ -68,8 +68,8 @@
     --navbar-bg: rgb(6 16 35 / 70%);
     --navbar-color: #{$gray-5};
     --header-bg: linear-gradient(180deg, #{$gray-7} 0%, #{$gray-9} 100%);
-    --bubble-1: url('../assets/bubble-1-darkmode.svg');
-    --bubble-2: url('../assets/bubble-2-darkmode.svg');
+    --bubble-1: url('~assets/bubble-1-darkmode.svg');
+    --bubble-2: url('~assets/bubble-2-darkmode.svg');
     --header-color: #{$gray-5};
     --type-color: #{$gray-3};
     --header-box-bg: rgb(6 16 35 / 70%);
@@ -101,7 +101,7 @@
     --identity-removed: rgb(118 45 52 / 49%);
     --mint-green-bg: #{$mint-green-7};
     --feeds-bg: #00121f;
-    --shimmer-bg: url('../assets/header-bg-dark.svg');
+    --shimmer-bg: url('~assets/header-bg-dark.svg');
     --stardust-visualizer-bg: #0f202c;
     --transaction-history-dark-row: #{$gray-9};
     --associated-outputs-tabs-bg: #00121f;

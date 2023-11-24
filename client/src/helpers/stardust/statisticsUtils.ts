@@ -1,5 +1,5 @@
 import moment from "moment";
-import { IInfluxDailyResponse } from "../../models/api/stardust/influx/IInfluxDailyResponse";
+import { IInfluxDailyResponse } from "~models/api/stardust/influx/IInfluxDailyResponse";
 
 export interface IStatisticsGraphsData {
     blocksDaily: DataPoint[];

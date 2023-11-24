@@ -1,15 +1,15 @@
 import React, { ReactNode } from "react";
 import { FooterProps } from "./FooterProps";
 import { FooterState } from "./FooterState";
-import { ReactComponent as DiscordIcon } from "../../../assets/discord.svg";
-import { ReactComponent as GithubIcon } from "../../../assets/github.svg";
-import { ReactComponent as InstagramIcon } from "../../../assets/instagram.svg";
-import { ReactComponent as LinkedinIcon } from "../../../assets/linkedin.svg";
-import logoFooter from "../../../assets/logo-footer.svg";
-import { ReactComponent as RedditIcon } from "../../../assets/reddit.svg";
-import { ReactComponent as TwitterIcon } from "../../../assets/twitter.svg";
-import { ReactComponent as YoutubeIcon } from "../../../assets/youtube.svg";
-import { FoundationDataHelper } from "../../../helpers/foundationDataHelper";
+import DiscordIcon from "~assets/discord.svg?react";
+import GithubIcon from "~assets/github.svg?react";
+import InstagramIcon from "~assets/instagram.svg?react";
+import LinkedinIcon from "~assets/linkedin.svg?react";
+import LogoFooter from "~assets/logo-footer.svg?react";
+import RedditIcon from "~assets/reddit.svg?react";
+import TwitterIcon from "~assets/twitter.svg?react";
+import YoutubeIcon from "~assets/youtube.svg?react";
+import { FoundationDataHelper } from "~helpers/foundationDataHelper";
 import AsyncComponent from "../AsyncComponent";
 import "./Footer.scss";
 
@@ -123,7 +123,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                         <hr className="sep" />
                         <div className="row foundation-data">
                             <div className="margin-t-m">
-                                <img src={logoFooter} alt="IOTA" />
+                                <LogoFooter title="IOTA Foundation" />
                             </div>
                             <section className="line-breaks">
                                 {this.state.foundationData?.registeredAddress.value.join("\n")}

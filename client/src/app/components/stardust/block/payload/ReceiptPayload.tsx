@@ -3,8 +3,8 @@
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React, { Component, ReactNode } from "react";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
-import { Bech32AddressHelper } from "../../../../../helpers/stardust/bech32AddressHelper";
-import { formatAmount } from "../../../../../helpers/stardust/valueFormatHelper";
+import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../../context/NetworkContext";
 import { ReceiptPayloadState } from "../../../ReceiptPayloadState";
 import Bech32Address from "../../address/Bech32Address";
@@ -44,7 +44,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         return (
-            <div className="indexation-payload">
+            <div className="indexation-payload card">
                 <div className="card--header">
                     <h2>Receipt Payload</h2>
                 </div>

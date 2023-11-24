@@ -4,8 +4,8 @@ import {
 } from "@iota/sdk-wasm/web";
 import * as H from "history";
 import React from "react";
-import { IInput } from "../../../../../models/api/stardust/IInput";
-import { IOutput } from "../../../../../models/api/stardust/IOutput";
+import { IInput } from "~models/api/stardust/IInput";
+import { IOutput } from "~models/api/stardust/IOutput";
 import MilestonePayload from "../payload/milestone/MilestonePayload";
 import TaggedDataPayload from "../payload/TaggedDataPayload";
 import TransactionPayload from "../payload/TransactionPayload";

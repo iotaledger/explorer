@@ -1,21 +1,18 @@
 import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { useContext, useState } from "react";
-
-import "./KeyPanel.scss";
 import { Link } from "react-router-dom";
-import { ReactComponent as CloseIcon } from "../../../../assets/close.svg";
-
-import { ReactComponent as DropdownIcon } from "../../../../assets/dropdown-arrow.svg";
+import CloseIcon from "../../../../assets/close.svg?react";
+import DropdownIcon from "../../../../assets/dropdown-arrow.svg?react";
 import { DateHelper } from "../../../../helpers/dateHelper";
 import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
 import { INetwork } from "../../../../models/config/INetwork";
 import NetworkContext from "../../../context/NetworkContext";
-import { TSelectFeedItem, TSelectNode } from "../../../types/visualizer.types";
+import { TSelectNode } from "../../../types/visualizer.types";
 import BlockTangleState from "../block/BlockTangleState";
-
 import TruncatedId from "../TruncatedId";
 import { useTangleStore } from "../../../../features/visualizer-threejs/store";
+import "./KeyPanel.scss";
 
 export const SelectedFeedInfo = ({
     network,
@@ -39,6 +36,7 @@ export const SelectedFeedInfo = ({
         conflictReason ? CONFLICT_REASON_STRINGS[conflictReason] : undefined
     );
 
+    // eslint-disable-next-line no-extra-boolean-cast
     const selectedFeedItem = !!clickedInstanceId ? blockMetadata?.get(clickedInstanceId) : undefined;
     const properties = selectedFeedItem?.properties;
 

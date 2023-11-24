@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { ICurrencySettings } from "../../models/services/ICurrencySettings";
-import { CurrencyService } from "../../services/currencyService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ICurrencySettings } from "~models/services/ICurrencySettings";
+import { CurrencyService } from "~services/currencyService";
 
 /**
  * Hook into Currency Service

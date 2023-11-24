@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
-import { IRichAddress } from "../../../../models/api/stardust/chronicle/IRichestAddressesResponse";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
+import { IRichAddress } from "~models/api/stardust/chronicle/IRichestAddressesResponse";
 import NetworkContext from "../../../context/NetworkContext";
 import TruncatedId from "../TruncatedId";
 import "./RichestAddresses.scss";

@@ -1,11 +1,11 @@
 import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { ITransactionHistoryRequest } from "../../models/api/stardust/ITransactionHistoryRequest";
-import { ITransactionHistoryItem, ITransactionHistoryResponse } from "../../models/api/stardust/ITransactionHistoryResponse";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ITransactionHistoryRequest } from "~models/api/stardust/ITransactionHistoryRequest";
+import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/api/stardust/ITransactionHistoryResponse";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
 interface IOutputDetailsMap {
     [outputId: string]: OutputResponse;

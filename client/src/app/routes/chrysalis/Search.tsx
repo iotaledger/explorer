@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { CHRYSALIS, ProtocolVersion } from "../../../models/config/protocolVersion";
-import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
-import { NetworkService } from "../../../services/networkService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { CHRYSALIS, ProtocolVersion } from "~models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "~services/chrysalis/chrysalisTangleCacheService";
+import { NetworkService } from "~services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
 import "../Search.scss";

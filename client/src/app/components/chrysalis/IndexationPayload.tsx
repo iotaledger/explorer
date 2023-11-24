@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React, { Component, ReactNode } from "react";
-import indexationMessage from "./../../../assets/modals/chrysalis/message/indexation-payload.json";
+import indexationMessage from "~assets/modals/chrysalis/message/indexation-payload.json";
 import DataToggle from "./../DataToggle";
 import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";

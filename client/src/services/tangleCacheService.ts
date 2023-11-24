@@ -1,9 +1,9 @@
 import { NetworkService } from "./networkService";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { ICachedTransaction } from "../models/api/ICachedTransaction";
-import { ITransactionsCursor } from "../models/api/legacy/ITransactionsCursor";
-import { TransactionsGetMode } from "../models/api/legacy/transactionsGetMode";
-import { ProtocolVersion } from "../models/config/protocolVersion";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ICachedTransaction } from "~models/api/ICachedTransaction";
+import { ITransactionsCursor } from "~models/api/legacy/ITransactionsCursor";
+import { TransactionsGetMode } from "~models/api/legacy/transactionsGetMode";
+import { ProtocolVersion } from "~models/config/protocolVersion";
 
 /**
  * Cache tangle requests.

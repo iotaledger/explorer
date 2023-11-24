@@ -1,5 +1,5 @@
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { FetchHelper } from "../../helpers/fetchHelper";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { FetchHelper } from "~helpers/fetchHelper";
 import { NetworkService } from "../networkService";
 
 interface IWhitelistedResponse {

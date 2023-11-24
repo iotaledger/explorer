@@ -1,6 +1,7 @@
 import {
     Client, IOutputsResponse, QueryParameter, AliasQueryParameter, FoundryQueryParameter, NftQueryParameter, AddressType
 } from "@iota/sdk";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { AssociationType } from "../../models/api/stardust/IAssociationsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
@@ -21,10 +22,10 @@ export class AssociatedOutputsHelper {
     }
 
     public async fetch() {
-        const network = this.network;
+        const network = this.network.network;
         const address = this.addressDetails.bech32;
 
-        const client = new Client({ nodes: [network.provider] });
+        const client = ServiceFactory.get<Client>(`client-${network}`);
         const promises: Promise<void>[] = [];
 
         promises.push(

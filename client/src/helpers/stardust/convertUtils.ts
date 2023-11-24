@@ -242,6 +242,29 @@ export class Converter {
     }
 
     /**
+     * Convert little endian to big endian.
+     * @param index Output index in little endian format.
+     * @returns Output index in big endian format.
+     */
+    public static convertToBigEndian(index: string) {
+        const bigEndian = [];
+        let hexLength = index.length;
+
+        if (hexLength % 2 !== 0) {
+            index = "0".concat(index);
+            hexLength = index.length;
+        }
+
+        while (hexLength >= 0) {
+            const slicedBits = index.slice(hexLength - 2, hexLength);
+            bigEndian.push(slicedBits);
+            hexLength -= 2;
+        }
+
+        return bigEndian.join("");
+    }
+
+    /**
      * Build the static lookup tables.
      * @internal
      */

@@ -1,6 +1,6 @@
 import * as H from "history";
 import { ReactNode } from "react";
-import { INetwork } from "../../../models/config/INetwork";
+import { INetwork } from "~models/config/INetwork";
 
 /**
  * The props for the Header component.

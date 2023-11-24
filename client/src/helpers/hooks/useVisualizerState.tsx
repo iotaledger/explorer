@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
-import { TSelectFeedItem, TSelectNode } from "../../app/types/visualizer.types";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMetadata";
-import { INodeData } from "../../models/graph/stardust/INodeData";
-import { SettingsService } from "../../services/settingsService";
-import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { TSelectFeedItem, TSelectNode } from "~/app/types/visualizer.types";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IFeedBlockData } from "~models/api/stardust/feed/IFeedBlockData";
+import { IFeedBlockMetadata } from "~models/api/stardust/feed/IFeedBlockMetadata";
+import { INodeData } from "~models/graph/stardust/INodeData";
+import { SettingsService } from "~services/settingsService";
+import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
 import { Converter } from "../stardust/convertUtils";
 

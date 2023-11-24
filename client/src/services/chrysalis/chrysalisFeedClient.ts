@@ -1,13 +1,13 @@
 import { Blake2b } from "@iota/crypto.js";
 import { deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
 import { Converter, ReadStream } from "@iota/util.js";
-import { TrytesHelper } from "../../helpers/trytesHelper";
-import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
-import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
-import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
-import { IFeedItem } from "../../models/feed/IFeedItem";
-import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
+import { TrytesHelper } from "~helpers/trytesHelper";
+import { IFeedSubscribeResponse } from "~models/api/IFeedSubscribeResponse";
+import { IFeedSubscriptionMessage } from "~models/api/IFeedSubscriptionMessage";
+import { IFeedUnsubscribeRequest } from "~models/api/IFeedUnsubscribeRequest";
+import { INetworkBoundGetRequest } from "~models/api/INetworkBoundGetRequest";
+import { IFeedItem } from "~models/feed/IFeedItem";
+import { IFeedItemMetadata } from "~models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
 
 /**

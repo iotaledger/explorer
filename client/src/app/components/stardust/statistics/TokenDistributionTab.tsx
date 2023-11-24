@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { RangeBarChart } from "./charts/RangeBarChart";
 import { getSubunitThreshold } from "./ChartUtils";
 import { RichestAddresses } from "./RichestAddresses";
-import { useTokenDistributionState } from "../../../../helpers/hooks/useTokenDistributionState";
-import { IDistributionEntry } from "../../../../models/api/stardust/chronicle/ITokenDistributionResponse";
+import { useTokenDistributionState } from "~helpers/hooks/useTokenDistributionState";
+import { IDistributionEntry } from "~models/api/stardust/chronicle/ITokenDistributionResponse";
 import NetworkContext from "../../../context/NetworkContext";
 
 export const TokenDistributionTab: React.FC = () => {

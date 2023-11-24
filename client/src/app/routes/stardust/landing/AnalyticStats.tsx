@@ -1,8 +1,8 @@
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React from "react";
 import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
-import { IAnalyticStats } from "../../../../models/api/stats/IAnalyticStats";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
+import { IAnalyticStats } from "~models/api/stats/IAnalyticStats";
 import "./AnalyticStats.scss";
 
 interface AnalyticStatsProps {
