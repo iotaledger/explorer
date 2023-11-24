@@ -208,7 +208,6 @@ export abstract class InfluxDbClient {
      * Populates the dailyCache.
      */
     private async collectGraphsDaily() {
-        console.log('[InfluxDb] Collecting daily');
         logger.verbose(`[InfluxDb] Collecting daily stats for "${this._network.network}"`);
         this.updateCacheEntry<IBlocksDailyInflux>(
             BLOCK_DAILY_QUERY,
@@ -436,8 +435,6 @@ export abstract class InfluxDbClient {
         const query = fromNanoDate ?
             queryTemplate.parameterized :
             queryTemplate.full;
-
-        console.log('--- query', query);
 
         this.queryInflux<T>(query, fromNanoDate, this.getToNanoDate()).then(results => {
             for (const update of results) {
