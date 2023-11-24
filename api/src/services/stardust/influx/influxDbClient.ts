@@ -466,14 +466,12 @@ export abstract class InfluxDbClient {
      * @param to The ending Date to use in the query.
      */
     private async queryInflux<T>(query: string, from: INanoDate | null, to: INanoDate): Promise<IResults<T>> {
-        let params;
+        const params = { placeholders: { from: undefined, to: to.toNanoISOString() } };
 
         if (from) {
-            params = { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } };
+            params.placeholders.from = from.toNanoISOString();
         }
-        if (to) {
-            params = { placeholders: { to: to.toNanoISOString() } };
-        }
+
         return this._client.query<T>(query, params);
     }
 
