@@ -23,6 +23,10 @@ export default defineConfig(() => {
             }),
             nodePolyfills()
         ],
+        test: {
+            globals: true,
+            teardownTimeout: 100
+        },
     };
 });
 
