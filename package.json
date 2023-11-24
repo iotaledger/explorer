@@ -1,8 +1,5 @@
 {
   "name": "explorer",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "setup:client": "cd client && npm install && npm run postinstall",
     "setup:api": "cd api && npm install && npm run build-compile && npm run build-config",
@@ -11,9 +8,6 @@
     "dev": "concurrently 'cd api && npm run start-dev' 'cd client && npm run start'",
     "pre-push": "concurrently 'cd api && npm run build-compile && npm run build-lint && npm run build-config' 'cd client && npm run build'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
