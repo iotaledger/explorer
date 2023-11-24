@@ -1,12 +1,12 @@
 import { AddressType, Utils } from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { scrollToTop } from "../../../helpers/pageUtils";
-import { Bech32AddressHelper } from "../../../helpers/stardust/bech32AddressHelper";
-import { ProtocolVersion, STARDUST } from "../../../models/config/protocolVersion";
-import { NetworkService } from "../../../services/networkService";
-import { StardustApiClient } from "../../../services/stardust/stardustApiClient";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { scrollToTop } from "~helpers/pageUtils";
+import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";
+import { ProtocolVersion, STARDUST } from "~models/config/protocolVersion";
+import { NetworkService } from "~services/networkService";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import AsyncComponent from "../../components/AsyncComponent";
 import Spinner from "../../components/Spinner";
 import NetworkContext from "../../context/NetworkContext";

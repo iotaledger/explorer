@@ -1,4 +1,4 @@
-import { TangleStatus } from "./../../models/tangleStatus";
+import { TangleStatus } from "~models/tangleStatus";
 
 export interface TransactionState {
     /**

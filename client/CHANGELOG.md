@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.3.2
+
+* Migrate to vite bundler
+
+## v3.3.0
+
+* Migrate to iota-sdk/wasm as base library for stardust networks
+
 ## v3.2.0
 
 * Add Token distribution Stats

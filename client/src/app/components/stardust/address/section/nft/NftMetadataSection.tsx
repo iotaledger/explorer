@@ -4,12 +4,12 @@ import {
     getNftImageContent, isSupportedImageFormat, loadingImagePlaceholder, MESSAGE_NFT_SCHEMA_STANDARD,
     unsupportedImageFormatPlaceholder
 } from "./NftMetadataUtils";
-import nftSchemeIRC27 from "../../../../../../assets/schemas/nft-schema-IRC27.json";
-import { useNftMetadataUri } from "../../../../../../helpers/hooks/useNftMetadataUri";
-import { useTokenRegistryNftCheck } from "../../../../../../helpers/hooks/useTokenRegistryNftCheck";
-import { tryParseMetadata } from "../../../../../../helpers/stardust/metadataUtils";
-import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
-import { INftImmutableMetadata } from "../../../../../../models/api/stardust/nft/INftImmutableMetadata";
+import nftSchemeIRC27 from "~assets/schemas/nft-schema-IRC27.json";
+import { useNftMetadataUri } from "~helpers/hooks/useNftMetadataUri";
+import { useTokenRegistryNftCheck } from "~helpers/hooks/useTokenRegistryNftCheck";
+import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
+import { INftBase } from "~models/api/stardust/nft/INftBase";
+import { INftImmutableMetadata } from "~models/api/stardust/nft/INftImmutableMetadata";
 import DataToggle from "../../../../DataToggle";
 import JsonViewer from "../../../../JsonViewer";
 import TruncatedId from "../../../TruncatedId";

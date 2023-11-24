@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useIsMounted } from "../../../../../../helpers/hooks/useIsMounted";
+import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import Pagination from "../../../../Pagination";
 import TruncatedId from "../../../TruncatedId";
 import "./AliasFoundriesSection.scss";

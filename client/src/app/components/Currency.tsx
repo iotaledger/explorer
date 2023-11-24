@@ -1,8 +1,8 @@
 import { CurrencyState } from "./CurrencyState";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { ICurrencySettings } from "../../models/services/ICurrencySettings";
-import { CurrencyService } from "../../services/currencyService";
-import { SettingsService } from "../../services/settingsService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ICurrencySettings } from "~models/services/ICurrencySettings";
+import { CurrencyService } from "~services/currencyService";
+import { SettingsService } from "~services/settingsService";
 import AsyncComponent from "../components/AsyncComponent";
 
 /**

@@ -1,4 +1,4 @@
-import { IIdentityDiffHistoryResponse } from "../../../../models/api/IIdentityDiffHistoryResponse";
+import { IIdentityDiffHistoryResponse } from "~models/api/IIdentityDiffHistoryResponse";
 
 export interface IdentityTreeItemState {
     // If children of current integration message are shown.

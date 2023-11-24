@@ -1,11 +1,11 @@
-import { IIdentityDiffHistoryResponse } from "./../models/api/IIdentityDiffHistoryResponse";
+import { IIdentityDiffHistoryResponse } from "~models/api/IIdentityDiffHistoryResponse";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { StardustApiClient } from "./stardust/stardustApiClient";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { IIdentityDidHistoryResponse } from "../models/api/IIdentityDidHistoryResponse";
-import { IIdentityDidResolveResponse } from "../models/api/IIdentityResolveResponse";
-import { IIdentityStardustResolveResponse } from "../models/api/IIdentityStardustResolveResponse";
-import { CHRYSALIS, STARDUST } from "../models/config/protocolVersion";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResponse";
+import { IIdentityDidResolveResponse } from "~models/api/IIdentityResolveResponse";
+import { IIdentityStardustResolveResponse } from "~models/api/IIdentityStardustResolveResponse";
+import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
 
 export class IdentityService {
     /**

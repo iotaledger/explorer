@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { IMessageMetadata, IMilestoneResponse, IOutputResponse } from "@iota/iota.js";
 import { mamFetch, MamMode } from "@iota/mam.js";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
-import { ITransactionHistoryRequest } from "../../models/api/chrysalis/ITransactionHistoryRequest";
-import { ITransactionHistoryResponse } from "../../models/api/chrysalis/ITransactionHistoryResponse";
-import { CHRYSALIS } from "../../models/config/protocolVersion";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ISearchResponse } from "~models/api/chrysalis/ISearchResponse";
+import { ITransactionHistoryRequest } from "~models/api/chrysalis/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "~models/api/chrysalis/ITransactionHistoryResponse";
+import { CHRYSALIS } from "~models/config/protocolVersion";
 import { ChrysalisApiClient } from "../chrysalis/chrysalisApiClient";
 import { ChrysalisApiStreamsV0Client } from "../chrysalis/chrysalisApiStreamsV0Client";
 import { TangleCacheService } from "../tangleCacheService";

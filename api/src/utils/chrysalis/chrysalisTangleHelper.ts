@@ -1,13 +1,13 @@
 import { Blake2b } from "@iota/crypto.js";
 import { Bech32Helper, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js-chrysalis";
 import { Converter, WriteStream } from "@iota/util.js";
+import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
 import { ISearchResponse } from "../../models/api/chrysalis/ISearchResponse";
 import { ITransactionHistoryRequest } from "../../models/api/chrysalis/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/chrysalis/ITransactionHistoryResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../hexHelper";
-import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 
 /**
  * Helper functions for use with tangle.

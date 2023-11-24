@@ -1,4 +1,4 @@
-import { IStatistics } from "../../services/IStatistics";
+import { IStatistics } from "~models/services/IStatistics";
 import { IResponse } from "../IResponse";
 import { ISignedResponse } from "../ISignedResponse";
 

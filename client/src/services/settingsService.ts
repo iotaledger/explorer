@@ -1,6 +1,6 @@
 import { LocalStorageService } from "./localStorageService";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { ISettings, SettingsKeys } from "../models/services/ISettings";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { ISettings, SettingsKeys } from "~models/services/ISettings";
 
 /**
  * Settings manager.

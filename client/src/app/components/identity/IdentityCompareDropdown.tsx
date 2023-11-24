@@ -7,7 +7,7 @@ import "./IdentityCompareDropdown.scss";
 import { IdentityCompareDropdownProps } from "./IdentityCompareDropdownProps";
 import { IdentityCompareDropdownState } from "./IdentityCompareDropdownState";
 import IdentityMsgStatusIcon from "./IdentityMsgStatusIcon";
-import { IdentityHelper } from "../../../helpers/identityHelper";
+import { IdentityHelper } from "~helpers/identityHelper";
 
 class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, IdentityCompareDropdownState> {
     constructor(props: IdentityCompareDropdownProps) {

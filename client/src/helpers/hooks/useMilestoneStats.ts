@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IMilestoneAnalyticStats } from "../../models/api/stats/IMilestoneAnalyticStats";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IMilestoneAnalyticStats } from "~models/api/stats/IMilestoneAnalyticStats";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
 /**
  * Fetch the milestone stats
@@ -16,36 +16,31 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
         IMilestoneAnalyticStats | null,
         boolean
     ] {
-    const [milestoneStatsEnabled] = useState(false);
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        if (milestoneStatsEnabled) {
-            setIsLoading(true);
-            if (milestoneIndex) {
-                // eslint-disable-next-line no-void
-                void (async () => {
-                    apiClient.milestoneStats({
-                        network,
-                        milestoneIndex
-                    }).then(response => {
-                        if (isMounted) {
-                            setMilestoneStats(response ?? null);
-                        }
-                    }).finally(() => {
-                        setIsLoading(false);
-                    });
-                })();
-            } else {
-                setIsLoading(false);
-            }
+        setIsLoading(true);
+        if (milestoneIndex) {
+            // eslint-disable-next-line no-void
+            void (async () => {
+                apiClient.milestoneStats({
+                    network,
+                    milestoneIndex
+                }).then(response => {
+                    if (isMounted) {
+                        setMilestoneStats(response ?? null);
+                    }
+                }).finally(() => {
+                    setIsLoading(false);
+                });
+            })();
         } else {
             setIsLoading(false);
         }
-    }, [network, milestoneIndex, milestoneStatsEnabled]);
+    }, [network, milestoneIndex]);
 
     return [milestoneStats, isLoading];
 }

@@ -3,9 +3,9 @@ import { UnitsHelper } from "@iota/iota.js";
 import React, { Component, ReactNode } from "react";
 import Bech32Address from "./Bech32Address";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { Bech32AddressHelper } from "../../../helpers/chrysalis/bech32AddressHelper";
-import { NetworkService } from "../../../services/networkService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { Bech32AddressHelper } from "~helpers/chrysalis/bech32AddressHelper";
+import { NetworkService } from "~services/networkService";
 import { ReceiptPayloadState } from "../ReceiptPayloadState";
 
 /**
@@ -42,7 +42,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
      */
     public render(): ReactNode {
         return (
-            <div className="indexation-payload">
+            <div className="indexation-payload card">
                 <div className="card--header">
                     <h2>Receipt Payload</h2>
                 </div>

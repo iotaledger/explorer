@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { INetwork } from "../../models/config/INetwork";
-import { CUSTOM } from "../../models/config/networkType";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { NetworkService } from "../../services/networkService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { INetwork } from "~models/config/INetwork";
+import { CUSTOM } from "~models/config/networkType";
+import { STARDUST } from "~models/config/protocolVersion";
+import { NetworkService } from "~services/networkService";
 
 /**
  * Use state for the landing page

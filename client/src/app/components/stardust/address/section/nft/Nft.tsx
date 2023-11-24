@@ -7,12 +7,12 @@ import {
     unsupportedImageFormatPlaceholderCompact, getNftImageContent, loadingImagePlaceholderCompact
 } from "./NftMetadataUtils";
 import { NftProps } from "./NftProps";
-import nftSchemeIRC27 from "../../../../../../assets/schemas/nft-schema-IRC27.json";
-import { useNftMetadataUri } from "../../../../../../helpers/hooks/useNftMetadataUri";
-import { useTokenRegistryNftCheck } from "../../../../../../helpers/hooks/useTokenRegistryNftCheck";
-import { Bech32AddressHelper } from "../../../../../../helpers/stardust/bech32AddressHelper";
-import { tryParseMetadata } from "../../../../../../helpers/stardust/metadataUtils";
-import { INftImmutableMetadata } from "../../../../../../models/api/stardust/nft/INftImmutableMetadata";
+import nftSchemeIRC27 from "~assets/schemas/nft-schema-IRC27.json";
+import { useNftMetadataUri } from "~helpers/hooks/useNftMetadataUri";
+import { useTokenRegistryNftCheck } from "~helpers/hooks/useTokenRegistryNftCheck";
+import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";
+import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
+import { INftImmutableMetadata } from "~models/api/stardust/nft/INftImmutableMetadata";
 import NetworkContext from "../../../../../context/NetworkContext";
 import TruncatedId from "../../../TruncatedId";
 import "./Nft.scss";

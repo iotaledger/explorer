@@ -1,4 +1,4 @@
-import { IdentityMsgStatus } from "./../../../models/identityMsgStatus";
+import { IdentityMsgStatus } from "~models/identityMsgStatus";
 export interface IdentityMsgIdOverviewProps {
     messageId?: string;
     status: IdentityMsgStatus;

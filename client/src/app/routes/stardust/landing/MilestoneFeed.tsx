@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import MilestoneFeedAnalyics from "./MilestoneFeedAnalytics";
-import { DateHelper } from "../../../../helpers/dateHelper";
-import { useMilestoneInterval } from "../../../../helpers/hooks/useMilestoneInterval";
-import { HexHelper } from "../../../../helpers/stardust/hexHelper";
-import { INetwork } from "../../../../models/config/INetwork";
-import { IMilestoneFeedItem } from "../../../../models/IMilestoneFeedItem";
+import { DateHelper } from "~helpers/dateHelper";
+import { useMilestoneInterval } from "~helpers/hooks/useMilestoneInterval";
+import { HexHelper } from "~helpers/stardust/hexHelper";
+import { INetwork } from "~models/config/INetwork";
+import { IMilestoneFeedItem } from "~models/IMilestoneFeedItem";
 import TruncatedId from "../../../components/stardust/TruncatedId";
 import "./MilestoneFeed.scss";
 

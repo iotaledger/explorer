@@ -12,11 +12,11 @@ import {
 import bigInt from "big-integer";
 import { Converter } from "./convertUtils";
 import { HexHelper } from "./hexHelper";
-import { IBech32AddressDetails } from "../../models/api/IBech32AddressDetails";
-import { IInput } from "../../models/api/stardust/IInput";
-import { IOutput } from "../../models/api/stardust/IOutput";
-import { MAINNET } from "../../models/config/networkType";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
+import { IInput } from "~models/api/stardust/IInput";
+import { IOutput } from "~models/api/stardust/IOutput";
+import { MAINNET } from "~models/config/networkType";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 
 interface TransactionInputsAndOutputsResponse {

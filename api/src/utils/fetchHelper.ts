@@ -1,4 +1,3 @@
-import AbortController from "abort-controller";
 import fetch from "node-fetch";
 import logger from "../logger";
 

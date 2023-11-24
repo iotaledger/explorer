@@ -1,4 +1,4 @@
-import { IFoundationData } from "../../../models/IFoundationData";
+import { IFoundationData } from "~models/IFoundationData";
 
 /**
  * The state for the Footer component.

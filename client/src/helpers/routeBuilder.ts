@@ -1,5 +1,5 @@
-import { INetwork } from "../models/config/INetwork";
-import { CHRYSALIS, LEGACY } from "../models/config/protocolVersion";
+import { INetwork } from "~models/config/INetwork";
+import { CHRYSALIS, LEGACY } from "~models/config/protocolVersion";
 
 /**
  * Class for helping to build routes.

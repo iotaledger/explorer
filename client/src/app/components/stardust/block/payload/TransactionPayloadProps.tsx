@@ -1,6 +1,6 @@
 import { Unlock } from "@iota/sdk-wasm/web";
-import { IInput } from "../../../../../models/api/stardust/IInput";
-import { IOutput } from "../../../../../models/api/stardust/IOutput";
+import { IInput } from "~models/api/stardust/IInput";
+import { IOutput } from "~models/api/stardust/IOutput";
 
 export interface TransactionPayloadProps {
     /**

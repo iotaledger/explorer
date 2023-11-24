@@ -1,4 +1,4 @@
-import { IIdentityDocument } from "./../models/identity/IIdentityDocument";
+import { IIdentityDocument } from "~models/identity/IIdentityDocument";
 export class IdentityHelper {
     /**
      * @param msgId messageId to shorten
