@@ -44,7 +44,7 @@ class ReceiptPayload extends Component<ReceiptPayloadProps, ReceiptPayloadState>
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         return (
-            <div className="indexation-payload">
+            <div className="indexation-payload card">
                 <div className="card--header">
                     <h2>Receipt Payload</h2>
                 </div>
