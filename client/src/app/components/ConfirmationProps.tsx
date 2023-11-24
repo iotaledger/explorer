@@ -1,4 +1,4 @@
-import { ConfirmationState } from "../../models/confirmationState";
+import { ConfirmationState } from "~models/confirmationState";
 
 export interface ConfirmationProps {
     /**

@@ -1,8 +1,8 @@
 import { MilestonePayload } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useMilestoneDetails } from "../../../../helpers/hooks/useMilestoneDetails";
-import { TransactionsHelper } from "../../../../helpers/stardust/transactionsHelper";
+import { useMilestoneDetails } from "~helpers/hooks/useMilestoneDetails";
+import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import "./MilestoneControls.scss";
 

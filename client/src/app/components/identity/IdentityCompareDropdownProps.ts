@@ -1,4 +1,4 @@
-import { IIdentityMessageWrapper } from "./../../../models/identity/IIdentityMessageWrapper";
+import { IIdentityMessageWrapper } from "~models/identity/IIdentityMessageWrapper";
 export interface IdentityCompareDropdownProps {
     selectedMessage?: IIdentityMessageWrapper;
     messages: IIdentityMessageWrapper[];

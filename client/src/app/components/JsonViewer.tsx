@@ -1,6 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { JsonViewerProps } from "./JsonViewerProps";
-import { JsonSyntaxHelper } from "../../helpers/jsonSyntaxHelper";
+import { JsonSyntaxHelper } from "~helpers/jsonSyntaxHelper";
 import "./JsonViewer.scss";
 
 /**

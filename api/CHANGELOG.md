@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.3.2
+
+* Updated npm dependencies
+* Fixed issue with backend performance degrading over time on higher traffic
+
+## v3.3.0
+
+* Migrated to iota-sdk as base library for startdust networks
+
 ## v3.2.0
 
 * Add Token distribution Stats

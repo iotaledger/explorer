@@ -1,4 +1,4 @@
-import { FetchHelper } from "../../helpers/fetchHelper";
+import { FetchHelper } from "~helpers/fetchHelper";
 
 interface IIpfsLink {
     Hash: string;

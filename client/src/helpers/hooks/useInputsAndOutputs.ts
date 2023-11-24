@@ -1,12 +1,12 @@
 import { Block, Unlock, PayloadType } from "@iota/sdk-wasm/web";
 import { useContext, useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import NetworkContext from "../../app/context/NetworkContext";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IInput } from "../../models/api/stardust/IInput";
-import { IOutput } from "../../models/api/stardust/IOutput";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import NetworkContext from "~app/context/NetworkContext";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IInput } from "~models/api/stardust/IInput";
+import { IOutput } from "~models/api/stardust/IOutput";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { TransactionsHelper } from "../stardust/transactionsHelper";
 
 /**

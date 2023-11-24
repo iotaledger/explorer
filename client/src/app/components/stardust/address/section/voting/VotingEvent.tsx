@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { IEventDetails } from "../../../../../../helpers/hooks/useParticipationEventDetails";
-import { IParticipationEventAnswer } from "../../../../../../models/api/stardust/participation/IParticipationEventAnswer";
-import { IParticipationEventQuestion } from "../../../../../../models/api/stardust/participation/IParticipationEventQuestion";
+import { IEventDetails } from "~helpers/hooks/useParticipationEventDetails";
+import { IParticipationEventAnswer } from "~models/api/stardust/participation/IParticipationEventAnswer";
+import { IParticipationEventQuestion } from "~models/api/stardust/participation/IParticipationEventQuestion";
 import "./VotingEvent.scss";
 
 interface VotingEventProps {

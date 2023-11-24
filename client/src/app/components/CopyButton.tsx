@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { CopyButtonProps } from "./CopyButtonProps";
 import { CopyButtonState } from "./CopyButtonState";
-import { ClipboardHelper } from "../../helpers/clipboardHelper";
+import { ClipboardHelper } from "~helpers/clipboardHelper";
 import "./CopyButton.scss";
 
 /**

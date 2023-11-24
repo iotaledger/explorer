@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import NetworkContext from "../../app/context/NetworkContext";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IParticipation } from "../../models/api/stardust/participation/IParticipation";
-import { IParticipationEventInfo } from "../../models/api/stardust/participation/IParticipationEventInfo";
-import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import NetworkContext from "~app/context/NetworkContext";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IParticipation } from "~models/api/stardust/participation/IParticipation";
+import { IParticipationEventInfo } from "~models/api/stardust/participation/IParticipationEventInfo";
+import { IParticipationEventStatus } from "~models/api/stardust/participation/IParticipationEventStatus";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
 export interface IEventDetails {
     participation: IParticipation;

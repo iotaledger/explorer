@@ -1,6 +1,6 @@
 import React, { Key } from "react";
 import { Link } from "react-router-dom";
-import { IFoundationData } from "../models/IFoundationData";
+import { IFoundationData } from "~models/IFoundationData";
 
 /**
  * Class to help with foundation data.

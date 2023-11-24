@@ -1,7 +1,7 @@
 import { UnitsHelper } from "@iota/iota.js";
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React from "react";
-import Tooltip from "../../app/components/Tooltip";
+import Tooltip from "~app/components/Tooltip";
 
 /**
  * The id of the Genesis block.

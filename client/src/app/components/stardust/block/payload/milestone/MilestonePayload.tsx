@@ -4,7 +4,7 @@ import {
 import React, { ReactNode } from "react";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import MilestoneSignaturesSection from "./MilestoneSignaturesSection";
-import { DateHelper } from "../../../../../../helpers/dateHelper";
+import { DateHelper } from "~helpers/dateHelper";
 import AsyncComponent from "../../../../AsyncComponent";
 import DataToggle from "../../../../DataToggle";
 import TruncatedId from "../../../TruncatedId";

@@ -1,11 +1,11 @@
 import { asTransactionObject } from "@iota/transaction-converter";
-import { TrytesHelper } from "../../helpers/trytesHelper";
-import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
-import { IFeedSubscriptionMessage } from "../../models/api/IFeedSubscriptionMessage";
-import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
-import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
-import { IFeedItem } from "../../models/feed/IFeedItem";
-import { IFeedItemMetadata } from "../../models/feed/IFeedItemMetadata";
+import { TrytesHelper } from "~helpers/trytesHelper";
+import { IFeedSubscribeResponse } from "~models/api/IFeedSubscribeResponse";
+import { IFeedSubscriptionMessage } from "~models/api/IFeedSubscriptionMessage";
+import { IFeedUnsubscribeRequest } from "~models/api/IFeedUnsubscribeRequest";
+import { INetworkBoundGetRequest } from "~models/api/INetworkBoundGetRequest";
+import { IFeedItem } from "~models/feed/IFeedItem";
+import { IFeedItemMetadata } from "~models/feed/IFeedItemMetadata";
 import { FeedClient } from "../feedClient";
 
 /**

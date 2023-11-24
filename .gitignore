@@ -10,6 +10,7 @@ application-data
 /api/.env
 /api/logs/
 /client/build
+/client/public/iota_sdk_wasm_bg.wasm
 
 config.dev.json
 config.local.json

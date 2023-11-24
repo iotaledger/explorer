@@ -2,10 +2,10 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import { MessageTangleStateProps } from "./MessageTangleStateProps";
 import { MessageTangleStateState } from "./MessageTangleStateState";
-import { ServiceFactory } from "../../../factories/serviceFactory";
-import { DateHelper } from "../../../helpers/dateHelper";
-import { CHRYSALIS } from "../../../models/config/protocolVersion";
-import { ChrysalisTangleCacheService } from "../../../services/chrysalis/chrysalisTangleCacheService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { DateHelper } from "~helpers/dateHelper";
+import { CHRYSALIS } from "~models/config/protocolVersion";
+import { ChrysalisTangleCacheService } from "~services/chrysalis/chrysalisTangleCacheService";
 import AsyncComponent from "../AsyncComponent";
 import "./MessageTangleState.scss";
 
