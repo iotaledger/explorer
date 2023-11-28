@@ -1,6 +1,6 @@
 import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
 import { createContext } from "react";
-import { IOTA_UI } from "../../models/config/uiTheme";
+import { IOTA_UI } from "~models/config/uiTheme";
 
 /**
  * The network context object.

@@ -1,6 +1,6 @@
 import { IMessage, IMessageMetadata, IUTXOInput } from "@iota/iota.js";
-import { IBech32AddressDetails } from "../../../models/api/IBech32AddressDetails";
-import { TangleStatus } from "../../../models/tangleStatus";
+import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
+import { TangleStatus } from "~models/tangleStatus";
 
 export interface MessageState {
     /**

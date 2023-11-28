@@ -1,4 +1,5 @@
 import { InfluxDbClient } from "./influxDbClient";
+import logger from "../../../logger";
 import { IMilestoneAnalyticStats } from "../../../models/api/stats/IMilestoneAnalyticStats";
 import { ITimedEntry } from "../../../models/influx/IInfluxTimedEntries";
 
@@ -131,6 +132,7 @@ export class InfluxDBService extends InfluxDbClient {
 
         while (!maybeMsStats && retries < MAX_RETRY) {
             retries += 1;
+            logger.debug(`[InfluxDbService] Try ${retries} of fetching milestone stats for ${milestoneIndex}`);
             maybeMsStats = this._milestoneCache.get(milestoneIndex);
 
             await new Promise(f => setTimeout(f, RETRY_TIMEOUT));

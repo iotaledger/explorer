@@ -10,14 +10,14 @@ import {
     Utils
 } from "@iota/sdk-wasm/web";
 import { io, Socket } from "socket.io-client";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IFeedSubscribeResponse } from "../../models/api/IFeedSubscribeResponse";
-import { IFeedBlockData, IFeedMilestoneData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { IFeedBlockMetadata } from "../../models/api/stardust/feed/IFeedBlockMetadata";
-import { IFeedSubscribeRequest } from "../../models/api/stardust/feed/IFeedSubscribeRequest";
-import { IFeedUnsubscribeRequest } from "../../models/api/stardust/feed/IFeedUnsubscribeRequest";
-import { IFeedUpdate } from "../../models/api/stardust/feed/IFeedUpdate";
-import { INetwork } from "../../models/config/INetwork";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IFeedSubscribeResponse } from "~models/api/IFeedSubscribeResponse";
+import { IFeedBlockData, IFeedMilestoneData } from "~models/api/stardust/feed/IFeedBlockData";
+import { IFeedBlockMetadata } from "~models/api/stardust/feed/IFeedBlockMetadata";
+import { IFeedSubscribeRequest } from "~models/api/stardust/feed/IFeedSubscribeRequest";
+import { IFeedUnsubscribeRequest } from "~models/api/stardust/feed/IFeedUnsubscribeRequest";
+import { IFeedUpdate } from "~models/api/stardust/feed/IFeedUpdate";
+import { INetwork } from "~models/config/INetwork";
 import { NetworkService } from "../networkService";
 
 const CACHE_TRIM_INTERVAL_MS = 10000;

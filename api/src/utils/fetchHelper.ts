@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/no-named-as-default
 import fetch from "node-fetch";
+import logger from "../logger";
 
 /**
  * Fetch from an endpoint.
@@ -25,6 +25,7 @@ export class FetchHelper {
     ): Promise<U> {
         headers = headers ?? {};
         headers["Content-Type"] = "application/json";
+        logger.verbose(`[fetchHelper] Request for json with path ${path}`);
 
         let controller: AbortController | undefined;
         let timerId: NodeJS.Timeout | undefined;
@@ -37,7 +38,8 @@ export class FetchHelper {
                         controller.abort();
                     }
                 },
-                timeout);
+                timeout
+            );
         }
 
         try {
@@ -48,7 +50,8 @@ export class FetchHelper {
                     headers,
                     body: payload ? JSON.stringify(payload) : undefined,
                     signal: controller ? controller.signal : undefined
-                });
+                }
+            );
 
             const json = await res.json();
             return json as U;

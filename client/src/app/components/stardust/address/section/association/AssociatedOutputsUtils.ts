@@ -1,4 +1,4 @@
-import { AssociationType, IAssociation } from "../../../../../../models/api/stardust/IAssociationsResponse";
+import { AssociationType, IAssociation } from "~models/api/stardust/IAssociationsResponse";
 
 export type AssociatedOutputTab = "Basic" | "NFT" | "Alias" | "Foundry";
 

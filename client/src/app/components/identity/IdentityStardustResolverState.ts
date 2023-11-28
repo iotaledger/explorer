@@ -1,4 +1,4 @@
-import { IIdentityStardustResolveResponse } from "../../../models/api/IIdentityStardustResolveResponse";
+import { IIdentityStardustResolveResponse } from "~models/api/IIdentityStardustResolveResponse";
 export interface IdentityStardustResolverState {
     /**
      * DID to be resolved.

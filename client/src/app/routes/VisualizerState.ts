@@ -1,4 +1,4 @@
-import { IFeedItem } from "../../models/feed/IFeedItem";
+import { IFeedItem } from "~models/feed/IFeedItem";
 import { FeedsState } from "../components/chrysalis/FeedsState";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

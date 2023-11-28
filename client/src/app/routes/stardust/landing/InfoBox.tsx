@@ -1,5 +1,5 @@
 import React from "react";
-import { NumberHelper } from "../../../../helpers/numberHelper";
+import { NumberHelper } from "~helpers/numberHelper";
 import "./InfoBox.scss";
 
 interface InfoBoxProps {

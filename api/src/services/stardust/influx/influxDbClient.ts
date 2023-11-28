@@ -410,14 +410,14 @@ export abstract class InfluxDbClient {
      * Update one cache entry with InfluxDb data.
      * Uses the date from the latest entry as FROM timestamp for the update.
      * @param queryTemplate The query template object.
-     * @param queryTemplate.full Full query (no timespan) and parameterized (from, to).
-     * @param queryTemplate.parameterized Parameterized query (from, to).
+     * @param queryTemplate.full Full query (no timespan) and partial (from, to).
+     * @param queryTemplate.partial Parameterized query (from, to).
      * @param cacheEntryToFetch The cache entry to fetch.
      * @param description The optional entry description for logging.
      * @param debug The optional debug boolean to show more logs.
      */
     private updateCacheEntry<T extends ITimedEntry>(
-        queryTemplate: { full: string; parameterized: string },
+        queryTemplate: { full: string; partial: string },
         cacheEntryToFetch: Map<DayKey, T>,
         description: string = "Daily entry",
         debug: boolean = false
@@ -433,7 +433,7 @@ export abstract class InfluxDbClient {
         }
 
         const query = fromNanoDate ?
-            queryTemplate.parameterized :
+            queryTemplate.partial :
             queryTemplate.full;
 
         this.queryInflux<T>(query, fromNanoDate, this.getToNanoDate()).then(results => {
@@ -466,9 +466,12 @@ export abstract class InfluxDbClient {
      * @param to The ending Date to use in the query.
      */
     private async queryInflux<T>(query: string, from: INanoDate | null, to: INanoDate): Promise<IResults<T>> {
-        const params = from ?
-            { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } } :
-            undefined;
+        const params = { placeholders: { from: undefined, to: to.toNanoISOString() } };
+
+        if (from) {
+            params.placeholders.from = from.toNanoISOString();
+        }
+
         return this._client.query<T>(query, params);
     }
 
@@ -528,7 +531,7 @@ export abstract class InfluxDbClient {
      * @returns Current datetime as INanoDate.
      */
     private getToNanoDate(): INanoDate {
-        return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+        return toNanoDate((moment().startOf("day").valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
     /**

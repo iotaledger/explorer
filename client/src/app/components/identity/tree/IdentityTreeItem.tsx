@@ -3,11 +3,11 @@ import moment from "moment";
 import React, { Component, Fragment, ReactNode } from "react";
 import { IdentityTreeItemProps } from "./IdentityTreeItemProps";
 import { IdentityTreeItemState } from "./IdentityTreeItemState";
-import { ServiceFactory } from "../../../../factories/serviceFactory";
-import { DiffMessage } from "../../../../models/api/IIdentityDiffHistoryResponse";
-import { IIdentityMessageWrapper } from "../../../../models/identity/IIdentityMessageWrapper";
-import { IdentityDiffStorageService } from "../../../../services/identityDiffStorageService";
-import { IdentityService } from "../../../../services/identityService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { DiffMessage } from "~models/api/IIdentityDiffHistoryResponse";
+import { IIdentityMessageWrapper } from "~models/identity/IIdentityMessageWrapper";
+import { IdentityDiffStorageService } from "~services/identityDiffStorageService";
+import { IdentityService } from "~services/identityService";
 import IdentityMsgStatusIcon from "../IdentityMsgStatusIcon";
 import "./IdentityTreeItem.scss";
 

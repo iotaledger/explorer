@@ -1,12 +1,12 @@
 import React from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import OutputPageProps from "./OutputPageProps";
-import mainMessage from "../../../assets/modals/stardust/output/main-header.json";
-import { DateHelper } from "../../../helpers/dateHelper";
-import { useOutputDetails } from "../../../helpers/hooks/useOutputDetails";
-import { TransactionsHelper } from "../../../helpers/stardust/transactionsHelper";
-import { formatSpecialBlockId } from "../../../helpers/stardust/valueFormatHelper";
-import { CHRYSALIS_MAINNET } from "../../../models/config/networkType";
+import mainMessage from "~assets/modals/stardust/output/main-header.json";
+import { DateHelper } from "~helpers/dateHelper";
+import { useOutputDetails } from "~helpers/hooks/useOutputDetails";
+import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { formatSpecialBlockId } from "~helpers/stardust/valueFormatHelper";
+import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";

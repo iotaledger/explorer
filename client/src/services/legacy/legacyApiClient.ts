@@ -1,16 +1,16 @@
-import { FetchHelper } from "../../helpers/fetchHelper";
-import { ICurrenciesResponse } from "../../models/api/ICurrenciesResponse";
-import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
-import { IAddressGetRequest } from "../../models/api/legacy/IAddressGetRequest";
-import { IAddressGetResponse } from "../../models/api/legacy/IAddressGetResponse";
-import { IMilestoneGetRequest } from "../../models/api/legacy/IMilestoneGetRequest";
-import { IMilestoneGetResponse } from "../../models/api/legacy/IMilestoneGetResponse";
-import { ITransactionsGetRequest } from "../../models/api/legacy/ITransactionsGetRequest";
-import { ITransactionsGetResponse } from "../../models/api/legacy/ITransactionsGetResponse";
-import { ITrytesRetrieveRequest } from "../../models/api/legacy/ITrytesRetrieveRequest";
-import { ITrytesRetrieveResponse } from "../../models/api/legacy/ITrytesRetrieveResponse";
-import { IStatsGetRequest } from "../../models/api/stats/IStatsGetRequest";
-import { IStatsGetResponse } from "../../models/api/stats/IStatsGetResponse";
+import { FetchHelper } from "~helpers/fetchHelper";
+import { ICurrenciesResponse } from "~models/api/ICurrenciesResponse";
+import { INetworkGetResponse } from "~models/api/INetworkGetResponse";
+import { IAddressGetRequest } from "~models/api/legacy/IAddressGetRequest";
+import { IAddressGetResponse } from "~models/api/legacy/IAddressGetResponse";
+import { IMilestoneGetRequest } from "~models/api/legacy/IMilestoneGetRequest";
+import { IMilestoneGetResponse } from "~models/api/legacy/IMilestoneGetResponse";
+import { ITransactionsGetRequest } from "~models/api/legacy/ITransactionsGetRequest";
+import { ITransactionsGetResponse } from "~models/api/legacy/ITransactionsGetResponse";
+import { ITrytesRetrieveRequest } from "~models/api/legacy/ITrytesRetrieveRequest";
+import { ITrytesRetrieveResponse } from "~models/api/legacy/ITrytesRetrieveResponse";
+import { IStatsGetRequest } from "~models/api/stats/IStatsGetRequest";
+import { IStatsGetResponse } from "~models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
 
 /**

@@ -1,4 +1,4 @@
-import { IIdentityMessageWrapper } from "./../../../models/identity/IIdentityMessageWrapper";
+import { IIdentityMessageWrapper } from "~models/identity/IIdentityMessageWrapper";
 export interface IdentityJsonCompareProps {
     /**
      * main message that is shown if no comparison is done.

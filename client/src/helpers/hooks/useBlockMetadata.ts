@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
-import { BlockMetadata } from "../../app/routes/stardust/BlockState";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { calculateConflictReason, calculateStatus } from "../../models/tangleStatus";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import { BlockMetadata } from "~app/routes/stardust/BlockState";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { STARDUST } from "~models/config/protocolVersion";
+import { calculateConflictReason, calculateStatus } from "~models/tangleStatus";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { HexHelper } from "../stardust/hexHelper";
 
 /**

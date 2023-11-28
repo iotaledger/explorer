@@ -1,12 +1,12 @@
 /* eslint-disable max-len */
 import React, { Fragment, ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import welcomeMessage from "./../../assets/modals/identity-resolver/welcome.json";
+import welcomeMessage from "~assets/modals/identity-resolver/welcome.json";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { CHRYSALIS, LEGACY, STARDUST } from "../../models/config/protocolVersion";
-import { NetworkService } from "../../services/networkService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
+import { NetworkService } from "~services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityChrysalisResolver from "../components/identity/IdentityChrysalisResolver";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";

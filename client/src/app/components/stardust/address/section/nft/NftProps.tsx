@@ -1,4 +1,4 @@
-import { INftBase } from "../../../../../../models/api/stardust/nft/INftBase";
+import { INftBase } from "~models/api/stardust/nft/INftBase";
 
 export interface NftProps {
     /**

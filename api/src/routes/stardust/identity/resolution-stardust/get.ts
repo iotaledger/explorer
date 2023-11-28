@@ -23,10 +23,9 @@ export async function get(
     ValidationHelper.oneOf(request.network, networks, "network");
 
     const networkConfig = networkService.get(request.network);
-    const providerUrl = networkConfig.provider;
 
     try {
-        const resolvedDocument = await resolveIdentity(providerUrl, request.did);
+        const resolvedDocument = await resolveIdentity(networkConfig.network, request.did);
         const governorAddress = resolvedDocument.metadataGovernorAddress();
         const stateControllerAddress = resolvedDocument.metadataStateControllerAddress();
 
@@ -50,16 +49,12 @@ export async function get(
 
 /**
  * Resolves a UTXO DID into its document.
- *
- * @param apiEndpoint Node URL.
+ * @param network The network in context.
  * @param did DID to resolve.
  * @returns Resolved document.
  */
-async function resolveIdentity(apiEndpoint: string, did: string): Promise<IotaDocument> {
-    const client = new Client({
-        primaryNode: apiEndpoint
-    });
-
+async function resolveIdentity(network: string, did: string): Promise<IotaDocument> {
+    const client = ServiceFactory.get<Client>(`client-${network}`);
     const didClient = new IotaIdentityClient(client);
     const iotaDid = IotaDID.parse(did);
 

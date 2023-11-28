@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import NetworkContext from "../../app/context/NetworkContext";
-import { ServiceFactory } from "../../factories/serviceFactory";
-import { IRichAddress } from "../../models/api/stardust/chronicle/IRichestAddressesResponse";
-import { IDistributionEntry } from "../../models/api/stardust/chronicle/ITokenDistributionResponse";
-import { STARDUST } from "../../models/config/protocolVersion";
-import { StardustApiClient } from "../../services/stardust/stardustApiClient";
+import NetworkContext from "~app/context/NetworkContext";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { IRichAddress } from "~models/api/stardust/chronicle/IRichestAddressesResponse";
+import { IDistributionEntry } from "~models/api/stardust/chronicle/ITokenDistributionResponse";
+import { STARDUST } from "~models/config/protocolVersion";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
 /**
  * State holder for Statistics page token distribution section.

@@ -13,14 +13,14 @@ import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
 import SearchInput from "./components/SearchInput";
 import buildAppRoutes from "./routes";
-import { ServiceFactory } from "../factories/serviceFactory";
-import { isShimmerUiTheme } from "../helpers/networkHelper";
-import { scrollToTop } from "../helpers/pageUtils";
-import { INetwork } from "../models/config/INetwork";
-import { MAINNET } from "../models/config/networkType";
-import { STARDUST } from "../models/config/protocolVersion";
-import { NetworkService } from "../services/networkService";
-import { NodeInfoService } from "../services/nodeInfoService";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { isShimmerUiTheme } from "~helpers/networkHelper";
+import { scrollToTop } from "~helpers/pageUtils";
+import { INetwork } from "~models/config/INetwork";
+import { MAINNET } from "~models/config/networkType";
+import { STARDUST } from "~models/config/protocolVersion";
+import { NetworkService } from "~services/networkService";
+import { NodeInfoService } from "~services/nodeInfoService";
 import "./App.scss";
 
 const App: React.FC<RouteComponentProps<AppRouteProps>> = (
