@@ -1,6 +1,12 @@
+export enum Status {
+    InFlight = "INFLIGHT",
+    Verified = "VERIFIED",
+    Error = "ERROR",
+}
+
 export interface IdentityDomainResolverState {
     verifiedDomainsPresentation: Map<string, {
-        status: "in-flight" | "verified" | "error";
+        status: Status;
         message?: string;
     }>;
 }

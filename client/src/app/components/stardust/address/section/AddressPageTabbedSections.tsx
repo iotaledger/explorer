@@ -203,7 +203,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         <DIDSection
             key={`did-${addressBech32}`}
             network={network}
-            output={addressHex} // TODO: use computed alias ID instead
+            output={addressHex}
         />
     ] : null;
 
