@@ -335,4 +335,15 @@ export const MILESTONE_STATS_QUERY = `
         last("no_payload_count") AS "noPayload"
     FROM "stardust_block_activity"
 `;
+export const MILESTONE_STATS_QUERY_BY_INDEX = `
+    SELECT
+        last("milestone_index") AS "milestoneIndex",
+        last("tagged_data_count") AS "taggedData",
+        last("milestone_count") AS "milestone",
+        last("transaction_count") AS "transaction",
+        last("treasury_transaction_count") AS "treasuryTransaction",
+        last("no_payload_count") AS "noPayload"
+    FROM "stardust_block_activity"
+    WHERE "milestone_index" = $milestoneIndex
+`;
 
