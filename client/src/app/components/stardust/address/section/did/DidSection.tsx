@@ -1,5 +1,5 @@
 import React from "react";
-import IdentityStardustResolver from "../../../../identity/IdentityStardustResolverNew";
+import IdentityStardustResolver from "../../../../identity/IdentityStardustResolver";
 
 interface DIDSectionProps {
     /**
