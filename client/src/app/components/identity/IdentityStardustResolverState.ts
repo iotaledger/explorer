@@ -19,4 +19,6 @@ export interface IdentityStardustResolverState {
      * The resolved document if resolution succeeds
      */
     resolvedIdentity?: IIdentityStardustResolveResponse;
+
+    verifiedDomains?: Map<string, Promise<void>>;
 }

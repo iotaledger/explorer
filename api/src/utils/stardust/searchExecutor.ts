@@ -28,11 +28,30 @@ export class SearchExecutor {
         const searchQuery = this.query;
         const promises: Promise<void>[] = [];
         let promisesResult: ISearchResponse | null = null;
-
         if (searchQuery.did) {
-            return {
-                did: searchQuery.did
-            };
+            promises.push(
+                new Promise((resolve, reject) => {
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(
+                        searchQuery.aliasId,
+                        "aliasOutputId",
+                        network
+                    ).then(
+                        aliasOutputs => {
+                            if (aliasOutputs) {
+                                promisesResult = {
+                                    aliasId: searchQuery.aliasId,
+                                    did: searchQuery.did
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Output (aliasId) not present"));
+                            }
+                        }
+                    ).catch(_ => {
+                        reject(new Error("Output (aliasId) fetch failed"));
+                    });
+                })
+            );
         }
 
         if (searchQuery.milestoneIndex) {

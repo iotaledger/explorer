@@ -194,8 +194,13 @@ export class SearchQueryBuilder {
         let addressType: number;
         let isBech32: boolean = false;
 
-        const q = this.queryLower;
+        let q = this.queryLower;
         const hrp = this.networkBechHrp;
+
+        const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
+        if (did) {
+            q = did.slice(Math.max(0, did.lastIndexOf(":") + 3));
+        }
 
         if (Bech32Helper.matches(q, hrp)) {
             isBech32 = true;

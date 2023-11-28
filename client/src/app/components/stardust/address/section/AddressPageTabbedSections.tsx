@@ -3,6 +3,7 @@ import React from "react";
 import AliasFoundriesSection from "./alias/AliasFoundriesSection";
 import AliasStateSection from "./alias/AliasStateSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
+import DIDSection from "./did/DidSection";
 import AssetsTable from "./native-tokens/AssetsTable";
 import NftMetadataSection from "./nft/NftMetadataSection";
 import NftSection from "./nft/NftSection";
@@ -30,6 +31,7 @@ enum DEFAULT_TABS {
 enum ALIAS_TABS {
     State = "State",
     Foundries = "Foundries",
+    DID = "DID"
 }
 
 enum NFT_TABS {
@@ -197,6 +199,11 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             key={`alias-foundry-${addressBech32}`}
             network={network}
             foundries={aliasFoundries}
+        />,
+        <DIDSection
+            key={`did-${addressBech32}`}
+            network={network}
+            output={addressHex} // TODO: use computed alias ID instead
         />
     ] : null;
 
