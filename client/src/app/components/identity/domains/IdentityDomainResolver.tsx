@@ -36,10 +36,10 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
      */
     public render(): ReactNode {
         return (
-            <div>
-                {[...this.state.verifiedDomainsPresentation.keys()].map(key => (
-                    <div key={key} className="value code row middle">
-                        <div className="margin-r-t">
+            <div className="row">
+                {this.state.verifiedDomainsPresentation.size ? [...this.state.verifiedDomainsPresentation.keys()].map(key => (
+                    <div key={key} className="value code inline-flex">
+                        <div className="margin-r-2">
                             <a href={key}>
                                 {key}
                             </a>
@@ -60,7 +60,7 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
                                 )}
                         </div>
                     </div>
-            )) ?? "no linked domains"}
+            )) : <div className="value code row middle">no linked domains</div>}
             </div>
         );
     }
