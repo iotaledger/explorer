@@ -39,6 +39,10 @@ module.exports = {
                         {
                             from: 'node_modules/@iota/sdk-wasm/web/wasm/iota_sdk_wasm_bg.wasm',
                             to: 'iota_sdk_wasm_bg.wasm'
+                        },
+                        {
+                            from: 'node_modules/@iota/identity-wasm/web/identity_wasm_bg.wasm',
+                            to: 'identity_wasm_bg.wasm'
                         }
                     ]
                 }),
