@@ -36,7 +36,7 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
      */
     public render(): ReactNode {
         return (
-            <div className="row">
+            <div className="row flex-wrap-wrap">
                 {this.state.verifiedDomainsPresentation.size ? [...this.state.verifiedDomainsPresentation.keys()].map(key => (
                     <div key={key} className="value code inline-flex">
                         <div className="margin-r-2">
