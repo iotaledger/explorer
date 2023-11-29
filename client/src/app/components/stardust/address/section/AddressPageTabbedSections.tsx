@@ -13,6 +13,7 @@ import associatedOuputsMessage from "~assets/modals/stardust/address/associated-
 import addressNftsMessage from "~assets/modals/stardust/address/nfts-in-wallet.json";
 import transactionHistoryMessage from "~assets/modals/stardust/address/transaction-history.json";
 import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
+import didMessage from "~assets/modals/stardust/alias/did.json";
 import stateMessage from "~assets/modals/stardust/alias/state.json";
 import nftMetadataMessage from "~assets/modals/stardust/nft/metadata.json";
 import votingMessage from "~assets/modals/stardust/participation/main-header.json";
@@ -83,7 +84,9 @@ const buildAliasAddressTabsOptions = (
     isAliasStateTabDisabled: boolean,
     isAliasDetailsLoading: boolean,
     isAliasFoundriesTabDisabled: boolean,
-    isAliasFoundriesLoading: boolean
+    isAliasFoundriesLoading: boolean,
+    isAliasDIDTabDisabled: boolean,
+    isAliasDIDLoading: boolean,
 ) => ({
     [ALIAS_TABS.State]: {
         disabled: isAliasStateTabDisabled,
@@ -94,6 +97,11 @@ const buildAliasAddressTabsOptions = (
         disabled: isAliasFoundriesTabDisabled,
         isLoading: isAliasFoundriesLoading,
         infoContent: foundriesMessage
+    },
+    [ALIAS_TABS.DID]: {
+        disabled: isAliasDIDTabDisabled,
+        isLoading: isAliasDIDLoading,
+        infoContent: didMessage
     }
 });
 
@@ -234,7 +242,9 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                     !aliasOutput,
                     isAliasDetailsLoading,
                     !aliasFoundries,
-                    isAliasFoundriesLoading
+                    isAliasFoundriesLoading,
+                    false, //TODO: parse state metadata and check if it begins with "DID"
+                    false, //TODO: create a new effect?
                 ),
                 ...defaultTabsOptions
             };
