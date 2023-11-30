@@ -6,6 +6,7 @@ import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResp
 import { IIdentityDidResolveResponse } from "~models/api/IIdentityResolveResponse";
 import { IIdentityStardustResolveResponse } from "~models/api/IIdentityStardustResolveResponse";
 import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
+import * as identity from "@iota/identity-wasm/web";
 
 export class IdentityService {
     /**
@@ -62,5 +63,9 @@ export class IdentityService {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
         const response = await apiClient.didDocument({ did, network });
         return response;
+    }
+
+    public async initLibrary(path = "/identity_wasm_bg.wasm") {
+        return await identity.init(path);
     }
 }

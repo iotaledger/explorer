@@ -150,7 +150,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         isAddressHistoryLoading, isAddressHistoryDisabled,
         isAssociatedOutputsLoading,
         tokensCount, nftCount, associatedOutputCount,
-        eventDetails
+        eventDetails, aliasContainsDID,
+        resolvedDID, isDIDLoading
     } = addressPageState;
 
     if (!bech32AddressDetails) {
@@ -210,8 +211,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
         <DIDSection
             key={`did-${addressBech32}`}
+            resolvedDID={resolvedDID}
             network={network}
-            output={addressHex}
         />
     ] : null;
 
@@ -243,8 +244,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                     isAliasDetailsLoading,
                     !aliasFoundries,
                     isAliasFoundriesLoading,
-                    false, //TODO: parse state metadata and check if it begins with "DID"
-                    false, //TODO: create a new effect?
+                    !aliasContainsDID,
+                    isDIDLoading,
                 ),
                 ...defaultTabsOptions
             };

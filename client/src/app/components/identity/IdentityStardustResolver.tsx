@@ -1,196 +1,181 @@
-import * as identity from "@iota/identity-wasm/web";
+import * as identity from "@iota/identity-wasm/web"; 
 import { DomainLinkageConfiguration, EdDSAJwsVerifier, JwtCredentialValidationOptions, JwtDomainLinkageValidator, LinkedDomainService } from "@iota/identity-wasm/web";
-import React, { Fragment, ReactNode } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import IdentityDomainResolver from "./domains/IdentityDomainResolver";
 import { IdentityStardustResolverProps } from "./IdentityStardustResolverProps";
-import { IdentityStardustResolverState } from "./IdentityStardustResolverState";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~services/identityService";
-import AsyncComponent from "../AsyncComponent";
 import "./IdentityStardustResolver.scss";
 import CopyButton from "../CopyButton";
 import JsonViewer from "../JsonViewer";
 import Spinner from "../Spinner";
 
-class IdentityStardustResolver extends AsyncComponent<IdentityStardustResolverProps,
-    IdentityStardustResolverState
-> {
-    constructor(props: IdentityStardustResolverProps) {
-        super(props);
-        this.state = {
-            did: props.did,
-            aliasId: getAliasId(props.did ?? ""),
-            errorMessage: ""
-        };
-    }
+function IdentityStardustResolver(props: IdentityStardustResolverProps) {
 
-    public async componentDidMount(): Promise<void> {
-        super.componentDidMount();
+    const [DID, setDID] = useState<string>("");
+    useEffect(() => {
+        setDID(props.resolvedDID?.document?.doc.id ?? "")
+    }, [props.resolvedDID])
 
-        if (!this.state.did) {
+    const [governorAddress, setGovernorAddress] = useState<string>("");
+    useEffect(() => {
+        setGovernorAddress(props.resolvedDID?.document?.meta.governorAddress ?? "")
+    }, [props.resolvedDID])
+
+    const [stateControllerAddress, setStateControllerAddress] = useState<string>("");
+    useEffect(() => {
+        setStateControllerAddress(props.resolvedDID?.document?.meta.stateControllerAddress ?? "")
+    }, [props.resolvedDID])
+
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    useEffect(() => {
+        setErrorMessage(props.resolvedDID?.error ?? "")
+    }, [props.resolvedDID])
+
+    const [verifiedDomains, setVerifiedDomains] = useState<Map<string, Promise<void>>>(new Map());
+    useEffect(() => {
+
+        if (!props.resolvedDID?.document) {
             return;
         }
 
-        const resolvedIdentity = await ServiceFactory.get<IdentityService>("identity").resolveIdentityStardust(
-            this.state.did,
-            this.props.network
-        );
+        async function constructVerifiedDomains() {
 
-        if (resolvedIdentity.error) {
-            this.setState({
-                errorMessage: resolvedIdentity.error
-            });
-            return;
-        }
+            const newVerifiedDomains = new Map<string, Promise<void>>();
 
-        this.setState({
-            resolvedIdentity
-        });
+            await ServiceFactory.get<IdentityService>("identity").initLibrary();
 
-        await identity.init("/identity_wasm_bg.wasm");
+            const didDocument = identity.IotaDocument.fromJSON(props.resolvedDID!.document);
+            // Get the Linked Domain Services from the DID Document.
+            const linkedDomainServices = didDocument
+                .service()
+                .filter(service => LinkedDomainService.isValid(service))
+                .map(service => LinkedDomainService.fromService(service));
 
-        const didDocument = identity.IotaDocument.fromJSON(resolvedIdentity.document);
-        // Get the Linked Domain Services from the DID Document.
-        const linkedDomainServices = didDocument
-            .service()
-            .filter(service => LinkedDomainService.isValid(service))
-            .map(service => LinkedDomainService.fromService(service));
 
-        const verifiedDomains = new Map<string, Promise<void>>();
+            for (const entry of linkedDomainServices) {
+                for (const domain of entry.domains()) {
+                    newVerifiedDomains.set(domain, new Promise(async (resolve, reject) => {
+                        // Note that according to the specs, the DID Configuration resource must exist
+                        // at the origin's root, Well-Known Resource directory.
+                        const configurationUrl = new URL("/.well-known/did-configuration.php", domain); // TODO: .json
 
-        for (const entry of linkedDomainServices) {
-            for (const domain of entry.domains()) {
-                verifiedDomains.set(domain, new Promise(async (resolve, reject) => {
-                    // Note that according to the specs, the DID Configuration resource must exist
-                    // at the origin's root, Well-Known Resource directory.
-                    const configurationUrl = new URL("/.well-known/did-configuration.php", domain); // TODO: .json
+                        let fetchedConfigurationResource;
 
-                    let fetchedConfigurationResource;
+                        try {
+                            fetchedConfigurationResource = await fetch(configurationUrl);
+                        } catch (err) {
+                            console.log(err);
+                            reject(new Error(`could not fetch configuration from ${domain}`));
+                            return;
+                        }
 
-                    try {
-                        fetchedConfigurationResource = await fetch(configurationUrl);
-                    } catch (err) {
-                        console.log(err);
-                        reject(new Error(`could not fetch configuration from ${domain}`));
-                        return;
-                    }
+                        let parsedConfigurationResource;
 
-                    let parsedConfigurationResource;
+                        try {
+                            const jsonResponse = await fetchedConfigurationResource.json();
+                            parsedConfigurationResource = DomainLinkageConfiguration.fromJSON(jsonResponse);
+                        } catch (err) {
+                            console.log(err);
+                            reject(new Error(`could not parse configuration from domain ${domain}`));
+                            return;
+                        }
 
-                    try {
-                        const jsonResponse = await fetchedConfigurationResource.json();
-                        parsedConfigurationResource = DomainLinkageConfiguration.fromJSON(jsonResponse);
-                    } catch (err) {
-                        console.log(err);
-                        reject(new Error(`could not parse configuration from domain ${domain}`));
-                        return;
-                    }
-
-                    try {
-                        new JwtDomainLinkageValidator(new EdDSAJwsVerifier()).validateLinkage(
-                            didDocument,
-                            parsedConfigurationResource,
-                            domain,
-                            new JwtCredentialValidationOptions()
-                        );
-                        resolve();
-                    } catch (err) {
-                        reject(err);
-                    }
-                }));
+                        try {
+                            new JwtDomainLinkageValidator(new EdDSAJwsVerifier()).validateLinkage(
+                                didDocument,
+                                parsedConfigurationResource,
+                                domain,
+                                new JwtCredentialValidationOptions()
+                            );
+                            resolve();
+                        } catch (err) {
+                            reject(err);
+                        }
+                    }));
+                }
             }
+
+            setVerifiedDomains(newVerifiedDomains);
         }
+        constructVerifiedDomains();
+    }, [props.resolvedDID])
 
-        this.setState({
-            verifiedDomains
-        });
-    }
+    return (
+        <div>
+            <div className="label">DID</div>
+            <div className="row middle value code highlight margin-b-s">
+                <div className="margin-r-t">{DID}</div>
+                <CopyButton copy={DID} />
+            </div>
 
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
-    public render(): ReactNode {
-        const network = this.props.network;
-        const governorAddress = this.state.resolvedIdentity?.document?.meta.governorAddress;
-        const stateControllerAddress = this.state.resolvedIdentity?.document?.meta.stateControllerAddress;
-        return (
-            <div>
-
-
-                <div className="label">DID</div>
-                <div className="row middle value code highlight margin-b-s">
-                    <div className="margin-r-t">{this.props.did}</div>
-                    <CopyButton copy={this.props.did} />
-                </div>
-
-                {this.state.resolvedIdentity?.document &&
-                        !this.state.errorMessage && (
-                            <Fragment>
-                                <div className="margin-b-s">
-                                    <div className="label">Governor</div>
-                                    <div className="value code row middle">
-                                        <div className="margin-r-t">
-                                            <a onClick={() => {
-                                                window.location.href =
-                                                    // eslint-disable-next-line max-len
-                                                    `/${network}/search/${governorAddress}`;
-                                            }}
-                                            >
-                                                {governorAddress}
-                                            </a>
-                                        </div>
-                                        <CopyButton
-                                            copy={this.state.resolvedIdentity.document.meta.governorAddress}
-                                        />
-                                    </div>
+            {props.resolvedDID?.document &&
+                !errorMessage && (
+                    <Fragment>
+                        <div className="margin-b-s">
+                            <div className="label">Governor</div>
+                            <div className="value code row middle">
+                                <div className="margin-r-t">
+                                    <a onClick={() => {
+                                        window.location.href =
+                                            // eslint-disable-next-line max-len
+                                            `/${props.network}/search/${governorAddress}`;
+                                    }}
+                                    >
+                                        {governorAddress}
+                                    </a>
                                 </div>
+                                <CopyButton
+                                    copy={governorAddress}
+                                />
+                            </div>
+                        </div>
 
-                                <div className="margin-b-s">
-                                    <div className="label">State Controller</div>
-                                    <div className="value code row middle">
-                                        <div className="margin-r-t">
-                                            <a onClick={() => {
-                                                // eslint-disable-next-line max-len
-                                                window.location.href = `/${network}/search/${stateControllerAddress}`;
-                                            }}
-                                            >
-                                                {stateControllerAddress}
-                                            </a>
-                                        </div>
-                                        <CopyButton
-                                            copy={stateControllerAddress}
-                                        />
-                                    </div>
+                        <div className="margin-b-s">
+                            <div className="label">State Controller</div>
+                            <div className="value code row middle">
+                                <div className="margin-r-t">
+                                    <a onClick={() => {
+                                        // eslint-disable-next-line max-len
+                                        window.location.href = `/${props.network}/search/${stateControllerAddress}`;
+                                    }}
+                                    >
+                                        {stateControllerAddress}
+                                    </a>
                                 </div>
+                                <CopyButton
+                                    copy={stateControllerAddress}
+                                />
+                            </div>
+                        </div>
 
-                                <div className="margin-b-s">
-                                    <div className="label">Linked Domains</div>
-                                    <IdentityDomainResolver verifiedDomains={this.state.verifiedDomains} />
-                                </div>
+                        <div className="margin-b-s">
+                            <div className="label">Linked Domains</div>
+                            <IdentityDomainResolver verifiedDomains={verifiedDomains} />
+                        </div>
 
-                            </Fragment>
-                        )}
+                    </Fragment>
+                )}
 
-                <div className="margin-b-s">
-                    <h3 className="label">DID Document</h3>
+            <div className="margin-b-s">
+                <h3 className="label">DID Document</h3>
 
 
-                    {!this.state.resolvedIdentity && !this.state.errorMessage && (
+                {!props.resolvedDID && !errorMessage && (
                     <Fragment>
                         <h3 className="margin-r-s">Resolving DID ...</h3>
                         <Spinner />
                     </Fragment>
                 )}
 
-                    {this.state.errorMessage && (
+                {errorMessage && (
                     <div className="identity-json-container did-error">
                         <p className="margin-b-t">ಠ_ಠ </p>
-                        <p className="">{this.state.errorMessage}</p>
+                        <p className="">{errorMessage}</p>
                     </div>
-                 )}
+                )}
 
-                    {this.state.resolvedIdentity && !this.state.errorMessage && (
+                {props.resolvedDID && !errorMessage && (
                     <div
                         className="
                             json-wraper-stardust-identity
@@ -201,47 +186,47 @@ class IdentityStardustResolver extends AsyncComponent<IdentityStardustResolverPr
                     >
                         <JsonViewer
                             json={JSON.stringify(
-                                this.state.resolvedIdentity?.document?.doc,
+                                props.resolvedDID?.document?.doc,
                                 null,
                                 4
                             )}
                         />
                     </div>
                 )}
-                </div>
+            </div>
 
-                <div className="margin-b-s">
-                    {this.state.resolvedIdentity && !this.state.errorMessage && (
+            <div className="margin-b-s">
+                {props.resolvedDID && !errorMessage && (
 
-                        <div>
-                            <h3 className="label">
-                                Metadata
-                            </h3>
+                    <div>
+                        <h3 className="label">
+                            Metadata
+                        </h3>
 
-                            <div
-                                className="
+                        <div
+                            className="
                                     json-wraper-stardust-identity
                                     card--value
                                     card--value-textarea
                                     card--value-textarea__json
                                 "
-                            >
-                                <JsonViewer
-                                    json={JSON.stringify(
-                                            this.state.resolvedIdentity?.document?.meta,
-                                            null,
-                                            3
-                                        )}
-                                />
-                            </div>
-
+                        >
+                            <JsonViewer
+                                json={JSON.stringify(
+                                    props.resolvedDID?.document?.meta,
+                                    null,
+                                    3
+                                )}
+                            />
                         </div>
-                    )}
-                </div>
+
+                    </div>
+                )}
             </div>
-        );
-    }
+        </div>
+    );
 }
+// }
 export default IdentityStardustResolver;
 
 /**
