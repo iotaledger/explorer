@@ -58,7 +58,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                     newVerifiedDomains.set(domain, new Promise(async (resolve, reject) => {
                         // Note that according to the specs, the DID Configuration resource must exist
                         // at the origin's root, Well-Known Resource directory.
-                        const configurationUrl = new URL("/.well-known/did-configuration.php", domain); // TODO: .json
+                        const configurationUrl = new URL("/.well-known/did-configuration.json", domain);
 
                         let fetchedConfigurationResource;
 
