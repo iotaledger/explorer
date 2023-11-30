@@ -162,11 +162,12 @@ export abstract class InfluxDbClient {
      * @param milestoneIndex - The milestone index.
      */
     public async collectMilestoneStatsByIndex(milestoneIndex: number) {
+        console.log('--- request ', milestoneIndex);
         try {
             for (const update of await
                 this._client.query<MilestoneUpdate>(MILESTONE_STATS_QUERY_BY_INDEX, { placeholders: { milestoneIndex } })
                 ) {
-                this.updateCacheMilestone(update);
+                this.updateMilestoneCache(update);
             }
         } catch (err) {
             logger.warn(`[InfluxDb] Failed refreshing milestone stats for "${this._network.network}". Cause: ${err}`);
@@ -378,14 +379,14 @@ export abstract class InfluxDbClient {
                 this.queryInflux<MilestoneUpdate>(
                     MILESTONE_STATS_QUERY, null, this.getToNanoDate()
                 )) {
-                this.updateCacheMilestone(update);
+                this.updateMilestoneCache(update);
             }
         } catch (err) {
             logger.warn(`[InfluxDb] Failed refreshing milestone stats for "${this._network.network}". Cause: ${err}`);
         }
     }
 
-    private updateCacheMilestone(update: MilestoneUpdate) {
+    private updateMilestoneCache(update: MilestoneUpdate) {
         if (update.milestoneIndex !== undefined && !this._milestoneCache.has(update.milestoneIndex)) {
             const {
                 milestoneIndex, transaction, milestone, taggedData, treasuryTransaction, noPayload
