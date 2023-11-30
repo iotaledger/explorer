@@ -4,11 +4,12 @@ import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~/services/identityService";
 import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
-/** TODO
- * Fetch alias output details
+/**
+ * Fetch resolved DID
  * @param network The Network in context
- * @param aliasId The alias id
- * @returns The output response and loading bool.
+ * @param bech32Hrp The alias id
+ * @param addressHex Hex representation of the alias address
+ * @returns The DID response and loading bool.
  */
 export function useResolvedDID(network: string, bech32Hrp: string , addressHex: string | null):
     [

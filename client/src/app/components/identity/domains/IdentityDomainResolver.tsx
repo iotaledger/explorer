@@ -20,7 +20,6 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
 
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        console.log(this.props);
         this.computeVerifiedDomainsPresentation(this.props.verifiedDomains);
     }
 

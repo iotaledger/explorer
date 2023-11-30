@@ -1,11 +1,10 @@
 import { AliasOutput, hexToUtf8 } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 
-/** TODO
- * Fetch Address alias UTXOs
- * @param network The Network in context
- * @param addressBech32 The address in bech32 format
- * @returns The output responses and loading bool.
+/**
+ * Determine if an alias contains a DID
+ * @param alias The alias output to check
+ * @returns The result.
  */
 export function useAliasContainsDID(
     alias: AliasOutput | null
