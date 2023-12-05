@@ -15,7 +15,8 @@ import {
     NFT_STAT_TOTAL_QUERY,
     SHIMMER_CLAIMED_TOTAL_QUERY,
     MILESTONE_STATS_QUERY,
-    STORAGE_DEPOSIT_TOTAL_QUERY
+    STORAGE_DEPOSIT_TOTAL_QUERY,
+    MILESTONE_STATS_QUERY_BY_INDEX
 } from "./influxQueries";
 import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
@@ -31,6 +32,15 @@ import {
     ITokensHeldWithUnlockConditionDailyInflux, ITokensTransferredDailyInflux, ITransactionsDailyInflux,
     IUnclaimedGenesisOutputsDailyInflux, IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
 } from "../../../models/influx/IInfluxTimedEntries";
+
+type MilestoneUpdate = ITimedEntry & {
+    milestoneIndex: number;
+    taggedData: number;
+    milestone: number;
+    transaction: number;
+    treasuryTransaction: number;
+    noPayload: number;
+};
 
 /**
  * The collect graph data interval cron expression.
@@ -148,6 +158,23 @@ export abstract class InfluxDbClient {
     }
 
     /**
+     * Get the milestone analytics by index and set it in the cache.
+     * @param milestoneIndex - The milestone index.
+     */
+    public async collectMilestoneStatsByIndex(milestoneIndex: number) {
+        console.log('--- request ', milestoneIndex);
+        try {
+            for (const update of await
+                this._client.query<MilestoneUpdate>(MILESTONE_STATS_QUERY_BY_INDEX, { placeholders: { milestoneIndex } })
+                ) {
+                this.updateMilestoneCache(update);
+            }
+        } catch (err) {
+            logger.warn(`[InfluxDb] Failed refreshing milestone stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    /**
      * Function to sort map entries in ascending order.
      * @param a The first entry
      * @param z The second entry
@@ -187,7 +214,7 @@ export abstract class InfluxDbClient {
                 void this.collectAnalytics();
             });
 
-            cron.schedule("*/5 * * * * *", async () => {
+            cron.schedule("*/4 * * * * *", async () => {
                 // eslint-disable-next-line no-void
                 void this.collectMilestoneStats();
             });
@@ -349,60 +376,56 @@ export abstract class InfluxDbClient {
         logger.debug(`[InfluxDb] Collecting milestone stats for "${this._network.network}"`);
         try {
             for (const update of await
-                this.queryInflux<ITimedEntry & {
-                    milestoneIndex: number;
-                    taggedData: number;
-                    milestone: number;
-                    transaction: number;
-                    treasuryTransaction: number;
-                    noPayload: number;
-                }>(
+                this.queryInflux<MilestoneUpdate>(
                     MILESTONE_STATS_QUERY, null, this.getToNanoDate()
-                )
-            ) {
-                if (update.milestoneIndex !== undefined && !this._milestoneCache.has(update.milestoneIndex)) {
-                    const {
-                        milestoneIndex, transaction, milestone, taggedData, treasuryTransaction, noPayload
-                    } = update;
-                    const blockCount = transaction + milestone + taggedData + treasuryTransaction + noPayload;
-                    this._milestoneCache.set(milestoneIndex, {
-                        milestoneIndex,
-                        blockCount,
-                        perPayloadType: {
-                            transaction,
-                            milestone,
-                            taggedData,
-                            treasuryTransaction,
-                            noPayload
-                        }
-                    });
-
-                    logger.debug(
-                        `[InfluxDb] Added milestone index "${milestoneIndex}" to cache for "${this._network.network}"`
-                    );
-
-                    if (this._milestoneCache.size > MILESTONE_CACHE_MAX) {
-                        let lowestIndex: number;
-                        for (const index of this._milestoneCache.keys()) {
-                            if (!lowestIndex) {
-                                lowestIndex = index;
-                            }
-
-                            if (milestoneIndex < lowestIndex) {
-                                lowestIndex = index;
-                            }
-                        }
-
-                        logger.debug(
-                            `[InfluxDb] Deleting milestone index "${lowestIndex}" ("${this._network.network}")`
-                        );
-
-                        this._milestoneCache.delete(lowestIndex);
-                    }
-                }
+                )) {
+                this.updateMilestoneCache(update);
             }
         } catch (err) {
             logger.warn(`[InfluxDb] Failed refreshing milestone stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    private updateMilestoneCache(update: MilestoneUpdate) {
+        if (update.milestoneIndex !== undefined && !this._milestoneCache.has(update.milestoneIndex)) {
+            const {
+                milestoneIndex, transaction, milestone, taggedData, treasuryTransaction, noPayload
+            } = update;
+            const blockCount = transaction + milestone + taggedData + treasuryTransaction + noPayload;
+            this._milestoneCache.set(milestoneIndex, {
+                milestoneIndex,
+                blockCount,
+                perPayloadType: {
+                    transaction,
+                    milestone,
+                    taggedData,
+                    treasuryTransaction,
+                    noPayload
+                }
+            });
+
+            logger.debug(
+                `[InfluxDb] Added milestone index "${milestoneIndex}" to cache for "${this._network.network}"`
+            );
+
+            if (this._milestoneCache.size > MILESTONE_CACHE_MAX) {
+                let lowestIndex: number;
+                for (const index of this._milestoneCache.keys()) {
+                    if (!lowestIndex) {
+                        lowestIndex = index;
+                    }
+
+                    if (milestoneIndex < lowestIndex) {
+                        lowestIndex = index;
+                    }
+                }
+
+                logger.debug(
+                    `[InfluxDb] Deleting milestone index "${lowestIndex}" ("${this._network.network}")`
+                );
+
+                this._milestoneCache.delete(lowestIndex);
+            }
         }
     }
 
@@ -410,14 +433,14 @@ export abstract class InfluxDbClient {
      * Update one cache entry with InfluxDb data.
      * Uses the date from the latest entry as FROM timestamp for the update.
      * @param queryTemplate The query template object.
-     * @param queryTemplate.full Full query (no timespan) and parameterized (from, to).
-     * @param queryTemplate.parameterized Parameterized query (from, to).
+     * @param queryTemplate.full Full query (no timespan) and partial (from, to).
+     * @param queryTemplate.partial Parameterized query (from, to).
      * @param cacheEntryToFetch The cache entry to fetch.
      * @param description The optional entry description for logging.
      * @param debug The optional debug boolean to show more logs.
      */
     private updateCacheEntry<T extends ITimedEntry>(
-        queryTemplate: { full: string; parameterized: string },
+        queryTemplate: { full: string; partial: string },
         cacheEntryToFetch: Map<DayKey, T>,
         description: string = "Daily entry",
         debug: boolean = false
@@ -433,7 +456,7 @@ export abstract class InfluxDbClient {
         }
 
         const query = fromNanoDate ?
-            queryTemplate.parameterized :
+            queryTemplate.partial :
             queryTemplate.full;
 
         this.queryInflux<T>(query, fromNanoDate, this.getToNanoDate()).then(results => {
@@ -466,9 +489,12 @@ export abstract class InfluxDbClient {
      * @param to The ending Date to use in the query.
      */
     private async queryInflux<T>(query: string, from: INanoDate | null, to: INanoDate): Promise<IResults<T>> {
-        const params = from ?
-            { placeholders: { from: from.toNanoISOString(), to: to.toNanoISOString() } } :
-            undefined;
+        const params = { placeholders: { from: undefined, to: to.toNanoISOString() } };
+
+        if (from) {
+            params.placeholders.from = from.toNanoISOString();
+        }
+
         return this._client.query<T>(query, params);
     }
 
@@ -528,7 +554,7 @@ export abstract class InfluxDbClient {
      * @returns Current datetime as INanoDate.
      */
     private getToNanoDate(): INanoDate {
-        return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+        return toNanoDate((moment().startOf("day").valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
     /**

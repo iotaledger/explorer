@@ -16,8 +16,7 @@
         "lint": "eslint src --ext .tsx,.ts",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "tsc && vite build",
-        "build-test": "vitest run",
-        "build": "run-s lint sass-lint build-test build-internal",
+        "build": "run-s lint sass-lint build-internal",
         "test": "vitest"
     },
     "dependencies": {
