@@ -224,3 +224,4 @@ const buildAppRoutes = (
 };
 
 export default buildAppRoutes;
+
