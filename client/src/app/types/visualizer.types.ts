@@ -6,17 +6,3 @@ export type TSelectNode = (node?: Viva.Graph.INode<INodeData, unknown>) => void;
 
 export type TSelectFeedItem = IFeedBlockData | null;
 
-export interface IVisualizerHookReturn {
-    setIsPlaying: (isPlaying: boolean) => void;
-    selectNode: (node?: Viva.Graph.INode<INodeData, unknown>) => void;
-    filter: string;
-    setFilter: React.Dispatch<React.SetStateAction<string>>;
-    isPlaying: boolean;
-    blocksCount: number;
-    selectedFeedItem: IFeedBlockData | null;
-    isFormatAmountsFull: boolean | null;
-    setIsFormatAmountsFull: React.Dispatch<
-        React.SetStateAction<boolean | null>
-    >;
-    lastClick: number | null;
-}

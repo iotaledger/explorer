@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
-import { TSelectFeedItem, TSelectNode } from "~/app/types/visualizer.types";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IFeedBlockData } from "~models/api/stardust/feed/IFeedBlockData";
 import { IFeedBlockMetadata } from "~models/api/stardust/feed/IFeedBlockMetadata";
@@ -10,18 +9,18 @@ import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
 import { buildNodeShader } from "../nodeShader";
 import { Converter } from "../stardust/convertUtils";
 
-export const MAX_ITEMS: number = 2500;
-export const FEED_PROBE_THRESHOLD: number = 3000;
-export const EDGE_COLOR_LIGHT: number = 0x00000055;
-export const EDGE_COLOR_DARK: number = 0xFFFFFF33;
-export const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
-export const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
-export const COLOR_PENDING: string = "0xbbbbbb";
-export const COLOR_REFERENCED: string = "0x61e884";
-export const COLOR_CONFLICTING: string = "0xff8b5c";
-export const COLOR_INCLUDED: string = "0x4caaff";
-export const COLOR_MILESTONE: string = "0x666af6";
-export const COLOR_SEARCH_RESULT: string = "0xC061E8";
+const MAX_ITEMS: number = 2500;
+const FEED_PROBE_THRESHOLD: number = 3000;
+const EDGE_COLOR_LIGHT: number = 0x00000055;
+const EDGE_COLOR_DARK: number = 0xFFFFFF33;
+const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
+const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
+const COLOR_PENDING: string = "0xbbbbbb";
+const COLOR_REFERENCED: string = "0x61e884";
+const COLOR_CONFLICTING: string = "0xff8b5c";
+const COLOR_INCLUDED: string = "0x4caaff";
+const COLOR_MILESTONE: string = "0x666af6";
+const COLOR_SEARCH_RESULT: string = "0xC061E8";
 
 /**
  * Setup the Visualizer state and ook into feed service for visalizer data.
@@ -29,18 +28,18 @@ export const COLOR_SEARCH_RESULT: string = "0xC061E8";
  * @param graphElement The div element ref to hook the graph
  * @returns Milestones and latestMilestonIndex
  */
-function useVisualizerState(network: string, graphElement: React.MutableRefObject<HTMLDivElement | null>): {
-    toggleActivity: () => void;
-    selectNode: TSelectNode;
-    filter: string;
-    setFilter: React.Dispatch<React.SetStateAction<string>>;
-    isActive: boolean;
-    itemCount: number;
-    selectedFeedItem: TSelectFeedItem;
-    isFormatAmountsFull: boolean | null;
-    setIsFormatAmountsFull: React.Dispatch<React.SetStateAction<boolean | null>>;
-    lastClick: number | null;
-} {
+export function useVisualizerState(network: string, graphElement: React.MutableRefObject<HTMLDivElement | null>): [
+    (() => void),
+    ((node?: Viva.Graph.INode<INodeData, unknown>) => void),
+    string,
+    React.Dispatch<React.SetStateAction<string>>,
+    boolean,
+    number,
+    (IFeedBlockData | null),
+    (boolean | null),
+    React.Dispatch<React.SetStateAction<boolean | null>>,
+    number | null
+] {
     const [settingsService] = useState<SettingsService>(ServiceFactory.get<SettingsService>("settings"));
     const [darkMode, setDarkMode] = useState<boolean | null>(
         settingsService.get().darkMode ?? null
@@ -539,7 +538,7 @@ function useVisualizerState(network: string, graphElement: React.MutableRefObjec
         setDarkMode(dMode);
     }
 
-    return {
+    return [
         toggleActivity,
         selectNode,
         filter,
@@ -549,8 +548,6 @@ function useVisualizerState(network: string, graphElement: React.MutableRefObjec
         selectedFeedItem,
         isFormatAmountsFull,
         setIsFormatAmountsFull,
-        lastClick: lastClick.current
-    };
+        lastClick.current
+    ];
 }
-
-export default useVisualizerState;

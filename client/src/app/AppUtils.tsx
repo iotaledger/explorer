@@ -145,3 +145,4 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
         </Helmet>
     );
 };
+

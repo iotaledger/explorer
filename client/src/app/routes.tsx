@@ -35,7 +35,7 @@ import StardustOutputPage from "./routes/stardust/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
-import { VisualizerContainer as StardustVisualizer } from "./routes/stardust/VisualizerContainer";
+import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
