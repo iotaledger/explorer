@@ -1,4 +1,4 @@
-import { SECOND } from "../../constants";
+import { SECOND } from "./constants";
 
 const BPS_SPLIT_TO = 4;
 

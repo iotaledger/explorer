@@ -10,7 +10,7 @@ import { COLORS, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
-import { BPSCounter } from "./worker/entities/BPSCounter";
+import { BPSCounter } from "./BPSCounter";
 import { Wrapper } from "../../app/components/stardust/Visualizer/Wrapper";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
