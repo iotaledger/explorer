@@ -164,29 +164,6 @@ export class StardustFeedClient {
         }
     }
 
-    public replayAttack(cb: (block: IFeedBlockData) => void) {
-        this.socket = io(this.endpoint, {
-            upgrade: true,
-            transports: ["websocket"]
-        });
-        try {
-            if (this.socket) {
-                this.socket.on("replayAttack", (block: IFeedBlockData) => {
-                    console.log("replayAttack from websocket");
-                    cb(block);
-                });
-
-                this.socket.on("replayAttackEnd", () => {
-                    console.log("replayAttackEnd from websocket");
-                });
-
-                this.socket.emit("replayAttack");
-            }
-        } catch {
-            console.error("[FeedClient] Could not replay attack");
-        }
-    }
-
     /**
      * Subscribe to the feed of milestones.
      * @param onMilestoneCallback the callback for block data updates.
