@@ -36,7 +36,12 @@ export async function get(
     }
 
     const milestoneIndex = Number.parseInt(request.milestoneIndex, 10);
-    const maybeMsStats = await influxService.fetchAnalyticsForMilestoneWithRetries(milestoneIndex);
+    let maybeMsStats = await influxService.fetchAnalyticsForMilestoneWithRetries(milestoneIndex);
+
+    if (!maybeMsStats) {
+        maybeMsStats = await influxService.fetchAnalyticsForMilestone(milestoneIndex);
+    }
+
 
     return maybeMsStats ? {
         milestoneIndex: maybeMsStats.milestoneIndex,
