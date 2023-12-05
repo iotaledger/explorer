@@ -121,6 +121,11 @@ export class InfluxDBService extends InfluxDbClient {
         return this._milestoneCache;
     }
 
+    public async fetchAnalyticsForMilestone(milestoneIndex: number) {
+        await this.collectMilestoneStatsByIndex(milestoneIndex);
+        return this._milestoneCache.get(milestoneIndex);
+    }
+
     public async fetchAnalyticsForMilestoneWithRetries(
         milestoneIndex: number
     ): Promise<IMilestoneAnalyticStats | undefined> {

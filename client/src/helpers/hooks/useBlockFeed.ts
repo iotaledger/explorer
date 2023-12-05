@@ -27,6 +27,7 @@ export function useBlockFeed(network: string): [
     const resetCounter = useRef<number>(0);
     const [milestones, setMilestones] = useState<IMilestoneFeedItem[]>([]);
     const [latestMilestonIndex, setLatestMilestoneIndex] = useState<number | null>(null);
+    const latestMilestoneIndexRef = useRef<number | null>(latestMilestonIndex);
 
     const fetchLatestCachedMilestones = useCallback(async () => {
         if (apiClient) {
@@ -61,6 +62,10 @@ export function useBlockFeed(network: string): [
     }, [network, feedProbe]);
 
     useEffect(() => {
+        latestMilestoneIndexRef.current = latestMilestonIndex;
+    }, [latestMilestonIndex]);
+
+    useEffect(() => {
         // eslint-disable-next-line no-void
         void fetchLatestCachedMilestones();
         const feedService = ServiceFactory.get<StardustFeedClient>(`feed-${network}`);
@@ -69,7 +74,7 @@ export function useBlockFeed(network: string): [
             const onMilestoneUpdate = (newMilestone: IFeedMilestoneData) => {
                 lastUpdateTime.current = Date.now();
                 if (isMounted) {
-                    if (isMounted && (latestMilestonIndex ?? 0) < newMilestone.milestoneIndex) {
+                    if (isMounted && (latestMilestoneIndexRef.current ?? 0) < newMilestone.milestoneIndex) {
                         setLatestMilestoneIndex(newMilestone.milestoneIndex);
                     }
                     if (isMounted) {
