@@ -331,4 +331,3 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         </div>
     );
 };
-
