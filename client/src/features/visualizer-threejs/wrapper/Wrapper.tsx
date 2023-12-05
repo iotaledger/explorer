@@ -1,11 +1,11 @@
 import React from "react";
+import Modal from "~/app/components/Modal";
+import { TSelectFeedItem, TSelectNode } from "~/app/types/visualizer.types";
+import { INetwork } from "~/models/config/INetwork";
 import { KeyPanel } from "./KeyPanel";
+import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import { StatsPanel } from "./StatsPanel";
-import mainHeader from "../../../../assets/modals/visualizer/main-header.json";
-import { INetwork } from "../../../../models/config/INetwork";
-import { TSelectFeedItem, TSelectNode } from "../../../types/visualizer.types";
-import Modal from "../../Modal";
 
 export const Wrapper = ({
     blocksCount,
@@ -33,7 +33,7 @@ export const Wrapper = ({
     readonly isEdgeRenderingEnabled?: boolean;
     readonly setEdgeRenderingEnabled?: ((isEnabled: boolean) => void);
 }) => (
-    <div className="visualizer-stardust">
+    <div className="visualizer-nova">
         <div className="row middle">
             <div className="row middle heading margin-r-t margin-b-t">
                 <h1>Visualizer</h1>

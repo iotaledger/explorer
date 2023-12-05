@@ -1,8 +1,8 @@
-@import "../../../scss/fonts";
-@import "../../../scss/mixins";
-@import "../../../scss/media-queries";
-@import "../../../scss/variables";
-@import "../../../scss/themes";
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .visualizer-nova {
   position: relative;
@@ -87,11 +87,11 @@
     display: flex;
     position: absolute;
     z-index: 1;
-    top: 0;
-    right: 30px;
-    bottom: 0;
+    top: 90px!important;
+    left: 20px!important;
+    bottom: auto!important;
+    justify-content: left!important;
     align-items: center;
-    justify-content: center;
     pointer-events: none;
 
     .stats-panel {
@@ -99,13 +99,17 @@
 
       .card--value,
       .card--label {
-        text-align: right;
+        text-align: left;
       }
       .card--label {
-        justify-content: flex-end;
+        justify-content: flex-start;
       }
       .card--content {
-         padding: 20px 30px;
+         padding: 0;
+      }
+      .stats-panel__info{
+          padding: 0 10px;
+          display: inline-block;
       }
     }
 

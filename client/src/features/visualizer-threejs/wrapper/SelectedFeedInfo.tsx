@@ -2,16 +2,16 @@ import { CONFLICT_REASON_STRINGS, ConflictReason, hexToUtf8 } from "@iota/sdk-wa
 import classNames from "classnames";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import CloseIcon from "../../../../assets/close.svg?react";
-import DropdownIcon from "../../../../assets/dropdown-arrow.svg?react";
-import { DateHelper } from "../../../../helpers/dateHelper";
-import { formatAmount } from "../../../../helpers/stardust/valueFormatHelper";
-import { INetwork } from "../../../../models/config/INetwork";
-import NetworkContext from "../../../context/NetworkContext";
-import { TSelectNode } from "../../../types/visualizer.types";
-import BlockTangleState from "../block/BlockTangleState";
-import TruncatedId from "../TruncatedId";
-import { useTangleStore } from "../../../../features/visualizer-threejs/store";
+import BlockTangleState from "~/app/components/stardust/block/BlockTangleState";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
+import NetworkContext from "~/app/context/NetworkContext";
+import { TSelectNode } from "~/app/types/visualizer.types";
+import CloseIcon from "~assets/close.svg?react";
+import DropdownIcon from "~assets/dropdown-arrow.svg?react";
+import { DateHelper } from "~helpers/dateHelper";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
+import { useTangleStore } from "../store";
+import { INetwork } from "~models/config/INetwork";
 import "./KeyPanel.scss";
 
 export const SelectedFeedInfo = ({

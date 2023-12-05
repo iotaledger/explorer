@@ -2,7 +2,7 @@ import React from "react";
 
 import "./KeyPanel.scss";
 
-export const KeyPanel = () => (
+export const KeyPanel: React.FC = () => (
     <div className="key-panel-container">
         <div className="card key-panel">
             <div className="key-panel-item">
