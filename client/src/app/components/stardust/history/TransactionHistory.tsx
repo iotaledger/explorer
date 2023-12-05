@@ -1,92 +1,56 @@
 /* eslint-disable no-void */
-import React, {useCallback, useEffect, useMemo, useState} from "react";
-import TransactionCard from "./TransactionCard";
-import TransactionRow from "./TransactionRow";
-import { useAddressHistory } from "~helpers/hooks/useAddressHistory";
+import React, {useEffect, useMemo, useState} from "react";
+import {useAddressHistory} from "~helpers/hooks/useAddressHistory";
 import DownloadModal from "../DownloadModal";
-import "./TransactionHistory.scss";
 import {OutputResponse} from "@iota/sdk-wasm/web";
 import {ITransactionHistoryItem} from "~models/api/stardust/ITransactionHistoryResponse";
 
-interface TransactionHistoryProps {
-    readonly network: string;
-    readonly address?: string;
-    readonly setLoading: (isLoadin: boolean) => void;
-    readonly setDisabled?: (isDisabled: boolean) => void;
-}
+/** Local imports */
+import "./TransactionHistory.scss";
+import TransactionCard from "./TransactionCard";
+import TransactionRow from "./TransactionRow";
+import { ICalculatedTransaction, TransactionHistoryProps } from "./history.types";
+import {calculateBalanceChange, mapByTransactionId} from "./history.helpers";
+
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (
     { network, address, setLoading, setDisabled }
 ) => {
-    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
+    let [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
         network,
         address,
         setDisabled
     );
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
 
+    // historyView = [];
     useEffect(() => {
         setLoading(isLoading);
     }, [isLoading]);
 
-    let isDarkBackgroundRow = false;
-
     const byTransactionId = useMemo(() => {
-        const byTransactionId: { [key: string]: (OutputResponse & ITransactionHistoryItem)[] } = {};
-        historyView.forEach((historyItem) => {
-            const outputDetails = outputDetailsMap[historyItem.outputId];
-            if (!outputDetails) {
-                return;
-            }
-            const transactionId = historyItem.isSpent ?
-                outputDetails.metadata.transactionIdSpent :
-                outputDetails.metadata.transactionId;
-
-            if (!transactionId) {
-                return;
-            }
-
-            if (!byTransactionId[transactionId]) {
-                byTransactionId[transactionId] = [];
-            }
-
-            byTransactionId[transactionId].push({...historyItem, ...outputDetails});
-        });
-        return byTransactionId;
+        return mapByTransactionId(historyView, outputDetailsMap);
     }, [historyView]);
 
-    const calculateTransactionBalance = useCallback((outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
-        return outputs.reduce((acc, output) => {
-            if (output.isSpent) {
-                return acc - Number(output.output.amount);
-            }
-            return acc + Number(output.output.amount);
-        }, 0);
-    }, []);
-
     const calculatedTransactions = useMemo(() => {
-        const calculatedTransactions: {
-            transactionId: string;
-            timestamp: number;
-            balanceChange: number;
-            outputs: (OutputResponse & ITransactionHistoryItem)[];
-        }[] = [];
+        const calculatedTransactions: ICalculatedTransaction[] = [];
         Object.keys(byTransactionId).forEach((transactionId) => {
-            const transaction = byTransactionId[transactionId];
-            const transactionFirst = transaction[0];
+            const transactions = byTransactionId[transactionId];
+            const transactionFirst = transactions[0];
 
-            const res = {
+            calculatedTransactions.push({
                 transactionId: transactionId,
                 timestamp: transactionFirst.milestoneTimestamp,
-                balanceChange: calculateTransactionBalance(transaction),
-                outputs: transaction
-            };
-            calculatedTransactions.push(res);
+                balanceChange: calculateBalanceChange(transactions),
+                outputs: transactions
+            });
         });
         return calculatedTransactions;
     }, [
         byTransactionId
     ]);
+
+    console.log('--- calculatedTransactions', calculatedTransactions);
 
     return (historyView.length > 0 && address ? (
         <div className="section transaction-history--section">
@@ -118,54 +82,6 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                         </React.Fragment>
                     ))}
                 </tbody>
-                {/*<tbody>*/}
-                {/*    {historyView.length > 0 && (*/}
-                {/*        historyView.map((historyItem, idx) => {*/}
-                {/*            const outputDetails = outputDetailsMap[historyItem.outputId];*/}
-                {/*            if (!outputDetails) {*/}
-                {/*                return null;*/}
-                {/*            }*/}
-                {/*            const transactionId = historyItem.isSpent ?*/}
-                {/*                outputDetails.metadata.transactionIdSpent :*/}
-                {/*                outputDetails.metadata.transactionId;*/}
-
-                {/*            if (!transactionId) {*/}
-                {/*                return null;*/}
-                {/*            }*/}
-
-                {/*            // rotate row background colour for different transaction ids*/}
-                {/*            if (idx > 0) {*/}
-                {/*                const previousItemDetails = outputDetailsMap[historyView[idx - 1].outputId];*/}
-                {/*                const previousSpent = historyView[idx - 1].isSpent;*/}
-                {/*                if (previousItemDetails) {*/}
-                {/*                    const previousTransactionId = previousSpent ?*/}
-                {/*                        previousItemDetails.metadata.transactionIdSpent :*/}
-                {/*                        previousItemDetails.metadata.transactionId;*/}
-
-                {/*                    if (transactionId !== previousTransactionId) {*/}
-                {/*                        isDarkBackgroundRow = !isDarkBackgroundRow;*/}
-                {/*                    }*/}
-                {/*                }*/}
-                {/*            }*/}
-
-                {/*            return (*/}
-                {/*                <React.Fragment key={idx}>*/}
-                {/*                    <TransactionRow*/}
-                {/*                        outputId={historyItem.outputId}*/}
-                {/*                        transactionId={transactionId}*/}
-                {/*                        date={historyItem.milestoneTimestamp}*/}
-                {/*                        milestoneIndex={historyItem.milestoneIndex}*/}
-                {/*                        value={Number(outputDetails.output.amount)}*/}
-                {/*                        isSpent={historyItem.isSpent}*/}
-                {/*                        isFormattedAmounts={isFormattedAmounts}*/}
-                {/*                        setIsFormattedAmounts={setIsFormattedAmounts}*/}
-                {/*                        darkBackgroundRow={isDarkBackgroundRow}*/}
-                {/*                    />*/}
-                {/*                </React.Fragment>*/}
-                {/*            );*/}
-                {/*        })*/}
-                {/*    )}*/}
-                {/*</tbody>*/}
             </table>
 
             {/* Only visible in mobile -- Card transactions*/}

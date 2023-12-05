@@ -7,7 +7,7 @@ import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/ap
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 
-interface IOutputDetailsMap {
+export interface IOutputDetailsMap {
     [outputId: string]: OutputResponse;
 }
 

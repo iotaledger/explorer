@@ -2,7 +2,7 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { ITransactionEntryProps } from "./TransactionEntryProps";
+import { ITransactionEntryProps } from "./history.types";
 import { DateHelper } from "~helpers/dateHelper";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
@@ -13,7 +13,6 @@ import TruncatedId from "../TruncatedId";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
     {
-        outputId,
         transactionId,
         date,
         milestoneIndex,
@@ -25,8 +24,6 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
     }
 ) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
-    const outputIdTransaction = outputId.slice(0, -4);
-    const outputIdIndex = outputId.slice(-4);
     const ago = moment(date * 1000).fromNow();
 
     const valueView = (

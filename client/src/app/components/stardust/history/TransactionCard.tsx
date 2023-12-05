@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import moment from "moment";
 import React, { useContext } from "react";
-import { ITransactionEntryProps } from "./TransactionEntryProps";
+import { ITransactionEntryProps } from "./history.types";
 import { DateHelper } from "~helpers/dateHelper";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";

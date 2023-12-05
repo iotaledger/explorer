@@ -1,3 +1,6 @@
+import {OutputResponse} from "@iota/sdk-wasm/web";
+import {ITransactionHistoryItem} from "~models/api/stardust/ITransactionHistoryResponse";
+
 export interface ITransactionEntryProps {
     /**
      * The output id.
@@ -46,3 +49,16 @@ export interface ITransactionEntryProps {
     darkBackgroundRow?: boolean;
 }
 
+export interface TransactionHistoryProps {
+    readonly network: string;
+    readonly address?: string;
+    readonly setLoading: (isLoadin: boolean) => void;
+    readonly setDisabled?: (isDisabled: boolean) => void;
+}
+
+export interface ICalculatedTransaction {
+    transactionId: string;
+    timestamp: number;
+    balanceChange: number;
+    outputs: (OutputResponse & ITransactionHistoryItem)[];
+}
