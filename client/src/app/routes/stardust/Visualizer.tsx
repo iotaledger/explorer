@@ -33,7 +33,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         filter,
         setFilter,
         isActive,
-        itemCount,
+        blocksCount,
         selectedFeedItem,
         isFormatAmountsFull,
         setIsFormatAmountsFull,
@@ -94,7 +94,7 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
                         <div className="stats-panel__info">
                             <div className="card--label">Blocks</div>
                             <div className="card--value">
-                                {itemCount}
+                                {blocksCount}
                             </div>
                         </div>
                         <div className="stats-panel__info">
