@@ -150,7 +150,7 @@
   .info-panel {
       background: var(--body-background);
       display: flex;
-      position: relative;
+      position: absolute;
       z-index: 2;
       top: 100px;
       left: 20px;
