@@ -2,6 +2,7 @@ import { BasicBlock, Client, IBlockMetadata } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
+import { IFeedUpdate } from "../../../models/api/nova/feed/IFeedUpdate";
 
 /**
  * Wrapper class around Nova MqttClient.
@@ -12,7 +13,7 @@ export class NovaFeed {
      * The block feed subscribers (downstream).
      */
     protected readonly blockSubscribers: {
-        [id: string]: (data: Record<string, unknown>) => Promise<void>;
+        [id: string]: (data: IFeedUpdate) => Promise<void>;
     };
 
     /**
@@ -21,12 +22,18 @@ export class NovaFeed {
     private readonly _mqttClient: Client;
 
     /**
+     * The network in context.
+     */
+    private readonly network: string;
+
+    /**
      * Creates a new instance of NovaFeed.
      * @param networkId The network id.
      */
     constructor(networkId: string) {
         logger.debug("[NovaFeed] Constructing a Nova Feed");
         this.blockSubscribers = {};
+        this.network = networkId;
         this._mqttClient = ServiceFactory.get<Client>(`mqtt-${networkId}`);
 
         logger.debug(`[NovaFeed] Mqtt is ${JSON.stringify(this._mqttClient)}`);
@@ -36,6 +43,24 @@ export class NovaFeed {
         } else {
             throw new Error(`Failed to build novaFeed instance for ${networkId}`);
         }
+    }
+
+    /**
+     * Subscribe to the blocks nova feed.
+     * @param id The id of the subscriber.
+     * @param callback The callback to call with data for the event.
+     */
+    public async subscribeBlocks(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+        this.blockSubscribers[id] = callback;
+    }
+
+    /**
+     * Unsubscribe from the blocks feed.
+     * @param subscriptionId The id to unsubscribe.
+     */
+    public unsubscribeBlocks(subscriptionId: string): void {
+        logger.debug(`[NovaFeed] Removing subscriber ${subscriptionId} from blocks (${this.network})`);
+        delete this.blockSubscribers[subscriptionId];
     }
 
     /**
