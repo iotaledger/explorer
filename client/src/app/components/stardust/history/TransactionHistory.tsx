@@ -106,30 +106,19 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                 </tbody>
             </table>
 
-            {/* Only visible in mobile -- Card transactions*/}
+            {/** Only visible in mobile -- Card transactions */}
             <div className="transaction-history--cards">
-                    {transactions.map((historyItem, idx) => {
-                        const outputDetails = outputDetailsMap[historyItem.outputId];
-                        if (!outputDetails) {
-                            return null;
-                        }
-                        const transactionId = historyItem.isSpent ?
-                            outputDetails.metadata.transactionIdSpent :
-                            outputDetails.metadata.transactionId;
-
-                        if (!transactionId) {
-                            return null;
-                        }
-
+                    {transactions.map((c, idx) => {
                         return (
                             <React.Fragment key={idx}>
                                 <TransactionCard
-                                    outputId={historyItem.outputId}
-                                    transactionId={transactionId}
-                                    date={historyItem.milestoneTimestamp}
-                                    milestoneIndex={historyItem.milestoneIndex}
-                                    value={Number(outputDetails.output.amount)}
-                                    isSpent={historyItem.isSpent}
+                                    isGenesisByDate={c.isGenesisByDate}
+                                    isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
+                                    transactionLink={c.transactionLink}
+                                    dateFormatted={c.dateFormatted}
+                                    balanceChangeFormatted={c.balanceChangeFormatted}
+                                    transactionId={c.transactionId}
+                                    isSpent={c.isSpent}
                                     isFormattedAmounts={isFormattedAmounts}
                                     setIsFormattedAmounts={setIsFormattedAmounts}
                                 />
