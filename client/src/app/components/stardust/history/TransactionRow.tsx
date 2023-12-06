@@ -1,49 +1,39 @@
 import classNames from "classnames";
-import moment from "moment";
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { ITransactionEntryProps } from "./history.types";
-import { DateHelper } from "~helpers/dateHelper";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
-import { formatAmount } from "~helpers/stardust/valueFormatHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
-import NetworkContext from "../../../context/NetworkContext";
 import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
 
+/** Local imports */
+import { ITransactionEntryProps } from "./history.types";
+
+/** Component */
 const TransactionRow: React.FC<ITransactionEntryProps> = (
     {
+        isGenesisByDate,
+        isTransactionFromStardustGenesis,
+        transactionLink,
+        dateFormatted,
+        balanceChangeFormatted,
         transactionId,
-        date,
-        milestoneIndex,
-        value,
         isSpent,
         isFormattedAmounts,
         setIsFormattedAmounts,
         darkBackgroundRow
     }
 ) => {
-    const { name: network, tokenInfo } = useContext(NetworkContext);
-    const ago = moment(date * 1000).fromNow();
-
     const valueView = (
         <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)} >
-            {`${isSpent ? "-" : "+"} ${formatAmount(value, tokenInfo, !isFormattedAmounts)}`}
+            {balanceChangeFormatted}
         </span>
     );
 
-    const isTransactionFromStardustGenesis = milestoneIndex &&
-        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
-    const transactionLink = isTransactionFromStardustGenesis ?
-        `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
-        `/${network}/transaction/${transactionId}`;
-
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
-            {date === 0 ? (
+            { isGenesisByDate ? (
                 <td className="date">Genesis</td>
             ) : (
-                <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
+                <td className="date">{dateFormatted}</td>
             )}
             <td className="transaction-id">
                 <Link to={transactionLink} className="row center margin-r-t">

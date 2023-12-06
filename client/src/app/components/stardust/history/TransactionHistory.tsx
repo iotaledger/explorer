@@ -1,9 +1,11 @@
 /* eslint-disable no-void */
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useContext, useEffect, useMemo, useState} from "react";
+import moment from "moment";
 import {useAddressHistory} from "~helpers/hooks/useAddressHistory";
 import DownloadModal from "../DownloadModal";
-import {OutputResponse} from "@iota/sdk-wasm/web";
-import {ITransactionHistoryItem} from "~models/api/stardust/ITransactionHistoryResponse";
+import {DateHelper} from "~helpers/dateHelper";
+import {formatAmount} from "~helpers/stardust/valueFormatHelper";
+import NetworkContext from "~app/context/NetworkContext";
 
 /** Local imports */
 import "./TransactionHistory.scss";
@@ -11,6 +13,8 @@ import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import { ICalculatedTransaction, TransactionHistoryProps } from "./history.types";
 import {calculateBalanceChange, mapByTransactionId} from "./history.helpers";
+import {TransactionsHelper} from "~helpers/stardust/transactionsHelper";
+import {CHRYSALIS_MAINNET} from "~models/config/networkType";
 
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (
@@ -22,35 +26,52 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
         setDisabled
     );
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
+    const { tokenInfo } = useContext(NetworkContext);
 
-    // historyView = [];
     useEffect(() => {
         setLoading(isLoading);
     }, [isLoading]);
 
-    const byTransactionId = useMemo(() => {
-        return mapByTransactionId(historyView, outputDetailsMap);
-    }, [historyView]);
-
-    const calculatedTransactions = useMemo(() => {
+    const transactions = useMemo(() => {
+        const byTransactionId = mapByTransactionId(historyView, outputDetailsMap);
         const calculatedTransactions: ICalculatedTransaction[] = [];
         Object.keys(byTransactionId).forEach((transactionId) => {
             const transactions = byTransactionId[transactionId];
             const transactionFirst = transactions[0];
+            const balanceChange = calculateBalanceChange(transactions);
+            const ago = moment(transactionFirst.milestoneTimestamp * 1000).fromNow();
+
+            const isGenesisByDate = transactions
+                .map((t) => t.milestoneTimestamp)
+                .some((milestoneTimestamp) => milestoneTimestamp === 0);
+
+            const milestoneIndexes = transactions.map((t) => t.milestoneIndex);
+            const isTransactionFromStardustGenesis = milestoneIndexes
+                .map(milestoneIndex => TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex))
+                .some(isTransactionFromStardustGenesis => isTransactionFromStardustGenesis);
+
+            const transactionLink = isTransactionFromStardustGenesis ?
+                `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
+                `/${network}/transaction/${transactionId}`;
+
+            const isSpent = balanceChange < 0;
 
             calculatedTransactions.push({
+                isGenesisByDate: isGenesisByDate,
+                isTransactionFromStardustGenesis: isTransactionFromStardustGenesis,
+                isSpent: isSpent,
+                transactionLink: transactionLink,
                 transactionId: transactionId,
                 timestamp: transactionFirst.milestoneTimestamp,
-                balanceChange: calculateBalanceChange(transactions),
+                dateFormatted: `${DateHelper.formatShort(transactionFirst.milestoneTimestamp * 1000)} (${ago})`,
+                balanceChange: balanceChange,
+                balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts),
                 outputs: transactions
             });
         });
         return calculatedTransactions;
-    }, [
-        byTransactionId
-    ]);
+    }, [historyView, outputDetailsMap, isFormattedAmounts]);
 
-    console.log('--- calculatedTransactions', calculatedTransactions);
 
     return (historyView.length > 0 && address ? (
         <div className="section transaction-history--section">
@@ -66,15 +87,16 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                     </tr>
                 </thead>
                 <tbody>
-                    {calculatedTransactions?.map((c, idx) => (
+                    {transactions?.map((c, idx) => (
                         <React.Fragment key={idx}>
                             <TransactionRow
-                                outputId={''}
+                                isGenesisByDate={c.isGenesisByDate}
+                                isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
+                                transactionLink={c.transactionLink}
+                                dateFormatted={c.dateFormatted}
+                                balanceChangeFormatted={c.balanceChangeFormatted}
                                 transactionId={c.transactionId}
-                                date={c.timestamp}
-                                milestoneIndex={0}
-                                value={Math.abs(c.balanceChange)}
-                                isSpent={c.balanceChange < 0}
+                                isSpent={c.isSpent}
                                 isFormattedAmounts={isFormattedAmounts}
                                 setIsFormattedAmounts={setIsFormattedAmounts}
                                 darkBackgroundRow={idx % 2 === 0}
@@ -86,8 +108,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
             {/* Only visible in mobile -- Card transactions*/}
             <div className="transaction-history--cards">
-                {historyView.length > 0 && (
-                    historyView.map((historyItem, idx) => {
+                    {transactions.map((historyItem, idx) => {
                         const outputDetails = outputDetailsMap[historyItem.outputId];
                         if (!outputDetails) {
                             return null;
@@ -114,8 +135,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                                 />
                             </React.Fragment>
                         );
-                    })
-                )}
+                    })}
             </div>
             {hasMore && historyView.length > 0 && (
                 <div className="card load-more--button" onClick={loadMore}>

@@ -3,29 +3,14 @@ import {ITransactionHistoryItem} from "~models/api/stardust/ITransactionHistoryR
 
 export interface ITransactionEntryProps {
     /**
-     * The output id.
-     */
-    outputId: string;
-
-    /**
      * The transaction id.
      */
     transactionId: string;
 
     /**
-     * The date of the transaction.
+     * The formatted date of the transaction.
      */
-    date: number;
-
-    /**
-     * The milestone index of the transaction.
-     */
-    milestoneIndex: number;
-
-    /**
-     * The transaction amount.
-     */
-    value: number;
+    dateFormatted: string;
 
     /**
      * Is the transaction spent.
@@ -47,6 +32,26 @@ export interface ITransactionEntryProps {
      * unrelated transactions.
      */
     darkBackgroundRow?: boolean;
+
+    /**
+     * The formatted transaction amount.
+     */
+    balanceChangeFormatted: string;
+
+    /**
+     * Check if transaction from stardust by TransactionHelper.
+     */
+    isTransactionFromStardustGenesis: boolean;
+
+    /**
+     * check some of outputs timestamps zero
+     */
+    isGenesisByDate: boolean;
+
+    /**
+     * The transaction link.
+     */
+    transactionLink: string;
 }
 
 export interface TransactionHistoryProps {
@@ -57,8 +62,14 @@ export interface TransactionHistoryProps {
 }
 
 export interface ICalculatedTransaction {
+    isGenesisByDate: boolean;
+    isTransactionFromStardustGenesis: boolean;
+    isSpent: boolean;
+    transactionLink: string;
     transactionId: string;
     timestamp: number;
+    dateFormatted: string;
     balanceChange: number;
+    balanceChangeFormatted: string;
     outputs: (OutputResponse & ITransactionHistoryItem)[];
 }
