@@ -1,17 +1,16 @@
 /* eslint-disable no-void */
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import moment from "moment";
 import { OutputResponse } from "@iota/sdk-wasm/web";
-import { IOutputDetailsMap, useAddressHistory } from "~helpers/hooks/useAddressHistory";
-import { DateHelper } from "~helpers/dateHelper";
-import { formatAmount } from "~helpers/stardust/valueFormatHelper";
+import { useAddressHistory } from "~helpers/hooks/useAddressHistory";
 import NetworkContext from "~app/context/NetworkContext";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
 import DownloadModal from "../DownloadModal";
 import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
+import {
+    getTransactionHistoryRecords,
+    groupOutputsByTransactionId
+} from "~app/components/stardust/history/transactionHistoryUtils";
 import "./TransactionHistory.scss";
 
 
@@ -23,31 +22,6 @@ export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHi
         return acc + Number(output.output.amount);
     }, 0);
 };
-
-export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
-    const byTransactionId = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
-    historyView.forEach((historyItem) => {
-        const outputDetails = outputDetailsMap[historyItem.outputId];
-        if (!outputDetails) {
-            return;
-        }
-        const transactionId = historyItem.isSpent ?
-            outputDetails.metadata.transactionIdSpent :
-            outputDetails.metadata.transactionId;
-
-        if (!transactionId) {
-            return;
-        }
-
-        if (!byTransactionId.has(transactionId)) {
-            byTransactionId.set(transactionId, []);
-        }
-
-        const transaction = byTransactionId.get(transactionId);
-        transaction?.push({...historyItem, ...outputDetails});
-    });
-    return byTransactionId;
-}
 
 export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
@@ -86,40 +60,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     const transactions = useMemo(() => {
         const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
-        const calculatedTransactions: ITransactionHistoryRecord[] = [];
-        transactionIdToOutputs.forEach((outputs, transactionId) => {
-            const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
-            const balanceChange = calculateBalanceChange(outputs);
-            const ago = moment(lastOutputTime * 1000).fromNow();
-
-            const isGenesisByDate = outputs
-                .map((t) => t.milestoneTimestamp)
-                .some((milestoneTimestamp) => milestoneTimestamp === 0);
-
-            const milestoneIndexes = outputs.map((t) => t.milestoneIndex);
-            const isTransactionFromStardustGenesis = milestoneIndexes
-                .some(milestoneIndex => TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex));
-
-            const transactionLink = isTransactionFromStardustGenesis ?
-                `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
-                `/${network}/transaction/${transactionId}`;
-
-            const isSpent = balanceChange < 0;
-
-            calculatedTransactions.push({
-                isGenesisByDate: isGenesisByDate,
-                isTransactionFromStardustGenesis: isTransactionFromStardustGenesis,
-                isSpent: isSpent,
-                transactionLink: transactionLink,
-                transactionId: transactionId,
-                timestamp: lastOutputTime,
-                dateFormatted: `${DateHelper.formatShort(lastOutputTime * 1000)} (${ago})`,
-                balanceChange: balanceChange,
-                balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts),
-                outputs: outputs
-            });
-        });
-        return calculatedTransactions;
+        return getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
     }, [historyView, outputDetailsMap, isFormattedAmounts]);
 
 
