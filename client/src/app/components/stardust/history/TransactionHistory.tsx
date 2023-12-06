@@ -1,20 +1,18 @@
 /* eslint-disable no-void */
-import React, {useContext, useEffect, useMemo, useState} from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import moment from "moment";
+import { OutputResponse } from "@iota/sdk-wasm/web";
 import { IOutputDetailsMap, useAddressHistory } from "~helpers/hooks/useAddressHistory";
 import { DateHelper } from "~helpers/dateHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "~app/context/NetworkContext";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";
-
-import "./TransactionHistory.scss";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
-import { ITransactionHistoryRecord, TransactionHistoryProps } from "./TransactionHistoryTypes";
-import DownloadModal from "./DownloadModal";
-import { OutputResponse } from "@iota/sdk-wasm/web";
+import DownloadModal from "../DownloadModal";
 import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
+import "./TransactionHistory.scss";
 
 
 export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
@@ -25,7 +23,6 @@ export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHi
         return acc + Number(output.output.amount);
     }, 0);
 };
-
 
 export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
     const byTransactionId = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
@@ -50,6 +47,26 @@ export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem
         transaction?.push({...historyItem, ...outputDetails});
     });
     return byTransactionId;
+}
+
+export interface ITransactionHistoryRecord {
+    isGenesisByDate: boolean;
+    isTransactionFromStardustGenesis: boolean;
+    isSpent: boolean;
+    transactionLink: string;
+    transactionId: string;
+    timestamp: number;
+    dateFormatted: string;
+    balanceChange: number;
+    balanceChangeFormatted: string;
+    outputs: (OutputResponse & ITransactionHistoryItem)[];
+}
+
+export interface TransactionHistoryProps {
+    readonly network: string;
+    readonly address?: string;
+    readonly setLoading: (isLoadin: boolean) => void;
+    readonly setDisabled?: (isDisabled: boolean) => void;
 }
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (

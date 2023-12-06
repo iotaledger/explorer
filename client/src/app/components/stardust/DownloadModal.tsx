@@ -2,8 +2,8 @@ import moment from "moment";
 import React, { useState } from "react";
 import Datetime from "react-datetime";
 import { useTransactionHistoryDownload } from "~helpers/hooks/useTransactionHistoryDownload";
-import Spinner from "../../Spinner";
-import Tooltip from "../../Tooltip";
+import Spinner from "../Spinner";
+import Tooltip from "../Tooltip";
 import "./DownloadModal.scss";
 import "react-datetime/css/react-datetime.css";
 

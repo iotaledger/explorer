@@ -3,8 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
-
-import { ITransactionEntryProps } from "./TransactionHistoryTypes";
+import { ITransactionEntryProps } from "./TransactionEntryProps";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = (
     {
