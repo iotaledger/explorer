@@ -7,7 +7,6 @@ import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import { DateHelper } from "~helpers/dateHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
-import { calculateBalanceChange, ITransactionHistoryRecord } from "~app/components/stardust/history/TransactionHistory";
 
 export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
     const byTransactionId = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
@@ -32,6 +31,28 @@ export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem
         transaction?.push({...historyItem, ...outputDetails});
     });
     return byTransactionId;
+}
+
+export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
+    return outputs.reduce((acc, output) => {
+        if (output.isSpent) {
+            return acc - Number(output.output.amount);
+        }
+        return acc + Number(output.output.amount);
+    }, 0);
+};
+
+export interface ITransactionHistoryRecord {
+    isGenesisByDate: boolean;
+    isTransactionFromStardustGenesis: boolean;
+    isSpent: boolean;
+    transactionLink: string;
+    transactionId: string;
+    timestamp: number;
+    dateFormatted: string;
+    balanceChange: number;
+    balanceChangeFormatted: string;
+    outputs: (OutputResponse & ITransactionHistoryItem)[];
 }
 
 export const getTransactionHistoryRecords = (

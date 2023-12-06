@@ -1,40 +1,12 @@
 /* eslint-disable no-void */
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useAddressHistory } from "~helpers/hooks/useAddressHistory";
 import NetworkContext from "~app/context/NetworkContext";
-import TransactionCard from "./TransactionCard";
-import TransactionRow from "./TransactionRow";
 import DownloadModal from "../DownloadModal";
-import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
-import {
-    getTransactionHistoryRecords,
-    groupOutputsByTransactionId
-} from "~app/components/stardust/history/transactionHistoryUtils";
+import { getTransactionHistoryRecords, groupOutputsByTransactionId } from "./transactionHistoryUtils";
+import TransactionRow from "./TransactionRow";
+import TransactionCard from "./TransactionCard";
 import "./TransactionHistory.scss";
-
-
-export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
-    return outputs.reduce((acc, output) => {
-        if (output.isSpent) {
-            return acc - Number(output.output.amount);
-        }
-        return acc + Number(output.output.amount);
-    }, 0);
-};
-
-export interface ITransactionHistoryRecord {
-    isGenesisByDate: boolean;
-    isTransactionFromStardustGenesis: boolean;
-    isSpent: boolean;
-    transactionLink: string;
-    transactionId: string;
-    timestamp: number;
-    dateFormatted: string;
-    balanceChange: number;
-    balanceChangeFormatted: string;
-    outputs: (OutputResponse & ITransactionHistoryItem)[];
-}
 
 export interface TransactionHistoryProps {
     readonly network: string;
