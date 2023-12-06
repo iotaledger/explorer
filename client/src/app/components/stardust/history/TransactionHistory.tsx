@@ -11,7 +11,7 @@ import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import "./TransactionHistory.scss";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
-import { ICalculatedTransaction, TransactionHistoryProps } from "./HistoryTypes";
+import { ITransactionHistoryRecord, TransactionHistoryProps } from "./TransactionHistoryTypes";
 import DownloadModal from "./DownloadModal";
 import { OutputResponse } from "@iota/sdk-wasm/web";
 import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
@@ -69,7 +69,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     const transactions = useMemo(() => {
         const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
-        const calculatedTransactions: ICalculatedTransaction[] = [];
+        const calculatedTransactions: ITransactionHistoryRecord[] = [];
         transactionIdToOutputs.forEach((outputs, transactionId) => {
             const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
             const balanceChange = calculateBalanceChange(outputs);

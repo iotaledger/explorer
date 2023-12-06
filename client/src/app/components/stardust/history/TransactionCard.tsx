@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-import { ITransactionEntryProps } from "./HistoryTypes";
+import { ITransactionEntryProps } from "./TransactionHistoryTypes";
 import TruncatedId from "../TruncatedId";
 import Tooltip from "~app/components/Tooltip";
 

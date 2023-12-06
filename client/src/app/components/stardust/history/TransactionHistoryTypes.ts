@@ -61,7 +61,7 @@ export interface TransactionHistoryProps {
     readonly setDisabled?: (isDisabled: boolean) => void;
 }
 
-export interface ICalculatedTransaction {
+export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
     isTransactionFromStardustGenesis: boolean;
     isSpent: boolean;
