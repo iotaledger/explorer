@@ -4,10 +4,8 @@ import { Link } from "react-router-dom";
 import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
 
-/** Local imports */
-import { ITransactionEntryProps } from "./history.types";
+import { ITransactionEntryProps } from "./HistoryTypes";
 
-/** Component */
 const TransactionRow: React.FC<ITransactionEntryProps> = (
     {
         isGenesisByDate,

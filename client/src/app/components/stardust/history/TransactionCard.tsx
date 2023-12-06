@@ -1,12 +1,6 @@
 import classNames from "classnames";
-import moment from "moment";
-import React, { useContext } from "react";
-import { ITransactionEntryProps } from "./history.types";
-import { DateHelper } from "~helpers/dateHelper";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
-import { formatAmount } from "~helpers/stardust/valueFormatHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
-import NetworkContext from "../../../context/NetworkContext";
+import React from "react";
+import { ITransactionEntryProps } from "./HistoryTypes";
 import TruncatedId from "../TruncatedId";
 import Tooltip from "~app/components/Tooltip";
 

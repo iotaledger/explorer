@@ -44,8 +44,10 @@
             }
 
             td {
-                padding: 16px 0;
+                padding: 16px;
                 text-align: center;
+                width: 33%;
+                text-wrap: nowrap;
 
                 &.transaction-id, &.output-id {
                     @include font-size(14px);

@@ -1,5 +1,5 @@
-import {OutputResponse} from "@iota/sdk-wasm/web";
-import {ITransactionHistoryItem} from "~models/api/stardust/ITransactionHistoryResponse";
+import { OutputResponse } from "@iota/sdk-wasm/web";
+import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
 
 export interface ITransactionEntryProps {
     /**

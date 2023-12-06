@@ -1,26 +1,61 @@
 /* eslint-disable no-void */
 import React, {useContext, useEffect, useMemo, useState} from "react";
 import moment from "moment";
-import {useAddressHistory} from "~helpers/hooks/useAddressHistory";
-import DownloadModal from "../DownloadModal";
-import {DateHelper} from "~helpers/dateHelper";
-import {formatAmount} from "~helpers/stardust/valueFormatHelper";
+import { IOutputDetailsMap, useAddressHistory } from "~helpers/hooks/useAddressHistory";
+import { DateHelper } from "~helpers/dateHelper";
+import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "~app/context/NetworkContext";
+import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 
-/** Local imports */
 import "./TransactionHistory.scss";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
-import { ICalculatedTransaction, TransactionHistoryProps } from "./history.types";
-import {calculateBalanceChange, mapByTransactionId} from "./history.helpers";
-import {TransactionsHelper} from "~helpers/stardust/transactionsHelper";
-import {CHRYSALIS_MAINNET} from "~models/config/networkType";
+import { ICalculatedTransaction, TransactionHistoryProps } from "./HistoryTypes";
+import DownloadModal from "./DownloadModal";
+import { OutputResponse } from "@iota/sdk-wasm/web";
+import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
 
+
+export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
+    return outputs.reduce((acc, output) => {
+        if (output.isSpent) {
+            return acc - Number(output.output.amount);
+        }
+        return acc + Number(output.output.amount);
+    }, 0);
+};
+
+
+export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
+    const byTransactionId = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
+    historyView.forEach((historyItem) => {
+        const outputDetails = outputDetailsMap[historyItem.outputId];
+        if (!outputDetails) {
+            return;
+        }
+        const transactionId = historyItem.isSpent ?
+            outputDetails.metadata.transactionIdSpent :
+            outputDetails.metadata.transactionId;
+
+        if (!transactionId) {
+            return;
+        }
+
+        if (!byTransactionId.has(transactionId)) {
+            byTransactionId.set(transactionId, []);
+        }
+
+        const transaction = byTransactionId.get(transactionId);
+        transaction?.push({...historyItem, ...outputDetails});
+    });
+    return byTransactionId;
+}
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = (
     { network, address, setLoading, setDisabled }
 ) => {
-    let [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
+    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
         network,
         address,
         setDisabled
@@ -33,22 +68,20 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
     }, [isLoading]);
 
     const transactions = useMemo(() => {
-        const byTransactionId = mapByTransactionId(historyView, outputDetailsMap);
+        const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
         const calculatedTransactions: ICalculatedTransaction[] = [];
-        Object.keys(byTransactionId).forEach((transactionId) => {
-            const transactions = byTransactionId[transactionId];
-            const transactionFirst = transactions[0];
-            const balanceChange = calculateBalanceChange(transactions);
-            const ago = moment(transactionFirst.milestoneTimestamp * 1000).fromNow();
+        transactionIdToOutputs.forEach((outputs, transactionId) => {
+            const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
+            const balanceChange = calculateBalanceChange(outputs);
+            const ago = moment(lastOutputTime * 1000).fromNow();
 
-            const isGenesisByDate = transactions
+            const isGenesisByDate = outputs
                 .map((t) => t.milestoneTimestamp)
                 .some((milestoneTimestamp) => milestoneTimestamp === 0);
 
-            const milestoneIndexes = transactions.map((t) => t.milestoneIndex);
+            const milestoneIndexes = outputs.map((t) => t.milestoneIndex);
             const isTransactionFromStardustGenesis = milestoneIndexes
-                .map(milestoneIndex => TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex))
-                .some(isTransactionFromStardustGenesis => isTransactionFromStardustGenesis);
+                .some(milestoneIndex => TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex));
 
             const transactionLink = isTransactionFromStardustGenesis ?
                 `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
@@ -62,11 +95,11 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                 isSpent: isSpent,
                 transactionLink: transactionLink,
                 transactionId: transactionId,
-                timestamp: transactionFirst.milestoneTimestamp,
-                dateFormatted: `${DateHelper.formatShort(transactionFirst.milestoneTimestamp * 1000)} (${ago})`,
+                timestamp: lastOutputTime,
+                dateFormatted: `${DateHelper.formatShort(lastOutputTime * 1000)} (${ago})`,
                 balanceChange: balanceChange,
                 balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts),
-                outputs: transactions
+                outputs: outputs
             });
         });
         return calculatedTransactions;
