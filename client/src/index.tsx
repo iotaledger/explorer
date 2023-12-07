@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
-import init from "@iota/sdk-wasm/web";
+import initStardustSdk from "@iota/sdk-wasm/web";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
@@ -34,7 +34,7 @@ const apiEndpoint = (window as any).env.API_ENDPOINT;
 
 initialiseServices().then(async () => {
     // load the wasm
-    await init("/iota_sdk_wasm_bg.wasm");
+    await initStardustSdk("/wasm/iota_sdk_stardust_wasm_bg.wasm");
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const container = document.querySelector("#root")!;
