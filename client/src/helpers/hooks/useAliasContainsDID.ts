@@ -1,5 +1,6 @@
-import { AliasOutput, hexToUtf8 } from "@iota/sdk-wasm/web";
+import { AliasOutput, hexToBytes, hexToUtf8 } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
+import { TextHelper } from "~helpers/textHelper";
 
 /**
  * Determine if an alias contains a DID
@@ -12,7 +13,7 @@ export function useAliasContainsDID(
     const [aliasContainsDID, setAliasContainsDID] = useState<boolean>(false);
 
     useEffect(() => {
-        if(alias && alias.stateMetadata) {
+        if(alias && alias.stateMetadata && TextHelper.isUTF8(hexToBytes(alias.stateMetadata))) {
             setAliasContainsDID(hexToUtf8(alias.stateMetadata).startsWith("DID") ?? false)
         }
     }, [alias]);
