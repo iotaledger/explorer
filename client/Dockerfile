@@ -22,7 +22,7 @@ RUN echo 'server {\
         index  index.html index.htm;\
         try_files $uri /index.html;\
     }\
-  }' > /etc/nginx/conf.d/default.conf
+  }' > /etc/nginx/sites-available/default
 
 
 # List all files and directories
