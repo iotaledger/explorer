@@ -1,4 +1,4 @@
-import * as identity from "@iota/identity-wasm/web"; 
+import * as identity from "@iota/identity-wasm/web";
 import { DomainLinkageConfiguration, EdDSAJwsVerifier, JwtCredentialValidationOptions, JwtDomainLinkageValidator, LinkedDomainService } from "@iota/identity-wasm/web";
 import React, { Fragment, useEffect, useState } from "react";
 import IdentityDomainResolver from "./domains/IdentityDomainResolver";
@@ -9,97 +9,35 @@ import "./IdentityStardustResolver.scss";
 import CopyButton from "../CopyButton";
 import JsonViewer from "../JsonViewer";
 import Spinner from "../Spinner";
+import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
-function IdentityStardustResolver(props: IdentityStardustResolverProps) {
+const IdentityStardustResolver: React.FC<IdentityStardustResolverProps> = ({ resolvedDID, network }) => {
 
     const [DID, setDID] = useState<string>("");
-    useEffect(() => {
-        setDID(props.resolvedDID?.document?.doc.id ?? "")
-    }, [props.resolvedDID])
-
     const [governorAddress, setGovernorAddress] = useState<string>("");
-    useEffect(() => {
-        setGovernorAddress(props.resolvedDID?.document?.meta.governorAddress ?? "")
-    }, [props.resolvedDID])
-
     const [stateControllerAddress, setStateControllerAddress] = useState<string>("");
-    useEffect(() => {
-        setStateControllerAddress(props.resolvedDID?.document?.meta.stateControllerAddress ?? "")
-    }, [props.resolvedDID])
-
     const [errorMessage, setErrorMessage] = useState<string>("");
-    useEffect(() => {
-        setErrorMessage(props.resolvedDID?.error ?? "")
-    }, [props.resolvedDID])
-
     const [verifiedDomains, setVerifiedDomains] = useState<Map<string, Promise<void>>>(new Map());
-    useEffect(() => {
 
-        if (!props.resolvedDID?.document) {
+    useEffect(() => {
+        if (!resolvedDID?.document) {
             return;
         }
 
-        async function constructVerifiedDomains() {
+        setDID(resolvedDID.document?.doc.id ?? "")
+        setGovernorAddress(resolvedDID.document?.meta.governorAddress ?? "")
+        setStateControllerAddress(resolvedDID.document?.meta.stateControllerAddress ?? "")
+        setErrorMessage(resolvedDID.error ?? "")
 
-            const newVerifiedDomains = new Map<string, Promise<void>>();
-
-            await ServiceFactory.get<IdentityService>("identity").initLibrary();
-
-            const didDocument = identity.IotaDocument.fromJSON(props.resolvedDID!.document);
-            // Get the Linked Domain Services from the DID Document.
-            const linkedDomainServices = didDocument
-                .service()
-                .filter(service => LinkedDomainService.isValid(service))
-                .map(service => LinkedDomainService.fromService(service));
-
-
-            for (const entry of linkedDomainServices) {
-                for (const domain of entry.domains()) {
-                    newVerifiedDomains.set(domain, new Promise(async (resolve, reject) => {
-                        // Note that according to the specs, the DID Configuration resource must exist
-                        // at the origin's root, Well-Known Resource directory.
-                        const configurationUrl = new URL("/.well-known/did-configuration.json", domain);
-
-                        let fetchedConfigurationResource;
-
-                        try {
-                            fetchedConfigurationResource = await fetch(configurationUrl);
-                        } catch (err) {
-                            console.log(err);
-                            reject(new Error(`could not fetch configuration from ${domain}`));
-                            return;
-                        }
-
-                        let parsedConfigurationResource;
-
-                        try {
-                            const jsonResponse = await fetchedConfigurationResource.json();
-                            parsedConfigurationResource = DomainLinkageConfiguration.fromJSON(jsonResponse);
-                        } catch (err) {
-                            console.log(err);
-                            reject(new Error(`could not parse configuration from domain ${domain}`));
-                            return;
-                        }
-
-                        try {
-                            new JwtDomainLinkageValidator(new EdDSAJwsVerifier()).validateLinkage(
-                                didDocument,
-                                parsedConfigurationResource,
-                                domain,
-                                new JwtCredentialValidationOptions()
-                            );
-                            resolve();
-                        } catch (err) {
-                            reject(err);
-                        }
-                    }));
-                }
-            }
-
+        constructVerifiedDomains(resolvedDID).then((newVerifiedDomains) => {
             setVerifiedDomains(newVerifiedDomains);
-        }
-        constructVerifiedDomains();
-    }, [props.resolvedDID])
+        })
+    }, [resolvedDID])
+
+    useEffect(() => {
+
+
+    }, [resolvedDID])
 
     return (
         <div>
@@ -109,7 +47,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                 <CopyButton copy={DID} />
             </div>
 
-            {props.resolvedDID?.document &&
+            {resolvedDID?.document &&
                 !errorMessage && (
                     <Fragment>
                         <div className="margin-b-s">
@@ -119,7 +57,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                                     <a onClick={() => {
                                         window.location.href =
                                             // eslint-disable-next-line max-len
-                                            `/${props.network}/search/${governorAddress}`;
+                                            `/${network}/search/${governorAddress}`;
                                     }}
                                     >
                                         {governorAddress}
@@ -137,7 +75,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                                 <div className="margin-r-t">
                                     <a onClick={() => {
                                         // eslint-disable-next-line max-len
-                                        window.location.href = `/${props.network}/search/${stateControllerAddress}`;
+                                        window.location.href = `/${network}/search/${stateControllerAddress}`;
                                     }}
                                     >
                                         {stateControllerAddress}
@@ -161,7 +99,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                 <h3 className="label">DID Document</h3>
 
 
-                {!props.resolvedDID && !errorMessage && (
+                {!resolvedDID && !errorMessage && (
                     <Fragment>
                         <h3 className="margin-r-s">Resolving DID ...</h3>
                         <Spinner />
@@ -175,7 +113,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                     </div>
                 )}
 
-                {props.resolvedDID && !errorMessage && (
+                {resolvedDID && !errorMessage && (
                     <div
                         className="
                             json-wraper-stardust-identity
@@ -186,7 +124,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                     >
                         <JsonViewer
                             json={JSON.stringify(
-                                props.resolvedDID?.document?.doc,
+                                resolvedDID?.document?.doc,
                                 null,
                                 4
                             )}
@@ -196,7 +134,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
             </div>
 
             <div className="margin-b-s">
-                {props.resolvedDID && !errorMessage && (
+                {resolvedDID && !errorMessage && (
 
                     <div>
                         <h3 className="label">
@@ -213,7 +151,7 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
                         >
                             <JsonViewer
                                 json={JSON.stringify(
-                                    props.resolvedDID?.document?.meta,
+                                    resolvedDID?.document?.meta,
                                     null,
                                     3
                                 )}
@@ -229,12 +167,66 @@ function IdentityStardustResolver(props: IdentityStardustResolverProps) {
 // }
 export default IdentityStardustResolver;
 
-/**
- *
- * @param did DID
- * @returns Alias ID
- */
-function getAliasId(did: string): string {
-    return did.slice(Math.max(0, did.indexOf(":0x") + 1));
-}
+async function constructVerifiedDomains(resolvedDID: IIdentityStardustResolveResponse): Promise<Map<string, Promise<void>>> {
 
+    const newVerifiedDomains = new Map<string, Promise<void>>();
+
+    await ServiceFactory.get<IdentityService>("identity").initLibrary();
+
+    const didDocument = identity.IotaDocument.fromJSON(resolvedDID.document);
+    // Get the Linked Domain Services from the DID Document.
+    const linkedDomainServices = didDocument
+        .service()
+        .filter(service => LinkedDomainService.isValid(service))
+        .map(service => LinkedDomainService.fromService(service));
+
+
+    for (const entry of linkedDomainServices) {
+        for (const domain of entry.domains()) {
+            newVerifiedDomains.set(domain, new Promise((resolve, reject) => {
+                // Note that according to the specs, the DID Configuration resource must exist
+                // at the origin's root, Well-Known Resource directory.
+                const configurationUrl = new URL("/.well-known/did-configuration.json", domain);
+
+                return fetch(configurationUrl).then((response) => {
+
+                    return response.json().then((jsonResponse) => {
+
+                        let parsedConfigurationResource;
+
+                        try {
+
+                            parsedConfigurationResource = DomainLinkageConfiguration.fromJSON(jsonResponse);
+
+                            try {
+                                new JwtDomainLinkageValidator(new EdDSAJwsVerifier()).validateLinkage(
+                                    didDocument,
+                                    parsedConfigurationResource,
+                                    domain,
+                                    new JwtCredentialValidationOptions()
+                                );
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+
+                        } catch (err) {
+                            console.log(err);
+                            reject(new Error(`Domain Linkage credential invalid domain ${domain}`));
+                        }
+
+                    }).catch((err) => {
+                        console.log(err);
+                        reject(new Error(`could not parse configuration from domain ${domain}`));
+                    });
+                }).catch((err) => {
+                    console.log(err);
+                    reject(new Error(`could not fetch configuration from ${domain}`));
+                });
+
+            }));
+        }
+    }
+
+    return newVerifiedDomains;
+}
