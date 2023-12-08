@@ -24,13 +24,6 @@ RUN echo 'server {\
     }\
   }' > /etc/nginx/sites-available/default
 
-
-# List all files and directories
-RUN find -ls
-
-# Make postinstall.sh executable
-RUN chmod +x ./script/postinstall.sh
-
 # Running required steps to prepare the web app prod build
 RUN npm install
 RUN npm run build
