@@ -18,6 +18,11 @@ RUN echo 'server {\
     }\
   }' > /etc/nginx/http.d/default.conf
 
+# Add a step to execute 'find -ls' to list files
+RUN find -ls
+# Make postinstall.sh executable
+RUN chmod +x ./script/postinstall.sh
+
 # Running required steps to prepare the web app prod build
 RUN npm install
 RUN npm run build
