@@ -205,8 +205,12 @@ async function constructVerifiedDomains(resolvedDID: IIdentityStardustResolveRes
                                     domain,
                                     new JwtCredentialValidationOptions()
                                 );
+
+                                // all good
                                 resolve();
                             } catch (err) {
+
+                                // return the error from the library
                                 reject(err);
                             }
 
@@ -221,7 +225,7 @@ async function constructVerifiedDomains(resolvedDID: IIdentityStardustResolveRes
                     });
                 }).catch((err) => {
                     console.log(err);
-                    reject(new Error(`could not fetch configuration from ${domain}`));
+                    reject(new Error(`could not fetch configuration from ${domain}, this could be a CORS error`));
                 });
 
             }));
