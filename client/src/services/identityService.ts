@@ -65,7 +65,7 @@ export class IdentityService {
         return response;
     }
 
-    public async initLibrary(path = "/identity_wasm_bg.wasm") {
+    public async initLibrary(path = "/wasm/identity_wasm_bg.wasm") {
         return await identity.init(path);
     }
 }
