@@ -1,5 +1,11 @@
-FROM node:16-alpine
-RUN apk add -U --no-cache git nginx
+# Use Debian-based Node 16 image
+FROM node:16
+
+# Update package lists and install dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
 
 # Working DIR
 WORKDIR /usr/src/app
@@ -16,12 +22,13 @@ RUN echo 'server {\
         index  index.html index.htm;\
         try_files $uri /index.html;\
     }\
-  }' > /etc/nginx/http.d/default.conf
+  }' > /etc/nginx/sites-available/default
 
 # Running required steps to prepare the web app prod build
 RUN npm install
 RUN npm run build
 
+# Expose port 80
 EXPOSE 80
 
 # Serve the prod build

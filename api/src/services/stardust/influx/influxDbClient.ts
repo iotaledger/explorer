@@ -162,7 +162,6 @@ export abstract class InfluxDbClient {
      * @param milestoneIndex - The milestone index.
      */
     public async collectMilestoneStatsByIndex(milestoneIndex: number) {
-        console.log('--- request ', milestoneIndex);
         try {
             for (const update of await
                 this._client.query<MilestoneUpdate>(MILESTONE_STATS_QUERY_BY_INDEX, { placeholders: { milestoneIndex } })
