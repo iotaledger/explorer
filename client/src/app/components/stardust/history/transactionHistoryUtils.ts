@@ -8,40 +8,6 @@ import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import { DateHelper } from "~helpers/dateHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 
-export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
-    const byTransactionId = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
-    historyView.forEach((historyItem) => {
-        const outputDetails = outputDetailsMap[historyItem.outputId];
-        if (!outputDetails) {
-            return;
-        }
-        const transactionId = historyItem.isSpent ?
-            outputDetails.metadata.transactionIdSpent :
-            outputDetails.metadata.transactionId;
-
-        if (!transactionId) {
-            return;
-        }
-
-        if (!byTransactionId.has(transactionId)) {
-            byTransactionId.set(transactionId, []);
-        }
-
-        const transaction = byTransactionId.get(transactionId);
-        transaction?.push({...historyItem, ...outputDetails});
-    });
-    return byTransactionId;
-}
-
-export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
-    return outputs.reduce((acc, output) => {
-        if (output.isSpent) {
-            return acc - Number(output.output.amount);
-        }
-        return acc + Number(output.output.amount);
-    }, 0);
-};
-
 export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
     isTransactionFromStardustGenesis: boolean;
@@ -55,12 +21,37 @@ export interface ITransactionHistoryRecord {
     outputs: (OutputResponse & ITransactionHistoryItem)[];
 }
 
+export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
+    const transactionIdToOutputs = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
+    historyView.forEach((historyItem) => {
+        const outputDetails = outputDetailsMap[historyItem.outputId];
+        if (!outputDetails) {
+            return;
+        }
+        const transactionId = historyItem.isSpent ?
+            outputDetails.metadata.transactionIdSpent :
+            outputDetails.metadata.transactionId;
+
+        if (!transactionId) {
+            return;
+        }
+
+        if (!transactionIdToOutputs.has(transactionId)) {
+            transactionIdToOutputs.set(transactionId, []);
+        }
+
+        const transaction = transactionIdToOutputs.get(transactionId);
+        transaction?.push({...historyItem, ...outputDetails});
+    });
+    return transactionIdToOutputs;
+}
+
 export const getTransactionHistoryRecords = (
     transactionIdToOutputs: Map<string, (OutputResponse & ITransactionHistoryItem)[]>,
     network: string,
     tokenInfo: INodeInfoBaseToken,
     isFormattedAmounts: boolean
-) => {
+): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
     transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
@@ -96,3 +87,12 @@ export const getTransactionHistoryRecords = (
     })
     return calculatedTransactions;
 }
+
+export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
+    return outputs.reduce((acc, output) => {
+        if (output.isSpent) {
+            return acc - Number(output.output.amount);
+        }
+        return acc + Number(output.output.amount);
+    }, 0);
+};
