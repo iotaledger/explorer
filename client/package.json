@@ -10,14 +10,13 @@
     },
     "license": "Apache-2.0",
     "scripts": {
-        "postinstall": "copyfiles -u 5 ./node_modules/@iota/sdk-wasm/web/wasm/iota_sdk_wasm_bg.wasm ./public",
+        "postinstall": "./script/postinstall.sh",
         "start": "vite",
         "preview": "vite preview",
         "lint": "eslint src --ext .tsx,.ts",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "tsc && vite build",
-        "build-test": "vitest run",
-        "build": "run-s lint sass-lint build-test build-internal",
+        "build": "run-s lint sass-lint build-internal",
         "test": "vitest"
     },
     "dependencies": {
