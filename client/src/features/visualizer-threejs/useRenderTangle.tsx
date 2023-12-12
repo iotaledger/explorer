@@ -20,7 +20,23 @@ export const useRenderTangle = () => {
     const blockQueue = useTangleStore(s => s.blockQueue);
     const removeFromBlockQueue = useTangleStore(s => s.removeFromBlockQueue);
 
+    const colorQueue = useTangleStore(s => s.colorQueue);
+    const removeFromColorQueue = useTangleStore(s => s.removeFromColorQueue);
+
+    const blockIdToIndex = useTangleStore(s => s.blockIdToIndex);
     const updateBlockIdToIndex = useTangleStore(s => s.updateBlockIdToIndex);
+
+    const updateBlockColor = (blockId: string, color: THREE.Color): void => {
+        const indexToUpdate = blockIdToIndex.get(blockId);
+
+        if (indexToUpdate) {
+            tangleMeshRef.current.setColorAt(indexToUpdate, color);
+            if (tangleMeshRef.current.instanceColor) {
+                tangleMeshRef.current.instanceColor.needsUpdate = true;
+            }
+            removeFromColorQueue(blockId);
+        }
+    };
 
     useRenderEdges();
     useMouseMove({ tangleMeshRef });
@@ -99,5 +115,14 @@ export const useRenderTangle = () => {
 
         removeFromBlockQueue(addedIds);
     }, [blockQueue]);
-};
 
+    useEffect(() => {
+        if (colorQueue.length === 0) {
+            return;
+        }
+
+        for (const { id, color } of colorQueue) {
+            updateBlockColor(id, color);
+        }
+    }, [colorQueue]);
+};
