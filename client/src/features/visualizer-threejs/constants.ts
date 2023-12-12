@@ -19,16 +19,24 @@ export const TIME_DIFF_COUNTER = 250;
 export const SECOND = 1000;
 export const DATA_SENDER_TIME_INTERVAL = 500;
 
+// colors
+export const PENDING_BLOCK_COLOR = new Color('#A6C3FC')
+
+export const ACCEPTED_BLOCK_COLORS = [
+  new Color('#0101FF'),
+  new Color('#0000DB'),
+  new Color('#0101AB'),
+]
+
 export const COLORS = [
-    new Color("#F0F4FF"),
-    new Color("#E0EAFF"),
-    new Color("#C8DAFE"),
-    new Color("#A6C3FC"),
-    new Color("#82A5F8"),
-    new Color("#5C84FA"),
-    new Color("#2559F5"),
-    new Color("#0101FF"),
-    new Color("#0000DB"),
-    new Color("#0101AB")
-];
+  new Color('#F0F4FF'),
+  new Color('#E0EAFF'),
+  new Color('#C8DAFE'),
+  PENDING_BLOCK_COLOR,
+  new Color('#82A5F8'),
+  new Color('#5C84FA'),
+  new Color('#2559F5'),
+  ...ACCEPTED_BLOCK_COLORS,
+]
+
 
