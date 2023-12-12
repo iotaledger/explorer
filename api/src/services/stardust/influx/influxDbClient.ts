@@ -133,7 +133,7 @@ export abstract class InfluxDbClient {
                 }
             };
 
-            const influxDbClient = new InfluxDB({ protocol, port: 443, host, database, username, password, options });
+            const influxDbClient = new InfluxDB({ protocol, port, host, database, username, password, options });
 
             return influxDbClient.ping(1500).then((pingResults: IPingStats[]) => {
                 if (pingResults.length > 0) {
