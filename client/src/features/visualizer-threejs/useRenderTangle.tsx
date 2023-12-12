@@ -9,7 +9,8 @@ import { useRenderEdges } from "./useRenderEdges";
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
 const SPHERE_TEMP_OBJECT = new THREE.Object3D();
-const SCALE_INCREMENT = 0.1;
+const SCALE_INCREMENT = 0.05;
+const INITIAL_SPHERE_SCALE = 0.7;
 
 export const useRenderTangle = () => {
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
@@ -102,7 +103,7 @@ export const useRenderTangle = () => {
             const color = block.color;
 
             SPHERE_TEMP_OBJECT.position.set(x, y, z);
-            SPHERE_TEMP_OBJECT.scale.setScalar(1);
+            SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
             SPHERE_TEMP_OBJECT.updateMatrix();
 
             updateBlockIdToIndex(block.id, objectIndexRef.current);
