@@ -1,9 +1,11 @@
 import { Color } from "three";
 
 // steps
-export const STEP_Y_PX = 10;
+export const STEP_Y_PX = 20;
 export const STEP_X_PX = 100;
 export const STEP_CAMERA_SHIFT_PX = 100;
+
+export const MAX_X_BLOCK_DISTANCE = 150;
 
 export const MAX_BLOCK_INSTANCES = 5000;
 
