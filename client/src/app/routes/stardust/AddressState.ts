@@ -56,7 +56,7 @@ export interface IAddressState {
     associatedOutputCount: number;
     aliasContainsDID: boolean;
     isDIDLoading: boolean;
-    resolvedDID: IIdentityStardustResolveResponse;
+    resolvedDID: IIdentityStardustResolveResponse | null;
 }
 
 const initialState = {
@@ -85,7 +85,10 @@ const initialState = {
     eventDetails: null,
     tokensCount: 0,
     nftCount: 0,
-    associatedOutputCount: 0
+    associatedOutputCount: 0,
+    aliasContainsDID: false,
+    isDIDLoading: true,
+    resolvedDID: null,
 };
 
 /**
