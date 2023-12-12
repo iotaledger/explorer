@@ -9,7 +9,8 @@
     "pre-push": "concurrently 'cd api && npm run build-compile && npm run build-lint && npm run build-config' 'cd client && npm run build'"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
   },
   "dependencies": {
     "husky": "^8.0.3"
