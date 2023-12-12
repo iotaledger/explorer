@@ -26,10 +26,6 @@ interface TangleState {
     addToBlockQueue: (newBlock: BlockState) => void;
     removeFromBlockQueue: (blockIds: string[]) => void;
 
-    scaleQueue: string[];
-    addToScaleQueue: (blockId: string, parents: string[]) => void;
-    removeFromScaleQueue: (blockIds: string[]) => void;
-
     edgeQueue: Edge[];
     addToEdgeQueue: (blockId: string, parents: string[]) => void;
     removeFromEdgeQueue: (edges: Edge[]) => void;
@@ -59,7 +55,6 @@ interface TangleState {
 
 export const useTangleStore = create<TangleState>()(devtools(set => ({
     blockQueue: [],
-    scaleQueue: [],
     edgeQueue: [],
     blockIdToEdges: new Map(),
     blockIdToIndex: new Map(),
@@ -79,24 +74,6 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
         set(state => ({
             ...state,
             blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
-        }));
-    },
-    addToScaleQueue: (_: string, parents: string[]) => {
-        if (parents.length > 0) {
-            set(state => {
-                const nextScalesToUpdate = [...state.scaleQueue, ...parents];
-
-                return {
-                    ...state,
-                    scaleQueue: nextScalesToUpdate
-                };
-            });
-        }
-    },
-    removeFromScaleQueue: (blockIds: string[]) => {
-        set(state => ({
-            ...state,
-            scaleQueue: state.scaleQueue.filter(blockId => !blockIds.includes(blockId))
         }));
     },
     addToEdgeQueue: (blockId: string, parents: string[]) => {

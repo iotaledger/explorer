@@ -48,7 +48,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const isPlaying = useConfigStore(s => s.isPlaying);
     const setIsPlaying = useConfigStore(s => s.setIsPlaying);
     const addBlock = useTangleStore(s => s.addToBlockQueue);
-    const addToScaleQueue = useTangleStore(s => s.addToScaleQueue);
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
     const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
@@ -121,7 +120,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         };
     }, []);
 
-
     /**
      * Subscribe to updates
      * @param blockData The new block data
@@ -154,7 +152,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             blockIdToPosition.set(blockData.blockId, position);
             blockMetadata.set(blockData.blockId, blockData);
 
-            addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
         }
