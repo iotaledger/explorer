@@ -36,7 +36,7 @@ export class FixerClient {
         try {
             response = await FetchHelper.json<unknown, ILatestResponse>(
                 this._endpoint,
-                `latest?base=${baseCurrency}&symbols=USD,JPY,GBP,CAD,SEK,CHF`,
+                `latest?base=${baseCurrency}&symbols=USD,JPY,GBP,CAD,SEK,CHF,IDR`,
                 "get",
                 null,
                 { apiKey: this._apiKey }
