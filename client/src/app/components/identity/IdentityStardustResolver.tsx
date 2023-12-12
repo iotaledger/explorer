@@ -24,7 +24,7 @@ const IdentityStardustResolver: React.FC<IdentityStardustResolverProps> = ({ res
             return;
         }
 
-        setDID(resolvedDID.document?.doc.id ?? "")
+        setDID(resolvedDID.document.doc.id as string ?? "")
         setGovernorAddress(resolvedDID.document?.meta.governorAddress ?? "")
         setStateControllerAddress(resolvedDID.document?.meta.stateControllerAddress ?? "")
         setErrorMessage(resolvedDID.error ?? "")
@@ -32,11 +32,6 @@ const IdentityStardustResolver: React.FC<IdentityStardustResolverProps> = ({ res
         constructVerifiedDomains(resolvedDID).then((newVerifiedDomains) => {
             setVerifiedDomains(newVerifiedDomains);
         })
-    }, [resolvedDID])
-
-    useEffect(() => {
-
-
     }, [resolvedDID])
 
     return (

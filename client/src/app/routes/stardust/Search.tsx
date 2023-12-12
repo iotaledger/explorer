@@ -227,9 +227,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                             });
 
                             if (response && Object.keys(response).length > 0) {
+                                const routeSearch = new Map<string, string>();
                                 let route = "";
                                 let routeParam = query;
-                                const routeSearch = new Map<string, string>();
                                 let redirectState = {};
                                 if (response.block) {
                                     route = "block";
@@ -288,11 +288,13 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     if (routeSearch.size === 0) {
                                         return "";
                                     }
-                                        const searchParams = new URLSearchParams();
-                                        for (const [key, value] of routeSearch.entries()) {
-                                            searchParams.append(key, value);
-                                        }
-                                        return `?${searchParams.toString()}`;
+
+                                    const searchParams = new URLSearchParams();
+                                    for (const [key, value] of routeSearch.entries()) {
+                                        searchParams.append(key, value);
+                                    }
+
+                                    return `?${searchParams.toString()}`;
                                 };
 
                                 this.setState({
