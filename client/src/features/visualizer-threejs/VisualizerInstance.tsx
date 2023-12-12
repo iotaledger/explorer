@@ -18,6 +18,7 @@ import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
+import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
 
 const features = {
     statsEnabled: true,
@@ -48,7 +49,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const isPlaying = useConfigStore(s => s.isPlaying);
     const setIsPlaying = useConfigStore(s => s.setIsPlaying);
     const addBlock = useTangleStore(s => s.addToBlockQueue);
-    const addToScaleQueue = useTangleStore(s => s.addToScaleQueue);
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore(s => s.addToColorQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
@@ -122,7 +122,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         };
     }, []);
 
-
     /**
      * Subscribe to updates
      * @param blockData The new block data
@@ -155,7 +154,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             blockIdToPosition.set(blockData.blockId, position);
             blockMetadata.set(blockData.blockId, blockData);
 
-            addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
         }
