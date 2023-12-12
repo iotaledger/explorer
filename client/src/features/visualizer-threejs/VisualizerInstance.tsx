@@ -15,7 +15,7 @@ import {
 } from './constants'
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { getGenerateY, randomIntFromInterval, timer } from "./utils";
+import { generateXbyShift, getGenerateY, randomIntFromInterval, timer } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -143,7 +143,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             const position: [number, number, number] = [
                 randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
                 Y,
-                randomIntFromInterval(-MAX_X_BLOCK_DISTANCE, MAX_X_BLOCK_DISTANCE),
+                generateXbyShift(-0.5),
             ];
 
             bpsCounter.addBlock();
