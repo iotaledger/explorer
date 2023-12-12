@@ -75,10 +75,66 @@ export const useRenderTangle = () => {
         }
     }, [tangleMeshRef]);
 
+    // @ts-ignore
+    function logInstancedMeshDetails(instancedMesh) {
+        const tempObject = new THREE.Object3D();
+        const position = new THREE.Vector3();
+        const rotation = new THREE.Quaternion();
+        const scale = new THREE.Vector3();
+
+        for (let i = 0; i < 100; i++) {
+            instancedMesh.getMatrixAt(i, tempObject.matrix);
+            tempObject.matrix.decompose(position, rotation, scale);
+
+            if (i === 0) {
+                position.x += 10;
+            }
+            console.log(`Instance ${i}: Position: ${position.toArray()}, Rotation: ${rotation.toArray()}, Scale: ${scale.toArray()}`);
+        }
+
+    }
+
+    // @ts-ignore
+    function changePositionOfFirstElement(instancedMesh) {
+        const index = 0; // Index of the first element
+        const matrix = new THREE.Matrix4();
+        const position = new THREE.Vector3();
+        const quaternion = new THREE.Quaternion();
+        const scale = new THREE.Vector3();
+
+        // Retrieve the current matrix of the first instance
+        instancedMesh.getMatrixAt(index, matrix);
+
+        // Decompose the matrix to get position, rotation (quaternion), and scale
+        matrix.decompose(position, quaternion, scale);
+
+        // Modify the position
+        position.y += 10;
+
+        // Recompose the matrix with the updated position
+        matrix.compose(position, quaternion, scale);
+
+        // Update the instance with the new matrix
+        instancedMesh.setMatrixAt(index, matrix);
+
+        // Notify Three.js that the instance matrix needs updating
+        instancedMesh.instanceMatrix.needsUpdate = true;
+    }
+
+    useEffect(() => {
+        // @ts-ignore
+        window.r = () => {
+            changePositionOfFirstElement(tangleMeshRef.current);
+        }
+    }, []);
+
     useEffect(() => {
         if (blockQueue.length === 0) {
             return;
         }
+
+
+        // changePositionFirstIndex();
 
         const addedIds = [];
 
