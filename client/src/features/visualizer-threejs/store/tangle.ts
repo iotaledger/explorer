@@ -55,6 +55,12 @@ interface TangleState {
 
     clickedInstanceId: string | null;
     setClickedInstanceId: (instanceId: string | null) => void;
+
+    // blockAnimation: Map<string, number>; // string - block id, number - duration from start
+    blockAnimation: {[blockId: string]: number}; // string - block id, number - duration from start
+    addBlockAnimation: (blockId: string) => void;
+    blockAnimationUpdate: (blockIds: {[blockId: string]: number}) => void;
+
 }
 
 export const useTangleStore = create<TangleState>()(devtools(set => ({
@@ -70,6 +76,26 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
     zoom: ZOOM_DEFAULT,
     bps: 0,
     clickedInstanceId: null,
+    blockAnimation: {},
+    blockAnimationUpdate: (blockIds) => {
+        set(state => {
+            return {
+                blockAnimation: blockIds,
+            };
+        });
+    },
+    addBlockAnimation: (blockId: string) => {
+        set(state => {
+            const next = {
+                ...state.blockAnimation,
+                [blockId]: 0,
+            }
+            return {
+                blockAnimation: next,
+            };
+        });
+    },
+
     addToBlockQueue: newBlockData => {
         set(state => ({
             blockQueue: [...state.blockQueue, newBlockData]
