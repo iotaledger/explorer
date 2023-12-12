@@ -1,6 +1,6 @@
-import { AliasOutput, hexToBytes, hexToUtf8 } from "@iota/sdk-wasm/web";
+import { AliasOutput, hexToBytes } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
-import { TextHelper } from "~helpers/textHelper";
+import { Converter } from "~helpers/stardust/convertUtils";
 
 /**
  * Determine if an alias contains a DID
@@ -13,8 +13,14 @@ export function useAliasContainsDID(
     const [aliasContainsDID, setAliasContainsDID] = useState<boolean>(false);
 
     useEffect(() => {
-        if(alias && alias.stateMetadata && TextHelper.isUTF8(hexToBytes(alias.stateMetadata))) {
-            setAliasContainsDID(hexToUtf8(alias.stateMetadata).startsWith("DID") ?? false)
+        if(alias && alias.stateMetadata && Converter.isHex(alias.stateMetadata, true)) {
+            const metaDataBytes = hexToBytes(alias.stateMetadata);
+            // Check if the first three bytes contain "DID" according to specification: https://wiki.iota.org/identity.rs/references/specifications/iota-did-method-spec/#anatomy-of-the-state-metadata
+            if (metaDataBytes.length >= 3) {
+                const testBytes = metaDataBytes.slice(0, 3);
+                const testString = Converter.bytesToUtf8(testBytes);
+                setAliasContainsDID(testString === "DID");
+            }
         }
     }, [alias]);
 
