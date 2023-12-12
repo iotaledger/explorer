@@ -43,6 +43,9 @@
       ],
       "~features/*": [
         "src/features/*"
+      ],
+      "~nova/*": [
+        "src/services/nova/*"
       ]
     }
   },

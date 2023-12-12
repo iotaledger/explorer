@@ -1,6 +1,6 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { Client as StardustClient } from "@iota/sdk";
-import { initLogger, Client as NovaMqttClient } from "@iota/sdk-nova";
+import { initLogger, Client as NovaClient } from "@iota/sdk-nova";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -22,10 +22,11 @@ import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
 import { NovaFeed } from "./services/nova/feed/novaFeed";
+import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
-import { NodeInfoService } from "./services/stardust/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceStardust } from "./services/stardust/nodeInfoService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
 // iota-sdk debug
@@ -203,7 +204,7 @@ function initStardustServices(networkConfig: INetwork): void {
     }
 
     // eslint-disable-next-line no-void
-    void NodeInfoService.build(networkConfig).then(nodeInfoService => {
+    void NodeInfoServiceStardust.build(networkConfig).then(nodeInfoService => {
         ServiceFactory.register(
             `node-info-${networkConfig.network}`,
             () => nodeInfoService
@@ -240,20 +241,31 @@ function initStardustServices(networkConfig: INetwork): void {
  */
 function initNovaServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
+    const novaClient = new NovaClient({
+        nodes: [networkConfig.provider],
+        brokerOptions: { useWs: true },
+        // Needed only for now in local development (NOT FOR PROD)
+        ignoreNodeHealth: true
+    });
 
-    const mqttInstance = new NovaMqttClient(
-        { nodes: [networkConfig.feedEndpoint], brokerOptions: { useWs: true }, ignoreNodeHealth: true }
-    );
     ServiceFactory.register(
-        `mqtt-${networkConfig.network}`,
-        () => mqttInstance
+        `client-${networkConfig.network}`,
+        () => novaClient
     );
 
-    const feedInstance = new NovaFeed(networkConfig.network);
-    ServiceFactory.register(
-        `feed-${networkConfig.network}`,
-        () => feedInstance
-    );
+    // eslint-disable-next-line no-void
+    void NodeInfoServiceNova.build(networkConfig).then(nodeInfoService => {
+        ServiceFactory.register(
+            `node-info-${networkConfig.network}`,
+            () => nodeInfoService
+        );
+
+        const feedInstance = new NovaFeed(networkConfig.network);
+        ServiceFactory.register(
+            `feed-${networkConfig.network}`,
+            () => feedInstance
+        );
+    });
 }
 
 /**

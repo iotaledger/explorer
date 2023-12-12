@@ -1,8 +1,9 @@
-import { BasicBlock, Client, IBlockMetadata } from "@iota/sdk-nova";
+import { Block, Client, IBlockMetadata } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IFeedUpdate } from "../../../models/api/nova/feed/IFeedUpdate";
+import { NodeInfoService } from "../nodeInfoService";
 
 /**
  * Wrapper class around Nova MqttClient.
@@ -34,11 +35,10 @@ export class NovaFeed {
         logger.debug("[NovaFeed] Constructing a Nova Feed");
         this.blockSubscribers = {};
         this.network = networkId;
-        this._mqttClient = ServiceFactory.get<Client>(`mqtt-${networkId}`);
+        this._mqttClient = ServiceFactory.get<Client>(`client-${networkId}`);
+        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
-        logger.debug(`[NovaFeed] Mqtt is ${JSON.stringify(this._mqttClient)}`);
-
-        if (this._mqttClient) {
+        if (this._mqttClient && nodeInfoService) {
             this.connect();
         } else {
             throw new Error(`Failed to build novaFeed instance for ${networkId}`);
@@ -71,7 +71,7 @@ export class NovaFeed {
         // eslint-disable-next-line no-void
         void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
             try {
-                const block: BasicBlock = this.parseMqttPayloadMessage(BasicBlock, message);
+                const block: Block = this.parseMqttPayloadMessage(Block, message);
                 const update: Partial<Record<string, unknown>> = {
                     block
                 };

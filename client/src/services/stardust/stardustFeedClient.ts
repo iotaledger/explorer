@@ -66,7 +66,7 @@ export class StardustFeedClient {
     private cacheTrimTimer: NodeJS.Timer | null = null;
 
     /**
-     * Create a new instance of TransactionsClient.
+     * Create a new instance of StardustFeedClient.
      * @param endpoint The endpoint for the api.
      * @param networkId The network configurations.
      */
@@ -122,6 +122,7 @@ export class StardustFeedClient {
                         this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
+
                 this.socket.on("block", async (update: IFeedUpdate) => {
                     if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.blockMetadata) {
