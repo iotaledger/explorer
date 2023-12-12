@@ -19,7 +19,8 @@ export class CurrencyService {
         GBP: "£",
         CAD: "$",
         SEK: "kr",
-        CHF: "CHF"
+        CHF: "CHF",
+        IDR: "Rp"
     };
 
     /**
@@ -32,7 +33,8 @@ export class CurrencyService {
         GBP: "British Pound Sterling",
         CAD: "Canadian Dollar",
         SEK: "Swedish Krona",
-        CHF: "Swiss Franc"
+        CHF: "Swiss Franc",
+        IDR: "Indonesian Rupiah"
     };
 
     /**
