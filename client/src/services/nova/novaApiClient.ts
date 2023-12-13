@@ -3,7 +3,7 @@ import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { ApiClient } from "../apiClient";
 
 /**
- * Class to handle api communications on stardust.
+ * Class to handle api communications on nova.
  */
 export class NovaApiClient extends ApiClient {
     /**

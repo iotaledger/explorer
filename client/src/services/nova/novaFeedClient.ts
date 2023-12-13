@@ -1,5 +1,5 @@
 import {
-    Block, Utils
+    Block
 } from "@iota/sdk-wasm-nova/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "~/factories/serviceFactory";
@@ -10,7 +10,7 @@ import { IFeedUpdate } from "~/models/api/nova/feed/IFeedUpdate";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { INetwork } from "~/models/config/INetwork";
 import { NetworkService } from "../networkService";
-import { NodeInfoService } from "../nodeInfoService";
+import { NodeInfoService } from "../stardust/nodeInfoService";
 
 export class NovaFeedClient {
     /**
