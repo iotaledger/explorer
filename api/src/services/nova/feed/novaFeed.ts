@@ -1,10 +1,7 @@
+import { BasicBlock, Client, IBlockMetadata } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
-
-class Mock {
-
-}
 
 /**
  * Wrapper class around Nova MqttClient.
@@ -21,7 +18,7 @@ export class NovaFeed {
     /**
      * Mqtt service for data (upstream).
      */
-    private readonly _mqttClient: any;
+    private readonly _mqttClient: Client;
 
     /**
      * Creates a new instance of NovaFeed.
@@ -30,7 +27,7 @@ export class NovaFeed {
     constructor(networkId: string) {
         logger.debug("[NovaFeed] Constructing a Nova Feed");
         this.blockSubscribers = {};
-        this._mqttClient = ServiceFactory.get<any>(`mqtt-${networkId}`);
+        this._mqttClient = ServiceFactory.get<Client>(`mqtt-${networkId}`);
 
         logger.debug(`[NovaFeed] Mqtt is ${JSON.stringify(this._mqttClient)}`);
 
@@ -49,7 +46,7 @@ export class NovaFeed {
         // eslint-disable-next-line no-void
         void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
             try {
-                const block: any = this.parseMqttPayloadMessage(Mock, message);
+                const block: BasicBlock = this.parseMqttPayloadMessage(BasicBlock, message);
                 const update: Partial<Record<string, unknown>> = {
                     block
                 };
@@ -66,7 +63,7 @@ export class NovaFeed {
         // eslint-disable-next-line no-void
         void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, message) => {
             const parsed: { topic: string; payload: string } = JSON.parse(message);
-            const metadata: any = JSON.parse(parsed.payload);
+            const metadata: IBlockMetadata = JSON.parse(parsed.payload);
 
             logger.debug(`New metadata ${JSON.stringify(metadata)}`);
 

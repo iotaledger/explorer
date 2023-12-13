@@ -1,62 +1,17 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
+import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT, ANIMATION_TIME_SECONDS } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
-import { useTangleStore } from "./store";
+import { BlockState, IBlockAnimation, useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
-import { randomIntFromInterval } from "~features/visualizer-threejs/utils";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
 const SPHERE_TEMP_OBJECT = new THREE.Object3D();
 const INITIAL_SPHERE_SCALE = 0.7;
 
-// function createCoordinatesBetween(start, end, numberOfCoordinates) {
-//     const coordinates = [];
-//
-//     for (let i = 1; i <= numberOfCoordinates; i++) {
-//         const t = i / (numberOfCoordinates + 1); // Calculate the interpolation factor
-//
-//         const x = start.x + (end.x - start.x) * t;
-//         const y = start.y + (end.y - start.y) * t;
-//         const z = start.z + (end.z - start.z) * t;
-//
-//         coordinates.push({ x, y, z });
-//     }
-//
-//     return coordinates;
-// }
-
-type Coordinates = [number, number, number]; // x,y,z
-class NodeAnimation {
-    startPosition: THREE.Vector3
-    endPosition: THREE.Vector3
-    currentPosition: THREE.Vector3
-    elapsedTime: number
-    duration: number
-    constructor(start: Coordinates, end: Coordinates, duration: number) {
-        this.startPosition = new THREE.Vector3(...start);
-        this.endPosition = new THREE.Vector3(...end);
-        this.currentPosition = new THREE.Vector3(...start);
-        this.elapsedTime = 0;
-        this.duration = duration;
-    }
-
-    updatePosition(delta: number) {
-        if (this.elapsedTime < this.duration) {
-            this.elapsedTime += delta;
-            const t = Math.min(this.elapsedTime / this.duration, 1);
-            this.currentPosition.lerpVectors(this.startPosition, this.endPosition, t);
-        }
-    }
-}
-
-// @ts-ignore
-
-// readonly
-
-export const useRenderTangle = (emitterRef: RefObject<THREE.Mesh>) => {
+export const useRenderTangle = () => {
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
@@ -86,19 +41,68 @@ export const useRenderTangle = (emitterRef: RefObject<THREE.Mesh>) => {
         }
     };
 
+    function updateInstancedMeshPosition(instancedMesh: THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>, index: number, nextPosition: THREE.Vector3) {
+        const matrix = new THREE.Matrix4();
+        const position = new THREE.Vector3();
+        const quaternion = new THREE.Quaternion();
+        const scale = new THREE.Vector3();
+        instancedMesh.getMatrixAt(index, matrix);
+        matrix.decompose(position, quaternion, scale);
+        matrix.compose(nextPosition, quaternion, scale);
+        instancedMesh.setMatrixAt(index, matrix);
+        instancedMesh.instanceMatrix.needsUpdate = true;
+    }
+
+    const initPlaceBlockOnCanvas = (block: BlockState) => {
+        const initPosition = blockAnimation[block.id];
+
+        if (!initPosition) return;
+
+        SPHERE_TEMP_OBJECT.position.set(
+            initPosition.x,
+            initPosition.y,
+            initPosition.z,
+        );
+        SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
+        SPHERE_TEMP_OBJECT.updateMatrix();
+
+        updateBlockIdToIndex(block.id, objectIndexRef.current);
+
+        tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
+        tangleMeshRef.current.setColorAt(objectIndexRef.current, block.color);
+
+        // Reuses old indexes when MAX_INSTANCES is reached
+        // This also makes it so that old nodes are removed
+        if (objectIndexRef.current < MAX_BLOCK_INSTANCES - 1) {
+            objectIndexRef.current += 1;
+        } else {
+            objectIndexRef.current = 0;
+        }
+
+        return block.id;
+    }
+
     useRenderEdges();
     useMouseMove({ tangleMeshRef });
 
-    // useFrame((_, delta) => {
-    //     console.log('--- ', delta);
-    // })
-
-    const st = useThree(state => state);
-
-    useEffect(() => {
-        // @ts-expect-error: It's fine
-        window.st = st;
-    }, [st]);
+    /** Spray animation */
+    useFrame((_, delta) => {
+        const updated: IBlockAnimation = {};
+        Object.entries(blockAnimation).forEach(([blockId, { x, y, z, duration: currentTime }]) => {
+            const nextTime = currentTime + delta;
+            const startPositionVector = new THREE.Vector3(x, y, z);
+            const endPositionVector = new THREE.Vector3(...blockIdToPosition.get(blockId) as [number, number, number]);
+            const interpolationFactor = Math.min(nextTime / ANIMATION_TIME_SECONDS, 1);
+            const targetPositionVector = new THREE.Vector3();
+            targetPositionVector.lerpVectors(startPositionVector, endPositionVector, interpolationFactor)
+            updated[blockId] = { x, y, z, duration: nextTime };
+            const index = blockIdToIndex.get(blockId);
+            if (index) {
+                updateInstancedMeshPosition(tangleMeshRef.current, index, targetPositionVector);
+            }
+        });
+        blockAnimationUpdate(updated);
+    })
 
     useEffect(() => {
         const intervalCallback = () => {
@@ -127,101 +131,20 @@ export const useRenderTangle = (emitterRef: RefObject<THREE.Mesh>) => {
         }
     }, [tangleMeshRef]);
 
-    // @ts-ignore
-    function changePositionOfFirstElement(instancedMesh, index, nextPosition) {
-        // const index = 0; // Index of the first element
-        const matrix = new THREE.Matrix4();
-        const position = new THREE.Vector3();
-        const quaternion = new THREE.Quaternion();
-        const scale = new THREE.Vector3();
-        // console.log('--- nextPosition', nextPosition);
-        // Retrieve the current matrix of the first instance
-        instancedMesh.getMatrixAt(index, matrix);
 
-        // Decompose the matrix to get position, rotation (quaternion), and scale
-        matrix.decompose(position, quaternion, scale);
-
-        // Modify the position
-        // position.y += 10;
-
-        // Recompose the matrix with the updated position
-        // matrix.compose(position, quaternion, scale);
-        matrix.compose(nextPosition, quaternion, scale);
-
-        // Update the instance with the new matrix
-        instancedMesh.setMatrixAt(index, matrix);
-
-        // Notify Three.js that the instance matrix needs updating
-        instancedMesh.instanceMatrix.needsUpdate = true;
-    }
-
-    useFrame((_, delta) => {
-        const updated = {};
-        Object.entries(blockAnimation).forEach(([blockId, currentTime]) => {
-            const nextTime = currentTime + delta;
-            const startPosition = [0, 0, 0] as [number, number, number];
-            const endPosition = blockIdToPosition.get(blockId) as [number, number, number];
-            const startPositionVector = new THREE.Vector3(...startPosition);
-            const endPositionVector = new THREE.Vector3(...endPosition);
-            const t = Math.min(nextTime / 3, 1);
-            const currentPositionVector = new THREE.Vector3();
-            currentPositionVector.lerpVectors(startPositionVector, endPositionVector, t)
-            // console.log('--- ', currentPositionVector);
-            // @ts-ignore
-            updated[blockId] = nextTime;
-            const index = blockIdToIndex.get(blockId);
-            // console.log('--- index', t);
-            changePositionOfFirstElement(tangleMeshRef.current, index, currentPositionVector);
-        });
-        blockAnimationUpdate(updated);
-    })
-
-    useEffect(() => {
-        // @ts-ignore
-        window.r = () => {
-            // changePositionOfFirstElement(tangleMeshRef.current, 0, );
-        }
-    }, []);
 
     useEffect(() => {
         if (blockQueue.length === 0) {
             return;
         }
 
-
-        // changePositionFirstIndex();
-
         const addedIds = [];
 
         for (const block of blockQueue) {
-            const [x, y, z] = block.position;
-            const emitterObj = emitterRef.current;
-            const emitterBox = new THREE.Box3().setFromObject(emitterObj);
-
-            const color = block.color;
-
-            SPHERE_TEMP_OBJECT.position.set(
-                randomIntFromInterval(emitterBox.min.x, emitterBox.max.x) + 50,
-                0,
-                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
-            );
-            SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
-            SPHERE_TEMP_OBJECT.updateMatrix();
-
-            updateBlockIdToIndex(block.id, objectIndexRef.current);
-
-            tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
-            tangleMeshRef.current.setColorAt(objectIndexRef.current, color);
-
-            // Reuses old indexes when MAX_INSTANCES is reached
-            // This also makes it so that old nodes are removed
-            if (objectIndexRef.current < MAX_BLOCK_INSTANCES - 1) {
-                objectIndexRef.current += 1;
-            } else {
-                objectIndexRef.current = 0;
+            const addedBlockId = initPlaceBlockOnCanvas(block);
+            if (addedBlockId) {
+                addedIds.push(addedBlockId);
             }
-
-            addedIds.push(block.id);
         }
 
         if (tangleMeshRef.current.instanceColor) {
@@ -232,7 +155,7 @@ export const useRenderTangle = (emitterRef: RefObject<THREE.Mesh>) => {
         tangleMeshRef.current.computeBoundingSphere();
 
         removeFromBlockQueue(addedIds);
-    }, [blockQueue]);
+    }, [blockQueue, blockAnimation]);
 
     useEffect(() => {
         if (colorQueue.length === 0) {

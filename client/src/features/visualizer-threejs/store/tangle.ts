@@ -4,7 +4,19 @@ import { devtools } from "zustand/middleware";
 import { ZOOM_DEFAULT } from "../constants";
 import {IFeedBlockData} from "../../../models/api/stardust/feed/IFeedBlockData";
 
-interface BlockState {
+interface IPosition {
+    x: number;
+    y: number;
+    z: number;
+}
+
+export interface IBlockAnimation {
+    [blockId: string]: IPosition & {
+        duration: number;
+    };
+}
+
+export interface BlockState {
     id: string;
     position: [x: number, y: number, z: number];
     color: Color;
@@ -23,7 +35,7 @@ interface EdgeEntry {
 interface TangleState {
     // Queue for "add block" operation to the canvas
     blockQueue: BlockState[];
-    addToBlockQueue: (newBlock: BlockState) => void;
+    addToBlockQueue: (newBlock: BlockState & { initPosition: IPosition; }) => void;
     removeFromBlockQueue: (blockIds: string[]) => void;
 
     edgeQueue: Edge[];
@@ -56,11 +68,8 @@ interface TangleState {
     clickedInstanceId: string | null;
     setClickedInstanceId: (instanceId: string | null) => void;
 
-    // blockAnimation: Map<string, number>; // string - block id, number - duration from start
-    blockAnimation: {[blockId: string]: number}; // string - block id, number - duration from start
-    addBlockAnimation: (blockId: string) => void;
-    blockAnimationUpdate: (blockIds: {[blockId: string]: number}) => void;
-
+    blockAnimation: IBlockAnimation;
+    blockAnimationUpdate: (updated: IBlockAnimation) => void;
 }
 
 export const useTangleStore = create<TangleState>()(devtools(set => ({
@@ -77,29 +86,36 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
     bps: 0,
     clickedInstanceId: null,
     blockAnimation: {},
-    blockAnimationUpdate: (blockIds) => {
+    blockAnimationUpdate: (updated) => {
         set(state => {
-            return {
-                blockAnimation: blockIds,
-            };
-        });
-    },
-    addBlockAnimation: (blockId: string) => {
-        set(state => {
-            const next = {
+            const nextBlockAnimation = {
                 ...state.blockAnimation,
-                [blockId]: 0,
+                ...updated,
+            };
+            for (const key in nextBlockAnimation) {
+                if (nextBlockAnimation[key].duration > 1) {
+                    delete nextBlockAnimation[key];
+                }
             }
             return {
-                blockAnimation: next,
+                blockAnimation: nextBlockAnimation,
             };
         });
     },
-
     addToBlockQueue: newBlockData => {
-        set(state => ({
-            blockQueue: [...state.blockQueue, newBlockData]
-        }));
+        set(state => {
+            const { initPosition, ...blockDataRest } = newBlockData;
+            return {
+                blockQueue: [...state.blockQueue, blockDataRest],
+                blockAnimation: {
+                    ...state.blockAnimation,
+                    [newBlockData.id]: {
+                        ...initPosition,
+                        duration: 0,
+                    },
+                }
+            };
+        });
     },
     removeFromBlockQueue: (blockIds: string[]) => {
         set(state => ({

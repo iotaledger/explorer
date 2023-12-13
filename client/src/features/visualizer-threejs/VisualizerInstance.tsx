@@ -55,7 +55,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const blockMetadata = useTangleStore(s => s.blockMetadata);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
-    const addBlockAnimation = useTangleStore(s => s.addBlockAnimation);
+    // const addBlockAnimation = useTangleStore(s => s.addBlockAnimation);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | null>(null);
@@ -146,18 +146,22 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 bpsCounter.start();
             }
 
-            addBlock({
-                id: blockData.blockId,
-                position,
-                color: PENDING_BLOCK_COLOR
-            });
-            addBlockAnimation(blockData.blockId);
-
             blockIdToPosition.set(blockData.blockId, position);
             blockMetadata.set(blockData.blockId, blockData);
 
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
+
+            addBlock({
+                id: blockData.blockId,
+                position,
+                color: PENDING_BLOCK_COLOR,
+                initPosition: {
+                    x: randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
+                    y: 0,
+                    z: randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
+                }
+            });
         }
     };
 
