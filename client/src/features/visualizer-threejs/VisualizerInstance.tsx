@@ -226,7 +226,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 />
                 <color attach="background" args={[VISUALIZER_BACKGROUND[themeMode]]} />
                 <ambientLight />
-                <directionalLight color={0xFFFFFF} position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
+                <directionalLight position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
                 <Emitter
                     emitterRef={emitterRef}
                     setRunListeners={setRunListeners}
