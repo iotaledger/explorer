@@ -80,7 +80,7 @@ export class StardustFeedClient {
         if (theNetworkConfig) {
             this._networkConfig = theNetworkConfig;
         } else {
-            console.error("[FeedClient] Couldn't initialize client for network", networkId);
+            console.error("[StardustFeedClient] Couldn't initialize client for network", networkId);
         }
 
         this.setupCacheTrimJob();
@@ -232,7 +232,7 @@ export class StardustFeedClient {
             }
         } catch {
             success = false;
-            console.error("[FeedClient] Could not unsubscribe blocks");
+            console.error("[StardustFeedClient] Could not unsubscribe blocks");
         } finally {
             this.socket?.disconnect();
             this.blockSubscriptionId = undefined;
@@ -261,7 +261,7 @@ export class StardustFeedClient {
             }
         } catch {
             success = false;
-            console.error("[FeedClient] Could not unsubscribe milestones");
+            console.error("[StardustFeedClient] Could not unsubscribe milestones");
         } finally {
             this.socket?.disconnect();
             this.milestoneSubscriptionId = undefined;

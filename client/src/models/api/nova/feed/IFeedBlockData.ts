@@ -4,7 +4,7 @@ export interface IFeedBlockData {
     /**
      * The block id.
      */
-    blockId?: string;
+    blockId: string;
 
     /**
      * The block.
