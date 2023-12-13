@@ -10,7 +10,6 @@ import { NetworkService } from "~services/networkService";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityChrysalisResolver from "../components/identity/IdentityChrysalisResolver";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
-import IdentityStardustResolver from "../components/identity/IdentityStardustResolver";
 import Modal from "../components/Modal";
 import "./IdentityResolver.scss";
 
@@ -108,9 +107,6 @@ class IdentityResolver extends AsyncComponent<
                                         )}
                                         {this.props.protocolVersion === CHRYSALIS && (
                                             <IdentityChrysalisResolver {...this.props} />
-                                        )}
-                                        {this.props.protocolVersion === STARDUST && (
-                                            <IdentityStardustResolver {...this.props} />
                                         )}
                                     </div>
                                 )}
