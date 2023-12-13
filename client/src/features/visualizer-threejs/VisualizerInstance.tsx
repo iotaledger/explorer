@@ -16,6 +16,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
 import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";

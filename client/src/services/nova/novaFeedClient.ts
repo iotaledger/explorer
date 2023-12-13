@@ -98,6 +98,7 @@ export class NovaFeedClient {
                     if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.block) {
                             const block: IFeedBlockData = this.buildFeedBlockData(update.block);
+                            console.log("[NovaFeed] New block", block);
                             onBlockDataCallback?.(block);
                         }
                     }
@@ -116,16 +117,17 @@ export class NovaFeedClient {
      * @returns The feed item.
      */
     private buildFeedBlockData(block: Block): IFeedBlockData {
-        let blockId = "unknown"
-
-        const latestProtocolParameters = this._nodeInfo?.protocolParameters.at(-1)?.parameters.at(-1) ?? null
-
-        if (latestProtocolParameters) {
-            blockId = Utils.blockId(block, latestProtocolParameters);
-        }
+        // TODO Figure out how to use Protocol parameters from SDK to build blockId
+        // let blockId = "unknown"
+        //
+        // const latestProtocolParameters = this._nodeInfo?.protocolParameters.at(-1)?.parameters ?? null
+        // if (latestProtocolParameters) {
+        //     console.log(latestProtocolParameters)
+        //     blockId = Utils.blockId(block, latestProtocolParameters);
+        // }
 
         return {
-            blockId,
+            block
         };
     }
 }
