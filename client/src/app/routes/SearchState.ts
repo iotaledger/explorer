@@ -32,6 +32,11 @@ export interface SearchState {
     redirect: string;
 
     /**
+     * Encoded search/query parameter
+     */
+    search?: string;
+
+    /**
      * State to pass to redirected page.
      */
     redirectState?: Record<string, unknown>;
