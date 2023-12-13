@@ -241,30 +241,32 @@ function initStardustServices(networkConfig: INetwork): void {
  */
 function initNovaServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
-    const novaClient = new NovaClient({
+
+    // eslint-disable-next-line no-void
+    void NovaClient.create({
         nodes: [networkConfig.provider],
         brokerOptions: { useWs: true },
         // Needed only for now in local development (NOT FOR PROD)
         ignoreNodeHealth: true
-    });
-
-    ServiceFactory.register(
-        `client-${networkConfig.network}`,
-        () => novaClient
-    );
-
-    // eslint-disable-next-line no-void
-    void NodeInfoServiceNova.build(networkConfig).then(nodeInfoService => {
+    }).then(novaClient => {
         ServiceFactory.register(
-            `node-info-${networkConfig.network}`,
-            () => nodeInfoService
+            `client-${networkConfig.network}`,
+            () => novaClient
         );
 
-        const feedInstance = new NovaFeed(networkConfig.network);
-        ServiceFactory.register(
-            `feed-${networkConfig.network}`,
-            () => feedInstance
-        );
+        // eslint-disable-next-line no-void
+        void NodeInfoServiceNova.build(networkConfig).then(nodeInfoService => {
+            ServiceFactory.register(
+                `node-info-${networkConfig.network}`,
+                () => nodeInfoService
+            );
+
+            const feedInstance = new NovaFeed(networkConfig.network);
+            ServiceFactory.register(
+                `feed-${networkConfig.network}`,
+                () => feedInstance
+            );
+        });
     });
 }
 
