@@ -8,14 +8,13 @@ import * as THREE from "three";
 import { Box3 } from "three";
 import {
   ACCEPTED_BLOCK_COLORS,
-  MAX_X_BLOCK_DISTANCE,
   PENDING_BLOCK_COLOR,
   TIME_DIFF_COUNTER,
   ZOOM_DEFAULT,
 } from './constants'
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { generateXbyShift, getGenerateY, randomIntFromInterval, timer } from "./utils";
+import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -143,7 +142,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             const position: [number, number, number] = [
                 randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
                 Y,
-                generateXbyShift(-0.5),
+                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
             ];
 
             bpsCounter.addBlock();

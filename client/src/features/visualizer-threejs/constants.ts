@@ -2,7 +2,6 @@ import { Color } from "three";
 
 // steps
 export const STEP_Y_PX = 20;
-export const STEP_X_PX = 250;
 export const STEP_CAMERA_SHIFT_PX = 100;
 
 export const MAX_BLOCK_INSTANCES = 5000;
@@ -40,3 +39,8 @@ export const COLORS = [
 ]
 
 
+// emitter
+
+export const EMITTER_WIDTH = 30;
+export const EMITTER_HEIGHT = 250;
+export const EMITTER_DEPTH = 250;
