@@ -55,7 +55,7 @@ const Emitter: React.FC<EmitterProps> = ({
     });
 
     // The Tangle rendering hook
-    useRenderTangle();
+    useRenderTangle(emitterRef);
 
     return (
         <mesh

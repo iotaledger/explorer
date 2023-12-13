@@ -5,6 +5,7 @@ import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
 import { useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
+import { randomIntFromInterval } from "~features/visualizer-threejs/utils";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
@@ -53,8 +54,9 @@ class NodeAnimation {
 
 // @ts-ignore
 
+// readonly
 
-export const useRenderTangle = () => {
+export const useRenderTangle = (emitterRef: RefObject<THREE.Mesh>) => {
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
     const objectIndexRef = useRef(0);
     const clearBlocksRef = useRef<() => void>();
@@ -193,9 +195,16 @@ export const useRenderTangle = () => {
 
         for (const block of blockQueue) {
             const [x, y, z] = block.position;
+            const emitterObj = emitterRef.current;
+            const emitterBox = new THREE.Box3().setFromObject(emitterObj);
+
             const color = block.color;
 
-            SPHERE_TEMP_OBJECT.position.set(0, 0, 0);
+            SPHERE_TEMP_OBJECT.position.set(
+                randomIntFromInterval(emitterBox.min.x, emitterBox.max.x) + 50,
+                0,
+                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
+            );
             SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
             SPHERE_TEMP_OBJECT.updateMatrix();
 

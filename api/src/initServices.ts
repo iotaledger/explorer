@@ -1,6 +1,6 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { Client as StardustClient } from "@iota/sdk";
-import { initLogger, Client as NovaMqttClient } from "@iota/sdk-nova";
+// import { initLogger, Client as NovaMqttClient } from "@iota/sdk-nova";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -29,7 +29,7 @@ import { NodeInfoService } from "./services/stardust/nodeInfoService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
 // iota-sdk debug
-initLogger();
+// initLogger();
 
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
@@ -241,13 +241,13 @@ function initStardustServices(networkConfig: INetwork): void {
 function initNovaServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
 
-    const mqttInstance = new NovaMqttClient(
-        { nodes: [networkConfig.feedEndpoint], brokerOptions: { useWs: true }, ignoreNodeHealth: true }
-    );
-    ServiceFactory.register(
-        `mqtt-${networkConfig.network}`,
-        () => mqttInstance
-    );
+    // const mqttInstance = new NovaMqttClient(
+    //     { nodes: [networkConfig.feedEndpoint], brokerOptions: { useWs: true }, ignoreNodeHealth: true }
+    // );
+    // ServiceFactory.register(
+    //     `mqtt-${networkConfig.network}`,
+    //     () => mqttInstance
+    // );
 
     const feedInstance = new NovaFeed(networkConfig.network);
     ServiceFactory.register(
