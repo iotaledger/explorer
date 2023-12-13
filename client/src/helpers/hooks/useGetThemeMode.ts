@@ -24,7 +24,7 @@ export function useGetThemeMode(): ThemeMode {
     return () => {
       window.removeEventListener('theme-change', toggleDarkMode)
     }
-  }, [settingsService])
+  }, [])
 
   return themeMode
 }
