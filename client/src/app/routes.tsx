@@ -35,12 +35,12 @@ import StardustOutputPage from "./routes/stardust/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
-// import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
-import StardustVisualizer from "../features/visualizer-threejs/VisualizerInstance";
+import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
+import NovaVisualizer from "../features/visualizer-threejs/VisualizerInstance";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
-import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 
 /**
  * Generator for keys in routes. Gives an incremented value on every next().
@@ -208,6 +208,13 @@ const buildAppRoutes = (
         />
     ];
 
+    const novaRoutes = [
+        <Route path="/:network/visualizer/"
+            key={keys.next().value}
+            component={NovaVisualizer}
+        />
+    ];
+
     return (
         <Switch>
             {commonRoutes}
@@ -219,6 +226,9 @@ const buildAppRoutes = (
             )}
             {protocolVersion === STARDUST && (
                 withNetworkContext(stardustRoutes)
+            )}
+            {protocolVersion === NOVA && (
+                novaRoutes
             )}
         </Switch>
     );

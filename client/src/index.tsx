@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
-import initStardustSdk from "@iota/sdk-wasm/web";
+import initSdkStardust from "@iota/sdk-wasm/web";
+import initSdkNova from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
@@ -10,7 +11,7 @@ import App from "~app/App";
 import { AppRouteProps } from "~app/AppRouteProps";
 import { ServiceFactory } from "~factories/serviceFactory";
 import "./index.scss";
-import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 import { ChrysalisApiClient } from "~services/chrysalis/chrysalisApiClient";
 import { ChrysalisFeedClient } from "~services/chrysalis/chrysalisFeedClient";
 import { ChrysalisTangleCacheService } from "~services/chrysalis/chrysalisTangleCacheService";
@@ -21,20 +22,24 @@ import { LegacyFeedClient } from "~services/legacy/legacyFeedClient";
 import { LegacyTangleCacheService } from "~services/legacy/legacyTangleCacheService";
 import { LocalStorageService } from "~services/localStorageService";
 import { NetworkService } from "~services/networkService";
-import { NodeInfoService } from "~services/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
 import { SettingsService } from "~services/settingsService";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
+import { NovaApiClient } from "./services/nova/novaApiClient";
+import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
-import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
+import { NovaFeedClient } from "./services/nova/novaFeedClient";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
 
 initialiseServices().then(async () => {
     // load the wasm
-    await initStardustSdk("/wasm/iota_sdk_stardust_wasm_bg.wasm");
+    await initSdkStardust("/wasm/iota_sdk_stardust_wasm_bg.wasm");
+    await initSdkNova("/wasm/iota_sdk_nova_wasm_bg.wasm");
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const container = document.querySelector("#root")!;
@@ -58,6 +63,7 @@ async function initialiseServices(): Promise<void> {
     ServiceFactory.register(`api-client-${LEGACY}`, () => new LegacyApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(apiEndpoint));
+    ServiceFactory.register(`api-client-${NOVA}`, () => new NovaApiClient(apiEndpoint));
     ServiceFactory.register("settings", () => new SettingsService());
     ServiceFactory.register("local-storage", () => new LocalStorageService());
 
@@ -69,9 +75,13 @@ async function initialiseServices(): Promise<void> {
     await networkService.buildCache();
     ServiceFactory.register("network", () => networkService);
 
-    const nodeInfoService = new NodeInfoService();
-    await nodeInfoService.buildCache();
-    ServiceFactory.register("node-info", () => nodeInfoService);
+    const nodeInfoServiceStardust = new NodeInfoServiceStardust();
+    await nodeInfoServiceStardust.buildCache();
+    ServiceFactory.register("node-info-stardust", () => nodeInfoServiceStardust);
+
+    const nodeInfoServiceNova = new NodeInfoServiceNova();
+    await nodeInfoServiceNova.buildCache();
+    ServiceFactory.register("node-info-nova", () => nodeInfoServiceNova);
 
     ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
     ServiceFactory.register(`tangle-cache-${LEGACY}`, () => new LegacyTangleCacheService());
@@ -100,6 +110,13 @@ async function initialiseServices(): Promise<void> {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
                         serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
+                    );
+                    break;
+                }
+                case NOVA: {
+                    ServiceFactory.register(
+                        `feed-${netConfig.network}`,
+                        serviceName => new NovaFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
                 }

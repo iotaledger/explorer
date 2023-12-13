@@ -66,7 +66,7 @@ export class StardustFeedClient {
     private cacheTrimTimer: NodeJS.Timer | null = null;
 
     /**
-     * Create a new instance of TransactionsClient.
+     * Create a new instance of StardustFeedClient.
      * @param endpoint The endpoint for the api.
      * @param networkId The network configurations.
      */
@@ -80,7 +80,7 @@ export class StardustFeedClient {
         if (theNetworkConfig) {
             this._networkConfig = theNetworkConfig;
         } else {
-            console.error("[FeedClient] Couldn't initialize client for network", networkId);
+            console.error("[StardustFeedClient] Couldn't initialize client for network", networkId);
         }
 
         this.setupCacheTrimJob();
@@ -122,6 +122,7 @@ export class StardustFeedClient {
                         this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
                 });
+
                 this.socket.on("block", async (update: IFeedUpdate) => {
                     if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.blockMetadata) {
@@ -231,7 +232,7 @@ export class StardustFeedClient {
             }
         } catch {
             success = false;
-            console.error("[FeedClient] Could not unsubscribe blocks");
+            console.error("[StardustFeedClient] Could not unsubscribe blocks");
         } finally {
             this.socket?.disconnect();
             this.blockSubscriptionId = undefined;
@@ -260,7 +261,7 @@ export class StardustFeedClient {
             }
         } catch {
             success = false;
-            console.error("[FeedClient] Could not unsubscribe milestones");
+            console.error("[StardustFeedClient] Could not unsubscribe milestones");
         } finally {
             this.socket?.disconnect();
             this.milestoneSubscriptionId = undefined;
