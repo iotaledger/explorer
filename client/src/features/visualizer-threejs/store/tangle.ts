@@ -26,13 +26,13 @@ interface TangleState {
     addToBlockQueue: (newBlock: BlockState) => void;
     removeFromBlockQueue: (blockIds: string[]) => void;
 
-    scaleQueue: string[];
-    addToScaleQueue: (blockId: string, parents: string[]) => void;
-    removeFromScaleQueue: (blockIds: string[]) => void;
-
     edgeQueue: Edge[];
     addToEdgeQueue: (blockId: string, parents: string[]) => void;
     removeFromEdgeQueue: (edges: Edge[]) => void;
+
+    colorQueue: Pick<BlockState, "id" | "color">[];
+    addToColorQueue: (blockId: string, color: Color) => void;
+    removeFromColorQueue: (blockId: string) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
     blockIdToIndex: Map<string, number>;
@@ -59,8 +59,8 @@ interface TangleState {
 
 export const useTangleStore = create<TangleState>()(devtools(set => ({
     blockQueue: [],
-    scaleQueue: [],
     edgeQueue: [],
+    colorQueue: [],
     blockIdToEdges: new Map(),
     blockIdToIndex: new Map(),
     blockIdToPosition: new Map(),
@@ -79,24 +79,6 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
         set(state => ({
             ...state,
             blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
-        }));
-    },
-    addToScaleQueue: (_: string, parents: string[]) => {
-        if (parents.length > 0) {
-            set(state => {
-                const nextScalesToUpdate = [...state.scaleQueue, ...parents];
-
-                return {
-                    ...state,
-                    scaleQueue: nextScalesToUpdate
-                };
-            });
-        }
-    },
-    removeFromScaleQueue: (blockIds: string[]) => {
-        set(state => ({
-            ...state,
-            scaleQueue: state.scaleQueue.filter(blockId => !blockIds.includes(blockId))
         }));
     },
     addToEdgeQueue: (blockId: string, parents: string[]) => {
@@ -125,6 +107,18 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
                         edgeToRemove.fromBlockId === edge.fromBlockId
                 )
             )
+        }));
+    },
+    addToColorQueue: (id: string, color: Color) => {
+        set(state => ({
+            ...state,
+            colorQueue: [...state.colorQueue, { id, color }]
+        }));
+    },
+    removeFromColorQueue: (blockId: string) => {
+        set(state => ({
+            ...state,
+            colorQueue: state.colorQueue.filter(block => block.id !== blockId)
         }));
     },
     updateBlockIdToIndex: (blockId: string, index: number) => {

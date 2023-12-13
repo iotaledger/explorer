@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { COLORS, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
+import { ACCEPTED_BLOCK_COLORS, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
@@ -18,6 +18,7 @@ import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
+import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
 
 const features = {
     statsEnabled: true,
@@ -48,8 +49,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const isPlaying = useConfigStore(s => s.isPlaying);
     const setIsPlaying = useConfigStore(s => s.setIsPlaying);
     const addBlock = useTangleStore(s => s.addToBlockQueue);
-    const addToScaleQueue = useTangleStore(s => s.addToScaleQueue);
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
+    const addToColorQueue = useTangleStore(s => s.addToColorQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
     const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const blockMetadata = useTangleStore(s => s.blockMetadata);
@@ -121,7 +122,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         };
     }, []);
 
-
     /**
      * Subscribe to updates
      * @param blockData The new block data
@@ -148,18 +148,25 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addBlock({
                 id: blockData.blockId,
                 position,
-                color: COLORS[randomIntFromInterval(0, COLORS.length - 1)]
+                color: PENDING_BLOCK_COLOR
             });
 
             blockIdToPosition.set(blockData.blockId, position);
             blockMetadata.set(blockData.blockId, blockData);
 
-            addToScaleQueue(blockData.blockId, blockData.parents ?? []);
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
         }
     };
 
+    function onBlockMetadataUpdate(metadataUpdate: { [id: string]: IFeedBlockMetadata }): void {
+        for (const [blockId, metadata] of Object.entries(metadataUpdate)) {
+            if (metadata.referenced && !metadata.conflicting) {
+                const colorIndex = randomIntFromInterval(0, ACCEPTED_BLOCK_COLORS.length - 1);
+                addToColorQueue(blockId, ACCEPTED_BLOCK_COLORS[colorIndex]);
+            }
+        }
+    }
     useEffect(() => {
         if (!runListeners) {
             return;
@@ -178,7 +185,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!feedServiceRef.current) {
             return;
         }
-        feedServiceRef.current.subscribeBlocks(onNewBlock, () => { });
+        feedServiceRef.current.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
         bpsCounter.start();
         setIsPlaying(true);
     };
