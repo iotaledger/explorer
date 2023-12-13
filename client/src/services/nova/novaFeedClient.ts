@@ -10,7 +10,7 @@ import { IFeedUpdate } from "~/models/api/nova/feed/IFeedUpdate";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { INetwork } from "~/models/config/INetwork";
 import { NetworkService } from "../networkService";
-import { NodeInfoService } from "../stardust/nodeInfoService";
+import { NodeInfoService } from "./nodeInfoService";
 
 export class NovaFeedClient {
     /**
@@ -47,12 +47,11 @@ export class NovaFeedClient {
         this.endpoint = endpoint;
         const networkService = ServiceFactory.get<NetworkService>("network");
         const theNetworkConfig = networkService.get(networkId);
-        const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
+        const nodeService = ServiceFactory.get<NodeInfoService>("node-info-nova");
         const nodeInfo = theNetworkConfig?.network ? nodeService.get(theNetworkConfig?.network) : null;
 
         if (theNetworkConfig && nodeInfo) {
             this._networkConfig = theNetworkConfig;
-            // @ts-expect-error We should splint the node info service for stardust vs nova to remove the ambiguity hear
             this._nodeInfo = nodeInfo
         } else {
             console.error("[FeedClient] Couldn't initialize client for network", networkId);
@@ -118,6 +117,7 @@ export class NovaFeedClient {
      */
     private buildFeedBlockData(block: Block): IFeedBlockData {
         // TODO Figure out how to use Protocol parameters from SDK to build blockId
+
         // let blockId = "unknown"
         //
         // const latestProtocolParameters = this._nodeInfo?.protocolParameters.at(-1)?.parameters ?? null

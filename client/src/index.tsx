@@ -23,6 +23,7 @@ import { LegacyTangleCacheService } from "~services/legacy/legacyTangleCacheServ
 import { LocalStorageService } from "~services/localStorageService";
 import { NetworkService } from "~services/networkService";
 import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
 import { SettingsService } from "~services/settingsService";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
@@ -74,9 +75,13 @@ async function initialiseServices(): Promise<void> {
     await networkService.buildCache();
     ServiceFactory.register("network", () => networkService);
 
-    const nodeInfoService = new NodeInfoServiceStardust();
-    await nodeInfoService.buildCache();
-    ServiceFactory.register("node-info-stardust", () => nodeInfoService);
+    const nodeInfoServiceStardust = new NodeInfoServiceStardust();
+    await nodeInfoServiceStardust.buildCache();
+    ServiceFactory.register("node-info-stardust", () => nodeInfoServiceStardust);
+
+    const nodeInfoServiceNova = new NodeInfoServiceNova();
+    await nodeInfoServiceNova.buildCache();
+    ServiceFactory.register("node-info-nova", () => nodeInfoServiceNova);
 
     ServiceFactory.register("currency", () => new CurrencyService(apiEndpoint));
     ServiceFactory.register(`tangle-cache-${LEGACY}`, () => new LegacyTangleCacheService());
