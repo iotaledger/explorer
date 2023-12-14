@@ -69,11 +69,15 @@ export class NovaFeed {
     private connect() {
         logger.info("[NovaFeed] Connecting upstream feed!");
         // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
+        void this._mqttClient.listenMqtt(["blocks"], async (_, message) => {
             try {
                 const block: Block = this.parseMqttPayloadMessage(Block, message);
+                const blockId = await this._mqttClient.blockId(block);
                 const update: Partial<IFeedUpdate> = {
-                    block
+                    blockUpdate: {
+                        blockId,
+                        block
+                    }
                 };
 
                 // eslint-disable-next-line no-void

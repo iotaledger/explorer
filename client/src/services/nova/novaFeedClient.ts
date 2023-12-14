@@ -1,6 +1,3 @@
-import {
-    Block
-} from "@iota/sdk-wasm-nova/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { IFeedSubscribeResponse } from "~/models/api/IFeedSubscribeResponse";
@@ -99,10 +96,8 @@ export class NovaFeedClient {
 
                 this.socket.on("block", async (update: IFeedUpdate) => {
                     if (update.subscriptionId === this.blockSubscriptionId) {
-                        if (update.block) {
-                            const block: IFeedBlockData = this.buildFeedBlockData(update.block);
-                            console.log("[NovaFeedClient] New block", block);
-                            onBlockDataCallback?.(block);
+                        if (update.blockUpdate) {
+                            onBlockDataCallback?.(update.blockUpdate);
                         }
                     }
                 });
@@ -141,26 +136,5 @@ export class NovaFeedClient {
         }
 
         return success;
-    }
-
-    /**
-     * Build the block data object.
-     * @param block The item source.
-     * @returns The feed item.
-     */
-    private buildFeedBlockData(block: Block): IFeedBlockData {
-        const blockId = "unknown"
-        // TODO Figure out how to use Protocol parameters from SDK to build blockId
-        //
-        // const latestProtocolParameters = this._nodeInfo?.protocolParameters.at(-1)?.parameters ?? null
-        // if (latestProtocolParameters) {
-        //     console.log(latestProtocolParameters)
-        //     blockId = Utils.blockId(block, latestProtocolParameters);
-        // }
-
-        return {
-            blockId,
-            block
-        };
     }
 }

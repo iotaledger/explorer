@@ -1,9 +1,12 @@
 import { Block } from "@iota/sdk-nova";
 
-type IFeedBlockUpdate = Block;
+interface IFeedBlockUpdate {
+    blockId: string;
+    block: Block;
+}
 
 export interface IFeedUpdate {
     subscriptionId: string;
-    block?: IFeedBlockUpdate;
+    blockUpdate?: IFeedBlockUpdate;
 }
 
