@@ -1,4 +1,4 @@
-import { Block, Client, IBlockMetadata } from "@iota/sdk-nova";
+import { Block, Client } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
@@ -72,43 +72,15 @@ export class NovaFeed {
         void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
             try {
                 const block: Block = this.parseMqttPayloadMessage(Block, message);
-                const update: Partial<Record<string, unknown>> = {
+                const update: Partial<IFeedUpdate> = {
                     block
                 };
-
-                logger.debug(`New block ${JSON.stringify(block)}`);
 
                 // eslint-disable-next-line no-void
                 void this.broadcastBlock(update);
             } catch {
                 logger.error("[NovaFeed]: Failed broadcasting block downstream.");
             }
-        });
-
-        // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, message) => {
-            const parsed: { topic: string; payload: string } = JSON.parse(message);
-            const metadata: IBlockMetadata = JSON.parse(parsed.payload);
-
-            logger.debug(`New metadata ${JSON.stringify(metadata)}`);
-
-            const currentEntry = {
-                blockId: metadata.blockId,
-                blockState: metadata.blockState,
-                transactionState: metadata.transactionState,
-                blockFailureReason: metadata.blockFailureReason,
-                transactionFailureReason: metadata.transactionFailureReason
-            };
-
-            const update: Partial<Record<string, unknown>> = {
-                blockMetadata: {
-                    blockId: metadata.blockId,
-                    metadata: currentEntry
-                }
-            };
-
-            // eslint-disable-next-line no-void
-            void this.broadcastBlock(update);
         });
     }
 

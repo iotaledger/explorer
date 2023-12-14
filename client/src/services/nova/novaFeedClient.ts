@@ -66,7 +66,7 @@ export class NovaFeedClient {
      */
     public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
-        // TODO Support metadata update
+        // TODO Support metadata update when 'blocks-metadata' topic becomes supported
         onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
     ) {
         this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
