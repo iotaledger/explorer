@@ -1,6 +1,6 @@
 #!/bin/bash
 SDK_DIR="iota-sdk"
-TARGET_COMMIT="8d3f742c07ea94669d6e7ab7f8a85fe9d48c7af8"
+TARGET_COMMIT="05b7cec884177ba11c8848d0d52c850a8bb496fe"
 
 if [ ! -d "$SDK_DIR" ]; then
   git clone -b 2.0 git@github.com:iotaledger/iota-sdk.git
@@ -8,6 +8,7 @@ if [ ! -d "$SDK_DIR" ]; then
 else
   echo "Pulling nova-sdk..."
   cd "./$SDK_DIR"
+  git reset --hard 2.0
   git pull
 fi
 
