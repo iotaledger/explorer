@@ -4,11 +4,11 @@ import NetworkContext from "./context/NetworkContext";
 import { INetwork } from "~models/config/INetwork";
 import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "~models/config/networkType";
 import { IOTA_UI, Theme } from "~models/config/uiTheme";
-import { IReducedNodeInfo } from "~services/nodeInfoService";
+import { IStardustNodeInfo } from "~services/stardust/nodeInfoService";
 
 export const networkContextWrapper = (
     currentNetwork: string | undefined,
-    nodeInfo: IReducedNodeInfo | null,
+    nodeInfo: IStardustNodeInfo | null,
     uiTheme: Theme | undefined
 ) => function withNetworkContext(wrappedComponent: ReactNode) {
     return currentNetwork && nodeInfo ? (

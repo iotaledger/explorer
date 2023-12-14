@@ -1,14 +1,14 @@
 import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
-import { StardustApiClient } from "./stardust/stardustApiClient";
+import { StardustApiClient } from "../stardust/stardustApiClient";
 import { ServiceFactory } from "~factories/serviceFactory";
-import { INodeInfoResponse } from "~models/api/stardust/INodeInfoResponse";
+import { INodeInfoResponse as IStardustInfoResponse } from "~models/api/stardust/INodeInfoResponse";
 import { STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
 
 /**
- * The reduced node info fields relevant for Explorer.
+ * The reduced stardust node info fields relevant for Explorer.
  */
-export interface IReducedNodeInfo {
+export interface IStardustNodeInfo {
     /**
      * The base token info of the node.
      */
@@ -28,20 +28,20 @@ export interface IReducedNodeInfo {
 }
 
 /**
- * Service to handle base token info.
+ * Service to handle base token info on stardust.
  */
 export class NodeInfoService {
     /**
      * Cache of the base taken infos.
      */
-    private _cache: { [network: string]: IReducedNodeInfo } = {};
+    private _cache: { [network: string]: IStardustNodeInfo } = {};
 
     /**
      * Get the base token info by network.
      * @param network The name of the network.
      * @returns The base token info.
      */
-    public get(network: string): IReducedNodeInfo {
+    public get(network: string): IStardustNodeInfo {
         return this._cache[network];
     }
 
@@ -55,7 +55,7 @@ export class NodeInfoService {
         for (const networkDetails of stardustNetworks) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
             const network = networkDetails.network;
-            const response: INodeInfoResponse = await apiClient.nodeInfo({ network });
+            const response: IStardustInfoResponse = await apiClient.nodeInfo({ network });
             const { baseToken, protocolVersion, bech32Hrp, rentStructure } = response;
 
             if (baseToken && protocolVersion && bech32Hrp && rentStructure) {
