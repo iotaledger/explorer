@@ -10,15 +10,12 @@ interface IPosition {
     z: number;
 }
 
-export interface IBlockAnimation {
-    [blockId: string]: IPosition & {
-        duration: number;
-    };
+export interface IBlockInitPosition extends IPosition {
+    duration: number;
 }
 
 export interface BlockState {
     id: string;
-    position: [x: number, y: number, z: number];
     color: Color;
 }
 
@@ -35,7 +32,7 @@ interface EdgeEntry {
 interface TangleState {
     // Queue for "add block" operation to the canvas
     blockQueue: BlockState[];
-    addToBlockQueue: (newBlock: BlockState & { initPosition: IPosition; }) => void;
+    addToBlockQueue: (newBlock: BlockState & { initPosition: IPosition; targetPosition: IPosition; }) => void;
     removeFromBlockQueue: (blockIds: string[]) => void;
 
     edgeQueue: Edge[];
@@ -51,6 +48,7 @@ interface TangleState {
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
     blockMetadata: Map<string, IFeedBlockData>;
+    blockIdToInitPosition: Map<string, IBlockInitPosition>;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
@@ -68,11 +66,10 @@ interface TangleState {
     clickedInstanceId: string | null;
     setClickedInstanceId: (instanceId: string | null) => void;
 
-    blockAnimation: IBlockAnimation;
-    blockAnimationUpdate: (updated: IBlockAnimation) => void;
+    blockAnimationUpdate: (updated: IBlockInitPosition) => void;
 }
 
-export const useTangleStore = create<TangleState>()(devtools(set => ({
+export const useTangleStore = create<TangleState>()(devtools((set, get) => ({
     blockQueue: [],
     edgeQueue: [],
     colorQueue: [],
@@ -80,35 +77,34 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
     blockIdToIndex: new Map(),
     blockIdToPosition: new Map(),
     blockMetadata: new Map(),
+    blockIdToInitPosition: new Map(),
     indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     bps: 0,
     clickedInstanceId: null,
-    blockAnimation: {},
     blockAnimationUpdate: (updated) => {
-        set(state => {
-            const nextBlockAnimation = {
-                ...state.blockAnimation,
-                ...updated,
-            };
-            for (const key in nextBlockAnimation) {
-                if (nextBlockAnimation[key].duration > 1) {
-                    delete nextBlockAnimation[key];
-                }
-            }
-            return {
-                blockAnimation: nextBlockAnimation,
-            };
-        });
+        // set(state => {
+        //     const nextBlockAnimation = {
+        //         ...state.blockIdToInitPosition,
+        //         ...updated,
+        //     };
+        //     for (const key in nextBlockAnimation) {
+        //         if (nextBlockAnimation[key].duration > 1) {
+        //             delete nextBlockAnimation[key];
+        //         }
+        //     }
+        //     state.blockIdToInitPosition = nextBlockAnimation;
+        //     return state;
+        // });
     },
     addToBlockQueue: newBlockData => {
         set(state => {
-            const { initPosition, ...blockDataRest } = newBlockData;
+            const { initPosition, targetPosition, ...blockDataRest } = newBlockData;
             return {
                 blockQueue: [...state.blockQueue, blockDataRest],
                 blockAnimation: {
-                    ...state.blockAnimation,
+                    ...state.blockIdToInitPosition,
                     [newBlockData.id]: {
                         ...initPosition,
                         duration: 0,
@@ -118,9 +114,11 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
         });
     },
     removeFromBlockQueue: (blockIds: string[]) => {
-        set(state => ({
-            ...state,
-            blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
+        if (!blockIds.length) return;
+        const prevBlockQueue = get().blockQueue;
+        const blockQueue = prevBlockQueue.filter(b => !blockIds.includes(b.id));
+        set(() => ({
+            blockQueue
         }));
     },
     addToEdgeQueue: (blockId: string, parents: string[]) => {

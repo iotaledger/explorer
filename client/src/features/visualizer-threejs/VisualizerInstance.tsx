@@ -58,7 +58,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const blockMetadata = useTangleStore(s => s.blockMetadata);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
-    // const addBlockAnimation = useTangleStore(s => s.addBlockAnimation);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | NovaFeedClient | null>(null);
@@ -138,31 +137,34 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             const Y = generateY(secondsFromStart, bpsCounter.getBPS());
 
-            const position: [number, number, number] = [
-                randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                Y,
-                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
-            ];
+            const targetPosition = {
+                x: randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
+                y: Y,
+                z: randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
+            };
 
             bpsCounter.addBlock();
             if (!bpsCounter.getBPS()) {
                 bpsCounter.start();
             }
 
-            blockIdToPosition.set(blockData.blockId, position);
+            blockIdToPosition.set(blockData.blockId, [targetPosition.x, targetPosition.y, targetPosition.x]);
             blockMetadata.set(blockData.blockId, blockData);
 
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
 
+            const emitterCenter = new THREE.Vector3();
+            emitterBox.getCenter(emitterCenter);
+
             addBlock({
                 id: blockData.blockId,
-                position,
                 color: PENDING_BLOCK_COLOR,
+                targetPosition: targetPosition,
                 initPosition: {
-                    x: randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                    y: 0,
-                    z: randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
+                    x: emitterCenter.x,
+                    y: emitterCenter.y,
+                    z: emitterCenter.z
                 }
             });
         }
