@@ -1,4 +1,5 @@
 import { Color } from "three";
+import { ThemeMode } from './enums';
 
 // steps
 export const STEP_Y_PX = 20;
@@ -38,6 +39,14 @@ export const COLORS = [
   ...ACCEPTED_BLOCK_COLORS,
 ]
 
+// visualizer
+
+export const DIRECTIONAL_LIGHT_INTENSITY = 0.45;
+
+export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
+  [ThemeMode.Dark]: "#000000",
+  [ThemeMode.Light]: "#f2f2f2",
+}
 
 // emitter
 
