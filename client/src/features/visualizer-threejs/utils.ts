@@ -1,4 +1,4 @@
-import { STEP_X_PX, STEP_Y_PX, TIME_DIFF_COUNTER, SECOND } from "./constants";
+import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND } from "./constants";
 
 /**
  * Generates a random number within a specified range.
@@ -146,25 +146,4 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
 
         return Y * STEP_Y_PX;
     };
-};
-
-/**
- * Generator for coordinate X. It returns coordinate based on shift.
- * @param shift The shift value
- * @returns The X axis value
- */
-export const generateXbyShift = (shift: number) => {
-    const randomNumber = Math.floor(Math.random() * STEP_X_PX) + 1;
-
-    const shiftWithThreshold = (shift ?? 0) * STEP_X_PX;
-    return shiftWithThreshold + randomNumber;
-};
-
-
-export const wiggleEffect = (max: number) => {
-    const needToChange = Math.random() > 0.95;
-    if (needToChange) {
-        return randomNumberFromInterval(0 - max, max);
-    }
-    return 0;
 };

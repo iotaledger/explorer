@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { ACCEPTED_BLOCK_COLORS, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
+import { ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, VISUALIZER_BACKGROUND, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
@@ -15,10 +15,12 @@ import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
-import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
+import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
 import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
+import { useGetThemeMode } from '~/helpers/hooks/useGetThemeMode';
+import { StardustFeedClient } from "~/services/stardust/stardustFeedClient";
 
 const features = {
     statsEnabled: true,
@@ -34,6 +36,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 }) => {
     const [networkConfig] = useNetworkConfig(network);
     const generateY = getGenerateY({ withRandom: true });
+    const themeMode = useGetThemeMode()
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
@@ -58,7 +61,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     // const addBlockAnimation = useTangleStore(s => s.addBlockAnimation);
 
     const emitterRef = useRef<THREE.Mesh>(null);
-    const feedServiceRef = useRef<StardustFeedClient | null>(null);
+    const feedServiceRef = useRef<StardustFeedClient | NovaFeedClient | null>(null);
 
     /**
      * Pause on tab or window change
@@ -138,7 +141,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             const position: [number, number, number] = [
                 randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
                 Y,
-                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z)
+                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
             ];
 
             bpsCounter.addBlock();
@@ -177,7 +180,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
-        feedServiceRef.current = ServiceFactory.get<StardustFeedClient>(
+        feedServiceRef.current = ServiceFactory.get<NovaFeedClient | StardustFeedClient>(
             `feed-${network}`
         );
         setIsPlaying(true);
@@ -228,9 +231,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                     position={[0, 0, 1500]}
                     zoom={ZOOM_DEFAULT}
                 />
-                <color attach="background" args={["#f2f2f2"]} />
+                <color attach="background" args={[VISUALIZER_BACKGROUND[themeMode]]} />
                 <ambientLight />
-                <directionalLight position={[100, 100, 50]} />
+                <directionalLight position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
                 <Emitter
                     emitterRef={emitterRef}
                     setRunListeners={setRunListeners}
