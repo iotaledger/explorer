@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
+import { EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from './constants';
 
 interface EmitterProps {
     readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
@@ -57,13 +58,14 @@ const Emitter: React.FC<EmitterProps> = ({
     // The Tangle rendering hook
     useRenderTangle();
 
+
     return (
         <mesh
             ref={emitterRef}
             name="emitter"
             position={[0, 0, 0]}
         >
-            <boxGeometry args={[30, 150, 150]} />
+            <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
             <meshPhongMaterial transparent={true} opacity={0.6} />
         </mesh>
     );
