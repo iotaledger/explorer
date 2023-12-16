@@ -39,4 +39,27 @@ export const COLORS = [
   ...ACCEPTED_BLOCK_COLORS,
 ]
 
+// emitter
 
+export const EMITTER_SPEED_MULTIPLIER = 80
+export const EMITTER_PADDING_RIGHT = 150
+export const VISUALIZER_SAFE_ZONE = 150
+
+// camera
+
+export const CAMERA_X_AXIS_MOVEMENT = 0.02
+export const CAMERA_Y_AXIS_MOVEMENT = 0.05
+export const CAMERA_X_OFFSET = 0
+export const CAMERA_Y_OFFSET = 0.5
+
+export const FAR_PLANE = 4000
+export const NEAR_PLANE = 1
+
+// general
+
+export const MIN_BLOCKS_PER_SECOND = 50
+export const MAX_BLOCKS_PER_SECOND = 200
+
+// time
+
+export const MILLISECONDS_PER_SECOND = 1000

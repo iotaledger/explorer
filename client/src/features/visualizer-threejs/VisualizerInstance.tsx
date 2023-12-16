@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unknown-property */
-import { CameraControls, OrthographicCamera } from "@react-three/drei";
+import { OrthographicCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { ACCEPTED_BLOCK_COLORS, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
+import { ACCEPTED_BLOCK_COLORS, FAR_PLANE, NEAR_PLANE, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
@@ -19,6 +19,8 @@ import { StardustFeedClient } from "../../services/stardust/stardustFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
 import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
+import CameraControls from './CameraControls';
+import { ElementName } from './enums';
 
 const features = {
     statsEnabled: true,
@@ -215,10 +217,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         >
             <Canvas ref={canvasRef}>
                 <OrthographicCamera
-                    name="mainCamera"
+                    name={ElementName.MainCamera}
                     makeDefault
-                    near={1}
-                    far={4000}
+                    near={NEAR_PLANE}
+                    far={FAR_PLANE}
                     position={[0, 0, 1500]}
                     zoom={ZOOM_DEFAULT}
                 />
@@ -229,7 +231,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                     emitterRef={emitterRef}
                     setRunListeners={setRunListeners}
                 />
-                {features.cameraControls && <CameraControls makeDefault />}
+                {features.cameraControls && <CameraControls />}
                 {features.statsEnabled && <Perf />}
             </Canvas>
         </Wrapper>
