@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { EMITTER_PADDING_RIGHT, EMITTER_SPEED_MULTIPLIER, VISUALIZER_SAFE_ZONE } from './constants';
+import { EMITTER_PADDING_RIGHT, EMITTER_SPEED_MULTIPLIER, VISUALIZER_SAFE_ZONE, EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from './constants';
 import { getTangleDistances } from './utils';
 import { TangleMeshType } from './types';
 import { ElementName } from './enums';
@@ -68,6 +68,7 @@ const Emitter: React.FC<EmitterProps> = ({
     // The Tangle rendering hook
     useRenderTangle();
 
+
     return (
       <>
         <mesh ref={tangleMesh} name={ElementName.TangleMesh} position={[-(xDistance / 2), 0, 0]}>
@@ -79,7 +80,7 @@ const Emitter: React.FC<EmitterProps> = ({
             name={ElementName.EmitterMesh}
             position={[0, 0, 0]}
         >
-            <boxGeometry args={[30, 150, 150]} />
+            <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
             <meshPhongMaterial transparent={true} opacity={0.6} />
         </mesh>
       </>

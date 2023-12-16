@@ -1,8 +1,8 @@
 import { Color } from "three";
+import { ThemeMode } from './enums';
 
 // steps
-export const STEP_Y_PX = 10;
-export const STEP_X_PX = 100;
+export const STEP_Y_PX = 20;
 export const STEP_CAMERA_SHIFT_PX = 100;
 
 export const MAX_BLOCK_INSTANCES = 5000;
@@ -40,13 +40,11 @@ export const COLORS = [
 ]
 
 // emitter
-
 export const EMITTER_SPEED_MULTIPLIER = 80
 export const EMITTER_PADDING_RIGHT = 150
 export const VISUALIZER_SAFE_ZONE = 150
 
 // camera
-
 export const CAMERA_X_AXIS_MOVEMENT = 0.02
 export const CAMERA_Y_AXIS_MOVEMENT = 0.05
 export const CAMERA_X_OFFSET = 0
@@ -56,10 +54,21 @@ export const FAR_PLANE = 4000
 export const NEAR_PLANE = 1
 
 // general
-
 export const MIN_BLOCKS_PER_SECOND = 50
 export const MAX_BLOCKS_PER_SECOND = 200
 
 // time
-
 export const MILLISECONDS_PER_SECOND = 1000
+
+// visualizer
+export const DIRECTIONAL_LIGHT_INTENSITY = 0.45;
+
+export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
+  [ThemeMode.Dark]: "#000000",
+  [ThemeMode.Light]: "#f2f2f2",
+}
+
+// emitter
+export const EMITTER_WIDTH = 30;
+export const EMITTER_HEIGHT = 250;
+export const EMITTER_DEPTH = 250;

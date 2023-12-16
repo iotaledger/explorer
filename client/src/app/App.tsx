@@ -20,7 +20,7 @@ import { INetwork } from "~models/config/INetwork";
 import { MAINNET } from "~models/config/networkType";
 import { STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
-import { NodeInfoService } from "~services/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
 import "./App.scss";
 
 const App: React.FC<RouteComponentProps<AppRouteProps>> = (
@@ -48,7 +48,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
     const currentNetworkName = networkConfig?.network;
     const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
-    const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
+    const nodeService = ServiceFactory.get<NodeInfoServiceStardust>("node-info-stardust");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetworkName, nodeInfo, networkConfig?.uiTheme);
     scrollToTop();

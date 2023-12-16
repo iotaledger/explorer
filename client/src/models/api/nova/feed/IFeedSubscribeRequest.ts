@@ -1,4 +1,4 @@
-export type IFeedSelect = "block" | "milestone";
+export type IFeedSelect = "block";
 
 export interface IFeedSubscribeRequest {
     /**
@@ -7,7 +7,7 @@ export interface IFeedSubscribeRequest {
     network: string;
 
     /**
-     * The specific feed to subscribe too (expected only on stardust/nova feeds).
+     * The specific feed to subscribe too.
      */
     feedSelect: IFeedSelect;
 }
