@@ -1,8 +1,8 @@
 import { Color } from "three";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { ZOOM_DEFAULT } from "../constants";
-import {IFeedBlockData} from "../../../models/api/stardust/feed/IFeedBlockData";
+import { ZOOM_DEFAULT, ANIMATION_TIME_SECONDS } from "../constants";
+import { IFeedBlockData } from "~models/api/stardust/feed/IFeedBlockData";
 
 interface IPosition {
     x: number;
@@ -48,7 +48,7 @@ interface TangleState {
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
     blockMetadata: Map<string, IFeedBlockData>;
-    blockIdToInitPosition: Map<string, IBlockInitPosition>;
+    blockIdToAnimationPosition: Map<string, IBlockInitPosition>;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
@@ -66,7 +66,7 @@ interface TangleState {
     clickedInstanceId: string | null;
     setClickedInstanceId: (instanceId: string | null) => void;
 
-    blockAnimationUpdate: (updated: IBlockInitPosition) => void;
+    updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
 }
 
 export const useTangleStore = create<TangleState>()(devtools((set, get) => ({
@@ -77,39 +77,40 @@ export const useTangleStore = create<TangleState>()(devtools((set, get) => ({
     blockIdToIndex: new Map(),
     blockIdToPosition: new Map(),
     blockMetadata: new Map(),
-    blockIdToInitPosition: new Map(),
+    blockIdToAnimationPosition: new Map(),
     indexToBlockId: [],
     yPositions: {},
     zoom: ZOOM_DEFAULT,
     bps: 0,
     clickedInstanceId: null,
-    blockAnimationUpdate: (updated) => {
-        // set(state => {
-        //     const nextBlockAnimation = {
-        //         ...state.blockIdToInitPosition,
-        //         ...updated,
-        //     };
-        //     for (const key in nextBlockAnimation) {
-        //         if (nextBlockAnimation[key].duration > 1) {
-        //             delete nextBlockAnimation[key];
-        //         }
-        //     }
-        //     state.blockIdToInitPosition = nextBlockAnimation;
-        //     return state;
-        // });
-    },
-    addToBlockQueue: newBlockData => {
+    updateBlockIdToAnimationPosition: (updatedPositions) => {
         set(state => {
-            const { initPosition, targetPosition, ...blockDataRest } = newBlockData;
-            return {
-                blockQueue: [...state.blockQueue, blockDataRest],
-                blockAnimation: {
-                    ...state.blockIdToInitPosition,
-                    [newBlockData.id]: {
-                        ...initPosition,
-                        duration: 0,
-                    },
+            updatedPositions.forEach((value, key) => {
+                state.blockIdToAnimationPosition.set(key, value);
+            });
+
+            for (const [key, value] of state.blockIdToAnimationPosition) {
+                if (value.duration > ANIMATION_TIME_SECONDS) {
+                    state.blockIdToAnimationPosition.delete(key);
                 }
+            }
+            return {
+                blockIdToAnimationPosition: state.blockIdToAnimationPosition
+            };
+        });
+    },
+    addToBlockQueue: block => {
+        set(state => {
+            const { initPosition, targetPosition, ...blockRest } = block;
+
+            state.blockIdToPosition.set(block.id, [targetPosition.x, targetPosition.y, targetPosition.z]);
+            state.blockIdToAnimationPosition.set(block.id, {
+                ...initPosition,
+                duration: 0,
+            });
+            return {
+                ...state,
+                blockQueue: [...state.blockQueue, blockRest]
             };
         });
     },

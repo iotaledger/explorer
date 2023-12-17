@@ -55,7 +55,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore(s => s.addToColorQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
-    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const blockMetadata = useTangleStore(s => s.blockMetadata);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
 
@@ -148,7 +147,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 bpsCounter.start();
             }
 
-            blockIdToPosition.set(blockData.blockId, [targetPosition.x, targetPosition.y, targetPosition.x]);
             blockMetadata.set(blockData.blockId, blockData);
 
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
@@ -160,7 +158,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
-                targetPosition: targetPosition,
+                targetPosition: {
+                    x: targetPosition.x,
+                    y: targetPosition.y,
+                    z: targetPosition.z
+                },
                 initPosition: {
                     x: emitterCenter.x,
                     y: emitterCenter.y,
