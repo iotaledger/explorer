@@ -73,10 +73,13 @@ const Emitter: React.FC<EmitterProps> = ({
 
     return (
       <>
+        {/* Mesh for tangle zoom */}
         <mesh ref={tangleMesh} name={ElementName.TangleMesh} position={[-(xDistance / 2), 0, 0]}>
           <boxGeometry args={[xDistance + (VISUALIZER_SAFE_ZONE * 2), yDistance, 0.1]} />
-          <meshPhongMaterial color={0x000000} wireframe={true} />
+          <meshPhongMaterial opacity={0} wireframe={true} transparent />
         </mesh>
+
+        {/* Emitter Mesh */}
         <mesh
             ref={emitterRef}
             name={ElementName.EmitterMesh}
