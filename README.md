@@ -46,7 +46,9 @@ If Node.js is installed, you should see the version that's installed.
 
 ## Getting started
 
-To get started, see the [deployment instructions](api/DEPLOYMENT.md).
+1. `npm i`
+2. Install all dependencies `npm run setup:dev`
+3. See the [deployment instructions](api/DEPLOYMENT.md).
 
 ## Supporting the project
 
