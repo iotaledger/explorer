@@ -71,7 +71,7 @@ export function* yCoordinateGenerator(): Generator<number> {
     }
 }
 
-export const getMaxYPosition = (bps: number) => {
+const getMaxYPosition = (bps: number) => {
     const blocksPerTick = bps / (SECOND / TIME_DIFF_COUNTER);
     const maxYPerTick = blocksPerTick * STEP_Y_PX / 2; // divide 2 because we have values more than 0 and less
 
