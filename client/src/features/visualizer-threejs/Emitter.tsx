@@ -26,7 +26,9 @@ const Emitter: React.FC<EmitterProps> = ({
     const { halfScreenWidth } = useBorderPositions();
     const tangleMesh = useRef<TangleMeshType | null>(null)
 
-  const {xDistance, yDistance} = getTangleDistances()
+    const sinusoidal = 0
+
+  const { xDistance, yDistance } = getTangleDistances({ sinusoidal })
     
     useEffect(() => {
         setZoom(currentZoom);

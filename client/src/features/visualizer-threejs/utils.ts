@@ -153,7 +153,7 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
  * Calculate the tangles distances
  * @returns The axis distances
  */
-export function getTangleDistances(): {
+export function getTangleDistances({ sinusoidal = 0 } : { sinusoidal?: number }): {
     xDistance: number;
     yDistance: number;
 } {
@@ -167,7 +167,7 @@ export function getTangleDistances(): {
     const maxXDistance = MAX_BLOCK_DISTANCE + (VISUALIZER_SAFE_ZONE * 2)
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = (maxYPerTick * 2) + (VISUALIZER_SAFE_ZONE * 2)
+    const maxYDistance = (maxYPerTick * 2) + (sinusoidal * 2) + (VISUALIZER_SAFE_ZONE * 2)
 
     /* TODO: add sinusoidal distances */
   
