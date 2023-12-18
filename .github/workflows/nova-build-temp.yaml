@@ -56,10 +56,11 @@ jobs:
           rm package.json.bak
           echo "Building nodejs bindings"
           source $HOME/.cargo/env
-          echo 'LIBCLANG_PATH=/usr/lib/llvm-11/lib' >> $GITHUB_ENV
           yarn
           yarn build
           cd ..
+        env:
+          LIBCLANG_PATH: "/usr/local/lib"
 
       - name: Build WASM Bindings
         run: |
@@ -69,12 +70,11 @@ jobs:
           rm package.json.bak
           echo "Building wasm bindings"
           source $HOME/.cargo/env
-          echo 'LIBCLANG_PATH=/usr/lib/llvm-11/lib' >> $GITHUB_ENV
           yarn
           yarn build
           cd ../..
         env:
-          TARGET_COMMIT: ${{ github.event.inputs.TARGET_COMMIT }}
+          LIBCLANG_PATH: "/usr/local/lib"
 
       - name: See what we got
         run: |
