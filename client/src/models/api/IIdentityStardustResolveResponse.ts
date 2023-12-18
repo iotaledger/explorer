@@ -5,7 +5,7 @@ export interface IIdentityStardustResolveResponse extends IResponse {
      * The resolved DID Document.
      */
     document?: {
-        doc: unknown;
+        doc: Record<string, unknown>;
         meta: {
             governorAddress: string;
             stateControllerAddress: string;

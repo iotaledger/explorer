@@ -128,7 +128,7 @@ export class SearchQueryBuilder {
         let foundryId: string;
         let tag: HexEncodedString;
 
-        const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
+        const did = this.isDIDString(this.queryLower) ? this.query : undefined;
         const milestoneIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
         const queryDetails = this.buildQueryDetails();
 
@@ -194,8 +194,13 @@ export class SearchQueryBuilder {
         let addressType: number;
         let isBech32: boolean = false;
 
-        const q = this.queryLower;
+        let q = this.queryLower;
         const hrp = this.networkBechHrp;
+
+        const did = this.isDIDString(this.queryLower) ? this.query : undefined;
+        if (did) {
+            q = this.extractHexFromDID(did);
+        }
 
         if (Bech32Helper.matches(q, hrp)) {
             isBech32 = true;
@@ -242,6 +247,15 @@ export class SearchQueryBuilder {
         } else if (addressType === AddressType.Nft) {
             return "NFT";
         }
+    }
+
+    private isDIDString(searchString: string): boolean {
+        return searchString.startsWith("did:iota:");
+    }
+
+    private extractHexFromDID(did: string): string {
+        // cut off the first two chars
+        return did.slice(Math.max(0, did.lastIndexOf(":") + 3));
     }
 }
 
