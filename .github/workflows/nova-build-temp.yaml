@@ -56,6 +56,7 @@ jobs:
           rm package.json.bak
           echo "Building nodejs bindings"
           source $HOME/.cargo/env
+          echo 'LIBCLANG_PATH=/usr/lib/llvm-11/lib' >> $GITHUB_ENV
           yarn
           yarn build
           cd ..
@@ -68,6 +69,7 @@ jobs:
           rm package.json.bak
           echo "Building wasm bindings"
           source $HOME/.cargo/env
+          echo 'LIBCLANG_PATH=/usr/lib/llvm-11/lib' >> $GITHUB_ENV
           yarn
           yarn build
           cd ../..
