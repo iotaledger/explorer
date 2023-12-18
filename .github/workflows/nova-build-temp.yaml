@@ -58,11 +58,10 @@ jobs:
           source $HOME/.cargo/env
           yarn
           yarn build
-          cd ..
 
       - name: Build WASM Bindings
         run: |
-          cd wasm
+          cd iota-sdk/bindings/wasm
           echo "Renaming wasm sdk (sdk-wasm-nova)"
           sed -i.bak '2s/.*/    \"name\": \"@iota\/sdk-wasm-nova\",/' package.json
           rm package.json.bak
@@ -70,8 +69,8 @@ jobs:
           source $HOME/.cargo/env
           yarn
           yarn build
-          cd ../..
 
       - name: See what we got
         run: |
+          cd iota-sdk
           find -ls
