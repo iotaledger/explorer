@@ -19,11 +19,13 @@ export const useRenderTangle = () => {
 
     const blockQueue = useTangleStore(s => s.blockQueue);
     const removeFromBlockQueue = useTangleStore(s => s.removeFromBlockQueue);
+
     const colorQueue = useTangleStore(s => s.colorQueue);
     const removeFromColorQueue = useTangleStore(s => s.removeFromColorQueue);
+
     const blockIdToIndex = useTangleStore(s => s.blockIdToIndex);
-    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const updateBlockIdToIndex = useTangleStore(s => s.updateBlockIdToIndex);
+    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const blockIdToAnimationPosition = useTangleStore(s => s.blockIdToAnimationPosition);
 
     const updateBlockColor = (blockId: string, color: THREE.Color): void => {

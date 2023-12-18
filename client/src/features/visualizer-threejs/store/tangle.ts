@@ -69,7 +69,7 @@ interface TangleState {
     updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
 }
 
-export const useTangleStore = create<TangleState>()(devtools((set, get) => ({
+export const useTangleStore = create<TangleState>()(devtools(set => ({
     blockQueue: [],
     edgeQueue: [],
     colorQueue: [],
@@ -116,10 +116,8 @@ export const useTangleStore = create<TangleState>()(devtools((set, get) => ({
     },
     removeFromBlockQueue: (blockIds: string[]) => {
         if (!blockIds.length) return;
-        const prevBlockQueue = get().blockQueue;
-        const blockQueue = prevBlockQueue.filter(b => !blockIds.includes(b.id));
-        set(() => ({
-            blockQueue
+        set((state) => ({
+            blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
         }));
     },
     addToEdgeQueue: (blockId: string, parents: string[]) => {
