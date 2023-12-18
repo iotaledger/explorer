@@ -44,6 +44,7 @@ jobs:
       - name: Setup SDK
         run: |
           git clone -b 2.0 https://github.com/iotaledger/iota-sdk
+          cd iota-sdk
           echo "Checking out nova-sdk commit ${{ github.event.inputs.TARGET_COMMIT }}"
           git checkout ${{ github.event.inputs.TARGET_COMMIT }}
 
