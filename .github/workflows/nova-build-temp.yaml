@@ -24,7 +24,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python2 gcc-multilib g++-multilib build-essential libssl-dev rpm libsecret-1-dev software-properties-common apt-transport-https libudev-dev libusb-1.0-0-dev llvm-dev libclang-dev clang yarn
-          echo 'LIBCLANG_PATH=/usr/lib/llvm-11/lib' >> $GITHUB_ENV
+          echo 'LIBCLANG_PATH=/usr/lib/llvm-14/lib' >> $GITHUB_ENV
           echo 'DEBUG=electron-builder' >> $GITHUB_ENV
           echo 'PATH=/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/snap' >> $GITHUB_ENV
 
@@ -59,8 +59,6 @@ jobs:
           yarn
           yarn build
           cd ..
-        env:
-          LIBCLANG_PATH: "/usr/local/lib"
 
       - name: Build WASM Bindings
         run: |
@@ -73,8 +71,6 @@ jobs:
           yarn
           yarn build
           cd ../..
-        env:
-          LIBCLANG_PATH: "/usr/local/lib"
 
       - name: See what we got
         run: |
