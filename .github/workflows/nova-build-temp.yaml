@@ -5,8 +5,8 @@ on:
     inputs:
       TARGET_COMMIT:
         description: 'Target Commit Hash for the SDK'
-        required: true
-        default: '2.0'
+        required: false
+        default: '05b7cec884177ba11c8848d0d52c850a8bb496fe'
 
 jobs:
   build:
@@ -55,6 +55,7 @@ jobs:
           sed -i.bak '2s/.*/    \"name\": \"@iota\/sdk-nova\",/' package.json
           rm package.json.bak
           echo "Building nodejs bindings"
+          source $HOME/.cargo/env
           yarn
           yarn build
           cd ..
@@ -66,6 +67,7 @@ jobs:
           sed -i.bak '2s/.*/    \"name\": \"@iota\/sdk-wasm-nova\",/' package.json
           rm package.json.bak
           echo "Building wasm bindings"
+          source $HOME/.cargo/env
           yarn
           yarn build
           cd ../..
