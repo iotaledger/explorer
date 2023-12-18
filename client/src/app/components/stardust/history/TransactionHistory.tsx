@@ -32,6 +32,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     const transactions = useMemo(() => {
         const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
+        // console.log('--- transactionIdToOutputs', transactionIdToOutputs);
         return getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
     }, [historyView, outputDetailsMap, isFormattedAmounts]);
 

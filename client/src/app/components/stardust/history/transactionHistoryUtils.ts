@@ -21,7 +21,7 @@ export interface ITransactionHistoryRecord {
     outputs: (OutputResponse & ITransactionHistoryItem)[];
 }
 
-export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
+export const groupOutputsByTransactionId = (outputDetailsMap: IOutputDetailsMap) => {
     const transactionIdToOutputs = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
     historyView.forEach((historyItem) => {
         const outputDetails = outputDetailsMap[historyItem.outputId];
