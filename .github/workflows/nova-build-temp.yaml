@@ -14,6 +14,11 @@ on:
           - nova
         required: false
         default: nova
+      deployment:
+        type: boolean
+        description: 'Deploy after build?'
+        required: false
+        default: false
 
 jobs:
   build-and-deploy:
@@ -103,7 +108,22 @@ jobs:
           tags: iotaledger/explorer-api:${{ env.VERSION }}
           no-cache: true
 
-      - name: See what we got
+      - name: Build and push Client Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./client/Dockerfile
+          push: true
+          tags: iotaledger/explorer-client:${{ env.VERSION }}
+          no-cache: true
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.UPDATER_SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        if: ${{ github.event.inputs.deployment }}
         run: |
-          cd iota-sdk
-          find -ls
+              ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_NOVA_GATEWAY }} "${{ env.DEPLOY_ENV }} ${{ env.VERSION }}"
+

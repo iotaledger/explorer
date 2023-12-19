@@ -11,7 +11,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /usr/src/app
 
 # Copy everything from current Folder
-COPY . ./
+# COPY . ./
+
+# Copy iota-sdk-nova deps REMOVE THIS for prod
+COPY ./client ./
+COPY ./iota-sdk/bindings/wasm ../iota-sdk/bindings/wasm/
 
 # A minimal NGINX configuration
 RUN echo 'server {\
