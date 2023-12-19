@@ -16,7 +16,6 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
         isSpent,
         isFormattedAmounts,
         setIsFormattedAmounts,
-        darkBackgroundRow
     }
 ) => {
     const valueView = (
@@ -26,7 +25,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
     );
 
     return (
-        <tr className={darkBackgroundRow ? "dark" : ""}>
+        <tr>
             { isGenesisByDate ? (
                 <td className="date">Genesis</td>
             ) : (

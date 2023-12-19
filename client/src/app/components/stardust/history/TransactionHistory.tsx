@@ -68,7 +68,6 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                                 isSpent={c.isSpent}
                                 isFormattedAmounts={isFormattedAmounts}
                                 setIsFormattedAmounts={setIsFormattedAmounts}
-                                darkBackgroundRow={idx % 2 === 0}
                             />
                         </React.Fragment>
                     ))}

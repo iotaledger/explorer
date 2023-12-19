@@ -25,12 +25,6 @@ export interface ITransactionEntryProps {
     setIsFormattedAmounts: React.Dispatch<React.SetStateAction<boolean>>;
 
     /**
-     * To colour the transaction row ligter/darker, alternating on
-     * unrelated transactions.
-     */
-    darkBackgroundRow?: boolean;
-
-    /**
      * The formatted transaction amount.
      */
     balanceChangeFormatted: string;
