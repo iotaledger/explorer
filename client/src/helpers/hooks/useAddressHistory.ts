@@ -6,11 +6,9 @@ import { ITransactionHistoryRequest } from "~models/api/stardust/ITransactionHis
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
-import { IOutputDetailsResponse } from "~models/api/stardust/IOutputDetailsResponse";
-import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
 
 export interface IOutputDetailsMap {
-    [outputId: string]: OutputResponse & { transactionHistory: ITransactionHistoryItem };
+    [outputId: string]: OutputResponse;
 }
 
 /**
@@ -32,68 +30,11 @@ export function useAddressHistory(
     const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
-    const hasMore = Boolean(cursor);
     const PAGE_SIZE: number = 10;
     const SORT: string = "newest";
-    const TRANSACTIONS_PER_PAGE: number = 5;
-    // console.log('--- historyView', historyView);
+
     useEffect(() => {
         loadHistory();
-    }, [address]);
-
-
-
-    const loadTransactions = async () => {
-        if (address) {
-            const outputs = await loadOutputs();
-            const details = await attachDetails(outputs?.items);
-            const groupedOutputs = groupOutputsByTransactionId(details);
-            console.log('--- ', details);
-            // setDisabled
-        }
-    }
-
-    const loadOutputs = async () => {
-        if (!address) return;
-        const request: ITransactionHistoryRequest = {
-            network,
-            address,
-            pageSize: PAGE_SIZE,
-            sort: SORT,
-            cursor
-        };
-
-        const resp = await apiClient.transactionHistory(request) as ITransactionHistoryResponse | undefined;
-        return {
-            items: resp?.items ?? [],
-            cursor: resp?.cursor
-        };
-    }
-
-    const attachDetails = async (outputs?: ITransactionHistoryItem[]) => {
-        const detailsPage: IOutputDetailsMap = {};
-
-        if (!outputs) return;
-
-        for (const output of outputs) {
-            const response = await apiClient.outputDetails({ network, outputId: output.outputId }) as IOutputDetailsResponse;
-            const details = response?.output;
-            if (!response.error && details?.output && details?.metadata) {
-
-                detailsPage[output.outputId] = {
-                    output: details.output,
-                    metadata: details.metadata,
-                    transactionHistory: output
-                };
-            }
-        }
-
-        return detailsPage;
-    }
-
-    useEffect(() => {
-        if (!address) return;
-        loadTransactions();
     }, [address]);
 
     const loadHistory = () => {
@@ -112,7 +53,6 @@ export function useAddressHistory(
                     const items = response?.items ?? [];
                     if (items.length > 0 && isMounted) {
                         setHistory([...history, ...items]);
-                        // console.log('--- response?.cursor', response?.cursor);
                         setCursor(response?.cursor);
                     } else if (setDisabled && isMounted) {
                         setDisabled(true);
@@ -173,6 +113,6 @@ export function useAddressHistory(
         }
     }, [history]);
 
-    return [historyView, outputDetailsMap, loadHistory, isAddressHistoryLoading, hasMore];
+    return [historyView, outputDetailsMap, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
 }
 
