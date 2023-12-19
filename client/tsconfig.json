@@ -43,6 +43,9 @@
       ],
       "~features/*": [
         "src/features/*"
+      ],
+      "~hooks/*": [
+        "src/helpers/hooks/*"
       ]
     }
   },

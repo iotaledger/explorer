@@ -1,5 +1,5 @@
 import React from "react";
-import { useMilestoneInterval } from "~helpers/hooks/useMilestoneInterval";
+import { useMilestoneInterval } from "~helpers/stardust/hooks/useMilestoneInterval";
 import "./FeedMilestoneInfo.scss";
 
 interface FeedMilestoneInfoProps {

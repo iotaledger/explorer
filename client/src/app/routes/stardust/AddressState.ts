@@ -5,14 +5,14 @@ import {
 } from "@iota/sdk-wasm/web";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { useAddressAliasOutputs } from "~helpers/hooks/useAddressAliasOutputs";
-import { useAddressBalance } from "~helpers/hooks/useAddressBalance";
-import { useAddressBasicOutputs } from "~helpers/hooks/useAddressBasicOutputs";
-import { useAddressNftOutputs } from "~helpers/hooks/useAddressNftOutputs";
-import { useAliasControlledFoundries } from "~helpers/hooks/useAliasControlledFoundries";
-import { useAliasDetails } from "~helpers/hooks/useAliasDetails";
-import { useNftDetails } from "~helpers/hooks/useNftDetails";
-import { IEventDetails, useParticipationEventDetails } from "~helpers/hooks/useParticipationEventDetails";
+import { useAddressAliasOutputs } from "~helpers/stardust/hooks/useAddressAliasOutputs";
+import { useAddressBalance } from "~helpers/stardust/hooks/useAddressBalance";
+import { useAddressBasicOutputs } from "~helpers/stardust/hooks/useAddressBasicOutputs";
+import { useAddressNftOutputs } from "~helpers/stardust/hooks/useAddressNftOutputs";
+import { useAliasControlledFoundries } from "~helpers/stardust/hooks/useAliasControlledFoundries";
+import { useAliasDetails } from "~helpers/stardust/hooks/useAliasDetails";
+import { useNftDetails } from "~helpers/stardust/hooks/useNftDetails";
+import { IEventDetails, useParticipationEventDetails } from "~helpers/stardust/hooks/useParticipationEventDetails";
 import { scrollToTop } from "~helpers/pageUtils";
 import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";
 import { Converter } from "~helpers/stardust/convertUtils";
@@ -23,8 +23,8 @@ import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
 import { IParticipation } from "~models/api/stardust/participation/IParticipation";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import { useAliasContainsDID } from "~/helpers/hooks/useAliasContainsDID";
-import { useResolvedDID } from "~/helpers/hooks/useResolvedDID";
+import { useAliasContainsDID } from "~helpers/stardust/hooks/useAliasContainsDID";
+import { useResolvedDID } from "~helpers/stardust/hooks/useResolvedDID";
 import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
 export interface IAddressState {
