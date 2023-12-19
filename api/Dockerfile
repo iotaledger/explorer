@@ -1,7 +1,17 @@
 FROM node:16.20.2-bullseye
 
 ## Include the build tools for any npm packages that rebuild
-RUN apt install git curl python3
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libudev-dev \
+    cmake \
+    clang \
+    curl \
+    git \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Working DIR
 WORKDIR /usr/src/app
