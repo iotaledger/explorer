@@ -7,7 +7,11 @@ RUN apt install git curl python3
 WORKDIR /usr/src/app
 
 # Copy everything from current Folder
-COPY . ./
+# COPY . ./
+
+# Copy iota-sdk-nova deps REMOVE THIS for prod
+COPY ./api ./
+COPY ./iota-sdk/bindings/nodejs ../iota-sdk/bindings/nodejs/
 
 # Set the env variables
 ARG CONFIG_ID
