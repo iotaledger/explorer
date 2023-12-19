@@ -1,6 +1,6 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { Client as StardustClient } from "@iota/sdk";
-import { initLogger, Client as NovaClient } from "@iota/sdk-nova";
+import { Client as NovaClient } from "@iota/sdk-nova";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -30,7 +30,7 @@ import { NodeInfoService as NodeInfoServiceStardust } from "./services/stardust/
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
 // iota-sdk debug
-initLogger();
+// initLogger();
 
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
