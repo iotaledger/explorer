@@ -32,8 +32,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     const transactions = useMemo(() => {
         const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
-        return getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
-    }, [historyView, outputDetailsMap, isFormattedAmounts]);
+        const transactions = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
+
+        if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs
+            transactions.pop();
+        }
+
+        return transactions;
+    }, [historyView, outputDetailsMap, isFormattedAmounts, hasMore]);
 
 
     return (historyView.length > 0 && address ? (
