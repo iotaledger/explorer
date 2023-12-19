@@ -10,8 +10,12 @@ WORKDIR /usr/src/app
 # COPY . ./
 
 # Copy iota-sdk-nova deps REMOVE THIS for prod
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+
 COPY ./api ./
-COPY ./iota-sdk/bindings/nodejs ../iota-sdk/bindings/nodejs/
+COPY ./iota-sdk/ ../iota-sdk/
 
 # Set the env variables
 ARG CONFIG_ID

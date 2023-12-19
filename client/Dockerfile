@@ -15,7 +15,7 @@ WORKDIR /usr/src/app
 
 # Copy iota-sdk-nova deps REMOVE THIS for prod
 COPY ./client ./
-COPY ./iota-sdk/bindings/wasm ../iota-sdk/bindings/wasm/
+COPY ./iota-sdk/ ../iota-sdk/
 
 # A minimal NGINX configuration
 RUN echo 'server {\
