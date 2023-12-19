@@ -31,9 +31,13 @@ jobs:
           username: ${{ secrets.IOTALEDGER_DOCKER_USERNAME }}
           password: ${{ secrets.IOTALEDGER_DOCKER_PASSWORD }}
 
+      - name: Get the short commit hash
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "VERSION=$COMMIT_HASH" >> $GITHUB_ENV
+
       - name: Set up Environment Variable
         run: echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
