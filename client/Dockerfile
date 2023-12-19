@@ -3,15 +3,7 @@ FROM node:16
 
 # Update package lists and install dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    libudev-dev \
-    cmake \
-    clang \
-    curl \
     git \
-    python3 \
     nginx \
     && rm -rf /var/lib/apt/lists/*
 
