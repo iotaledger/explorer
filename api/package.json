@@ -34,6 +34,7 @@
         "@iota/iota.js-chrysalis": "npm:@iota/iota.js@^1.8.6",
         "@iota/mqtt.js": "^1.8.6",
         "@iota/sdk": "1.1.1",
+        "@iota/sdk-nova": "../iota-sdk/bindings/nodejs",
         "@iota/sdk-wasm": "^1.0.4",
         "@iota/util.js": "^1.8.6",
         "@iota/validators": "^1.0.0-beta.30",

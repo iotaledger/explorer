@@ -2,11 +2,13 @@
 export const LEGACY = "legacy";
 export const CHRYSALIS = "chrysalis";
 export const STARDUST = "stardust";
+export const NOVA = "nova";
 
 const protocolVersions = [
     LEGACY,
     CHRYSALIS,
-    STARDUST
+    STARDUST,
+    NOVA
 ] as const;
 
 /**

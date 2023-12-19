@@ -29,7 +29,10 @@
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.6.2",
         "@iota/sdk-wasm": "1.1.1",
+        "@iota/sdk-wasm-nova": "../iota-sdk/bindings/wasm",
         "@iota/util.js": "^1.8.6",
+        "@react-three/drei": "^9.84.2",
+        "@react-three/fiber": "^8.14.2",
         "classnames": "^2.3.1",
         "d3-array": "^3.2.1",
         "d3-axis": "^3.0.0",
@@ -52,8 +55,10 @@
         "react-icons": "^4.3.1",
         "react-router-dom": "^5.3.3",
         "socket.io-client": "^4.2.0",
+        "three": "^0.156.1",
         "universal-cookie": "^4.0.4",
-        "vivagraphjs": "^0.12.0"
+        "vivagraphjs": "^0.12.0",
+        "zustand": "^4.4.1"
     },
     "devDependencies": {
         "@ruffy/ts-optional": "^1.1.1",
@@ -75,6 +80,7 @@
         "@types/react-dom": "^18.0.6",
         "@types/react-helmet": "^6.1.5",
         "@types/react-router-dom": "^5.3.3",
+        "@types/three": "^0.156.0",
         "@typescript-eslint/eslint-plugin": "^5.36.0",
         "@typescript-eslint/parser": "^5.36.0",
         "@vitejs/plugin-react": "^4.2.0",
@@ -87,6 +93,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-unicorn": "^49.0.0",
         "npm-run-all": "^4.1.5",
+        "r3f-perf": "^7.1.2",
         "sass": "^1.54.6",
         "stylelint": "^14.11.0",
         "stylelint-config-property-sort-order-smacss": "^9.0.0",

@@ -8,7 +8,7 @@ import mainHeader from "~assets/modals/visualizer/main-header.json";
 import CloseIcon from "~assets/close.svg?react";
 import { DateHelper } from "~helpers/dateHelper";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
-import { useNetworkStats } from "~helpers/hooks/useNetworkStats";
+import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
 import { useVisualizerState } from "~helpers/hooks/useVisualizerState";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import Modal from "../../components/Modal";
@@ -331,4 +331,3 @@ export const Visualizer: React.FC<RouteComponentProps<VisualizerRouteProps>> = (
         </div>
     );
 };
-

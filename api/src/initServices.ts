@@ -1,11 +1,12 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { Client as StardustClient } from "@iota/sdk";
+import { initLogger, Client as NovaClient } from "@iota/sdk-nova";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { INetwork } from "./models/db/INetwork";
-import { CHRYSALIS, LEGACY, STARDUST } from "./models/db/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
 import { IItemsService as IItemsServiceLegacy } from "./models/services/legacy/IItemsService";
@@ -20,18 +21,24 @@ import { LegacyStatsService } from "./services/legacy/legacyStatsService";
 import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
+import { NovaFeed } from "./services/nova/feed/novaFeed";
+import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
-import { NodeInfoService } from "./services/stardust/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceStardust } from "./services/stardust/nodeInfoService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
+
+// iota-sdk debug
+initLogger();
 
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
     networkConfig.protocolVersion === LEGACY ||
     networkConfig.protocolVersion === CHRYSALIS ||
-    networkConfig.protocolVersion === STARDUST;
+    networkConfig.protocolVersion === STARDUST ||
+    networkConfig.protocolVersion === NOVA;
 
 /**
  * Initialise all the services for the workers.
@@ -61,11 +68,16 @@ export async function initServices(config: IConfiguration) {
                     initStardustServices(networkConfig);
                     break;
                 }
+                case NOVA: {
+                    initNovaServices(networkConfig);
+                    break;
+                }
                 default:
             }
         }
     }
 
+    // Init for legacy and chrysalis Zmq/Mqtt
     for (const networkConfig of enabledNetworks) {
         if (isKnownProtocolVersion(networkConfig)) {
             if (networkConfig.protocolVersion === LEGACY) {
@@ -79,6 +91,7 @@ export async function initServices(config: IConfiguration) {
                 const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
                     `items-${networkConfig.network}`
                 );
+
                 if (itemsService) {
                     itemsService.init();
                 }
@@ -191,7 +204,7 @@ function initStardustServices(networkConfig: INetwork): void {
     }
 
     // eslint-disable-next-line no-void
-    void NodeInfoService.build(networkConfig).then(nodeInfoService => {
+    void NodeInfoServiceStardust.build(networkConfig).then(nodeInfoService => {
         ServiceFactory.register(
             `node-info-${networkConfig.network}`,
             () => nodeInfoService
@@ -220,6 +233,41 @@ function initStardustServices(networkConfig: INetwork): void {
             );
         }
     }).catch(e => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
+}
+
+/**
+ * Register services for nova network
+ * @param networkConfig The Network Config.
+ */
+function initNovaServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
+
+    // eslint-disable-next-line no-void
+    void NovaClient.create({
+        nodes: [networkConfig.provider],
+        brokerOptions: { useWs: true },
+        // Needed only for now in local development (NOT FOR PROD)
+        ignoreNodeHealth: true
+    }).then(novaClient => {
+        ServiceFactory.register(
+            `client-${networkConfig.network}`,
+            () => novaClient
+        );
+
+        // eslint-disable-next-line no-void
+        void NodeInfoServiceNova.build(networkConfig).then(nodeInfoService => {
+            ServiceFactory.register(
+                `node-info-${networkConfig.network}`,
+                () => nodeInfoService
+            );
+
+            const feedInstance = new NovaFeed(networkConfig.network);
+            ServiceFactory.register(
+                `feed-${networkConfig.network}`,
+                () => feedInstance
+            );
+        });
+    });
 }
 
 /**

@@ -7,7 +7,7 @@ export interface IFeedSubscribeRequest {
     network: string;
 
     /**
-     * The specific feed to subscribe too (expected only on stardust feed).
+     * The specific feed to subscribe too (expected only on stardust/nova feeds).
      */
     feedSelect: IFeedSelect;
 }

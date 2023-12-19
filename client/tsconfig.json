@@ -40,6 +40,12 @@
       ],
       "~services/*": [
         "src/services/*"
+      ],
+      "~features/*": [
+        "src/features/*"
+      ],
+      "~hooks/*": [
+        "src/helpers/hooks/*"
       ]
     }
   },
