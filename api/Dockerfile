@@ -12,7 +12,7 @@ WORKDIR /usr/src/app
 # Copy iota-sdk-nova deps REMOVE THIS for prod
 # Get Rust
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+ENV PATH="${PATH}:/root/.cargo/bin"
 
 COPY ./api ./
 COPY ./iota-sdk/ ../iota-sdk/
