@@ -32,6 +32,7 @@ import { Landing as StardustLanding } from "./routes/stardust/landing/Landing";
 import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
+import NovaOutputPage from "./routes/nova/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
@@ -213,7 +214,11 @@ const buildAppRoutes = (
         <Route path="/:network/visualizer/"
             key={keys.next().value}
             component={NovaVisualizer}
-        />
+        />,
+        <Route path="/:network/output/:outputId"
+            key={keys.next().value}
+            component={NovaOutputPage}
+        />,
     ];
 
     return (

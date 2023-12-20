@@ -1,7 +1,7 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import OutputListProps from "./OutputListProps";
-import { useTaggedOutputs } from "~helpers/hooks/useTaggedOutputs";
+import { useTaggedOutputs } from "~helpers/stardust/hooks/useTaggedOutputs";
 import TabbedSection from "../../components/hoc/TabbedSection";
 import Pagination from "../../components/Pagination";
 import Output from "../../components/stardust/Output";

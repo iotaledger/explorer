@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import TransactionCard from "./TransactionCard";
 import TransactionRow from "./TransactionRow";
-import { useAddressHistory } from "~helpers/hooks/useAddressHistory";
+import { useAddressHistory } from "~helpers/stardust/hooks/useAddressHistory";
 import DownloadModal from "../DownloadModal";
 import "./TransactionHistory.scss";
 

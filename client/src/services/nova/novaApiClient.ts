@@ -1,5 +1,7 @@
 import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
+import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
+import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
 import { ApiClient } from "../apiClient";
 
 /**
@@ -15,6 +17,17 @@ export class NovaApiClient extends ApiClient {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
             "get"
+        );
+    }
+
+    /**
+     * Get the output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
+        return this.callApi<unknown, IOutputDetailsResponse>(
+            `nova/output/${request.network}/${request.outputId}`, "get"
         );
     }
 }

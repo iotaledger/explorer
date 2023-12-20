@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
-import { useAssociatedOutputs } from "~helpers/hooks/useAssociatedOutputs";
+import { useAssociatedOutputs } from "~helpers/stardust/hooks/useAssociatedOutputs";
 import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
 import { AssociationType, IAssociation } from "~models/api/stardust/IAssociationsResponse";
 import "./AssociatedOutputs.scss";

@@ -13,7 +13,7 @@ import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
+import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
