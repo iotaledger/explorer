@@ -64,3 +64,21 @@
         border-left: 1px solid var(--border-color);
     }
 }
+
+.card--content--dropdown {
+    margin-right: 8px;
+    cursor: pointer;
+
+    svg {
+        transition: transform 0.25s ease;
+
+        path {
+            fill: var(--card-color);
+        }
+    }
+
+    &.opened > svg {
+        transform: rotate(90deg);
+    }
+}
+

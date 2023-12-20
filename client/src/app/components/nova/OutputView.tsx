@@ -4,18 +4,27 @@ import classNames from "classnames";
 import { Output, OutputType, CommonOutput } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
+import { Link } from "react-router-dom";
 import "./OutputView.scss";
 
 interface OutputViewProps {
+    outputId: string;
     output: Output;
     showCopyAmount: boolean;
 }
 
-const OutputView: React.FC<OutputViewProps> = ({ output, showCopyAmount }) => {
+const OutputView: React.FC<OutputViewProps> = ({
+    outputId,
+    output,
+    showCopyAmount,
+}) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
 
     console.log(output);
+
+    const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
+    const outputIdIndexPart = outputId.slice(-4);
 
     return (
         <div className="card--content__output">
@@ -34,12 +43,27 @@ const OutputView: React.FC<OutputViewProps> = ({ output, showCopyAmount }) => {
                     <button type="button" className="output-type--name color">
                         {getOutputTypeName(output.type)}
                     </button>
+                    <div className="output-id--link">
+                        (
+                        <Link
+                            // TODO need the network context here
+                            to={`/networkContext/output/${outputId}`}
+                            className="margin-r-t"
+                        >
+                            <span>{outputIdTransactionPart}</span>
+                            <span className="highlight">
+                                {outputIdIndexPart}
+                            </span>
+                        </Link>
+                        )
+                        <CopyButton copy={String(outputId)} />
+                    </div>
                 </div>
                 {showCopyAmount && (
                     <div className="card--value pointer amount-size row end">
                         <span
                             className="pointer"
-                            onClick={e => {
+                            onClick={(e) => {
                                 setIsFormattedBalance(!isFormattedBalance);
                                 e.stopPropagation();
                             }}

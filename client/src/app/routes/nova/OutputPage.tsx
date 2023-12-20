@@ -48,113 +48,107 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         );
     }
 
-    const {
-        blockId, transactionId, outputIndex, isSpent, transactionIdSpent
-    } = outputMetadataResponse ?? {};
+    const { blockId, transactionId, outputIndex, isSpent, transactionIdSpent } =
+        outputMetadataResponse ?? {};
 
-    return (output &&
-        <div className="output-page">
-            <div className="wrapper">
-                <div className="inner">
-                    <div className="output-page--header">
-                        <div className="row middle">
-                            <h1>
-                                Output
-                            </h1>
-                            <Modal icon="info" data={mainMessage} />
-                        </div>
-                    </div>
-                    <div className="section">
-                        <div className="card">
-                            <OutputView
-                                output={output}
-                                showCopyAmount={true}
-                            />
-                        </div>
-
-                        <div className="section--header row row--tablet-responsive middle space-between">
+    return (
+        (output && (
+            <div className="output-page">
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="output-page--header">
                             <div className="row middle">
-                                <h2>Metadata</h2>
+                                <h1>Output</h1>
+                                <Modal icon="info" data={mainMessage} />
                             </div>
                         </div>
+                        <div className="section">
+                            <div className="card">
+                                <OutputView
+                                    outputId={outputId}
+                                    output={output}
+                                    showCopyAmount={true}
+                                />
+                            </div>
 
-                        {blockId && (
-                            <div className="section--data">
-                                <div className="label">
-                                    Block ID
-                                </div>
-                                <div className="value code row middle highlight">
-                                    <Link
-                                        to={`/${network}/block/${blockId}`}
-                                        className="margin-r-t text--no-decoration truncate"
-                                    >
-                                        {blockId}
-                                    </Link>
-                                    <CopyButton copy={blockId} />
+                            <div className="section--header row row--tablet-responsive middle space-between">
+                                <div className="row middle">
+                                    <h2>Metadata</h2>
                                 </div>
                             </div>
-                        )}
 
-                        {transactionId && (
-                            <div className="section--data">
-                                <div className="label">
-                                    Transaction ID
+                            {blockId && (
+                                <div className="section--data">
+                                    <div className="label">Block ID</div>
+                                    <div className="value code row middle highlight">
+                                        <Link
+                                            to={`/${network}/block/${blockId}`}
+                                            className="margin-r-t text--no-decoration truncate"
+                                        >
+                                            {blockId}
+                                        </Link>
+                                        <CopyButton copy={blockId} />
+                                    </div>
                                 </div>
-                                <div className="value code highlight row middle">
-                                    <TruncatedId
-                                        id={transactionId}
-                                        showCopyButton
-                                    />
-                                </div>
-                            </div>
-                        )}
+                            )}
 
-                        {outputIndex !== undefined && (
-                            <div className="section--data">
-                                <div className="label">
-                                    Output index
+                            {transactionId && (
+                                <div className="section--data">
+                                    <div className="label">Transaction ID</div>
+                                    <div className="value code highlight row middle">
+                                        <TruncatedId
+                                            id={transactionId}
+                                            showCopyButton
+                                        />
+                                    </div>
                                 </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
-                                        {outputIndex}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                            )}
 
-                        {isSpent !== undefined && (
-                            <div className="section--data">
-                                <div className="label">
-                                    Is spent ?
+                            {outputIndex !== undefined && (
+                                <div className="section--data">
+                                    <div className="label">Output index</div>
+                                    <div className="value code row middle">
+                                        <span className="margin-r-t">
+                                            {outputIndex}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="value code row middle">
-                                    <span className="margin-r-t">
-                                        {isSpent.toString()}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                            )}
 
-                        {transactionIdSpent && (
-                            <div className="section--data">
-                                <div className="label">
-                                    Spent in transaction with ID
+                            {isSpent !== undefined && (
+                                <div className="section--data">
+                                    <div className="label">Is spent ?</div>
+                                    <div className="value code row middle">
+                                        <span className="margin-r-t">
+                                            {isSpent.toString()}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="value code row middle highlight">
-                                    <Link
-                                        to={`/${network}/transaction/${transactionIdSpent}`}
-                                        className="margin-r-t"
-                                    >
-                                        {transactionIdSpent}
-                                    </Link>
-                                    <CopyButton copy={transactionIdSpent} />
+                            )}
+
+                            {transactionIdSpent && (
+                                <div className="section--data">
+                                    <div className="label">
+                                        Spent in transaction with ID
+                                    </div>
+                                    <div className="value code row middle highlight">
+                                        <Link
+                                            to={`/${network}/transaction/${transactionIdSpent}`}
+                                            className="margin-r-t"
+                                        >
+                                            {transactionIdSpent}
+                                        </Link>
+                                        <CopyButton copy={transactionIdSpent} />
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>) ?? null;
+        )) ??
+        null
+    );
 };
 
 export default OutputPage;
