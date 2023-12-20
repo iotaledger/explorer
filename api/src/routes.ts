@@ -144,5 +144,6 @@ export const routes: IRoute[] = [
         folder: "stardust/address/distribution", func: "get"
     },
     // Nova
-    { path: "/nova/output/:network/:outputId", method: "get", folder: "nova/output", func: "get" }
+    { path: "/nova/output/:network/:outputId", method: "get", folder: "nova/output", func: "get" },
+    { path: "/nova/block/:network/:blockId", method: "get", folder: "nova/block", func: "get" }
 ];

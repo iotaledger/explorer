@@ -1,4 +1,6 @@
 import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
+import { IBlockRequest } from "~/models/api/nova/block/IBlockRequest";
+import { IBlockResponse } from "~/models/api/nova/block/IBlockResponse";
 import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
@@ -17,6 +19,17 @@ export class NovaApiClient extends ApiClient {
         return this.callApi<unknown, INodeInfoResponse>(
             `node-info/${request.network}`,
             "get"
+        );
+    }
+
+    /**
+     * Get a block.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async block(request: IBlockRequest): Promise<IBlockResponse> {
+        return this.callApi<unknown, IBlockResponse>(
+            `nova/block/${request.network}/${request.blockId}`, "get"
         );
     }
 
