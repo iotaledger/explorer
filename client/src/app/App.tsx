@@ -53,7 +53,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     const withNetworkContext = networkContextWrapper(currentNetworkName, nodeInfo, networkConfig?.uiTheme);
     scrollToTop();
 
-    // Populate NetworkInfo for nova
     if (networkConfig?.protocolVersion === NOVA) {
         populateNetworkInfoNova(networkConfig.network);
     }
