@@ -5,6 +5,7 @@ import { Output, OutputType, CommonOutput } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
 import { Link } from "react-router-dom";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -20,8 +21,7 @@ const OutputView: React.FC<OutputViewProps> = ({
 }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
-
-    console.log(output);
+    const networkInfo = useNetworkInfoNova(s => s.networkInfo);
 
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
@@ -46,8 +46,7 @@ const OutputView: React.FC<OutputViewProps> = ({
                     <div className="output-id--link">
                         (
                         <Link
-                            // TODO need the network context here
-                            to={`/networkContext/output/${outputId}`}
+                            to={`/${networkInfo.name}/output/${outputId}`}
                             className="margin-r-t"
                         >
                             <span>{outputIdTransactionPart}</span>
