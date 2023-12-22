@@ -5,7 +5,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { AppRouteProps } from "./AppRouteProps";
 import {
     buildMetaLabel, buildUtilities, getFooterItems,
-    getPages, getFaviconHelmet, networkContextWrapper
+    getPages, getFaviconHelmet, networkContextWrapper, populateNetworkInfoNova
 } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
@@ -18,7 +18,7 @@ import { isShimmerUiTheme } from "~helpers/networkHelper";
 import { scrollToTop } from "~helpers/pageUtils";
 import { INetwork } from "~models/config/INetwork";
 import { MAINNET } from "~models/config/networkType";
-import { STARDUST } from "~models/config/protocolVersion";
+import { NOVA, STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
 import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
 import "./App.scss";
@@ -52,6 +52,10 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetworkName, nodeInfo, networkConfig?.uiTheme);
     scrollToTop();
+
+    if (networkConfig?.protocolVersion === NOVA) {
+        populateNetworkInfoNova(networkConfig.network);
+    }
 
     const body = document.querySelector("body");
     if (isShimmer) {
