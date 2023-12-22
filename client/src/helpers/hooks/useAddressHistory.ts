@@ -52,21 +52,23 @@ export function useAddressHistory(
         setIsLoading(true);
 
         let currentCursor = cursor;
-        let allTransactions = {...transactions};
+        const allTransactions = {...transactions};
         let shouldContinue = true;
+        let numberOfRequests = 0;
+        while(shouldContinue && numberOfRequests < 10) {
 
-        while(shouldContinue) {
             const request: ITransactionHistoryRequest = {
                 network,
                 address,
                 pageSize: PAGE_SIZE,
                 sort: SORT,
-                cursor
+                cursor: currentCursor
             };
             const response = await apiClient.transactionHistory(request) as ITransactionHistoryResponse | undefined;
 
             const items = response?.items ?? [];
-            console.log('--- response', response);
+            currentCursor = response?.cursor;
+            numberOfRequests++;
 
             if (!response || !isMounted) {
                 setDisabled?.(true);
@@ -96,7 +98,7 @@ export function useAddressHistory(
         //         // loadedTransactions.set(transactionId, (loadedTransactions.get(transactionId) || 0) + 1);
             }
 
-            console.log('--- allTransactions', allTransactions);
+            console.log('--- allTransactions', Object.keys(allTransactions).length);
 
             // If number of transactions more than we expect or loaded all outputs
             if (Object.keys(allTransactions).length > transactionsExpect || !response?.cursor) {
