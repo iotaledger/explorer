@@ -1,12 +1,12 @@
-import { INodeInfoBaseToken, OutputResponse } from "@iota/sdk-wasm/web";
+import { CommonOutput, ExpirationUnlockCondition, INodeInfoBaseToken, OutputResponse, UnlockConditionType } from "@iota/sdk-wasm/web";
 import moment from "moment/moment";
 
-import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
+import { DateHelper } from "~helpers/dateHelper";
 import { IOutputDetailsMap } from "~helpers/hooks/useAddressHistory";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
-import { DateHelper } from "~helpers/dateHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
+import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
+import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 
 export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
@@ -41,7 +41,7 @@ export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem
         }
 
         const transaction = transactionIdToOutputs.get(transactionId);
-        transaction?.push({...historyItem, ...outputDetails});
+        transaction?.push({ ...historyItem, ...outputDetails });
     });
     return transactionIdToOutputs;
 }
@@ -90,9 +90,17 @@ export const getTransactionHistoryRecords = (
 
 export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
     return outputs.reduce((acc, output) => {
+        let amount = Number(output.output.amount);
         if (output.isSpent) {
-            return acc - Number(output.output.amount);
+            const commonOutput = (output.output as CommonOutput);
+            amount = -1 * amount;
+            // we need to cover the case where the output is spent not by the current address, 
+            // but by the return address of an expired expiration unlock condition
+            const expirationUnlockCondition = commonOutput.unlockConditions?.find(({ type }) => type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+            if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
+                amount = 0;
+            }
         }
-        return acc + Number(output.output.amount);
+        return acc + amount;
     }, 0);
 };
