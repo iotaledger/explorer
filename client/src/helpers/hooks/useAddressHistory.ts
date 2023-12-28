@@ -11,7 +11,7 @@ export interface IOutputDetailsMap {
     [outputId: string]: OutputResponse;
 }
 
-type OutputWithDetails = OutputResponse & ITransactionHistoryItem;
+type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null };
 
 /**
  * Fetch Address history
@@ -36,39 +36,77 @@ export function useAddressHistory(
     const SORT: string = "newest";
 
     useEffect(() => {
-        loadHistory();
+        if (!address) return;
+        void loadHistory();
     }, [address]);
 
-    const loadHistory = () => {
+
+    const requestOutputsList = async () => {
+        if (!address) return;
+
+        const request: ITransactionHistoryRequest = {
+            network,
+            address,
+            pageSize: PAGE_SIZE,
+            sort: SORT,
+            cursor
+        };
+
+        const response = await apiClient.transactionHistory(request) as ITransactionHistoryResponse | undefined;
+        const items = response?.items ?? [];
+        return {
+            outputs: items,
+            cursor: response?.cursor
+        }
+    };
+
+    const requestOutputDetails = async (outputId: string) => {
+        if (!outputId) return null;
+
+        const response = await apiClient.outputDetails({ network, outputId });
+        const details = response.output;
+
+        if (!response.error && details?.output && details?.metadata) {
+            return details;
+        }
+        return null;
+    }
+
+
+    const loadHistory = async () => {
         if (address) {
             setIsAddressHistoryLoading(true);
-            const request: ITransactionHistoryRequest = {
-                network,
-                address,
-                pageSize: PAGE_SIZE,
-                sort: SORT,
-                cursor
-            };
 
-            apiClient.transactionHistory(request)
-                .then((response: ITransactionHistoryResponse | undefined) => {
-                    console.log('--- response', response);
-                    const items = response?.items ?? [];
+            try {
+                const outputList = await requestOutputsList();
 
-                    if (items.length > 0 && isMounted) {
-                        setHistory([...history, ...items]);
-                        setCursor(response?.cursor);
-                    } else if (setDisabled && isMounted) {
-                        setDisabled(true);
-                    }
-                })
-                .finally(() => {
-                    setIsAddressHistoryLoading(false);
-                });
+                if (!outputList) {
+                    return;
+                }
+
+                const { outputs, cursor } = outputList;
+
+                const fulfilledOutputs = [];
+
+                for (const output of outputs) {
+                    const outputDetails = await requestOutputDetails(output.outputId);
+                    fulfilledOutputs.push({ ...output, details: outputDetails });
+                }
+
+                console.log('--- fulfilledOutputs', fulfilledOutputs);
+                // setHistory([...history, ...items]);
+                // setCursor(response?.cursor);
+            } finally {
+                setIsAddressHistoryLoading(false);
+            }
+
+
+
         }
     };
 
     useEffect(() => {
+        return;
         if (history.length > 0) {
             setIsAddressHistoryLoading(true);
             const promises: Promise<void>[] = [];
@@ -77,15 +115,7 @@ export function useAddressHistory(
             for (const item of history) {
                 const promise = apiClient.outputDetails({ network, outputId: item.outputId })
                     .then(response => {
-                        const details = response.output;
-                        if (!response.error && details?.output && details?.metadata) {
-                            const outputDetails = {
-                                output: details.output,
-                                metadata: details.metadata
-                            };
 
-                            detailsPage[item.outputId] = outputDetails;
-                        }
                     })
                     .catch(e => console.log(e));
 

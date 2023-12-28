@@ -24,7 +24,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
         setDisabled
     );
 
-    console.log('--- historyView', historyView);
+    // console.log('--- historyView', historyView);
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
     const { tokenInfo } = useContext(NetworkContext);
 
