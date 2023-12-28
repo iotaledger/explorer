@@ -23,6 +23,8 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
         address,
         setDisabled
     );
+
+    console.log('--- historyView', historyView);
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
     const { tokenInfo } = useContext(NetworkContext);
 
@@ -31,7 +33,23 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
     }, [isLoading]);
 
     const transactions = useMemo(() => {
+        // Get list of outputs and their details
+        // send from: rms1qqjhut662v2mk33sn03j7ejk2cledafzl7s06hfgg75agjnnmeukwurtvac
+        // send to: rms1qr7382pmu9em8zamngpyzkn63wg6ea53ka3wm5y5t6dmse09s9kf6m8fs7d
+        // 20 - just send
+        // 30 - send with time condition and claimed
+        //
+        // 130 - reject
+        // 200 - expired
+        // 150 - claimed
+        // Case: user send to address without conditions
+        // Case: user send to address with time condition and it's in progress (unclaimed)
+        // case: user send to address with time condition and it's expired
+        // case: user send to address with time condition and it's claimed
+        // case: user send to address with time conditions and it's rejected
         const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
+
+        // console.log('--- transactionIdToOutputs', transactionIdToOutputs);
         const transactions = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
 
         if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs

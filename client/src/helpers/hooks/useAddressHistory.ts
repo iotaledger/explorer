@@ -11,6 +11,8 @@ export interface IOutputDetailsMap {
     [outputId: string]: OutputResponse;
 }
 
+type OutputWithDetails = OutputResponse & ITransactionHistoryItem;
+
 /**
  * Fetch Address history
  * @param network The Network in context
@@ -30,7 +32,7 @@ export function useAddressHistory(
     const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
-    const PAGE_SIZE: number = 10;
+    const PAGE_SIZE: number = 5;
     const SORT: string = "newest";
 
     useEffect(() => {
@@ -50,7 +52,9 @@ export function useAddressHistory(
 
             apiClient.transactionHistory(request)
                 .then((response: ITransactionHistoryResponse | undefined) => {
+                    console.log('--- response', response);
                     const items = response?.items ?? [];
+
                     if (items.length > 0 && isMounted) {
                         setHistory([...history, ...items]);
                         setCursor(response?.cursor);

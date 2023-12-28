@@ -89,17 +89,20 @@ export const getTransactionHistoryRecords = (
 }
 
 export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
+    console.log('--- outputs', outputs);
     return outputs.reduce((acc, output) => {
         let amount = Number(output.output.amount);
         if (output.isSpent) {
             const commonOutput = (output.output as CommonOutput);
             amount = -1 * amount;
-            // we need to cover the case where the output is spent not by the current address, 
+            // we need to cover the case where the output is spent not by the current address,
             // but by the return address of an expired expiration unlock condition
             const expirationUnlockCondition = commonOutput.unlockConditions?.find(({ type }) => type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
-            if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
-                amount = 0;
-            }
+
+            // console.log('--- expirationUnlockCondition', expirationUnlockCondition);
+            // if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
+            //     amount = 0;
+            // }
         }
         return acc + amount;
     }, 0);

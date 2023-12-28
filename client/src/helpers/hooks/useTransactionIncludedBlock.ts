@@ -33,6 +33,7 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
                     network,
                     transactionId: HexHelper.addPrefix(transactionId)
                 }).then(response => {
+                    console.log('--- response', response);
                     if (isMounted) {
                         setBlock(response.block ?? null);
                         setError(response.error);
