@@ -21,6 +21,7 @@ plugins:
   - '@typescript-eslint'
 rules: {
   no-empty: off,
+  "max-len": [2, { code: 140, ignoreComments: true, ignoreStrings: true }],
   "@typescript-eslint/no-inferrable-types": off,
   "@typescript-eslint/no-unused-vars": [2, { args: "none" }],
   "@typescript-eslint/no-empty-function": off

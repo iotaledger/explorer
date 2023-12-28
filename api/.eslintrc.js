@@ -556,6 +556,8 @@ module.exports = {
             "error",
             {
                 "ignorePattern": "^import",
+                "ignoreComments": true,
+                "ignoreStrings": true,
                 "code": 140
             }
         ],
