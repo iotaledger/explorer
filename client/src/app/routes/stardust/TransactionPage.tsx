@@ -43,7 +43,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = (
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
-
+    console.log('--- isInputsAndOutputsLoading', isInputsAndOutputsLoading);
     useEffect(() => {
         if (block?.payload?.type === PayloadType.Transaction) {
             const transactionPayload = block.payload as ITransactionPayload;
