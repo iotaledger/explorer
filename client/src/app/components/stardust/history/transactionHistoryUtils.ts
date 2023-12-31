@@ -2,10 +2,9 @@ import { CommonOutput, ExpirationUnlockCondition, INodeInfoBaseToken, OutputResp
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
-import { IOutputDetailsMap, OutputWithDetails } from "~helpers/hooks/useAddressHistory";
+import { OutputWithDetails } from "~helpers/hooks/useAddressHistory";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
-import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 
 export interface ITransactionHistoryRecord {
@@ -18,10 +17,9 @@ export interface ITransactionHistoryRecord {
     dateFormatted: string;
     balanceChange: number;
     balanceChangeFormatted: string;
-    outputs: (OutputResponse & ITransactionHistoryItem)[];
+    outputs: OutputWithDetails[];
 }
 
-// , historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap
 export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetails[]) => {
     const transactionIdToOutputs = new Map<string, OutputWithDetails[]>();
     outputsWithDetails.forEach((output) => {
@@ -52,12 +50,14 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
 }
 
 export const getTransactionHistoryRecords = (
-    transactionIdToOutputs: Map<string, (OutputResponse & ITransactionHistoryItem)[]>,
+    transactionIdToOutputs: Map<string, OutputWithDetails[]>,
     network: string,
     tokenInfo: INodeInfoBaseToken,
     isFormattedAmounts: boolean
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
+    // @ts-ignore
+    window.transactionIdToOutputs = transactionIdToOutputs;
     transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
         const balanceChange = calculateBalanceChange(outputs);
@@ -93,21 +93,25 @@ export const getTransactionHistoryRecords = (
     return calculatedTransactions;
 }
 
-export const calculateBalanceChange = (outputs: (OutputResponse & ITransactionHistoryItem)[]) => {
-    console.log('--- outputs', outputs);
+export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     return outputs.reduce((acc, output) => {
-        let amount = Number(output.output.amount);
+        const outputFromDetails = output?.details?.output as CommonOutput;
+
+        if (!outputFromDetails?.amount) {
+            console.warn("Output details not found for: ", output);
+            return acc;
+        }
+
+        let amount = Number(outputFromDetails.amount);
         if (output.isSpent) {
-            const commonOutput = (output.output as CommonOutput);
             amount = -1 * amount;
             // we need to cover the case where the output is spent not by the current address,
             // but by the return address of an expired expiration unlock condition
-            const expirationUnlockCondition = commonOutput.unlockConditions?.find(({ type }) => type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+            const expirationUnlockCondition = outputFromDetails.unlockConditions?.find(({ type }) => type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
 
-            // console.log('--- expirationUnlockCondition', expirationUnlockCondition);
-            // if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
-            //     amount = 0;
-            // }
+            if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
+                amount = 0;
+            }
         }
         return acc + amount;
     }, 0);

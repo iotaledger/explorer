@@ -18,13 +18,12 @@ export interface TransactionHistoryProps {
 const TransactionHistory: React.FC<TransactionHistoryProps> = (
     { network, address, setLoading, setDisabled }
 ) => {
-    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
+    const [transactionIdToOutputs, loadMore, isLoading, hasMore] = useAddressHistory(
         network,
         address,
         setDisabled
     );
 
-    // console.log('--- historyView', historyView);
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
     const { tokenInfo } = useContext(NetworkContext);
 
@@ -32,21 +31,16 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
         setLoading(isLoading);
     }, [isLoading]);
 
-    // const transactions = useMemo(() => {
-    //
-    //
-    //     // console.log('--- transactionIdToOutputs', transactionIdToOutputs);
-    //     // const transactions = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
-    //
-    //     if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs
-    //         transactions.pop();
-    //     }
-    //
-    //     return transactions;
-    // }, [historyView, outputDetailsMap, isFormattedAmounts, hasMore]);
+    const transactions = useMemo(() => {
+        const transactionsLocal = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
+        if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs
+            transactionsLocal.pop();
+        }
+        return transactionsLocal;
+    }, [transactionIdToOutputs, tokenInfo, isFormattedAmounts, hasMore]);
 
 
-    return (historyView.length > 0 && address ? (
+    return (transactions.length > 0 && address ? (
         <div className="section transaction-history--section">
             <div className="section--header row end">
                 <DownloadModal network={network} address={address} />
@@ -60,21 +54,21 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                     </tr>
                 </thead>
                 <tbody>
-                    {/*{transactions?.map((c, idx) => (*/}
-                    {/*    <React.Fragment key={idx}>*/}
-                    {/*        <TransactionRow*/}
-                    {/*            isGenesisByDate={c.isGenesisByDate}*/}
-                    {/*            isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}*/}
-                    {/*            transactionLink={c.transactionLink}*/}
-                    {/*            dateFormatted={c.dateFormatted}*/}
-                    {/*            balanceChangeFormatted={c.balanceChangeFormatted}*/}
-                    {/*            transactionId={c.transactionId}*/}
-                    {/*            isSpent={c.isSpent}*/}
-                    {/*            isFormattedAmounts={isFormattedAmounts}*/}
-                    {/*            setIsFormattedAmounts={setIsFormattedAmounts}*/}
-                    {/*        />*/}
-                    {/*    </React.Fragment>*/}
-                    {/*))}*/}
+                    {transactions?.map((c, idx) => (
+                        <React.Fragment key={idx}>
+                            <TransactionRow
+                                isGenesisByDate={c.isGenesisByDate}
+                                isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
+                                transactionLink={c.transactionLink}
+                                dateFormatted={c.dateFormatted}
+                                balanceChangeFormatted={c.balanceChangeFormatted}
+                                transactionId={c.transactionId}
+                                isSpent={c.isSpent}
+                                isFormattedAmounts={isFormattedAmounts}
+                                setIsFormattedAmounts={setIsFormattedAmounts}
+                            />
+                        </React.Fragment>
+                    ))}
                 </tbody>
             </table>
 
@@ -98,7 +92,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                         );
                     })}
             </div>
-            {hasMore && historyView.length > 0 && (
+            {hasMore && transactions.length > 0 && (
                 <div className="card load-more--button" onClick={loadMore}>
                     <button type="button">Load more...</button>
                 </div>

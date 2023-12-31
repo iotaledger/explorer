@@ -8,10 +8,6 @@ import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
 
-export interface IOutputDetailsMap {
-    [outputId: string]: OutputResponse;
-}
-
 export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null };
 
 /**
@@ -25,13 +21,11 @@ export function useAddressHistory(
     network: string,
     address?: string,
     setDisabled?: (isDisabled: boolean) => void
-): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
+): [Map<string, OutputWithDetails[]>, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [outputsWithDetails, setOutputsWithDetails] = useState<OutputWithDetails[]>([]);
-    const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
-    const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
-    const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
+    const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>([]);
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
     const PAGE_SIZE: number = 25;
@@ -114,9 +108,9 @@ export function useAddressHistory(
                     return 1;
                 });
 
+                const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
 
-                const transactionIdToOutputs = groupOutputsByTransactionId(updatedOutputsWithDetails);
-                console.log('--- transactionIdToOutputs', transactionIdToOutputs);
+                setTransactionIdToOutputs(groupedOutputsByTransactionId);
                 setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
                 setCursor(cursor);
             } finally {
@@ -125,40 +119,6 @@ export function useAddressHistory(
         }
     };
 
-    // useEffect(() => {
-    //     return;
-    //     if (history.length > 0) {
-    //         setIsAddressHistoryLoading(true);
-    //         const promises: Promise<void>[] = [];
-    //         const detailsPage: IOutputDetailsMap = {};
-    //
-    //         for (const item of history) {
-    //             const promise = apiClient.outputDetails({ network, outputId: item.outputId })
-    //                 .then(response => {
-    //
-    //                 })
-    //                 .catch(e => console.log(e));
-    //
-    //             promises.push(promise);
-    //         }
-    //
-    //         Promise.allSettled(promises)
-    //             .then(_ => {
-    //                 if (isMounted) {
-    //                     setOutputDetailsMap(detailsPage);
-    //                     setIsAddressHistoryLoading(false);
-    //                     const updatedHistoryView = [...history]
-    //
-    //                     setHistoryView(updatedHistoryView);
-    //                 }
-    //             }).catch(_ => {
-    //             })
-    //             .finally(() => {
-    //                 setIsAddressHistoryLoading(false);
-    //             });
-    //     }
-    // }, [history]);
-
-    return [historyView, outputDetailsMap, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
+    return [transactionIdToOutputs, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
 }
 
