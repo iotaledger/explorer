@@ -2,7 +2,7 @@ import { CommonOutput, ExpirationUnlockCondition, INodeInfoBaseToken, OutputResp
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
-import { IOutputDetailsMap } from "~helpers/hooks/useAddressHistory";
+import { IOutputDetailsMap, OutputWithDetails } from "~helpers/hooks/useAddressHistory";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { ITransactionHistoryItem } from "~models/api/stardust/ITransactionHistoryResponse";
@@ -21,28 +21,33 @@ export interface ITransactionHistoryRecord {
     outputs: (OutputResponse & ITransactionHistoryItem)[];
 }
 
-export const groupOutputsByTransactionId = (historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap) => {
-    const transactionIdToOutputs = new Map<string, (OutputResponse & ITransactionHistoryItem)[]>();
-    historyView.forEach((historyItem) => {
-        const outputDetails = outputDetailsMap[historyItem.outputId];
-        if (!outputDetails) {
+// , historyView: ITransactionHistoryItem[], outputDetailsMap: IOutputDetailsMap
+export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetails[]) => {
+    const transactionIdToOutputs = new Map<string, OutputWithDetails[]>();
+    outputsWithDetails.forEach((output) => {
+        const detailsMetadata = output?.details?.metadata;
+        if (!detailsMetadata) {
             return;
         }
-        const transactionId = historyItem.isSpent ?
-            outputDetails.metadata.transactionIdSpent :
-            outputDetails.metadata.transactionId;
+
+        const transactionId = output.isSpent
+            ? detailsMetadata.transactionIdSpent
+            : detailsMetadata.transactionId;
 
         if (!transactionId) {
             return;
         }
 
-        if (!transactionIdToOutputs.has(transactionId)) {
-            transactionIdToOutputs.set(transactionId, []);
+        // if we don't have the transaction
+        const previousOutputs = transactionIdToOutputs.get(transactionId);
+        if (previousOutputs) {
+            transactionIdToOutputs.set(transactionId, [...previousOutputs, output]);
+        } else {
+            transactionIdToOutputs.set(transactionId, [output]);
         }
 
-        const transaction = transactionIdToOutputs.get(transactionId);
-        transaction?.push({ ...historyItem, ...outputDetails });
     });
+
     return transactionIdToOutputs;
 }
 

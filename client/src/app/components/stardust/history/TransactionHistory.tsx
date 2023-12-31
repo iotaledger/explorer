@@ -32,19 +32,18 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
         setLoading(isLoading);
     }, [isLoading]);
 
-    const transactions = useMemo(() => {
-
-        const transactionIdToOutputs = groupOutputsByTransactionId(historyView, outputDetailsMap);
-
-        // console.log('--- transactionIdToOutputs', transactionIdToOutputs);
-        const transactions = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
-
-        if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs
-            transactions.pop();
-        }
-
-        return transactions;
-    }, [historyView, outputDetailsMap, isFormattedAmounts, hasMore]);
+    // const transactions = useMemo(() => {
+    //
+    //
+    //     // console.log('--- transactionIdToOutputs', transactionIdToOutputs);
+    //     // const transactions = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
+    //
+    //     if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs
+    //         transactions.pop();
+    //     }
+    //
+    //     return transactions;
+    // }, [historyView, outputDetailsMap, isFormattedAmounts, hasMore]);
 
 
     return (historyView.length > 0 && address ? (
@@ -61,21 +60,21 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                     </tr>
                 </thead>
                 <tbody>
-                    {transactions?.map((c, idx) => (
-                        <React.Fragment key={idx}>
-                            <TransactionRow
-                                isGenesisByDate={c.isGenesisByDate}
-                                isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
-                                transactionLink={c.transactionLink}
-                                dateFormatted={c.dateFormatted}
-                                balanceChangeFormatted={c.balanceChangeFormatted}
-                                transactionId={c.transactionId}
-                                isSpent={c.isSpent}
-                                isFormattedAmounts={isFormattedAmounts}
-                                setIsFormattedAmounts={setIsFormattedAmounts}
-                            />
-                        </React.Fragment>
-                    ))}
+                    {/*{transactions?.map((c, idx) => (*/}
+                    {/*    <React.Fragment key={idx}>*/}
+                    {/*        <TransactionRow*/}
+                    {/*            isGenesisByDate={c.isGenesisByDate}*/}
+                    {/*            isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}*/}
+                    {/*            transactionLink={c.transactionLink}*/}
+                    {/*            dateFormatted={c.dateFormatted}*/}
+                    {/*            balanceChangeFormatted={c.balanceChangeFormatted}*/}
+                    {/*            transactionId={c.transactionId}*/}
+                    {/*            isSpent={c.isSpent}*/}
+                    {/*            isFormattedAmounts={isFormattedAmounts}*/}
+                    {/*            setIsFormattedAmounts={setIsFormattedAmounts}*/}
+                    {/*        />*/}
+                    {/*    </React.Fragment>*/}
+                    {/*))}*/}
                 </tbody>
             </table>
 

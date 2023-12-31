@@ -6,12 +6,13 @@ import { ITransactionHistoryRequest } from "~models/api/stardust/ITransactionHis
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
+import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
 
 export interface IOutputDetailsMap {
     [outputId: string]: OutputResponse;
 }
 
-type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null };
+export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null };
 
 /**
  * Fetch Address history
@@ -38,7 +39,9 @@ export function useAddressHistory(
 
     useEffect(() => {
         if (!address) return;
-        void loadHistory();
+        (async () => {
+            await loadHistory();
+        })()
     }, [address]);
 
 
@@ -100,9 +103,9 @@ export function useAddressHistory(
                     fulfilledOutputs.push({ ...output, details: outputDetails });
                 }
 
-                const updatedOutputWithDetails = [...outputsWithDetails, ...fulfilledOutputs];
+                const updatedOutputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs];
 
-                updatedOutputWithDetails.sort((a, b) => {
+                updatedOutputsWithDetails.sort((a, b) => {
                     // Ensure that entries with equal timestamp, but different isSpent,
                     // have the spending before the depositing
                     if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
@@ -111,6 +114,9 @@ export function useAddressHistory(
                     return 1;
                 });
 
+
+                const transactionIdToOutputs = groupOutputsByTransactionId(updatedOutputsWithDetails);
+                console.log('--- transactionIdToOutputs', transactionIdToOutputs);
                 setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
                 setCursor(cursor);
             } finally {
