@@ -4,23 +4,16 @@ import { IFeedSubscribeResponse } from "~/models/api/IFeedSubscribeResponse";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import { IFeedSubscribeRequest } from "~/models/api/nova/feed/IFeedSubscribeRequest";
 import { IFeedUpdate } from "~/models/api/nova/feed/IFeedUpdate";
-import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
 import { IFeedUnsubscribeRequest } from "~/models/api/stardust/feed/IFeedUnsubscribeRequest";
 import { INetwork } from "~/models/config/INetwork";
 import { NetworkService } from "../networkService";
-import { NodeInfoService } from "./nodeInfoService";
 
 export class NovaFeedClient {
     /**
      * Network configuration.
      */
     protected readonly _networkConfig?: INetwork;
-
-    /**
-     * Network node info.
-     */
-    protected readonly _nodeInfo?: INodeInfoResponse;
 
     /**
      * Socket endpoint
@@ -46,12 +39,9 @@ export class NovaFeedClient {
         this.endpoint = endpoint;
         const networkService = ServiceFactory.get<NetworkService>("network");
         const theNetworkConfig = networkService.get(networkId);
-        const nodeService = ServiceFactory.get<NodeInfoService>("node-info-nova");
-        const nodeInfo = theNetworkConfig?.network ? nodeService.get(theNetworkConfig?.network) : null;
 
-        if (theNetworkConfig && nodeInfo) {
+        if (theNetworkConfig) {
             this._networkConfig = theNetworkConfig;
-            this._nodeInfo = nodeInfo
         } else {
             console.error("[NovaFeedClient] Couldn't initialize client for network", networkId);
         }

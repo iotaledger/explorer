@@ -13,7 +13,7 @@ import { getGenerateY, randomIntFromInterval, timer } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { useNetworkConfig } from "../../helpers/hooks/useNetworkConfig";
+import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
 import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
 import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
@@ -57,7 +57,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore(s => s.addToColorQueue);
     const addYPosition = useTangleStore(s => s.addYPosition);
-    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
     const blockMetadata = useTangleStore(s => s.blockMetadata);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
 
@@ -139,28 +138,39 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             const Y = generateY(secondsFromStart, bpsCounter.getBPS());
 
-            const position: [number, number, number] = [
-                randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                Y,
-                randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
-            ];
+            const targetPosition = {
+                x: randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
+                y: Y,
+                z: randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
+            };
 
             bpsCounter.addBlock();
             if (!bpsCounter.getBPS()) {
                 bpsCounter.start();
             }
 
-            addBlock({
-                id: blockData.blockId,
-                position,
-                color: PENDING_BLOCK_COLOR
-            });
-
-            blockIdToPosition.set(blockData.blockId, position);
             blockMetadata.set(blockData.blockId, blockData);
 
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
             addYPosition(Y);
+
+            const emitterCenter = new THREE.Vector3();
+            emitterBox.getCenter(emitterCenter);
+
+            addBlock({
+                id: blockData.blockId,
+                color: PENDING_BLOCK_COLOR,
+                targetPosition: {
+                    x: targetPosition.x,
+                    y: targetPosition.y,
+                    z: targetPosition.z
+                },
+                initPosition: {
+                    x: emitterCenter.x,
+                    y: emitterCenter.y,
+                    z: emitterCenter.z
+                }
+            });
         }
     };
 

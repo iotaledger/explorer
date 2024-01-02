@@ -1,4 +1,4 @@
-import { IEventDetails } from "~helpers/hooks/useParticipationEventDetails";
+import { IEventDetails } from "~helpers/stardust/hooks/useParticipationEventDetails";
 
 export type VotingEventTab = "upcoming" | "commencing" | "holding" | "ended";
 

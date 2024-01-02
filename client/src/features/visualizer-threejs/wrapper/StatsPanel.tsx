@@ -1,5 +1,5 @@
 import React from "react";
-import { useNetworkStats } from "~helpers/hooks/useNetworkStats";
+import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
 
 export const StatsPanel: React.FC<{readonly blocksCount: number; readonly network: string}> = (
     { blocksCount, network }

@@ -18,6 +18,7 @@ export const ZOOM_DEFAULT = 2;
 export const TIME_DIFF_COUNTER = 250;
 export const SECOND = 1000;
 export const DATA_SENDER_TIME_INTERVAL = 500;
+export const ANIMATION_TIME_SECONDS = 3;
 
 // colors
 export const PENDING_BLOCK_COLOR = new Color('#A6C3FC')
