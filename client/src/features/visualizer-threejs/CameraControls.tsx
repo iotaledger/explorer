@@ -1,37 +1,39 @@
-import React, { useEffect } from 'react';
-import { CameraControls } from '@react-three/drei';
-import { getCameraAngles } from './utils';
-import { useThree } from '@react-three/fiber';
-import { TangleMeshType } from './types';
-import { ElementName } from './enums';
-import { useTangleStore } from './store';
+import { CameraControls as DreiCameraControls } from "@react-three/drei";
+import { getCameraAngles } from "./utils";
+import React, { useEffect } from "react";
+import { useThree } from "@react-three/fiber";
+import { CanvasElement } from "./enums";
+import { useTangleStore } from "./store";
+import { VISUALIZER_PADDINGS } from "./constants";
 
-const CameraControl = () => {
-  const controls = React.useRef<CameraControls>(null)
-  const CAMERA_ANGLES = getCameraAngles()
-  const zoom = useTangleStore((state) => state.zoom)
+const CameraControls = () => {
+    const [shouldLockZoom, setShouldLockZoom] = React.useState<boolean>(false);
+    const controls = React.useRef<DreiCameraControls>(null);
 
-  const get = useThree((state) => state.get)
+    const CAMERA_ANGLES = getCameraAngles();
 
-  const tangle = get().scene.getObjectByName(ElementName.TangleMesh) as TangleMeshType | undefined
-  const camera = get().camera as THREE.OrthographicCamera | undefined
+    const zoom = useTangleStore((s) => s.zoom);
+    const get = useThree((state) => state.get);
+    const mesh = get().scene.getObjectByName(CanvasElement.TangleWrapperMesh);
 
-  // Fit camera to tangleMesh
-  useEffect(() => {
-    if (tangle && controls.current) {
-      controls.current.fitToBox(tangle, true, { cover: false })
-    }
-  }, [controls, tangle])
+    // Set fixed zoom
+    useEffect(() => {
+        if (controls.current && shouldLockZoom) {
+            controls.current.maxZoom = zoom;
+            controls.current.minZoom = zoom;
+        }
+    }, [controls, zoom, shouldLockZoom]);
 
-  // Set fixed zoom
-  useEffect(() => {
-    if (camera && controls.current) {
-      controls.current.maxZoom = zoom
-      controls.current.minZoom = zoom
-    }
-  }, [controls, zoom])
+    // Fix to TangleMesh
+    useEffect(() => {
+        if (controls.current && mesh) {
+            controls.current.fitToBox(mesh, false, { ...VISUALIZER_PADDINGS });
+            controls.current.setOrbitPoint(0, 0, 0);
+            setShouldLockZoom(true);
+        }
+    }, [controls, mesh]);
 
-  return <CameraControls makeDefault ref={controls} {...CAMERA_ANGLES}   />
-}
+    return <DreiCameraControls ref={controls} makeDefault {...CAMERA_ANGLES} />;
+};
 
-export default CameraControl
+export default CameraControls;

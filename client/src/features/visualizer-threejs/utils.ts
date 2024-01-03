@@ -1,4 +1,4 @@
-import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, MAX_BLOCKS_PER_SECOND, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MIN_BLOCKS_PER_SECOND, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET, VISUALIZER_SAFE_ZONE } from "./constants";
+import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, MAX_BLOCKS_PER_SECOND, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MIN_BLOCKS_PER_SECOND, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET } from "./constants";
 import { ICameraAngles } from './interfaces';
 
 /**
@@ -154,8 +154,8 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
  * @returns The axis distances
  */
 export function getTangleDistances({ sinusoidal = 0 } : { sinusoidal?: number }): {
-    xDistance: number;
-    yDistance: number;
+    xTangleDistance: number;
+    yTangleDistance: number;
 } {
     /* We assume MAX BPS to get the max possible Y */
     const { maxYPerTick } = getMaxYPosition(MAX_BLOCKS_PER_SECOND);
@@ -164,16 +164,16 @@ export function getTangleDistances({ sinusoidal = 0 } : { sinusoidal?: number })
 
     const MAX_BLOCK_DISTANCE = EMITTER_SPEED_MULTIPLIER * MAX_TANGLE_DISTANCE_SECONDS;
 
-    const maxXDistance = MAX_BLOCK_DISTANCE + (VISUALIZER_SAFE_ZONE * 2)
+    const maxXDistance = MAX_BLOCK_DISTANCE
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = (maxYPerTick * 2) + (sinusoidal * 2) + (VISUALIZER_SAFE_ZONE * 2)
+    const maxYDistance = (maxYPerTick * 2) + (sinusoidal * 2)
 
     /* TODO: add sinusoidal distances */
   
     return {
-        xDistance: maxXDistance,
-        yDistance: maxYDistance
+        xTangleDistance: maxXDistance,
+        yTangleDistance: maxYDistance
     }
   }
 

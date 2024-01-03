@@ -1,5 +1,5 @@
-export enum ElementName {
-  TangleMesh = 'TangleMesh',
+export enum CanvasElement {
+  TangleWrapperMesh = 'TangleWrapperMesh',
   EmitterMesh = 'EmmiterMesh',
   MainCamera = 'MainCamera',
 }

@@ -2,13 +2,11 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import React, { useRef, RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
-import { useBorderPositions } from "./hooks/useBorderPositions";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { EMITTER_PADDING_RIGHT, EMITTER_SPEED_MULTIPLIER, VISUALIZER_SAFE_ZONE, EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from './constants';
+import { EMITTER_SPEED_MULTIPLIER, EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from './constants';
 import { getTangleDistances } from './utils';
-import { TangleMeshType } from './types';
-import { ElementName } from './enums';
+import { CanvasElement } from './enums';
 
 interface EmitterProps {
     readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
@@ -23,13 +21,11 @@ const Emitter: React.FC<EmitterProps> = ({
     const get = useThree(state => state.get);
     const currentZoom = useThree(state => state.camera.zoom);
     const setZoom = useTangleStore(s => s.setZoom);
-    const { halfScreenWidth } = useBorderPositions();
-    const tangleMesh = useRef<TangleMeshType | null>(null)
+    const groupRef = useRef<THREE.Group>(null);
+    const camera = get().camera;
 
-    const sinusoidal = 0
+    const { xTangleDistance, yTangleDistance } = getTangleDistances({ sinusoidal: 0 })
 
-  const { xDistance, yDistance } = getTangleDistances({ sinusoidal })
-    
     useEffect(() => {
         setZoom(currentZoom);
     }, [currentZoom]);
@@ -41,10 +37,8 @@ const Emitter: React.FC<EmitterProps> = ({
     }, [emitterRef]);
 
     useFrame(() => {
-        const camera = get().camera;
-        const emitterObj = get().scene.getObjectByName(ElementName.EmitterMesh);
-        if (camera && emitterObj) {
-            camera.position.x = emitterObj.position.x - halfScreenWidth + EMITTER_PADDING_RIGHT;
+        if (camera && groupRef.current) {
+            camera.position.x = groupRef.current.position.x;
         }
     });
 
@@ -58,37 +52,32 @@ const Emitter: React.FC<EmitterProps> = ({
 
         const newPos = delta * EMITTER_SPEED_MULTIPLIER;
 
-        if (emitterRef?.current) {
-            emitterRef.current.position.x += newPos;
-        }
-
-        if (tangleMesh.current) {
-          tangleMesh.current.position.x += newPos;
+        if (groupRef.current) {
+            groupRef.current.position.x += newPos;
         }
     });
 
     // The Tangle rendering hook
     useRenderTangle();
 
-
     return (
-      <>
-        {/* Mesh for tangle zoom */}
-        <mesh ref={tangleMesh} name={ElementName.TangleMesh} position={[-(xDistance / 2), 0, 0]}>
-          <boxGeometry args={[xDistance + (VISUALIZER_SAFE_ZONE * 2), yDistance, 0.1]} />
-          <meshPhongMaterial opacity={0} wireframe={true} transparent />
+      <group ref={groupRef}>
+        {/* TangleWrapper Mesh */}
+        <mesh  name={CanvasElement.TangleWrapperMesh} position={[-(xTangleDistance / 2), 0, 0]}>
+          <boxGeometry args={[xTangleDistance, yTangleDistance, 0]} attach="geometry"  />
+          <meshPhongMaterial opacity={0} wireframe={true} transparent attach="material" />
         </mesh>
 
         {/* Emitter Mesh */}
         <mesh
             ref={emitterRef}
-            name={ElementName.EmitterMesh}
+            name={CanvasElement.EmitterMesh}
             position={[0, 0, 0]}
         >
             <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
             <meshPhongMaterial transparent={true} opacity={0.6} />
         </mesh>
-      </>
+      </group>
     );
 };
 export default Emitter;
