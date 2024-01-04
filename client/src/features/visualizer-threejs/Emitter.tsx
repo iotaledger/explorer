@@ -65,8 +65,8 @@ const Emitter: React.FC<EmitterProps> = ({
     /**
      * Emitter shift
      */
-        useFrame(({ clock }, delta) => {
-            const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
+    useFrame(({ clock }, delta) => {
+        const DELTA_MULTIPLIER = 80; // depends on this param we can manage speed of emitter
 
         const currentRealTime = clock.getElapsedTime();
         const realTimeDelta = currentRealTime - previousRealTime.current;
