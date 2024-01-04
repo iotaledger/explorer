@@ -1,4 +1,4 @@
-import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND } from "./constants";
+import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, HALF_WAVE_PERIOD_SECONDS } from "./constants";
 
 /**
  * Generates a random number within a specified range.
@@ -147,3 +147,13 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
         return Y * STEP_Y_PX;
     };
 };
+
+export function getNewSinusoidalPosition(time: number, amplitude: number): number {
+    const period = HALF_WAVE_PERIOD_SECONDS * 2;
+    const frequency = 1 / period;
+    const phase = (time % period) * frequency
+
+    const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+
+    return newY;
+}
