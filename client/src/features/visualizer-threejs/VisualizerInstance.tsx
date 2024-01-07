@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, PENDING_BLOCK_COLOR, VISUALIZER_BACKGROUND, ZOOM_DEFAULT } from "./constants";
+import { ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, PENDING_BLOCK_COLOR, VISUALIZER_BACKGROUND, X_POSITION_MULTIPLIER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateDynamicYZPosition, randomIntFromInterval,  } from "./utils";
@@ -134,12 +134,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             emitterBox.getCenter(emitterCenter);
 
             const { y, z } = generateYZPositions(bpsCounter.getBPS(), emitterCenter);
+            const minX = emitterBox.min.x - ((emitterBox.max.x - emitterBox.min.x) * X_POSITION_MULTIPLIER);
+            const maxX = emitterBox.max.x + ((emitterBox.max.x - emitterBox.min.x) * X_POSITION_MULTIPLIER);
 
-            const targetPosition = {
-                x: randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                y,
-                z,
-            };
+            const x = randomIntFromInterval(minX, maxX)
+            const targetPosition = { x, y, z };
 
             bpsCounter.addBlock();
             if (!bpsCounter.getBPS()) {

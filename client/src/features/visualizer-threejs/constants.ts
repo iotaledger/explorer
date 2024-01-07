@@ -67,3 +67,5 @@ export const MIN_BLOCK_NEAR_RADIUS = 20;
 
 export const MAX_POINT_RETRIES = 10;
 export const MAX_PREV_POINTS = 20;
+
+export const X_POSITION_MULTIPLIER = 3;
