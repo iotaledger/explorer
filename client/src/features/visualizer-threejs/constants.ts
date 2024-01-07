@@ -2,7 +2,7 @@ import { Color } from "three";
 import { ThemeMode } from './enums';
 
 // steps
-export const STEP_Y_PX = 20;
+export const BLOCK_STEP_PX = 10;
 export const STEP_CAMERA_SHIFT_PX = 100;
 
 export const MAX_BLOCK_INSTANCES = 5000;
@@ -54,3 +54,16 @@ export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
 export const EMITTER_WIDTH = 30;
 export const EMITTER_HEIGHT = 250;
 export const EMITTER_DEPTH = 250;
+
+// conic emitter
+
+export const MIN_RADIUS = 100;
+export const MAX_RADIUS = 300;
+
+export const MIN_BLOCKS_PER_SECOND = 50;
+export const MAX_BLOCKS_PER_SECOND = 200;
+
+export const MIN_BLOCK_NEAR_RADIUS = 20;
+
+export const MAX_POINT_RETRIES = 10;
+export const MAX_PREV_POINTS = 20;
