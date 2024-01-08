@@ -12,18 +12,24 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param outputId The output id
  * @returns The output, metadata, loading bool and error message.
  */
-export function useOutputDetails(network: string, outputId: string | null):
-    [
-        Output | null,
-        IOutputMetadataResponse | null,
-        boolean,
-        string?
-    ] {
+export function useOutputDetails(
+    network: string,
+    outputId: string | null,
+): {
+    output: Output | null;
+    outputMetadataResponse: IOutputMetadataResponse | null;
+    isLoading: boolean;
+    error: string | null;
+} {
     const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
+    const [apiClient] = useState(
+        ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`),
+    );
     const [output, setOutput] = useState<Output | null>(null);
-    const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(null);
-    const [error, setError] = useState<string>();
+    const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(
+        null,
+    );
+    const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -33,24 +39,27 @@ export function useOutputDetails(network: string, outputId: string | null):
         if (outputId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.outputDetails({
-                    network,
-                    outputId: HexHelper.addPrefix(outputId)
-                }).then(response => {
-                    if (isMounted) {
-                        const details = response.output;
-                        setOutput(details?.output ?? null);
-                        setMetadata(details?.metadata ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .outputDetails({
+                        network,
+                        outputId: HexHelper.addPrefix(outputId),
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            const details = response.output;
+                            setOutput(details?.output ?? null);
+                            setMetadata(details?.metadata ?? null);
+                            setError(response.error ?? null);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);
         }
     }, [network, outputId]);
 
-    return [output, metadata, isLoading, error];
+    return { output, outputMetadataResponse: metadata, isLoading, error };
 }

@@ -5,6 +5,9 @@ import { INetwork } from "~models/config/INetwork";
 import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "~models/config/networkType";
 import { IOTA_UI, Theme } from "~models/config/uiTheme";
 import { IStardustNodeInfo } from "~services/stardust/nodeInfoService";
+import { ServiceFactory } from "~/factories/serviceFactory";
+import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 export const networkContextWrapper = (
     currentNetwork: string | undefined,
@@ -25,6 +28,23 @@ export const networkContextWrapper = (
         </NetworkContext.Provider>
     ) : null;
 };
+
+export const populateNetworkInfoNova = (networkName: string) => {
+    const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
+    if (nodeService) {
+        const nodeInfo = nodeService.get(networkName);
+        const protocolInfo = nodeInfo?.protocolParameters.reduce((params, cur) => {
+            return params.startEpoch > cur.startEpoch ? params : cur;
+        }) ?? null;
+        const setNetworkInfoNova = useNetworkInfoNova.getState().setNetworkInfo;
+        setNetworkInfoNova({
+            name: nodeInfo?.name ?? "",
+            tokenInfo: nodeInfo?.baseToken ?? {},
+            protocolVersion: protocolInfo?.parameters.version ?? -1,
+            bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
+        });
+    }
+}
 
 export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]) => {
     const pages = [];
