@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useAddressHistory } from "~helpers/hooks/useAddressHistory";
 import NetworkContext from "~app/context/NetworkContext";
 import DownloadModal from "../DownloadModal";
-import { getTransactionHistoryRecords, groupOutputsByTransactionId } from "./transactionHistoryUtils";
+import { getTransactionHistoryRecords } from "./transactionHistoryUtils";
 import TransactionRow from "./TransactionRow";
 import TransactionCard from "./TransactionCard";
 import "./TransactionHistory.scss";
@@ -116,22 +116,3 @@ TransactionHistory.defaultProps = {
 };
 
 export default TransactionHistory;
-
-// Get list of outputs and their details
-// send from: rms1qqjhut662v2mk33sn03j7ejk2cledafzl7s06hfgg75agjnnmeukwurtvac
-// send to: rms1qr7382pmu9em8zamngpyzkn63wg6ea53ka3wm5y5t6dmse09s9kf6m8fs7d
-// 20 - just send
-// 30 - send with time condition and claimed
-//
-// 130 - reject
-// 200 - expired
-// 150 - claimed
-
-// claimingTransactionId
-
-
-// Case: user send to address without conditions
-// Case: user send to address with time condition and it's in progress (unclaimed)
-// case: user send to address with time condition and it's expired
-// case: user send to address with time condition and it's claimed
-// case: user send to address with time conditions and it's rejected

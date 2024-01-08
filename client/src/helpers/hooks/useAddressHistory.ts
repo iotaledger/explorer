@@ -25,18 +25,18 @@ export function useAddressHistory(
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [outputsWithDetails, setOutputsWithDetails] = useState<OutputWithDetails[]>([]);
-    const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>([]);
+    const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>(new Map());
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
-    const PAGE_SIZE: number = 25;
+    const PAGE_SIZE: number = 10;
     const SORT: string = "newest";
 
     useEffect(() => {
-        if (!address) return;
+        if (!address || !isMounted) return;
         (async () => {
             await loadHistory();
         })()
-    }, [address]);
+    }, [address, isMounted]);
 
 
     const requestOutputsList = async () => {
@@ -78,7 +78,7 @@ export function useAddressHistory(
 
 
     const loadHistory = async () => {
-        if (address) {
+        if (address && isMounted) {
             setIsAddressHistoryLoading(true);
 
             try {
@@ -89,6 +89,10 @@ export function useAddressHistory(
                 }
 
                 const { outputs, cursor } = outputList;
+
+                if (!cursor) {
+                    setDisabled?.(true);
+                }
 
                 const fulfilledOutputs: OutputWithDetails[] = [];
 
@@ -109,9 +113,6 @@ export function useAddressHistory(
                 });
 
                 const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
-
-                // @ts-ignore
-                window.gr = groupedOutputsByTransactionId;
 
                 setTransactionIdToOutputs(groupedOutputsByTransactionId);
                 setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
