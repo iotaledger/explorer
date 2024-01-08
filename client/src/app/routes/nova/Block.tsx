@@ -4,12 +4,13 @@ import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "~assets/modals/stardust/block/main-header.json";
 import { useBlock } from "~helpers/nova/hooks/useBlock";
 import NotFound from "../../components/NotFound";
-import { BlockBodyType } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, BlockBodyType, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
 import Modal from "~/app/components/Modal";
 import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { DateHelper } from "~/helpers/dateHelper";
 import MilestoneSignaturesSection from "~/app/components/stardust/block/payload/milestone/MilestoneSignaturesSection";
+import { Ed25519Signature } from "@iota/sdk-wasm/web";
 
 export interface BlockProps {
     /**
@@ -29,20 +30,25 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
 
     const [block, isLoading, blockError] = useBlock(network, blockId);
 
+    let blockBody: BasicBlockBody | ValidationBlockBody | undefined
     let pageTitle = "Block";
     switch (block?.body?.type) {
         case BlockBodyType.Basic: {
             pageTitle = `Basic ${pageTitle}`;
+            blockBody = blockBody as BasicBlockBody 
             break;
         }
         case BlockBodyType.Validation: {
             pageTitle = `Validation ${pageTitle}`;
+            blockBody = block?.body as ValidationBlockBody 
             break;
         }
         default: {
             break;
         }
     }
+    
+
     const blockContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
@@ -85,12 +91,12 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             </div>
 
             <div className="section--data row row--tablet-responsive">
-                {block.body?.strongParents && (
+                {blockBody?.strongParents && (
                     <div className="truncate margin-b-s margin-r-m">
                         <div className="label">
                             Strong Parents
                         </div>
-                        {block.body?.strongParents.map((parent, idx) => (
+                        {blockBody.strongParents.map((parent, idx) => (
                             <div
                                 key={idx}
                                 style={{ marginTop: "8px" }}
@@ -104,12 +110,12 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                         ))}
                     </div>
                 )}
-                {block.body?.weakParents && (
+                {blockBody?.weakParents && (
                     <div className="truncate">
                         <div className="label">
                             Weak Parents
                         </div>
-                        {block.body?.weakParents.map((child, idx) => (
+                        {blockBody.weakParents.map((child, idx) => (
                             <div
                                 key={idx}
                                 style={{ marginTop: "8px" }}
@@ -125,20 +131,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                 )}
             </div>
             
-            {block.body.type === BlockBodyType.Basic && (
+            {block.body?.type === BlockBodyType.Basic && (
                 <div>
-                    {JSON.stringify(block.body)}
-                    <div className="section--data">
-                        <div className="label">
-                            Max burned mana
-                        </div>
-                        <div className="value code">
-                            {block.body.maxBurnedMana}
-                        </div>
-                    </div>
+                    {/* todo: add all block payload */}
+                    {JSON.stringify(blockBody)}
                 </div>
             )}
-            <MilestoneSignaturesSection signatures={[block.signature]} />
+            <MilestoneSignaturesSection signatures={[block.signature as Ed25519Signature]} />
         </React.Fragment>
     ) : null;
 
