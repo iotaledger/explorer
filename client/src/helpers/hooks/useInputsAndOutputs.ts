@@ -45,6 +45,12 @@ export function useInputsAndOutputs(network: string, block: Block | null):
                         bech32Hrp,
                         apiClient
                     );
+
+                // @ts-ignore
+                window.inputs = inputs;
+                // @ts-ignore
+                window.outputs = outputs;
+
                 if (isMounted) {
                     setInputs(inputs);
                     setUnlocks(unlocks);
@@ -57,8 +63,6 @@ export function useInputsAndOutputs(network: string, block: Block | null):
             setIsLoading(false);
         }
     }, [network, block]);
-
-    console.log('--- ', tsxInputs, tsxOutputs);
 
     return [tsxInputs, tsxUnlocks, tsxOutputs, tsxTransferTotal, isLoading];
 }

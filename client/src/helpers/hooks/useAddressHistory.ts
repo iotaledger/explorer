@@ -28,7 +28,7 @@ export function useAddressHistory(
     const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>(new Map());
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
-    const PAGE_SIZE: number = 10;
+    const PAGE_SIZE: number = 50;
     const SORT: string = "newest";
 
     useEffect(() => {
@@ -113,6 +113,11 @@ export function useAddressHistory(
                 });
 
                 const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
+
+                // @ts-ignore
+                window.outputs = updatedOutputsWithDetails;
+                // @ts-ignore
+                window.groupedOutputsByTransactionId = groupedOutputsByTransactionId;
 
                 setTransactionIdToOutputs(groupedOutputsByTransactionId);
                 setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);

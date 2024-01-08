@@ -130,6 +130,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const [aliasContainsDID] = useAliasContainsDID(aliasOutput);
     const [resolvedDID, isDIDLoading] = useResolvedDID(network, bech32Hrp, addressHex);
 
+
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails ? locationState :

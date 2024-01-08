@@ -28,7 +28,7 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
             return;
         }
 
-        const transactionId = output.isSpent
+        const transactionId = detailsMetadata.isSpent
             ? detailsMetadata.transactionIdSpent
             : detailsMetadata.transactionId;
 
@@ -46,6 +46,9 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
             }
         };
         addOutputToTransactionId(transactionId, output);
+        // addOutputToTransactionId(detailsMetadata.transactionIdSpent as string, output);
+        // addOutputToTransactionId(detailsMetadata.transactionId, output);
+
     });
 
     return transactionIdToOutputs;
@@ -61,6 +64,8 @@ export const getTransactionHistoryRecords = (
 
     transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
+
+        console.log('--- getTransactionHistoryRecords', transactionId, outputs);
         const balanceChange = calculateBalanceChange(outputs);
         const ago = moment(lastOutputTime * 1000).fromNow();
 
