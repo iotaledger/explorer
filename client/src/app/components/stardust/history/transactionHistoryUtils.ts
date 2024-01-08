@@ -36,13 +36,19 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
             return;
         }
 
-        // if we don't have the transaction
-        const previousOutputs = transactionIdToOutputs.get(transactionId);
-        if (previousOutputs) {
-            transactionIdToOutputs.set(transactionId, [...previousOutputs, output]);
-        } else {
-            transactionIdToOutputs.set(transactionId, [output]);
-        }
+        const addOutput = (transactionId: string, output: OutputWithDetails) => {
+            // if we don't have the transaction
+            const previousOutputs = transactionIdToOutputs.get(transactionId);
+            if (previousOutputs) {
+                transactionIdToOutputs.set(transactionId, [...previousOutputs, output]);
+            } else {
+                transactionIdToOutputs.set(transactionId, [output]);
+            }
+        };
+        // addOutput(transactionId, output);
+
+        addOutput(detailsMetadata.transactionIdSpent as string, output);
+        addOutput(detailsMetadata.transactionId, output);
 
     });
 
@@ -56,8 +62,7 @@ export const getTransactionHistoryRecords = (
     isFormattedAmounts: boolean
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
-    // @ts-ignore
-    window.transactionIdToOutputs = transactionIdToOutputs;
+
     transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
         const balanceChange = calculateBalanceChange(outputs);
@@ -95,6 +100,25 @@ export const getTransactionHistoryRecords = (
 
 export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     return outputs.reduce((acc, output) => {
+        const neededIds = [
+            "0x135f00374f4fe01f3d52e4becd8a01d736412d42fae3eb10f7f866ffa328d0cc0100",
+            "0x135f00374f4fe01f3d52e4becd8a01d736412d42fae3eb10f7f866ffa328d0cc",
+
+            "0x135f00374f4fe01f3d52e4becd8a01d736412d42fae3eb10f7f866ffa328d0cc0000",
+            "0x135f00374f4fe01f3d52e4becd8a01d736412d42fae3eb10f7f866ffa328d0cc",
+
+            "0xa12ce8220fee69e9396c0438c8f1530b3fead27d619d53e1dde59930b09505a10100",
+            "0xa12ce8220fee69e9396c0438c8f1530b3fead27d619d53e1dde59930b09505a1",
+
+            "0xa12ce8220fee69e9396c0438c8f1530b3fead27d619d53e1dde59930b09505a10000",
+            "0xa12ce8220fee69e9396c0438c8f1530b3fead27d619d53e1dde59930b09505a1",
+        ];
+
+        if (neededIds.includes(output.outputId)) {
+            console.log("Found output: ", output);
+        }
+
+
         const outputFromDetails = output?.details?.output as CommonOutput;
 
         if (!outputFromDetails?.amount) {

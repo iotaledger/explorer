@@ -58,5 +58,7 @@ export function useInputsAndOutputs(network: string, block: Block | null):
         }
     }, [network, block]);
 
+    console.log('--- ', tsxInputs, tsxOutputs);
+
     return [tsxInputs, tsxUnlocks, tsxOutputs, tsxTransferTotal, isLoading];
 }

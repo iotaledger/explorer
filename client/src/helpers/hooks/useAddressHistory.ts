@@ -8,7 +8,7 @@ import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
 
-export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null };
+export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string; };
 
 /**
  * Fetch Address history
@@ -94,7 +94,7 @@ export function useAddressHistory(
 
                 for (const output of outputs) {
                     const outputDetails = await requestOutputDetails(output.outputId);
-                    fulfilledOutputs.push({ ...output, details: outputDetails });
+                    fulfilledOutputs.push({ ...output, details: outputDetails, amount: outputDetails?.output?.amount });
                 }
 
                 const updatedOutputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs];
@@ -109,6 +109,9 @@ export function useAddressHistory(
                 });
 
                 const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
+
+                // @ts-ignore
+                window.gr = groupedOutputsByTransactionId;
 
                 setTransactionIdToOutputs(groupedOutputsByTransactionId);
                 setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
