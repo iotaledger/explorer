@@ -52,6 +52,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status: "",
             completion: "",
             redirect: "",
+            search: "",
             invalidError: ""
         };
     }
@@ -84,6 +85,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         return this.state.redirect ? (
             <Redirect to={{
                 pathname: this.state.redirect,
+                search: this.state.search,
                 state: this.state.redirectState
             }}
             />
@@ -225,6 +227,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                             });
 
                             if (response && Object.keys(response).length > 0) {
+                                const routeSearch = new Map<string, string>();
                                 let route = "";
                                 let routeParam = query;
                                 let redirectState = {};
@@ -260,6 +263,9 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                         addressDetails: aliasAddress
                                     };
                                     routeParam = aliasAddress.bech32;
+                                    if (response.did) {
+                                        routeSearch.set("tab", "DID");
+                                    }
                                 } else if (response.foundryId) {
                                     route = "foundry";
                                     routeParam = response.foundryId;
@@ -276,14 +282,26 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                 } else if (response.milestone?.blockId) {
                                     route = "block";
                                     routeParam = response.milestone?.blockId;
-                                } else if (response.did) {
-                                    route = "identity-resolver";
-                                    routeParam = response.did;
                                 }
+
+                                const getEncodedSearch = () => {
+                                    if (routeSearch.size === 0) {
+                                        return "";
+                                    }
+
+                                    const searchParams = new URLSearchParams();
+                                    for (const [key, value] of routeSearch.entries()) {
+                                        searchParams.append(key, value);
+                                    }
+
+                                    return `?${searchParams.toString()}`;
+                                };
+
                                 this.setState({
                                     status: "",
                                     statusBusy: false,
                                     redirect: `/${this.props.match.params.network}/${route}/${routeParam}`,
+                                    search: getEncodedSearch(),
                                     redirectState
                                 });
                             } else {
