@@ -1,0 +1,11 @@
+.eslintrc.js
+*.d.ts
+
+**/dist/*
+**/node_modules/*
+
+.local-storage/*
+iota-sdk/*
+discord-bot/*
+
+client/public/env.js

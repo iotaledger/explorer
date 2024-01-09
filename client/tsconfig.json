@@ -46,6 +46,8 @@
   "include": [
     "src",
     "typings",
+    "vite.config.ts",
+    "api/index.js",
     "vite-env.d.ts"
   ]
 }

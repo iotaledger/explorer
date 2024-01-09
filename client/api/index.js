@@ -1,6 +1,6 @@
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import fs from "fs";
+import path from "path";
 
 const LEGACY_MAINNET = "legacy-mainnet";
 const MAINNET = "mainnet";

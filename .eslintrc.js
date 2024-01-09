@@ -1,31 +1,14 @@
-module.exports = {
-    "env": {
-        "browser": true,
-        "node": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:import/errors",
-        "plugin:import/warnings",
-        "plugin:import/typescript",
-        "plugin:jsdoc/recommended",
-        "plugin:unicorn/recommended"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "project": "tsconfig.json",
-        "tsconfigRootDir": __dirname,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint",
-        "import",
-        "jsdoc",
-        "unicorn"
-    ],
-    "rules": {
+
+const parserOptions = {
+    project: "tsconfig.lint.json",
+    tsconfigRootDir: __dirname,
+    sourceType: "module",
+    ecmaVersion: 2021,
+}
+
+const _extends = ["eslint:recommended","plugin:@typescript-eslint/recommended"]
+
+const apiRules = {
         "@typescript-eslint/adjacent-overload-signatures": [
             "error"
         ],
@@ -183,7 +166,7 @@ module.exports = {
             "error"
         ],
         "@typescript-eslint/no-parameter-properties": [
-            "error"
+            "off"
         ],
         "@typescript-eslint/no-require-imports": [
             "error"
@@ -261,7 +244,7 @@ module.exports = {
             "error"
         ],
         "@typescript-eslint/prefer-nullish-coalescing": [
-            "error"
+            "off",
         ],
         "@typescript-eslint/prefer-optional-chain": [
             "error"
@@ -451,7 +434,7 @@ module.exports = {
             "off"
         ],
         "generator-star-spacing": [
-            "error"
+            "error", {"before": false, "after": true}
         ],
         "getter-return": [
             "off"
@@ -556,7 +539,9 @@ module.exports = {
             "error",
             {
                 "ignorePattern": "^import",
-                "code": 120
+                "ignoreComments": true,
+                "ignoreStrings": true,
+                "code": 140
             }
         ],
         "max-lines": [
@@ -590,7 +575,7 @@ module.exports = {
             "error"
         ],
         "newline-per-chained-call": [
-            "error"
+            "error", { "ignoreChainWithDepth": 3 }
         ],
         "no-alert": [
             "error"
@@ -877,8 +862,9 @@ module.exports = {
         "no-setter-return": [
             "off"
         ],
-        "no-shadow": [
-            "error"
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": [
+            "error", { "ignoreTypeValueShadow": true }
         ],
         "no-shadow-restricted-names": [
             "error"
@@ -1015,7 +1001,7 @@ module.exports = {
             "error"
         ],
         "operator-linebreak": [
-            "error"
+            "error", "after", { "overrides": { "?": "ignore", ":": "ignore" } }
         ],
         "padded-blocks": [
             "error",
@@ -1150,6 +1136,9 @@ module.exports = {
         "unicorn/custom-error-definition": [
             "off"
         ],
+        "unicorn/empty-brace-spaces": [
+            "off"
+        ],
         "unicorn/error-message": [
             "error"
         ],
@@ -1176,6 +1165,9 @@ module.exports = {
         ],
         "unicorn/no-array-instanceof": [
             "error"
+        ],
+        "unicorn/no-array-push-push": [
+            "off"
         ],
         "unicorn/no-console-spaces": [
             "error"
@@ -1246,14 +1238,17 @@ module.exports = {
         "unicorn/prefer-modern-dom-apis": [
             "error"
         ],
-        "unicorn/prefer-module": [
-            "off"
-        ],
         "unicorn/prefer-negative-index": [
             "error"
         ],
+        "unicorn/prefer-module": [
+            "off"
+        ],
         "unicorn/prefer-node-append": [
             "error"
+        ],
+        "unicorn/prefer-node-protocol": [
+            "off"
         ],
         "unicorn/prefer-node-remove": [
             "error"
@@ -1284,6 +1279,9 @@ module.exports = {
         ],
         "unicorn/prefer-string-slice": [
             "error"
+        ],
+        "unicorn/prefer-switch": [
+            "off"
         ],
         "unicorn/prefer-text-content": [
             "error"
@@ -1327,5 +1325,79 @@ module.exports = {
         "jsdoc/newline-after-description": "off",
         "jsdoc/require-param-type": "off",
         "jsdoc/require-returns-type": "off"
-    }
+}
+
+module.exports = {
+    env: {
+        browser: true,
+        node: true,
+        es2021: true
+    },
+    parser: "@typescript-eslint/parser",
+    extends: _extends,
+    parserOptions: {
+        project: "tsconfig.lint.json",
+        tsconfigRootDir: __dirname,
+        sourceType: "module",
+        ecmaVersion: 2021,
+    },
+    plugins: [
+        "@typescript-eslint"
+    ],
+    settings: {
+        react: {
+            version: '18.2'
+        }
+    },
+    ignorePatterns: ["iota-sdk/", "**/build/", "**/dist/", "**/node_modules/"],
+    overrides: [
+        {
+            files: ["client/**/*.js", "client/**/*.jsx", "client/**/*.ts", "client/**/*.tsx"],
+            rules: {
+                "no-empty": "off",
+                "max-len": [2, { code: 140, ignoreComments: true, ignoreStrings: true }],
+                "@typescript-eslint/no-inferrable-types": "off",
+                "@typescript-eslint/no-unused-vars": [2, { args: "none" }],
+                "@typescript-eslint/no-empty-function": "off"
+            },
+            plugins: [
+                "react",
+                "react-hooks",
+                "import",
+                "jsdoc",
+                "unicorn",
+                "@typescript-eslint",
+              ],
+            extends: [..._extends, "plugin:@typescript-eslint/recommended" ],
+            parserOptions: {
+                ...parserOptions,
+                project: 'tsconfig.json',
+                tsconfigRootDir: __dirname + '/client',
+            }
+        }, 
+        {
+            files: ["discord-bot/**/*.js", "discord-bot/**/*.ts", "api/**/*.js", "api/**/*.ts"],
+            rules: apiRules,
+            plugins: [
+                "@typescript-eslint",
+                "import",
+                "jsdoc",
+                "unicorn"
+            ],
+            extends: [
+                ..._extends,
+                "plugin:@typescript-eslint/recommended-requiring-type-checking",
+                "plugin:import/errors",
+                "plugin:import/warnings",
+                "plugin:import/typescript",
+                "plugin:jsdoc/recommended",
+                "plugin:unicorn/recommended"
+            ],
+            parserOptions: {
+                ...parserOptions,
+                project: 'tsconfig.json',
+                tsconfigRootDir: __dirname + '/api',
+            }
+        }
+    ]
 };
