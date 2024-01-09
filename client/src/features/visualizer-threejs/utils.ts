@@ -142,7 +142,7 @@ export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints 
 
         return validPoint;
     };
-};
+}
 
 export function getNewSinusoidalPosition(time: number, amplitude: number): number {
     const period = HALF_WAVE_PERIOD_SECONDS * 2;
