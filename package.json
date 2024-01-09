@@ -30,7 +30,8 @@
     "husky": "^8.0.3"
   },
   "lint-staged": {
-    "*.{ts,js,tsx,jsx }": "eslint --cache --fix",
-    "*.{ts,js,scss,css}": "prettier --ignore-path=.prettierignore --write"
+    "*.{ts,js,tsx,jsx}": "eslint --cache --fix",
+    "*.{ts,js}": "prettier --ignore-path=.prettierignore --write",
+    "*.{scss,css}": "stylelint --fix"
   }
 }
