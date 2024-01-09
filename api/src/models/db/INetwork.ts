@@ -6,165 +6,170 @@ import { Theme } from "./uiTheme";
  * Definition of network configuration.
  */
 export interface INetwork {
-  /**
-   * The network.
-   */
-  network: NetworkType;
+    /**
+     * The network.
+     */
+    network: NetworkType;
 
-  /**
-   * The protocol version.
-   */
-  protocolVersion: ProtocolVersion;
+    /**
+     * The protocol version.
+     */
+    protocolVersion: ProtocolVersion;
 
-  /**
-   * The label.
-   */
-  label: string;
+    /**
+     * The label.
+     */
+    label: string;
 
-  /**
-   * The description for the network.
-   */
-  description?: string;
+    /**
+     * The description for the network.
+     */
+    description?: string;
 
-  /**
-   * The provider to use for IOTA communication.
-   */
-  provider?: string;
+    /**
+     * The provider to use for IOTA communication.
+     */
+    provider?: string;
 
-  /**
-   * The username for the endpoint.
-   */
-  user?: string;
+    /**
+     * The username for the endpoint.
+     */
+    user?: string;
 
-  /**
-   * The password for the endpoint.
-   */
-  password?: string;
+    /**
+     * The password for the endpoint.
+     */
+    password?: string;
 
-  /**
-   * Depth for attaches.
-   */
-  depth?: number;
+    /**
+     * Depth for attaches.
+     */
+    depth?: number;
 
-  /**
-   * Minimum weight magnitude for attaches.
-   */
-  mwm?: number;
+    /**
+     * Minimum weight magnitude for attaches.
+     */
+    mwm?: number;
 
-  /**
-   * The permanode endpoint.
-   */
-  permaNodeEndpoint?: string;
+    /**
+     * The permanode endpoint.
+     */
+    permaNodeEndpoint?: string;
 
-  /**
-   * The permanode endpoint user.
-   */
-  permaNodeEndpointUser?: string;
+    /**
+     * The permanode endpoint user.
+     */
+    permaNodeEndpointUser?: string;
 
-  /**
-   * The permanode endpoint password.
-   */
-  permaNodeEndpointPassword?: string;
+    /**
+     * The permanode endpoint password.
+     */
+    permaNodeEndpointPassword?: string;
 
-  /**
-   * The permanode endpoint JWT.
-   */
-  permaNodeJwt?: string;
+    /**
+     * The permanode endpoint JWT.
+     */
+    permaNodeJwt?: string;
 
-  /**
-   * The analytics influxDB endpoint.
-   */
-  analyticsInfluxDbEndpoint?: string;
+    /**
+     * The potocol used by the influxDB endpoint.
+     */
+    analyticsInfluxDbProtocol?: "http" | "https";
 
-  /**
-   * The analytics influxDB database name.
-   */
-  analyticsInfluxDbDatabase?: string;
+    /**
+     * The analytics influxDB endpoint.
+     */
+    analyticsInfluxDbEndpoint?: string;
 
-  /**
-   * The analytics influxDB username.
-   */
-  analyticsInfluxDbUsername?: string;
+    /**
+     * The analytics influxDB database name.
+     */
+    analyticsInfluxDbDatabase?: string;
 
-  /**
-   * The analytics influxDB password.
-   */
-  analyticsInfluxDbPassword?: string;
+    /**
+     * The analytics influxDB username.
+     */
+    analyticsInfluxDbUsername?: string;
 
-  /**
-   * The feed to communicate with.
-   */
-  feedEndpoint?: string;
+    /**
+     * The analytics influxDB password.
+     */
+    analyticsInfluxDbPassword?: string;
 
-  /**
-   * Url endpoint for token registry.
-   */
-  tokenRegistryEndpoint?: string;
+    /**
+     * The feed to communicate with.
+     */
+    feedEndpoint?: string;
 
-  /**
-   * The address of the coordinator.
-   */
-  coordinatorAddress?: string;
+    /**
+     * Url endpoint for token registry.
+     */
+    tokenRegistryEndpoint?: string;
 
-  /**
-   * The level of the coordinator security.
-   */
-  coordinatorSecurityLevel?: number;
+    /**
+     * The address of the coordinator.
+     */
+    coordinatorAddress?: string;
 
-  /**
-   * The bech32 human readable part prefix.
-   */
-  bechHrp?: string;
+    /**
+     * The level of the coordinator security.
+     */
+    coordinatorSecurityLevel?: number;
 
-  /**
-   * Is the network enabled.
-   */
-  isEnabled: boolean;
+    /**
+     * The bech32 human readable part prefix.
+     */
+    bechHrp?: string;
 
-  /**
-   * Is the network enabled.
-   */
-  isHidden?: boolean;
+    /**
+     * Is the network enabled.
+     */
+    isEnabled: boolean;
 
-  /**
-   * Show the market figures.
-   */
-  showMarket?: boolean;
+    /**
+     * Is the network enabled.
+     */
+    isHidden?: boolean;
 
-  /**
-   * Set the UI theme.
-   */
-  uiTheme?: Theme;
+    /**
+     * Show the market figures.
+     */
+    showMarket?: boolean;
 
-  /**
-   * An example for an Identity DID address.
-   */
-  didExample?: string;
+    /**
+     * Set the UI theme.
+     */
+    uiTheme?: Theme;
 
-  /**
-   * Url for faucet.
-   */
-  faucet?: string;
+    /**
+     * An example for an Identity DID address.
+     */
+    didExample?: string;
 
-  /**
-   * Targeted interval in seconds between milestones.
-   */
-  milestoneInterval?: number;
+    /**
+     * Url for faucet.
+     */
+    faucet?: string;
 
-  /**
-   * Native token circulating supply.
-   */
-  circulatingSupply?: number;
+    /**
+     * Targeted interval in seconds between milestones.
+     */
+    milestoneInterval?: number;
 
-  /**
-   * Is API calls fallback disabled.
-   * If both permanode and node are configured, and this is true, API calls will only try calling permanode
-   * without falling back on node on failure.
-   */
-  disableApiFallback?: boolean;
+    /**
+     * Native token circulating supply.
+     */
+    circulatingSupply?: number;
 
-  /**
-   * If Identity Resolver tool should be supported.
-   */
-  identityResolverEnabled?: boolean;
+    /**
+     * Is API calls fallback disabled.
+     * If both permanode and node are configured, and this is true, API calls will only try calling permanode
+     * without falling back on node on failure.
+     */
+    disableApiFallback?: boolean;
+
+    /**
+     * If Identity Resolver tool should be supported.
+     */
+    identityResolverEnabled?: boolean;
 }
