@@ -28,7 +28,7 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
             return;
         }
 
-        const transactionId = detailsMetadata.isSpent
+        const transactionId = output.isSpent
             ? detailsMetadata.transactionIdSpent
             : detailsMetadata.transactionId;
 
@@ -82,6 +82,10 @@ export const getTransactionHistoryRecords = (
             `/${network}/transaction/${transactionId}`;
 
         const isSpent = balanceChange < 0;
+
+        if (balanceChange === 0) {
+            return;
+        }
 
         calculatedTransactions.push({
             isGenesisByDate: isGenesisByDate,
