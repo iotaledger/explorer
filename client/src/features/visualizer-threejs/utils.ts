@@ -1,4 +1,4 @@
-import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, MAX_BLOCKS_PER_SECOND, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MIN_BLOCKS_PER_SECOND, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET } from "./constants";
+import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, MAX_BLOCKS_PER_SECOND, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MIN_BLOCKS_PER_SECOND, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET, HALF_WAVE_PERIOD_SECONDS, MAX_AMPLITUDE } from "./constants";
 import { ICameraAngles } from './interfaces';
 
 /**
@@ -153,7 +153,7 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
  * Calculate the tangles distances
  * @returns The axis distances
  */
-export function getTangleDistances({ sinusoidal = 0 } : { sinusoidal?: number }): {
+export function getTangleDistances(): {
     xTangleDistance: number;
     yTangleDistance: number;
 } {
@@ -167,7 +167,7 @@ export function getTangleDistances({ sinusoidal = 0 } : { sinusoidal?: number })
     const maxXDistance = MAX_BLOCK_DISTANCE
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = (maxYPerTick * 2) + (sinusoidal * 2)
+    const maxYDistance = (maxYPerTick * 2) + (MAX_AMPLITUDE * 2)
 
     /* TODO: add sinusoidal distances */
   
@@ -200,4 +200,14 @@ export function getCameraAngles(): ICameraAngles {
         maxPolarAngle: MAX_VENTICAL_ANGLE,
         maxAzimuthAngle: MAX_HORIZONTAL_ANGLE
     }
+}
+
+export function getNewSinusoidalPosition(time: number, amplitude: number): number {
+    const period = HALF_WAVE_PERIOD_SECONDS * 2;
+    const frequency = 1 / period;
+    const phase = (time % period) * frequency
+
+    const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+
+    return newY;
 }

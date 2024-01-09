@@ -1,11 +1,11 @@
 /* eslint-disable react/no-unknown-property */
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useRef, RefObject, Dispatch, SetStateAction, useEffect } from "react";
+import React, { useState, useRef, RefObject, Dispatch, SetStateAction, useEffect } from "react";
 import * as THREE from "three";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { EMITTER_SPEED_MULTIPLIER, EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from './constants';
-import { getTangleDistances } from './utils';
+import { AMPLITUDE_ACCUMULATOR, HALF_WAVE_PERIOD_SECONDS, EMITTER_SPEED_MULTIPLIER, EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH, MAX_AMPLITUDE } from './constants';
+import { getTangleDistances, getNewSinusoidalPosition } from './utils';
 import { CanvasElement } from './enums';
 
 interface EmitterProps {
@@ -17,14 +17,21 @@ const Emitter: React.FC<EmitterProps> = ({
     setRunListeners,
     emitterRef
 }: EmitterProps) => {
-    const isPlaying = useConfigStore(state => state.isPlaying);
+    const setZoom = useTangleStore(s => s.setZoom);
     const get = useThree(state => state.get);
     const currentZoom = useThree(state => state.camera.zoom);
-    const setZoom = useTangleStore(s => s.setZoom);
+
     const groupRef = useRef<THREE.Group>(null);
     const camera = get().camera;
 
-    const { xTangleDistance, yTangleDistance } = getTangleDistances({ sinusoidal: 0 })
+    const { xTangleDistance, yTangleDistance } = getTangleDistances()
+    const isPlaying = useConfigStore(state => state.isPlaying);
+
+    const [animationTime, setAnimationTime] = useState<number>(0)
+    const [currentAmplitude, setCurrentAmplitude] = useState<number>(AMPLITUDE_ACCUMULATOR);
+
+    const previousRealTime = useRef<number>(0);
+    const previousPeakTime = useRef<number>(0);
 
     useEffect(() => {
         setZoom(currentZoom);
@@ -42,18 +49,47 @@ const Emitter: React.FC<EmitterProps> = ({
         }
     });
 
+    function updateAnimationTime(realTimeDelta: number): void {
+        setAnimationTime(prev => prev + realTimeDelta);
+    }
+
+    function checkAndHandleNewPeak(): void {
+        const currentHalfWaveCount = Math.floor(animationTime / HALF_WAVE_PERIOD_SECONDS);
+        const lastPeakHalfWaveCount = Math.floor(previousPeakTime.current / HALF_WAVE_PERIOD_SECONDS);
+
+        if (currentHalfWaveCount > lastPeakHalfWaveCount) {
+            setCurrentAmplitude(prev => Math.min(prev + AMPLITUDE_ACCUMULATOR, MAX_AMPLITUDE));
+            previousPeakTime.current = animationTime;
+        }
+    }
+
     /**
      * Emitter shift
      */
-    useFrame((_, delta) => {
-        if (!isPlaying) {
-            return;
-        }
+    useFrame(({ clock }, delta) => {
 
-        const newPos = delta * EMITTER_SPEED_MULTIPLIER;
+        const currentRealTime = clock.getElapsedTime();
+        const realTimeDelta = currentRealTime - previousRealTime.current;
+        previousRealTime.current = currentRealTime;
 
         if (groupRef.current) {
-            groupRef.current.position.x += newPos;
+        const newPos = delta * EMITTER_SPEED_MULTIPLIER;
+        groupRef.current.position.x += newPos;
+
+        if (isPlaying) {
+            updateAnimationTime(realTimeDelta);
+            checkAndHandleNewPeak();
+
+            if (emitterRef.current) {
+                const { x } = emitterRef.current.position;
+
+                const newXPos = x + (delta * EMITTER_SPEED_MULTIPLIER);
+                const newYPos = getNewSinusoidalPosition(animationTime, currentAmplitude);
+
+                emitterRef.current.position.y = newYPos;
+                emitterRef.current.position.x = newXPos;
+            }
+        }
         }
     });
 
