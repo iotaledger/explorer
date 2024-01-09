@@ -21,7 +21,7 @@ export class FetchHelper {
     method: "get" | "post" | "put" | "delete",
     payload?: T,
     headers?: { [id: string]: string },
-    timeout?: number
+    timeout?: number,
   ): Promise<U> {
     headers = headers ?? {};
     headers["Content-Type"] = "application/json";

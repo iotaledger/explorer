@@ -85,7 +85,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
             <a
               className="download-button"
               href={DownloadHelper.createJsonDataUrl(
-                this.state.toggleState === "doc" ? this.props.selectedMessage?.document : this.props.selectedMessage?.message
+                this.state.toggleState === "doc" ? this.props.selectedMessage?.document : this.props.selectedMessage?.message,
               )}
               download={DownloadHelper.filename(this.props.selectedMessage?.messageId ?? "message", "json")}
               role="button"
@@ -120,7 +120,7 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                 this.props.selectedMessage?.document.doc
               : IdentityHelper.transformDocument(this.props.selectedMessage?.message, this.mode, this.props.version),
               null,
-              4
+              4,
             )}
             oldValue={
               this.props.selectedComparisonMessage?.message && this.props.selectedComparisonMessage.document ?
@@ -129,14 +129,14 @@ class IdentityJsonCompare extends Component<IdentityJsonCompareProps, IdentityJs
                     this.props.selectedComparisonMessage.document.doc
                   : IdentityHelper.transformDocument(this.props.selectedComparisonMessage.message, this.mode, this.props.version),
                   null,
-                  4
+                  4,
                 )
               : JSON.stringify(
                   this.state.toggleState === "doc" ?
                     this.props.selectedMessage?.document.doc
                   : IdentityHelper.transformDocument(this.props.selectedMessage?.message, this.mode, this.props.version),
                   null,
-                  4
+                  4,
                 )
             }
             splitView={false}

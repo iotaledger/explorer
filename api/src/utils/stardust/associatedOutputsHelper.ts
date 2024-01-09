@@ -39,8 +39,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<QueryParameter>(
         async (query) => client.basicOutputIds([query]),
         { address },
-        AssociationType.BASIC_ADDRESS
-      )
+        AssociationType.BASIC_ADDRESS,
+      ),
     );
 
     promises.push(
@@ -48,8 +48,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<QueryParameter>(
         async (query) => client.basicOutputIds([query]),
         { storageDepositReturnAddress: address },
-        AssociationType.BASIC_STORAGE_RETURN
-      )
+        AssociationType.BASIC_STORAGE_RETURN,
+      ),
     );
 
     promises.push(
@@ -57,8 +57,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<QueryParameter>(
         async (query) => client.basicOutputIds([query]),
         { expirationReturnAddress: address },
-        AssociationType.BASIC_EXPIRATION_RETURN
-      )
+        AssociationType.BASIC_EXPIRATION_RETURN,
+      ),
     );
 
     promises.push(
@@ -66,8 +66,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<QueryParameter>(
         async (query) => client.basicOutputIds([query]),
         { sender: address },
-        AssociationType.BASIC_SENDER
-      )
+        AssociationType.BASIC_SENDER,
+      ),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -75,7 +75,7 @@ export class AssociatedOutputsHelper {
       const aliasId = this.addressDetails.hex;
       promises.push(
         // Alias id
-        this.fetchAssociatedOutputIds<string>(async (query) => client.aliasOutputId(query), aliasId, AssociationType.ALIAS_ID)
+        this.fetchAssociatedOutputIds<string>(async (query) => client.aliasOutputId(query), aliasId, AssociationType.ALIAS_ID),
       );
     }
 
@@ -84,8 +84,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<AliasQueryParameter>(
         async (query) => client.aliasOutputIds([query]),
         { stateController: address },
-        AssociationType.ALIAS_STATE_CONTROLLER
-      )
+        AssociationType.ALIAS_STATE_CONTROLLER,
+      ),
     );
 
     promises.push(
@@ -93,8 +93,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<AliasQueryParameter>(
         async (query) => client.aliasOutputIds([query]),
         { governor: address },
-        AssociationType.ALIAS_GOVERNOR
-      )
+        AssociationType.ALIAS_GOVERNOR,
+      ),
     );
 
     promises.push(
@@ -102,8 +102,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<AliasQueryParameter>(
         async (query) => client.aliasOutputIds([query]),
         { issuer: address },
-        AssociationType.ALIAS_ISSUER
-      )
+        AssociationType.ALIAS_ISSUER,
+      ),
     );
 
     promises.push(
@@ -111,8 +111,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<AliasQueryParameter>(
         async (query) => client.aliasOutputIds([query]),
         { sender: address },
-        AssociationType.ALIAS_SENDER
-      )
+        AssociationType.ALIAS_SENDER,
+      ),
     );
 
     promises.push(
@@ -120,8 +120,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<FoundryQueryParameter>(
         async (query) => client.foundryOutputIds([query]),
         { aliasAddress: address },
-        AssociationType.FOUNDRY_ALIAS
-      )
+        AssociationType.FOUNDRY_ALIAS,
+      ),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -129,7 +129,7 @@ export class AssociatedOutputsHelper {
       const nftId = this.addressDetails.hex;
       promises.push(
         // Nft id
-        this.fetchAssociatedOutputIds<string>(async (query) => client.nftOutputId(query), nftId, AssociationType.NFT_ID)
+        this.fetchAssociatedOutputIds<string>(async (query) => client.nftOutputId(query), nftId, AssociationType.NFT_ID),
       );
     }
 
@@ -138,8 +138,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<NftQueryParameter>(
         async (query) => client.nftOutputIds([query]),
         { address },
-        AssociationType.NFT_ADDRESS
-      )
+        AssociationType.NFT_ADDRESS,
+      ),
     );
 
     promises.push(
@@ -147,8 +147,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<NftQueryParameter>(
         async (query) => client.nftOutputIds([query]),
         { storageDepositReturnAddress: address },
-        AssociationType.NFT_STORAGE_RETURN
-      )
+        AssociationType.NFT_STORAGE_RETURN,
+      ),
     );
 
     promises.push(
@@ -156,8 +156,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<NftQueryParameter>(
         async (query) => client.nftOutputIds([query]),
         { expirationReturnAddress: address },
-        AssociationType.NFT_EXPIRATION_RETURN
-      )
+        AssociationType.NFT_EXPIRATION_RETURN,
+      ),
     );
 
     promises.push(
@@ -165,8 +165,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<NftQueryParameter>(
         async (query) => client.nftOutputIds([query]),
         { issuer: address },
-        AssociationType.NFT_ISSUER
-      )
+        AssociationType.NFT_ISSUER,
+      ),
     );
 
     promises.push(
@@ -174,8 +174,8 @@ export class AssociatedOutputsHelper {
       this.fetchAssociatedOutputIds<NftQueryParameter>(
         async (query) => client.nftOutputIds([query]),
         { sender: address },
-        AssociationType.NFT_SENDER
-      )
+        AssociationType.NFT_SENDER,
+      ),
     );
 
     await Promise.all(promises);
@@ -190,7 +190,7 @@ export class AssociatedOutputsHelper {
   private async fetchAssociatedOutputIds<T>(
     fetch: (req: T) => Promise<IOutputsResponse | string>,
     args: T,
-    association: AssociationType
+    association: AssociationType,
   ): Promise<void> {
     const associationToOutputIds = this.associationToOutputIds;
     let cursor: string;

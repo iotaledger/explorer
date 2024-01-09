@@ -20,7 +20,7 @@ import { IConfiguration } from "../models/configuration/IConfiguration";
  */
 export function matchRouteUrl(
   matchUrls: string[],
-  url: string
+  url: string,
 ):
   | {
       index: number;
@@ -73,7 +73,7 @@ export async function executeRoute(
   config: IConfiguration,
   route: IRoute,
   pathParams: { [id: string]: string },
-  verboseLogging: boolean
+  verboseLogging: boolean,
 ): Promise<void> {
   let response: IResponse;
   const start = Date.now();
@@ -141,7 +141,7 @@ export async function executeRoute(
 
   if (route.sign && config.privateKeyEd25519 && config.privateKeyEd25519.length === 128) {
     (response as ISignedResponse).signature = Converter.bytesToHex(
-      Ed25519.sign(Converter.hexToBytes(config.privateKeyEd25519), Converter.utf8ToBytes(JSON.stringify(response)))
+      Ed25519.sign(Converter.hexToBytes(config.privateKeyEd25519), Converter.utf8ToBytes(JSON.stringify(response))),
     );
   }
 
@@ -211,7 +211,7 @@ export function cors(
   res: IHttpResponse,
   allowDomains: string | (string | RegExp)[] | undefined,
   allowMethods: string | undefined,
-  allowHeaders: string | undefined
+  allowHeaders: string | undefined,
 ): void {
   if (!allowDomains || allowDomains === "*") {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -249,7 +249,7 @@ export function cors(
           "Authorization",
           "Accept",
           "Accept-Encoding",
-        ].join(",")
+        ].join(","),
     );
   }
 }

@@ -49,7 +49,7 @@ export class ChrysalisTangleHelper {
     password: string | undefined,
     bechHrp: string,
     query: string,
-    cursor?: string
+    cursor?: string,
   ): Promise<ISearchResponse> {
     const client = new SingleNodeClient(provider, {
       userName: user,
@@ -169,7 +169,7 @@ export class ChrysalisTangleHelper {
         if (query.length >= 2 && query.length <= 128 && Converter.isHex(queryLower)) {
           messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
             "get",
-            `messages?index=${queryLower}${cursorParam}`
+            `messages?index=${queryLower}${cursorParam}`,
           );
 
           if (messages.count > 0) {
@@ -181,7 +181,7 @@ export class ChrysalisTangleHelper {
         if (!indexMessageType && query.length <= 64) {
           messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
             "get",
-            `messages?index=${Converter.utf8ToHex(query)}${cursorParam}`
+            `messages?index=${Converter.utf8ToHex(query)}${cursorParam}`,
           );
 
           if (messages.count > 0) {
@@ -249,7 +249,7 @@ export class ChrysalisTangleHelper {
    */
   public static async transactionHistory(
     network: INetwork,
-    request: ITransactionHistoryRequest
+    request: ITransactionHistoryRequest,
   ): Promise<ITransactionHistoryResponse | undefined> {
     try {
       const client = new ExtendedSingleNodeClient(network.provider, {

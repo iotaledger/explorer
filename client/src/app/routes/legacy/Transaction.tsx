@@ -205,7 +205,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                               },
                               {
                                 "card--header-count__success": this.state.isBundleValid === "valid",
-                              }
+                              },
                             )}
                           >
                             {this.state.isBundleValidMessage}
@@ -314,7 +314,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                       this.state.showRawMessageTrytes ?
                                                                         "trytes"
                                                                       : this.state.messageType?.toLowerCase()
-                                                                    }`
+                                                                    }`,
                               )}
                             >
                               {this.state.showRawMessageTrytes ?
@@ -544,14 +544,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 async () => {
                   const children = await this._tangleCacheService.getTransactionChildren(
                     this.props.match.params.network,
-                    this.props.match.params.txHash
+                    this.props.match.params.txHash,
                   );
 
                   this.setState({
                     children,
                     childrenBusy: false,
                   });
-                }
+                },
               );
             } else {
               this.setState({
@@ -560,7 +560,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
               });
             }
           }
-        }
+        },
       );
     }
   }
@@ -600,7 +600,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
     const transactions = await this._tangleCacheService.getTransactions(
       this.props.match.params.network,
       [this.props.match.params.txHash],
-      true
+      true,
     );
 
     if (transactions && transactions.length > 0 && transactions[0].confirmationState === "confirmed") {

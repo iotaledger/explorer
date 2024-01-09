@@ -41,7 +41,7 @@ export class LegacyApiClient extends ApiClient {
   public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
     return this.callApi<unknown, IStatsGetResponse>(
       `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-      "get"
+      "get",
     );
   }
 

@@ -68,7 +68,7 @@ export class FoundationDataHelper {
         url: string;
       }[];
     },
-    key?: Key
+    key?: Key,
   ): React.ReactNode {
     return (
       <React.Fragment key={key}>

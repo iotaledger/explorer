@@ -218,7 +218,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     {
                       filter: e.target.value.toUpperCase(),
                     },
-                    () => this.restyleNodes()
+                    () => this.restyleNodes(),
                   )
                 }
                 maxLength={90}
@@ -541,7 +541,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
    */
   private calculateNodeStyle(
     node: Viva.Graph.INode<INodeData, unknown> | undefined,
-    highlight: boolean
+    highlight: boolean,
   ): {
     color: string;
     size: number;

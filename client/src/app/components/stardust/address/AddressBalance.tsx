@@ -39,7 +39,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
     setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
     showInfo: boolean,
     showWallet: boolean,
-    amount: number | null
+    amount: number | null,
   ) => (
     <div className="balance">
       {showWallet && <Icon icon="wallet" boxed />}
@@ -88,7 +88,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
           setFormatBalanceFull,
           false,
           true,
-          shouldShowExtendedBalance ? spendableBalance : balance
+          shouldShowExtendedBalance ? spendableBalance : balance,
         )}
         {shouldShowExtendedBalance &&
           buildBalanceView(
@@ -97,7 +97,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
             setFormatConditionalBalanceFull,
             true,
             false,
-            conditionalBalance
+            conditionalBalance,
           )}
         {buildBalanceView("Storage Deposit", formatStorageBalanceFull, setFormatStorageBalanceFull, false, false, storageRentBalance)}
       </div>

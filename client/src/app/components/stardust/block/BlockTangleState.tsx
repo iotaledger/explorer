@@ -28,7 +28,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                 "block-tangle-state",
                 { "block-tangle-state__no-click": !onClick },
                 { "block-tangle-state__confirmed": milestoneIndex },
-                { "block-tangle-state__pending": !milestoneIndex }
+                { "block-tangle-state__pending": !milestoneIndex },
               )}
             >
               {milestoneIndex && "Confirmed"}
@@ -52,7 +52,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                 "block-tangle-state__conflicting": status === "referenced" && hasConflicts,
               },
               { "block-tangle-state__pending": status === "pending" },
-              { "block-tangle-state__unknown": status === "unknown" }
+              { "block-tangle-state__unknown": status === "unknown" },
             )}
           >
             {status === "unknown" && "Unknown"}

@@ -44,12 +44,12 @@ app.get("/*", (req, res) => {
     indexHtml = indexHtml
       .replace(
         '<meta name="apple-mobile-web-app-title" content="Tangle Explorer"',
-        `<meta name="apple-mobile-web-app-title" content="${label} Explorer"`
+        `<meta name="apple-mobile-web-app-title" content="${label} Explorer"`,
       )
       .replace('<meta name="application-name" content="Tangle Explorer"', `<meta name="application-name" content="${label} Explorer"`)
       .replace(
         '<meta name="description" content="Explorer for viewing transactions and data on the Tangle."',
-        `<meta name="description" content="${label} Explorer for viewing transactions and data on the Tangle."`
+        `<meta name="description" content="${label} Explorer for viewing transactions and data on the Tangle."`,
       )
       .replace("<title>Tangle Explorer</title>", `<title>${label} Explorer</title>`);
 
@@ -60,23 +60,23 @@ app.get("/*", (req, res) => {
       indexHtml = indexHtml
         .replace(
           `<link rel="shortcut icon" href="${publicUrl}/favicon/iota/favicon.ico" data-react-helmet="true"/>`,
-          `<link rel="shortcut icon" href="${publicUrl}/favicon/shimmer/favicon.ico" data-react-helmet="true"/>`
+          `<link rel="shortcut icon" href="${publicUrl}/favicon/shimmer/favicon.ico" data-react-helmet="true"/>`,
         )
         .replace(
           `<link rel="manifest" href="${publicUrl}/favicon/iota/site.webmanifest" data-react-helmet="true"/>`,
-          `<link rel="manifest" href="${publicUrl}/favicon/shimmer/site.webmanifest" data-react-helmet="true"/>`
+          `<link rel="manifest" href="${publicUrl}/favicon/shimmer/site.webmanifest" data-react-helmet="true"/>`,
         )
         .replace(
           `<link rel="apple-touch-icon" sizes="180x180" href="${publicUrl}/favicon/iota/favicon-180x180.png" data-react-helmet="true"/>`,
-          `<link rel="apple-touch-icon" sizes="180x180" href="${publicUrl}/favicon/shimmer/favicon-180x180.png" data-react-helmet="true"/>`
+          `<link rel="apple-touch-icon" sizes="180x180" href="${publicUrl}/favicon/shimmer/favicon-180x180.png" data-react-helmet="true"/>`,
         )
         .replace(
           `<link rel="icon" type="image/png" sizes="32x32" href="${publicUrl}/favicon/iota/favicon-32x32.png" data-react-helmet="true"/>`,
-          `<link rel="icon" type="image/png" sizes="32x32" href="${publicUrl}/favicon/shimmer/favicon-32x32.png" data-react-helmet="true"/>`
+          `<link rel="icon" type="image/png" sizes="32x32" href="${publicUrl}/favicon/shimmer/favicon-32x32.png" data-react-helmet="true"/>`,
         )
         .replace(
           `<link rel="icon" type="image/png" sizes="16x16" href="${publicUrl}/favicon/iota/favicon-16x16.png" data-react-helmet="true"/>`,
-          `<link rel="icon" type="image/png" sizes="16x16" href="${publicUrl}/favicon/shimmer/favicon-16x16.png" data-react-helmet="true"/>`
+          `<link rel="icon" type="image/png" sizes="16x16" href="${publicUrl}/favicon/shimmer/favicon-16x16.png" data-react-helmet="true"/>`,
         );
     }
 

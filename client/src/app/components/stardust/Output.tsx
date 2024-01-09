@@ -340,7 +340,7 @@ class Output extends Component<OutputProps, OutputState> {
         (condition) =>
           condition.type === UnlockConditionType.StorageDepositReturn ||
           condition.type === UnlockConditionType.Expiration ||
-          condition.type === UnlockConditionType.Timelock
+          condition.type === UnlockConditionType.Timelock,
       );
     }
     return specialUnlockConditionExists;

@@ -217,7 +217,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                           className={classNames(
                             "card--value",
                             "card--value-textarea",
-                            `card--value-textarea__${item.showRawMessageTrytes ? "trytes" : item.messageType?.toLowerCase()}`
+                            `card--value-textarea__${item.showRawMessageTrytes ? "trytes" : item.messageType?.toLowerCase()}`,
                           )}
                         >
                           {item.showRawMessageTrytes ?
@@ -308,7 +308,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
           this._nextRoot = this.state.root;
           this._timeout = 100;
           await this.loadNextPacket(true);
-        }
+        },
       );
     }
   }
@@ -334,7 +334,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         this.props.match.params.network,
         this._nextRoot,
         this.state.mode,
-        this.state.sideKey
+        this.state.sideKey,
       );
 
       if (packet) {

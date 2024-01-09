@@ -37,7 +37,7 @@ export class CoinGeckoClient {
       response = await FetchHelper.json<unknown, ICoinsHistoryResponse>(
         this._endpoint,
         `coins/${coin}/history?date=${day}-${month}-${year}`,
-        "get"
+        "get",
       );
     } catch (err) {
       logger.error(`[CoinGecko] Fetch coin history failed. Cause: ${err}`);
@@ -59,7 +59,7 @@ export class CoinGeckoClient {
       response = await FetchHelper.json<unknown, ICoinsMarketsResponse[]>(
         this._endpoint,
         `coins/markets?vs_currency=${currency}&ids=${coin}&order=market_cap_desc&per_page=100&page=1&sparkline=false`,
-        "get"
+        "get",
       );
     } catch (err) {
       logger.error(`[CoinGecko] Fetch coin markets failed. Cause: ${err}`);
@@ -81,7 +81,7 @@ export class CoinGeckoClient {
       response = await FetchHelper.json<unknown, ICoinsMarketChartResponse>(
         this._endpoint,
         `coins/${coin}/market_chart?vs_currency=${currency}&days=1&interval=hourly`,
-        "get"
+        "get",
       );
     } catch (err) {
       logger.error(`[CoinGecko] Fetch market chart failed. Cause: ${err}`);

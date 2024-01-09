@@ -39,7 +39,7 @@ export class FixerClient {
         `latest?base=${baseCurrency}&symbols=USD,JPY,GBP,CAD,SEK,CHF`,
         "get",
         null,
-        { apiKey: this._apiKey }
+        { apiKey: this._apiKey },
       );
     } catch (e) {
       logger.error(`Failed fetching latest from fixerAPI. Cause: ${e}`);

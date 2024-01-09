@@ -103,7 +103,7 @@ export function buildNodeShader(): WebGLProgram {
         gl.FLOAT,
         false,
         ATTRIBUTES_PER_PRIMITIVE * Float32Array.BYTES_PER_ELEMENT,
-        2 * 4
+        2 * 4,
       );
       gl.drawArrays(gl.POINTS, 0, nodesCount);
     },
@@ -151,7 +151,7 @@ export function buildNodeShader(): WebGLProgram {
           nodes,
           node.id * ATTRIBUTES_PER_PRIMITIVE,
           nodesCount * ATTRIBUTES_PER_PRIMITIVE,
-          ATTRIBUTES_PER_PRIMITIVE
+          ATTRIBUTES_PER_PRIMITIVE,
         );
       }
     },

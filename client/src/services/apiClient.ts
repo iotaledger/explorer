@@ -31,7 +31,7 @@ export class ApiClient {
     path: string,
     method: "get" | "post" | "put" | "delete",
     request?: U,
-    timeout?: number
+    timeout?: number,
   ): Promise<T> {
     let response: T;
 
@@ -58,7 +58,7 @@ export class ApiClient {
     path: string,
     method: "get" | "post" | "put" | "delete",
     request?: unknown,
-    timeout?: number
+    timeout?: number,
   ): Promise<IRawResponse> {
     let result: IRawResponse;
     const headers = { "Content-Type": "application/json" };

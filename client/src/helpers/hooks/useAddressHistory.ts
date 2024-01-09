@@ -21,7 +21,7 @@ interface IOutputDetailsMap {
 export function useAddressHistory(
   network: string,
   address?: string,
-  setDisabled?: (isDisabled: boolean) => void
+  setDisabled?: (isDisabled: boolean) => void,
 ): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
   const isMounted = useIsMounted();
   const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));

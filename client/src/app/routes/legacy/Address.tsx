@@ -90,7 +90,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
             this.props.match.params.network,
             "address",
             this.props.match.params.address,
-            250
+            250,
           );
 
           let status = "";
@@ -141,11 +141,11 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                   .sort(
                     (itemA, itemB) =>
                       DateHelper.milliseconds(
-                        itemB.details.tx.timestamp === 0 ? itemB.details.tx.attachmentTimestamp : itemB.details.tx.timestamp
+                        itemB.details.tx.timestamp === 0 ? itemB.details.tx.attachmentTimestamp : itemB.details.tx.timestamp,
                       ) -
                       DateHelper.milliseconds(
-                        itemA.details.tx.timestamp === 0 ? itemA.details.tx.attachmentTimestamp : itemA.details.tx.timestamp
-                      )
+                        itemA.details.tx.timestamp === 0 ? itemA.details.tx.attachmentTimestamp : itemA.details.tx.timestamp,
+                      ),
                   );
 
                 this.setState({
@@ -154,13 +154,13 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                   filteredItems: this.filterItems(
                     fullItems,
                     this.state.showOnlyValueTransactions,
-                    this.state.showOnlyConfirmedTransactions
+                    this.state.showOnlyConfirmedTransactions,
                   ),
                 });
               }
-            }
+            },
           );
-        }
+        },
       );
     } else {
       this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -221,7 +221,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                               showOnlyValueTransactions: e.target.checked,
                               filteredItems: this.filterItems(this.state.items, e.target.checked, this.state.showOnlyConfirmedTransactions),
                             },
-                            () => this._settingsService.saveSingle("showOnlyValueTransactions", this.state.showOnlyValueTransactions)
+                            () => this._settingsService.saveSingle("showOnlyValueTransactions", this.state.showOnlyValueTransactions),
                           )
                         }
                       />
@@ -239,7 +239,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                               filteredItems: this.filterItems(this.state.items, this.state.showOnlyValueTransactions, e.target.checked),
                             },
                             () =>
-                              this._settingsService.saveSingle("showOnlyConfirmedTransactions", this.state.showOnlyConfirmedTransactions)
+                              this._settingsService.saveSingle("showOnlyConfirmedTransactions", this.state.showOnlyConfirmedTransactions),
                           )
                         }
                       />
@@ -295,14 +295,14 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                     },
                                     {
                                       value__inprogress: item.details.confirmationState !== "confirmed",
-                                    }
+                                    },
                                   )}
                                   onClick={() =>
                                     this.setState(
                                       {
                                         formatFull: !this.state.formatFull,
                                       },
-                                      () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                      () => this._settingsService.saveSingle("formatFull", this.state.formatFull),
                                     )
                                   }
                                 >
@@ -313,8 +313,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                               <div className="card--value card--value__light">
                                 {DateHelper.format(
                                   DateHelper.milliseconds(
-                                    item.details.tx.timestamp === 0 ? item.details.tx.attachmentTimestamp : item.details.tx.timestamp
-                                  )
+                                    item.details.tx.timestamp === 0 ? item.details.tx.attachmentTimestamp : item.details.tx.timestamp,
+                                  ),
                                 )}
                               </div>
                             </div>
@@ -371,7 +371,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
       details?: ICachedTransaction;
     }[],
     showOnlyValueTransactions?: boolean,
-    showOnlyConfirmedTransactions?: boolean
+    showOnlyConfirmedTransactions?: boolean,
   ):
     | {
         /**
@@ -393,7 +393,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
         !i.details ||
         (i.details &&
           ((i.details.tx.value === 0 && !showOnlyValueTransactions) || i.details.tx.value !== 0) &&
-          (!showOnlyConfirmedTransactions || (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed")))
+          (!showOnlyConfirmedTransactions || (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed"))),
     );
   }
 }

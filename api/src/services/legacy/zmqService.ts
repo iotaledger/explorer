@@ -132,7 +132,7 @@ export class ZmqService {
   public subscribe(
     event: ZmqEvent,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    callback: (eventName: string, data: any) => Promise<void>
+    callback: (eventName: string, data: any) => Promise<void>,
   ): string {
     return this.internalAddEventCallback(event, callback);
   }

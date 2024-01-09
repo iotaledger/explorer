@@ -171,7 +171,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
         const result = await this._tangleCacheService.search(
           this.props.match.params.network,
           this.props.match.params.index,
-          useCursor ? this.state.cursor : undefined
+          useCursor ? this.state.cursor : undefined,
         );
 
         this.setState({
@@ -180,7 +180,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
           messageIds: result?.indexMessageIds,
           cursor: result?.cursor,
         });
-      }
+      },
     );
   }
 }

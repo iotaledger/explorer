@@ -20,7 +20,7 @@ export class LegacyTangleHelper {
     network: INetwork,
     hashTypeName: TransactionsGetMode,
     hash: string,
-    limit?: number
+    limit?: number,
   ): Promise<{
     /**
      * The hashes we found in the lookup
@@ -80,7 +80,7 @@ export class LegacyTangleHelper {
    */
   public static async getTrytes(
     network: INetwork,
-    txHashes: string[]
+    txHashes: string[],
   ): Promise<{
     /**
      * The trytes for the requested transactions.

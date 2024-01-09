@@ -21,7 +21,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
 export async function subscribe(
   _: IConfiguration,
   socket: SocketIO.Socket,
-  request: IFeedSubscribeRequest
+  request: IFeedSubscribeRequest,
 ): Promise<IFeedSubscribeResponse> {
   let response: IFeedSubscribeResponse;
   logger.verbose(`[subscribe] req = ${JSON.stringify(request)}`);

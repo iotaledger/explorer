@@ -117,7 +117,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         transferTotal={transferTotal ?? undefined}
         history={history}
         isLinksDisabled={isLinksDisabled}
-      />
+      />,
     );
     tabbedSections.push(
       <BlockMetadataSection
@@ -128,7 +128,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         blockChildren={blockChildren}
         conflictReason={conflictReason}
         isLinksDisabled={isLinksDisabled}
-      />
+      />,
     );
   }
   if (isMilestoneBlock) {

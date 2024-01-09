@@ -27,7 +27,7 @@ const OUTPUTS_LIMIT = 100;
  * @returns The taggedOutputs state.
  */
 export function useTaggedOutputs(
-  network: string
+  network: string,
 ): [
   string,
   OutputListItem[],
@@ -75,7 +75,7 @@ export function useTaggedOutputs(
   const loadOutputDetails = async (
     outputs: string[],
     setState: React.Dispatch<React.SetStateAction<OutputListItem[] | null>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   ) => {
     setLoading(true);
     const itemsUpdate: OutputListItem[] = [];
@@ -95,7 +95,7 @@ export function useTaggedOutputs(
             };
             itemsUpdate.push(item);
           }
-        })
+        }),
       );
     }
 

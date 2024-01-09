@@ -53,7 +53,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
 
     if (options?.some((option) => option.type === MilestoneOptionType.ProtocolParams)) {
       protocolParamsMilestoneOption = options.find(
-        (option) => option.type === MilestoneOptionType.ProtocolParams
+        (option) => option.type === MilestoneOptionType.ProtocolParams,
       ) as ProtocolParamsMilestoneOption;
     }
 

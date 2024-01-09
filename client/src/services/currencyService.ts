@@ -157,7 +157,7 @@ export class CurrencyService {
     tokenInfo: INodeInfoBaseToken,
     currencyData: ICurrencySettings,
     includeSymbol: boolean,
-    numDigits: number
+    numDigits: number,
   ): string {
     let converted = "";
     const coinName = tokenInfo.name.toLocaleLowerCase();
@@ -201,7 +201,7 @@ export class CurrencyService {
     includeSymbol: boolean,
     numDigits: number,
     extendToFindMax?: number,
-    includeSuffix?: boolean
+    includeSuffix?: boolean,
   ): string {
     let converted = "";
     if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode) {

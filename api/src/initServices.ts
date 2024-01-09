@@ -108,11 +108,11 @@ function initLegacyServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Legacy services for ${networkConfig.network}`);
     ServiceFactory.register(
       `zmq-${networkConfig.network}`,
-      () => new ZmqService(networkConfig.feedEndpoint, ["trytes", "sn", networkConfig.coordinatorAddress])
+      () => new ZmqService(networkConfig.feedEndpoint, ["trytes", "sn", networkConfig.coordinatorAddress]),
     );
     ServiceFactory.register(
       `feed-${networkConfig.network}`,
-      () => new LegacyFeedService(networkConfig.network, networkConfig.coordinatorAddress)
+      () => new LegacyFeedService(networkConfig.network, networkConfig.coordinatorAddress),
     );
     ServiceFactory.register(`items-${networkConfig.network}`, () => new LegacyItemsService(networkConfig.network));
 
@@ -129,7 +129,7 @@ function initChrysalisServices(networkConfig: INetwork): void {
   ServiceFactory.register(`mqtt-${networkConfig.network}`, () => new ChrysalisMqttClient(networkConfig.feedEndpoint.split(";")));
   ServiceFactory.register(
     `feed-${networkConfig.network}`,
-    () => new ChrysalisFeedService(networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
+    () => new ChrysalisFeedService(networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password),
   );
   ServiceFactory.register(`items-${networkConfig.network}`, () => new ChrysalisItemsService(networkConfig.network));
   ServiceFactory.register(`stats-${networkConfig.network}`, () => new ChrysalisStatsService(networkConfig));
@@ -199,7 +199,7 @@ async function registerStorageServices(config: IConfiguration): Promise<void> {
 
     ServiceFactory.register(
       "currency-storage",
-      () => new AmazonDynamoDbService<ICurrencyState>(config.dynamoDbConnection, "currency", "id")
+      () => new AmazonDynamoDbService<ICurrencyState>(config.dynamoDbConnection, "currency", "id"),
     );
   }
 }

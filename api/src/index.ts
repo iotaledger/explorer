@@ -54,7 +54,7 @@ app.use((req, res, next) => {
   if (config.routeCors) {
     const foundRoute = matchRouteUrl(
       config.routeCors.map((c) => c.path),
-      req.url
+      req.url,
     );
 
     if (foundRoute) {

@@ -31,7 +31,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
     hashType: TransactionsGetMode | undefined,
     hash: string,
     limit?: number,
-    nextCursor?: ITransactionsCursor
+    nextCursor?: ITransactionsCursor,
   ): Promise<{
     /**
      * The lookup hashes.
@@ -139,7 +139,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
               !tranCache[h] ||
               tranCache[h].tx === undefined ||
               tranCache[h].confirmationState === "unknown" ||
-              now - tranCache[h].cached > 60000
+              now - tranCache[h].cached > 60000,
           )
         );
 
@@ -209,7 +209,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
             cached: 0,
             manual: false,
             isEmpty: true,
-          }
+          },
       );
     }
 
@@ -391,7 +391,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
     network: string,
     root: string,
     mode: MamMode,
-    key: string
+    key: string,
   ): Promise<
     | {
         /**

@@ -12,7 +12,7 @@ export class ExtendedSingleNodeClient extends SingleNodeClient {
 
       const res = await this.fetchJson<never, ITransactionHistoryResponse>(
         "get",
-        `addresses/ed25519/${address}/tx-history${params ? `${FetchHelper.urlParams(params)}` : ""}`
+        `addresses/ed25519/${address}/tx-history${params ? `${FetchHelper.urlParams(params)}` : ""}`,
       );
       return res;
     } catch (e) {

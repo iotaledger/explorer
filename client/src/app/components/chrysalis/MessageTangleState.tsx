@@ -109,7 +109,7 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
                 "message-tangle-state__conflicting": this.props.status === "referenced" && this.props.hasConflicts,
               },
               { "message-tangle-state__pending": this.props.status === "pending" },
-              { "message-tangle-state__unknown": this.props.status === "unknown" }
+              { "message-tangle-state__unknown": this.props.status === "unknown" },
             )}
           >
             {this.props.status === "unknown" && "Unknown"}

@@ -60,7 +60,7 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                   <span className="label">References unlock at index:</span>
                   <span className="value">{(unlock as ReferenceUnlock).reference}</span>
                 </div>
-              </div>
+              </div>,
           )}
         </div>
       )}

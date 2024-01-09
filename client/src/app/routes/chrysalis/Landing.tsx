@@ -319,7 +319,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                   {
                                     formatFull: !this.state.formatFull,
                                   },
-                                  () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                  () => this._settingsService.saveSingle("formatFull", this.state.formatFull),
                                 )
                               }
                             >
@@ -525,7 +525,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         valueMaximumUnits: "Ti",
         valuesFilter: this.state.valuesFilter.map((filter) => ({ ...filter, isEnabled: true })),
       },
-      async () => this.updateFilters()
+      async () => this.updateFilters(),
     );
   }
 
@@ -550,13 +550,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                     {
                       valueMinimumUnits: e.target.value as Units,
                     },
-                    async () => this.updateFilters()
+                    async () => this.updateFilters(),
                   )
                 : this.setState(
                     {
                       valueMaximumUnits: e.target.value as Units,
                     },
-                    async () => this.updateFilters()
+                    async () => this.updateFilters(),
                   )
               }
             >

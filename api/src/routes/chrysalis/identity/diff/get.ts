@@ -52,7 +52,7 @@ export async function get(config: IConfiguration, request: IIdentityDiffHistoryR
 async function resolveDiff(
   document: IIdentityDiffHistoryBody,
   nodeUrl: string,
-  permaNodeUrl?: string
+  permaNodeUrl?: string,
 ): Promise<IIdentityDiffHistoryResponse> {
   try {
     const config: identity.IClientConfig = {
@@ -97,7 +97,7 @@ async function resolveDiff(
 async function resolveLegacyDiff(
   document: identityLegacy.Document,
   nodeUrl: string,
-  permaNodeUrl?: string
+  permaNodeUrl?: string,
 ): Promise<IIdentityDiffHistoryResponse> {
   try {
     const config = new identityLegacy.Config();

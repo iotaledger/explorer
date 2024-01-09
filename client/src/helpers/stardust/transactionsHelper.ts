@@ -60,7 +60,7 @@ export class TransactionsHelper {
     block: Block | undefined,
     network: string,
     _bechHrp: string,
-    apiClient: StardustApiClient
+    apiClient: StardustApiClient,
   ): Promise<TransactionInputsAndOutputsResponse> {
     const GENESIS_HASH = "0".repeat(64);
     const inputs: IInput[] = [];
@@ -97,7 +97,7 @@ export class TransactionsHelper {
         }
 
         unlockAddresses.push(
-          Bech32AddressHelper.buildAddress(_bechHrp, Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp))
+          Bech32AddressHelper.buildAddress(_bechHrp, Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp)),
         );
       }
 
@@ -159,7 +159,7 @@ export class TransactionsHelper {
           const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
             output.unlockConditions,
             _bechHrp,
-            output.type
+            output.type,
           );
 
           const isRemainder = inputs.some((input) => input.address.bech32 === address.bech32);
@@ -238,7 +238,7 @@ export class TransactionsHelper {
         return false;
       }
       const hasStorageDepositUnlockCondition = (output as CommonOutput).unlockConditions.some(
-        (uc) => uc.type === UnlockConditionType.StorageDepositReturn
+        (uc) => uc.type === UnlockConditionType.StorageDepositReturn,
       );
 
       return !hasStorageDepositUnlockCondition;
@@ -293,7 +293,7 @@ export class TransactionsHelper {
   private static bechAddressFromAddressUnlockCondition(
     unlockConditions: UnlockCondition[],
     _bechHrp: string,
-    outputType: number
+    outputType: number,
   ): IBech32AddressDetails {
     let address: IBech32AddressDetails = { bech32: "" };
     let unlockCondition;

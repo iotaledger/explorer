@@ -10,7 +10,7 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
 
   const getPosition = useCallback(
     ({ clientX, clientY }: { clientX: number; clientY: number }) => setPosition({ x: clientX, y: clientY }),
-    []
+    [],
   );
 
   useLayoutEffect(() => {

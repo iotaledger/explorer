@@ -93,7 +93,7 @@ export class StardustFeedClient {
    */
   public subscribeBlocks(
     onBlockDataCallback?: (blockData: IFeedBlockData) => void,
-    onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
+    onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void,
   ) {
     this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 

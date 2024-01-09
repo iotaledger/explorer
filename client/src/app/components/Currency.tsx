@@ -84,7 +84,7 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
         },
         () => {
           this.updateCurrency();
-        }
+        },
       );
     }
   }

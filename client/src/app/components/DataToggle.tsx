@@ -93,7 +93,7 @@ const DataToggle: React.FC<DataToggleProps> = ({ sourceData, link, withSpacedHex
             >
               {option.label}
             </div>
-          : null
+          : null,
         )}
         <div className="data-toggle--tab margin-t-2">
           <CopyButton copy={content && activeOption?.label === "HEX" ? content.replaceAll(/\s+/g, "") : content} />

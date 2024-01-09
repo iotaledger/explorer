@@ -47,7 +47,7 @@ const VotingEvent: React.FC<VotingEventProps> = ({ event }) => {
               "voting-event__status",
               { "voting-event__status--commencing": status === "commencing" || status === "upcoming" },
               { "voting-event__status--holding": status === "holding" },
-              { "voting-event__status--ended": status === "ended" }
+              { "voting-event__status--ended": status === "ended" },
             )}
           >
             {status}

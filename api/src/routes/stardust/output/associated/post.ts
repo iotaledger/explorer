@@ -18,7 +18,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 export async function post(
   _: IConfiguration,
   request: IAssociationsRequest,
-  body: IAssociationsRequestBody
+  body: IAssociationsRequestBody,
 ): Promise<IAssociationsResponse> {
   const networkService = ServiceFactory.get<NetworkService>("network");
   const networks = networkService.networkNames();

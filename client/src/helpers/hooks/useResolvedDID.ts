@@ -14,7 +14,7 @@ import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardust
 export function useResolvedDID(
   network: string,
   bech32Hrp: string,
-  addressHex: string | null
+  addressHex: string | null,
 ): [IIdentityStardustResolveResponse | null, boolean] {
   const isMounted = useIsMounted();
   const [identityService] = useState(ServiceFactory.get<IdentityService>("identity"));

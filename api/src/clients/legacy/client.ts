@@ -81,7 +81,7 @@ export class LegacyClient {
         `core/v0/transactions${params}`,
         "get",
         null,
-        headers
+        headers,
       );
 
       if (response.error) {
@@ -114,7 +114,7 @@ export class LegacyClient {
         `core/v0/transactions/${request.txHash}/trytes`,
         "get",
         null,
-        headers
+        headers,
       );
 
       if (response.error) {
@@ -124,7 +124,7 @@ export class LegacyClient {
                                `core/v0/transactions/${request.txHash}/trytes`,
                                "get",
                                headers,
-                               null
+                               null,
                              )}
                              `);
       }
@@ -153,7 +153,7 @@ export class LegacyClient {
         `core/v0/transactions/${request.txHash}/metadata`,
         "get",
         null,
-        headers
+        headers,
       );
 
       if (response.error) {
@@ -163,7 +163,7 @@ export class LegacyClient {
                                `core/v0/transactions/${request.txHash}/metadata`,
                                "get",
                                headers,
-                               null
+                               null,
                              )}
                              `);
       }
@@ -192,7 +192,7 @@ export class LegacyClient {
         `core/v0/addresses/${request.address}/balance`,
         "get",
         null,
-        headers
+        headers,
       );
 
       if (response.error) {
@@ -202,7 +202,7 @@ export class LegacyClient {
                                `core/v0/addresses/${request.address}/balance`,
                                "get",
                                headers,
-                               null
+                               null,
                              )}
                              `);
       }
@@ -231,7 +231,7 @@ export class LegacyClient {
         `core/v0/milestones/by-index/${request.milestoneIndex}`,
         "get",
         null,
-        headers
+        headers,
       );
 
       if (response.error) {
@@ -241,7 +241,7 @@ export class LegacyClient {
                                `core/v0/milestones/by-index/${request.milestoneIndex}`,
                                "get",
                                headers,
-                               null
+                               null,
                              )}
                              `);
       }

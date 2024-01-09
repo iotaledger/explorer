@@ -21,7 +21,7 @@ class Confirmation extends Component<ConfirmationProps> {
           { confirmation__unknown: this.props.state === "unknown" },
           { confirmation__reattachment: this.props.state === "reattachment" },
           { confirmation__consistency: this.props.state === "consistency" },
-          { confirmation__conflicting: this.props.state === "conflicting" }
+          { confirmation__conflicting: this.props.state === "conflicting" },
         )}
       >
         {this.props.state === "unknown" && "Unknown"}

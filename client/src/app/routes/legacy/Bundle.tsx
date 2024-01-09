@@ -61,7 +61,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
       const { txHashes } = await this._tangleCacheService.findTransactionHashes(
         this.props.match.params.network,
         "bundle",
-        this.props.match.params.bundle
+        this.props.match.params.bundle,
       );
 
       const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(this.props.match.params.network, txHashes);
@@ -154,7 +154,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             timestamp: DateHelper.milliseconds(
               bundleGroupsPlain[i][0].tx.timestamp === 0 ?
                 bundleGroupsPlain[i][0].tx.attachmentTimestamp
-              : bundleGroupsPlain[i][0].tx.timestamp
+              : bundleGroupsPlain[i][0].tx.timestamp,
             ),
             confirmationState,
           });
@@ -249,7 +249,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         {
                                           formatFull: !this.state.formatFull,
                                         },
-                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull),
                                       )
                                     }
                                   >
@@ -299,7 +299,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         {
                                           formatFull: !this.state.formatFull,
                                         },
-                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                        () => this._settingsService.saveSingle("formatFull", this.state.formatFull),
                                       )
                                     }
                                   >

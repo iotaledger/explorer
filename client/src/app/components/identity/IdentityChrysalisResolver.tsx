@@ -195,7 +195,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
                           onClick={() => {
                             this.props.history.push(
                               // eslint-disable-next-line max-len
-                              `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
+                              `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`,
                             );
                           }}
                         />

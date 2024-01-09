@@ -182,7 +182,7 @@ async function constructVerifiedDomains(resolvedDID: IIdentityStardustResolveRes
                         didDocument,
                         parsedConfigurationResource,
                         domain,
-                        new JwtCredentialValidationOptions()
+                        new JwtCredentialValidationOptions(),
                       );
 
                       // all good
@@ -205,7 +205,7 @@ async function constructVerifiedDomains(resolvedDID: IIdentityStardustResolveRes
               console.log(err);
               reject(new Error(`could not fetch configuration from ${domain}, this could be a CORS error`));
             });
-        })
+        }),
       );
     }
   }

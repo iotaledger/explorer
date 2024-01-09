@@ -263,7 +263,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
       this.props.itemMessage.messageId,
       this.props.network,
       this.props.version,
-      this.props.itemMessage.message
+      this.props.itemMessage.message,
     );
 
     // if result includes Error
@@ -285,7 +285,7 @@ export default class IdentityTreeItem extends Component<IdentityTreeItemProps, I
       const diff = res.chainData[i];
       if (typeof (diff.message as DiffMessage).diff === "string") {
         (res.chainData[i].message as DiffMessage).diff = JSON.parse(
-          this.removeEscapingBackslash((diff?.message as DiffMessage).diff as string) ?? ""
+          this.removeEscapingBackslash((diff?.message as DiffMessage).diff as string) ?? "",
         );
       }
       res.chainData[i].isDiff = true;

@@ -28,7 +28,7 @@ export const useSingleValueTooltip = (data: { [name: string]: number; time: numb
                 <span class="value">${formatToMagnituge(dataPoint.n)(dataPoint.n)}</span>
             </p>
         `,
-    [data, label]
+    [data, label],
   );
 
   return buildTooltip;
@@ -37,7 +37,7 @@ export const useMultiValueTooltip = (
   data: { [name: string]: number; time: number }[],
   subgroups: string[],
   colors: string[],
-  groupLabels?: string[]
+  groupLabels?: string[],
 ) => {
   const buildTooltip = useCallback(
     (dataPoint: { [key: string]: number }): string => `
@@ -50,10 +50,10 @@ export const useMultiValueTooltip = (
                     <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
                     <span class="value">${formatToMagnituge(dataPoint[subgroup])(dataPoint[subgroup])}</span>
                 </p>
-        `
+        `,
           )
           .join("")}`,
-    [data, subgroups, groupLabels, colors]
+    [data, subgroups, groupLabels, colors],
   );
 
   return buildTooltip;
@@ -72,7 +72,7 @@ export const useTokenDistributionTooltip = (data: IDistributionEntry[] | null, t
                 <span class="value">~${formatAmount(Number(dataPoint.totalBalance), tokenInfo, false, 0)}</span>
             </p>
         `,
-    [data]
+    [data],
   );
 
   return buildTooltip;
@@ -95,7 +95,7 @@ export const useChartWrapperSize: () => [
         wrapperHeight: chartWrapper?.clientHeight ?? 0,
       });
     }),
-    [chartWrapper]
+    [chartWrapper],
   );
 
   useEffect(() => {
@@ -191,7 +191,7 @@ export const computeDataIncludedInSelection = (
   data: {
     [name: string]: number;
     time: number;
-  }[]
+  }[],
 ) => {
   const selectedData: { [name: string]: number; time: number }[] = [];
 

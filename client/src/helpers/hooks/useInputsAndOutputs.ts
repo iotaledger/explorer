@@ -17,7 +17,7 @@ import { TransactionsHelper } from "../stardust/transactionsHelper";
  */
 export function useInputsAndOutputs(
   network: string,
-  block: Block | null
+  block: Block | null,
 ): [IInput[] | null, Unlock[] | null, IOutput[] | null, number | null, boolean] {
   const isMounted = useIsMounted();
   const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
@@ -38,7 +38,7 @@ export function useInputsAndOutputs(
           block,
           network,
           bech32Hrp,
-          apiClient
+          apiClient,
         );
         if (isMounted) {
           setInputs(inputs);

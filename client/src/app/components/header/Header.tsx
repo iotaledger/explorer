@@ -261,7 +261,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                 history?.push(
                   action === "streams" ? `/${targetNetwork}/streams/0/`
                   : action === "visualizer" ? `/${targetNetwork}/visualizer/`
-                  : `/${targetNetwork}`
+                  : `/${targetNetwork}`,
                 );
               }}
             />
@@ -294,7 +294,7 @@ class Header extends Component<HeaderProps, HeaderState> {
         this._settingsService.saveSingle("darkMode", this.state.darkMode);
         const event = new CustomEvent("theme-change", { detail: { darkMode: this.state.darkMode } });
         window.dispatchEvent(event);
-      }
+      },
     );
     this.toggleModeClass();
   }

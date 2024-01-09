@@ -16,7 +16,7 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
 export function useAssociatedOutputs(
   network: string,
   addressDetails: IBech32AddressDetails,
-  setOutputCount?: (count: number) => void
+  setOutputCount?: (count: number) => void,
 ): [IAssociation[], boolean] {
   const isMounted = useIsMounted();
   const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));

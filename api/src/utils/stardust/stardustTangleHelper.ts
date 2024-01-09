@@ -249,7 +249,7 @@ export class StardustTangleHelper {
       const outputIdsResponse = await this.tryFetchNodeThenPermanode<QueryParameter[], IOutputsResponse>(
         [{ address: addressBech32 }, { cursor: cursor ?? "" }],
         "basicOutputIds",
-        network
+        network,
       );
 
       outputIds = outputIds.concat(outputIdsResponse.items);
@@ -277,7 +277,7 @@ export class StardustTangleHelper {
       const outputIdsResponse = await this.tryFetchNodeThenPermanode<AliasQueryParameter[], IOutputsResponse>(
         [{ stateController: addressBech32 }, { cursor: cursor ?? "" }],
         "aliasOutputIds",
-        network
+        network,
       );
 
       outputIds = outputIds.concat(outputIdsResponse.items);
@@ -305,7 +305,7 @@ export class StardustTangleHelper {
       const outputIdsResponse = await this.tryFetchNodeThenPermanode<NftQueryParameter[], IOutputsResponse>(
         [{ address: addressBech32 }, { cursor: cursor ?? "" }],
         "nftOutputIds",
-        network
+        network,
       );
 
       outputIds = outputIds.concat(outputIdsResponse.items);
@@ -347,7 +347,7 @@ export class StardustTangleHelper {
       const response = await this.tryFetchNodeThenPermanode<FoundryQueryParameter[], IOutputsResponse>(
         [{ aliasAddress }],
         "foundryOutputIds",
-        network
+        network,
       );
 
       if (response) {
@@ -410,14 +410,14 @@ export class StardustTangleHelper {
     network: INetwork,
     encodedTag: HexEncodedString,
     pageSize: number,
-    cursor?: string
+    cursor?: string,
   ): Promise<IBasicOutputsResponse | undefined> {
     try {
       const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
       const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<QueryParameter[], IOutputsResponse>(
         params,
         "basicOutputIds",
-        network
+        network,
       );
 
       if (basicOutputIdsResponse?.items.length > 0) {
@@ -440,14 +440,14 @@ export class StardustTangleHelper {
     network: INetwork,
     encodedTag: HexEncodedString,
     pageSize: number,
-    cursor?: string
+    cursor?: string,
   ): Promise<INftOutputsResponse | undefined> {
     try {
       const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
       const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<NftQueryParameter[], IOutputsResponse>(
         params,
         "nftOutputIds",
-        network
+        network,
       );
 
       if (nftOutputIdsResponse?.items.length > 0) {
@@ -550,7 +550,7 @@ export class StardustTangleHelper {
     method: "GET" | "POST",
     methodPath: string,
     queryParams?: string[],
-    request?: string
+    request?: string,
   ): Promise<S> | null {
     const client = ServiceFactory.get<Client>(`client-${network.network}`);
 

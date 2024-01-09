@@ -47,7 +47,7 @@ initialiseServices()
           path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
           component={(props: RouteComponentProps<AppRouteProps>) => <App {...props} />}
         />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
   })
   .catch((err) => console.error(err));

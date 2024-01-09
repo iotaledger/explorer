@@ -28,7 +28,7 @@ export function useNetworkConfig(network: string): [INetwork] {
         protocolVersion: STARDUST,
         hasStatisticsSupport: false,
         isEnabled: false,
-      }
+      },
     );
   }, [network]);
 

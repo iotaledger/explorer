@@ -34,7 +34,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
   public componentDidUpdate(prevProps: PaginationProps): void {
     if (this.props !== prevProps) {
       this.setState({ paginationRange: this.updatePaginationRange() }, () =>
-        this.setState({ lastPage: this.state.paginationRange.at(-1) as number })
+        this.setState({ lastPage: this.state.paginationRange.at(-1) as number }),
       );
     }
   }
@@ -45,7 +45,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
   public componentDidMount(): void {
     super.componentDidMount();
     this.setState({ paginationRange: this.updatePaginationRange() }, () =>
-      this.setState({ lastPage: this.state.paginationRange.at(-1) as number })
+      this.setState({ lastPage: this.state.paginationRange.at(-1) as number }),
     );
     window.addEventListener("resize", this.resize.bind(this));
     this.resize();

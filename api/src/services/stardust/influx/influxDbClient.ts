@@ -264,54 +264,54 @@ export abstract class InfluxDbClient {
     this.updateCacheEntry<ITokensHeldPerOutputDailyInflux>(
       TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
       this._dailyCache.tokensHeldDaily,
-      "Tokens Held Daily"
+      "Tokens Held Daily",
     );
     this.updateCacheEntry<IAddressesWithBalanceDailyInflux>(
       ADDRESSES_WITH_BALANCE_DAILY_QUERY,
       this._dailyCache.addressesWithBalanceDaily,
-      "Addresses with balance Daily"
+      "Addresses with balance Daily",
     );
     this.updateCacheEntry<IActiveAddressesDailyInflux>(
       TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
       this._dailyCache.activeAddressesDaily,
-      "Number of Daily Active Addresses"
+      "Number of Daily Active Addresses",
     );
     this.updateCacheEntry<ITokensTransferredDailyInflux>(
       TOKENS_TRANSFERRED_DAILY_QUERY,
       this._dailyCache.tokensTransferredDaily,
-      "Tokens transferred Daily"
+      "Tokens transferred Daily",
     );
     this.updateCacheEntry<IAliasActivityDailyInflux>(
       ALIAS_ACTIVITY_DAILY_QUERY,
       this._dailyCache.aliasActivityDaily,
-      "Alias activity Daily"
+      "Alias activity Daily",
     );
     this.updateCacheEntry<IUnlockConditionsPerTypeDailyInflux>(
       UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
       this._dailyCache.unlockConditionsPerTypeDaily,
-      "Unlock conditions per type Daily"
+      "Unlock conditions per type Daily",
     );
     this.updateCacheEntry<INftActivityDailyInflux>(NFT_ACTIVITY_DAILY_QUERY, this._dailyCache.nftActivityDaily, "Nft activity Daily");
     this.updateCacheEntry<ITokensHeldWithUnlockConditionDailyInflux>(
       TOKENS_HELD_WITH_UC_DAILY_QUERY,
       this._dailyCache.tokensHeldWithUnlockConditionDaily,
-      "Tokens held with Unlock condition Daily"
+      "Tokens held with Unlock condition Daily",
     );
     this.updateCacheEntry<IUnclaimedTokensDailyInflux>(
       UNCLAIMED_TOKENS_DAILY_QUERY,
       this._dailyCache.unclaimedTokensDaily,
-      "Unclaimed Tokens Daily"
+      "Unclaimed Tokens Daily",
     );
     this.updateCacheEntry<IUnclaimedGenesisOutputsDailyInflux>(
       UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY,
       this._dailyCache.unclaimedGenesisOutputsDaily,
-      "Unclaimed genesis outputs Daily"
+      "Unclaimed genesis outputs Daily",
     );
     this.updateCacheEntry<ILedgerSizeDailyInflux>(LEDGER_SIZE_DAILY_QUERY, this._dailyCache.ledgerSizeDaily, "Ledger size Daily");
     this.updateCacheEntry<IStorageDepositDailyInflux>(
       STORAGE_DEPOSIT_DAILY_QUERY,
       this._dailyCache.storageDepositDaily,
-      "Storage Deposit Daily"
+      "Storage Deposit Daily",
     );
   }
 
@@ -325,7 +325,7 @@ export abstract class InfluxDbClient {
       for (const update of await this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
         ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
         null,
-        this.getToNanoDate()
+        this.getToNanoDate(),
       )) {
         this._analyticsCache.addressesWithBalance = update.addressesWithBalance;
       }
@@ -333,7 +333,7 @@ export abstract class InfluxDbClient {
       for (const update of await this.queryInflux<ITimedEntry & { nativeTokensCount: string }>(
         NATIVE_TOKENS_STAT_TOTAL_QUERY,
         null,
-        this.getToNanoDate()
+        this.getToNanoDate(),
       )) {
         this._analyticsCache.nativeTokensCount = update.nativeTokensCount;
       }
@@ -345,7 +345,7 @@ export abstract class InfluxDbClient {
       for (const update of await this.queryInflux<ITimedEntry & { lockedStorageDeposit: string }>(
         STORAGE_DEPOSIT_TOTAL_QUERY,
         null,
-        this.getToNanoDate()
+        this.getToNanoDate(),
       )) {
         this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
       }
@@ -361,7 +361,7 @@ export abstract class InfluxDbClient {
       for (const update of await this.queryInflux<ITimedEntry & { totalUnclaimedShimmer: string }>(
         SHIMMER_CLAIMED_TOTAL_QUERY,
         null,
-        this.getToNanoDate()
+        this.getToNanoDate(),
       )) {
         this._analyticsCache.totalUnclaimedShimmer = update.totalUnclaimedShimmer;
       }
@@ -432,7 +432,7 @@ export abstract class InfluxDbClient {
     queryTemplate: { full: string; partial: string },
     cacheEntryToFetch: Map<DayKey, T>,
     description: string = "Daily entry",
-    debug: boolean = false
+    debug: boolean = false,
   ) {
     const network = this._network.network;
     const fromNanoDate: INanoDate | null = this.getFromNanoDate(cacheEntryToFetch);
@@ -440,7 +440,7 @@ export abstract class InfluxDbClient {
     if (debug) {
       logger.debug(
         `[InfluxDb] Refreshing ${description} from date
-                ${fromNanoDate ? fromNanoDate.toISOString() : null} (${this._network.network})`
+                ${fromNanoDate ? fromNanoDate.toISOString() : null} (${this._network.network})`,
       );
     }
 
@@ -458,7 +458,7 @@ export abstract class InfluxDbClient {
           } else if (debug) {
             logger.warn(
               `[InfluxDb] Found empty result entry while populating cache (${network}).
-                            ${JSON.stringify(update)}`
+                            ${JSON.stringify(update)}`,
             );
           }
         }
@@ -498,7 +498,7 @@ export abstract class InfluxDbClient {
 
       fromNanoDate = toNanoDate(
         // eslint-disable-next-line newline-per-chained-call
-        (lastDate.hours(0).minutes(0).seconds(1).valueOf() * NANOSECONDS_IN_MILLISECOND).toString()
+        (lastDate.hours(0).minutes(0).seconds(1).valueOf() * NANOSECONDS_IN_MILLISECOND).toString(),
       );
     }
 

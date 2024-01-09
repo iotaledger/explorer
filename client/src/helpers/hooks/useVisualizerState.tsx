@@ -30,7 +30,7 @@ const COLOR_SEARCH_RESULT: string = "0xC061E8";
  */
 export function useVisualizerState(
   network: string,
-  graphElement: React.MutableRefObject<HTMLDivElement | null>
+  graphElement: React.MutableRefObject<HTMLDivElement | null>,
 ): [
   () => void,
   (node?: Viva.Graph.INode<INodeData, unknown>) => void,
@@ -306,7 +306,7 @@ export function useVisualizerState(
    */
   function calculateNodeStyle(
     node: Viva.Graph.INode<INodeData, unknown> | undefined,
-    highlight: boolean
+    highlight: boolean,
   ): {
     color: string;
     size: number;

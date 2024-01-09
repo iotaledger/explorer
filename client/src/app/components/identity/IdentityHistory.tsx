@@ -162,7 +162,7 @@ export default class IdentityHistory extends Component<
     window.history.replaceState(
       null,
       "",
-      `/${this.props.match.params.network}/identity-resolver/${this.props.match.params.did}?debugview=true`
+      `/${this.props.match.params.network}/identity-resolver/${this.props.match.params.did}?debugview=true`,
     );
 
     if (!this.props.match.params.did) {
@@ -174,7 +174,7 @@ export default class IdentityHistory extends Component<
     const res = await ServiceFactory.get<IdentityService>("identity").resolveHistory(
       this.props.match.params.did,
       this.props.match.params.network,
-      this.props.version
+      this.props.version,
     );
 
     // handle if response contains Error.

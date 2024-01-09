@@ -35,7 +35,7 @@ export class LegacyApiStreamsV0Client {
   public async prepareTransfers(
     seed: string | Int8Array,
     transfers: readonly Transfer[],
-    options?: Partial<unknown>
+    options?: Partial<unknown>,
   ): Promise<readonly string[]> {
     throw new Error("This method is not supported by the API");
   }
@@ -52,7 +52,7 @@ export class LegacyApiStreamsV0Client {
     trytes: readonly string[],
     depth: number,
     minWeightMagnitude: number,
-    reference?: string | undefined
+    reference?: string | undefined,
   ): Promise<readonly Transaction[]> {
     throw new Error("This method is not supported by the API");
   }

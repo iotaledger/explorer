@@ -74,7 +74,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         },
         () => {
           this.loadItemsUI();
-        }
+        },
       );
     }
   }
@@ -101,7 +101,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         () => {
           this.loadItemsUI();
           this.setState({ isBusy: false });
-        }
+        },
       );
     }
   }

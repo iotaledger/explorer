@@ -20,7 +20,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 export async function post(
   _: IConfiguration,
   request: ITransactionHistoryRequest,
-  body: ITransactionHistoryDownloadBody
+  body: ITransactionHistoryDownloadBody,
 ): Promise<IDataResponse | null> {
   const networkService = ServiceFactory.get<NetworkService>("network");
   const networks = networkService.networkNames();

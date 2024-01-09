@@ -82,7 +82,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
     const transactionsPage = this.txsHistory.slice(firstPageIndex, lastPageIndex);
 
     const sortedTransactions: ITransactionHistoryItem[] = transactionsPage.sort((a, b) =>
-      a.referencedByMilestoneIndex > b.referencedByMilestoneIndex ? -1 : 1
+      a.referencedByMilestoneIndex > b.referencedByMilestoneIndex ? -1 : 1,
     );
     return sortedTransactions;
   }
@@ -114,7 +114,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
         },
         async () => {
           await this.getTransactionHistory();
-        }
+        },
       );
     } else {
       this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
@@ -319,7 +319,7 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
         network: this.props.match.params.network,
         address: this.state.address?.address ?? "",
       },
-      false
+      false,
     );
 
     this.setState({

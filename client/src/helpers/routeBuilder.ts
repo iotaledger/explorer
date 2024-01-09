@@ -24,7 +24,7 @@ export class RouteBuilder {
        * The milestone index.
        */
       milestoneIndex: number;
-    }
+    },
   ): string {
     const parts = [];
     if (networkConfig) {

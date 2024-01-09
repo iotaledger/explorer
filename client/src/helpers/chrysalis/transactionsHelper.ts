@@ -44,7 +44,7 @@ export class TransactionsHelper {
     transactionMessage: IMessage | undefined,
     network: string,
     _bechHrp: string,
-    tangleCacheService: ChrysalisTangleCacheService
+    tangleCacheService: ChrysalisTangleCacheService,
   ): Promise<{
     inputs: (IUTXOInput & Input)[];
     outputs: Output[];
@@ -75,8 +75,8 @@ export class TransactionsHelper {
           Bech32AddressHelper.buildAddress(
             _bechHrp,
             Converter.bytesToHex(new Ed25519Address(Converter.hexToBytes(signatureBlocks[i].signature.publicKey)).toAddress()),
-            signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE ? ED25519_ADDRESS_TYPE : undefined
-          )
+            signatureBlocks[i].type === SIGNATURE_UNLOCK_BLOCK_TYPE ? ED25519_ADDRESS_TYPE : undefined,
+          ),
         );
       }
 
@@ -113,7 +113,7 @@ export class TransactionsHelper {
           const address = Bech32AddressHelper.buildAddress(
             _bechHrp,
             transactionMessage.payload.essence.outputs[i].address.address,
-            transactionMessage.payload.essence.outputs[i].address.type
+            transactionMessage.payload.essence.outputs[i].address.type,
           );
           const isRemainder = inputs.some((input) => input.transactionAddress.bech32 === address.bech32);
           outputs.push({
@@ -136,7 +136,7 @@ export class TransactionsHelper {
           inputs[i].transactionAddress = Bech32AddressHelper.buildAddress(
             _bechHrp,
             outputResponse.output.address.address,
-            outputResponse.output.address.type
+            outputResponse.output.address.type,
           );
           inputs[i].transactionUrl = `/${network}/message/${outputResponse.messageId}`;
         }
@@ -157,7 +157,7 @@ export class TransactionsHelper {
   public static async getMessageStatus(
     network: string,
     messageId: string,
-    tangleCacheService: ChrysalisTangleCacheService
+    tangleCacheService: ChrysalisTangleCacheService,
   ): Promise<{ messageTangleStatus: TangleStatus; date: string }> {
     let messageTangleStatus: TangleStatus = "unknown";
     let date: string = "";

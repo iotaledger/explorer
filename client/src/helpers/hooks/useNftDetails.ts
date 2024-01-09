@@ -48,7 +48,7 @@ export function useNftDetails(network: string, nftId: string | null): [NftOutput
               const output = response.nftDetails?.output as NftOutput;
 
               const metadataFeature = output?.immutableFeatures?.find(
-                (feature) => feature.type === FeatureType.Metadata
+                (feature) => feature.type === FeatureType.Metadata,
               ) as MetadataFeature;
 
               const issuerFeature = output?.immutableFeatures?.find((feature) => feature.type === FeatureType.Issuer) as IssuerFeature;

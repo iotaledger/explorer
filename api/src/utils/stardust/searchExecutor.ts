@@ -46,7 +46,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Output (aliasId) fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -67,7 +67,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Milestone by index failed"));
             });
-        })
+        }),
       );
     }
 
@@ -88,7 +88,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Milestone by milestoneId failed"));
             });
-        })
+        }),
       );
     }
 
@@ -109,7 +109,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Block fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -130,7 +130,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Block (by transactionId) fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -149,7 +149,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Output fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -170,7 +170,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Output (aliasId) fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -191,7 +191,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Output (nftId) fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -212,7 +212,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Output (foundryId) fetch failed"));
             });
-        })
+        }),
       );
     }
 
@@ -233,7 +233,7 @@ export class SearchExecutor {
             .catch((_) => {
               reject(new Error("Tagged outputs not present"));
             });
-        })
+        }),
       );
     }
 

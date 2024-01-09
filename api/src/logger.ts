@@ -12,7 +12,7 @@ const theFormat = combine(
   timestampFunc({
     format: () => moment().format("DD-MM-YYYY HH:mm:ss.SSSZ"),
   }),
-  printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`)
+  printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`),
 );
 
 const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
@@ -28,7 +28,7 @@ if (process.env.GCLOUD_PROJECT) {
     new transports.Console({
       level: logLevel,
       format: loggerFormat,
-    })
+    }),
   );
 }
 

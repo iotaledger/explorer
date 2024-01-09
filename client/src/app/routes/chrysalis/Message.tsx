@@ -121,7 +121,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                     {
                       advancedMode: e.target.checked,
                     },
-                    () => this._settingsService.saveSingle("advancedMode", this.state.advancedMode)
+                    () => this._settingsService.saveSingle("advancedMode", this.state.advancedMode),
                   )
                 }
               />
@@ -395,7 +395,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
         message,
         this.props.match.params.network,
         this._bechHrp,
-        this._tangleCacheService
+        this._tangleCacheService,
       );
       let transactionId;
 
@@ -418,13 +418,13 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
         },
         async () => {
           await this.updateMessageDetails();
-        }
+        },
       );
       if (updateUrl) {
         window.history.pushState(
           undefined,
           window.document.title,
-          `/${this.props.match.params.network}/message/${result.includedMessageId ?? messageId}`
+          `/${this.props.match.params.network}/message/${result.includedMessageId ?? messageId}`,
         );
       }
     } else {

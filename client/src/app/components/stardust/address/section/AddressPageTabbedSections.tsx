@@ -47,7 +47,7 @@ const buildDefaultTabsOptions = (
   isNftOutputsLoading: boolean,
   associatedOutputCount: number,
   isAssociatedOutputsLoading: boolean,
-  eventDetailsCount?: number
+  eventDetailsCount?: number,
 ) => ({
   [DEFAULT_TABS.Transactions]: {
     disabled: false,
@@ -86,7 +86,7 @@ const buildAliasAddressTabsOptions = (
   isAliasFoundriesTabDisabled: boolean,
   isAliasFoundriesLoading: boolean,
   isAliasDIDTabDisabled: boolean,
-  isAliasDIDLoading: boolean
+  isAliasDIDLoading: boolean,
 ) => ({
   [ALIAS_TABS.State]: {
     disabled: isAliasStateTabDisabled,
@@ -220,7 +220,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     isNftOutputsLoading,
     associatedOutputCount,
     isAssociatedOutputsLoading,
-    eventDetailsCount
+    eventDetailsCount,
   );
   let tabOptions = defaultTabsOptions;
   let tabbedSections = defaultSections;
@@ -236,7 +236,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
           !aliasFoundries,
           isAliasFoundriesLoading,
           !aliasContainsDID,
-          isDIDLoading
+          isDIDLoading,
         ),
         ...defaultTabsOptions,
       };

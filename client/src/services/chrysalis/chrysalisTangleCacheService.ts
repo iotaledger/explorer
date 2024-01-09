@@ -64,7 +64,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
     network: string,
     root: string,
     mode: MamMode,
-    key: string
+    key: string,
   ): Promise<
     | {
         /**
@@ -154,7 +154,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
    */
   public async messageDetails(
     networkId: string,
-    messageId: string
+    messageId: string,
   ): Promise<{
     metadata?: IMessageMetadata;
     childrenIds?: string[];
@@ -229,7 +229,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
    */
   public async transactionsHistory(
     request: ITransactionHistoryRequest,
-    skipCache: boolean = false
+    skipCache: boolean = false,
   ): Promise<ITransactionHistoryResponse | undefined> {
     if (!this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]?.data?.transactionHistory || skipCache) {
       const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);

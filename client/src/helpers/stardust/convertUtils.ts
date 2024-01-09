@@ -102,7 +102,7 @@ export class Converter {
     includePrefix: boolean = false,
     startIndex?: number,
     length?: number | undefined,
-    reverse?: boolean
+    reverse?: boolean,
   ): string {
     let hex = "";
     this.buildHexLookups();

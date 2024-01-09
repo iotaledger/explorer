@@ -14,7 +14,7 @@ import { HexHelper } from "../stardust/hexHelper";
  */
 export function useOutputDetails(
   network: string,
-  outputId: string | null
+  outputId: string | null,
 ): [Output | null, IOutputMetadataResponse | null, boolean, string?] {
   const isMounted = useIsMounted();
   const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));

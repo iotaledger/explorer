@@ -6,7 +6,7 @@ const parserOptions = {
     ecmaVersion: 2021,
 }
 
-const _extends = ["eslint:recommended","plugin:@typescript-eslint/recommended"]
+const _extends = ["eslint:recommended","plugin:@typescript-eslint/recommended", "prettier"]
 
 const apiRules = {
         "@typescript-eslint/adjacent-overload-signatures": [
@@ -340,7 +340,7 @@ const apiRules = {
         ],
         "arrow-parens": [
             "error",
-            "as-needed"
+            "always"
         ],
         "arrow-spacing": [
             "error"
@@ -367,7 +367,8 @@ const apiRules = {
             "off"
         ],
         "comma-dangle": [
-            "error"
+            "error",
+            "always-multiline"
         ],
         "comma-spacing": [
             "off"
@@ -1355,7 +1356,7 @@ module.exports = {
             files: ["client/**/*.js", "client/**/*.jsx", "client/**/*.ts", "client/**/*.tsx"],
             rules: {
                 "no-empty": "off",
-                "max-len": [2, { code: 140, ignoreComments: true, ignoreStrings: true }],
+                "max-len": [2, { code: 140, ignoreComments: true, ignoreStrings: true, ignoreTemplateLiterals: true }],
                 "@typescript-eslint/no-inferrable-types": "off",
                 "@typescript-eslint/no-unused-vars": [2, { args: "none" }],
                 "@typescript-eslint/no-empty-function": "off"

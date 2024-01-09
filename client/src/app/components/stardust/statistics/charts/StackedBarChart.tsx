@@ -59,7 +59,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ chartId, title, info,
             sum += d[key];
           }
           return sum;
-        })
+        }),
       );
       const leftMargin = determineGraphLeftPadding(yMax);
       const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
@@ -158,7 +158,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({ chartId, title, info,
                 sum += d[key];
               }
               return sum;
-            })
+            }),
           );
           y.domain([0, yMaxUpdate]);
           // Update axis

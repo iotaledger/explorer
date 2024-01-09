@@ -81,7 +81,7 @@ export class ChronicleService {
       return await FetchHelper.json<never, IAddressBalanceResponse>(
         this.chronicleEndpoint,
         `${CHRONICLE_ENDPOINTS.balance}${address}`,
-        "get"
+        "get",
       );
     } catch (error) {
       const network = this.networkConfig.network;
@@ -106,7 +106,7 @@ export class ChronicleService {
         const response = await FetchHelper.json<never, { blocks?: IMilestoneBlockInfo[]; cursor?: string }>(
           this.chronicleEndpoint,
           `${path}${params}`,
-          "get"
+          "get",
         );
 
         cursor = response.cursor;
@@ -161,7 +161,7 @@ export class ChronicleService {
       return await FetchHelper.json<never, ITransactionHistoryResponse>(
         this.chronicleEndpoint,
         `${CHRONICLE_ENDPOINTS.updatedByAddress}${request.address}${params ? `${FetchHelper.urlParams(params)}` : ""}`,
-        "get"
+        "get",
       );
     } catch (error) {
       const network = this.networkConfig.network;
@@ -191,7 +191,7 @@ export class ChronicleService {
         response = await FetchHelper.json<never, ITransactionHistoryResponse>(
           this.chronicleEndpoint,
           `${CHRONICLE_ENDPOINTS.updatedByAddress}${address}${params}`,
-          "get"
+          "get",
         );
 
         cursor = response.cursor;
@@ -234,7 +234,7 @@ export class ChronicleService {
       return await FetchHelper.json<never, IRichestAddressesResponse>(
         this.chronicleEndpoint,
         `${CHRONICLE_ENDPOINTS.richestAddresses}${FetchHelper.urlParams(params)}`,
-        "get"
+        "get",
       );
     } catch (error) {
       const network = this.networkConfig.network;
@@ -251,7 +251,7 @@ export class ChronicleService {
       return await FetchHelper.json<never, ITokenDistributionResponse>(
         this.chronicleEndpoint,
         `${CHRONICLE_ENDPOINTS.tokenDistribution}`,
-        "get"
+        "get",
       );
     } catch (error) {
       const network = this.networkConfig.network;

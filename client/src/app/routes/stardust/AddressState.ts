@@ -112,7 +112,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
 
   const [state, setState] = useReducer<Reducer<IAddressState, Partial<IAddressState>>>(
     (currentState, newState) => ({ ...currentState, ...newState }),
-    initialState
+    initialState,
   );
 
   const addressBech32: string | null = state.bech32AddressDetails?.bech32 ?? null;
@@ -125,7 +125,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
   const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressType === AddressType.Alias ? addressHex : null);
   const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
     network,
-    addressType === AddressType.Alias ? state.bech32AddressDetails : null
+    addressType === AddressType.Alias ? state.bech32AddressDetails : null,
   );
   const [balance, sigLockedBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null);
   const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
@@ -211,7 +211,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
       for (const outputResponse of addressBasicOutputs) {
         if (outputResponse.output.type === OutputType.Basic && TransactionsHelper.isParticipationEventOutput(outputResponse.output)) {
           const metadataFeature = (outputResponse.output as BasicOutput).features?.find(
-            (feature) => feature.type === FeatureType.Metadata
+            (feature) => feature.type === FeatureType.Metadata,
           ) as MetadataFeature;
 
           if (metadataFeature) {

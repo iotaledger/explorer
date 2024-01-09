@@ -24,7 +24,7 @@ export class JsonSyntaxHelper {
             cls = "null";
           }
           return `<span class="${cls}">${match}</span>`;
-        }
+        },
       );
   }
 }

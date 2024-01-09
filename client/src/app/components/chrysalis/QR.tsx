@@ -54,7 +54,7 @@ class QR extends Component<QRProps, QRState> {
           {this.state.cells.map((row, rowIndex) =>
             row.map((cell, cellIndex) => (
               <rect height={1} key={cellIndex} style={{ fill: cell ? "var(--qr-color)" : "none" }} width={1} x={cellIndex} y={rowIndex} />
-            ))
+            )),
           )}
         </svg>
         <div className="qr-container__label">{QR.LABEL}</div>

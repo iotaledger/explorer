@@ -25,7 +25,7 @@ export function blockIdFromMilestonePayload(protocolVersion: number, payload: Mi
  */
 export async function addressBalance(
   client: Client,
-  address: string
+  address: string,
 ): Promise<{
   balance: BigInteger;
   nativeTokens: { [id: string]: BigInteger };

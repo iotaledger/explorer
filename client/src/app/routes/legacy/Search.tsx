@@ -208,7 +208,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                 const { hashType } = await this._tangleCacheService.findTransactionHashes(
                   this.props.match.params.network,
                   undefined,
-                  query
+                  query,
                 );
 
                 if (hashType) {

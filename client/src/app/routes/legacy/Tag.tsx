@@ -86,7 +86,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
             this.props.match.params.network,
             "tag",
             this.props.match.params.tag,
-            250
+            250,
           );
 
           let status = "";
@@ -136,11 +136,11 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                   .sort(
                     (itemA, itemB) =>
                       DateHelper.milliseconds(
-                        itemB.details.tx.timestamp === 0 ? itemB.details.tx.attachmentTimestamp : itemB.details.tx.timestamp
+                        itemB.details.tx.timestamp === 0 ? itemB.details.tx.attachmentTimestamp : itemB.details.tx.timestamp,
                       ) -
                       DateHelper.milliseconds(
-                        itemA.details.tx.timestamp === 0 ? itemA.details.tx.attachmentTimestamp : itemA.details.tx.timestamp
-                      )
+                        itemA.details.tx.timestamp === 0 ? itemA.details.tx.attachmentTimestamp : itemA.details.tx.timestamp,
+                      ),
                   );
 
                 this.setState({
@@ -149,13 +149,13 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                   filteredItems: this.filterItems(
                     fullItems,
                     this.state.showOnlyValueTransactions,
-                    this.state.showOnlyConfirmedTransactions
+                    this.state.showOnlyConfirmedTransactions,
                   ),
                 });
               }
-            }
+            },
           );
-        }
+        },
       );
     } else {
       this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.tag}`);
@@ -199,7 +199,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                               showOnlyValueTransactions: e.target.checked,
                               filteredItems: this.filterItems(this.state.items, e.target.checked, this.state.showOnlyConfirmedTransactions),
                             },
-                            () => this._settingsService.saveSingle("showOnlyValueTransactions", this.state.showOnlyValueTransactions)
+                            () => this._settingsService.saveSingle("showOnlyValueTransactions", this.state.showOnlyValueTransactions),
                           )
                         }
                       />
@@ -216,7 +216,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                               filteredItems: this.filterItems(this.state.items, this.state.showOnlyValueTransactions, e.target.checked),
                             },
                             () =>
-                              this._settingsService.saveSingle("showOnlyConfirmedTransactions", this.state.showOnlyConfirmedTransactions)
+                              this._settingsService.saveSingle("showOnlyConfirmedTransactions", this.state.showOnlyConfirmedTransactions),
                           )
                         }
                       />
@@ -272,14 +272,14 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                                     },
                                     {
                                       value__inprogress: item.details.confirmationState !== "confirmed",
-                                    }
+                                    },
                                   )}
                                   onClick={() =>
                                     this.setState(
                                       {
                                         formatFull: !this.state.formatFull,
                                       },
-                                      () => this._settingsService.saveSingle("formatFull", this.state.formatFull)
+                                      () => this._settingsService.saveSingle("formatFull", this.state.formatFull),
                                     )
                                   }
                                 >
@@ -290,8 +290,8 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                               <div className="card--value card--value__light">
                                 {DateHelper.format(
                                   DateHelper.milliseconds(
-                                    item.details.tx.timestamp === 0 ? item.details.tx.attachmentTimestamp : item.details.tx.timestamp
-                                  )
+                                    item.details.tx.timestamp === 0 ? item.details.tx.attachmentTimestamp : item.details.tx.timestamp,
+                                  ),
                                 )}
                               </div>
                             </div>
@@ -348,7 +348,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
       details?: ICachedTransaction;
     }[],
     showOnlyValueTransactions?: boolean,
-    showOnlyConfirmedTransactions?: boolean
+    showOnlyConfirmedTransactions?: boolean,
   ):
     | {
         /**
@@ -370,7 +370,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         !i.details ||
         (i.details &&
           ((i.details.tx.value === 0 && !showOnlyValueTransactions) || i.details.tx.value !== 0) &&
-          (!showOnlyConfirmedTransactions || (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed")))
+          (!showOnlyConfirmedTransactions || (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed"))),
     );
   }
 }

@@ -49,7 +49,7 @@ export class ChrysalisApiClient extends ApiClient {
   public async search(request: ISearchRequest): Promise<ISearchResponse> {
     return this.callApi<unknown, ISearchResponse>(
       `search/${request.network}/${request.query}${request.cursor ? `?cursor=${request.cursor}` : ""}`,
-      "get"
+      "get",
     );
   }
 
@@ -80,7 +80,7 @@ export class ChrysalisApiClient extends ApiClient {
     const { network, address, ...params } = request;
     return this.callApi<unknown, ITransactionHistoryResponse>(
       `transactionhistory/${network}/${address}${params ? FetchHelper.urlParams(params) : ""}`,
-      "get"
+      "get",
     );
   }
 
@@ -101,7 +101,7 @@ export class ChrysalisApiClient extends ApiClient {
   public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
     return this.callApi<unknown, IStatsGetResponse>(
       `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-      "get"
+      "get",
     );
   }
 
@@ -122,7 +122,7 @@ export class ChrysalisApiClient extends ApiClient {
   public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
     return this.callApi<unknown, IIdentityDidResolveResponse>(
       `chrysalis/did/${request.network}/${request.did}/history?version=${request.version}`,
-      "get"
+      "get",
     );
   }
 
@@ -136,7 +136,7 @@ export class ChrysalisApiClient extends ApiClient {
     return this.callApi<unknown, IIdentityDiffHistoryResponse>(
       `chrysalis/did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
       "post",
-      payload
+      payload,
     );
   }
 }

@@ -173,7 +173,7 @@ export class StardustApiClient extends ApiClient {
 
     return this.callApi<unknown, { error?: string; outputs?: IOutputsResponse }>(
       `stardust/output/tagged/${request.network}/${request.tag}/${request.outputType}${params}`,
-      "get"
+      "get",
     );
   }
 
@@ -186,7 +186,7 @@ export class StardustApiClient extends ApiClient {
     return this.callApi<unknown, IAssociationsResponse>(
       `stardust/output/associated/${request.network}/${request.addressDetails.bech32}`,
       "post",
-      { addressDetails: request.addressDetails }
+      { addressDetails: request.addressDetails },
     );
   }
 
@@ -243,7 +243,7 @@ export class StardustApiClient extends ApiClient {
 
     return this.callApi<unknown, ITransactionHistoryResponse>(
       `stardust/transactionhistory/${request.network}/${request.address}${FetchHelper.urlParams(params)}`,
-      "get"
+      "get",
     );
   }
 
@@ -321,7 +321,7 @@ export class StardustApiClient extends ApiClient {
   public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
     return this.callApi<unknown, IStatsGetResponse>(
       `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-      "get"
+      "get",
     );
   }
 

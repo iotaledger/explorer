@@ -37,8 +37,8 @@ export function useChronicleAnalytics(network: string): [IAnalyticStats | null] 
             // eslint-disable-next-line no-void
             void fetchAnalytics();
           },
-          CHRONICLE_ANALYTICS_REFRESH_MINUTES * 60 * 1000
-        )
+          CHRONICLE_ANALYTICS_REFRESH_MINUTES * 60 * 1000,
+        ),
       );
     }
 
