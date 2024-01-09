@@ -40,8 +40,35 @@ export const COLORS = [
   ...ACCEPTED_BLOCK_COLORS,
 ]
 
-// visualizer
+// emitter
+export const EMITTER_SPEED_MULTIPLIER = 80
+export const EMITTER_PADDING_RIGHT = 150
+export const VISUALIZER_SAFE_ZONE = 150
 
+// camera
+export const CAMERA_X_AXIS_MOVEMENT = 0.025
+export const CAMERA_Y_AXIS_MOVEMENT = 0.035
+export const CAMERA_X_OFFSET = 0
+export const CAMERA_Y_OFFSET = 0.5
+
+export const FAR_PLANE = 15000
+export const NEAR_PLANE = 1
+
+export const VISUALIZER_PADDINGS = {
+  paddingLeft: VISUALIZER_SAFE_ZONE,
+  paddingRight: VISUALIZER_SAFE_ZONE,
+  paddingBottom: VISUALIZER_SAFE_ZONE,
+  paddingTop: VISUALIZER_SAFE_ZONE,
+}
+
+// general
+export const MIN_BLOCKS_PER_SECOND = 50
+export const MAX_BLOCKS_PER_SECOND = 200
+
+// time
+export const MILLISECONDS_PER_SECOND = 1000
+
+// visualizer
 export const DIRECTIONAL_LIGHT_INTENSITY = 0.45;
 
 export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
@@ -50,11 +77,11 @@ export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
 }
 
 // emitter
-
 export const EMITTER_WIDTH = 30;
 export const EMITTER_HEIGHT = 250;
 export const EMITTER_DEPTH = 250;
 
-export const MAX_AMPLITUDE = 200;
-export const AMPLITUDE_ACCUMULATOR = 10;
+export const MAX_SINUSOIDAL_AMPLITUDE = 200;
+export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 10;
+export const INITIAL_SINUSOIDAL_AMPLITUDE = 50;
 export const HALF_WAVE_PERIOD_SECONDS = 4;

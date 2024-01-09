@@ -1,4 +1,5 @@
-import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, HALF_WAVE_PERIOD_SECONDS } from "./constants";
+import { MAX_BLOCKS_PER_SECOND, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MIN_BLOCKS_PER_SECOND, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET, HALF_WAVE_PERIOD_SECONDS, MAX_SINUSOIDAL_AMPLITUDE, SECOND, TIME_DIFF_COUNTER, STEP_Y_PX } from "./constants";
+import { ICameraAngles } from './interfaces';
 
 /**
  * Generates a random number within a specified range.
@@ -79,6 +80,7 @@ const getMaxYPosition = (bps: number) => {
         maxYPerTick: maxYPerTick > 0 ? maxYPerTick : 1
     };
 };
+
 const checkRules = (y: number, prev: number[]) => {
     let passAllChecks = true;
     if (prev.length === 0) {
@@ -110,8 +112,7 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
     const generator = yCoordinateGenerator();
     const prevY: number[] = [];
     const limitPrevY = 5;
-    const LIMIT_BPS = 48;
-    const { maxYPerTick: defaultMaxYPerTick } = getMaxYPosition(LIMIT_BPS);
+    const { maxYPerTick: defaultMaxYPerTick } = getMaxYPosition(MAX_BLOCKS_PER_SECOND);
 
     return (shift: number, bps: number) => {
         shift += 1; // This hack needs to avoid Y = 0 on the start of graph.
@@ -122,7 +123,7 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
             currentShift = shift;
         }
 
-        if (bps < LIMIT_BPS) {
+        if (bps < MAX_BLOCKS_PER_SECOND) {
             let randomY = randomNumberFromInterval(-defaultMaxYPerTick, defaultMaxYPerTick);
 
             // check if not match with last value (and not near);
@@ -148,12 +149,65 @@ export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shif
     };
 };
 
-export function getNewSinusoidalPosition(time: number, amplitude: number): number {
-    const period = HALF_WAVE_PERIOD_SECONDS * 2;
-    const frequency = 1 / period;
-    const phase = (time % period) * frequency
+/**
+ * Calculate the tangles distances
+ * @returns The axis distances
+ */
+export function getTangleDistances(): {
+    xTangleDistance: number;
+    yTangleDistance: number;
+} {
+    /* We assume MAX BPS to get the max possible Y */
+    const { maxYPerTick } = getMaxYPosition(MAX_BLOCKS_PER_SECOND);
 
-    const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+    const MAX_TANGLE_DISTANCE_SECONDS = MAX_BLOCK_INSTANCES / MIN_BLOCKS_PER_SECOND;
 
-    return newY;
+    const MAX_BLOCK_DISTANCE = EMITTER_SPEED_MULTIPLIER * MAX_TANGLE_DISTANCE_SECONDS;
+
+    const maxXDistance = MAX_BLOCK_DISTANCE
+
+    /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
+    const maxYDistance = (maxYPerTick * 2) + (MAX_SINUSOIDAL_AMPLITUDE * 2)
+
+    /* TODO: add sinusoidal distances */
+  
+    return {
+        xTangleDistance: maxXDistance,
+        yTangleDistance: maxYDistance
+    }
+  }
+
+export function getCameraAngles(): ICameraAngles {
+    const xAngle = Math.PI * CAMERA_X_AXIS_MOVEMENT
+    const yAngle = Math.PI * CAMERA_Y_AXIS_MOVEMENT
+
+    const startingXAngle = Math.PI * CAMERA_X_OFFSET
+    const startingYAngle = Math.PI * CAMERA_Y_OFFSET
+
+    // Divided by the two directions, positive and negative
+    const X_MOVEMENT = xAngle / 2
+    const Y_MOVEMENT = yAngle / 2
+
+    const MIN_HORIZONTAL_ANGLE = startingXAngle - X_MOVEMENT
+    const MIN_VERTICAL_ANGLE = startingYAngle - Y_MOVEMENT
+
+    const MAX_HORIZONTAL_ANGLE = startingXAngle + X_MOVEMENT
+    const MAX_VENTICAL_ANGLE = startingYAngle + Y_MOVEMENT
+
+    return {
+        minAzimuthAngle: MIN_HORIZONTAL_ANGLE,
+        minPolarAngle: MIN_VERTICAL_ANGLE,
+        maxPolarAngle: MAX_VENTICAL_ANGLE,
+        maxAzimuthAngle: MAX_HORIZONTAL_ANGLE
+    }
 }
+    
+    export function getSinusoidalPosition(time: number, amplitude: number): number {
+        const period = HALF_WAVE_PERIOD_SECONDS * 2;
+        const frequency = 1 / period;
+        const phase = (time % period) * frequency
+
+        const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+
+        return newY;
+    }
