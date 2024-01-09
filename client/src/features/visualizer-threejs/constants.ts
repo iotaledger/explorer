@@ -80,3 +80,8 @@ export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
 export const EMITTER_WIDTH = 30;
 export const EMITTER_HEIGHT = 250;
 export const EMITTER_DEPTH = 250;
+
+export const MAX_SINUSOIDAL_AMPLITUDE = 200;
+export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 10;
+export const INITIAL_SINUSOIDAL_AMPLITUDE = 50;
+export const HALF_WAVE_PERIOD_SECONDS = 4;
