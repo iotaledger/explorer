@@ -55,8 +55,8 @@ export const FAR_PLANE = 15000
 export const NEAR_PLANE = 1
 
 export const VISUALIZER_PADDINGS = {
-  paddingLeft: VISUALIZER_SAFE_ZONE,
-  paddingRight: VISUALIZER_SAFE_ZONE,
+  paddingLeft: VISUALIZER_SAFE_ZONE * 2,
+  paddingRight: VISUALIZER_SAFE_ZONE * 2,
   paddingBottom: VISUALIZER_SAFE_ZONE,
   paddingTop: VISUALIZER_SAFE_ZONE,
 }

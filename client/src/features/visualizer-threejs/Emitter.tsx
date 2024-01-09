@@ -22,7 +22,6 @@ const Emitter: React.FC<EmitterProps> = ({
     const currentZoom = useThree(state => state.camera.zoom);
 
     const groupRef = useRef<THREE.Group>(null);
-    const camera = get().camera;
 
     const { xTangleDistance, yTangleDistance } = getTangleDistances()
     const isPlaying = useConfigStore(state => state.isPlaying);
@@ -44,9 +43,10 @@ const Emitter: React.FC<EmitterProps> = ({
     }, [emitterRef]);
 
     useFrame(() => {
+        const camera = get().camera;
         if (camera && groupRef.current) {
-            camera.position.x = groupRef.current.position.x;
-        }
+                camera.position.x = groupRef.current.position.x;
+            }
     });
 
     function updateAnimationTime(realTimeDelta: number): void {
@@ -72,24 +72,19 @@ const Emitter: React.FC<EmitterProps> = ({
         const realTimeDelta = currentRealTime - previousRealTime.current;
         previousRealTime.current = currentRealTime;
 
-        if (groupRef.current) {
-        const newPos = delta * EMITTER_SPEED_MULTIPLIER;
-        groupRef.current.position.x += newPos;
-
         if (isPlaying) {
             updateAnimationTime(realTimeDelta);
             checkAndHandleNewPeak();
 
-            if (emitterRef.current) {
-                const { x } = emitterRef.current.position;
+            if (groupRef.current) {
+                const { x } = groupRef.current.position;
 
                 const newXPos = x + (delta * EMITTER_SPEED_MULTIPLIER);
                 const newYPos = getNewSinusoidalPosition(animationTime, currentAmplitude);
 
-                emitterRef.current.position.y = newYPos;
-                emitterRef.current.position.x = newXPos;
+                groupRef.current.position.y = newYPos;
+                groupRef.current.position.x = newXPos;
             }
-        }
         }
     });
 
