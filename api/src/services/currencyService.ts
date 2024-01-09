@@ -84,10 +84,9 @@ export class CurrencyService {
 
         currentState = currentState?.coinStats === undefined ? CurrencyService.INITIAL_STATE : currentState;
 
-        const lastFixerUpdate =
-          currentState?.lastFixerUpdate > 0 ?
-            new Date(currentState.lastFixerUpdate)
-          : new Date(Date.now() - 2 * CurrencyService.MS_PER_DAY);
+        const twoDays = 2 * CurrencyService.MS_PER_DAY;
+
+        const lastFixerUpdate = currentState?.lastFixerUpdate > 0 ? new Date(currentState.lastFixerUpdate) : new Date(Date.now() - twoDays);
 
         // Update Fixer rates every 4 hours so we dont hit rate limit
         if (nowMs - lastFixerUpdate.getTime() > CurrencyService.MS_PER_MINUTE * 240) {
@@ -98,8 +97,7 @@ export class CurrencyService {
           const currentStats = currentState.coinStats[coin];
 
           // If now date, default to 2 days ago
-          const lastCurrencyUpdate =
-            currentStats?.lastUpdate ? new Date(currentStats.lastUpdate) : new Date(Date.now() - 2 * CurrencyService.MS_PER_DAY);
+          const lastCurrencyUpdate = currentStats?.lastUpdate ? new Date(currentStats.lastUpdate) : new Date(Date.now() - twoDays);
 
           // If we have no state, an update over 5 minutes old, the day has changed, or force update
           if (
