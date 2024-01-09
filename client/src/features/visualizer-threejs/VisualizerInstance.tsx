@@ -33,7 +33,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     }
 }) => {
     const [networkConfig] = useNetworkConfig(network);
-    const generateYZPositions = getGenerateDynamicYZPosition({ withRandom: true });
+    const generateYZPositions = getGenerateDynamicYZPosition();
     const themeMode = useGetThemeMode()
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);

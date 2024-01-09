@@ -1,4 +1,4 @@
-import { BLOCK_STEP_PX, MIN_BLOCKS_PER_SECOND, MAX_BLOCKS_PER_SECOND, MIN_RADIUS, MAX_RADIUS, MIN_BLOCK_NEAR_RADIUS, MAX_PREV_POINTS, MAX_POINT_RETRIES } from "./constants";
+import { BLOCK_STEP_PX, MIN_BLOCKS_PER_SECOND, MAX_BLOCKS_PER_SECOND, MIN_RADIUS, MAX_RADIUS, MIN_BLOCK_NEAR_RADIUS, MAX_PREV_POINTS, MAX_POINT_RETRIES, HALF_WAVE_PERIOD_SECONDS } from "./constants";
 import { Vector3 } from 'three';
 
 /**
@@ -92,15 +92,13 @@ function getDynamicRandomYZPoints(bps: number, initialPosition: Vector3 = new Ve
  * Checks if the point is far enough from the prevPoints.
  * @returns true if the point is far enough from the prevPoints.
  */
-function checkPassAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTanglePosition[]): boolean {
+function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTanglePosition[]): boolean {
     if (prevPoints.length === 0) {
         return true;
     }
 
-    return !prevPoints.some(prevPoint => distanceBetweenPoints(point, prevPoint) < MIN_BLOCK_NEAR_RADIUS);
+    return prevPoints.some(prevPoint => distanceBetweenPoints(point, prevPoint) > MIN_BLOCK_NEAR_RADIUS);
 }
-
-
 
 /**
  * Retries to generate a point until it passes all the checks.
@@ -113,7 +111,7 @@ function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPo
 
     do {
         trialPoint = getDynamicRandomYZPoints(bps, initialPosition);
-        passAllChecks = checkPassAllChecks(trialPoint, prevPoints);
+        passAllChecks = pointPassesAllChecks(trialPoint, prevPoints);
         retries++;
     } while (!passAllChecks && retries < MAX_POINT_RETRIES);
 
@@ -130,19 +128,28 @@ function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPo
  * Gets a function to generate a random point on a circle.
  * @returns the function to generate the random point on a circle.
  */
-export function getGenerateDynamicYZPosition({ withRandom }: { withRandom: boolean }): typeof getDynamicRandomYZPoints {
+export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
     const prevPoints: IBlockTanglePosition[] = [];
     
     return (bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition => {
         const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
         
-        if (withRandom) {
-            const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
-            const randomXNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
-            validPoint.y += randomYNumber;
-            validPoint.z += randomXNumber;
-        }
+        const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
+        const randomZNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
+
+        validPoint.y += randomYNumber;
+        validPoint.z += randomZNumber;
 
         return validPoint;
     };
+};
+
+export function getNewSinusoidalPosition(time: number, amplitude: number): number {
+    const period = HALF_WAVE_PERIOD_SECONDS * 2;
+    const frequency = 1 / period;
+    const phase = (time % period) * frequency
+
+    const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+
+    return newY;
 }

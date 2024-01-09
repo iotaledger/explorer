@@ -69,3 +69,7 @@ export const MAX_POINT_RETRIES = 10;
 export const MAX_PREV_POINTS = 20;
 
 export const X_POSITION_MULTIPLIER = 3;
+
+export const MAX_AMPLITUDE = 200;
+export const AMPLITUDE_ACCUMULATOR = 10;
+export const HALF_WAVE_PERIOD_SECONDS = 4;
