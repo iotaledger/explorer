@@ -1,4 +1,5 @@
 .eslintrc.js
+.eslintcache
 *.d.ts
 
 **/dist/*
