@@ -14,17 +14,17 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @returns The response.
  */
 export async function info(_: IConfiguration, request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
 
-  ValidationHelper.oneOf(request.network, networks, "network");
-  const networkConfig = networkService.get(request.network);
+    ValidationHelper.oneOf(request.network, networks, "network");
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return {};
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return {};
+    }
 
-  const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
+    const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
 
-  return nodeService.getNodeInfo();
+    return nodeService.getNodeInfo();
 }

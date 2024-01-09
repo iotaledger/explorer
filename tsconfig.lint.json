@@ -2,6 +2,6 @@
 // used for compilation or building.
 
 {
-  "include": ["client/**/*.ts", "client/**/*.tsx", "client/**/*.js", "client/**/*.jsx", "api/**/*.js", "api/**/*.ts"],
-  "exclude": ["**/node_modules/*", "**/dist/*", "**/build/*"]
+    "include": ["client/**/*.ts", "client/**/*.tsx", "client/**/*.js", "client/**/*.jsx", "api/**/*.js", "api/**/*.ts"],
+    "exclude": ["**/node_modules/*", "**/dist/*", "**/build/*"]
 }

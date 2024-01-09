@@ -15,97 +15,101 @@ import { AddressRouteProps } from "../AddressRouteProps";
 import "./AddressPage.scss";
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
-  match: {
-    params: { network, address },
-  },
+    match: {
+        params: { network, address },
+    },
 }) => {
-  const [state, setState] = useAddressPageState();
-  const {
-    bech32AddressDetails,
-    balance,
-    sigLockedBalance,
-    storageRentBalance,
-    isBasicOutputsLoading,
-    isAliasOutputsLoading,
-    isNftOutputsLoading,
-    isNftDetailsLoading,
-    isAddressHistoryLoading,
-    isAssociatedOutputsLoading,
-  } = state;
+    const [state, setState] = useAddressPageState();
+    const {
+        bech32AddressDetails,
+        balance,
+        sigLockedBalance,
+        storageRentBalance,
+        isBasicOutputsLoading,
+        isAliasOutputsLoading,
+        isNftOutputsLoading,
+        isNftDetailsLoading,
+        isAddressHistoryLoading,
+        isAssociatedOutputsLoading,
+    } = state;
 
-  if (!bech32AddressDetails) {
+    if (!bech32AddressDetails) {
+        return (
+            <div className="address-page">
+                <div className="wrapper">
+                    <div className="inner">
+                        <div className="addr--header">
+                            <div className="row middle">
+                                <h1>Address</h1>
+                                <Modal icon="info" data={addressMainHeaderInfo} />
+                            </div>
+                        </div>
+                        <NotFound searchTarget="address" query={address} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
+    const isPageLoading = isAddressOutputsLoading || isNftDetailsLoading || isAddressHistoryLoading || isAssociatedOutputsLoading;
+
+    const addressType = bech32AddressDetails.type;
+
+    let addressMessage = addressMainHeaderInfo;
+    if (addressType === AddressType.Alias) {
+        addressMessage = aliasMainHeaderInfo;
+    } else if (addressType === AddressType.Nft) {
+        addressMessage = nftMainHeaderInfo;
+    }
+
     return (
-      <div className="address-page">
-        <div className="wrapper">
-          <div className="inner">
-            <div className="addr--header">
-              <div className="row middle">
-                <h1>Address</h1>
-                <Modal icon="info" data={addressMainHeaderInfo} />
-              </div>
+        <div className="address-page">
+            <div className="wrapper">
+                {bech32AddressDetails && (
+                    <div className="inner">
+                        <div className="addr--header">
+                            <div className="row middle">
+                                <h1>{bech32AddressDetails.typeLabel?.replace("Ed25519", "Address")}</h1>
+                                <Modal icon="info" data={addressMessage} />
+                            </div>
+                            {isPageLoading && <Spinner />}
+                        </div>
+                        <div className="section no-border-bottom padding-b-0">
+                            <div className="section--header">
+                                <div className="row middle">
+                                    <h2>General</h2>
+                                </div>
+                            </div>
+                            <div className="general-content">
+                                <div className="section--data">
+                                    <Bech32Address addressDetails={bech32AddressDetails} advancedMode={true} />
+                                    {balance !== null && (
+                                        <AddressBalance
+                                            balance={balance}
+                                            spendableBalance={sigLockedBalance}
+                                            storageRentBalance={storageRentBalance}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <AddressPageTabbedSections
+                            key={address}
+                            network={network}
+                            addressPageState={state}
+                            setTransactionHistoryLoading={(isLoading) => setState({ isAddressHistoryLoading: isLoading })}
+                            setTransactionHistoryDisabled={(val) => setState({ isAddressHistoryDisabled: val })}
+                            setTokenCount={(count) => setState({ tokensCount: count })}
+                            setNftCount={(count) => setState({ nftCount: count })}
+                            setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                            setAssociatedOutputsCount={(count) => setState({ associatedOutputCount: count })}
+                        />
+                    </div>
+                )}
             </div>
-            <NotFound searchTarget="address" query={address} />
-          </div>
         </div>
-      </div>
     );
-  }
-
-  const isAddressOutputsLoading = isBasicOutputsLoading || isAliasOutputsLoading || isNftOutputsLoading;
-  const isPageLoading = isAddressOutputsLoading || isNftDetailsLoading || isAddressHistoryLoading || isAssociatedOutputsLoading;
-
-  const addressType = bech32AddressDetails.type;
-
-  let addressMessage = addressMainHeaderInfo;
-  if (addressType === AddressType.Alias) {
-    addressMessage = aliasMainHeaderInfo;
-  } else if (addressType === AddressType.Nft) {
-    addressMessage = nftMainHeaderInfo;
-  }
-
-  return (
-    <div className="address-page">
-      <div className="wrapper">
-        {bech32AddressDetails && (
-          <div className="inner">
-            <div className="addr--header">
-              <div className="row middle">
-                <h1>{bech32AddressDetails.typeLabel?.replace("Ed25519", "Address")}</h1>
-                <Modal icon="info" data={addressMessage} />
-              </div>
-              {isPageLoading && <Spinner />}
-            </div>
-            <div className="section no-border-bottom padding-b-0">
-              <div className="section--header">
-                <div className="row middle">
-                  <h2>General</h2>
-                </div>
-              </div>
-              <div className="general-content">
-                <div className="section--data">
-                  <Bech32Address addressDetails={bech32AddressDetails} advancedMode={true} />
-                  {balance !== null && (
-                    <AddressBalance balance={balance} spendableBalance={sigLockedBalance} storageRentBalance={storageRentBalance} />
-                  )}
-                </div>
-              </div>
-            </div>
-            <AddressPageTabbedSections
-              key={address}
-              network={network}
-              addressPageState={state}
-              setTransactionHistoryLoading={(isLoading) => setState({ isAddressHistoryLoading: isLoading })}
-              setTransactionHistoryDisabled={(val) => setState({ isAddressHistoryDisabled: val })}
-              setTokenCount={(count) => setState({ tokensCount: count })}
-              setNftCount={(count) => setState({ nftCount: count })}
-              setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
-              setAssociatedOutputsCount={(count) => setState({ associatedOutputCount: count })}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
 };
 
 export default AddressPage;

@@ -27,10 +27,10 @@ e.g. To run the API locally
 
 ```json
 {
-  "fixerApiKey": "MY-KEY",
-  "rootStorageFolder": "../.local-storage",
-  "allowedDomains": ["http://localhost:3000"],
-  "verboseLogging": false
+    "fixerApiKey": "MY-KEY",
+    "rootStorageFolder": "../.local-storage",
+    "allowedDomains": ["http://localhost:3000"],
+    "verboseLogging": false
 }
 ```
 
@@ -58,21 +58,21 @@ e.g. `../.local-storage/network/mainnet.json`
 
 ```json
 {
-  "network": "mainnet",
-  "label": "Mainnet",
-  "provider": "https://nodes.iota.cafe:443",
-  "depth": 3,
-  "mwm": 14,
-  "protocolVersion": "legacy",
-  "feedEndpoint": "tcp://zmq.iota.org:5556",
-  "coordinatorAddress": "UDYXTZBE9GZGPM9SSQV9LTZNDLJIZMPUVVXYXFYVBLIEUHLSEWFTKZZLXYRHHWVQV9MNNX9KZC9D9UZWZ",
-  "coordinatorSecurityLevel": 2,
-  "primaryColor": "#131F37",
-  "secondaryColor": "#485776",
-  "isEnabled": true,
-  "showMarket": true,
-  "order": 0,
-  "description": "Mainnet is the IOTA network that uses the IOTA tokens that are traded on cryptocurrency exchanges. This network is the most stable."
+    "network": "mainnet",
+    "label": "Mainnet",
+    "provider": "https://nodes.iota.cafe:443",
+    "depth": 3,
+    "mwm": 14,
+    "protocolVersion": "legacy",
+    "feedEndpoint": "tcp://zmq.iota.org:5556",
+    "coordinatorAddress": "UDYXTZBE9GZGPM9SSQV9LTZNDLJIZMPUVVXYXFYVBLIEUHLSEWFTKZZLXYRHHWVQV9MNNX9KZC9D9UZWZ",
+    "coordinatorSecurityLevel": 2,
+    "primaryColor": "#131F37",
+    "secondaryColor": "#485776",
+    "isEnabled": true,
+    "showMarket": true,
+    "order": 0,
+    "description": "Mainnet is the IOTA network that uses the IOTA tokens that are traded on cryptocurrency exchanges. This network is the most stable."
 }
 ```
 
@@ -82,18 +82,18 @@ e.g. `../.local-storage/network/chrysalis.json`
 
 ```json
 {
-  "network": "chrysalis",
-  "label": "Chrysalis",
-  "provider": "https://api.mynode.com/",
-  "primaryColor": "#2E8698",
-  "secondaryColor": "#77c6d6",
-  "isEnabled": true,
-  "isHidden": false,
-  "order": 3,
-  "feedEndpoint": "mqtt://api.mynode.com:1883",
-  "protocolVersion": "chrysalis",
-  "bechHrp": "iot",
-  "description": "Chrysalis Alphanet network. This network makes no guarantees of its stability."
+    "network": "chrysalis",
+    "label": "Chrysalis",
+    "provider": "https://api.mynode.com/",
+    "primaryColor": "#2E8698",
+    "secondaryColor": "#77c6d6",
+    "isEnabled": true,
+    "isHidden": false,
+    "order": 3,
+    "feedEndpoint": "mqtt://api.mynode.com:1883",
+    "protocolVersion": "chrysalis",
+    "bechHrp": "iot",
+    "description": "Chrysalis Alphanet network. This network makes no guarantees of its stability."
 }
 ```
 

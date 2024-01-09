@@ -1,3 +1,3 @@
 export interface IdentityJsonCompareState {
-  toggleState: "msg" | "doc";
+    toggleState: "msg" | "doc";
 }

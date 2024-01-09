@@ -2,18 +2,18 @@ import { IIdentityDocument } from "./../identity/IIdentityDocument";
 import { IResponse } from "./IResponse";
 
 export interface IIdentityDidResolveResponse extends IResponse {
-  /**
-   * message id of resolved DID
-   */
-  messageId?: string;
+    /**
+     * message id of resolved DID
+     */
+    messageId?: string;
 
-  /**
-   * Resolved DID Document
-   */
-  document?: IIdentityDocument;
+    /**
+     * Resolved DID Document
+     */
+    document?: IIdentityDocument;
 
-  /**
-   * version of DID implementation
-   */
-  version?: string;
+    /**
+     * version of DID implementation
+     */
+    version?: string;
 }

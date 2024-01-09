@@ -1,11 +1,11 @@
 {
-  "title": "Alias Transactions",
-  "description": "<p>Aliases offer multiple additional features that make advanced features of the protocol work: smart contract chains, native tokens and NFTs all require alias outputs.</p>",
-  "links": [
-    {
-      "label": "Read more",
-      "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/alias",
-      "isExternal": true
-    }
-  ]
+    "title": "Alias Transactions",
+    "description": "<p>Aliases offer multiple additional features that make advanced features of the protocol work: smart contract chains, native tokens and NFTs all require alias outputs.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/alias",
+            "isExternal": true
+        }
+    ]
 }

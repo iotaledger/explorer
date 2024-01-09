@@ -14,16 +14,16 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(config: IConfiguration, request: IFoundryRequest): Promise<IFoundryResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
-  ValidationHelper.string(request.foundryId, "foundryId");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.string(request.foundryId, "foundryId");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return {};
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return {};
+    }
 
-  return StardustTangleHelper.foundryDetails(networkConfig, request.foundryId);
+    return StardustTangleHelper.foundryDetails(networkConfig, request.foundryId);
 }

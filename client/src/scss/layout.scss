@@ -3,224 +3,224 @@
 @import "./variables";
 
 .row {
-  display: flex;
-  flex-direction: row;
+    display: flex;
+    flex-direction: row;
 
-  @include tablet-down {
-    &.row--tablet-responsive {
-      flex-direction: column;
+    @include tablet-down {
+        &.row--tablet-responsive {
+            flex-direction: column;
 
-      &.middle {
-        align-items: flex-start;
-      }
+            &.middle {
+                align-items: flex-start;
+            }
+        }
     }
-  }
 
-  &.center {
-    justify-content: center;
-  }
+    &.center {
+        justify-content: center;
+    }
 
-  &.end {
-    justify-content: flex-end;
-  }
+    &.end {
+        justify-content: flex-end;
+    }
 
-  &.space-between {
-    justify-content: space-between;
-  }
+    &.space-between {
+        justify-content: space-between;
+    }
 
-  &.wrap {
-    flex-wrap: wrap;
-  }
+    &.wrap {
+        flex-wrap: wrap;
+    }
 
-  &.top {
-    align-items: flex-start;
-  }
+    &.top {
+        align-items: flex-start;
+    }
 
-  &.middle {
-    align-items: center;
-  }
+    &.middle {
+        align-items: center;
+    }
 
-  &.bottom {
-    align-items: flex-end;
-  }
+    &.bottom {
+        align-items: flex-end;
+    }
 }
 
 .col {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  &.fill {
-    flex: 1;
-  }
+    &.fill {
+        flex: 1;
+    }
 }
 
 .w100 {
-  width: 100%;
+    width: 100%;
 }
 
 .pointer {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .line-breaks {
-  white-space: pre;
+    white-space: pre;
 }
 
 .margin-0 {
-  margin: 0 !important;
+    margin: 0 !important;
 }
 
 .margin-b-0 {
-  margin-bottom: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .margin-b-2 {
-  margin-bottom: 2px !important;
+    margin-bottom: 2px !important;
 }
 
 .margin-r-2 {
-  margin-right: 2px !important;
+    margin-right: 2px !important;
 }
 
 .margin-r-5 {
-  margin-right: 5px !important;
+    margin-right: 5px !important;
 }
 
 .margin-t-0 {
-  margin-top: 0 !important;
+    margin-top: 0 !important;
 }
 
 .margin-t-2 {
-  margin-top: 2px !important;
+    margin-top: 2px !important;
 }
 
 .margin-l-2 {
-  margin-left: 2px !important;
+    margin-left: 2px !important;
 }
 
 .margin-b-s {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .margin-r-s {
-  margin-right: 20px;
+    margin-right: 20px;
 }
 
 .margin-t-s {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .margin-l-s {
-  margin-left: 20px;
+    margin-left: 20px;
 }
 
 .margin-b-t {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .margin-r-t {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .margin-t-t {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .margin-l-t {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .margin-b-m {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 .margin-r-m {
-  margin-right: 30px;
+    margin-right: 30px;
 }
 
 .margin-t-m {
-  margin-top: 30px;
+    margin-top: 30px;
 }
 
 .margin-l-m {
-  margin-left: 30px;
+    margin-left: 30px;
 }
 
 .padding-l-t {
-  padding-left: 10px;
+    padding-left: 10px;
 }
 
 .padding-l-8 {
-  padding-left: 8px;
+    padding-left: 8px;
 }
 
 .padding-b-0 {
-  padding-bottom: 0;
+    padding-bottom: 0;
 }
 
 .padding-b-s {
-  padding-bottom: 20px;
+    padding-bottom: 20px;
 }
 
 .padding-r-s {
-  padding-right: 20px;
+    padding-right: 20px;
 }
 
 .padding-t-s {
-  padding-top: 20px;
+    padding-top: 20px;
 }
 
 .padding-l-s {
-  padding-left: 20px;
+    padding-left: 20px;
 }
 
 .padding-b-m {
-  padding-bottom: 30px;
+    padding-bottom: 30px;
 }
 
 .padding-r-m {
-  padding-right: 30px;
+    padding-right: 30px;
 }
 
 .padding-t-m {
-  padding-top: 30px;
+    padding-top: 30px;
 }
 
 .padding-l-m {
-  padding-left: 30px;
+    padding-left: 30px;
 }
 
 .relative {
-  position: relative;
+    position: relative;
 }
 
 .overflow-hidden {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .overflow-unset {
-  overflow: unset;
+    overflow: unset;
 }
 
 .overflow-ellipsis {
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  word-break: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: normal !important;
 }
 
 .hidden {
-  display: none !important;
+    display: none !important;
 }
 
 .dot-separator {
-  @include font-size(20px);
+    @include font-size(20px);
 
-  margin: 0 6px;
-  color: $gray-6;
+    margin: 0 6px;
+    color: $gray-6;
 }
 
 .truncate {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

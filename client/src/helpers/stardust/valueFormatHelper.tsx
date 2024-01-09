@@ -17,16 +17,16 @@ const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000
  * @returns The formatted string.
  */
 export function formatAmount(value: number, tokenInfo: INodeInfoBaseToken, formatFull: boolean = false, decimalPlaces: number = 2): string {
-  if (formatFull) {
-    return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
-  }
+    if (formatFull) {
+        return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
+    }
 
-  const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-  const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces);
+    const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
+    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces);
 
-  // useMetricPrefix is broken cause it passes a float value to formatBest
-  const amount = tokenInfo.useMetricPrefix ? UnitsHelper.formatBest(baseTokenValue) : `${formattedAmount} `;
-  return `${amount}${tokenInfo.unit}`;
+    // useMetricPrefix is broken cause it passes a float value to formatBest
+    const amount = tokenInfo.useMetricPrefix ? UnitsHelper.formatBest(baseTokenValue) : `${formattedAmount} `;
+    return `${amount}${tokenInfo.unit}`;
 }
 
 /**
@@ -35,7 +35,7 @@ export function formatAmount(value: number, tokenInfo: INodeInfoBaseToken, forma
  * @returns {string} The formatted number as a string, with commas separating thousands.
  */
 export function formatNumberWithCommas(value: bigint): string {
-  return value.toLocaleString("en", { useGrouping: true });
+    return value.toLocaleString("en", { useGrouping: true });
 }
 
 /**
@@ -45,24 +45,24 @@ export function formatNumberWithCommas(value: bigint): string {
  * @returns The formatted amount.
  */
 function toFixedNoRound(value: number, precision: number = 2): string {
-  const valueString = `${value}`;
-  const [integer, fraction] = valueString.split(".");
-  if (!fraction) {
-    return valueString;
-  }
+    const valueString = `${value}`;
+    const [integer, fraction] = valueString.split(".");
+    if (!fraction) {
+        return valueString;
+    }
 
-  if (!precision) {
-    return integer;
-  }
+    if (!precision) {
+        return integer;
+    }
 
-  const truncatedFraction = fraction.slice(0, precision);
+    const truncatedFraction = fraction.slice(0, precision);
 
-  // avoid 0.00 case
-  if (!Number(truncatedFraction)) {
-    return `${integer}.${fraction}`;
-  }
+    // avoid 0.00 case
+    if (!Number(truncatedFraction)) {
+        return `${integer}.${fraction}`;
+    }
 
-  return `${integer}.${truncatedFraction}`;
+    return `${integer}.${truncatedFraction}`;
 }
 
 /**
@@ -71,12 +71,12 @@ function toFixedNoRound(value: number, precision: number = 2): string {
  * @returns The tooltip content or id.
  */
 export function formatSpecialBlockId(id: string): React.ReactNode {
-  if (id === GENESIS_BLOCK_ID) {
-    return (
-      <Tooltip tooltipContent="Genesis block">
-        <span className="tooltip__special">{id}</span>
-      </Tooltip>
-    );
-  }
-  return id;
+    if (id === GENESIS_BLOCK_ID) {
+        return (
+            <Tooltip tooltipContent="Genesis block">
+                <span className="tooltip__special">{id}</span>
+            </Tooltip>
+        );
+    }
+    return id;
 }

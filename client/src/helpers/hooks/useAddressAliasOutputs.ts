@@ -12,32 +12,32 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @returns The output responses and loading bool.
  */
 export function useAddressAliasOutputs(network: string, addressBech32: string | null): [OutputResponse[] | null, boolean] {
-  const isMounted = useIsMounted();
-  const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-  const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+    const isMounted = useIsMounted();
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+    const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    setIsLoading(true);
-    setOutputs(null);
-    if (addressBech32) {
-      // eslint-disable-next-line no-void
-      void (async () => {
-        apiClient
-          .aliasOutputsDetails({ network, address: addressBech32 })
-          .then((response) => {
-            if (!response?.error && response.outputs && isMounted) {
-              setOutputs(response.outputs);
-            }
-          })
-          .finally(() => {
+    useEffect(() => {
+        setIsLoading(true);
+        setOutputs(null);
+        if (addressBech32) {
+            // eslint-disable-next-line no-void
+            void (async () => {
+                apiClient
+                    .aliasOutputsDetails({ network, address: addressBech32 })
+                    .then((response) => {
+                        if (!response?.error && response.outputs && isMounted) {
+                            setOutputs(response.outputs);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
+            })();
+        } else {
             setIsLoading(false);
-          });
-      })();
-    } else {
-      setIsLoading(false);
-    }
-  }, [network, addressBech32]);
+        }
+    }, [network, addressBech32]);
 
-  return [outputs, isLoading];
+    return [outputs, isLoading];
 }

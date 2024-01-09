@@ -22,11 +22,11 @@ const SUPPORTED_IMAGE_FORMATS = new Set(["image/jpeg", "image/png", "image/gif",
  * @returns A bool.
  */
 export function isSupportedImageFormat(nftType: string | undefined): boolean {
-  if (nftType === undefined) {
-    return false;
-  }
+    if (nftType === undefined) {
+        return false;
+    }
 
-  return SUPPORTED_IMAGE_FORMATS.has(nftType);
+    return SUPPORTED_IMAGE_FORMATS.has(nftType);
 }
 
 /**
@@ -37,7 +37,9 @@ export function isSupportedImageFormat(nftType: string | undefined): boolean {
  * @returns JSX.
  */
 export function getNftImageContent(contentType: string, uri: string, className: string): JSX.Element {
-  return contentType === "video/mp4" ?
-      <video className={className} src={uri} controls autoPlay muted loop />
-    : <img className={className} src={uri} alt="nft image" />;
+    return contentType === "video/mp4" ? (
+        <video className={className} src={uri} controls autoPlay muted loop />
+    ) : (
+        <img className={className} src={uri} alt="nft image" />
+    );
 }

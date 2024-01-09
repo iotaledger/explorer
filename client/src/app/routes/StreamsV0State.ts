@@ -1,83 +1,83 @@
 import { MamMode } from "@iota/mam-legacy";
 
 export interface StreamsV0State {
-  /**
-   * The mam channel details to lookup.
-   */
-  root: string;
-
-  /**
-   * The validation message for the root.
-   */
-  rootValidation: string;
-
-  /**
-   * The mode for the mam channel.
-   */
-  mode: MamMode;
-
-  /**
-   * The sideKey for the mam channel.
-   */
-  sideKey: string;
-
-  /**
-   * The validation message for the key.
-   */
-  sideKeyValidation: string;
-
-  /**
-   * Mam item details.
-   */
-  packets: {
     /**
-     * The channel item root.
+     * The mam channel details to lookup.
      */
     root: string;
 
     /**
-     * The channel item address.
+     * The validation message for the root.
      */
-    nextRoot: string;
+    rootValidation: string;
 
     /**
-     * The channel item tag.
+     * The mode for the mam channel.
      */
-    tag: string;
+    mode: MamMode;
 
     /**
-     * The raw message.
+     * The sideKey for the mam channel.
      */
-    rawMessageTrytes?: string;
+    sideKey: string;
 
     /**
-     * The decoded message.
+     * The validation message for the key.
      */
-    message?: string;
+    sideKeyValidation: string;
 
     /**
-     * The decoded message.
+     * Mam item details.
      */
-    messageType?: "Trytes" | "ascii" | "JSON";
+    packets: {
+        /**
+         * The channel item root.
+         */
+        root: string;
+
+        /**
+         * The channel item address.
+         */
+        nextRoot: string;
+
+        /**
+         * The channel item tag.
+         */
+        tag: string;
+
+        /**
+         * The raw message.
+         */
+        rawMessageTrytes?: string;
+
+        /**
+         * The decoded message.
+         */
+        message?: string;
+
+        /**
+         * The decoded message.
+         */
+        messageType?: "Trytes" | "ascii" | "JSON";
+
+        /**
+         * Show the raw message trytes.
+         */
+        showRawMessageTrytes: boolean;
+    }[];
 
     /**
-     * Show the raw message trytes.
+     * Is the component valid.
      */
-    showRawMessageTrytes: boolean;
-  }[];
+    isValid: boolean;
 
-  /**
-   * Is the component valid.
-   */
-  isValid: boolean;
+    /**
+     * Is the component status busy.
+     */
+    statusBusy: boolean;
 
-  /**
-   * Is the component status busy.
-   */
-  statusBusy: boolean;
-
-  /**
-   * The status.
-   */
-  status: string;
+    /**
+     * The status.
+     */
+    status: string;
 }

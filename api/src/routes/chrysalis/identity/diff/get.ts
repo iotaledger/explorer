@@ -17,30 +17,30 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(config: IConfiguration, request: IIdentityDiffHistoryRequest, body: IIdentityDiffHistoryBody): Promise<unknown> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
 
-  ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.oneOf(request.network, networks, "network");
 
-  const networkConfig = networkService.get(request.network);
-  if (networkConfig.protocolVersion !== CHRYSALIS) {
-    return {
-      error: `Network is not supported. IOTA Identity only supports
+    const networkConfig = networkService.get(request.network);
+    if (networkConfig.protocolVersion !== CHRYSALIS) {
+        return {
+            error: `Network is not supported. IOTA Identity only supports
             chrysalis phase 2 networks, such as the IOTA main network.`,
-    };
-  }
+        };
+    }
 
-  const providerUrl = networkConfig.provider;
-  const permanodeUrl = networkConfig.permaNodeEndpoint;
+    const providerUrl = networkConfig.provider;
+    const permanodeUrl = networkConfig.permaNodeEndpoint;
 
-  if (request.version === "legacy") {
-    // do the resolution in the resolve functions
-    const document = identityLegacy.Document.fromJSON(IdentityHelper.revertLegacyDocument(body));
-    document.messageId = request.integrationMsgId;
-    return resolveLegacyDiff(document, providerUrl, permanodeUrl);
-  }
+    if (request.version === "legacy") {
+        // do the resolution in the resolve functions
+        const document = identityLegacy.Document.fromJSON(IdentityHelper.revertLegacyDocument(body));
+        document.messageId = request.integrationMsgId;
+        return resolveLegacyDiff(document, providerUrl, permanodeUrl);
+    }
 
-  return resolveDiff(body, providerUrl, permanodeUrl);
+    return resolveDiff(body, providerUrl, permanodeUrl);
 }
 
 /**
@@ -50,42 +50,42 @@ export async function get(config: IConfiguration, request: IIdentityDiffHistoryR
  * @returns resolved diff chain and spam messages.
  */
 async function resolveDiff(
-  document: IIdentityDiffHistoryBody,
-  nodeUrl: string,
-  permaNodeUrl?: string,
+    document: IIdentityDiffHistoryBody,
+    nodeUrl: string,
+    permaNodeUrl?: string,
 ): Promise<IIdentityDiffHistoryResponse> {
-  try {
-    const config: identity.IClientConfig = {
-      nodes: [nodeUrl],
-      permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined,
-    };
+    try {
+        const config: identity.IClientConfig = {
+            nodes: [nodeUrl],
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined,
+        };
 
-    const client = await identity.Client.fromConfig(config);
+        const client = await identity.Client.fromConfig(config);
 
-    const resolvedDocument = identity.ResolvedDocument.fromJSON(document);
-    const receipt = await client.resolveDiffHistory(resolvedDocument);
+        const resolvedDocument = identity.ResolvedDocument.fromJSON(document);
+        const receipt = await client.resolveDiffHistory(resolvedDocument);
 
-    const receiptObj = receipt.toJSON();
+        const receiptObj = receipt.toJSON();
 
-    const diffChainData = [];
+        const diffChainData = [];
 
-    const chainData = receipt.chainData();
+        const chainData = receipt.chainData();
 
-    for (let i = 0; i < chainData.length; i++) {
-      resolvedDocument.mergeDiffMessage(chainData[i]);
+        for (let i = 0; i < chainData.length; i++) {
+            resolvedDocument.mergeDiffMessage(chainData[i]);
 
-      const integrationMessage = {
-        message: receiptObj.chainData[i],
-        document: resolvedDocument.document(),
-        messageId: chainData[i].messageId(),
-      };
-      diffChainData.push(integrationMessage);
+            const integrationMessage = {
+                message: receiptObj.chainData[i],
+                document: resolvedDocument.document(),
+                messageId: chainData[i].messageId(),
+            };
+            diffChainData.push(integrationMessage);
+        }
+
+        return { chainData: diffChainData, spam: receiptObj.spam };
+    } catch (e) {
+        return { error: e.message };
     }
-
-    return { chainData: diffChainData, spam: receiptObj.spam };
-  } catch (e) {
-    return { error: e.message };
-  }
 }
 
 /**
@@ -95,40 +95,40 @@ async function resolveDiff(
  * @returns resolved diff chain and spam messages.
  */
 async function resolveLegacyDiff(
-  document: identityLegacy.Document,
-  nodeUrl: string,
-  permaNodeUrl?: string,
+    document: identityLegacy.Document,
+    nodeUrl: string,
+    permaNodeUrl?: string,
 ): Promise<IIdentityDiffHistoryResponse> {
-  try {
-    const config = new identityLegacy.Config();
-    config.setNode(nodeUrl);
+    try {
+        const config = new identityLegacy.Config();
+        config.setNode(nodeUrl);
 
-    if (permaNodeUrl) {
-      config.setPermanode(permaNodeUrl);
+        if (permaNodeUrl) {
+            config.setPermanode(permaNodeUrl);
+        }
+        const client = identityLegacy.Client.fromConfig(config);
+
+        const receipt = await client.resolveDiffHistory(document);
+
+        const receiptObj = receipt.toJSON();
+
+        const diffChainData = [];
+
+        const chainData: identityLegacy.DocumentDiff[] = receipt.chainData();
+
+        for (let i = 0; i < chainData.length; i++) {
+            document.merge(chainData[i]);
+
+            const integrationMessage = {
+                message: receiptObj.chainData[i],
+                document: IdentityHelper.convertLegacyDocument(document.toJSON() as Record<string, unknown>),
+                messageId: chainData[i].messageId,
+            };
+            diffChainData.push(integrationMessage);
+        }
+
+        return { chainData: diffChainData, spam: receiptObj.spam };
+    } catch (e) {
+        return { error: e.message };
     }
-    const client = identityLegacy.Client.fromConfig(config);
-
-    const receipt = await client.resolveDiffHistory(document);
-
-    const receiptObj = receipt.toJSON();
-
-    const diffChainData = [];
-
-    const chainData: identityLegacy.DocumentDiff[] = receipt.chainData();
-
-    for (let i = 0; i < chainData.length; i++) {
-      document.merge(chainData[i]);
-
-      const integrationMessage = {
-        message: receiptObj.chainData[i],
-        document: IdentityHelper.convertLegacyDocument(document.toJSON() as Record<string, unknown>),
-        messageId: chainData[i].messageId,
-      };
-      diffChainData.push(integrationMessage);
-    }
-
-    return { chainData: diffChainData, spam: receiptObj.spam };
-  } catch (e) {
-    return { error: e.message };
-  }
 }

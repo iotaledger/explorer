@@ -1,6 +1,6 @@
 export interface CopyButtonProps {
-  /**
-   * The string to copy to clipboard.
-   */
-  copy: string | undefined;
+    /**
+     * The string to copy to clipboard.
+     */
+    copy: string | undefined;
 }

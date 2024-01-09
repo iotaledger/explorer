@@ -8,19 +8,19 @@ export type TangleStatus = "unknown" | "pending" | "referenced" | "milestone";
  * @returns The block status.
  */
 export function calculateStatus(metadata?: IBlockMetadata): TangleStatus {
-  let blockTangleStatus: TangleStatus = "unknown";
+    let blockTangleStatus: TangleStatus = "unknown";
 
-  if (metadata) {
-    if (metadata.milestoneIndex) {
-      blockTangleStatus = "milestone";
-    } else if (metadata.referencedByMilestoneIndex) {
-      blockTangleStatus = "referenced";
-    } else {
-      blockTangleStatus = "pending";
+    if (metadata) {
+        if (metadata.milestoneIndex) {
+            blockTangleStatus = "milestone";
+        } else if (metadata.referencedByMilestoneIndex) {
+            blockTangleStatus = "referenced";
+        } else {
+            blockTangleStatus = "pending";
+        }
     }
-  }
 
-  return blockTangleStatus;
+    return blockTangleStatus;
 }
 
 /**
@@ -29,14 +29,14 @@ export function calculateStatus(metadata?: IBlockMetadata): TangleStatus {
  * @returns The conflict reason.
  */
 export function calculateConflictReason(metadata?: IBlockMetadata): string {
-  let conflictReason: string = "";
+    let conflictReason: string = "";
 
-  if (metadata?.ledgerInclusionState === "conflicting") {
-    conflictReason =
-      metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason] ?
-        CONFLICT_REASON_STRINGS[metadata.conflictReason]
-      : "The reason for the conflict is unknown";
-  }
+    if (metadata?.ledgerInclusionState === "conflicting") {
+        conflictReason =
+            metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                : "The reason for the conflict is unknown";
+    }
 
-  return conflictReason;
+    return conflictReason;
 }

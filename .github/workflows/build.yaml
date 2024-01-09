@@ -1,37 +1,37 @@
 name: Build All with Node versions 16.16, 16.20.2
 
 on:
-  push:
-    branches: [main, dev]
-    paths:
-      - "api/**"
-      - "client/**"
-      - ".github/workflows/build.yaml"
+    push:
+        branches: [main, dev]
+        paths:
+            - "api/**"
+            - "client/**"
+            - ".github/workflows/build.yaml"
 
 concurrency:
-  group: build-${{ github.ref }}
-  cancel-in-progress: true
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ["16.16", "16.20.2"]
-    name: Node ${{ matrix.node }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node ${{ matrix.node }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - name: npm 8
-        run: npm install -g npm@8
-      - name: Build
-        run: |
-          cd client
-          npm install
-          npm run build
-          cd ../api
-          npm install
-          npm run build
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node: ["16.16", "16.20.2"]
+        name: Node ${{ matrix.node }}
+        steps:
+            - uses: actions/checkout@v2
+            - name: Setup Node ${{ matrix.node }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node }}
+            - name: npm 8
+              run: npm install -g npm@8
+            - name: Build
+              run: |
+                  cd client
+                  npm install
+                  npm run build
+                  cd ../api
+                  npm install
+                  npm run build

@@ -14,23 +14,23 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(_: IConfiguration, request: IMilestoneBlocksRequest): Promise<IMilestoneBlocksResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
-  ValidationHelper.string(request.milestoneId, "milestoneId");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.string(request.milestoneId, "milestoneId");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return { error: "Endpoint available only on Stardust networks." };
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return { error: "Endpoint available only on Stardust networks." };
+    }
 
-  const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
+    const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
 
-  if (chronicleService) {
-    const milestoneBlocksResponse = await chronicleService.milestoneBlocks(request.milestoneId);
-    return milestoneBlocksResponse;
-  }
+    if (chronicleService) {
+        const milestoneBlocksResponse = await chronicleService.milestoneBlocks(request.milestoneId);
+        return milestoneBlocksResponse;
+    }
 
-  return { error: "ChronicleService unavailable for this network." };
+    return { error: "ChronicleService unavailable for this network." };
 }

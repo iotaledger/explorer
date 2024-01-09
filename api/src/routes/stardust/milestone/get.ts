@@ -14,18 +14,18 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(config: IConfiguration, request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
-  ValidationHelper.number(Number(request.milestoneIndex), "milestoneIndex");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.number(Number(request.milestoneIndex), "milestoneIndex");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return {};
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return {};
+    }
 
-  const milestoneDetails = await StardustTangleHelper.milestoneDetailsByIndex(networkConfig, Number(request.milestoneIndex));
+    const milestoneDetails = await StardustTangleHelper.milestoneDetailsByIndex(networkConfig, Number(request.milestoneIndex));
 
-  return milestoneDetails;
+    return milestoneDetails;
 }

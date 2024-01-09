@@ -1,4 +1,4 @@
 export interface IdentityHistoryProps {
-  network: string;
-  did: string;
+    network: string;
+    did: string;
 }

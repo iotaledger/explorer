@@ -1,24 +1,24 @@
 import { IResponse } from "./IResponse";
 
 export interface IIdentityStardustResolveResponse extends IResponse {
-  /**
-   * The resolved DID Document.
-   */
-  document?: {
-    doc: Record<string, unknown>;
-    meta: {
-      governorAddress: string;
-      stateControllerAddress: string;
+    /**
+     * The resolved DID Document.
+     */
+    document?: {
+        doc: Record<string, unknown>;
+        meta: {
+            governorAddress: string;
+            stateControllerAddress: string;
+        };
     };
-  };
 
-  /**
-   * Governor of Alias Output.
-   */
-  governorAddress?: string;
+    /**
+     * Governor of Alias Output.
+     */
+    governorAddress?: string;
 
-  /**
-   * State controller of Alias Output.
-   */
-  stateControllerAddress?: string;
+    /**
+     * State controller of Alias Output.
+     */
+    stateControllerAddress?: string;
 }

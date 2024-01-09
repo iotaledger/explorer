@@ -1,61 +1,61 @@
 name: Bot Build and Deploy Production
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "discord-bot/**"
-      - ".github/workflows/bot-prod.yaml"
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: "Log level"
-        required: true
-        default: "warning"
-      tags:
-        description: "Test scenario tags"
+    push:
+        branches: [main]
+        paths:
+            - "discord-bot/**"
+            - ".github/workflows/bot-prod.yaml"
+    workflow_dispatch:
+        inputs:
+            logLevel:
+                description: "Log level"
+                required: true
+                default: "warning"
+            tags:
+                description: "Test scenario tags"
 
 concurrency:
-  group: bot-${{ github.ref }}
-  cancel-in-progress: true
+    group: bot-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    env:
-      CONFIG_JSON: ${{ secrets.BOT_CONFIG }}
-      APP_YAML: ${{ secrets.BOT_GCP_APP_YAML }}
-      DISPATCH_YAML: ${{ secrets.COMMON_GCP_DISPATCH_YAML }}
+        env:
+            CONFIG_JSON: ${{ secrets.BOT_CONFIG }}
+            APP_YAML: ${{ secrets.BOT_GCP_APP_YAML }}
+            DISPATCH_YAML: ${{ secrets.COMMON_GCP_DISPATCH_YAML }}
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: API and GCP Config
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const fs = require('fs')
-            fs.writeFileSync('./discord-bot/src/data/config.prod.json', process.env.CONFIG_JSON)
-            fs.writeFileSync('./discord-bot/dispatch.yaml', process.env.DISPATCH_YAML)
-            fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)
-      - name: Use Node.js 16.16
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.16"
-      - name: npm 8.18
-        run: npm install -g npm@8.18
-      - name: Deploy
-        run: |
-          cd discord-bot
-          npm install
-          npm run build
-      - uses: google-github-actions/setup-gcloud@v0
-        with:
-          version: latest
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-      - name: Deploy
-        run: |
-          cd discord-bot
-          gcloud app deploy app.yaml dispatch.yaml --quiet
+        steps:
+            - uses: actions/checkout@v2
+            - name: API and GCP Config
+              uses: actions/github-script@v4
+              with:
+                  script: |
+                      const fs = require('fs')
+                      fs.writeFileSync('./discord-bot/src/data/config.prod.json', process.env.CONFIG_JSON)
+                      fs.writeFileSync('./discord-bot/dispatch.yaml', process.env.DISPATCH_YAML)
+                      fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)
+            - name: Use Node.js 16.16
+              uses: actions/setup-node@v1
+              with:
+                  node-version: "16.16"
+            - name: npm 8.18
+              run: npm install -g npm@8.18
+            - name: Deploy
+              run: |
+                  cd discord-bot
+                  npm install
+                  npm run build
+            - uses: google-github-actions/setup-gcloud@v0
+              with:
+                  version: latest
+                  project_id: ${{ secrets.GCP_PROJECT_ID }}
+                  service_account_key: ${{ secrets.GCP_SA_KEY }}
+                  export_default_credentials: true
+            - name: Deploy
+              run: |
+                  cd discord-bot
+                  gcloud app deploy app.yaml dispatch.yaml --quiet

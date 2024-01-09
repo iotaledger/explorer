@@ -5,80 +5,80 @@ title: "[Bug]: "
 labels: type:bug report
 
 body:
-  - type: markdown
-    attributes:
-      value: "## Reporting a bug"
-  - type: markdown
-    attributes:
-      value: |
-        Thank you for helping us make Explorer better, by reporting a bug you have found. This issue may already be reported! Please join our [discord](https://discord.iota.org/) for help.
+    - type: markdown
+      attributes:
+          value: "## Reporting a bug"
+    - type: markdown
+      attributes:
+          value: |
+              Thank you for helping us make Explorer better, by reporting a bug you have found. This issue may already be reported! Please join our [discord](https://discord.iota.org/) for help.
 
-  - type: textarea
-    id: description
-    attributes:
-      label: Issue description
-      description: Briefly describe the issue.
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected_behaviour
-    attributes:
-      label: Expected behaviour
-      description: A concise description of what you expected to happen.
-    validations:
-      required: true
-
-  - type: textarea
-    id: actual_behaviour
-    attributes:
-      label: Actual behaviour
-      description: A concise description of what actually happened.
-    validations:
-      required: true
-
-  - type: dropdown
-    id: can_repro
-    attributes:
-      label: Can the issue reliably be reproduced?
-      options:
-        - "Yes"
-        - "No"
-    validations:
-      required: true
-
-  - type: textarea
-    id: repro_steps
-    attributes:
-      label: Steps to reproduce the issue
-      description: Explain how the maintainer can reproduce the issue.
-      placeholder: |
-        1.
-        2.
-        3.
-        ...
-
-  - type: textarea
-    id: errors
-    attributes:
-      label: Errors
-      description: Paste any errors (or screenshots).
-      render: shell
-
-  - type: checkboxes
-    id: duplicate_declaration
-    attributes:
-      label: Duplicate declaration
-      description: Please confirm that you are not creating a duplicate issue.
-      options:
-        - label: I have searched the issues tracker for this issue and there is none
+    - type: textarea
+      id: description
+      attributes:
+          label: Issue description
+          description: Briefly describe the issue.
+      validations:
           required: true
 
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/iotaledger/explorer/blob/dev/.github/CODE_OF_CONDUCT.md).
-      options:
-        - label: I agree to follow this project's Code of Conduct
+    - type: textarea
+      id: expected_behaviour
+      attributes:
+          label: Expected behaviour
+          description: A concise description of what you expected to happen.
+      validations:
           required: true
+
+    - type: textarea
+      id: actual_behaviour
+      attributes:
+          label: Actual behaviour
+          description: A concise description of what actually happened.
+      validations:
+          required: true
+
+    - type: dropdown
+      id: can_repro
+      attributes:
+          label: Can the issue reliably be reproduced?
+          options:
+              - "Yes"
+              - "No"
+      validations:
+          required: true
+
+    - type: textarea
+      id: repro_steps
+      attributes:
+          label: Steps to reproduce the issue
+          description: Explain how the maintainer can reproduce the issue.
+          placeholder: |
+              1.
+              2.
+              3.
+              ...
+
+    - type: textarea
+      id: errors
+      attributes:
+          label: Errors
+          description: Paste any errors (or screenshots).
+          render: shell
+
+    - type: checkboxes
+      id: duplicate_declaration
+      attributes:
+          label: Duplicate declaration
+          description: Please confirm that you are not creating a duplicate issue.
+          options:
+              - label: I have searched the issues tracker for this issue and there is none
+                required: true
+
+    - type: checkboxes
+      id: terms
+      attributes:
+          label: Code of Conduct
+          description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/iotaledger/explorer/blob/dev/.github/CODE_OF_CONDUCT.md).
+          options:
+              - label: I agree to follow this project's Code of Conduct
+                required: true

@@ -14,16 +14,16 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @returns The response.
  */
 export async function search(_: IConfiguration, request: ISearchRequest): Promise<ISearchResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
-  ValidationHelper.string(request.query, "query");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.string(request.query, "query");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return {};
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return {};
+    }
 
-  return StardustTangleHelper.search(networkConfig, request.query);
+    return StardustTangleHelper.search(networkConfig, request.query);
 }

@@ -11,113 +11,113 @@ import { IAnalyticStats } from "../stats/IAnalyticStats";
 import { IMilestoneAnalyticStats } from "../stats/IMilestoneAnalyticStats";
 
 export interface ISearchResponse extends IResponse {
-  /**
-   * Block if it was found.
-   */
-  block?: Block;
+    /**
+     * Block if it was found.
+     */
+    block?: Block;
 
-  /**
-   * The transaction included block.
-   */
-  transactionBlock?: Block;
+    /**
+     * The transaction included block.
+     */
+    transactionBlock?: Block;
 
-  /**
-   * Address details.
-   */
-  addressDetails?: IBech32AddressDetails;
+    /**
+     * Address details.
+     */
+    addressDetails?: IBech32AddressDetails;
 
-  /**
-   * Output if it was found (block will also be populated).
-   */
-  output?: OutputResponse;
+    /**
+     * Output if it was found (block will also be populated).
+     */
+    output?: OutputResponse;
 
-  /**
-   * The addres UTXOs.
-   */
-  addressOutputs?: OutputResponse[];
+    /**
+     * The addres UTXOs.
+     */
+    addressOutputs?: OutputResponse[];
 
-  /**
-   * Basic and/or Nft tagged output ids.
-   */
-  taggedOutputs?: ITaggedOutputsResponse;
+    /**
+     * Basic and/or Nft tagged output ids.
+     */
+    taggedOutputs?: ITaggedOutputsResponse;
 
-  /**
-   * The outputIds of transaction history request.
-   */
-  historyOutputs?: ITransactionHistoryResponse;
+    /**
+     * The outputIds of transaction history request.
+     */
+    historyOutputs?: ITransactionHistoryResponse;
 
-  /**
-   * Associated outputs of the address.
-   */
-  addressAssociatedOutputs?: IAssociationsResponse;
+    /**
+     * Associated outputs of the address.
+     */
+    addressAssociatedOutputs?: IAssociationsResponse;
 
-  /**
-   * Alias id if it was found.
-   */
-  aliasId?: string;
+    /**
+     * Alias id if it was found.
+     */
+    aliasId?: string;
 
-  /**
-   * Alias details.
-   */
-  aliasDetails?: OutputResponse;
+    /**
+     * Alias details.
+     */
+    aliasDetails?: OutputResponse;
 
-  /**
-   * Foundry id if it was found.
-   */
-  foundryId?: string;
+    /**
+     * Foundry id if it was found.
+     */
+    foundryId?: string;
 
-  /**
-   * Foundry details.
-   */
-  foundryDetails?: OutputResponse;
+    /**
+     * Foundry details.
+     */
+    foundryDetails?: OutputResponse;
 
-  /**
-   * Nft id if it was found.
-   */
-  nftId?: string;
+    /**
+     * Nft id if it was found.
+     */
+    nftId?: string;
 
-  /**
-   * Nft outputs.
-   */
-  nftOutputs?: IOutputsResponse;
+    /**
+     * Nft outputs.
+     */
+    nftOutputs?: IOutputsResponse;
 
-  /**
-   * Nft details.
-   */
-  nftDetails?: OutputResponse;
+    /**
+     * Nft details.
+     */
+    nftDetails?: OutputResponse;
 
-  /**
-   * Foundry outputs.
-   */
-  foundryOutputs?: IOutputsResponse;
+    /**
+     * Foundry outputs.
+     */
+    foundryOutputs?: IOutputsResponse;
 
-  /**
-   * Milestone if it was found.
-   */
-  milestone?: IMilestoneDetailsResponse;
+    /**
+     * Milestone if it was found.
+     */
+    milestone?: IMilestoneDetailsResponse;
 
-  /**
-   * Milestone chornicle stats.
-   */
-  milestoneStats?: IMilestoneAnalyticStats;
+    /**
+     * Milestone chornicle stats.
+     */
+    milestoneStats?: IMilestoneAnalyticStats;
 
-  /**
-   * Milestone referenced blocks from chornicle.
-   */
-  milestoneBlocks?: IMilestoneBlocksResponse;
+    /**
+     * Milestone referenced blocks from chornicle.
+     */
+    milestoneBlocks?: IMilestoneBlocksResponse;
 
-  /**
-   * The influx analytic stats.
-   */
-  analyticStats?: IAnalyticStats;
+    /**
+     * The influx analytic stats.
+     */
+    analyticStats?: IAnalyticStats;
 
-  /**
-   * The influx daily graphs data.
-   */
-  influxStats?: IInfluxDailyResponse;
+    /**
+     * The influx daily graphs data.
+     */
+    influxStats?: IInfluxDailyResponse;
 
-  /**
-   * DiD identifier.
-   */
-  did?: string;
+    /**
+     * DiD identifier.
+     */
+    did?: string;
 }

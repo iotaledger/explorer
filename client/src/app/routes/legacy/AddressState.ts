@@ -2,78 +2,78 @@ import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { ITransactionsCursor } from "~models/api/legacy/ITransactionsCursor";
 
 export interface AddressState {
-  /**
-   * The address.
-   */
-  address?: string;
-
-  /**
-   * The address checksum.
-   */
-  checksum?: string;
-
-  /**
-   * The address balance.
-   */
-  balance?: number;
-
-  /**
-   * Transaction hashes for the address.
-   */
-  items?: {
     /**
-     * The transaction hash.
+     * The address.
      */
-    txHash: string;
+    address?: string;
 
     /**
-     * The details details.
+     * The address checksum.
      */
-    details?: ICachedTransaction;
-  }[];
-
-  /**
-   * Transaction hashes for the address.
-   */
-  filteredItems?: {
-    /**
-     * The transaction hash.
-     */
-    txHash: string;
+    checksum?: string;
 
     /**
-     * The details details.
+     * The address balance.
      */
-    details?: ICachedTransaction;
-  }[];
+    balance?: number;
 
-  /**
-   * Is the component status busy.
-   */
-  statusBusy: number;
+    /**
+     * Transaction hashes for the address.
+     */
+    items?: {
+        /**
+         * The transaction hash.
+         */
+        txHash: string;
 
-  /**
-   * The status.
-   */
-  status: string;
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
 
-  /**
-   * Format the iota in full.
-   */
-  formatFull?: boolean;
+    /**
+     * Transaction hashes for the address.
+     */
+    filteredItems?: {
+        /**
+         * The transaction hash.
+         */
+        txHash: string;
 
-  /**
-   * Hide zero transactions.
-   */
-  showOnlyValueTransactions: boolean;
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
 
-  /**
-   * Hide unconfirmed transactions.
-   */
-  showOnlyConfirmedTransactions: boolean;
+    /**
+     * Is the component status busy.
+     */
+    statusBusy: number;
 
-  /**
-   * Cursor for more items.
-   */
-  cursor?: ITransactionsCursor;
+    /**
+     * The status.
+     */
+    status: string;
+
+    /**
+     * Format the iota in full.
+     */
+    formatFull?: boolean;
+
+    /**
+     * Hide zero transactions.
+     */
+    showOnlyValueTransactions: boolean;
+
+    /**
+     * Hide unconfirmed transactions.
+     */
+    showOnlyConfirmedTransactions: boolean;
+
+    /**
+     * Cursor for more items.
+     */
+    cursor?: ITransactionsCursor;
 }

@@ -14,16 +14,16 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(config: IConfiguration, request: ITransactionDetailsRequest): Promise<ITransactionDetailsResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
-  ValidationHelper.string(request.transactionId, "transactionId");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.string(request.transactionId, "transactionId");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return {};
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return {};
+    }
 
-  return StardustTangleHelper.transactionIncludedBlock(networkConfig, request.transactionId);
+    return StardustTangleHelper.transactionIncludedBlock(networkConfig, request.transactionId);
 }

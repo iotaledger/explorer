@@ -18,42 +18,42 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @returns The response.
  */
 export async function post(
-  _: IConfiguration,
-  request: ITransactionHistoryRequest,
-  body: ITransactionHistoryDownloadBody,
+    _: IConfiguration,
+    request: ITransactionHistoryRequest,
+    body: ITransactionHistoryDownloadBody,
 ): Promise<IDataResponse | null> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return null;
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return null;
+    }
 
-  if (!networkConfig.permaNodeEndpoint) {
-    return null;
-  }
+    if (!networkConfig.permaNodeEndpoint) {
+        return null;
+    }
 
-  const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
+    const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
 
-  const result = await chronicleService.transactionHistoryDownload(request.address, body.targetDate);
+    const result = await chronicleService.transactionHistoryDownload(request.address, body.targetDate);
 
-  const jsZip = new JSZip();
-  let response: IDataResponse = null;
+    const jsZip = new JSZip();
+    let response: IDataResponse = null;
 
-  try {
-    jsZip.file("history.json", JSON.stringify(result));
-    const content = await jsZip.generateAsync({ type: "nodebuffer" });
+    try {
+        jsZip.file("history.json", JSON.stringify(result));
+        const content = await jsZip.generateAsync({ type: "nodebuffer" });
 
-    response = {
-      data: content,
-      contentType: "application/octet-stream",
-    };
-  } catch (e) {
-    logger.error(`Failed to zip transaction history for download. Cause: ${e}`);
-  }
+        response = {
+            data: content,
+            contentType: "application/octet-stream",
+        };
+    } catch (e) {
+        logger.error(`Failed to zip transaction history for download. Cause: ${e}`);
+    }
 
-  return response;
+    return response;
 }

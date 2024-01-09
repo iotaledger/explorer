@@ -3,11 +3,11 @@
 $rem-base-font: 16px !default;
 
 @mixin font-size($font-size, $line-height: 0) {
-  font-size: $font-size;
-  font-size: math.div($font-size, $rem-base-font) * 1rem;
+    font-size: $font-size;
+    font-size: math.div($font-size, $rem-base-font) * 1rem;
 
-  @if $line-height > 0 {
-    line-height: $line-height;
-    line-height: math.div($line-height, $rem-base-font) * 1rem;
-  }
+    @if $line-height > 0 {
+        line-height: $line-height;
+        line-height: math.div($line-height, $rem-base-font) * 1rem;
+    }
 }

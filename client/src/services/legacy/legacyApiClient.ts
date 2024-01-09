@@ -17,71 +17,71 @@ import { ApiClient } from "../apiClient";
  * Class to handle api communications on legacy.
  */
 export class LegacyApiClient extends ApiClient {
-  /**
-   * Perform a request to get the networks.
-   * @returns The response from the request.
-   */
-  public async networks(): Promise<INetworkGetResponse> {
-    return this.callApi<unknown, INetworkGetResponse>("networks", "get");
-  }
+    /**
+     * Perform a request to get the networks.
+     * @returns The response from the request.
+     */
+    public async networks(): Promise<INetworkGetResponse> {
+        return this.callApi<unknown, INetworkGetResponse>("networks", "get");
+    }
 
-  /**
-   * Perform a request to get the currency information.
-   * @returns The response from the request.
-   */
-  public async currencies(): Promise<ICurrenciesResponse> {
-    return this.callApi<unknown, ICurrenciesResponse>("currencies", "get");
-  }
+    /**
+     * Perform a request to get the currency information.
+     * @returns The response from the request.
+     */
+    public async currencies(): Promise<ICurrenciesResponse> {
+        return this.callApi<unknown, ICurrenciesResponse>("currencies", "get");
+    }
 
-  /**
-   * Get the stats.
-   * @param request The request to send.
-   * @returns The response from the request.
-   */
-  public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
-    return this.callApi<unknown, IStatsGetResponse>(
-      `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-      "get",
-    );
-  }
+    /**
+     * Get the stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
+        return this.callApi<unknown, IStatsGetResponse>(
+            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
+            "get",
+        );
+    }
 
-  /**
-   * Find milestones from the tangle.
-   * @param request The request to send.
-   * @returns The response from the request.
-   */
-  public async milestoneGet(request: IMilestoneGetRequest): Promise<IMilestoneGetResponse> {
-    return this.callApi<unknown, IMilestoneGetResponse>(`milestones/${request.network}/${request.milestoneIndex}`, "get");
-  }
+    /**
+     * Find milestones from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async milestoneGet(request: IMilestoneGetRequest): Promise<IMilestoneGetResponse> {
+        return this.callApi<unknown, IMilestoneGetResponse>(`milestones/${request.network}/${request.milestoneIndex}`, "get");
+    }
 
-  /**
-   * Find transactions from the tangle.
-   * @param request The request to send.
-   * @returns The response from the request.
-   */
-  public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
-    const { network, hash, ...rest } = request;
+    /**
+     * Find transactions from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
+        const { network, hash, ...rest } = request;
 
-    return this.callApi<unknown, ITransactionsGetResponse>(`transactions/${network}/${hash}/${FetchHelper.urlParams(rest)}`, "get");
-  }
+        return this.callApi<unknown, ITransactionsGetResponse>(`transactions/${network}/${hash}/${FetchHelper.urlParams(rest)}`, "get");
+    }
 
-  /**
-   * Get trytes from the tangle.
-   * @param request The request to send.
-   * @returns The response from the request.
-   */
-  public async trytesRetrieve(request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
-    const { network, ...rest } = request;
+    /**
+     * Get trytes from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async trytesRetrieve(request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
+        const { network, ...rest } = request;
 
-    return this.callApi<unknown, ITransactionsGetResponse>(`trytes/${network}`, "post", rest);
-  }
+        return this.callApi<unknown, ITransactionsGetResponse>(`trytes/${network}`, "post", rest);
+    }
 
-  /**
-   * Perform tangle operation on address.
-   * @param request The request to send.
-   * @returns The response from the request.
-   */
-  public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
-    return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.address}`, "get");
-  }
+    /**
+     * Perform tangle operation on address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async addressGet(request: IAddressGetRequest): Promise<IAddressGetResponse> {
+        return this.callApi<unknown, IAddressGetResponse>(`address/${request.network}/${request.address}`, "get");
+    }
 }

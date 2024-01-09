@@ -1,4 +1,4 @@
 {
-  "title": "Visualizer",
-  "description": "<p>The visualizer tool shows new transactions and how do they get attached to the Tangle in real time.<p>"
+    "title": "Visualizer",
+    "description": "<p>The visualizer tool shows new transactions and how do they get attached to the Tangle in real time.<p>"
 }

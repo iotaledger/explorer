@@ -1,6 +1,6 @@
 export interface CopyButtonState {
-  /**
-   * Is the message active.
-   */
-  active: boolean;
+    /**
+     * Is the message active.
+     */
+    active: boolean;
 }

@@ -3,66 +3,66 @@ import { ConfirmationState } from "~models/confirmationState";
 import { CurrencyState } from "../../components/CurrencyState";
 
 export interface BundleState extends CurrencyState {
-  /**
-   * The bundle hash.
-   */
-  bundle?: string;
-
-  /**
-   * The transactions groups for the bundle.
-   */
-  groups: {
     /**
-     * The confirmation state for the group.
+     * The bundle hash.
      */
-    confirmationState: ConfirmationState;
+    bundle?: string;
 
     /**
-     * Timestamp for the group.
+     * The transactions groups for the bundle.
      */
-    timestamp: number;
+    groups: {
+        /**
+         * The confirmation state for the group.
+         */
+        confirmationState: ConfirmationState;
 
-    /**
-     * The transactions in the group.
-     */
-    inputs: {
-      /**
-       * The transaction.
-       */
-      details: ICachedTransaction;
-      /**
-       * The value converted.
-       */
-      valueCurrency: string;
+        /**
+         * Timestamp for the group.
+         */
+        timestamp: number;
+
+        /**
+         * The transactions in the group.
+         */
+        inputs: {
+            /**
+             * The transaction.
+             */
+            details: ICachedTransaction;
+            /**
+             * The value converted.
+             */
+            valueCurrency: string;
+        }[];
+
+        /**
+         * The transactions in the group.
+         */
+        outputs: {
+            /**
+             * The transaction.
+             */
+            details: ICachedTransaction;
+            /**
+             * The value converted.
+             */
+            valueCurrency: string;
+        }[];
     }[];
 
     /**
-     * The transactions in the group.
+     * Is the component busy.
      */
-    outputs: {
-      /**
-       * The transaction.
-       */
-      details: ICachedTransaction;
-      /**
-       * The value converted.
-       */
-      valueCurrency: string;
-    }[];
-  }[];
+    statusBusy: boolean;
 
-  /**
-   * Is the component busy.
-   */
-  statusBusy: boolean;
+    /**
+     * The status.
+     */
+    status: string;
 
-  /**
-   * The status.
-   */
-  status: string;
-
-  /**
-   * Format the iota in full.
-   */
-  formatFull?: boolean;
+    /**
+     * Format the iota in full.
+     */
+    formatFull?: boolean;
 }

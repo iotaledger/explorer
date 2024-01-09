@@ -1,7 +1,7 @@
 dispatch:
-  - url: "%GCP-PROD-DOMAIN%/*"
-    service: %GCP-PROD-SERVICE-ID%
-  - url: "%GCP-STAGING-DOMAIN%/*"
-    service: %GCP-STAGING-SERVICE-ID%
-  - url: "%GCP-BOT-PROD-DOMAIN%/*"
-    service: %GCP-BOT-PROD-SERVICE-ID%
+    - url: "%GCP-PROD-DOMAIN%/*"
+      service: %GCP-PROD-SERVICE-ID%
+    - url: "%GCP-STAGING-DOMAIN%/*"
+      service: %GCP-STAGING-SERVICE-ID%
+    - url: "%GCP-BOT-PROD-DOMAIN%/*"
+      service: %GCP-BOT-PROD-SERVICE-ID%

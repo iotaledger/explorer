@@ -1,11 +1,11 @@
 {
-  "title": "Output",
-  "description": "<p>Unspent outputs define the owner of the tokens, the kind of tokens and their amount, as well as conditions by which you can unlock them.</p>",
-  "links": [
-    {
-      "label": "Read more",
-      "href": "http://wiki.iota.org/shimmer/introduction/explanations/what_is_stardust/rethink_utxo",
-      "isExternal": true
-    }
-  ]
+    "title": "Output",
+    "description": "<p>Unspent outputs define the owner of the tokens, the kind of tokens and their amount, as well as conditions by which you can unlock them.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "http://wiki.iota.org/shimmer/introduction/explanations/what_is_stardust/rethink_utxo",
+            "isExternal": true
+        }
+    ]
 }

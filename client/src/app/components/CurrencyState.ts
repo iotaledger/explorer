@@ -1,6 +1,6 @@
 export interface CurrencyState {
-  /**
-   * The selected currency.
-   */
-  currency: string;
+    /**
+     * The selected currency.
+     */
+    currency: string;
 }

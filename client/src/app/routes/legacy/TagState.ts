@@ -2,73 +2,73 @@ import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { ITransactionsCursor } from "~models/api/legacy/ITransactionsCursor";
 
 export interface TagState {
-  /**
-   * The tag to display.
-   */
-  tag?: string;
-
-  /**
-   * The tag remainder.
-   */
-  tagFill?: string;
-
-  /**
-   * Transaction hashes for the address.
-   */
-  items?: {
     /**
-     * The transaction hash.
+     * The tag to display.
      */
-    txHash: string;
+    tag?: string;
 
     /**
-     * The details details.
+     * The tag remainder.
      */
-    details?: ICachedTransaction;
-  }[];
-
-  /**
-   * Transaction hashes for the address.
-   */
-  filteredItems?: {
-    /**
-     * The transaction hash.
-     */
-    txHash: string;
+    tagFill?: string;
 
     /**
-     * The details details.
+     * Transaction hashes for the address.
      */
-    details?: ICachedTransaction;
-  }[];
+    items?: {
+        /**
+         * The transaction hash.
+         */
+        txHash: string;
 
-  /**
-   * Is the component status busy.
-   */
-  statusBusy: number;
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
 
-  /**
-   * The status.
-   */
-  status: string;
+    /**
+     * Transaction hashes for the address.
+     */
+    filteredItems?: {
+        /**
+         * The transaction hash.
+         */
+        txHash: string;
 
-  /**
-   * Format the iota in full.
-   */
-  formatFull?: boolean;
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[];
 
-  /**
-   * Hide zero transactions.
-   */
-  showOnlyValueTransactions: boolean;
+    /**
+     * Is the component status busy.
+     */
+    statusBusy: number;
 
-  /**
-   * Hide unconfirmed transactions.
-   */
-  showOnlyConfirmedTransactions: boolean;
+    /**
+     * The status.
+     */
+    status: string;
 
-  /**
-   * Cursor for more items.
-   */
-  cursor?: ITransactionsCursor;
+    /**
+     * Format the iota in full.
+     */
+    formatFull?: boolean;
+
+    /**
+     * Hide zero transactions.
+     */
+    showOnlyValueTransactions: boolean;
+
+    /**
+     * Hide unconfirmed transactions.
+     */
+    showOnlyConfirmedTransactions: boolean;
+
+    /**
+     * Cursor for more items.
+     */
+    cursor?: ITransactionsCursor;
 }

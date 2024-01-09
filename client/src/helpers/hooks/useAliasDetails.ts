@@ -13,36 +13,36 @@ import { HexHelper } from "../stardust/hexHelper";
  * @returns The output response and loading bool.
  */
 export function useAliasDetails(network: string, aliasId: string | null): [AliasOutput | null, boolean] {
-  const isMounted = useIsMounted();
-  const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-  const [aliasOutput, setAliasOutput] = useState<AliasOutput | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+    const isMounted = useIsMounted();
+    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+    const [aliasOutput, setAliasOutput] = useState<AliasOutput | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    setIsLoading(true);
-    if (aliasId) {
-      // eslint-disable-next-line no-void
-      void (async () => {
-        apiClient
-          .aliasDetails({
-            network,
-            aliasId: HexHelper.addPrefix(aliasId),
-          })
-          .then((response) => {
-            if (!response?.error && isMounted) {
-              const output = response.aliasDetails?.output as AliasOutput;
+    useEffect(() => {
+        setIsLoading(true);
+        if (aliasId) {
+            // eslint-disable-next-line no-void
+            void (async () => {
+                apiClient
+                    .aliasDetails({
+                        network,
+                        aliasId: HexHelper.addPrefix(aliasId),
+                    })
+                    .then((response) => {
+                        if (!response?.error && isMounted) {
+                            const output = response.aliasDetails?.output as AliasOutput;
 
-              setAliasOutput(output);
-            }
-          })
-          .finally(() => {
+                            setAliasOutput(output);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
+            })();
+        } else {
             setIsLoading(false);
-          });
-      })();
-    } else {
-      setIsLoading(false);
-    }
-  }, [network, aliasId]);
+        }
+    }, [network, aliasId]);
 
-  return [aliasOutput, isLoading];
+    return [aliasOutput, isLoading];
 }

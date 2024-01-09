@@ -8,11 +8,11 @@ const version = process.env.npm_package_version ? ` ${process.env.npm_package_ve
 
 const { combine, timestamp: timestampFunc, label: labelFunc, printf } = format;
 const theFormat = combine(
-  labelFunc({ label: `Explorer${version}` }),
-  timestampFunc({
-    format: () => moment().format("DD-MM-YYYY HH:mm:ss.SSSZ"),
-  }),
-  printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`),
+    labelFunc({ label: `Explorer${version}` }),
+    timestampFunc({
+        format: () => moment().format("DD-MM-YYYY HH:mm:ss.SSSZ"),
+    }),
+    printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`),
 );
 
 const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
@@ -21,23 +21,23 @@ const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.col
 const transportList: unknown[] = [];
 
 if (process.env.GCLOUD_PROJECT) {
-  const gCloudLogger = new LoggingWinston();
-  transportList.push(gCloudLogger);
+    const gCloudLogger = new LoggingWinston();
+    transportList.push(gCloudLogger);
 } else {
-  transportList.push(
-    new transports.Console({
-      level: logLevel,
-      format: loggerFormat,
-    }),
-  );
+    transportList.push(
+        new transports.Console({
+            level: logLevel,
+            format: loggerFormat,
+        }),
+    );
 }
 
 const logger = createLogger({
-  level: logLevel,
-  format: format.json(),
-  defaultMeta: { service: `Explorer${version}` },
-  // @ts-expect-error Can't find a common type between Console and gCloud winston transport to make ts happy
-  transports: transportList,
+    level: logLevel,
+    format: format.json(),
+    defaultMeta: { service: `Explorer${version}` },
+    // @ts-expect-error Can't find a common type between Console and gCloud winston transport to make ts happy
+    transports: transportList,
 });
 
 export default logger;

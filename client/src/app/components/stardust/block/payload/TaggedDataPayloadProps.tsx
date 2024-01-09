@@ -2,18 +2,18 @@ import { TaggedDataPayload } from "@iota/sdk-wasm/web";
 import * as H from "history";
 
 export interface TaggedDataPayloadProps {
-  /**
-   * The network to lookup.
-   */
-  network: string;
+    /**
+     * The network to lookup.
+     */
+    network: string;
 
-  /**
-   * The tagged data payload.
-   */
-  payload: TaggedDataPayload;
+    /**
+     * The tagged data payload.
+     */
+    payload: TaggedDataPayload;
 
-  /**
-   * History for navigation.
-   */
-  history: H.History;
+    /**
+     * History for navigation.
+     */
+    history: H.History;
 }

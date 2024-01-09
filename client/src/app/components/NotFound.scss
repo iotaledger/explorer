@@ -4,56 +4,56 @@
 @import "../../scss/variables";
 
 .not-found {
-  display: flex;
-  flex-direction: column;
-  .wrapper {
     display: flex;
-    justify-content: center;
-    .inner {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      max-width: $desktop-width;
-      margin: 40px 0px;
+    flex-direction: column;
+    .wrapper {
+        display: flex;
+        justify-content: center;
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 0px;
 
-      .card {
-        height: 40vh;
-      }
-
-      @include desktop-down {
-        flex: unset;
-        width: 100%;
-        max-width: 100%;
-        margin: 40px 0px;
-        padding-right: 24px;
-        padding-left: 24px;
-
-        > .row {
-          flex-direction: column;
-        }
-      }
-
-      @include tablet-down {
-        margin: 28px 0;
-      }
-      ul {
-        @include font-size(16px);
-
-        margin-left: 40px;
-        font-family: $metropolis;
-
-        li {
-          margin-bottom: 10px;
-          color: var(--body-color);
-
-          > span {
-            &:first-child {
-              margin-right: 10px;
-              color: $main-green;
+            .card {
+                height: 40vh;
             }
-          }
+
+            @include desktop-down {
+                flex: unset;
+                width: 100%;
+                max-width: 100%;
+                margin: 40px 0px;
+                padding-right: 24px;
+                padding-left: 24px;
+
+                > .row {
+                    flex-direction: column;
+                }
+            }
+
+            @include tablet-down {
+                margin: 28px 0;
+            }
+            ul {
+                @include font-size(16px);
+
+                margin-left: 40px;
+                font-family: $metropolis;
+
+                li {
+                    margin-bottom: 10px;
+                    color: var(--body-color);
+
+                    > span {
+                        &:first-child {
+                            margin-right: 10px;
+                            color: $main-green;
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }

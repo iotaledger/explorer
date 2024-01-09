@@ -9,200 +9,200 @@ import { ProtocolVersion } from "~models/config/protocolVersion";
  * Cache tangle requests.
  */
 export class TangleCacheService {
-  /**
-   * Timeout for stale cached items (5 mins).
-   */
-  protected readonly STALE_TIME: number = 300000;
-
-  /**
-   * The network service.
-   */
-  protected readonly _networkService: NetworkService;
-
-  /**
-   * The cache for the transactions.
-   */
-  protected readonly _transactionCache: {
     /**
-     * Network.
+     * Timeout for stale cached items (5 mins).
      */
-    [network: string]: {
-      /**
-       * Transaction hash.
-       */
-      [id: string]: ICachedTransaction;
-    };
-  };
+    protected readonly STALE_TIME: number = 300000;
 
-  /**
-   * Find transaction results.
-   */
-  protected readonly _legacyCache: {
     /**
-     * Network.
+     * The network service.
      */
-    [network: string]: {
-      /**
-       * The hash type.
-       */
-      [hashKey in TransactionsGetMode]?: {
+    protected readonly _networkService: NetworkService;
+
+    /**
+     * The cache for the transactions.
+     */
+    protected readonly _transactionCache: {
         /**
-         * The hash.
+         * Network.
          */
-        [id: string]: {
-          /**
-           * The transactions hashes found.
-           */
-          txHashes: string[];
-          /**
-           * There are more transactions.
-           */
-          cursor: ITransactionsCursor;
-          /**
-           * The time of cache.
-           */
-          cached: number;
+        [network: string]: {
+            /**
+             * Transaction hash.
+             */
+            [id: string]: ICachedTransaction;
         };
-      };
     };
-  };
 
-  /**
-   * Address balance results.
-   */
-  protected readonly _addressBalances: {
     /**
-     * Network.
+     * Find transaction results.
      */
-    [network: string]: {
-      /**
-       * The address hash.
-       */
-      [id: string]: {
+    protected readonly _legacyCache: {
         /**
-         * The balance for the address.
+         * Network.
          */
-        balance: number;
-        /**
-         * The time of cache.
-         */
-        cached: number;
-      };
+        [network: string]: {
+            /**
+             * The hash type.
+             */
+            [hashKey in TransactionsGetMode]?: {
+                /**
+                 * The hash.
+                 */
+                [id: string]: {
+                    /**
+                     * The transactions hashes found.
+                     */
+                    txHashes: string[];
+                    /**
+                     * There are more transactions.
+                     */
+                    cursor: ITransactionsCursor;
+                    /**
+                     * The time of cache.
+                     */
+                    cached: number;
+                };
+            };
+        };
     };
-  };
 
-  /**
-   * Streams v0 payload cache.
-   */
-  protected readonly _streamsV0: {
     /**
-     * Network.
+     * Address balance results.
      */
-    [network: string]: {
-      /**
-       * The root.
-       */
-      [id: string]: {
+    protected readonly _addressBalances: {
         /**
-         * The payload.
+         * Network.
          */
-        payload: string;
-        /**
-         * The next root.
-         */
-        nextRoot: string;
-        /**
-         * The tag.
-         */
-        tag: string;
-        /**
-         * The time of cache.
-         */
-        cached: number;
-      };
+        [network: string]: {
+            /**
+             * The address hash.
+             */
+            [id: string]: {
+                /**
+                 * The balance for the address.
+                 */
+                balance: number;
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
     };
-  };
 
-  /**
-   * Protocol versions.
-   */
-  protected readonly _networkProtocols: { [network: string]: ProtocolVersion };
+    /**
+     * Streams v0 payload cache.
+     */
+    protected readonly _streamsV0: {
+        /**
+         * Network.
+         */
+        [network: string]: {
+            /**
+             * The root.
+             */
+            [id: string]: {
+                /**
+                 * The payload.
+                 */
+                payload: string;
+                /**
+                 * The next root.
+                 */
+                nextRoot: string;
+                /**
+                 * The tag.
+                 */
+                tag: string;
+                /**
+                 * The time of cache.
+                 */
+                cached: number;
+            };
+        };
+    };
 
-  /**
-   * Create a new instance of TangleCacheService.
-   */
-  constructor() {
-    this._transactionCache = {};
-    this._legacyCache = {};
-    this._addressBalances = {};
-    this._streamsV0 = {};
-    this._networkProtocols = {};
+    /**
+     * Protocol versions.
+     */
+    protected readonly _networkProtocols: { [network: string]: ProtocolVersion };
 
-    this._networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = this._networkService.networks();
+    /**
+     * Create a new instance of TangleCacheService.
+     */
+    constructor() {
+        this._transactionCache = {};
+        this._legacyCache = {};
+        this._addressBalances = {};
+        this._streamsV0 = {};
+        this._networkProtocols = {};
 
-    for (const networkConfig of networks) {
-      this._transactionCache[networkConfig.network] = {};
-      this._networkProtocols[networkConfig.network] = networkConfig.protocolVersion;
+        this._networkService = ServiceFactory.get<NetworkService>("network");
+        const networks = this._networkService.networks();
 
-      this._legacyCache[networkConfig.network] = {
-        tag: {},
-        address: {},
-        bundle: {},
-        transaction: {},
-      };
+        for (const networkConfig of networks) {
+            this._transactionCache[networkConfig.network] = {};
+            this._networkProtocols[networkConfig.network] = networkConfig.protocolVersion;
 
-      this._addressBalances[networkConfig.network] = {};
-      this._streamsV0[networkConfig.network] = {};
-    }
+            this._legacyCache[networkConfig.network] = {
+                tag: {},
+                address: {},
+                bundle: {},
+                transaction: {},
+            };
 
-    // Check for stale cache items every minute
-    setInterval(() => this.staleCheck(), 60000);
-  }
-
-  /**
-   * Check all the cached items and remove any stale items.
-   */
-  protected staleCheck(): void {
-    const now = Date.now();
-
-    for (const net in this._transactionCache) {
-      const tranCache = this._transactionCache[net];
-      if (tranCache) {
-        for (const tx in tranCache) {
-          if (now - tranCache[tx].cached >= this.STALE_TIME) {
-            delete tranCache[tx];
-          }
+            this._addressBalances[networkConfig.network] = {};
+            this._streamsV0[networkConfig.network] = {};
         }
-      }
+
+        // Check for stale cache items every minute
+        setInterval(() => this.staleCheck(), 60000);
     }
 
-    for (const net in this._legacyCache) {
-      const findCache = this._legacyCache[net];
-      if (findCache) {
-        for (const hashType in findCache) {
-          const hashCache = findCache[hashType as TransactionsGetMode];
+    /**
+     * Check all the cached items and remove any stale items.
+     */
+    protected staleCheck(): void {
+        const now = Date.now();
 
-          if (hashCache) {
-            for (const hash in hashCache) {
-              if (now - hashCache[hash].cached >= this.STALE_TIME) {
-                delete hashCache[hash];
-              }
+        for (const net in this._transactionCache) {
+            const tranCache = this._transactionCache[net];
+            if (tranCache) {
+                for (const tx in tranCache) {
+                    if (now - tranCache[tx].cached >= this.STALE_TIME) {
+                        delete tranCache[tx];
+                    }
+                }
             }
-          }
         }
-      }
-    }
 
-    for (const net in this._addressBalances) {
-      const addrBalance = this._addressBalances[net];
-      if (addrBalance) {
-        for (const address in addrBalance) {
-          if (now - addrBalance[address].cached >= this.STALE_TIME) {
-            delete addrBalance[address];
-          }
+        for (const net in this._legacyCache) {
+            const findCache = this._legacyCache[net];
+            if (findCache) {
+                for (const hashType in findCache) {
+                    const hashCache = findCache[hashType as TransactionsGetMode];
+
+                    if (hashCache) {
+                        for (const hash in hashCache) {
+                            if (now - hashCache[hash].cached >= this.STALE_TIME) {
+                                delete hashCache[hash];
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+
+        for (const net in this._addressBalances) {
+            const addrBalance = this._addressBalances[net];
+            if (addrBalance) {
+                for (const address in addrBalance) {
+                    if (now - addrBalance[address].cached >= this.STALE_TIME) {
+                        delete addrBalance[address];
+                    }
+                }
+            }
+        }
     }
-  }
 }

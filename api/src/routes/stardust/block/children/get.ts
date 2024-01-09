@@ -14,21 +14,21 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(_: IConfiguration, request: IBlockRequest): Promise<IBlockChildrenResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
-  ValidationHelper.string(request.blockId, "blockId");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.string(request.blockId, "blockId");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== STARDUST) {
-    return { error: "Endpoint available only on Stardust networks." };
-  }
+    if (networkConfig.protocolVersion !== STARDUST) {
+        return { error: "Endpoint available only on Stardust networks." };
+    }
 
-  const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
+    const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
 
-  if (chronicleService) {
-    const blockChildrenResponse = await chronicleService.blockChildren(request.blockId);
-    return blockChildrenResponse;
-  }
+    if (chronicleService) {
+        const blockChildrenResponse = await chronicleService.blockChildren(request.blockId);
+        return blockChildrenResponse;
+    }
 }

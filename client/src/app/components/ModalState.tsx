@@ -1,6 +1,6 @@
 export interface ModalState {
-  /**
-   * To show modal.
-   */
-  show: boolean;
+    /**
+     * To show modal.
+     */
+    show: boolean;
 }

@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "lib": ["dom", "es2015", "es2015.iterable", "es2022"],
-    "esModuleInterop": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "typeRoots": ["node_modules/@types", "types"],
-    "outDir": "dist",
-    "resolveJsonModule": true
-  },
-  "include": ["src", "jest.config.js"]
+    "compilerOptions": {
+        "target": "es6",
+        "lib": ["dom", "es2015", "es2015.iterable", "es2022"],
+        "esModuleInterop": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noUnusedLocals": true,
+        "typeRoots": ["node_modules/@types", "types"],
+        "outDir": "dist",
+        "resolveJsonModule": true
+    },
+    "include": ["src", "jest.config.js"]
 }

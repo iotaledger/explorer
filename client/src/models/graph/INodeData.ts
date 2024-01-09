@@ -1,18 +1,18 @@
 import { IFeedItem } from "../feed/IFeedItem";
 
 export interface INodeData {
-  /**
-   * The feed item.
-   */
-  feedItem: IFeedItem;
+    /**
+     * The feed item.
+     */
+    feedItem: IFeedItem;
 
-  /**
-   * When was the node added.
-   */
-  added: number;
+    /**
+     * When was the node added.
+     */
+    added: number;
 
-  /**
-   * The graph number.
-   */
-  graphId?: number;
+    /**
+     * The graph number.
+     */
+    graphId?: number;
 }

@@ -12,10 +12,10 @@ Thanks! :heart:
 
 If you have a general or technical question, you can use one of the following resources instead of submitting an issue:
 
-- [**Developer documentation:**](https://docs.iota.org/) For official information about developing with IOTA technology
-- [**Discord:**](https://discord.iota.org/) For real-time chats with the developers and community members
-- [**IOTA cafe:**](https://iota.cafe/) For technical discussions with the Research and Development Department at the IOTA Foundation
-- [**StackExchange:**](https://iota.stackexchange.com/) For technical and troubleshooting questions
+-   [**Developer documentation:**](https://docs.iota.org/) For official information about developing with IOTA technology
+-   [**Discord:**](https://discord.iota.org/) For real-time chats with the developers and community members
+-   [**IOTA cafe:**](https://iota.cafe/) For technical discussions with the Research and Development Department at the IOTA Foundation
+-   [**StackExchange:**](https://iota.stackexchange.com/) For technical and troubleshooting questions
 </details>
 
 <br>
@@ -26,9 +26,9 @@ If you have a general or technical question, you can use one of the following re
 
 To contribute to the Tangle Explorer website on GitHub, you can:
 
-- Report a bug
-- Suggest a new feature
-- Build a new feature
+-   Report a bug
+-   Suggest a new feature
+-   Build a new feature
 </details>
 
 <br>
@@ -43,9 +43,9 @@ This section guides you through reporting a bug. Following these guidelines help
 
 Please check the following list:
 
-- **Do not open a GitHub issue for [security vulnerabilities](SECURITY.MD)**, instead, please contact us at [security@iota.org](mailto:security@iota.org).
+-   **Do not open a GitHub issue for [security vulnerabilities](SECURITY.MD)**, instead, please contact us at [security@iota.org](mailto:security@iota.org).
 
-- **Ensure the bug was not already reported** by searching on GitHub under [**Issues**](https://github.com/iotaledger/explorer/issues). If the bug has already been reported **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
+-   **Ensure the bug was not already reported** by searching on GitHub under [**Issues**](https://github.com/iotaledger/explorer/issues). If the bug has already been reported **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
 
 **Note:** If you find a **Closed** issue that seems similar to what you're experiencing, open a new issue and include a link to the original issue in the body of your new one.
 
@@ -95,7 +95,7 @@ Make sure to discuss the feature on [Discord](https://discord.iota.org/).
 
 To build a new feature, check out a new branch based on the `main` branch, and be sure to consider the following:
 
-- If the feature has a public facing API, make sure to document it, using JSDoc code comments
+-   If the feature has a public facing API, make sure to document it, using JSDoc code comments
 </details>
 
 <br>
@@ -110,11 +110,11 @@ This section guides you through submitting a pull request (PR). Following these 
 
 When creating a pull request, please follow these steps to have your contribution considered by the maintainers:
 
-- A pull request should have exactly one concern (for example one feature or one bug). If a PR addresses more than one concern, it should be split into two or more PRs.
+-   A pull request should have exactly one concern (for example one feature or one bug). If a PR addresses more than one concern, it should be split into two or more PRs.
 
-- A pull request can be merged only if it references an open issue
+-   A pull request can be merged only if it references an open issue
 
-  **Note:** Minor changes such as fixing a typo can but do not need an open issue.
+    **Note:** Minor changes such as fixing a typo can but do not need an open issue.
 
 ### Submitting a pull request
 

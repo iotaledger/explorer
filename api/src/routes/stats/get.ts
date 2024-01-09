@@ -13,44 +13,44 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @returns The response.
  */
 export async function get(_: IConfiguration, request: IStatsGetRequest): Promise<IStatsGetResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
 
-  const statsService = ServiceFactory.get<IStatsService>(`stats-${request.network}`);
+    const statsService = ServiceFactory.get<IStatsService>(`stats-${request.network}`);
 
-  const stats = statsService?.getStats();
-  let itemsPerSecondHistory: number[];
+    const stats = statsService?.getStats();
+    let itemsPerSecondHistory: number[];
 
-  if (request.includeHistory) {
-    itemsPerSecondHistory = statsService?.getItemsPerSecondHistory();
-  }
-
-  if (stats) {
-    const timeSinceLastMsInMinutes = (Date.now() - stats.latestMilestoneIndexTime) / 60000;
-    let health = 0;
-    let healthReason = "No milestone within 5 minutes";
-    if (timeSinceLastMsInMinutes < 2) {
-      health = 2; // good
-      healthReason = "OK";
-    } else if (timeSinceLastMsInMinutes < 5) {
-      health = 1; // degraded
-      healthReason = "No milestone within 2 minutes";
+    if (request.includeHistory) {
+        itemsPerSecondHistory = statsService?.getItemsPerSecondHistory();
     }
-    return {
-      ...stats,
-      health,
-      healthReason,
-      itemsPerSecondHistory,
-    };
-  }
 
-  return {
-    itemsPerSecond: 0,
-    confirmedItemsPerSecond: 0,
-    confirmationRate: 0,
-    latestMilestoneIndex: 0,
-    latestMilestoneIndexTime: 0,
-    health: 0,
-  };
+    if (stats) {
+        const timeSinceLastMsInMinutes = (Date.now() - stats.latestMilestoneIndexTime) / 60000;
+        let health = 0;
+        let healthReason = "No milestone within 5 minutes";
+        if (timeSinceLastMsInMinutes < 2) {
+            health = 2; // good
+            healthReason = "OK";
+        } else if (timeSinceLastMsInMinutes < 5) {
+            health = 1; // degraded
+            healthReason = "No milestone within 2 minutes";
+        }
+        return {
+            ...stats,
+            health,
+            healthReason,
+            itemsPerSecondHistory,
+        };
+    }
+
+    return {
+        itemsPerSecond: 0,
+        confirmedItemsPerSecond: 0,
+        confirmationRate: 0,
+        latestMilestoneIndex: 0,
+        latestMilestoneIndexTime: 0,
+        health: 0,
+    };
 }

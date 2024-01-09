@@ -5,29 +5,29 @@
 @import "../../scss/themes";
 
 .feed--metrics {
-  display: flex;
-  width: fit-content;
-  align-self: left;
-  flex-direction: column;
-  margin-bottom: 20px;
-
-  .latest-index {
-    margin-bottom: 4px;
-  }
-
-  .latest-index,
-  .seconds {
     display: flex;
+    width: fit-content;
+    align-self: left;
+    flex-direction: column;
+    margin-bottom: 20px;
 
-    h3 {
-      color: var(--header-color);
+    .latest-index {
+        margin-bottom: 4px;
     }
-  }
 
-  .metrics-value {
-    color: var(--body-color);
-    font-family: $inter;
-    font-weight: 600;
-    text-decoration: none;
-  }
+    .latest-index,
+    .seconds {
+        display: flex;
+
+        h3 {
+            color: var(--header-color);
+        }
+    }
+
+    .metrics-value {
+        color: var(--body-color);
+        font-family: $inter;
+        font-weight: 600;
+        text-decoration: none;
+    }
 }

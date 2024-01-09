@@ -14,20 +14,20 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @returns The response.
  */
 export async function post(config: IConfiguration, request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
-  const networkService = ServiceFactory.get<NetworkService>("network");
-  const networks = networkService.networkNames();
-  ValidationHelper.oneOf(request.network, networks, "network");
+    const networkService = ServiceFactory.get<NetworkService>("network");
+    const networks = networkService.networkNames();
+    ValidationHelper.oneOf(request.network, networks, "network");
 
-  const networkConfig = networkService.get(request.network);
+    const networkConfig = networkService.get(request.network);
 
-  if (networkConfig.protocolVersion !== LEGACY) {
-    return {};
-  }
+    if (networkConfig.protocolVersion !== LEGACY) {
+        return {};
+    }
 
-  const { trytes, milestoneIndexes } = await LegacyTangleHelper.getTrytes(networkConfig, request.txHashes);
+    const { trytes, milestoneIndexes } = await LegacyTangleHelper.getTrytes(networkConfig, request.txHashes);
 
-  return {
-    trytes,
-    milestoneIndexes,
-  };
+    return {
+        trytes,
+        milestoneIndexes,
+    };
 }

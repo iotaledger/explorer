@@ -5,181 +5,181 @@
 @import "../../scss/themes";
 
 .network--switcher {
-  width: 180px;
+    width: 180px;
 
-  @include tablet-down {
-    &::before {
-      content: "";
-      position: absolute;
-      top: -3px;
-      left: -20px;
-      width: 100vw;
-      height: 1px;
-      background-color: var(--border-color);
-    }
-  }
-
-  .network--switcher__header {
-    justify-content: center;
-    font-family: $metropolis;
-
-    &.opened {
-      .icon {
-        span {
-          transform: rotate(-180deg);
+    @include tablet-down {
+        &::before {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: -20px;
+            width: 100vw;
+            height: 1px;
+            background-color: var(--border-color);
         }
-      }
     }
 
-    .network--switcher__dropdown {
-      text-align: center;
+    .network--switcher__header {
+        justify-content: center;
+        font-family: $metropolis;
 
-      .label {
-        @include font-size(16px, 18px);
+        &.opened {
+            .icon {
+                span {
+                    transform: rotate(-180deg);
+                }
+            }
+        }
 
-        color: var(--header-label-color);
-        font-weight: 600;
-        letter-spacing: 0.01em;
-      }
+        .network--switcher__dropdown {
+            text-align: center;
 
-      .eyebrow {
-        @include font-size(10px, 15px);
+            .label {
+                @include font-size(16px, 18px);
 
-        color: $mint-green-6;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-      }
+                color: var(--header-label-color);
+                font-weight: 600;
+                letter-spacing: 0.01em;
+            }
 
-      @include desktop-down {
-        width: 100%;
-      }
+            .eyebrow {
+                @include font-size(10px, 15px);
+
+                color: $mint-green-6;
+                font-weight: 600;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+            }
+
+            @include desktop-down {
+                width: 100%;
+            }
+        }
+
+        .icon {
+            margin-left: 12px;
+
+            span {
+                transition: transform 0.2s ease;
+                color: var(--header-icon-color);
+            }
+        }
     }
-
-    .icon {
-      margin-left: 12px;
-
-      span {
-        transition: transform 0.2s ease;
-        color: var(--header-icon-color);
-      }
-    }
-  }
 }
 
 .network--expanded {
-  position: fixed;
-  z-index: 2;
-  top: $navbar-height-desktop;
-  right: 0;
-  width: 520px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  border-radius: 12px;
-  background: var(--body-background);
-  box-shadow: var(--box-shadow-down);
-
-  @include desktop-down {
-    width: 468px;
-    top: $navbar-height-mobile * 2;
-  }
-
-  @include phone-down {
-    width: 100vw;
-    border-radius: unset;
-  }
-
-  &.opened {
-    max-height: 1000px;
+    position: fixed;
+    z-index: 2;
+    top: $navbar-height-desktop;
+    right: 0;
+    width: 520px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    border-radius: 12px;
+    background: var(--body-background);
+    box-shadow: var(--box-shadow-down);
 
     @include desktop-down {
-      top: $navbar-height-mobile * 2;
-    }
-  }
-
-  .networks {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    padding: 32px 12px;
-
-    @media (max-width: 1200px) {
-      display: block;
-
-      div.network {
-        width: 100%;
-      }
+        width: 468px;
+        top: $navbar-height-mobile * 2;
     }
 
-    .network {
-      display: flex;
-      flex-direction: row;
-      padding: 0 10px;
+    @include phone-down {
+        width: 100vw;
+        border-radius: unset;
+    }
 
-      .network--cards {
+    &.opened {
+        max-height: 1000px;
+
+        @include desktop-down {
+            top: $navbar-height-mobile * 2;
+        }
+    }
+
+    .networks {
         display: flex;
         flex-direction: column;
-        width: 100vw;
+        margin: auto;
+        padding: 32px 12px;
 
-        .network--card {
-          min-height: 86px;
-          margin-bottom: 16px;
-          padding: 8px;
-          border-radius: 12px;
-          cursor: pointer;
+        @media (max-width: 1200px) {
+            display: block;
 
-          &.selected {
-            background: rgba(20, 202, 191, 0.08);
-
-            .network--icon {
-              background: $mint-green-6;
-
-              svg path {
-                fill: $white;
-              }
+            div.network {
+                width: 100%;
             }
-          }
-
-          &:hover:not(.selected) {
-            background: var(--light-bg);
-          }
-
-          .network--icon {
-            min-width: 64px;
-            height: 64px;
-            border-radius: 8px;
-            background: $gray-2;
-            background: var(--header-svg-bg);
-
-            svg path {
-              fill: var(--header-icon-color);
-            }
-          }
-
-          .network--content {
-            margin-left: 24px;
-
-            .label {
-              color: var(--body-color);
-              font-family: $metropolis;
-              font-weight: 600;
-              letter-spacing: 0.01em;
-
-              @include font-size(16px, 24px);
-            }
-
-            .protocol {
-              color: var(--expanded-color);
-              font-family: $inter;
-              font-weight: 500;
-              letter-spacing: 0.5px;
-
-              @include font-size(12px, 18px);
-            }
-          }
         }
-      }
+
+        .network {
+            display: flex;
+            flex-direction: row;
+            padding: 0 10px;
+
+            .network--cards {
+                display: flex;
+                flex-direction: column;
+                width: 100vw;
+
+                .network--card {
+                    min-height: 86px;
+                    margin-bottom: 16px;
+                    padding: 8px;
+                    border-radius: 12px;
+                    cursor: pointer;
+
+                    &.selected {
+                        background: rgba(20, 202, 191, 0.08);
+
+                        .network--icon {
+                            background: $mint-green-6;
+
+                            svg path {
+                                fill: $white;
+                            }
+                        }
+                    }
+
+                    &:hover:not(.selected) {
+                        background: var(--light-bg);
+                    }
+
+                    .network--icon {
+                        min-width: 64px;
+                        height: 64px;
+                        border-radius: 8px;
+                        background: $gray-2;
+                        background: var(--header-svg-bg);
+
+                        svg path {
+                            fill: var(--header-icon-color);
+                        }
+                    }
+
+                    .network--content {
+                        margin-left: 24px;
+
+                        .label {
+                            color: var(--body-color);
+                            font-family: $metropolis;
+                            font-weight: 600;
+                            letter-spacing: 0.01em;
+
+                            @include font-size(16px, 24px);
+                        }
+
+                        .protocol {
+                            color: var(--expanded-color);
+                            font-family: $inter;
+                            font-weight: 500;
+                            letter-spacing: 0.5px;
+
+                            @include font-size(12px, 18px);
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
 }
