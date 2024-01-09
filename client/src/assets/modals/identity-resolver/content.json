@@ -1,11 +1,11 @@
 {
-    "title": "Content",
-    "description": "<p>A set of data describing the DID subject, including mechanisms, such as public keys and pseudonymous biometrics, that the DID subject or a DID delegate can use to authenticate itself and prove its association with the DID. A DID document may also contain other attributes or claims describing the DID subject. A DID document may have one or more different representations as defined in the W3C DID Specification Registries <a href='https://www.w3.org/TR/did-spec-registries/' target='_blank'>W3C DID Specification Registries</a>.</p>",
-    "links": [
-      {
-        "label": "Read more",
-        "href": "https://wiki.iota.org/identity.rs/glossary#did-document",
-        "isExternal": true
-      }
-    ]
+  "title": "Content",
+  "description": "<p>A set of data describing the DID subject, including mechanisms, such as public keys and pseudonymous biometrics, that the DID subject or a DID delegate can use to authenticate itself and prove its association with the DID. A DID document may also contain other attributes or claims describing the DID subject. A DID document may have one or more different representations as defined in the W3C DID Specification Registries <a href='https://www.w3.org/TR/did-spec-registries/' target='_blank'>W3C DID Specification Registries</a>.</p>",
+  "links": [
+    {
+      "label": "Read more",
+      "href": "https://wiki.iota.org/identity.rs/glossary#did-document",
+      "isExternal": true
+    }
+  ]
 }

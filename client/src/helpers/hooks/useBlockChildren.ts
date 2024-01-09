@@ -12,40 +12,38 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param blockId The block id
  * @returns The children block ids, loading bool and an error string.
  */
-export function useBlockChildren(network: string, blockId: string | null):
-    [
-        HexEncodedString[] | null,
-        boolean,
-        string?
-    ] {
-    const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
-    const [error, setError] = useState<string | undefined>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+export function useBlockChildren(network: string, blockId: string | null): [HexEncodedString[] | null, boolean, string?] {
+  const isMounted = useIsMounted();
+  const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+  const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
+  const [error, setError] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        setIsLoading(true);
-        setBlockChildren(null);
-        if (blockId) {
-            // eslint-disable-next-line no-void
-            void (async () => {
-                apiClient.blockChildren({
-                    network,
-                    blockId: HexHelper.addPrefix(blockId)
-                }).then(response => {
-                    if (isMounted) {
-                        setBlockChildren(response.children ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
-            })();
-        } else {
+  useEffect(() => {
+    setIsLoading(true);
+    setBlockChildren(null);
+    if (blockId) {
+      // eslint-disable-next-line no-void
+      void (async () => {
+        apiClient
+          .blockChildren({
+            network,
+            blockId: HexHelper.addPrefix(blockId),
+          })
+          .then((response) => {
+            if (isMounted) {
+              setBlockChildren(response.children ?? null);
+              setError(response.error);
+            }
+          })
+          .finally(() => {
             setIsLoading(false);
-        }
-    }, [network, blockId]);
+          });
+      })();
+    } else {
+      setIsLoading(false);
+    }
+  }, [network, blockId]);
 
-    return [blockChildren, isLoading, error];
+  return [blockChildren, isLoading, error];
 }

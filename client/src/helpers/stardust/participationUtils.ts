@@ -10,20 +10,20 @@ const EVENT_ID_SIZE: number = Blake2b.SIZE_256;
  * The participation event.
  */
 interface Participation {
-    /**
-     * The event id.
-     */
-    eventId: string;
+  /**
+   * The event id.
+   */
+  eventId: string;
 
-    /**
-     * The number of answers.
-     */
-    answersCount?: number;
+  /**
+   * The number of answers.
+   */
+  answersCount?: number;
 
-    /**
-     * The list of answer values.
-     */
-    answers?: number[];
+  /**
+   * The list of answer values.
+   */
+  answers?: number[];
 }
 
 /**
@@ -32,14 +32,14 @@ interface Participation {
  * @returns The deserialized object.
  */
 export function deserializeParticipationEventMetadata(readStream: ReadStream): Participation[] {
-    const participationsCount = readStream.readUInt8("participation.count");
+  const participationsCount = readStream.readUInt8("participation.count");
 
-    const participations: Participation[] = [];
-    for (let i = 0; i < participationsCount; i++) {
-        participations.push(deserializeParticipation(readStream));
-    }
+  const participations: Participation[] = [];
+  for (let i = 0; i < participationsCount; i++) {
+    participations.push(deserializeParticipation(readStream));
+  }
 
-    return participations;
+  return participations;
 }
 
 /**
@@ -48,18 +48,18 @@ export function deserializeParticipationEventMetadata(readStream: ReadStream): P
  * @returns The deserialized object.
  */
 function deserializeParticipation(readStream: ReadStream): Participation {
-    const eventId = readStream.readFixedHex("participation.eventId", EVENT_ID_SIZE);
+  const eventId = readStream.readFixedHex("participation.eventId", EVENT_ID_SIZE);
 
-    const answersCount = readStream.readUInt8("participation.answersCount");
+  const answersCount = readStream.readUInt8("participation.answersCount");
 
-    const answers: number[] = [];
-    for (let i = 0; i < answersCount; i++) {
-        answers.push(readStream.readUInt8(`participation.answers${i}`));
-    }
+  const answers: number[] = [];
+  for (let i = 0; i < answersCount; i++) {
+    answers.push(readStream.readUInt8(`participation.answers${i}`));
+  }
 
-    return {
-        eventId,
-        answersCount,
-        answers
-    };
+  return {
+    eventId,
+    answersCount,
+    answers,
+  };
 }

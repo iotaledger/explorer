@@ -1,11 +1,11 @@
 {
-    "title": "Milestone Payload",
-    "description": "<p>A milestone payload contains the Milestone Essence, which consists of the actual milestone information (like its index number or position in the Tangle), which is signed using the Ed25519 signature scheme. It uses keys of 32 bytes, while the generated signatures are 64 bytes.</p>",
-    "links": [
-      {
-        "label": "Read more",
-        "href": "https://wiki.iota.org/learn/about-iota/messages#milestone-payload",
-        "isExternal": true
-      }
-    ]
+  "title": "Milestone Payload",
+  "description": "<p>A milestone payload contains the Milestone Essence, which consists of the actual milestone information (like its index number or position in the Tangle), which is signed using the Ed25519 signature scheme. It uses keys of 32 bytes, while the generated signatures are 64 bytes.</p>",
+  "links": [
+    {
+      "label": "Read more",
+      "href": "https://wiki.iota.org/learn/about-iota/messages#milestone-payload",
+      "isExternal": true
+    }
+  ]
 }

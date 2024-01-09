@@ -13,20 +13,17 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function search(
-    config: IConfiguration,
-    request: ISearchRequest
-): Promise<ISearchResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.query, "query");
+export async function search(config: IConfiguration, request: ISearchRequest): Promise<ISearchResponse> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
+  ValidationHelper.string(request.query, "query");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== CHRYSALIS) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== CHRYSALIS) {
+    return {};
+  }
 
-    return ChrysalisTangleHelper.search(networkConfig, request.query);
+  return ChrysalisTangleHelper.search(networkConfig, request.query);
 }

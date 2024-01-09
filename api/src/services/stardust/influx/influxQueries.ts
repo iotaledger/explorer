@@ -1,5 +1,5 @@
 export const BLOCK_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             sum("transaction_count") AS "transaction",
             sum("milestone_count") AS "milestone",
@@ -9,7 +9,7 @@ export const BLOCK_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             sum("transaction_count") AS "transaction",
             sum("milestone_count") AS "milestone",
@@ -18,11 +18,11 @@ export const BLOCK_DAILY_QUERY = {
         FROM "stardust_block_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const TRANSACTION_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             sum("confirmed_count") AS "confirmed",
             sum("conflicting_count") AS "conflicting"
@@ -30,18 +30,18 @@ export const TRANSACTION_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             sum("confirmed_count") AS "confirmed",
             sum("conflicting_count") AS "conflicting"
         FROM "stardust_block_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const OUTPUTS_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("basic_count") AS "basic",
             last("alias_count") AS "alias",
@@ -51,7 +51,7 @@ export const OUTPUTS_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("basic_count") AS "basic",
             last("alias_count") AS "alias",
@@ -60,11 +60,11 @@ export const OUTPUTS_DAILY_QUERY = {
         FROM "stardust_ledger_outputs"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("basic_amount") / 1000000 AS "basic",
             last("alias_amount") / 1000000 AS "alias",
@@ -74,7 +74,7 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("basic_amount") / 1000000 AS "basic",
             last("alias_amount") / 1000000 AS "alias",
@@ -83,62 +83,62 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
         FROM "stardust_ledger_outputs"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("address_with_balance_count") AS "addressesWithBalance"
         FROM "stardust_addresses"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("address_with_balance_count") AS "addressesWithBalance"
         FROM "stardust_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("count") AS activeAddresses
         FROM "stardust_daily_active_addresses"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("count") AS activeAddresses
         FROM "stardust_daily_active_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const TOKENS_TRANSFERRED_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             sum("transferred_amount") / 1000000 AS "tokens"
         FROM "stardust_base_token_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             sum("transferred_amount") / 1000000 AS "tokens"
         FROM "stardust_base_token_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const ALIAS_ACTIVITY_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             sum("alias_created_count") AS "created",
             sum("alias_governor_changed_count") AS "governorChanged",
@@ -148,7 +148,7 @@ export const ALIAS_ACTIVITY_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             sum("alias_created_count") AS "created",
             sum("alias_governor_changed_count") AS "governorChanged",
@@ -157,11 +157,11 @@ export const ALIAS_ACTIVITY_DAILY_QUERY = {
         FROM "stardust_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("timelock_count") AS "timelock",
             last("storage_deposit_return_count") AS "storageDepositReturn",
@@ -170,7 +170,7 @@ export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("timelock_count") AS "timelock",
             last("storage_deposit_return_count") AS "storageDepositReturn",
@@ -178,11 +178,11 @@ export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
         FROM "stardust_unlock_conditions"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const NFT_ACTIVITY_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             sum("nft_created_count") AS "created",
             sum("nft_transferred_count") AS "transferred",
@@ -191,7 +191,7 @@ export const NFT_ACTIVITY_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             sum("nft_created_count") AS "created",
             sum("nft_transferred_count") AS "transferred",
@@ -199,11 +199,11 @@ export const NFT_ACTIVITY_DAILY_QUERY = {
         FROM "stardust_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("timelock_amount") / 1000000 AS "timelock",
             last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
@@ -212,7 +212,7 @@ export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("timelock_amount") / 1000000 AS "timelock",
             last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
@@ -220,45 +220,45 @@ export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
         FROM "stardust_unlock_conditions"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const UNCLAIMED_TOKENS_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("unclaimed_amount") / 1000000 AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("unclaimed_amount") / 1000000 AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("unclaimed_count") AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("unclaimed_count") AS "unclaimed"
         FROM "stardust_unclaimed_rewards"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const LEDGER_SIZE_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("total_key_bytes") AS "keyBytes",
             last("total_data_bytes") AS "dataBytes"
@@ -266,31 +266,31 @@ export const LEDGER_SIZE_DAILY_QUERY = {
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("total_key_bytes") AS "keyBytes",
             last("total_data_bytes") AS "dataBytes"
         FROM "stardust_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 export const STORAGE_DEPOSIT_DAILY_QUERY = {
-    full: `
+  full: `
         SELECT
             last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
-    partial: `
+  partial: `
         SELECT
             last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `
+    `,
 };
 
 /* ANALYTIC QUERIES */
@@ -346,4 +346,3 @@ export const MILESTONE_STATS_QUERY_BY_INDEX = `
     FROM "stardust_block_activity"
     WHERE "milestone_index" = $milestoneIndex
 `;
-

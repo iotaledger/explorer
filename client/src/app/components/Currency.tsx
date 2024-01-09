@@ -9,107 +9,103 @@ import AsyncComponent from "../components/AsyncComponent";
  * Component which will provide facilities for a component with currencies.
  */
 abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S> {
-    /**
-     * The settings service.
-     */
-    protected readonly _settingsService: SettingsService;
+  /**
+   * The settings service.
+   */
+  protected readonly _settingsService: SettingsService;
 
-    /**
-     * The currency service.
-     */
-    protected readonly _currencyService: CurrencyService;
+  /**
+   * The currency service.
+   */
+  protected readonly _currencyService: CurrencyService;
 
-    /**
-     * The currency data.
-     */
-    protected _currencyData?: ICurrencySettings;
+  /**
+   * The currency data.
+   */
+  protected _currencyData?: ICurrencySettings;
 
-    /**
-     * Subscription id for currency updates.
-     */
-    protected _subscriptionId?: string;
+  /**
+   * Subscription id for currency updates.
+   */
+  protected _subscriptionId?: string;
 
-    /**
-     * Create a new instance of Currency.
-     * @param props The props.
-     */
-    constructor(props: P) {
-        super(props);
+  /**
+   * Create a new instance of Currency.
+   * @param props The props.
+   */
+  constructor(props: P) {
+    super(props);
 
-        this._currencyService = ServiceFactory.get<CurrencyService>("currency");
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
-    }
+    this._currencyService = ServiceFactory.get<CurrencyService>("currency");
+    this._settingsService = ServiceFactory.get<SettingsService>("settings");
+  }
 
-    /**
-     * The component mounted.
-     */
-    public componentDidMount(): void {
-        super.componentDidMount();
+  /**
+   * The component mounted.
+   */
+  public componentDidMount(): void {
+    super.componentDidMount();
 
-        this.buildCurrency();
+    this.buildCurrency();
 
-        this._subscriptionId = this._currencyService.subscribe(() => {
-            const currency = this._currencyService.getSettingsFiatCode();
-            if (this._currencyData && currency) {
-                this._currencyData.fiatCode = currency;
-                this.setState(
-                    { currency },
-                    () => {
-                        this.updateCurrency();
-                    });
-            }
+    this._subscriptionId = this._currencyService.subscribe(() => {
+      const currency = this._currencyService.getSettingsFiatCode();
+      if (this._currencyData && currency) {
+        this._currencyData.fiatCode = currency;
+        this.setState({ currency }, () => {
+          this.updateCurrency();
         });
-    }
+      }
+    });
+  }
 
-    /**
-     * The component will unmount so unsubscribe from currency service.
-     */
-    public componentWillUnmount(): void {
-        super.componentWillUnmount();
-        if (this._subscriptionId) {
-            this._currencyService.unsubscribe(this._subscriptionId);
-            this._subscriptionId = undefined;
+  /**
+   * The component will unmount so unsubscribe from currency service.
+   */
+  public componentWillUnmount(): void {
+    super.componentWillUnmount();
+    if (this._subscriptionId) {
+      this._currencyService.unsubscribe(this._subscriptionId);
+      this._subscriptionId = undefined;
+    }
+  }
+
+  /**
+   * Set a new currency.
+   * @param currency The currency to set.
+   */
+  protected setCurrency(currency: string): void {
+    if (this._currencyData) {
+      this._currencyData.fiatCode = currency;
+      this._currencyService.saveFiatCode(currency);
+      this.setState(
+        {
+          currency,
+        },
+        () => {
+          this.updateCurrency();
         }
+      );
     }
+  }
 
-    /**
-     * Set a new currency.
-     * @param currency The currency to set.
-     */
-    protected setCurrency(currency: string): void {
-        if (this._currencyData) {
-            this._currencyData.fiatCode = currency;
-            this._currencyService.saveFiatCode(currency);
-            this.setState(
-                {
-                    currency
-                },
-                () => {
-                    this.updateCurrency();
-                });
-        }
-    }
+  /**
+   * Build the currency information.
+   */
+  private buildCurrency(): void {
+    this._currencyService.loadCurrencies((isAvailable, currencyData) => {
+      if (isAvailable && currencyData && this._isMounted) {
+        this._currencyData = currencyData;
 
-    /**
-     * Build the currency information.
-     */
-    private buildCurrency(): void {
-        this._currencyService.loadCurrencies((isAvailable, currencyData) => {
-            if (isAvailable && currencyData && this._isMounted) {
-                this._currencyData = currencyData;
+        this.setState({ currency: this._currencyData.fiatCode }, () => this.updateCurrency());
+      }
+    });
+  }
 
-                this.setState(
-                    { currency: this._currencyData.fiatCode },
-                    () => this.updateCurrency()
-                );
-            }
-        });
-    }
-
-    /**
-     * Update formatted currencies.
-     */
-    protected abstract updateCurrency(): void;
+  /**
+   * Update formatted currencies.
+   */
+  protected abstract updateCurrency(): void;
 }
 
 export default Currency;

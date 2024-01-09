@@ -1,8 +1,7 @@
 import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
 export interface IdentityStardustResolverProps {
-    
-    resolvedDID: IIdentityStardustResolveResponse | null,
+  resolvedDID: IIdentityStardustResolveResponse | null;
 
-    network: string,
+  network: string;
 }

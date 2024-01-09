@@ -9,30 +9,25 @@ import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
  * @param tokenId The token id to check
  * @returns The whitelisted boolean.
  */
-export function useTokenRegistryNativeTokenCheck(tokenId: string | null): [
-    boolean
-] {
-    const { name: network } = useContext(NetworkContext);
-    const isMounted = useIsMounted();
-    const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
-    const [client] = useState(
-        ServiceFactory.get<TokenRegistryClient | undefined>("token-registry")
-    );
+export function useTokenRegistryNativeTokenCheck(tokenId: string | null): [boolean] {
+  const { name: network } = useContext(NetworkContext);
+  const isMounted = useIsMounted();
+  const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
+  const [client] = useState(ServiceFactory.get<TokenRegistryClient | undefined>("token-registry"));
 
-    useEffect(() => {
-        setIsWhitelisted(false);
-        // eslint-disable-next-line no-void
-        void (async () => {
-            if (client) {
-                const isTokenWhitelisted = tokenId ? await client.checkNativeToken(network, tokenId) : false;
+  useEffect(() => {
+    setIsWhitelisted(false);
+    // eslint-disable-next-line no-void
+    void (async () => {
+      if (client) {
+        const isTokenWhitelisted = tokenId ? await client.checkNativeToken(network, tokenId) : false;
 
-                if (isMounted) {
-                    setIsWhitelisted(isTokenWhitelisted);
-                }
-            }
-        })();
-    }, [network, tokenId]);
+        if (isMounted) {
+          setIsWhitelisted(isTokenWhitelisted);
+        }
+      }
+    })();
+  }, [network, tokenId]);
 
-    return [isWhitelisted];
+  return [isWhitelisted];
 }
-

@@ -13,28 +13,22 @@ import { ValidationHelper } from "../../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    _: IConfiguration,
-    request: IAddressBalanceRequest
-): Promise<IAddressBalanceResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
+export async function get(_: IConfiguration, request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== STARDUST) {
+    return {};
+  }
 
-    if (!networkConfig.permaNodeEndpoint) {
-        return {};
-    }
+  if (!networkConfig.permaNodeEndpoint) {
+    return {};
+  }
 
-    const chronicleService = ServiceFactory.get<ChronicleService>(
-        `chronicle-${networkConfig.network}`
-    );
+  const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
 
-    return chronicleService.addressBalance(request.address);
+  return chronicleService.addressBalance(request.address);
 }
-

@@ -1,11 +1,11 @@
 export interface IndexedRouteProps {
-    /**
-     * The network to lookup.
-     */
-    network: string;
+  /**
+   * The network to lookup.
+   */
+  network: string;
 
-    /**
-     * The index to lookup.
-     */
-    index: string;
+  /**
+   * The index to lookup.
+   */
+  index: string;
 }

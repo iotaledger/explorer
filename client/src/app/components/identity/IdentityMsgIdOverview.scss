@@ -2,7 +2,7 @@
 @import "../../../scss/mixins";
 @import "../../../scss/variables";
 
-.identity-msg-id{
+.identity-msg-id {
   .msg-id-overview {
     display: flex;
     flex-direction: row;
@@ -13,26 +13,26 @@
     height: 30px;
     padding: 6px 10px;
     border-radius: 6px;
-  
+
     p {
       color: var(--body-color);
-  
+
       &.code {
         @include font-size(14px);
-  
+
         font-family: $ibm-plex-mono;
         font-weight: normal;
         letter-spacing: 0.02em;
         line-height: 20px;
       }
     }
-  
+
     &.pointer {
       &:hover {
         cursor: pointer;
       }
     }
-  
+
     svg {
       margin-right: 10px;
     }

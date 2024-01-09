@@ -1,6 +1,6 @@
 export interface QRState {
-    /**
-     * Cells
-     */
-    cells: [][];
+  /**
+   * Cells
+   */
+  cells: [][];
 }

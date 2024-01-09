@@ -2,23 +2,23 @@ import { IIndexationPayload } from "@iota/iota.js";
 import * as H from "history";
 
 export interface IndexationPayloadProps {
-    /**
-     * The network to lookup.
-     */
-    network: string;
+  /**
+   * The network to lookup.
+   */
+  network: string;
 
-    /**
-     * The indexation payload.
-     */
-    payload: IIndexationPayload;
+  /**
+   * The indexation payload.
+   */
+  payload: IIndexationPayload;
 
-    /**
-     * History for navigation.
-     */
-    history: H.History;
+  /**
+   * History for navigation.
+   */
+  history: H.History;
 
-    /**
-     * Display advanced mode.
-     */
-    advancedMode: boolean;
+  /**
+   * Display advanced mode.
+   */
+  advancedMode: boolean;
 }

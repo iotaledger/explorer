@@ -56,6 +56,7 @@ To report a bug, [open a new issue](https://github.com/iotaledger/explorer/issue
 **Note:** Minor changes such as fixing a typo can but do not need an open issue.
 
 If you also want to fix the bug, submit a [pull request](#pull-requests) and reference the issue.
+
 </details>
 
 <br>
@@ -75,6 +76,7 @@ This section guides you through suggesting a new feature. Following these guidel
 To suggest a new feature, talk to the IOTA community and IOTA Foundation members on [Discord](https://discord.iota.org/).
 
 If the team members approve your feature, they will create an issue for it.
+
 </details>
 
 <br>
@@ -112,7 +114,7 @@ When creating a pull request, please follow these steps to have your contributio
 
 - A pull request can be merged only if it references an open issue
 
-    **Note:** Minor changes such as fixing a typo can but do not need an open issue.
+  **Note:** Minor changes such as fixing a typo can but do not need an open issue.
 
 ### Submitting a pull request
 
@@ -126,6 +128,7 @@ The following is a typical workflow for submitting a new pull request:
 If all [status checks](https://help.github.com/articles/about-status-checks/) pass, and the maintainer approves the PR, it will be merged.
 
 **Note:** Reviewers may ask you to complete additional work, tests, or other changes before your pull request can be approved and merged.
+
 </details>
 
 <br>

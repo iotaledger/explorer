@@ -4,58 +4,58 @@ import { IIdentityDidResolveResponse } from "~models/api/IIdentityResolveRespons
 import { TangleStatus } from "~models/tangleStatus";
 
 export interface IdentityChrysalisResolverState {
-    /**
-     * DID is already resolved in its document
-     */
-    isIdentityResolved: boolean;
+  /**
+   * DID is already resolved in its document
+   */
+  isIdentityResolved: boolean;
 
-    /**
-     * The resolved DID document
-     */
-    resolvedIdentity: IIdentityDidResolveResponse | undefined;
+  /**
+   * The resolved DID document
+   */
+  resolvedIdentity: IIdentityDidResolveResponse | undefined;
 
-    /**
-     * The resolved History of the DID document.
-     */
-    resolvedHistory: IIdentityDidHistoryResponse | undefined;
+  /**
+   * The resolved History of the DID document.
+   */
+  resolvedHistory: IIdentityDidHistoryResponse | undefined;
 
-    /**
-     * Error while resolving history.
-     */
-    historyError: boolean;
+  /**
+   * Error while resolving history.
+   */
+  historyError: boolean;
 
-    /**
-     * The DID
-     */
-    did: string | undefined;
+  /**
+   * The DID
+   */
+  did: string | undefined;
 
-    /**
-     * Error during resolving DID
-     */
-    error: boolean;
+  /**
+   * Error during resolving DID
+   */
+  error: boolean;
 
-    /**
-     * Error Message of Resolving DID
-     */
-    errorMessage: string;
+  /**
+   * Error Message of Resolving DID
+   */
+  errorMessage: string;
 
-    /**
-     * Metadata of last message.
-     */
-    metadata?: IMessageMetadata;
+  /**
+   * Metadata of last message.
+   */
+  metadata?: IMessageMetadata;
 
-    /**
-     * The state of the message on the tangle.
-     */
-    messageTangleStatus: TangleStatus;
+  /**
+   * The state of the message on the tangle.
+   */
+  messageTangleStatus: TangleStatus;
 
-    /**
-     * messageId of latest message. (zeros if latest message is a diff message)
-     */
-    latestMessageId?: string;
+  /**
+   * messageId of latest message. (zeros if latest message is a diff message)
+   */
+  latestMessageId?: string;
 
-    /**
-     * version of DID implementation
-     */
-    version?: string;
+  /**
+   * version of DID implementation
+   */
+  version?: string;
 }

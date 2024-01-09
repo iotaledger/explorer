@@ -101,7 +101,7 @@
       }
 
       &:not(:last-child) {
-          border-bottom: 1px solid var(--input-border-color);
+        border-bottom: 1px solid var(--input-border-color);
       }
     }
   }

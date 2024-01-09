@@ -13,24 +13,21 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: IAddressGetRequest
-): Promise<IAddressGetResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.address, "address");
+export async function get(config: IConfiguration, request: IAddressGetRequest): Promise<IAddressGetResponse> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
+  ValidationHelper.string(request.address, "address");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== LEGACY) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== LEGACY) {
+    return {};
+  }
 
-    const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.address);
+  const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.address);
 
-    return {
-        balance
-    };
+  return {
+    balance,
+  };
 }

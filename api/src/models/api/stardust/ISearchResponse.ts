@@ -5,53 +5,53 @@ import { IMilestoneDetailsResponse } from "./milestone/IMilestoneDetailsResponse
 import { IResponse } from "../IResponse";
 
 export interface ISearchResponse extends IResponse {
-    /**
-     * Block if it was found.
-     */
-    block?: Block;
+  /**
+   * Block if it was found.
+   */
+  block?: Block;
 
-    /**
-     * Transaction included block.
-     */
-    transactionBlock?: Block;
+  /**
+   * Transaction included block.
+   */
+  transactionBlock?: Block;
 
-    /**
-     * Address details.
-     */
-    addressDetails?: IBech32AddressDetails;
+  /**
+   * Address details.
+   */
+  addressDetails?: IBech32AddressDetails;
 
-    /**
-     * Output if it was found (block will also be populated).
-     */
-    output?: OutputResponse;
+  /**
+   * Output if it was found (block will also be populated).
+   */
+  output?: OutputResponse;
 
-    /**
-     * Basic and/or Nft tagged output ids.
-     */
-    taggedOutputs?: ITaggedOutputsResponse;
+  /**
+   * Basic and/or Nft tagged output ids.
+   */
+  taggedOutputs?: ITaggedOutputsResponse;
 
-    /**
-     * Alias id if it was found.
-     */
-    aliasId?: string;
+  /**
+   * Alias id if it was found.
+   */
+  aliasId?: string;
 
-    /**
-     * Foundry id if it was found.
-     */
-    foundryId?: string;
+  /**
+   * Foundry id if it was found.
+   */
+  foundryId?: string;
 
-    /**
-     * Nft id if it was found.
-     */
-    nftId?: string;
+  /**
+   * Nft id if it was found.
+   */
+  nftId?: string;
 
-    /**
-     * Milestone if it was found.
-     */
-    milestone?: IMilestoneDetailsResponse;
+  /**
+   * Milestone if it was found.
+   */
+  milestone?: IMilestoneDetailsResponse;
 
-    /**
-     * DiD identifier.
-     */
-    did?: string;
+  /**
+   * DiD identifier.
+   */
+  did?: string;
 }

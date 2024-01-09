@@ -12,28 +12,28 @@
     cursor: pointer;
 
     span {
-      color: $gray-10!important;
-      font-size: 16px!important;
+      color: $gray-10 !important;
+      font-size: 16px !important;
     }
 
     &:hover {
-      text-decoration: none!important;
+      text-decoration: none !important;
       span {
-        color: var(--link-highlight)!important;
+        color: var(--link-highlight) !important;
       }
     }
 
     &:focus {
-        box-shadow: none;
+      box-shadow: none;
     }
   }
 
   .copy-button--message {
-    line-height: 0!important;
+    line-height: 0 !important;
 
     span {
-        color: $main-green!important;
-        font-size: 16px!important;
+      color: $main-green !important;
+      font-size: 16px !important;
     }
   }
 }

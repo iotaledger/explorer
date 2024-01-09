@@ -1,3 +1,3 @@
 export interface ITransactionHistoryDownloadBody {
-    targetDate: string;
+  targetDate: string;
 }

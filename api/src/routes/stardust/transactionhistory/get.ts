@@ -13,28 +13,22 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: ITransactionHistoryRequest
-): Promise<ITransactionHistoryResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
+export async function get(config: IConfiguration, request: ITransactionHistoryRequest): Promise<ITransactionHistoryResponse> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== STARDUST) {
+    return {};
+  }
 
-    if (!networkConfig.permaNodeEndpoint) {
-        return {};
-    }
+  if (!networkConfig.permaNodeEndpoint) {
+    return {};
+  }
 
-    const chronicleService = ServiceFactory.get<ChronicleService>(
-        `chronicle-${networkConfig.network}`
-    );
+  const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
 
-    return chronicleService.transactionHistory(request);
+  return chronicleService.transactionHistory(request);
 }
-

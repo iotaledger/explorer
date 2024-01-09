@@ -1,6 +1,6 @@
 export interface JsonViewerProps {
-    /**
-     * The JSON data.
-     */
-    json: string | undefined;
+  /**
+   * The JSON data.
+   */
+  json: string | undefined;
 }

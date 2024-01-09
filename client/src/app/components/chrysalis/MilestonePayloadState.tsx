@@ -1,28 +1,28 @@
 import { IMilestoneResponse } from "@iota/iota.js";
 
 export interface MilestonePayloadState {
-    /**
-     * Milestone.
-     */
-    milestone?: IMilestoneResponse;
+  /**
+   * Milestone.
+   */
+  milestone?: IMilestoneResponse;
 
-    /**
-     * The previous milestone is available.
-     */
-    previousIndex: number;
+  /**
+   * The previous milestone is available.
+   */
+  previousIndex: number;
 
-    /**
-     * The next milestone is available.
-     */
-    nextIndex: number;
+  /**
+   * The next milestone is available.
+   */
+  nextIndex: number;
 
-    /**
-     * The previous milestone is available.
-     */
-    hasPrevious: boolean;
+  /**
+   * The previous milestone is available.
+   */
+  hasPrevious: boolean;
 
-    /**
-     * The next milestone is available.
-     */
-    hasNext: boolean;
+  /**
+   * The next milestone is available.
+   */
+  hasNext: boolean;
 }

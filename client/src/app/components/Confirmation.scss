@@ -1,7 +1,7 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .confirmation {
   @include font-size(12px);

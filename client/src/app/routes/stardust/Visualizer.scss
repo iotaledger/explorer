@@ -105,7 +105,7 @@
         justify-content: flex-end;
       }
       .card--content {
-         padding: 20px 30px;
+        padding: 20px 30px;
       }
     }
 
@@ -126,7 +126,7 @@
         .card--content {
           padding: 0;
         }
-        .stats-panel__info{
+        .stats-panel__info {
           padding: 0 10px;
           display: inline-block;
         }
@@ -140,7 +140,7 @@
         .card--label {
           font-size: 12px;
         }
-        .stats-panel__info:last-of-type{
+        .stats-panel__info:last-of-type {
           display: block;
         }
       }
@@ -148,168 +148,168 @@
   }
 
   .info-panel {
-      background: var(--body-background);
-      position: relative;
-      display: flex;
+    background: var(--body-background);
+    position: relative;
+    display: flex;
+    position: absolute;
+    z-index: 2;
+    top: 100px;
+    left: 20px;
+    width: 320px;
+    overflow: visible;
+
+    @include tablet-down {
+      top: 140px;
+      width: 46%;
+    }
+
+    @include phone-down {
+      top: 200px;
+      left: 10px;
+      width: 60%;
+    }
+
+    button {
       position: absolute;
-      z-index: 2;
-      top: 100px;
-      left: 20px;
-      width: 320px;
-      overflow: visible;
+      top: 8px;
+      right: 8px;
+    }
 
-      @include tablet-down {
-          top: 140px;
-          width: 46%;
-      }
+    .card--content {
+      padding: 20px 30px;
 
-      @include phone-down {
-          top: 200px;
-          left: 10px;
-          width: 60%;
-      }
+      .card--value,
+      .card--label {
+        align-items: center;
 
-      button {
-          position: absolute;
-          top: 8px;
-          right: 8px;
-      }
+        @include phone-down {
+          .block-tangle-state__confirmed {
+            text-indent: -9999px;
+            padding: 0 5px;
 
-      .card--content {
-          padding: 20px 30px;
+            &::before {
+              content: "\2713";
+              text-indent: 0px;
+              color: var(--mint-green-bg);
+              font-size: 16px;
+              font-weight: bold;
+            }
+          }
 
-          .card--value, .card--label {
-            align-items: center;
-
-            @include phone-down {
-              .block-tangle-state__confirmed {
-                text-indent: -9999px;
-                padding: 0 5px;
-
-                &::before {
-                  content: "\2713";
-                  text-indent: 0px;
-                  color: var(--mint-green-bg);
-                  font-size: 16px;
-                  font-weight: bold;
-                }
+          .blocks-tangle-state .block-tangle-state {
+            margin-right: 0;
+            padding: 0 5px;
+            .tooltip .children {
+              &::before {
+                content: "\2717";
+                padding-top: 4px;
+                color: $error;
+                font-size: 16px;
+                font-weight: bold;
               }
-
-              .blocks-tangle-state .block-tangle-state {
-                margin-right: 0;
-                padding: 0 5px;
-                .tooltip .children {
-                  &::before {
-                    content: "\2717";
-                    padding-top: 4px;
-                    color: $error;
-                    font-size: 16px;
-                    font-weight: bold;
-                  }
-                  span {
-                    display: none;
-                  }
-                }
+              span {
+                display: none;
               }
             }
           }
-      }
-
-      .tooltip {
-        .wrap {
-          width: 180px;
         }
       }
+    }
 
-      .info-panel__dropdown {
-        .card--content__input--dropdown {
-          display: none;
-
-          @include phone-down {
-            display: block;
-          }
-        }
+    .tooltip {
+      .wrap {
+        width: 180px;
       }
+    }
 
-      .info-panel__reattachments {
+    .info-panel__dropdown {
+      .card--content__input--dropdown {
+        display: none;
+
         @include phone-down {
-          display: none;
-
-          &.info-panel__reattachments--opened {
-            display: block;
-          }
+          display: block;
         }
       }
+    }
+
+    .info-panel__reattachments {
+      @include phone-down {
+        display: none;
+
+        &.info-panel__reattachments--opened {
+          display: block;
+        }
+      }
+    }
   }
 
   .key-panel-container {
+    display: flex;
+    position: absolute;
+    z-index: 1;
+    right: 30px;
+    bottom: 10px;
+    left: 30px;
+    justify-content: center;
+    pointer-events: none;
+
+    .key-panel {
+      background: var(--body-background);
       display: flex;
-      position: absolute;
-      z-index: 1;
-      right: 30px;
-      bottom: 10px;
-      left: 30px;
-      justify-content: center;
-      pointer-events: none;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 16px;
 
-      .key-panel {
-          background: var(--body-background);
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          padding: 16px;
+      .key-panel-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 0 16px;
 
-          .key-panel-item {
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              margin: 0 16px;
+        @include desktop-down {
+          width: 110px;
+          margin: 0;
+        }
 
-              @include desktop-down {
-                  width: 110px;
-                  margin: 0;
-              }
+        .key-marker {
+          width: 12px;
+          height: 12px;
+          margin-right: 10px;
+          border-radius: 3px;
 
-              .key-marker {
-                  width: 12px;
-                  height: 12px;
-                  margin-right: 10px;
-                  border-radius: 3px;
-
-                  &.vertex-state--pending {
-                      background-color: #bbbbbb;
-                  }
-
-                  &.vertex-state--included {
-                      background-color: #4caaff;
-                  }
-
-                  &.vertex-state--referenced {
-                      background-color: #61e884;
-                  }
-
-                  &.vertex-state--conflicting {
-                      background-color: #ff8b5c;
-                  }
-
-                  &.vertex-state--milestone {
-                      background-color: #666af6;
-                  }
-
-                  &.vertex-state--search-result {
-                      background-color: #C061E8;
-                  }
-              }
-
-              .key-label {
-                  @include font-size(14px);
-
-                  color: var(--body-color);
-                  font-family: $metropolis;
-                  font-weight: 500;
-              }
+          &.vertex-state--pending {
+            background-color: #bbbbbb;
           }
+
+          &.vertex-state--included {
+            background-color: #4caaff;
+          }
+
+          &.vertex-state--referenced {
+            background-color: #61e884;
+          }
+
+          &.vertex-state--conflicting {
+            background-color: #ff8b5c;
+          }
+
+          &.vertex-state--milestone {
+            background-color: #666af6;
+          }
+
+          &.vertex-state--search-result {
+            background-color: #c061e8;
+          }
+        }
+
+        .key-label {
+          @include font-size(14px);
+
+          color: var(--body-color);
+          font-family: $metropolis;
+          font-weight: 500;
+        }
       }
+    }
   }
 }
-

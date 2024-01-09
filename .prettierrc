@@ -9,5 +9,5 @@
   "htmlWhitespaceSensitivity": "css",
   "proseWrap": "preserve",
   "printWidth": 140,
-  "tabWidth": 4
+  "tabWidth": 2
 }

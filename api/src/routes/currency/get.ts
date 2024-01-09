@@ -10,20 +10,20 @@ import { IStorageService } from "../../models/services/IStorageService";
  * @returns The response.
  */
 export async function get(_: IConfiguration): Promise<ICurrenciesResponse> {
-    const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
+  const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
 
-    if (currencyStorageService) {
-        const currency = await currencyStorageService.get("default");
+  if (currencyStorageService) {
+    const currency = await currencyStorageService.get("default");
 
-        if (!currency) {
-            throw new Error("Unable to get currency data.");
-        }
-
-        return {
-            fiatExchangeRatesEur: currency.fiatExchangeRatesEur,
-            coinStats: currency.coinStats
-        };
+    if (!currency) {
+      throw new Error("Unable to get currency data.");
     }
 
-    throw new Error("Currency not configured");
+    return {
+      fiatExchangeRatesEur: currency.fiatExchangeRatesEur,
+      coinStats: currency.coinStats,
+    };
+  }
+
+  throw new Error("Currency not configured");
 }

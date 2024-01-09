@@ -5,213 +5,221 @@
 @import "../../../../scss/themes";
 
 .feed .section--header.milestone-feed-header {
-    padding-top: 28px;
-    margin-bottom: 16px;
+  padding-top: 28px;
+  margin-bottom: 16px;
 
-    @include phone-down {
-        margin-bottom: 0px;
+  @include phone-down {
+    margin-bottom: 0px;
+  }
+
+  span {
+    @include font-size(18px, 24px);
+
+    &:first-child {
+      margin-left: 4px;
     }
 
-    span {
-        @include font-size(18px, 24px);
+    font-family: $inter;
+    color: var(--body-color);
 
-        &:first-child {
-            margin-left: 4px;
-        }
-
-        font-family: $inter;
-        color: var(--body-color);
-
-        &.seconds {
-            display: inline-block;
-            min-width: 44px!important;
-        }
+    &.seconds {
+      display: inline-block;
+      min-width: 44px !important;
     }
+  }
 }
 
 .feed-items {
-    min-height: 440px;
-    padding: 15px 0;
+  min-height: 440px;
+  padding: 15px 0;
 
-    p {
-        color: var(--body-color);
+  p {
+    color: var(--body-color);
+  }
+
+  .feed-item--header {
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 8px;
+
+    .label {
+      @include font-size(12px, 18px);
+
+      min-width: 90px;
+      color: var(--header-color);
+      font-family: $inter;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      @include tablet-down {
+        display: none;
+      }
+
+      &.ms-index,
+      &.ms-id,
+      &.ms-blocks,
+      &.ms-txs,
+      &.ms-timestamp {
+        text-align: left;
+      }
+
+      &.ms-index {
+        min-width: 58px;
+      }
+
+      &.ms-id {
+        min-width: 136px;
+      }
+
+      &.ms-blocks,
+      &.ms-txs {
+        min-width: 60px;
+      }
+
+      &.ms-timestamp {
+        min-width: 120px;
+      }
+    }
+  }
+
+  .feed-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+
+    @include tablet-down {
+      padding: 12px;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      margin-bottom: 4px;
     }
 
-    .feed-item--header {
-        justify-content: space-between;
-        margin-bottom: 10px;
-        padding: 0 8px;
+    &:hover {
+      border-radius: 6px;
+      background-color: var(--light-bg);
+    }
 
-        .label {
-            @include font-size(12px, 18px);
+    .feed-item__content {
+      display: flex;
 
-            min-width: 90px;
-            color: var(--header-color);
-            font-family: $inter;
-            font-weight: 500;
-            text-transform: uppercase;
-
-            @include tablet-down {
-                display: none;
-            }
-
-            &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
-                text-align: left;
-            }
-
-            &.ms-index {
-                min-width: 58px;
-            }
-
-            &.ms-id {
-                min-width: 136px;
-            }
-
-            &.ms-blocks, &.ms-txs {
-                min-width: 60px;
-            }
-
-            &.ms-timestamp {
-                min-width: 120px;
-            }
+      @include tablet-down {
+        &:first-child {
+          margin-bottom: 0;
         }
+      }
+
+      &.desktop-only {
+        @include tablet-down {
+          display: none;
+        }
+      }
+
+      .feed-item--value {
+        .feed-item__ms-stat {
+          @include tablet-down {
+            min-height: 100%;
+            padding-left: 8px;
+            @include font-size(14px, 20px);
+          }
+        }
+      }
     }
 
-    .feed-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px;
+    .feed-item--label {
+      display: none;
+
+      @include tablet-down {
+        display: block;
+        color: var(--header-color);
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        @include font-size(14px, 21px);
+      }
+    }
+
+    .feed-item--value {
+      @include font-size(12px);
+
+      min-width: 90px;
+      color: $main-green;
+      font-family: $inter;
+
+      &.payload-type {
+        font-family: $metropolis;
+        @include font-size(14px, 21px);
+        color: var(--header-color);
+        font-weight: 700;
+        text-align: left;
 
         @include tablet-down {
-            padding: 12px;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-            margin-bottom: 4px;
+          color: var(--type-color);
+          text-transform: uppercase;
         }
+      }
 
-        &:hover {
-            border-radius: 6px;
-            background-color: var(--light-bg);
+      &.ms-index {
+        min-width: 52px;
+        text-align: left;
+      }
+
+      &.ms-blocks,
+      &.ms-txs {
+        text-align: left;
+        min-width: 60px;
+      }
+
+      &.ms-timestamp {
+        min-width: 120px;
+        display: flex;
+        justify-content: left;
+        color: var(--link-color);
+
+        @include tablet-down {
+          @include font-size(14px, 20px);
+
+          padding-left: 8px;
+          font-weight: 400;
+          font-family: $ibm-plex-mono;
+          display: inline-block;
+          word-break: break-word;
         }
+      }
 
-        .feed-item__content {
-            display: flex;
-
-            @include tablet-down {
-                &:first-child {
-                    margin-bottom: 0;
-                }
-            }
-
-            &.desktop-only {
-                @include tablet-down {
-                    display: none;
-                }
-            }
-
-            .feed-item--value {
-                .feed-item__ms-stat {
-                    @include tablet-down {
-                        min-height: 100%;
-                        padding-left: 8px;
-                        @include font-size(14px, 20px);
-                    }
-                }
-            }
-
+      @include tablet-down {
+        &.ms-index,
+        &.ms-id,
+        &.ms-blocks,
+        &.ms-txs,
+        &.ms-timestamp {
+          text-align: left;
         }
-
-        .feed-item--label {
-            display: none;
-
-            @include tablet-down {
-                display: block;
-                color: var(--header-color);
-                font-family: $inter;
-                letter-spacing: 0.5px;
-
-                @include font-size(14px, 21px);
-            }
-        }
-
-        .feed-item--value {
-            @include font-size(12px);
-
-            min-width: 90px;
-            color: $main-green;
-            font-family: $inter;
-
-            &.payload-type {
-                font-family: $metropolis;
-                @include font-size(14px, 21px);
-                color: var(--header-color);
-                font-weight: 700;
-                text-align: left;
-
-                @include tablet-down {
-                    color: var(--type-color);
-                    text-transform: uppercase;
-                }
-            }
-
-            &.ms-index {
-                min-width: 52px;
-                text-align: left;
-            }
-
-            &.ms-blocks, &.ms-txs {
-                text-align: left;
-                min-width: 60px;
-            }
-
-            &.ms-timestamp {
-                min-width: 120px;
-                display: flex;
-                justify-content: left;
-                color: var(--link-color);
-
-                @include tablet-down {
-                    @include font-size(14px, 20px);
-                    
-                    padding-left: 8px;
-                    font-weight: 400;
-                    font-family: $ibm-plex-mono;
-                    display: inline-block;
-                    word-break: break-word;
-                }
-            }
-
-            @include tablet-down {
-                &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
-                    text-align: left;
-                }
-            }
-        }
-
-        .feed-item--hash {
-            @include font-size(14px, 20px);
-            overflow: hidden;
-            color: var(--link-color);
-            font-family: $ibm-plex-mono;
-            text-decoration: none;
-            text-overflow: ellipsis;
-            word-break: break-word;
-
-            &:hover {
-                text-decoration: underline;
-            }
-
-            &.ms-id {
-                max-width: 136px;
-                text-align: left;
-
-                @include tablet-down {
-                    padding-left: 8px;
-                }
-            }
-        }
+      }
     }
-}
 
+    .feed-item--hash {
+      @include font-size(14px, 20px);
+      overflow: hidden;
+      color: var(--link-color);
+      font-family: $ibm-plex-mono;
+      text-decoration: none;
+      text-overflow: ellipsis;
+      word-break: break-word;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &.ms-id {
+        max-width: 136px;
+        text-align: left;
+
+        @include tablet-down {
+          padding-left: 8px;
+        }
+      }
+    }
+  }
+}

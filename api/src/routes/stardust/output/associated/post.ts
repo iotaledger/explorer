@@ -16,31 +16,31 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @returns The response.
  */
 export async function post(
-    _: IConfiguration,
-    request: IAssociationsRequest,
-    body: IAssociationsRequestBody
+  _: IConfiguration,
+  request: IAssociationsRequest,
+  body: IAssociationsRequestBody
 ): Promise<IAssociationsResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.address, "address");
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
+  ValidationHelper.string(request.address, "address");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== STARDUST) {
+    return {};
+  }
 
-    const helper = new AssociatedOutputsHelper(networkConfig, body.addressDetails);
-    await helper.fetch();
-    const result = helper.associationToOutputIds;
+  const helper = new AssociatedOutputsHelper(networkConfig, body.addressDetails);
+  await helper.fetch();
+  const result = helper.associationToOutputIds;
 
-    const associations: IAssociation[] = [];
-    for (const [type, outputIds] of result.entries()) {
-        associations.push({ type, outputIds: outputIds.reverse() });
-    }
+  const associations: IAssociation[] = [];
+  for (const [type, outputIds] of result.entries()) {
+    associations.push({ type, outputIds: outputIds.reverse() });
+  }
 
-    return {
-        associations
-    };
+  return {
+    associations,
+  };
 }

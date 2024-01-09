@@ -6,63 +6,63 @@ import { INetwork } from "~models/config/INetwork";
  * The props for the Header component.
  */
 export interface HeaderProps {
-    /**
-     * The root path.
-     */
-    rootPath: string;
+  /**
+   * The root path.
+   */
+  rootPath: string;
 
-    /**
-     * The currently selected network.
-     */
-    currentNetwork?: INetwork;
+  /**
+   * The currently selected network.
+   */
+  currentNetwork?: INetwork;
 
-    /**
-     * The networks available.
-     */
-    networks: INetwork[];
+  /**
+   * The networks available.
+   */
+  networks: INetwork[];
 
-    /**
-     * History for navigation.
-     */
-    history?: H.History;
+  /**
+   * History for navigation.
+   */
+  history?: H.History;
 
-    /**
-     * Action for navigation.
-     */
-    action?: string;
+  /**
+   * Action for navigation.
+   */
+  action?: string;
 
-    /**
-     * The search elements to display as content.
-     */
-    search?: ReactNode;
+  /**
+   * The search elements to display as content.
+   */
+  search?: ReactNode;
 
+  /**
+   * Utilities menu
+   */
+  utilities?: {
     /**
-     * Utilities menu
+     * The label for the utility.
      */
-    utilities?: {
-        /**
-         * The label for the utility.
-         */
-        label: string;
-
-        /**
-         * The link for the utility.
-         */
-        url: string;
-    }[];
+    label: string;
 
     /**
-     * Pages menu
+     * The link for the utility.
      */
-    pages?: {
-        /**
-         * The label for the page.
-         */
-        label: string;
+    url: string;
+  }[];
 
-        /**
-         * The link for the page.
-         */
-        url: string;
-    }[];
+  /**
+   * Pages menu
+   */
+  pages?: {
+    /**
+     * The label for the page.
+     */
+    label: string;
+
+    /**
+     * The link for the page.
+     */
+    url: string;
+  }[];
 }

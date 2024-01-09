@@ -13,20 +13,17 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: IOutputDetailsRequest
-): Promise<IOutputDetailsResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.outputId, "outputId");
+export async function get(config: IConfiguration, request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
+  ValidationHelper.string(request.outputId, "outputId");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== STARDUST) {
+    return {};
+  }
 
-    return StardustTangleHelper.outputDetails(networkConfig, request.outputId);
+  return StardustTangleHelper.outputDetails(networkConfig, request.outputId);
 }

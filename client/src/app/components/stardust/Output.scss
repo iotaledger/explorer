@@ -2,96 +2,95 @@
 @import "../../../scss/variables";
 
 .card--content__output {
-    padding: 0 30px;
-    margin-bottom: 20px;
+  padding: 0 30px;
+  margin-bottom: 20px;
+
+  @include phone-down {
+    padding: 0 4px;
+  }
+
+  .card--value.card-header--wrapper {
+    width: 100%;
+    display: flex;
+    margin-bottom: 0px;
+    height: 32px;
+    align-items: center;
+
+    .output-header {
+      display: flex;
+      width: 100%;
+
+      .output-type--name {
+        white-space: nowrap;
+      }
+
+      .output-id--link {
+        display: flex;
+        margin-right: 2px;
+        white-space: nowrap;
+
+        a {
+          margin-right: 0px;
+        }
+
+        .highlight {
+          font-weight: 500;
+          color: $gray-6;
+          margin-left: 2px;
+        }
+
+        .copy-button {
+          margin-left: 2px;
+        }
+      }
+    }
+
+    .amount-size {
+      width: min-content;
+      text-align: end;
+      word-break: normal;
+      white-space: nowrap;
+      cursor: pointer;
+      margin-bottom: 0;
+      margin-right: 4px;
+
+      span {
+        word-break: keep-all;
+      }
+    }
+  }
+
+  .unlock-condition-icon {
+    color: #fec900;
+    font-size: 18px;
+
+    @media (min-width: #{768px}) and (max-width: #{820px}) {
+      display: none;
+    }
 
     @include phone-down {
-        padding: 0 4px;
+      display: none;
     }
+  }
 
-    .card--value.card-header--wrapper {
-        width: 100%;
-        display: flex;
-        margin-bottom: 0px;
-        height: 32px;
-        align-items: center;
-
-        .output-header {
-            display: flex;
-            width: 100%;
-
-            .output-type--name {
-                white-space: nowrap;
-            }
-
-            .output-id--link {
-                display: flex;
-                margin-right: 2px;
-                white-space: nowrap;
-
-                a {
-                    margin-right: 0px;
-                }
-
-                .highlight {
-                    font-weight: 500;
-                    color: $gray-6;
-                    margin-left: 2px;
-                }
-
-                .copy-button {
-                    margin-left: 2px;
-                }
-            }
-        }
-
-        .amount-size {
-            width: min-content;
-            text-align: end;
-            word-break: normal;
-            white-space: nowrap;
-            cursor: pointer;
-            margin-bottom: 0;
-            margin-right: 4px;
-
-            span {
-                word-break: keep-all;
-            }
-        }
-    }
-
-    .unlock-condition-icon {
-        color: #FEC900;
-        font-size: 18px;
-
-        @media (min-width: #{768px}) and (max-width: #{820px}) {
-            display: none;
-        }
-
-        @include phone-down {
-            display: none;
-        }
-    }
-
-    .left-border {
-        border-left: 1px solid var(--border-color);
-    }
+  .left-border {
+    border-left: 1px solid var(--border-color);
+  }
 }
 
 .card--content--dropdown {
-    margin-right: 8px;
-    cursor: pointer;
+  margin-right: 8px;
+  cursor: pointer;
 
-    svg {
-        transition: transform 0.25s ease;
+  svg {
+    transition: transform 0.25s ease;
 
-        path {
-            fill: var(--card-color);
-        }
+    path {
+      fill: var(--card-color);
     }
+  }
 
-    &.opened > svg {
-        transform: rotate(90deg);
-    }
+  &.opened > svg {
+    transform: rotate(90deg);
+  }
 }
-

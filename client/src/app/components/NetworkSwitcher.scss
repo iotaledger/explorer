@@ -65,7 +65,6 @@
       }
     }
   }
-
 }
 
 .network--expanded {
@@ -87,8 +86,8 @@
   }
 
   @include phone-down {
-      width: 100vw;
-      border-radius: unset;
+    width: 100vw;
+    border-radius: unset;
   }
 
   &.opened {
@@ -109,7 +108,7 @@
       display: block;
 
       div.network {
-          width: 100%;
+        width: 100%;
       }
     }
 

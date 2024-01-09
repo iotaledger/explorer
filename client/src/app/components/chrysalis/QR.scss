@@ -4,32 +4,32 @@
 @import "../../../scss/media-queries";
 
 .qr-container {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    width: 180px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 180px;
 
-    .qr-container__label {
-        font-family: $inter;
-        @include font-size(14px);
-        color: $gray-5;
-        font-weight: 600;
-        text-align: center;
-        margin-top: 24px;
-    }
+  .qr-container__label {
+    font-family: $inter;
+    @include font-size(14px);
+    color: $gray-5;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 24px;
+  }
 
-    svg {
-        @include desktop-down {
-            width: 80px;
-            height: 80px;
-        }
-    }
-
+  svg {
     @include desktop-down {
-        width: 80px;
+      width: 80px;
+      height: 80px;
     }
+  }
 
-    @include phone-down {
-        width: 180px;
-    }
+  @include desktop-down {
+    width: 80px;
+  }
+
+  @include phone-down {
+    width: 180px;
+  }
 }

@@ -1,6 +1,6 @@
 export interface LandingRouteProps {
-    /**
-     * The network to lookup.
-     */
-    network: string;
+  /**
+   * The network to lookup.
+   */
+  network: string;
 }

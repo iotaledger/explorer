@@ -16,11 +16,11 @@ interface IpfsLink {
  * @returns Is ipfs link.
  */
 export function getIPFSHash(url?: string): string | undefined {
-    const ipfsPrefix = "ipfs://";
+  const ipfsPrefix = "ipfs://";
 
-    if (url?.startsWith(ipfsPrefix)) {
-      return url.slice(ipfsPrefix.length);
-    }
+  if (url?.startsWith(ipfsPrefix)) {
+    return url.slice(ipfsPrefix.length);
+  }
 }
 
 /**
@@ -29,20 +29,19 @@ export function getIPFSHash(url?: string): string | undefined {
  * @returns Path to a file.
  */
 export async function getIpfsUri(link: IpfsLink): Promise<string> {
-    let ipfsLink = `${IPFS_PATH}${link.hash}${link.path ?? ""}`;
+  let ipfsLink = `${IPFS_PATH}${link.hash}${link.path ?? ""}`;
 
-    try {
-        const ipfsEntry = await IpfsClient.ls(ipfsLink);
+  try {
+    const ipfsEntry = await IpfsClient.ls(ipfsLink);
 
-        if (ipfsEntry) {
-            if (ipfsEntry.type === "dir") {
-                const path = `${link.path ?? ""}/${ipfsEntry.name}`;
-                return await getIpfsUri({ hash: link.hash, path });
-            }
-            ipfsLink = `${ipfsLink}/${encodeURIComponent(ipfsEntry.name)}`;
-        }
-    } catch { }
+    if (ipfsEntry) {
+      if (ipfsEntry.type === "dir") {
+        const path = `${link.path ?? ""}/${ipfsEntry.name}`;
+        return await getIpfsUri({ hash: link.hash, path });
+      }
+      ipfsLink = `${ipfsLink}/${encodeURIComponent(ipfsEntry.name)}`;
+    }
+  } catch {}
 
-    return `${IPFS_ENDPOINT}${ipfsLink}`;
+  return `${IPFS_ENDPOINT}${ipfsLink}`;
 }
-

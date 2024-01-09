@@ -11,28 +11,28 @@ import { CurrencyService } from "../services/currencyService";
  * @returns The response.
  */
 export async function init(config: IConfiguration): Promise<string[]> {
-    let log = "Initializing\n";
+  let log = "Initializing\n";
 
-    try {
-        const networkStorageService = ServiceFactory.get<IStorageService<INetwork>>("network-storage");
-        if (networkStorageService) {
-            log += await networkStorageService.create();
-        }
-
-        const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
-        if (currencyStorageService) {
-            log += await currencyStorageService.create();
-        }
-
-        const currencyService = new CurrencyService(config);
-        if (currencyService) {
-            await currencyService.update(true);
-        }
-    } catch (err) {
-        log += `Failed\n${err.toString()}\n`;
+  try {
+    const networkStorageService = ServiceFactory.get<IStorageService<INetwork>>("network-storage");
+    if (networkStorageService) {
+      log += await networkStorageService.create();
     }
 
-    log += log.includes("Failed") ? "Initialization Failed" : "Initialization Succeeded";
+    const currencyStorageService = ServiceFactory.get<IStorageService<ICurrencyState>>("currency-storage");
+    if (currencyStorageService) {
+      log += await currencyStorageService.create();
+    }
 
-    return log.split("\n");
+    const currencyService = new CurrencyService(config);
+    if (currencyService) {
+      await currencyService.update(true);
+    }
+  } catch (err) {
+    log += `Failed\n${err.toString()}\n`;
+  }
+
+  log += log.includes("Failed") ? "Initialization Failed" : "Initialization Succeeded";
+
+  return log.split("\n");
 }

@@ -2,8 +2,8 @@
  * The props for the Spinner component.
  */
 export interface SpinnerProps {
-    /**
-     * Show in compact mode.
-     */
-    compact?: boolean;
+  /**
+   * Show in compact mode.
+   */
+  compact?: boolean;
 }

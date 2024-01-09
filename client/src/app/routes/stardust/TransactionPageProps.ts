@@ -1,11 +1,11 @@
 export interface TransactionPageProps {
-    /**
-     * The network to lookup.
-     */
-    network: string;
+  /**
+   * The network to lookup.
+   */
+  network: string;
 
-    /**
-     * The transaction to lookup.
-     */
-    transactionId: string;
+  /**
+   * The transaction to lookup.
+   */
+  transactionId: string;
 }

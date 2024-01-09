@@ -8,13 +8,13 @@ import bigInt, { BigInteger } from "big-integer";
  * @returns The blockId of the block with the milestone payload.
  */
 export function blockIdFromMilestonePayload(protocolVersion: number, payload: MilestonePayload): string {
-    const block = new Block();
-    block.protocolVersion = protocolVersion;
-    block.parents = payload.parents;
-    block.payload = payload;
-    block.nonce = "0";
+  const block = new Block();
+  block.protocolVersion = protocolVersion;
+  block.parents = payload.parents;
+  block.payload = payload;
+  block.nonce = "0";
 
-    return Utils.blockId(block);
+  return Utils.blockId(block);
 }
 
 /**
@@ -24,64 +24,63 @@ export function blockIdFromMilestonePayload(protocolVersion: number, payload: Mi
  * @returns The balance.
  */
 export async function addressBalance(
-    client: Client,
-    address: string
+  client: Client,
+  address: string
 ): Promise<{
-    balance: BigInteger;
-    nativeTokens: { [id: string]: BigInteger };
-    ledgerIndex: number;
+  balance: BigInteger;
+  nativeTokens: { [id: string]: BigInteger };
+  ledgerIndex: number;
 }> {
-    let total: BigInteger = bigInt(0);
-    let ledgerIndex = 0;
-    const nativeTokens: { [id: string]: BigInteger } = {};
+  let total: BigInteger = bigInt(0);
+  let ledgerIndex = 0;
+  const nativeTokens: { [id: string]: BigInteger } = {};
 
-    let response: IOutputsResponse;
-    let expirationResponse: IOutputsResponse;
-    let cursor: string | undefined;
-    let expirationCursor: string | undefined;
-    do {
-        response = await client.basicOutputIds([{ address }, { cursor }]);
+  let response: IOutputsResponse;
+  let expirationResponse: IOutputsResponse;
+  let cursor: string | undefined;
+  let expirationCursor: string | undefined;
+  do {
+    response = await client.basicOutputIds([{ address }, { cursor }]);
 
-        for (const outputId of response.items) {
-            const outputResponse = await client.getOutput(outputId);
+    for (const outputId of response.items) {
+      const outputResponse = await client.getOutput(outputId);
 
-            if (!outputResponse.metadata.isSpent) {
-                total = total.plus(outputResponse.output.getAmount());
+      if (!outputResponse.metadata.isSpent) {
+        total = total.plus(outputResponse.output.getAmount());
 
-                const nativeTokenOutput = outputResponse.output as CommonOutput;
-                if (Array.isArray(nativeTokenOutput.getNativeTokens())) {
-                    for (const token of nativeTokenOutput.getNativeTokens()) {
-                        nativeTokens[token.id] = nativeTokens[token.id] ?? bigInt(0);
-                        nativeTokens[token.id] = nativeTokens[token.id].add(token.amount);
-                    }
-                }
-            }
-            ledgerIndex = outputResponse.metadata.ledgerIndex;
+        const nativeTokenOutput = outputResponse.output as CommonOutput;
+        if (Array.isArray(nativeTokenOutput.getNativeTokens())) {
+          for (const token of nativeTokenOutput.getNativeTokens()) {
+            nativeTokens[token.id] = nativeTokens[token.id] ?? bigInt(0);
+            nativeTokens[token.id] = nativeTokens[token.id].add(token.amount);
+          }
         }
-        cursor = response.cursor;
-    } while (cursor && response.items.length > 0);
+      }
+      ledgerIndex = outputResponse.metadata.ledgerIndex;
+    }
+    cursor = response.cursor;
+  } while (cursor && response.items.length > 0);
 
-    do {
-        expirationResponse = await client.basicOutputIds([
-            { expirationReturnAddress: address },
-            { expiresBefore: Math.floor(Date.now() / 1000) },
-            { cursor: expirationCursor }
-        ]);
+  do {
+    expirationResponse = await client.basicOutputIds([
+      { expirationReturnAddress: address },
+      { expiresBefore: Math.floor(Date.now() / 1000) },
+      { cursor: expirationCursor },
+    ]);
 
-        for (const outputId of expirationResponse.items) {
-            const output = await client.getOutput(outputId);
+    for (const outputId of expirationResponse.items) {
+      const output = await client.getOutput(outputId);
 
-            if (!output.metadata.isSpent) {
-                total = total.plus(output.output.getAmount());
-            }
-        }
-        expirationCursor = expirationResponse.cursor;
-    } while (expirationCursor && expirationResponse.items.length > 0);
+      if (!output.metadata.isSpent) {
+        total = total.plus(output.output.getAmount());
+      }
+    }
+    expirationCursor = expirationResponse.cursor;
+  } while (expirationCursor && expirationResponse.items.length > 0);
 
-    return {
-        balance: total,
-        nativeTokens,
-        ledgerIndex
-    };
+  return {
+    balance: total,
+    nativeTokens,
+    ledgerIndex,
+  };
 }
-

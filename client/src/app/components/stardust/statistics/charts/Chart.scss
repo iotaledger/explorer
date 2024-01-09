@@ -5,69 +5,70 @@
 @import "../../../../../scss/media-queries";
 
 .chart-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 8px;
+  flex: 1;
+
+  &.chart-wrapper--no-data {
+    height: 350px;
+  }
+
+  .chart-wrapper__content {
+    height: 350px;
+  }
+
+  svg.hook {
+    rect {
+      &.bar.active,
+      &.stacked-bar.active {
+        opacity: 0.7;
+      }
+    }
+
+    .axis {
+      color: var(--statistics-charts-axis);
+
+      .tick text {
+        @include font-size(10px);
+        color: $gray-6;
+        fill: $gray-6;
+      }
+
+      @include phone-down {
+        .tick text {
+          @include font-size(9px);
+        }
+      }
+    }
+
+    .axis--x {
+      path {
+        stroke: $gray-6;
+      }
+
+      .tick line {
+        color: transparent;
+      }
+    }
+
+    .axis--y path {
+      stroke: none;
+    }
+
+    .axis--y g.tick line {
+      stroke-width: 1.8px;
+    }
+  }
+
+  .no-data--wrapper {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-radius: 8px;
-    flex: 1;
-
-    &.chart-wrapper--no-data{
-        height: 350px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    .no-data {
+      color: var(--card-color);
     }
-
-    .chart-wrapper__content {
-        height: 350px;
-    }
-
-    svg.hook {
-        rect {
-            &.bar.active, &.stacked-bar.active {
-                opacity: 0.7;
-            }
-        }
-
-        .axis {
-            color: var(--statistics-charts-axis);
-
-            .tick text {
-                @include font-size(10px);
-                color: $gray-6;
-                fill: $gray-6;
-            }
-
-            @include phone-down {
-                .tick text {
-                    @include font-size(9px);
-                }
-            }
-        }
-
-        .axis--x {
-            path {
-                stroke: $gray-6;
-            }
-
-            .tick line {
-                color: transparent;
-            }
-        }
-
-        .axis--y path {
-            stroke: none;
-        }
-
-        .axis--y g.tick line {
-            stroke-width: 1.8px;
-        }
-    }
-
-    .no-data--wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        .no-data {
-            color: var(--card-color);
-        }
-    }
+  }
 }

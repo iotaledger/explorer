@@ -38,11 +38,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "standard",
-    "name",
-    "symbol",
-    "decimals"
-  ]
+  "required": ["standard", "name", "symbol", "decimals"]
 }
-

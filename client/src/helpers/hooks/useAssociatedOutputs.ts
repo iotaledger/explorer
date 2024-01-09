@@ -14,37 +14,38 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @returns The associations and isLoading boolean.
  */
 export function useAssociatedOutputs(
-    network: string,
-    addressDetails: IBech32AddressDetails,
-    setOutputCount?: (count: number) => void
+  network: string,
+  addressDetails: IBech32AddressDetails,
+  setOutputCount?: (count: number) => void
 ): [IAssociation[], boolean] {
-    const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [associations, setAssociations] = useState<IAssociation[]>([]);
-    const [isAssociationsLoading, setIsAssociationsLoading] = useState(true);
+  const isMounted = useIsMounted();
+  const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+  const [associations, setAssociations] = useState<IAssociation[]>([]);
+  const [isAssociationsLoading, setIsAssociationsLoading] = useState(true);
 
-    useEffect(() => {
-        setIsAssociationsLoading(true);
-        // eslint-disable-next-line no-void
-        void (async () => {
-            apiClient.associatedOutputs({ network, addressDetails }).then(response => {
-                if (response?.associations && isMounted) {
-                    setAssociations(response.associations);
+  useEffect(() => {
+    setIsAssociationsLoading(true);
+    // eslint-disable-next-line no-void
+    void (async () => {
+      apiClient
+        .associatedOutputs({ network, addressDetails })
+        .then((response) => {
+          if (response?.associations && isMounted) {
+            setAssociations(response.associations);
 
-                    if (setOutputCount) {
-                        const outputsCount = response.associations.flatMap(
-                            association => association.outputIds.length
-                        ).reduce((acc, next) => acc + next, 0);
-                        setOutputCount(outputsCount);
-                    }
-                }
+            if (setOutputCount) {
+              const outputsCount = response.associations
+                .flatMap((association) => association.outputIds.length)
+                .reduce((acc, next) => acc + next, 0);
+              setOutputCount(outputsCount);
             }
-            ).finally(() => {
-                setIsAssociationsLoading(false);
-            });
-        })();
-    }, [network, addressDetails]);
+          }
+        })
+        .finally(() => {
+          setIsAssociationsLoading(false);
+        });
+    })();
+  }, [network, addressDetails]);
 
-    return [associations, isAssociationsLoading];
+  return [associations, isAssociationsLoading];
 }
-

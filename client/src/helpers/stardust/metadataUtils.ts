@@ -7,15 +7,15 @@ import * as jsonschema from "jsonschema";
  * @returns The parsed metadata or undefined.
  */
 export function tryParseMetadata<S>(metadataHex: HexEncodedString, schema: jsonschema.Schema): S | null {
-    const validator = new jsonschema.Validator();
-    try {
-        const json: unknown = JSON.parse(hexToUtf8(metadataHex));
-        const result = validator.validate(json, schema);
+  const validator = new jsonschema.Validator();
+  try {
+    const json: unknown = JSON.parse(hexToUtf8(metadataHex));
+    const result = validator.validate(json, schema);
 
-        if (result.valid) {
-            return json as S;
-        }
-    } catch { }
+    if (result.valid) {
+      return json as S;
+    }
+  } catch {}
 
-    return null;
+  return null;
 }

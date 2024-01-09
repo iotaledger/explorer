@@ -17,7 +17,6 @@
   }
 
   .modal--icon {
-
     span {
       color: #b0bfd9;
       font-size: 20px;
@@ -55,62 +54,61 @@
     }
 
     .modal--header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-bottom: 22px;
-        border-bottom: 1px solid #e8eefb;
-        letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 22px;
+      border-bottom: 1px solid #e8eefb;
+      letter-spacing: 0.02em;
 
-        .modal--title {
-            @include font-size(20px);
+      .modal--title {
+        @include font-size(20px);
 
-            color: var(--body-color);
-            font-family: $metropolis;
-            font-weight: 600;
-        }
+        color: var(--body-color);
+        font-family: $metropolis;
+        font-weight: 600;
+      }
 
-        button {
-            color: var(--body-color);
-        }
+      button {
+        color: var(--body-color);
+      }
     }
-
 
     .modal--body {
       margin-top: 24px;
 
       .input-container {
-          width: 100%;
+        width: 100%;
 
-          .date-label {
-            color: var(--body-color);
-            font-family: $inter;
-            font-weight: 500;
-            margin-bottom: 8px;
-            margin-right: 8px;
-          }
+        .date-label {
+          color: var(--body-color);
+          font-family: $inter;
+          font-weight: 500;
+          margin-bottom: 8px;
+          margin-right: 8px;
+        }
       }
 
       .confirm-button {
-          cursor: pointer;
-          margin: 24px 0 8px 0;
-          align-self: center;
-          width: fit-content;
-          padding: 8px 12px;
-          border: 1px solid #ccc;
-          color: $mint-green-7;
+        cursor: pointer;
+        margin: 24px 0 8px 0;
+        align-self: center;
+        width: fit-content;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        color: $mint-green-7;
 
-          &.disabled {
-              color: $mint-green-1;
-          }
+        &.disabled {
+          color: $mint-green-1;
+        }
 
-          .spinner-container {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              width: 57px;
-              height: 16px;
-          }
+        .spinner-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 57px;
+          height: 16px;
+        }
       }
     }
   }

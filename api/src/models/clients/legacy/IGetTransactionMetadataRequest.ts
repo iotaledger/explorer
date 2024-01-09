@@ -1,6 +1,6 @@
 export interface IGetTransactionMetadataRequest {
-    /**
-     * The hash to get.
-     */
-    txHash: string;
+  /**
+   * The hash to get.
+   */
+  txHash: string;
 }

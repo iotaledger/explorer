@@ -2,23 +2,23 @@ import { MilestonePayload } from "@iota/sdk-wasm/web";
 import * as H from "history";
 
 export interface MilestonePayloadProps {
-    /**
-     * The network to lookup.
-     */
-    network: string;
+  /**
+   * The network to lookup.
+   */
+  network: string;
 
-    /**
-     * The milestone payload.
-     */
-    milestonePayload: MilestonePayload;
+  /**
+   * The milestone payload.
+   */
+  milestonePayload: MilestonePayload;
 
-    /**
-     * History for navigation.
-     */
-    history: H.History;
+  /**
+   * History for navigation.
+   */
+  history: H.History;
 
-    /**
-     * The network protocol version.
-     */
-    protocolVersion: number;
+  /**
+   * The network protocol version.
+   */
+  protocolVersion: number;
 }

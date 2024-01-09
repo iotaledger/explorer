@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       TARGET_COMMIT:
-        description: 'Target Commit Hash for the SDK'
+        description: "Target Commit Hash for the SDK"
         required: true
-        default: '2.0'
+        default: "2.0"
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install System Dependencies
         run: |

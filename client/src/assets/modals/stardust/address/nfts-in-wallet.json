@@ -1,11 +1,11 @@
 {
-    "title": "Non-fungible Tokens (NFTs)",
-    "description": "<p>Non-fungible tokens are unique, cannot be mixed with other tokens, and store some immutable data.</p>",
-    "links": [
-      {
-        "label": "Read more",
-        "href": "https://wiki.iota.org/shimmer/introduction/explanations/what_is_stardust/tokenization#non-fungible-tokens-nfts",
-        "isExternal": true
-      }
-    ]
+  "title": "Non-fungible Tokens (NFTs)",
+  "description": "<p>Non-fungible tokens are unique, cannot be mixed with other tokens, and store some immutable data.</p>",
+  "links": [
+    {
+      "label": "Read more",
+      "href": "https://wiki.iota.org/shimmer/introduction/explanations/what_is_stardust/tokenization#non-fungible-tokens-nfts",
+      "isExternal": true
+    }
+  ]
 }

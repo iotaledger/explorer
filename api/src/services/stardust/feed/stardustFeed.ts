@@ -18,299 +18,295 @@ const MAX_MILESTONE_LATEST = 30;
  * Streaming blocks from mqtt (upstream) to explorer-client connections (downstream).
  */
 export class StardustFeed {
-    /**
-     * The block feed subscribers (downstream).
-     */
-    protected readonly blockSubscribers: {
-        [id: string]: (data: IFeedUpdate) => Promise<void>;
-    };
+  /**
+   * The block feed subscribers (downstream).
+   */
+  protected readonly blockSubscribers: {
+    [id: string]: (data: IFeedUpdate) => Promise<void>;
+  };
 
-    /**
-     * The milestone feed subscribers (downstream).
-     */
-    protected readonly milestoneSubscribers: {
-        [id: string]: (data: IFeedUpdate) => Promise<void>;
-    };
+  /**
+   * The milestone feed subscribers (downstream).
+   */
+  protected readonly milestoneSubscribers: {
+    [id: string]: (data: IFeedUpdate) => Promise<void>;
+  };
 
-    /**
-     * Mqtt service for data (upstream).
-     */
-    private readonly _mqttClient: Client;
+  /**
+   * Mqtt service for data (upstream).
+   */
+  private readonly _mqttClient: Client;
 
-    /**
-     * The latest milestones.
-     */
-    private readonly latestMilestonesCache: ILatestMilestone[] = [];
+  /**
+   * The latest milestones.
+   */
+  private readonly latestMilestonesCache: ILatestMilestone[] = [];
 
-    /**
-     * The most recent block metadata.
-     */
-    private readonly blockMetadataCache: Map<string, IFeedItemMetadata>;
+  /**
+   * The most recent block metadata.
+   */
+  private readonly blockMetadataCache: Map<string, IFeedItemMetadata>;
 
-    /**
-     * The cache maps trim job timer.
-     */
-    private blockMetadataCacheTrimTimer: NodeJS.Timer | null = null;
+  /**
+   * The cache maps trim job timer.
+   */
+  private blockMetadataCacheTrimTimer: NodeJS.Timer | null = null;
 
-    /**
-     * The protocol.version for the network in context (from NodeInfo).
-     */
-    private readonly networkProtocolVersion: number;
+  /**
+   * The protocol.version for the network in context (from NodeInfo).
+   */
+  private readonly networkProtocolVersion: number;
 
-    /**
-     * The network in context (from Init).
-     */
-    private readonly network: string;
+  /**
+   * The network in context (from Init).
+   */
+  private readonly network: string;
 
-    /**
-     * Creates a new instance of StardustFeed.
-     * @param networkId The network id.
-     */
-    constructor(networkId: string) {
-        this.blockSubscribers = {};
-        this.milestoneSubscribers = {};
-        this.blockMetadataCache = new Map();
-        this.network = networkId;
-        this._mqttClient = ServiceFactory.get<Client>(`client-${networkId}`);
-        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
+  /**
+   * Creates a new instance of StardustFeed.
+   * @param networkId The network id.
+   */
+  constructor(networkId: string) {
+    this.blockSubscribers = {};
+    this.milestoneSubscribers = {};
+    this.blockMetadataCache = new Map();
+    this.network = networkId;
+    this._mqttClient = ServiceFactory.get<Client>(`client-${networkId}`);
+    const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
 
-        if (this._mqttClient && nodeInfoService) {
-            const nodeInfo = nodeInfoService.getNodeInfo();
-            this.networkProtocolVersion = nodeInfo.protocolVersion;
+    if (this._mqttClient && nodeInfoService) {
+      const nodeInfo = nodeInfoService.getNodeInfo();
+      this.networkProtocolVersion = nodeInfo.protocolVersion;
 
-            this.setupCacheTrimJob();
-            this.connect();
-        } else {
-            throw new Error(`Failed to build stardustFeed instance for ${networkId}`);
-        }
+      this.setupCacheTrimJob();
+      this.connect();
+    } else {
+      throw new Error(`Failed to build stardustFeed instance for ${networkId}`);
     }
+  }
 
+  /**
+   * Get the latest milestone cache state.
+   * @returns The cache state.
+   */
+  public get getLatestMilestones() {
+    return this.latestMilestonesCache;
+  }
 
-    /**
-     * Get the latest milestone cache state.
-     * @returns The cache state.
-     */
-    public get getLatestMilestones() {
-        return this.latestMilestonesCache;
-    }
+  /**
+   * Subscribe to the blocks stardust feed.
+   * @param id The id of the subscriber.
+   * @param callback The callback to call with data for the event.
+   */
+  public async subscribeBlocks(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+    this.blockSubscribers[id] = callback;
+  }
 
-    /**
-     * Subscribe to the blocks stardust feed.
-     * @param id The id of the subscriber.
-     * @param callback The callback to call with data for the event.
-     */
-    public async subscribeBlocks(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
-        this.blockSubscribers[id] = callback;
-    }
+  /**
+   * Subscribe to the blocks stardust feed.
+   * @param id The id of the subscriber.
+   * @param callback The callback to call with data for the event.
+   */
+  public async subscribeMilestones(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
+    this.milestoneSubscribers[id] = callback;
+  }
 
-    /**
-     * Subscribe to the blocks stardust feed.
-     * @param id The id of the subscriber.
-     * @param callback The callback to call with data for the event.
-     */
-    public async subscribeMilestones(id: string, callback: (data: IFeedUpdate) => Promise<void>): Promise<void> {
-        this.milestoneSubscribers[id] = callback;
-    }
+  /**
+   * Unsubscribe from the blocks feed.
+   * @param subscriptionId The id to unsubscribe.
+   */
+  public unsubscribeBlocks(subscriptionId: string): void {
+    logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from blocks (${this.network})`);
+    delete this.blockSubscribers[subscriptionId];
+  }
 
-    /**
-     * Unsubscribe from the blocks feed.
-     * @param subscriptionId The id to unsubscribe.
-     */
-    public unsubscribeBlocks(subscriptionId: string): void {
-        logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from blocks (${this.network})`);
-        delete this.blockSubscribers[subscriptionId];
-    }
+  /**
+   * Unsubscribe from the milestones feed.
+   * @param subscriptionId The id to unsubscribe.
+   */
+  public unsubscribeMilestones(subscriptionId: string): void {
+    logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from milestones (${this.network})`);
+    delete this.milestoneSubscribers[subscriptionId];
+  }
 
-    /**
-     * Unsubscribe from the milestones feed.
-     * @param subscriptionId The id to unsubscribe.
-     */
-    public unsubscribeMilestones(subscriptionId: string): void {
-        logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from milestones (${this.network})`);
-        delete this.milestoneSubscribers[subscriptionId];
-    }
-
-    /**
-     * Connects the callbacks for upstream data.
-     */
-    private connect() {
-        logger.info("[StardustFeed] Connecting upstream feed!");
-        // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
-            try {
-                const block: Block = this.parseMqttPayloadMessage(Block, message);
-                const update: Partial<IFeedUpdate> = {
-                    block
-                };
-
-                // eslint-disable-next-line no-void
-                void this.broadcastBlock(update);
-            } catch {
-                logger.error("[FeedClient]: Failed broadcasting block downstream.");
-            }
-        });
+  /**
+   * Connects the callbacks for upstream data.
+   */
+  private connect() {
+    logger.info("[StardustFeed] Connecting upstream feed!");
+    // eslint-disable-next-line no-void
+    void this._mqttClient.listenMqtt(["blocks"], (_, message) => {
+      try {
+        const block: Block = this.parseMqttPayloadMessage(Block, message);
+        const update: Partial<IFeedUpdate> = {
+          block,
+        };
 
         // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, message) => {
-            const parsed: { topic: string; payload: string } = JSON.parse(message);
-            const metadata: IBlockMetadata = JSON.parse(parsed.payload);
-            // update cache
-            let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
-            currentEntry = currentEntry ? {
-                ...currentEntry,
-                milestone: metadata.milestoneIndex,
-                referenced: metadata.referencedByMilestoneIndex,
-                solid: metadata.isSolid,
-                conflicting: metadata.ledgerInclusionState === "conflicting",
-                conflictReason: metadata.conflictReason,
-                included: metadata.ledgerInclusionState === "included"
-            } : {
-                milestone: metadata.milestoneIndex,
-                referenced: metadata.referencedByMilestoneIndex,
-                solid: metadata.isSolid,
-                conflicting: metadata.ledgerInclusionState === "conflicting",
-                conflictReason: metadata.conflictReason,
-                included: metadata.ledgerInclusionState === "included"
-            };
+        void this.broadcastBlock(update);
+      } catch {
+        logger.error("[FeedClient]: Failed broadcasting block downstream.");
+      }
+    });
 
-            this.blockMetadataCache.set(metadata.blockId, currentEntry);
+    // eslint-disable-next-line no-void
+    void this._mqttClient.listenMqtt(["block-metadata/referenced"], (_, message) => {
+      const parsed: { topic: string; payload: string } = JSON.parse(message);
+      const metadata: IBlockMetadata = JSON.parse(parsed.payload);
+      // update cache
+      let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
+      currentEntry =
+        currentEntry ?
+          {
+            ...currentEntry,
+            milestone: metadata.milestoneIndex,
+            referenced: metadata.referencedByMilestoneIndex,
+            solid: metadata.isSolid,
+            conflicting: metadata.ledgerInclusionState === "conflicting",
+            conflictReason: metadata.conflictReason,
+            included: metadata.ledgerInclusionState === "included",
+          }
+        : {
+            milestone: metadata.milestoneIndex,
+            referenced: metadata.referencedByMilestoneIndex,
+            solid: metadata.isSolid,
+            conflicting: metadata.ledgerInclusionState === "conflicting",
+            conflictReason: metadata.conflictReason,
+            included: metadata.ledgerInclusionState === "included",
+          };
 
-            const update: Partial<IFeedUpdate> = {
-                blockMetadata: {
-                    blockId: metadata.blockId,
-                    metadata: currentEntry
-                }
-            };
+      this.blockMetadataCache.set(metadata.blockId, currentEntry);
 
-            // eslint-disable-next-line no-void
-            void this.broadcastBlock(update);
-        });
+      const update: Partial<IFeedUpdate> = {
+        blockMetadata: {
+          blockId: metadata.blockId,
+          metadata: currentEntry,
+        },
+      };
+
+      // eslint-disable-next-line no-void
+      void this.broadcastBlock(update);
+    });
+
+    // eslint-disable-next-line no-void
+    void this._mqttClient.listenMqtt(["milestones"], (_, message) => {
+      try {
+        const milestonePayload: MilestonePayload = this.parseMqttPayloadMessage(MilestonePayload, message);
+        const milestoneId = Utils.milestoneId(milestonePayload);
+        const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
+        const milestoneIndex = milestonePayload.index;
+        const timestamp = milestonePayload.timestamp;
 
         // eslint-disable-next-line no-void
-        void this._mqttClient.listenMqtt(["milestones"], (_, message) => {
-            try {
-                const milestonePayload: MilestonePayload = this.parseMqttPayloadMessage(MilestonePayload, message);
-                const milestoneId = Utils.milestoneId(milestonePayload);
-                const blockId = blockIdFromMilestonePayload(this.networkProtocolVersion, milestonePayload);
-                const milestoneIndex = milestonePayload.index;
-                const timestamp = milestonePayload.timestamp;
+        void this.updateLatestMilestoneCache(blockId, milestoneIndex, milestoneId, timestamp);
 
-                // eslint-disable-next-line no-void
-                void this.updateLatestMilestoneCache(blockId, milestoneIndex, milestoneId, timestamp);
+        const update: Partial<IFeedUpdate> = {
+          milestone: {
+            blockId,
+            milestoneId,
+            milestoneIndex,
+            timestamp,
+            payload: milestonePayload,
+          },
+        };
 
-                const update: Partial<IFeedUpdate> = {
-                    milestone: {
-                        blockId,
-                        milestoneId,
-                        milestoneIndex,
-                        timestamp,
-                        payload: milestonePayload
-                    }
-                };
+        // eslint-disable-next-line no-void
+        void this.broadcastMilestone(update);
+      } catch (err: unknown) {
+        logger.error(`[FeedClient] Mqtt milestone callback failed: ${JSON.stringify(err)}`);
+      }
+    });
+  }
 
-                // eslint-disable-next-line no-void
-                void this.broadcastMilestone(update);
-            } catch (err: unknown) {
-                logger.error(`[FeedClient] Mqtt milestone callback failed: ${JSON.stringify(err)}`);
-            }
+  /**
+   * Pushes block data to subscribers (downstream).
+   * @param payload The data payload (without subscriptionId).
+   */
+  private async broadcastBlock(payload: Partial<IFeedUpdate>) {
+    for (const subscriptionId in this.blockSubscribers) {
+      try {
+        logger.debug(`Broadcasting block to subscriber ${subscriptionId}`);
+        // push data through callback
+        await this.blockSubscribers[subscriptionId]({
+          ...payload,
+          subscriptionId,
         });
+      } catch (error) {
+        logger.warn(`[FeedClient] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
+      }
+    }
+  }
+
+  /**
+   * Pushes milestone data to subscribers (downstream).
+   * @param payload The data payload (without subscriptionId).
+   */
+  private async broadcastMilestone(payload: Partial<IFeedUpdate>) {
+    for (const subscriptionId in this.milestoneSubscribers) {
+      try {
+        logger.debug(`Broadcasting milestone to subscriber ${subscriptionId}`);
+        // push data through callback
+        await this.milestoneSubscribers[subscriptionId]({
+          ...payload,
+          subscriptionId,
+        });
+      } catch (error) {
+        logger.warn(`[FeedClient] Failed to send callback to milestone subscribers for ${subscriptionId}. Cause: ${error}`);
+      }
+    }
+  }
+
+  /**
+   * Updates the milestone cache.
+   * @param blockId The block id.
+   * @param milestoneIndex The milestone index.
+   * @param milestoneId The milestone id.
+   * @param timestamp The milestone timestamp.
+   */
+  private async updateLatestMilestoneCache(blockId: string, milestoneIndex: number, milestoneId: string, timestamp: number): Promise<void> {
+    if (!this.latestMilestonesCache.map((ms) => ms.blockId).includes(blockId)) {
+      this.latestMilestonesCache.unshift({
+        blockId,
+        milestoneId,
+        index: milestoneIndex,
+        timestamp,
+      });
+
+      if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
+        this.latestMilestonesCache.pop();
+      }
+    }
+  }
+
+  private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
+    try {
+      const message: { topic: string; payload: string } = JSON.parse(serializedMessage);
+      const payload: T = plainToInstance<T, Record<string, unknown>>(cls, JSON.parse(message.payload) as Record<string, unknown>);
+
+      return payload;
+    } catch (error) {
+      logger.warn(`[FeedClient] Failed to parse mqtt payload. ${error}`);
+    }
+  }
+
+  /**
+   * Setup a periodic interval to trim if the cache map is over the max limit.
+   */
+  private setupCacheTrimJob() {
+    if (this.blockMetadataCacheTrimTimer) {
+      clearInterval(this.blockMetadataCacheTrimTimer);
+      this.blockMetadataCacheTrimTimer = null;
     }
 
-    /**
-     * Pushes block data to subscribers (downstream).
-     * @param payload The data payload (without subscriptionId).
-     */
-    private async broadcastBlock(payload: Partial<IFeedUpdate>) {
-        for (const subscriptionId in this.blockSubscribers) {
-            try {
-                logger.debug(`Broadcasting block to subscriber ${subscriptionId}`);
-                // push data through callback
-                await this.blockSubscribers[subscriptionId]({
-                    ...payload,
-                    subscriptionId
-                });
-            } catch (error) {
-                logger.warn(`[FeedClient] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
-            }
-        }
-    }
+    this.blockMetadataCacheTrimTimer = setInterval(() => {
+      let cacheSize = this.blockMetadataCache.size;
 
-    /**
-     * Pushes milestone data to subscribers (downstream).
-     * @param payload The data payload (without subscriptionId).
-     */
-    private async broadcastMilestone(payload: Partial<IFeedUpdate>) {
-        for (const subscriptionId in this.milestoneSubscribers) {
-            try {
-                logger.debug(`Broadcasting milestone to subscriber ${subscriptionId}`);
-                // push data through callback
-                await this.milestoneSubscribers[subscriptionId]({
-                    ...payload,
-                    subscriptionId
-                });
-            } catch (error) {
-                logger.warn(`[FeedClient] Failed to send callback to milestone subscribers for ${subscriptionId}. Cause: ${error}`);
-            }
-        }
-    }
-
-    /**
-     * Updates the milestone cache.
-     * @param blockId The block id.
-     * @param milestoneIndex The milestone index.
-     * @param milestoneId The milestone id.
-     * @param timestamp The milestone timestamp.
-     */
-    private async updateLatestMilestoneCache(
-        blockId: string, milestoneIndex: number, milestoneId: string, timestamp: number
-    ): Promise<void> {
-        if (!this.latestMilestonesCache.map(ms => ms.blockId).includes(blockId)) {
-            this.latestMilestonesCache.unshift({
-                blockId,
-                milestoneId,
-                index: milestoneIndex,
-                timestamp
-            });
-
-            if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
-                this.latestMilestonesCache.pop();
-            }
-        }
-    }
-
-    private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
-        try {
-            const message: { topic: string; payload: string } = JSON.parse(serializedMessage);
-            const payload: T = plainToInstance<T, Record<string, unknown>>(
-                cls,
-                JSON.parse(message.payload) as Record<string, unknown>
-            );
-
-            return payload;
-        } catch (error) {
-            logger.warn(`[FeedClient] Failed to parse mqtt payload. ${error}`);
-        }
-    }
-
-    /**
-     * Setup a periodic interval to trim if the cache map is over the max limit.
-     */
-    private setupCacheTrimJob() {
-        if (this.blockMetadataCacheTrimTimer) {
-            clearInterval(this.blockMetadataCacheTrimTimer);
-            this.blockMetadataCacheTrimTimer = null;
-        }
-
-        this.blockMetadataCacheTrimTimer = setInterval(() => {
-            let cacheSize = this.blockMetadataCache.size;
-
-            while (cacheSize > MAX_BLOCKS_CACHE_SIZE) {
-                const keyIterator = this.blockMetadataCache.keys();
-                const oldestKey = keyIterator.next().value as string;
-                this.blockMetadataCache.delete(oldestKey); // remove the oldest key-value pair from the Map
-                cacheSize--;
-            }
-        }, CACHE_TRIM_INTERVAL_MS);
-    }
+      while (cacheSize > MAX_BLOCKS_CACHE_SIZE) {
+        const keyIterator = this.blockMetadataCache.keys();
+        const oldestKey = keyIterator.next().value as string;
+        this.blockMetadataCache.delete(oldestKey); // remove the oldest key-value pair from the Map
+        cacheSize--;
+      }
+    }, CACHE_TRIM_INTERVAL_MS);
+  }
 }
-

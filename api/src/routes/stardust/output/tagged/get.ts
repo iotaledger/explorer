@@ -15,30 +15,26 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    _: IConfiguration,
-    request: ITaggedOutputsRequest
-): Promise<IBasicOutputsResponse | INftOutputsResponse> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.tag, "tag");
-    ValidationHelper.oneOf(request.outputType, ["basic", "nft"], "outputType");
+export async function get(_: IConfiguration, request: ITaggedOutputsRequest): Promise<IBasicOutputsResponse | INftOutputsResponse> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
+  ValidationHelper.string(request.tag, "tag");
+  ValidationHelper.oneOf(request.outputType, ["basic", "nft"], "outputType");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== STARDUST) {
+    return {};
+  }
 
-    const tagHex = Converter.utf8ToHex(request.tag, true);
+  const tagHex = Converter.utf8ToHex(request.tag, true);
 
-    if (request.outputType === "basic") {
-        return StardustTangleHelper.taggedBasicOutputs(networkConfig, tagHex, 10, request.cursor);
-    } else if (request.outputType === "nft") {
-        return StardustTangleHelper.taggedNftOutputs(networkConfig, tagHex, 10, request.cursor);
-    }
+  if (request.outputType === "basic") {
+    return StardustTangleHelper.taggedBasicOutputs(networkConfig, tagHex, 10, request.cursor);
+  } else if (request.outputType === "nft") {
+    return StardustTangleHelper.taggedNftOutputs(networkConfig, tagHex, 10, request.cursor);
+  }
 
-    return { error: "Unsupported output type" };
+  return { error: "Unsupported output type" };
 }
-

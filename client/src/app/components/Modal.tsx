@@ -3,104 +3,88 @@ import { ModalProps } from "./ModalProps";
 import { ModalState } from "./ModalState";
 import "./Modal.scss";
 
-
 /**
  * Component to reuse for info modals.
  */
 class Modal extends Component<ModalProps, ModalState> {
-    /**
-     * Create a new instance of Modal.
-     * @param props The props.
-     */
-    constructor(props: ModalProps) {
-        super(props);
-        this.state = {
-            show: false
-        };
-    }
+  /**
+   * Create a new instance of Modal.
+   * @param props The props.
+   */
+  constructor(props: ModalProps) {
+    super(props);
+    this.state = {
+      show: false,
+    };
+  }
 
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
-    public render(): ReactNode {
-        return (
-            <div className="modal">
-                <button
-                    type="button"
-                    className="modal--icon"
-                    onClick={() => this.handleShow()}
-                >
-                    {this.props.icon && (
-                        <span className="material-icons">
-                            {this.props.icon}
-                        </span>)}
-                </button>
-                {this.state.show && (
-                    <React.Fragment>
-                        <div className="modal--content">
-                            <div className="modal--header">
-                                <div className="modal--title">
-                                    {this.props.data?.title}
-                                    <button
-                                        type="button"
-                                        onClick={() => this.handleHide()}
-                                    >
-                                        <span className="material-icons">close</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="modal--description">
-                                <div dangerouslySetInnerHTML={{ __html: this.props.data?.description }} />
-                                {this.props.data?.links && (
-                                    <div className="modal--actions">
-                                        {this.props.data.links.map((link, index) => (
-                                            <a
-                                                key={index}
-                                                rel="noopener noreferrer"
-                                                href={link.href}
-                                                target={link.isExternal ? "_blank" : "_self"}
-                                                className="modal--action"
-                                            >
-                                                {link.label}
-                                            </a>
-                                        ))}
-                                    </div>
-                                )}
-
-                            </div>
-                        </div>
-                        <div
-                            className="modal--bg"
-                            onClick={() => {
-                                this.handleHide();
-                            }}
-                        />
-                    </React.Fragment>
+  /**
+   * Render the component.
+   * @returns The node to render.
+   */
+  public render(): ReactNode {
+    return (
+      <div className="modal">
+        <button type="button" className="modal--icon" onClick={() => this.handleShow()}>
+          {this.props.icon && <span className="material-icons">{this.props.icon}</span>}
+        </button>
+        {this.state.show && (
+          <React.Fragment>
+            <div className="modal--content">
+              <div className="modal--header">
+                <div className="modal--title">
+                  {this.props.data?.title}
+                  <button type="button" onClick={() => this.handleHide()}>
+                    <span className="material-icons">close</span>
+                  </button>
+                </div>
+              </div>
+              <div className="modal--description">
+                <div dangerouslySetInnerHTML={{ __html: this.props.data?.description }} />
+                {this.props.data?.links && (
+                  <div className="modal--actions">
+                    {this.props.data.links.map((link, index) => (
+                      <a
+                        key={index}
+                        rel="noopener noreferrer"
+                        href={link.href}
+                        target={link.isExternal ? "_blank" : "_self"}
+                        className="modal--action"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
+                  </div>
                 )}
+              </div>
             </div>
-        );
-    }
+            <div
+              className="modal--bg"
+              onClick={() => {
+                this.handleHide();
+              }}
+            />
+          </React.Fragment>
+        )}
+      </div>
+    );
+  }
 
-    private handleShow(): void {
-        this.setState({ show: true },
-            () => {
-                if (this.props?.showModal) {
-                    this.props.showModal(this.state.show);
-                }
-            }
-        );
-    }
+  private handleShow(): void {
+    this.setState({ show: true }, () => {
+      if (this.props?.showModal) {
+        this.props.showModal(this.state.show);
+      }
+    });
+  }
 
-    private handleHide(): void {
-        this.setState({ show: false },
-            () => {
-                if (this.props?.showModal) {
-                    this.props.showModal(this.state.show);
-                }
-            }
-        );
-    }
+  private handleHide(): void {
+    this.setState({ show: false }, () => {
+      if (this.props?.showModal) {
+        this.props.showModal(this.state.show);
+      }
+    });
+  }
 }
 
 export default Modal;

@@ -2,23 +2,23 @@ import { ReceiptMilestoneOption } from "@iota/sdk-wasm/web";
 import * as H from "history";
 
 export interface ReceiptPayloadProps {
-    /**
-     * The network to lookup.
-     */
-    network: string;
+  /**
+   * The network to lookup.
+   */
+  network: string;
 
-    /**
-     * The receipt payload.
-     */
-    payload: ReceiptMilestoneOption;
+  /**
+   * The receipt payload.
+   */
+  payload: ReceiptMilestoneOption;
 
-    /**
-     * Display advanced mode.
-     */
-    advancedMode: boolean;
+  /**
+   * Display advanced mode.
+   */
+  advancedMode: boolean;
 
-    /**
-     * History for navigation.
-     */
-    history?: H.History;
+  /**
+   * History for navigation.
+   */
+  history?: H.History;
 }

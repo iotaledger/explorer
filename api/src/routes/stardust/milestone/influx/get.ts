@@ -7,48 +7,44 @@ import { NetworkService } from "../../../../services/networkService";
 import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
-
 /**
  * Find the object from the network.
  * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    _: IConfiguration,
-    request: IMilestoneStatsRequest
-): Promise<IMilestoneAnalyticStats> {
-    const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.number(Number(request.milestoneIndex), "milestoneIndex");
+export async function get(_: IConfiguration, request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
+  const networkService = ServiceFactory.get<NetworkService>("network");
+  const networks = networkService.networkNames();
+  ValidationHelper.oneOf(request.network, networks, "network");
+  ValidationHelper.number(Number(request.milestoneIndex), "milestoneIndex");
 
-    const networkConfig = networkService.get(request.network);
+  const networkConfig = networkService.get(request.network);
 
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return {};
-    }
+  if (networkConfig.protocolVersion !== STARDUST) {
+    return {};
+  }
 
-    const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
+  const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
 
-    if (!influxService) {
-        return { error: "Influx service not found for this network." };
-    }
+  if (!influxService) {
+    return { error: "Influx service not found for this network." };
+  }
 
-    const milestoneIndex = Number.parseInt(request.milestoneIndex, 10);
-    let maybeMsStats = await influxService.fetchAnalyticsForMilestoneWithRetries(milestoneIndex);
+  const milestoneIndex = Number.parseInt(request.milestoneIndex, 10);
+  let maybeMsStats = await influxService.fetchAnalyticsForMilestoneWithRetries(milestoneIndex);
 
-    if (!maybeMsStats) {
-        maybeMsStats = await influxService.fetchAnalyticsForMilestone(milestoneIndex);
-    }
+  if (!maybeMsStats) {
+    maybeMsStats = await influxService.fetchAnalyticsForMilestone(milestoneIndex);
+  }
 
-
-    return maybeMsStats ? {
+  return maybeMsStats ?
+      {
         milestoneIndex: maybeMsStats.milestoneIndex,
         blockCount: maybeMsStats.blockCount,
-        perPayloadType: maybeMsStats.perPayloadType
-    } : {
-        message: `Could not fetch milestone analytics for ${request.milestoneIndex}`
-    };
+        perPayloadType: maybeMsStats.perPayloadType,
+      }
+    : {
+        message: `Could not fetch milestone analytics for ${request.milestoneIndex}`,
+      };
 }
-

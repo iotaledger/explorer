@@ -1,6 +1,6 @@
 export interface NativeTokenState {
-    /**
-     * Is expanded.
-     */
-    isExpanded: boolean;
+  /**
+   * Is expanded.
+   */
+  isExpanded: boolean;
 }

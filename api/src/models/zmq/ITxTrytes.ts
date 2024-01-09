@@ -2,13 +2,13 @@
  * Signature of a transaction that the IRI has recently confirmed.
  */
 export interface ITxTrytes {
-    /**
-     * Trytes.
-     */
-    trytes: string;
+  /**
+   * Trytes.
+   */
+  trytes: string;
 
-    /**
-     * Transaction hash.
-     */
-    txHash: string;
+  /**
+   * Transaction hash.
+   */
+  txHash: string;
 }

@@ -236,11 +236,11 @@
   }
 
   .general-content {
-      padding-bottom: 26px;
+    padding-bottom: 26px;
 
-      @include phone-down {
-          flex-direction: column;
-      }
+    @include phone-down {
+      flex-direction: column;
+    }
   }
 
   .qr-content {
@@ -276,7 +276,7 @@
 
       a,
       button {
-          color: var(--link-color);
+        color: var(--link-color);
       }
     }
   }

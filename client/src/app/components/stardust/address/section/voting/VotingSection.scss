@@ -2,40 +2,39 @@
 @import "../../../../../../scss/variables";
 
 .voting-section {
-    .tabs-wrapper {
-        display: flex;
+  .tabs-wrapper {
+    display: flex;
 
-        button.tab {
-            background: var(--associated-outputs-tabs-bg);
-            color: $gray-6;
-            border: 1px solid $gray-4;
-            border-radius: 0;
-            border-right: 0;
-            text-transform: capitalize;
+    button.tab {
+      background: var(--associated-outputs-tabs-bg);
+      color: $gray-6;
+      border: 1px solid $gray-4;
+      border-radius: 0;
+      border-right: 0;
+      text-transform: capitalize;
 
-            &.active {
-                background: $mint-green-1;
-            }
+      &.active {
+        background: $mint-green-1;
+      }
 
-            &:focus {
-                box-shadow: none;
-            }
+      &:focus {
+        box-shadow: none;
+      }
 
-            &:first-child {
-                border-top-left-radius: 8px;
-                border-bottom-left-radius: 8px;
-            }
-            &:last-child {
-                border-top-right-radius: 8px;
-                border-bottom-right-radius: 8px;
-                border-right: 1px solid $gray-4;
-            }
+      &:first-child {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+      }
+      &:last-child {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        border-right: 1px solid $gray-4;
+      }
 
-            @include phone-down {
-                font-size: 12px;
-                padding: 3px 5px;
-            }
-        }
-
+      @include phone-down {
+        font-size: 12px;
+        padding: 3px 5px;
+      }
     }
+  }
 }

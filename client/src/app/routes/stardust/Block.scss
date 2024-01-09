@@ -36,7 +36,7 @@
       }
 
       @include phone-down {
-          padding: 0 8px;
+        padding: 0 8px;
       }
 
       .block--header {
@@ -44,16 +44,16 @@
         justify-content: space-between;
 
         @include tablet-down {
-            flex-direction: column;
-            justify-content: flex-start;
+          flex-direction: column;
+          justify-content: flex-start;
         }
 
         .header--wrapper {
-            h1 {
-                @include phone-down {
-                    font-size: 1.45rem;
-                }
+          h1 {
+            @include phone-down {
+              font-size: 1.45rem;
             }
+          }
         }
       }
 
@@ -74,21 +74,21 @@
       }
 
       .link {
-          @include font-size(14px);
+        @include font-size(14px);
 
-          color: var(--link-color);
-          font-family: $ibm-plex-mono;
-          font-weight: normal;
-          letter-spacing: 0.02em;
-          line-height: 20px;
+        color: var(--link-color);
+        font-family: $ibm-plex-mono;
+        font-weight: normal;
+        letter-spacing: 0.02em;
+        line-height: 20px;
       }
     }
 
     .section--data {
-        .amount-transacted {
-            @include font-size(15px);
-            font-weight: 700;
-        }
+      .amount-transacted {
+        @include font-size(15px);
+        font-weight: 700;
+      }
     }
   }
 }

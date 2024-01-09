@@ -9,3 +9,4 @@ iota-sdk/*
 discord-bot/*
 
 client/public/env.js
+client/build/*

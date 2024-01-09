@@ -9,13 +9,13 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Log level'
+        description: "Log level"
         required: true
-        default: 'warning'
+        default: "warning"
       tags:
-        description: 'Test scenario tags'
+        description: "Test scenario tags"
 
-concurrency: 
+concurrency:
   group: bot-${{ github.ref }}
   cancel-in-progress: true
 
@@ -37,7 +37,7 @@ jobs:
             const fs = require('fs')
             fs.writeFileSync('./discord-bot/src/data/config.prod.json', process.env.CONFIG_JSON)
             fs.writeFileSync('./discord-bot/dispatch.yaml', process.env.DISPATCH_YAML)
-            fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)      
+            fs.writeFileSync('./discord-bot/app.yaml', process.env.APP_YAML)
       - name: Use Node.js 16.16
         uses: actions/setup-node@v1
         with:

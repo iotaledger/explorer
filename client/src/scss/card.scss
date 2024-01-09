@@ -1,10 +1,10 @@
-@use 'sass:color';
-@import './fonts';
-@import './layout';
-@import './media-queries';
-@import './mixins';
-@import './variables';
-@import './themes';
+@use "sass:color";
+@import "./fonts";
+@import "./layout";
+@import "./media-queries";
+@import "./mixins";
+@import "./variables";
+@import "./themes";
 
 .card {
   display: flex;
@@ -24,7 +24,7 @@
     align-items: center;
   }
 
-  input[type='checkbox'] {
+  input[type="checkbox"] {
     @include font-size(24px);
 
     width: 24px;
@@ -36,7 +36,7 @@
 
     &:checked {
       &::after {
-        content: '\2713';
+        content: "\2713";
         position: relative;
         bottom: 4px;
         left: 0;
@@ -303,7 +303,7 @@
       padding: 0 20px;
       background-color: var(--body-background);
 
-      &[type='checkbox'] {
+      &[type="checkbox"] {
         padding: 0;
       }
     }
@@ -358,14 +358,14 @@
 
       &.card--value-textarea__hex {
         max-height: 350px;
-        font-family: 'Courier New', Courier, monospace;
+        font-family: "Courier New", Courier, monospace;
         word-break: break-word;
         white-space: pre-wrap;
       }
 
       &.card--value-textarea__json {
         max-height: 350px;
-        font-family: 'Courier New', Courier, monospace;
+        font-family: "Courier New", Courier, monospace;
         white-space: pre-wrap;
       }
 

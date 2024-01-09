@@ -11,36 +11,35 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @param milestoneIndex The milestone index
  * @returns The milestone stats and a loading bool.
  */
-export function useMilestoneStats(network: string, milestoneIndex: string | null):
-    [
-        IMilestoneAnalyticStats | null,
-        boolean
-    ] {
-    const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+export function useMilestoneStats(network: string, milestoneIndex: string | null): [IMilestoneAnalyticStats | null, boolean] {
+  const isMounted = useIsMounted();
+  const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+  const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        setIsLoading(true);
-        if (milestoneIndex) {
-            // eslint-disable-next-line no-void
-            void (async () => {
-                apiClient.milestoneStats({
-                    network,
-                    milestoneIndex
-                }).then(response => {
-                    if (isMounted) {
-                        setMilestoneStats(response ?? null);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
-            })();
-        } else {
+  useEffect(() => {
+    setIsLoading(true);
+    if (milestoneIndex) {
+      // eslint-disable-next-line no-void
+      void (async () => {
+        apiClient
+          .milestoneStats({
+            network,
+            milestoneIndex,
+          })
+          .then((response) => {
+            if (isMounted) {
+              setMilestoneStats(response ?? null);
+            }
+          })
+          .finally(() => {
             setIsLoading(false);
-        }
-    }, [network, milestoneIndex]);
+          });
+      })();
+    } else {
+      setIsLoading(false);
+    }
+  }, [network, milestoneIndex]);
 
-    return [milestoneStats, isLoading];
+  return [milestoneStats, isLoading];
 }

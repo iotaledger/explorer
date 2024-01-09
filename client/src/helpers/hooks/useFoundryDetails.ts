@@ -12,39 +12,37 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param foundryId The foundry id
  * @returns The output response, loading bool and an error message.
  */
-export function useFoundryDetails(network: string, foundryId: string | null):
-    [
-        OutputResponse | null,
-        boolean,
-        string?
-    ] {
-    const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [foundryDetails, setFoundryDetails] = useState<OutputResponse | null>(null);
-    const [error, setError] = useState<string | undefined>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+export function useFoundryDetails(network: string, foundryId: string | null): [OutputResponse | null, boolean, string?] {
+  const isMounted = useIsMounted();
+  const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+  const [foundryDetails, setFoundryDetails] = useState<OutputResponse | null>(null);
+  const [error, setError] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        setIsLoading(true);
-        if (foundryId) {
-            // eslint-disable-next-line no-void
-            void (async () => {
-                apiClient.foundryDetails({
-                    network,
-                    foundryId: HexHelper.addPrefix(foundryId)
-                }).then(response => {
-                    if (isMounted) {
-                        setFoundryDetails(response.foundryDetails ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
-            })();
-        } else {
+  useEffect(() => {
+    setIsLoading(true);
+    if (foundryId) {
+      // eslint-disable-next-line no-void
+      void (async () => {
+        apiClient
+          .foundryDetails({
+            network,
+            foundryId: HexHelper.addPrefix(foundryId),
+          })
+          .then((response) => {
+            if (isMounted) {
+              setFoundryDetails(response.foundryDetails ?? null);
+              setError(response.error);
+            }
+          })
+          .finally(() => {
             setIsLoading(false);
-        }
-    }, [network, foundryId]);
+          });
+      })();
+    } else {
+      setIsLoading(false);
+    }
+  }, [network, foundryId]);
 
-    return [foundryDetails, isLoading, error];
+  return [foundryDetails, isLoading, error];
 }

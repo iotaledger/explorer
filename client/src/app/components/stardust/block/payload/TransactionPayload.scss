@@ -58,12 +58,12 @@
     }
 
     .card--content {
-        @media (min-width: #{768px}) and (max-width: #{820px}) {
-            padding: 0 4px 20px;
-        }
-        @include phone-down {
-            padding: 0 4px 20px;
-        }
+      @media (min-width: #{768px}) and (max-width: #{820px}) {
+        padding: 0 4px 20px;
+      }
+      @include phone-down {
+        padding: 0 4px 20px;
+      }
 
       .card--value {
         margin-left: auto;
@@ -92,35 +92,36 @@
           margin-bottom: 20px;
 
           .unlocks-card--row {
-              display: flex;
-              flex-direction: row;
-              align-items: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
 
-              .public-key, .signature  {
-                  padding-left: 10px;
-                  max-width: 80%;
+            .public-key,
+            .signature {
+              padding-left: 10px;
+              max-width: 80%;
 
-                  @include phone-down {
-                      max-width: 75%;
-                  }
+              @include phone-down {
+                max-width: 75%;
               }
+            }
 
-              .label {
-                  @include font-size(12px);
-                  color: var(--card-color);
-                  font-family: $inter;
-                  font-weight: 500;
-                  letter-spacing: 0.5px;
-                  white-space: nowrap;
-              }
+            .label {
+              @include font-size(12px);
+              color: var(--card-color);
+              font-family: $inter;
+              font-weight: 500;
+              letter-spacing: 0.5px;
+              white-space: nowrap;
+            }
 
-              .value {
-                  @include font-size(14px, 20px);
-                  color: var(--body-color);
-                  font-family: $ibm-plex-mono;
-                  word-break: break-all;
-                  padding-left: 10px;
-              }
+            .value {
+              @include font-size(14px, 20px);
+              color: var(--body-color);
+              font-family: $ibm-plex-mono;
+              word-break: break-all;
+              padding-left: 10px;
+            }
           }
         }
       }
@@ -128,6 +129,6 @@
   }
 
   .transaction-payload_outputs.card--content .card--content__output {
-      padding: 0 0;
+    padding: 0 0;
   }
 }

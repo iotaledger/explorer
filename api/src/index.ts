@@ -22,21 +22,19 @@ const config: IConfiguration = require(`./data/config.${configId}.json`);
 
 const configAllowedDomains: (string | RegExp)[] | undefined = [];
 const configAllowedMethods: string | undefined =
-    !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS"
-        ? undefined : config.allowedMethods;
+  !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS" ? undefined : config.allowedMethods;
 const configAllowedHeaders: string | undefined =
-    !config.allowedHeaders || config.allowedHeaders === "ALLOWED-HEADERS"
-        ? undefined : config.allowedHeaders;
+  !config.allowedHeaders || config.allowedHeaders === "ALLOWED-HEADERS" ? undefined : config.allowedHeaders;
 
 if (Array.isArray(config.allowedDomains)) {
-    for (const dom of config.allowedDomains) {
-        if (dom.indexOf("*") > 0) {
-            // eslint-disable-next-line unicorn/prefer-string-replace-all
-            configAllowedDomains.push(new RegExp(dom.replace(/\*/g, "(.*)")));
-        } else {
-            configAllowedDomains.push(dom);
-        }
+  for (const dom of config.allowedDomains) {
+    if (dom.indexOf("*") > 0) {
+      // eslint-disable-next-line unicorn/prefer-string-replace-all
+      configAllowedDomains.push(new RegExp(dom.replace(/\*/g, "(.*)")));
+    } else {
+      configAllowedDomains.push(dom);
     }
+  }
 }
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 4000;
@@ -49,95 +47,86 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(compression());
 
 app.use((req, res, next) => {
-    let allowedDomains = configAllowedDomains;
-    let allowedMethods = configAllowedMethods;
-    let allowedHeaders = configAllowedHeaders;
+  let allowedDomains = configAllowedDomains;
+  let allowedMethods = configAllowedMethods;
+  let allowedHeaders = configAllowedHeaders;
 
-    if (config.routeCors) {
-        const foundRoute = matchRouteUrl(config.routeCors.map(c => c.path), req.url);
+  if (config.routeCors) {
+    const foundRoute = matchRouteUrl(
+      config.routeCors.map((c) => c.path),
+      req.url
+    );
 
-        if (foundRoute) {
-            const routeCors = config.routeCors[foundRoute.index];
-            allowedDomains = routeCors.allowedDomains ?? allowedDomains;
-            allowedMethods = routeCors.allowedMethods ?? allowedMethods;
-            allowedHeaders = routeCors.allowedHeaders ?? allowedHeaders;
-        }
+    if (foundRoute) {
+      const routeCors = config.routeCors[foundRoute.index];
+      allowedDomains = routeCors.allowedDomains ?? allowedDomains;
+      allowedMethods = routeCors.allowedMethods ?? allowedMethods;
+      allowedHeaders = routeCors.allowedHeaders ?? allowedHeaders;
     }
+  }
 
-    cors(
-        req,
-        res,
-        allowedDomains,
-        allowedMethods,
-        allowedHeaders);
-    next();
+  cors(req, res, allowedDomains, allowedMethods, allowedHeaders);
+  next();
 });
 
 for (const route of routes) {
-    app[route.method](route.path, async (req, res) => {
-        await executeRoute(
-            req,
-            res,
-            config,
-            route,
-            req.params,
-            config.verboseLogging);
-    });
+  app[route.method](route.path, async (req, res) => {
+    await executeRoute(req, res, config, route, req.params, config.verboseLogging);
+  });
 }
 
 const server = new Server(app);
 const socketServer = new SocketIOServer(server, { pingInterval: 5000, pingTimeout: 2000 });
 
 const sockets: {
-    [socketId: string]: string;
+  [socketId: string]: string;
 } = {};
 
-socketServer.on("connection", socket => {
-    logger.debug(`Socket::Connection [${socket.id}]`);
-    socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
-        const response = await subscribe(config, socket, data);
-        if (!response.error) {
-            sockets[socket.id] = data.network;
-        }
-        logger.debug(`Socket::Subscribe [${socket.id}]`);
-        socket.emit("subscribe", response);
-    });
+socketServer.on("connection", (socket) => {
+  logger.debug(`Socket::Connection [${socket.id}]`);
+  socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
+    const response = await subscribe(config, socket, data);
+    if (!response.error) {
+      sockets[socket.id] = data.network;
+    }
+    logger.debug(`Socket::Subscribe [${socket.id}]`);
+    socket.emit("subscribe", response);
+  });
 
-    socket.on("unsubscribe", (data: IFeedUnsubscribeRequest) => {
-        logger.debug(`Socket::Unsubscribe [${socket.id}]`);
-        const response = unsubscribe(config, socket, data);
-        if (sockets[socket.id]) {
-            delete sockets[socket.id];
-        }
-        socket.emit("unsubscribe", response);
-    });
+  socket.on("unsubscribe", (data: IFeedUnsubscribeRequest) => {
+    logger.debug(`Socket::Unsubscribe [${socket.id}]`);
+    const response = unsubscribe(config, socket, data);
+    if (sockets[socket.id]) {
+      delete sockets[socket.id];
+    }
+    socket.emit("unsubscribe", response);
+  });
 
-    socket.on("disconnect", async () => {
-        logger.debug(`Socket::Disconnect [${socket.id}]`);
-        if (sockets[socket.id]) {
-            await unsubscribe(config, socket, {
-                subscriptionId: socket.id,
-                network: sockets[socket.id]
-            });
-            delete sockets[socket.id];
-        }
-    });
+  socket.on("disconnect", async () => {
+    logger.debug(`Socket::Disconnect [${socket.id}]`);
+    if (sockets[socket.id]) {
+      await unsubscribe(config, socket, {
+        subscriptionId: socket.id,
+        network: sockets[socket.id],
+      });
+      delete sockets[socket.id];
+    }
+  });
 });
 
 server.listen(port, async () => {
-    const version = process.env.npm_package_version ? `(v${process.env.npm_package_version})` : "";
-    const env = process.env.NODE_ENV ? `Env: ${process.env.NODE_ENV}` : "";
-    logger.info(`Running Explorer API ${version} on port: ${port}. ${env}`);
-    logger.verbose(`Config: "${configId}", Logger level: "${logger.level}"`);
+  const version = process.env.npm_package_version ? `(v${process.env.npm_package_version})` : "";
+  const env = process.env.NODE_ENV ? `Env: ${process.env.NODE_ENV}` : "";
+  logger.info(`Running Explorer API ${version} on port: ${port}. ${env}`);
+  logger.verbose(`Config: "${configId}", Logger level: "${logger.level}"`);
 
-    try {
-        logger.verbose("Initializing services...");
-        await initServices(config);
-        logger.info("Services Initialized");
-    } catch (err) {
-        if (err instanceof NetworkConfigurationError) {
-            throw err;
-        }
+  try {
+    logger.verbose("Initializing services...");
+    await initServices(config);
+    logger.info("Services Initialized");
+  } catch (err) {
+    if (err instanceof NetworkConfigurationError) {
+      throw err;
     }
+  }
 });
-

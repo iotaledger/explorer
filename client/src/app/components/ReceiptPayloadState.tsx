@@ -1,7 +1,6 @@
 export interface ReceiptPayloadState {
-    /**
-     * Format the amount in full.
-     */
-    formatFull: boolean;
+  /**
+   * Format the amount in full.
+   */
+  formatFull: boolean;
 }
-

@@ -1,23 +1,15 @@
 {
-    "extends": [
-        "stylelint-config-standard-scss",
-        "stylelint-config-sass-guidelines",
-        "stylelint-config-property-sort-order-smacss"
-    ],
-    "plugins": [
-        "stylelint-scss"
-    ],
-    "rules": {
-        "order/properties-alphabetical-order": null,
-        "order/properties-order": null,
-        "at-rule-no-unknown": null,
-        "scss/at-rule-no-unknown": true,
-        "color-hex-length": "long",
-        "max-nesting-depth": 5,
-        "selector-max-compound-selectors": 6,
-        "selector-no-qualifying-type": null,
-        "selector-class-pattern": [
-            "^([a-z][a-z0-9]*)([-|_]{0,2}[a-z0-9]+)*$"
-        ]
-    }
+  "extends": ["stylelint-config-standard-scss", "stylelint-config-sass-guidelines", "stylelint-config-property-sort-order-smacss"],
+  "plugins": ["stylelint-scss"],
+  "rules": {
+    "order/properties-alphabetical-order": null,
+    "order/properties-order": null,
+    "at-rule-no-unknown": null,
+    "scss/at-rule-no-unknown": true,
+    "color-hex-length": "long",
+    "max-nesting-depth": 5,
+    "selector-max-compound-selectors": 6,
+    "selector-no-qualifying-type": null,
+    "selector-class-pattern": ["^([a-z][a-z0-9]*)([-|_]{0,2}[a-z0-9]+)*$"]
+  }
 }

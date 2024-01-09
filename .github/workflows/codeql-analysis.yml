@@ -5,20 +5,20 @@ on:
     branches:
       - main
     paths:
-      - 'api/**'
-      - 'client/**'
-      - 'discord-bot/**'
-      - '.github/codeql/**'
-      - '.github/workflows/codeql-analysis.yml'
+      - "api/**"
+      - "client/**"
+      - "discord-bot/**"
+      - ".github/codeql/**"
+      - ".github/workflows/codeql-analysis.yml"
   pull_request:
     paths:
-      - 'api/**'
-      - 'client/**'
-      - 'discord-bot/**'
-      - '.github/codeql/**'
-      - '.github/workflows/codeql-analysis.yml'
+      - "api/**"
+      - "client/**"
+      - "discord-bot/**"
+      - ".github/codeql/**"
+      - ".github/workflows/codeql-analysis.yml"
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
 
 jobs:
   CodeQL-Build:

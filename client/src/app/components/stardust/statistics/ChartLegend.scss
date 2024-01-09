@@ -4,43 +4,43 @@
 @import "../../../../scss/media-queries";
 
 .chart-legend {
+  display: flex;
+
+  @include phone-down {
+    flex-direction: column;
+  }
+
+  .chart-legend__entry {
     display: flex;
+    align-items: center;
 
-    @include phone-down {
-        flex-direction: column;
+    &:not(:last-child) {
+      margin-right: 8px;
     }
 
-    .chart-legend__entry {
-        display: flex;
-        align-items: center;
-
-        &:not(:last-child) {
-            margin-right: 8px;
-        }
-
-        .chart-legend__circle {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 4px;
-        }
-
-        .chart-legend__label {
-            @include font-size(12px);
-
-            display: flex;
-            align-items: center;
-            height: 32px;
-            color: var(--card-color);
-            font-family: $inter;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-
-            @include phone-down {
-                @include font-size(10px);
-                height: 16px;
-            }
-        }
+    .chart-legend__circle {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 4px;
     }
+
+    .chart-legend__label {
+      @include font-size(12px);
+
+      display: flex;
+      align-items: center;
+      height: 32px;
+      color: var(--card-color);
+      font-family: $inter;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+
+      @include phone-down {
+        @include font-size(10px);
+        height: 16px;
+      }
+    }
+  }
 }
