@@ -1,5 +1,7 @@
-import { STEP_Y_PX, TIME_DIFF_COUNTER, SECOND, MAX_BLOCKS_PER_SECOND, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MIN_BLOCKS_PER_SECOND, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET, HALF_WAVE_PERIOD_SECONDS, MAX_AMPLITUDE } from "./constants";
+import { MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET, HALF_WAVE_PERIOD_SECONDS, MAX_AMPLITUDE } from "./constants";
 import { ICameraAngles } from './interfaces';
+import { BLOCK_STEP_PX, MIN_BLOCKS_PER_SECOND, MAX_BLOCKS_PER_SECOND, MIN_RADIUS, MAX_RADIUS, MIN_BLOCK_NEAR_RADIUS, MAX_PREV_POINTS, MAX_POINT_RETRIES } from "./constants";
+import { Vector3 } from 'three';
 
 /**
  * Generates a random number within a specified range.
@@ -42,110 +44,108 @@ export const timer = (msCounter: number = 1000) => {
     };
 };
 
-/**
- * Y coordinate generator from zero coordinate to top and bottom
- * @yields {number} - Y coordinate
- * @returns {Generator<number>} - Y coordinate generator
- */
-export function* yCoordinateGenerator(): Generator<number> {
-    let count = 0;
-    let isPositive = true;
-
-    yield 0; // Initial value
-
-    while (true) {
-        const reset = yield isPositive ? count : -count;
-
-        if (reset) {
-            count = 0;
-            isPositive = true;
-        } else {
-            // Alternate between positive and negative
-            isPositive = !isPositive;
-
-            // Increase count after generating both a positive and negative pair
-            if (!isPositive) {
-                count++;
-            }
-        }
-    }
+interface IBlockTanglePosition {
+    y: number;
+    z: number;
 }
 
-const getMaxYPosition = (bps: number) => {
-    const blocksPerTick = bps / (SECOND / TIME_DIFF_COUNTER);
-    const maxYPerTick = blocksPerTick * STEP_Y_PX / 2; // divide 2 because we have values more than 0 and less
+/**
+ * Calculates the distance between two points.
+ * @returns the distance between two points.
+ */
+function distanceBetweenPoints(point1: IBlockTanglePosition , point2: IBlockTanglePosition): number {
+    const { z: z1, y: y1 } = point1;
+    const { z: z2, y: y2 }  = point2;
+    return Math.sqrt((y2 - y1) ** 2 + (z2 - z1) ** 2);
+}
 
-    return {
-        blocksPerTick,
-        maxYPerTick: maxYPerTick > 0 ? maxYPerTick : 1
-    };
-};
+/**
+ * Calculates the radius of the circle based on the blocks per second.
+ * @returns the radius of the circle.
+ */
+function getLinearRadius(bps: number): number {
+    if (bps < MIN_BLOCKS_PER_SECOND) bps = MIN_BLOCKS_PER_SECOND;
+    if (bps > MAX_BLOCKS_PER_SECOND) bps = MAX_BLOCKS_PER_SECOND;
 
-const checkRules = (y: number, prev: number[]) => {
-    let passAllChecks = true;
-    if (prev.length === 0) {
+    // Linear interpolation formula to find the radius
+    const radius = MIN_RADIUS + ((MAX_RADIUS - MIN_RADIUS) * (bps - MIN_BLOCKS_PER_SECOND) / (MAX_BLOCKS_PER_SECOND - MIN_BLOCKS_PER_SECOND));
+    return radius;
+}
+
+/**
+ * Generates a random point on a circle.
+ * @returns the random point on a circle.
+ */
+function getDynamicRandomYZPoints(bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition {
+    const theta = Math.random() * (2 * Math.PI);
+
+    const maxRadius = getLinearRadius(bps);
+    const randomFactor = Math.random();
+    const radius = randomFactor * maxRadius;
+
+
+    const y = radius * Math.cos(theta) + initialPosition.y;
+    const z = radius * Math.sin(theta) + initialPosition.z;
+
+    return { y, z };
+}
+
+/**
+ * Checks if the point is far enough from the prevPoints.
+ * @returns true if the point is far enough from the prevPoints.
+ */
+function checkPassAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTanglePosition[]): boolean {
+    if (prevPoints.length === 0) {
         return true;
     }
 
-    const nearRadius = 10;
-    const near = prev.some(prevY => {
-        const top = prevY + nearRadius;
-        const bottom = prevY - nearRadius;
-        return y < top && y > bottom;
-    });
+    return !prevPoints.some(prevPoint => distanceBetweenPoints(point, prevPoint) < MIN_BLOCK_NEAR_RADIUS);
+}
 
-    if (near) {
-        passAllChecks = false;
-    }
 
-    return passAllChecks;
-};
 
 /**
- * Create generator for Y coordinate
- * @param root0 - .
- * @param root0.withRandom - .
- * @returns - function that returns Y coordinate
+ * Retries to generate a point until it passes all the checks.
+ * @returns the point that passes all the checks.
  */
-export const getGenerateY = ({ withRandom }: {withRandom?: boolean} = {}): (shift: number, bps: number) => number => {
-    let currentShift = 1;
-    const generator = yCoordinateGenerator();
-    const prevY: number[] = [];
-    const limitPrevY = 5;
-    const { maxYPerTick: defaultMaxYPerTick } = getMaxYPosition(MAX_BLOCKS_PER_SECOND);
+function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPoints: IBlockTanglePosition[]): IBlockTanglePosition {
+    let trialPoint: IBlockTanglePosition;
+    let passAllChecks = false;
+    let retries = 0;
 
-    return (shift: number, bps: number) => {
-        shift += 1; // This hack needs to avoid Y = 0 on the start of graph.
-        let Y = generator.next().value as number;
-        if (!currentShift || currentShift !== shift) {
-            Y = generator.next(true).value as number;
-            // update shift locally
-            currentShift = shift;
-        }
+    do {
+        trialPoint = getDynamicRandomYZPoints(bps, initialPosition);
+        passAllChecks = checkPassAllChecks(trialPoint, prevPoints);
+        retries++;
+    } while (!passAllChecks && retries < MAX_POINT_RETRIES);
 
-        if (bps < MAX_BLOCKS_PER_SECOND) {
-            let randomY = randomNumberFromInterval(-defaultMaxYPerTick, defaultMaxYPerTick);
+    prevPoints.push(trialPoint);
+    if (prevPoints.length > MAX_PREV_POINTS) {
+        prevPoints.shift();
+    }
 
-            // check if not match with last value (and not near);
-            let passAllChecks = checkRules(randomY, prevY);
-            while (!passAllChecks) {
-                randomY = randomNumberFromInterval(-defaultMaxYPerTick, defaultMaxYPerTick);
-                passAllChecks = checkRules(randomY, prevY);
-            }
+    return trialPoint;
+}
 
-            prevY.push(randomY);
-            if (prevY.length > limitPrevY) {
-                prevY.shift();
-            }
-            return randomY;
-        }
 
+/**
+ * Gets a function to generate a random point on a circle.
+ * @returns the function to generate the random point on a circle.
+ */
+export function getGenerateDynamicYZPosition({ withRandom }: { withRandom: boolean }): typeof getDynamicRandomYZPoints {
+    const prevPoints: IBlockTanglePosition[] = [];
+    
+    return (bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition => {
+        const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
+        
         if (withRandom) {
-            const randomNumber = randomNumberFromInterval(0, STEP_Y_PX / 20);
-            Y += randomNumber;
+            const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
+            const randomXNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
+            validPoint.y += randomYNumber;
+            validPoint.z += randomXNumber;
         }
 
-        return Y * STEP_Y_PX;
+        return validPoint;
     };
 };
 
@@ -157,9 +157,6 @@ export function getTangleDistances(): {
     xTangleDistance: number;
     yTangleDistance: number;
 } {
-    /* We assume MAX BPS to get the max possible Y */
-    const { maxYPerTick } = getMaxYPosition(MAX_BLOCKS_PER_SECOND);
-
     const MAX_TANGLE_DISTANCE_SECONDS = MAX_BLOCK_INSTANCES / MIN_BLOCKS_PER_SECOND;
 
     const MAX_BLOCK_DISTANCE = EMITTER_SPEED_MULTIPLIER * MAX_TANGLE_DISTANCE_SECONDS;
@@ -167,7 +164,7 @@ export function getTangleDistances(): {
     const maxXDistance = MAX_BLOCK_DISTANCE
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = (maxYPerTick * 2) + (MAX_AMPLITUDE * 2)
+    const maxYDistance = MAX_RADIUS + (MAX_AMPLITUDE * 2)
 
     /* TODO: add sinusoidal distances */
   

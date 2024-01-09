@@ -2,7 +2,7 @@ import { Color } from "three";
 import { ThemeMode } from './enums';
 
 // steps
-export const STEP_Y_PX = 20;
+export const BLOCK_STEP_PX = 10;
 export const STEP_CAMERA_SHIFT_PX = 100;
 
 export const MAX_BLOCK_INSTANCES = 5000;
@@ -84,3 +84,15 @@ export const EMITTER_DEPTH = 250;
 export const MAX_AMPLITUDE = 200;
 export const AMPLITUDE_ACCUMULATOR = 10;
 export const HALF_WAVE_PERIOD_SECONDS = 4;
+
+// conic emitter
+
+export const MIN_RADIUS = 100;
+export const MAX_RADIUS = 300;
+
+export const MIN_BLOCK_NEAR_RADIUS = 20;
+
+export const MAX_POINT_RETRIES = 10;
+export const MAX_PREV_POINTS = 20;
+
+export const X_POSITION_MULTIPLIER = 3;

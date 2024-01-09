@@ -6,10 +6,10 @@ import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, FAR_PLANE, NEAR_PLANE, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, VISUALIZER_BACKGROUND } from "./constants";
+import { FAR_PLANE, NEAR_PLANE, ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, PENDING_BLOCK_COLOR, VISUALIZER_BACKGROUND, X_POSITION_MULTIPLIER, ZOOM_DEFAULT } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { getGenerateY, randomIntFromInterval, timer } from "./utils";
+import { getGenerateDynamicYZPosition, randomIntFromInterval,  } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -29,15 +29,13 @@ const features = {
     cameraControls: true
 };
 
-const timerDiff = timer(TIME_DIFF_COUNTER);
-
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
         params: { network }
     }
 }) => {
     const [networkConfig] = useNetworkConfig(network);
-    const generateY = getGenerateY({ withRandom: true });
+    const generateYZPositions = getGenerateDynamicYZPosition({ withRandom: true });
     const themeMode = useGetThemeMode()
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
@@ -56,7 +54,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addBlock = useTangleStore(s => s.addToBlockQueue);
     const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore(s => s.addToColorQueue);
-    const addYPosition = useTangleStore(s => s.addYPosition);
     const blockMetadata = useTangleStore(s => s.blockMetadata);
     const indexToBlockId = useTangleStore(s => s.indexToBlockId);
 
@@ -134,15 +131,16 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         const emitterObj = emitterRef.current;
         if (emitterObj && blockData) {
             const emitterBox = new Box3().setFromObject(emitterObj);
-            const secondsFromStart = timerDiff();
 
-            const Y = generateY(secondsFromStart, bpsCounter.getBPS());
+            const emitterCenter = new THREE.Vector3();
+            emitterBox.getCenter(emitterCenter);
 
-            const targetPosition = {
-                x: randomIntFromInterval(emitterBox.min.x, emitterBox.max.x),
-                y: Y,
-                z: randomIntFromInterval(emitterBox.min.z, emitterBox.max.z),
-            };
+            const { y, z } = generateYZPositions(bpsCounter.getBPS(), emitterCenter);
+            const minX = emitterBox.min.x - ((emitterBox.max.x - emitterBox.min.x) * X_POSITION_MULTIPLIER);
+            const maxX = emitterBox.max.x + ((emitterBox.max.x - emitterBox.min.x) * X_POSITION_MULTIPLIER);
+
+            const x = randomIntFromInterval(minX, maxX)
+            const targetPosition = { x, y, z };
 
             bpsCounter.addBlock();
             if (!bpsCounter.getBPS()) {
@@ -152,19 +150,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             blockMetadata.set(blockData.blockId, blockData);
 
             addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
-            addYPosition(Y);
-
-            const emitterCenter = new THREE.Vector3();
-            emitterBox.getCenter(emitterCenter);
 
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
-                targetPosition: {
-                    x: targetPosition.x,
-                    y: targetPosition.y,
-                    z: targetPosition.z
-                },
+                targetPosition,
                 initPosition: {
                     x: emitterCenter.x,
                     y: emitterCenter.y,

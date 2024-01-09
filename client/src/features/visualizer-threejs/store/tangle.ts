@@ -53,10 +53,6 @@ interface TangleState {
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
 
-    yPositions: { [k: number]: number };
-    addYPosition: (blockY: number) => void;
-    removeYPosition: (blockY: number) => void;
-
     zoom: number;
     setZoom: (zoom: number) => void;
 
@@ -79,7 +75,6 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
     blockMetadata: new Map(),
     blockIdToAnimationPosition: new Map(),
     indexToBlockId: [],
-    yPositions: {},
     zoom: ZOOM_DEFAULT,
     bps: 0,
     clickedInstanceId: null,
@@ -180,37 +175,6 @@ export const useTangleStore = create<TangleState>()(devtools(set => ({
             return {
                 ...state,
                 indexToBlockId: nextIndexToBlockId
-            };
-        });
-    },
-    addYPosition: blockY => {
-        const Y = Math.floor(Math.abs(blockY));
-
-        set(state => {
-            const nextYPositions = { ...state.yPositions };
-
-            const prevYCount = nextYPositions[Y] || 0;
-            nextYPositions[Y] = prevYCount + 1;
-            return {
-                ...state,
-                yPositions: nextYPositions
-            };
-        });
-    },
-    removeYPosition: blockY => {
-        const Y = Math.floor(Math.abs(blockY));
-
-        set(state => {
-            const nextYPositions = { ...state.yPositions };
-            const current = nextYPositions[Y];
-            if (current === 1) {
-                delete nextYPositions[Y];
-            } else {
-                nextYPositions[Y] -= 1;
-            }
-            return {
-                ...state,
-                yPositions: nextYPositions
             };
         });
     },
