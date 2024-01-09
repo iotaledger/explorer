@@ -2,12 +2,12 @@ name: Format & Lint
 
 on:
   pull_request:
-      types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize]
 
 jobs:
   lint-check:
-      runs-on: ubuntu-latest
-      steps:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v2
