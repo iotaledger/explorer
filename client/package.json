@@ -18,7 +18,7 @@
         "format:check": "prettier --ignore-path=.prettierignore --check .",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "tsc && vite build",
-        "build": "run-s lint sass-lint build-internal",
+        "build": "run-s lint:check sass-lint build-internal",
         "test": "vitest"
     },
     "dependencies": {
