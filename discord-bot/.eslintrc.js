@@ -1,14 +1,31 @@
-
-const parserOptions = {
-    project: "tsconfig.lint.json",
-    tsconfigRootDir: __dirname,
-    sourceType: "module",
-    ecmaVersion: 2021,
-}
-
-const _extends = ["eslint:recommended","plugin:@typescript-eslint/recommended", "prettier"]
-
-const apiRules = {
+module.exports = {
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:import/typescript",
+        "plugin:jsdoc/recommended",
+        "plugin:unicorn/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "tsconfig.json",
+        "tsconfigRootDir": __dirname,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "import",
+        "jsdoc",
+        "unicorn"
+    ],
+    "rules": {
         "@typescript-eslint/adjacent-overload-signatures": [
             "error"
         ],
@@ -166,7 +183,7 @@ const apiRules = {
             "error"
         ],
         "@typescript-eslint/no-parameter-properties": [
-            "off"
+            "error"
         ],
         "@typescript-eslint/no-require-imports": [
             "error"
@@ -244,7 +261,7 @@ const apiRules = {
             "error"
         ],
         "@typescript-eslint/prefer-nullish-coalescing": [
-            "off",
+            "error"
         ],
         "@typescript-eslint/prefer-optional-chain": [
             "error"
@@ -340,7 +357,7 @@ const apiRules = {
         ],
         "arrow-parens": [
             "error",
-            "always"
+            "as-needed"
         ],
         "arrow-spacing": [
             "error"
@@ -367,8 +384,7 @@ const apiRules = {
             "off"
         ],
         "comma-dangle": [
-            "error",
-            "always-multiline"
+            "error"
         ],
         "comma-spacing": [
             "off"
@@ -435,7 +451,7 @@ const apiRules = {
             "off"
         ],
         "generator-star-spacing": [
-            "error", {"before": false, "after": true}
+            "error"
         ],
         "getter-return": [
             "off"
@@ -540,9 +556,7 @@ const apiRules = {
             "error",
             {
                 "ignorePattern": "^import",
-                "ignoreComments": true,
-                "ignoreStrings": true,
-                "code": 140
+                "code": 120
             }
         ],
         "max-lines": [
@@ -576,7 +590,7 @@ const apiRules = {
             "error"
         ],
         "newline-per-chained-call": [
-            "error", { "ignoreChainWithDepth": 3 }
+            "error"
         ],
         "no-alert": [
             "error"
@@ -863,9 +877,8 @@ const apiRules = {
         "no-setter-return": [
             "off"
         ],
-        "no-shadow": "off",
-        "@typescript-eslint/no-shadow": [
-            "error", { "ignoreTypeValueShadow": true }
+        "no-shadow": [
+            "error"
         ],
         "no-shadow-restricted-names": [
             "error"
@@ -1002,7 +1015,7 @@ const apiRules = {
             "error"
         ],
         "operator-linebreak": [
-            "error", "after", { "overrides": { "?": "ignore", ":": "ignore" } }
+            "error"
         ],
         "padded-blocks": [
             "error",
@@ -1137,9 +1150,6 @@ const apiRules = {
         "unicorn/custom-error-definition": [
             "off"
         ],
-        "unicorn/empty-brace-spaces": [
-            "off"
-        ],
         "unicorn/error-message": [
             "error"
         ],
@@ -1166,9 +1176,6 @@ const apiRules = {
         ],
         "unicorn/no-array-instanceof": [
             "error"
-        ],
-        "unicorn/no-array-push-push": [
-            "off"
         ],
         "unicorn/no-console-spaces": [
             "error"
@@ -1239,17 +1246,14 @@ const apiRules = {
         "unicorn/prefer-modern-dom-apis": [
             "error"
         ],
-        "unicorn/prefer-negative-index": [
-            "error"
-        ],
         "unicorn/prefer-module": [
             "off"
         ],
-        "unicorn/prefer-node-append": [
+        "unicorn/prefer-negative-index": [
             "error"
         ],
-        "unicorn/prefer-node-protocol": [
-            "off"
+        "unicorn/prefer-node-append": [
+            "error"
         ],
         "unicorn/prefer-node-remove": [
             "error"
@@ -1280,9 +1284,6 @@ const apiRules = {
         ],
         "unicorn/prefer-string-slice": [
             "error"
-        ],
-        "unicorn/prefer-switch": [
-            "off"
         ],
         "unicorn/prefer-text-content": [
             "error"
@@ -1326,79 +1327,5 @@ const apiRules = {
         "jsdoc/newline-after-description": "off",
         "jsdoc/require-param-type": "off",
         "jsdoc/require-returns-type": "off"
-}
-
-module.exports = {
-    env: {
-        browser: true,
-        node: true,
-        es2021: true
-    },
-    parser: "@typescript-eslint/parser",
-    extends: _extends,
-    parserOptions: {
-        project: "tsconfig.lint.json",
-        tsconfigRootDir: __dirname,
-        sourceType: "module",
-        ecmaVersion: 2021,
-    },
-    plugins: [
-        "@typescript-eslint"
-    ],
-    settings: {
-        react: {
-            version: '18.2'
-        }
-    },
-    ignorePatterns: ["iota-sdk/", "**/build/", "**/dist/", "**/node_modules/"],
-    overrides: [
-        {
-            files: ["client/**/*.js", "client/**/*.jsx", "client/**/*.ts", "client/**/*.tsx"],
-            rules: {
-                "no-empty": "off",
-                "max-len": [2, { code: 140, ignoreComments: true, ignoreStrings: true, ignoreTemplateLiterals: true }],
-                "@typescript-eslint/no-inferrable-types": "off",
-                "@typescript-eslint/no-unused-vars": [2, { args: "none" }],
-                "@typescript-eslint/no-empty-function": "off"
-            },
-            plugins: [
-                "react",
-                "react-hooks",
-                "import",
-                "jsdoc",
-                "unicorn",
-                "@typescript-eslint",
-              ],
-            extends: [..._extends, "plugin:@typescript-eslint/recommended" ],
-            parserOptions: {
-                ...parserOptions,
-                project: 'tsconfig.json',
-                tsconfigRootDir: __dirname + '/client',
-            }
-        }, 
-        {
-            files: ["discord-bot/**/*.js", "discord-bot/**/*.ts", "api/**/*.js", "api/**/*.ts"],
-            rules: apiRules,
-            plugins: [
-                "@typescript-eslint",
-                "import",
-                "jsdoc",
-                "unicorn"
-            ],
-            extends: [
-                ..._extends,
-                "plugin:@typescript-eslint/recommended-requiring-type-checking",
-                "plugin:import/errors",
-                "plugin:import/warnings",
-                "plugin:import/typescript",
-                "plugin:jsdoc/recommended",
-                "plugin:unicorn/recommended"
-            ],
-            parserOptions: {
-                ...parserOptions,
-                project: 'tsconfig.json',
-                tsconfigRootDir: __dirname + '/api',
-            }
-        }
-    ]
+    }
 };

@@ -1,11 +1,14 @@
-name: Format & Lint
+name: Format & Lint Check
 
 on:
     pull_request:
         types: [opened, reopened, synchronize]
 
 jobs:
-    lint-check:
+    install_deps:
+        strategy:
+          matrix:
+            project: [api, client]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
@@ -14,8 +17,8 @@ jobs:
               with:
                   node-version: "16"
             - name: Install Dependencies
-              run: npm install && cd client && npm install && cd ../api && npm install
+              run: cd ${{ matrix.project }} && npm install
             - name: Format Check
-              run: npm run format-check
+              run: npm run format:check
             - name: Lint Check
-              run: npm run lint-check
+              run: npm run lint

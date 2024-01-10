@@ -1,7 +1,0 @@
-// CAUTION: This tsconfig.lint.json file is NOT meant to be
-// used for compilation or building.
-
-{
-    "include": ["client/**/*.ts", "client/**/*.tsx", "client/**/*.js", "client/**/*.jsx", "api/**/*.js", "api/**/*.ts"],
-    "exclude": ["**/node_modules/*", "**/dist/*", "**/build/*"]
-}

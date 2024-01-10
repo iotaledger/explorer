@@ -13,7 +13,9 @@
         "postinstall": "./script/postinstall.sh",
         "start": "vite",
         "preview": "vite preview",
-        "lint": "eslint src --ext .tsx,.ts",
+        "format": "prettier --ignore-path=.prettierignore --write . && eslint src --ext .tsx,.ts --fix",
+        "lint:check": "eslint src --ext .tsx,.ts",
+        "format:check": "prettier --ignore-path=.prettierignore --check .",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "tsc && vite build",
         "build": "run-s lint sass-lint build-internal",
@@ -75,10 +77,21 @@
         "@types/react-dom": "^18.0.6",
         "@types/react-helmet": "^6.1.5",
         "@types/react-router-dom": "^5.3.3",
+        "@typescript-eslint/eslint-plugin": "^5.36.0",
+        "@typescript-eslint/parser": "^5.36.0",
         "@vitejs/plugin-react": "^4.2.0",
         "class-transformer": "^0.5.1",
         "copyfiles": "^2.4.1",
+        "eslint": "^8.1.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jsdoc": "^39.3.6",
+        "eslint-plugin-react": "^7.31.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-unicorn": "^49.0.0",
+        "lint-staged": "^14.0.1",
         "npm-run-all": "^4.1.5",
+        "prettier": "^3.1.1",
         "sass": "^1.54.6",
         "stylelint": "^14.11.0",
         "stylelint-config-property-sort-order-smacss": "^9.0.0",
@@ -99,5 +112,9 @@
         "not dead",
         "not ie <= 11",
         "not op_mini all"
-    ]
+    ],
+    "lint-staged": {
+        "*.{ts,js,tsx,jsx}": "eslint --cache --fix",
+        "*.{ts,js,scss,css}": "prettier --ignore-path=.prettierignore --write"
+    }
 }
