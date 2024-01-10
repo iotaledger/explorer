@@ -13,6 +13,7 @@
         "build-clean": "rimraf ./dist/*",
         "build-compile": "tsc",
         "build-watch": "tsc --watch",
+        "build-lint": "eslint src --ext .tsx,.ts",
         "format": "prettier --ignore-path=.prettierignore --write . && eslint src --ext .ts,.js --fix",
         "lint:check": "eslint src --ext .ts,.js",
         "format:check": "prettier --ignore-path=.prettierignore .",
