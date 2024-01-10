@@ -81,7 +81,7 @@
     },
     "lint-staged": {
         "*.{ts,js}": [
-            "prettier --write",
+            "prettier --ignore-path=.prettierignore --write",
             "eslint --fix"
         ]
     }
