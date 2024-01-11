@@ -4,17 +4,25 @@ import classNames from "classnames";
 import {
     Output,
     OutputType,
+    BasicOutput,
     CommonOutput,
     AccountOutput,
     AnchorOutput,
     FoundryOutput,
     NftOutput,
+    TokenSchemeType,
+    SimpleTokenScheme,
+    DelegationOutput,
+    AddressType,
 } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
 import { Link } from "react-router-dom";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import FeatureView from "./FeaturesView";
+import TruncatedId from "../stardust/TruncatedId";
+import { TransactionsHelper } from "~/helpers/stardust/transactionsHelper";
+import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -34,8 +42,9 @@ const OutputView: React.FC<OutputViewProps> = ({
 }) => {
     const [isExpanded, setIsExpanded] = React.useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
-    const networkInfo = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: networkName, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
 
+    const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(
         0,
         8,
@@ -71,7 +80,7 @@ const OutputView: React.FC<OutputViewProps> = ({
                         </div>
                     ) : (
                         <Link
-                            to={`/${networkInfo.name}/output/${outputId}`}
+                            to={`/${networkName}/output/${outputId}`}
                             className="margin-r-t"
                         >
                             <span>{outputIdTransactionPart}</span>
@@ -101,11 +110,154 @@ const OutputView: React.FC<OutputViewProps> = ({
         </div>
     );
 
+    const topLevelFields = (
+        <React.Fragment>
+            {output.type === OutputType.Account && (
+                <React.Fragment>
+                    <div className="card--label">Account address:</div>
+                    <div className="card--value">
+                        <TruncatedId
+                            id={aliasOrNftBech32}
+                            link={
+                                isLinksDisabled
+                                    ? undefined
+                                    : `/${networkName}/addr/${aliasOrNftBech32}`
+                            }
+                            showCopyButton
+                        />
+                    </div>
+                    <div className="card--label">Foundry counter:</div>
+                    <div className="card--value row">
+                        {(output as AccountOutput).foundryCounter}
+                    </div>
+                </React.Fragment>
+            )}
+            {output.type === OutputType.Anchor && (
+                <React.Fragment>
+                    <div className="card--label">Anchor Id:</div>
+                    <div className="card--value">
+                        <TruncatedId
+                            id={(output as AnchorOutput).anchorId}
+                            link={
+                                isLinksDisabled
+                                    ? undefined
+                                    : `/${networkName}/addr/${
+                                          (output as AnchorOutput).anchorId
+                                      }`
+                            }
+                            showCopyButton
+                        />
+                    </div>
+                    <div className="card--label">Staten index:</div>
+                    <div className="card--value row">
+                        {(output as AnchorOutput).stateIndex}
+                    </div>
+                </React.Fragment>
+            )}
+            {output.type === OutputType.Nft && (
+                <React.Fragment>
+                    <div className="card--label">Nft address:</div>
+                    <div className="card--value">
+                        <TruncatedId
+                            id={aliasOrNftBech32}
+                            link={
+                                isLinksDisabled
+                                    ? undefined
+                                    : `/${networkName}/addr/${aliasOrNftBech32}`
+                            }
+                            showCopyButton
+                        />
+                    </div>
+                </React.Fragment>
+            )}
+            {output.type === OutputType.Foundry && (
+                <React.Fragment>
+                    <div className="card--label">Serial number:</div>
+                    <div className="card--value">
+                        {(output as FoundryOutput).serialNumber}
+                    </div>
+                    <div className="card--label">Token scheme type:</div>
+                    <div className="card--value row">
+                        {(output as FoundryOutput).tokenScheme.type}
+                    </div>
+                    {(output as FoundryOutput).tokenScheme.type ===
+                        TokenSchemeType.Simple && (
+                        <React.Fragment>
+                            <div className="card--label">Minted tokens:</div>
+                            <div className="card--value row">
+                                {Number(
+                                    (
+                                        (output as FoundryOutput)
+                                            .tokenScheme as SimpleTokenScheme
+                                    ).mintedTokens,
+                                )}
+                            </div>
+                            <div className="card--label">Melted tokens:</div>
+                            <div className="card--value row">
+                                {Number(
+                                    (
+                                        (output as FoundryOutput)
+                                            .tokenScheme as SimpleTokenScheme
+                                    ).meltedTokens,
+                                )}
+                            </div>
+                            <div className="card--label">Maximum supply:</div>
+                            <div className="card--value row">
+                                {Number(
+                                    (
+                                        (output as FoundryOutput)
+                                            .tokenScheme as SimpleTokenScheme
+                                    ).maximumSupply,
+                                )}
+                            </div>
+                        </React.Fragment>
+                    )}
+                </React.Fragment>
+            )}
+            {output.type === OutputType.Basic ||
+                output.type === OutputType.Account ||
+                output.type === OutputType.Anchor ||
+                (output.type === OutputType.Nft && (
+                    <React.Fragment>
+                        <div className="card--label">Stored mana:</div>
+                        <div className="card--value row">
+                            {(output as BasicOutput).mana?.toString()}
+                        </div>
+                    </React.Fragment>
+                ))}
+            {output.type === OutputType.Delegation && (
+                <React.Fragment>
+                    <div className="card--label">Delegated amount:</div>
+                    <div className="card--value row">
+                        {Number((output as DelegationOutput).delegatedAmount)}
+                    </div>
+                    <div className="card--label">Delegation Id:</div>
+                    <div className="card--value row">
+                        {(output as DelegationOutput).delegationId}
+                    </div>
+                    <div className="card--label">Validator Id:</div>
+                    <div className="card--value row">
+                        {(output as DelegationOutput).validatorId}
+                    </div>
+                    <div className="card--label">Start epoch:</div>
+                    <div className="card--value row">
+                        {(output as DelegationOutput).startEpoch}
+                    </div>
+                    <div className="card--label">End epoch:</div>
+                    <div className="card--value row">
+                        {(output as DelegationOutput).endEpoch}
+                    </div>
+                </React.Fragment>
+            )}
+        </React.Fragment>
+    );
+
     return (
         <div className="card--content__output">
             {header}
             {isExpanded && (
                 <div className="output padding-l-t left-border">
+                    {topLevelFields}
                     {(output as CommonOutput).unlockConditions?.map(
                         (unlockCondition, idx) => (
                             <UnlockConditionView
@@ -175,6 +327,30 @@ const OutputView: React.FC<OutputViewProps> = ({
         </div>
     );
 };
+
+function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string) {
+    let address: string = "";
+    let addressType: number = 0;
+
+    if (output.type === OutputType.Account) {
+        const aliasId = TransactionsHelper.buildIdHashForNft(
+            (output as AccountOutput).accountId,
+            outputId,
+        );
+        address = aliasId;
+        addressType = AddressType.Account;
+    } else if (output.type === OutputType.Nft) {
+        const nftId = TransactionsHelper.buildIdHashForAlias(
+            (output as NftOutput).nftId,
+            outputId,
+        );
+        address = nftId;
+        addressType = AddressType.Nft;
+    }
+
+    return Bech32AddressHelper.buildAddress(bech32Hrp, address, addressType)
+        .bech32;
+}
 
 function getOutputTypeName(type: OutputType): string {
     switch (type) {
