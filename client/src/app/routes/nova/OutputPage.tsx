@@ -68,6 +68,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                     outputId={outputId}
                                     output={output}
                                     showCopyAmount={true}
+                                    isPreExpanded={true}
                                 />
                             </div>
 

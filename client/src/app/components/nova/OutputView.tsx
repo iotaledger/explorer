@@ -12,18 +12,25 @@ interface OutputViewProps {
     outputId: string;
     output: Output;
     showCopyAmount: boolean;
+    isPreExpanded?: boolean;
+    isLinksDisabled?: boolean;
 }
 
 const OutputView: React.FC<OutputViewProps> = ({
     outputId,
     output,
     showCopyAmount,
+    isPreExpanded,
+    isLinksDisabled,
 }) => {
-    const [isExpanded, setIsExpanded] = React.useState(false);
+    const [isExpanded, setIsExpanded] = React.useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
-    const networkInfo = useNetworkInfoNova(s => s.networkInfo);
+    const networkInfo = useNetworkInfoNova((s) => s.networkInfo);
 
-    const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
+    const outputIdTransactionPart = `${outputId.slice(
+        0,
+        8,
+    )}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
 
     return (
@@ -45,15 +52,26 @@ const OutputView: React.FC<OutputViewProps> = ({
                     </button>
                     <div className="output-id--link">
                         (
-                        <Link
-                            to={`/${networkInfo.name}/output/${outputId}`}
-                            className="margin-r-t"
-                        >
-                            <span>{outputIdTransactionPart}</span>
-                            <span className="highlight">
-                                {outputIdIndexPart}
-                            </span>
-                        </Link>
+                        {isLinksDisabled ? (
+                            <div className="margin-r-t">
+                                <span className="highlight">
+                                    {outputIdTransactionPart}
+                                </span>
+                                <span className="highlight">
+                                    {outputIdIndexPart}
+                                </span>
+                            </div>
+                        ) : (
+                            <Link
+                                to={`/${networkInfo.name}/output/${outputId}`}
+                                className="margin-r-t"
+                            >
+                                <span>{outputIdTransactionPart}</span>
+                                <span className="highlight">
+                                    {outputIdIndexPart}
+                                </span>
+                            </Link>
+                        )}
                         )
                         <CopyButton copy={String(outputId)} />
                     </div>
