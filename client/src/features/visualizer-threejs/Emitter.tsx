@@ -69,19 +69,17 @@ const Emitter: React.FC<EmitterProps> = ({
         const currentRealTime = clock.getElapsedTime();
         const realTimeDelta = currentRealTime - previousRealTime.current;
         previousRealTime.current = currentRealTime;
-        
+
         if (isPlaying) {
             updateAnimationTime(realTimeDelta);
             checkAndHandleNewPeak();
-            
+
             if (groupRef.current) {
                 const { x } = groupRef.current.position;
-                
                 const newXPos = x + (delta * EMITTER_SPEED_MULTIPLIER);
-                
                 groupRef.current.position.x = newXPos;
             }
-            
+
             if (emitterRef.current) {
                 const newYPos = getSinusoidalPosition(animationTime, currentAmplitude);
                 emitterRef.current.position.y = newYPos;
@@ -97,7 +95,7 @@ const Emitter: React.FC<EmitterProps> = ({
         {/* TangleWrapper Mesh */}
         <mesh  name={CanvasElement.TangleWrapperMesh} position={[-(xTangleDistance / 2), 0, 0]}>
           <boxGeometry args={[xTangleDistance, yTangleDistance, 0]} attach="geometry"  />
-          <meshPhongMaterial opacity={0} wireframe={true} transparent attach="material" />
+          <meshPhongMaterial opacity={1} wireframe={true} transparent attach="material" />
         </mesh>
 
         {/* Emitter Mesh */}
