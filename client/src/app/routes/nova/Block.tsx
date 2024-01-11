@@ -35,7 +35,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
     switch (block?.body?.type) {
         case BlockBodyType.Basic: {
             pageTitle = `Basic ${pageTitle}`;
-            blockBody = blockBody as BasicBlockBody 
+            blockBody = block?.body as BasicBlockBody 
             break;
         }
         case BlockBodyType.Validation: {
@@ -47,7 +47,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             break;
         }
     }
-    
 
     const blockContent = block ? (
         <React.Fragment>
