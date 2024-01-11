@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unknown-property */
-import { CameraControls, OrthographicCamera } from "@react-three/drei";
+import { Center } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, VISUALIZER_BACKGROUND, ZOOM_DEFAULT } from "./constants";
+import { ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, FAR_PLANE, NEAR_PLANE, PENDING_BLOCK_COLOR, TIME_DIFF_COUNTER, VISUALIZER_BACKGROUND } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { getGenerateY, randomIntFromInterval, timer } from "./utils";
@@ -19,8 +19,10 @@ import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
 import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
+import { CanvasElement } from './enums';
 import { useGetThemeMode } from '~/helpers/hooks/useGetThemeMode';
 import { StardustFeedClient } from "~/services/stardust/stardustFeedClient";
+import CameraControls from './CameraControls';
 
 const features = {
     statsEnabled: true,
@@ -226,23 +228,22 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={checked => setEdgeRenderingEnabled(checked)}
         >
-            <Canvas ref={canvasRef}>
-                <OrthographicCamera
-                    name="mainCamera"
-                    makeDefault
-                    near={1}
-                    far={4000}
-                    position={[0, 0, 1500]}
-                    zoom={ZOOM_DEFAULT}
-                />
+            <Canvas ref={canvasRef} orthographic camera={{
+                name: CanvasElement.MainCamera,
+                near: NEAR_PLANE,
+                far: FAR_PLANE,
+                position: [0, 0, 9000],
+            }}>
                 <color attach="background" args={[VISUALIZER_BACKGROUND[themeMode]]} />
                 <ambientLight />
                 <directionalLight position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
-                <Emitter
-                    emitterRef={emitterRef}
-                    setRunListeners={setRunListeners}
-                />
-                {features.cameraControls && <CameraControls makeDefault />}
+                <Center>
+                    <Emitter
+                        emitterRef={emitterRef}
+                        setRunListeners={setRunListeners}
+                        />
+                </Center>
+                {features.cameraControls && <CameraControls />}
                 {features.statsEnabled && <Perf />}
             </Canvas>
         </Wrapper>
@@ -250,3 +251,4 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 };
 
 export default VisualizerInstance;
+
