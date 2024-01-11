@@ -33,11 +33,13 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                     output.type === OutputType.Foundry || output.type === OutputType.Nft) {
                     for (const token of (output as CommonOutput).nativeTokens ?? []) {
                         const existingToken = theTokens.find(t => t.id === token.id);
-                        if (existingToken) {
-                            existingToken.amount += token.amount;
-                        } else {
-                            theTokens.push({ id: token.id, amount: token.amount });
-                        }
+                        // Convert to BigInt again in case the amount is hex
+                        const amount = BigInt(token.amount);
+                            if (existingToken) {
+                                existingToken.amount += amount;
+                            } else {
+                                theTokens.push({ id: token.id, amount });
+                            }
                     }
                 }
             }
