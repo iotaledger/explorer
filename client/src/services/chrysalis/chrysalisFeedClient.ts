@@ -1,5 +1,11 @@
 import { Blake2b } from "@iota/crypto.js";
-import { deserializeMessage, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, SIG_LOCKED_SINGLE_OUTPUT_TYPE, TRANSACTION_PAYLOAD_TYPE } from "@iota/iota.js";
+import {
+    deserializeMessage,
+    INDEXATION_PAYLOAD_TYPE,
+    MILESTONE_PAYLOAD_TYPE,
+    SIG_LOCKED_SINGLE_OUTPUT_TYPE,
+    TRANSACTION_PAYLOAD_TYPE,
+} from "@iota/iota.js";
 import { Converter, ReadStream } from "@iota/util.js";
 import { TrytesHelper } from "~helpers/trytesHelper";
 import { IFeedSubscribeResponse } from "~models/api/IFeedSubscribeResponse";
@@ -26,7 +32,7 @@ export class ChrysalisFeedClient extends FeedClient {
         try {
             if (!this._subscriptionId) {
                 const subscribeRequest: INetworkBoundGetRequest = {
-                    network: this._networkId
+                    network: this._networkId,
                 };
 
                 this._socket.emit("subscribe", subscribeRequest);
@@ -39,51 +45,49 @@ export class ChrysalisFeedClient extends FeedClient {
                     if (subscriptionMessage.subscriptionId === this._subscriptionId) {
                         if (subscriptionMessage.itemsMetadata) {
                             for (const metadataId in subscriptionMessage.itemsMetadata) {
-                                const existing = this._items.find(c => c.id === metadataId);
+                                const existing = this._items.find((c) => c.id === metadataId);
                                 if (existing) {
                                     existing.metaData = {
                                         ...existing.metaData,
-                                        ...subscriptionMessage.itemsMetadata[metadataId]
+                                        ...subscriptionMessage.itemsMetadata[metadataId],
                                     };
                                 }
                             }
                         }
 
                         const filteredNewItems = subscriptionMessage.items
-                            .map(item => this.convertItem(item))
-                            .filter(nh => !this._existingIds.includes(nh.id));
+                            .map((item) => this.convertItem(item))
+                            .filter((nh) => !this._existingIds.includes(nh.id));
 
                         if (filteredNewItems.length > 0) {
                             this._items = filteredNewItems.slice().concat(this._items);
 
                             let removeItems: IFeedItem[] = [];
 
-                            const transactionPayload = this._items.filter(t => t.payloadType === "Transaction");
-                            const transactionPayloadToRemoveCount =
-                                transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
+                            const transactionPayload = this._items.filter((t) => t.payloadType === "Transaction");
+                            const transactionPayloadToRemoveCount = transactionPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (transactionPayloadToRemoveCount > 0) {
-                                removeItems =
-                                    removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
+                                removeItems = removeItems.concat(transactionPayload.slice(-transactionPayloadToRemoveCount));
                             }
-                            const indexPayload = this._items.filter(t => t.payloadType === "Index");
+                            const indexPayload = this._items.filter((t) => t.payloadType === "Index");
                             const indexPayloadToRemoveCount = indexPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (indexPayloadToRemoveCount > 0) {
                                 removeItems = removeItems.concat(indexPayload.slice(-indexPayloadToRemoveCount));
                             }
-                            const msPayload = this._items.filter(t => t.payloadType === "MS");
+                            const msPayload = this._items.filter((t) => t.payloadType === "MS");
                             const msPayloadToRemoveCount = msPayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (msPayloadToRemoveCount > 0) {
                                 removeItems = removeItems.concat(msPayload.slice(-msPayloadToRemoveCount));
                             }
-                            const nonePayload = this._items.filter(t => t.payloadType === "None");
+                            const nonePayload = this._items.filter((t) => t.payloadType === "None");
                             const nonePayloadToRemoveCount = nonePayload.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (nonePayloadToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonePayload.slice(-nonePayloadToRemoveCount));
                             }
 
-                            this._items = this._items.filter(t => !removeItems.includes(t));
+                            this._items = this._items.filter((t) => !removeItems.includes(t));
 
-                            this._existingIds = this._items.map(t => t.id);
+                            this._existingIds = this._items.map((t) => t.id);
                         }
 
                         for (const sub in this._subscribers) {
@@ -92,7 +96,7 @@ export class ChrysalisFeedClient extends FeedClient {
                     }
                 });
             }
-        } catch { }
+        } catch {}
 
         return subscriptionId;
     }
@@ -108,10 +112,10 @@ export class ChrysalisFeedClient extends FeedClient {
             if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkId,
-                    subscriptionId: this._subscriptionId
+                    subscriptionId: this._subscriptionId,
                 };
                 this._socket.emit("unsubscribe", unsubscribeRequest);
-                this._socket.on("unsubscribe", () => { });
+                this._socket.on("unsubscribe", () => {});
             }
         } catch {
         } finally {
@@ -174,7 +178,7 @@ export class ChrysalisFeedClient extends FeedClient {
             value,
             parents: message?.parentMessageIds ?? [],
             properties,
-            payloadType
+            payloadType,
         };
     }
 }

@@ -27,4 +27,3 @@ export const useMilestoneInterval = (milestoneIndex: number | undefined) => {
 
     return seconds;
 };
-

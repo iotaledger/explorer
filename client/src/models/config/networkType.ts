@@ -12,12 +12,11 @@ export const CUSTOM = "custom";
  * The network type.
  */
 export type NetworkType =
-    typeof LEGACY_MAINNET    |
-    typeof CHRYSALIS_MAINNET |
-    typeof MAINNET           |
-    typeof DEVNET            |
-    typeof SHIMMER           |
-    typeof TESTNET           |
-    typeof ALPHANET          |
-    typeof CUSTOM;
-
+    | typeof LEGACY_MAINNET
+    | typeof CHRYSALIS_MAINNET
+    | typeof MAINNET
+    | typeof DEVNET
+    | typeof SHIMMER
+    | typeof TESTNET
+    | typeof ALPHANET
+    | typeof CUSTOM;

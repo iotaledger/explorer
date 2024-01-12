@@ -5,48 +5,48 @@
 @import "../../scss/themes";
 
 .search {
-  display: flex;
-  flex-direction: column;
-
-  .wrapper {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
 
-    .inner {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      max-width: $desktop-width;
-      margin: 40px 20px;
+    .wrapper {
+        display: flex;
+        justify-content: center;
 
-      h3 {
-        margin-bottom: 20px;
-      }
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 20px;
 
-      p {
-        @include font-size(16px);
-
-        font-family: $metropolis;
-      }
-
-      ul {
-        @include font-size(16px);
-
-        margin-left: 40px;
-        font-family: $metropolis;
-
-        li {
-          margin-bottom: 10px;
-          color: var(--body-color);
-
-          > span {
-            &:first-child {
-              margin-right: 10px;
-              color: $main-green;
+            h3 {
+                margin-bottom: 20px;
             }
-          }
+
+            p {
+                @include font-size(16px);
+
+                font-family: $metropolis;
+            }
+
+            ul {
+                @include font-size(16px);
+
+                margin-left: 40px;
+                font-family: $metropolis;
+
+                li {
+                    margin-bottom: 10px;
+                    color: var(--body-color);
+
+                    > span {
+                        &:first-child {
+                            margin-right: 10px;
+                            color: $main-green;
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }

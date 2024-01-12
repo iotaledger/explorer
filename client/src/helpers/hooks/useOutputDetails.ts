@@ -12,13 +12,10 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param outputId The output id
  * @returns The output, metadata, loading bool and error message.
  */
-export function useOutputDetails(network: string, outputId: string | null):
-    [
-        Output | null,
-        IOutputMetadataResponse | null,
-        boolean,
-        string?
-    ] {
+export function useOutputDetails(
+    network: string,
+    outputId: string | null,
+): [Output | null, IOutputMetadataResponse | null, boolean, string?] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [output, setOutput] = useState<Output | null>(null);
@@ -33,19 +30,22 @@ export function useOutputDetails(network: string, outputId: string | null):
         if (outputId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.outputDetails({
-                    network,
-                    outputId: HexHelper.addPrefix(outputId)
-                }).then(response => {
-                    if (isMounted) {
-                        const details = response.output;
-                        setOutput(details?.output ?? null);
-                        setMetadata(details?.metadata ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .outputDetails({
+                        network,
+                        outputId: HexHelper.addPrefix(outputId),
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            const details = response.output;
+                            setOutput(details?.output ?? null);
+                            setMetadata(details?.metadata ?? null);
+                            setError(response.error);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);
@@ -54,4 +54,3 @@ export function useOutputDetails(network: string, outputId: string | null):
 
     return [output, metadata, isLoading, error];
 }
-

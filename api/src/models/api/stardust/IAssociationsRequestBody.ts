@@ -6,4 +6,3 @@ export interface IAssociationsRequestBody {
      */
     addressDetails: IBech32AddressDetails;
 }
-

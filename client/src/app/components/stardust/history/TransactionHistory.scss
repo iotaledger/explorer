@@ -36,7 +36,7 @@
             th {
                 @include font-size(12px);
 
-                text-align: center!important;
+                text-align: center !important;
                 color: $gray-6;
                 font-weight: 600;
                 text-align: left;
@@ -47,7 +47,8 @@
                 padding: 16px 0;
                 text-align: center;
 
-                &.transaction-id, &.output-id {
+                &.transaction-id,
+                &.output-id {
                     @include font-size(14px);
                     color: var(--link-color);
                     font-family: $ibm-plex-mono;

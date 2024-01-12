@@ -31,7 +31,7 @@ export class ApiClient {
         path: string,
         method: "get" | "post" | "put" | "delete",
         request?: U,
-        timeout?: number
+        timeout?: number,
     ): Promise<T> {
         let response: T;
 
@@ -39,7 +39,7 @@ export class ApiClient {
             response = await FetchHelper.json<U, T>(this._endpoint, path, method, request, undefined, timeout);
         } catch (err) {
             response = {
-                error: `There was a problem communicating with the API.\n${err}`
+                error: `There was a problem communicating with the API.\n${err}`,
             } as T;
         }
 
@@ -58,22 +58,21 @@ export class ApiClient {
         path: string,
         method: "get" | "post" | "put" | "delete",
         request?: unknown,
-        timeout?: number
+        timeout?: number,
     ): Promise<IRawResponse> {
         let result: IRawResponse;
         const headers = { "Content-Type": "application/json" };
 
         try {
             result = {
-                raw: await FetchHelper.raw(this._endpoint, path, method, request, headers, timeout)
+                raw: await FetchHelper.raw(this._endpoint, path, method, request, headers, timeout),
             };
         } catch (err) {
             result = {
-                error: `There was a problem communicating with the API.\n${err}`
+                error: `There was a problem communicating with the API.\n${err}`,
             };
         }
 
         return result;
     }
 }
-

@@ -16,4 +16,3 @@ export interface IAddressBalanceResponse extends IResponse {
      */
     ledgerIndex?: number;
 }
-

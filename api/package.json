@@ -14,7 +14,7 @@
         "build-compile": "tsc",
         "build-watch": "tsc --watch",
         "build-lint": "eslint src --ext .tsx,.ts",
-        "format": "prettier --ignore-path=.prettierignore --write src",
+        "format": "prettier --ignore-path=.prettierignore --write src && eslint --fix src",
         "lint:check": "eslint src --ext .ts,.js",
         "format:check": "prettier --ignore-path=.prettierignore src",
         "build-config": "copyfiles -u 2 ./src/data/config*.json ./dist/data/",

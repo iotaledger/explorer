@@ -14,14 +14,14 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
         super(props);
 
         this.state = {
-            contentShown: false
+            contentShown: false,
         };
 
-        window.addEventListener("mouseup", e => {
+        window.addEventListener("mouseup", (e) => {
             if (this.state.contentShown) {
                 e.stopPropagation();
                 this.setState({
-                    contentShown: false
+                    contentShown: false,
                 });
             }
         });
@@ -31,7 +31,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
         return (
             <div
                 className="identity-compare-dropdown row middle"
-                onMouseUp={e => {
+                onMouseUp={(e) => {
                     e.stopPropagation();
                 }}
             >
@@ -39,37 +39,31 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                     {/* ---------  selector --------- */}
                     <div
                         className={classNames("compare-selector", { opened: this.state.contentShown })}
-                        onMouseUp={e => {
+                        onMouseUp={(e) => {
                             e.stopPropagation();
                         }}
-                        onClick={e => {
+                        onClick={(e) => {
                             e.stopPropagation();
                             this.setState({
-                                contentShown: !this.state.contentShown
+                                contentShown: !this.state.contentShown,
                             });
                         }}
                     >
                         {this.props.selectedMessage?.messageId ? (
                             <div className="row middle message-selected">
+                                <IdentityMsgStatusIcon status={this.props.selectedMessage.isDiff ? "diff" : "integration"} />
 
-                                <IdentityMsgStatusIcon
-                                    status={this.props.selectedMessage.isDiff ? "diff" : "integration"}
-                                />
-
-                                <p className="margin-l-s margin-r-2">
-                                    {IdentityHelper.shortenMsgId(this.props.selectedMessage.messageId)}
-                                </p>
+                                <p className="margin-l-s margin-r-2">{IdentityHelper.shortenMsgId(this.props.selectedMessage.messageId)}</p>
                                 {/* --------- Reset Button --------- */}
                                 {this.props.selectedMessage && (
                                     <button
                                         className="reset-button"
                                         type="button"
-                                        onClick={e => {
+                                        onClick={(e) => {
                                             this.props.onSelectionChange();
                                         }}
                                     >
                                         <span className="material-icons close">close</span>
-
                                     </button>
                                 )}
                             </div>
@@ -77,9 +71,7 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                             <p className="dropdown-placeholder">Compare with</p>
                         )}
 
-                        <span className="material-icons dropdown">
-                            arrow_drop_down
-                        </span>
+                        <span className="material-icons dropdown">arrow_drop_down</span>
                     </div>
 
                     {/* --------- dropdown content --------- */}
@@ -88,16 +80,15 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                             {this.props.messages.map((value, index) => (
                                 <div
                                     className={classNames("dropdown-item", {
-                                        "dropdown-item-selected":
-                                            this.props.selectedMessage?.messageId === value.messageId
+                                        "dropdown-item-selected": this.props.selectedMessage?.messageId === value.messageId,
                                     })}
                                     key={index}
-                                    onMouseUp={e => {
+                                    onMouseUp={(e) => {
                                         e.stopPropagation();
                                     }}
-                                    onClick={e => {
+                                    onClick={(e) => {
                                         this.setState({
-                                            contentShown: !this.state.contentShown
+                                            contentShown: !this.state.contentShown,
                                         });
                                         this.props.onSelectionChange(value);
                                     }}
@@ -127,8 +118,6 @@ class IdentityCompareDropdown extends Component<IdentityCompareDropdownProps, Id
                         </div>
                     )}
                 </div>
-
-
             </div>
         );
     }

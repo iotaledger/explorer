@@ -12,8 +12,8 @@ export class TextHelper {
      */
     public static encodeNonASCII(value: string): string | undefined {
         return value
-            // eslint-disable-next-line unicorn/prefer-code-point
-            ? value.replaceAll(/[\u007F-\uFFFF]/g, chr => `\\u${(`0000${chr.charCodeAt(0).toString(16)}`).slice(-4)}`)
+            ? // eslint-disable-next-line unicorn/prefer-code-point
+              value.replaceAll(/[\u007F-\uFFFF]/g, (chr) => `\\u${`0000${chr.charCodeAt(0).toString(16)}`.slice(-4)}`)
             : undefined;
     }
 
@@ -24,10 +24,7 @@ export class TextHelper {
      */
     public static decodeNonASCII(value: string): string | undefined {
         return value
-            ? value.replaceAll(
-                /\\u(\w{4})/gi,
-                (_match, grp) => String.fromCodePoint(Number.parseInt(grp as string, 16))
-            )
+            ? value.replaceAll(/\\u(\w{4})/gi, (_match, grp) => String.fromCodePoint(Number.parseInt(grp as string, 16)))
             : undefined;
     }
 
