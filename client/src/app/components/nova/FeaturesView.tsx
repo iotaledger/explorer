@@ -119,9 +119,7 @@ const FeatureView: React.FC<FeatureViewProps> = ({
                                 Block issuer keys:
                             </div>
                             {Array.from(
-                                (
-                                    feature as BlockIssuerFeature
-                                ).blockIssuerKeys.values(),
+                                (feature as BlockIssuerFeature).blockIssuerKeys,
                             ).map((blockIssuerKey, idx) => (
                                 <div key={idx} className="card--value row">
                                     {
