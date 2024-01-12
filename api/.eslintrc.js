@@ -12,8 +12,6 @@ module.exports = {
         "plugin:import/typescript",
         "plugin:jsdoc/recommended",
         "plugin:unicorn/recommended",
-        "plugin:prettier/recommended",
-        "prettier",
     ],
     parser: "@typescript-eslint/parser",
     parserOptions: {
@@ -230,13 +228,6 @@ module.exports = {
         "lines-between-class-members": ["off"],
         "max-classes-per-file": ["error"],
         "max-depth": ["off"],
-        "max-len": [
-            "error",
-            {
-                ignorePattern: "^import",
-                code: 140,
-            },
-        ],
         "max-lines": ["off"],
         "max-lines-per-function": ["off"],
         "max-nested-callbacks": ["error"],
