@@ -4,16 +4,19 @@ import Modal from "~/app/components/Modal";
 import Unlocks from "~/app/components/nova/Unlocks";
 import OutputView from "~/app/components/nova/OutputView";
 import transactionPayloadMessage from "~assets/modals/stardust/block/transaction-payload.json";
+import { IInput } from "~/models/api/nova/IInput";
+import Input from "~/app/components/nova/Input";
 
 interface SignedTransactionPayloadProps {
     readonly payload: ISignedTransactionPayload;
+    readonly inputs: IInput[];
     readonly header?: string;
 }
 
 const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = (
-    { payload, header }
+    { payload, inputs, header }
 ) => {
-    const { inputs, outputs } = payload.transaction;
+    const { networkId, outputs } = payload.transaction;
     const transactionId = Utils.transactionId(payload)
 
     return (
@@ -34,7 +37,7 @@ const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = (
                         <span>{inputs.length}</span>
                     </div>
                     <div className="transaction-payload_outputs card--content">
-                        {/* {inputs.map((input, idx) => <Input key={idx} network={networkId} input={input} />)} */}
+                        {inputs.map((input, idx) => <Input key={idx} network={networkId} input={input} />)}
                         <Unlocks unlocks={payload.unlocks} />
                     </div>
                 </div>
@@ -63,6 +66,7 @@ const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = (
 
 SignedTransactionPayload.defaultProps = {
     payload: undefined,
+    inputs: undefined,
     header: undefined,
 };
 

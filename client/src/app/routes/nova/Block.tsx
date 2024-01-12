@@ -1,17 +1,23 @@
 
-import React from "react";
+import React, { useContext, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "~assets/modals/stardust/block/main-header.json";
 import { useBlock } from "~helpers/nova/hooks/useBlock";
 import NotFound from "../../components/NotFound";
-import { BasicBlockBody, BlockBodyType, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, BlockBodyType, PayloadType, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
 import Modal from "~/app/components/Modal";
 import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { DateHelper } from "~/helpers/dateHelper";
 import MilestoneSignaturesSection from "~/app/components/stardust/block/payload/milestone/MilestoneSignaturesSection";
 import { Ed25519Signature } from "@iota/sdk-wasm/web";
-
+import { useInputsAndOutputs } from "~/helpers/nova/hooks/useInputsAndOutputs";
+import BlockPayloadSection from "~/app/components/nova/block/section/BlockPayloadSection";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import NetworkContext from "~/app/context/NetworkContext";
+import TabbedSection from "~/app/components/hoc/TabbedSection";
+import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-payload.json";
+import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
 export interface BlockProps {
     /**
      * The network to lookup.
@@ -27,8 +33,10 @@ export interface BlockProps {
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
-
+    const { tokenInfo } = useContext(NetworkContext);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
+    const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
 
     let blockBody: BasicBlockBody | ValidationBlockBody | undefined
     let pageTitle = "Block";
@@ -48,6 +56,20 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
         }
     }
 
+    const tabbedSections = [];
+    let idx = 0;
+    if (block) {
+        tabbedSections.push(
+            <BlockPayloadSection
+                key={++idx}
+                block={block}
+                inputs={inputs ?? undefined}
+                outputs={outputs ?? undefined}
+                transferTotal={transferTotal ?? undefined}
+            />
+        );
+    }
+    
     const blockContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
@@ -129,11 +151,52 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 )}
             </div>
-            
-            {block.body?.type === BlockBodyType.Basic && (
+            {blockBody?.type === BlockBodyType.Basic && (
                 <div>
-                    {/* todo: add all block payload */}
-                    {JSON.stringify(blockBody)}
+                    {blockBody?.asBasic().payload?.type === PayloadType.SignedTransaction &&
+                    transferTotal !== null && (
+                        <div className="section--data">
+                            <div className="label">
+                                Amount transacted
+                            </div>
+                            <div className="amount-transacted value row middle">
+                                <span
+                                    onClick={() => setIsFormattedBalance(!isFormattedBalance)}
+                                    className="pointer margin-r-5"
+                                >
+                                    {formatAmount(
+                                        transferTotal,
+                                        tokenInfo,
+                                        !isFormattedBalance
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    <TabbedSection
+                        key={blockId}
+                        tabsEnum={
+                                (blockBody?.asBasic().payload?.type === PayloadType.SignedTransaction ?
+                                    { Payload: "Transaction Payload" } :
+                                    { Payload: "Tagged Data Payload" })
+                        }
+                        tabOptions={
+                            (blockBody?.asBasic().payload?.type === PayloadType.SignedTransaction ? {
+                                "Transaction Payload": {
+                                    disabled: !blockBody?.asBasic().payload,
+                                    infoContent: transactionPayloadInfo
+                                }
+                            } : {
+                                "Tagged Data Payload": {
+                                    disabled: !blockBody?.asBasic().payload,
+                                    infoContent: taggedDataPayloadInfo
+                                }
+                            })
+                        }
+                    >
+                        {tabbedSections}
+                    </TabbedSection>
                 </div>
             )}
             <MilestoneSignaturesSection signatures={[block.signature as Ed25519Signature]} />
