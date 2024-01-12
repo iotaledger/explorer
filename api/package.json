@@ -14,9 +14,9 @@
         "build-compile": "tsc",
         "build-watch": "tsc --watch",
         "build-lint": "eslint src --ext .tsx,.ts",
-        "format": "prettier --ignore-path=.prettierignore --write .",
+        "format": "prettier --ignore-path=.prettierignore --write src",
         "lint:check": "eslint src --ext .ts,.js",
-        "format:check": "prettier --ignore-path=.prettierignore .",
+        "format:check": "prettier --ignore-path=.prettierignore src",
         "build-config": "copyfiles -u 2 ./src/data/config*.json ./dist/data/",
         "build": "npm-run-all build-clean build-compile build-lint build-config",
         "serve-mon": "nodemon ./dist/index",
@@ -80,7 +80,7 @@
         "typescript": "^4.8.2"
     },
     "lint-staged": {
-        "*.{ts,js}": [
+        "src/**/*.{ts,js}": [
             "prettier --ignore-path=.prettierignore --write",
             "eslint --fix"
         ]

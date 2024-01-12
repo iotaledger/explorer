@@ -13,9 +13,9 @@
         "postinstall": "./script/postinstall.sh",
         "start": "vite",
         "preview": "vite preview",
-        "format": "prettier --ignore-path=.prettierignore --write . && eslint src --ext .tsx,.ts --fix",
+        "format": "prettier --ignore-path=.prettierignore --write src && eslint src --ext .tsx,.ts --fix",
         "lint:check": "eslint src --ext .tsx,.ts",
-        "format:check": "prettier --ignore-path=.prettierignore --check .",
+        "format:check": "prettier --ignore-path=.prettierignore --check src",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "tsc && vite build",
         "build": "run-s lint:check sass-lint build-internal",
@@ -115,7 +115,7 @@
         "not op_mini all"
     ],
     "lint-staged": {
-        "*.{ts,js,tsx,jsx}": "eslint --cache --fix",
-        "*.{ts,js,scss,css}": "prettier --ignore-path=.prettierignore --write"
+        "src/**/*.{ts,js,tsx,jsx}": "eslint --cache --fix",
+        "src/**/*.{ts,js,scss,css}": "prettier --ignore-path=.prettierignore --write"
     }
 }
