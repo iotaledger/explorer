@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { BlockTangleStateProps } from "./BlockTangleStateProps";
 import { useMilestoneDetails } from "~helpers/hooks/useMilestoneDetails";
