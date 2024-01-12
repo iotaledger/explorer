@@ -3,9 +3,9 @@
     "description": "<p>The history of all transactions for this address. It displays all blocks that consume or create outputs targeting this address.</p>",
     "links": [
         {
-            "label": "Read more",
-            "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/simple_transfers#transfer-of-funds",
-            "isExternal": true
+          "label": "Read more",
+          "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/simple_transfers#transfer-of-funds",
+          "isExternal": true
         }
     ]
 }

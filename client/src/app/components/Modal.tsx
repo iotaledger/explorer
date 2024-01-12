@@ -3,6 +3,7 @@ import { ModalProps } from "./ModalProps";
 import { ModalState } from "./ModalState";
 import "./Modal.scss";
 
+
 /**
  * Component to reuse for info modals.
  */
@@ -14,7 +15,7 @@ class Modal extends Component<ModalProps, ModalState> {
     constructor(props: ModalProps) {
         super(props);
         this.state = {
-            show: false,
+            show: false
         };
     }
 
@@ -25,8 +26,15 @@ class Modal extends Component<ModalProps, ModalState> {
     public render(): ReactNode {
         return (
             <div className="modal">
-                <button type="button" className="modal--icon" onClick={() => this.handleShow()}>
-                    {this.props.icon && <span className="material-icons">{this.props.icon}</span>}
+                <button
+                    type="button"
+                    className="modal--icon"
+                    onClick={() => this.handleShow()}
+                >
+                    {this.props.icon && (
+                        <span className="material-icons">
+                            {this.props.icon}
+                        </span>)}
                 </button>
                 {this.state.show && (
                     <React.Fragment>
@@ -34,7 +42,10 @@ class Modal extends Component<ModalProps, ModalState> {
                             <div className="modal--header">
                                 <div className="modal--title">
                                     {this.props.data?.title}
-                                    <button type="button" onClick={() => this.handleHide()}>
+                                    <button
+                                        type="button"
+                                        onClick={() => this.handleHide()}
+                                    >
                                         <span className="material-icons">close</span>
                                     </button>
                                 </div>
@@ -56,6 +67,7 @@ class Modal extends Component<ModalProps, ModalState> {
                                         ))}
                                     </div>
                                 )}
+
                             </div>
                         </div>
                         <div
@@ -71,19 +83,23 @@ class Modal extends Component<ModalProps, ModalState> {
     }
 
     private handleShow(): void {
-        this.setState({ show: true }, () => {
-            if (this.props?.showModal) {
-                this.props.showModal(this.state.show);
+        this.setState({ show: true },
+            () => {
+                if (this.props?.showModal) {
+                    this.props.showModal(this.state.show);
+                }
             }
-        });
+        );
     }
 
     private handleHide(): void {
-        this.setState({ show: false }, () => {
-            if (this.props?.showModal) {
-                this.props.showModal(this.state.show);
+        this.setState({ show: false },
+            () => {
+                if (this.props?.showModal) {
+                    this.props.showModal(this.state.show);
+                }
             }
-        });
+        );
     }
 }
 

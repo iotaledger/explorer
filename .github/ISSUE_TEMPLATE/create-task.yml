@@ -1,12 +1,12 @@
 ---
 name: New task
 description: Create a new work task
-title: "[Task]: "
+title: '[Task]: '
 
 body:
     - type: markdown
       attributes:
-          value: "## Creating a task"
+          value: '## Creating a task'
     - type: markdown
       attributes:
           value: |
@@ -40,7 +40,7 @@ body:
       id: checklist
       attributes:
           label: Creation checklist
-          description: "Before submitting this task please ensure you have done the following if necessary:"
+          description: 'Before submitting this task please ensure you have done the following if necessary:'
           options:
               - label: I have assigned this task to the correct people
                 required: false

@@ -18,7 +18,7 @@ import {
     TRANSITIONS_DURATION_MS,
     useChartWrapperSize,
     useMultiValueTooltip,
-    useTouchMoveEffect,
+    useTouchMoveEffect
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -32,7 +32,15 @@ interface StackedLineChartProps {
     readonly data: { [name: string]: number; time: number }[];
 }
 
-const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, info, subgroups, groupLabels, colors, data }) => {
+const StackedLineChart: React.FC<StackedLineChartProps> = ({
+    chartId,
+    title,
+    info,
+    subgroups,
+    groupLabels,
+    colors,
+    data
+}) => {
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
         if (chartWrapper !== null) {
@@ -53,7 +61,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
             select(theSvg.current).selectAll("*").remove();
 
             // chart dimensions
-            const yMax = Math.max(...data.map((d) => Math.max(...subgroups.map((key) => d[key]))));
+            const yMax = Math.max(...data.map(d => Math.max(...subgroups.map(key => d[key]))));
             const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
@@ -62,7 +70,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
             const stackedData = stack().keys(subgroups)(data);
-            const groups = data.map((d) => timestampToDate(d.time));
+            const groups = data.map(d => timestampToDate(d.time));
 
             // SVG
             const svg = select(theSvg.current)
@@ -76,15 +84,16 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
                 .domain([groups[0], groups.at(-1) ?? groups[0]])
                 .range([0, INNER_WIDTH]);
 
-            const xAxisSelection = svg
-                .append("g")
+            const xAxisSelection = svg.append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(buildXAxis(x));
 
             // Y
             const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
-            const yAxisSelection = svg.append("g").attr("class", "axis axis--y").call(buildYAxis(y, yMax));
+            const yAxisSelection = svg.append("g")
+                .attr("class", "axis axis--y")
+                .call(buildYAxis(y, yMax));
 
             // clip path
             svg.append("defs")
@@ -98,35 +107,35 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
 
             // area fill
             const areaGen = area<SeriesPoint<{ [key: string]: number }>>()
-                .x((d) => x(timestampToDate(d.data.time)) ?? 0)
-                .y0((_) => y(0))
-                .y1((d) => y(d[1] - d[0]));
+                .x(d => x(timestampToDate(d.data.time)) ?? 0)
+                .y0(_ => y(0))
+                .y1(d => y(d[1] - d[0]));
 
-            const theArea = svg.append("g").attr("class", "areas").attr("clip-path", `url(#clip-${chartId})`);
+            const theArea = svg.append("g")
+                .attr("class", "areas")
+                .attr("clip-path", `url(#clip-${chartId})`);
 
-            const areaSelection = theArea
-                .selectAll("g")
+            const areaSelection = theArea.selectAll("g")
                 .data(stackedData)
                 .join("path")
-                .style("fill", (d) => getGradient(d.key, color(d.key)))
+                .style("fill", d => getGradient(d.key, color(d.key)))
                 .attr("opacity", 0.5)
                 .attr("class", "area")
                 .attr("d", areaGen);
 
             // area lines path
             const lineGen = line<SeriesPoint<{ [key: string]: number }>>()
-                .x((d) => x(timestampToDate(d.data.time)) ?? 0)
-                .y((d) => y(d[1] - d[0]));
+                .x(d => x(timestampToDate(d.data.time)) ?? 0)
+                .y(d => y(d[1] - d[0]));
 
-            const lineSelection = svg
-                .append("g")
+            const lineSelection = svg.append("g")
                 .attr("class", "lines")
                 .attr("clip-path", `url(#clip-${chartId})`)
                 .selectAll("g")
                 .data(stackedData)
                 .join("path")
                 .attr("fill", "none")
-                .attr("stroke", (d) => color(d.key))
+                .attr("stroke", d => color(d.key))
                 .attr("stroke-width", 2)
                 .attr("class", "line")
                 .attr("d", lineGen);
@@ -148,8 +157,8 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
                         .style("stroke", color(dataStack.key))
                         .style("stroke-width", 5)
                         .style("stroke-opacity", 0)
-                        .attr("cx", (d) => x(timestampToDate(d.data.time)) ?? 0)
-                        .attr("cy", (d) => y(d[1] - d[0]))
+                        .attr("cx", d => x(timestampToDate(d.data.time)) ?? 0)
+                        .attr("cy", d => y(d[1] - d[0]))
                         .attr("r", 0)
                         .attr("class", (_, i) => `circle-${i}`);
                 }
@@ -163,24 +172,28 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
                     .enter()
                     .append("rect")
                     .attr("fill", "transparent")
-                    .attr("x", (_, idx) => (idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth))
+                    .attr("x", (_, idx) => (
+                        idx === 0 ? 0 : (x(timestampToDate(data[idx].time)) ?? 0) - halfLineWidth
+                    ))
                     .attr("y", 0)
                     .attr("class", (_, i) => `rect-${i}`)
                     .attr("height", INNER_HEIGHT)
-                    .attr("width", (_, idx) => (idx === 0 || idx === data.length - 1 ? halfLineWidth : halfLineWidth * 2))
+                    .attr("width", (_, idx) => (
+                        (idx === 0 || idx === data.length - 1) ?
+                            halfLineWidth : halfLineWidth * 2
+                    ))
                     .on("mouseover", mouseoverHandler)
                     .on("mouseout", mouseoutHandler);
             };
 
             // brushing
             const brush = brushX()
-                .extent([
-                    [0, 0],
-                    [INNER_WIDTH, height],
-                ])
-                .on("end", (e) => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
+                .extent([[0, 0], [INNER_WIDTH, height]])
+                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            const brushSelection = svg.append("g").attr("class", "brush").call(brush);
+            const brushSelection = svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
 
             let idleTimeout: NodeJS.Timer | null = null;
             const idled = () => {
@@ -207,7 +220,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
 
                 // to prevent infinite brushing
                 if (selectedData.length > 1) {
-                    const yMaxUpdate = Math.max(...selectedData.map((d) => Math.max(...subgroups.map((key) => d[key]))));
+                    const yMaxUpdate = Math.max(...selectedData.map(d => Math.max(...subgroups.map(key => d[key]))));
                     y.domain([0, yMaxUpdate]);
                     // Update axis
                     yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
@@ -243,8 +256,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
      * @returns The gradient
      */
     function getGradient(id: string, color: string): string {
-        const areaGradient = select(theSvg.current)
-            .append("defs")
+        const areaGradient = select(theSvg.current).append("defs")
             .append("linearGradient")
             .attr("id", `aG-${id}`)
             .attr("x1", "0%")
@@ -252,9 +264,16 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
             .attr("x2", "0%")
             .attr("y2", "100%");
 
-        areaGradient.append("stop").attr("offset", "30%").attr("stop-color", color).attr("stop-opacity", 0.6);
+        areaGradient
+            .append("stop")
+            .attr("offset", "30%")
+            .attr("stop-color", color)
+            .attr("stop-opacity", 0.6);
 
-        areaGradient.append("stop").attr("offset", "90%").attr("stop-color", "white").attr("stop-opacity", 0);
+        areaGradient.append("stop")
+            .attr("offset", "90%")
+            .attr("stop-color", "white")
+            .attr("stop-opacity", 0);
 
         return `url(#aG-${id})`;
     }
@@ -265,15 +284,26 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
      * @param _ The unused event param
      * @param dataPoint The data point rendered by this rect
      */
-    function mouseoverHandler(this: SVGRectElement | BaseType, _: MouseEvent, dataPoint: { [key: string]: number }) {
+    function mouseoverHandler(
+        this: SVGRectElement | BaseType,
+        _: MouseEvent,
+        dataPoint: { [key: string]: number }
+    ) {
         // show tooltip
-        select(theTooltip.current).style("display", "block").select("#content").html(buildTootip(dataPoint));
+        select(theTooltip.current)
+            .style("display", "block")
+            .select("#content")
+            .html(buildTootip(dataPoint));
         // add highlight
         const eleClass = (this as SVGRectElement).classList[0];
         const idx = eleClass.slice(eleClass.indexOf("-") + 1);
-        select(theSvg.current).selectAll(`.circle-${idx}`).attr("r", 2).style("stroke-opacity", 0.5);
+        select(theSvg.current)
+            .selectAll(`.circle-${idx}`)
+            .attr("r", 2)
+            .style("stroke-opacity", 0.5);
 
-        select(this).classed("active", true);
+        select(this)
+            .classed("active", true);
     }
 
     /**
@@ -283,14 +313,22 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        const activeElement = select(theSvg.current).select(".active");
+        const activeElement = select(theSvg.current)
+            .select(".active");
         if (activeElement.size() > 0) {
             const elClass = activeElement.attr("class");
-            const idx = elClass.slice(elClass.indexOf("rect-") + 5, elClass.lastIndexOf(" "));
+            const idx = elClass.slice(
+                elClass.indexOf("rect-") + 5,
+                elClass.lastIndexOf(" ")
+            );
 
-            select(theSvg.current).selectAll(`.circle-${idx}`).attr("r", 0).style("stroke-opacity", 0);
+            select(theSvg.current)
+                .selectAll(`.circle-${idx}`)
+                .attr("r", 0)
+                .style("stroke-opacity", 0);
 
-            activeElement.classed("active", false);
+            activeElement
+                .classed("active", false);
         }
     }
 
@@ -301,7 +339,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
                 info={info}
                 legend={{
                     labels: groupLabels ?? subgroups,
-                    colors,
+                    colors
                 }}
                 disabled={data.length === 0}
             />
@@ -320,7 +358,7 @@ const StackedLineChart: React.FC<StackedLineChartProps> = ({ chartId, title, inf
 StackedLineChart.defaultProps = {
     groupLabels: undefined,
     info: undefined,
-    title: undefined,
+    title: undefined
 };
 
 export default StackedLineChart;

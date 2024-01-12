@@ -16,7 +16,7 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
         super(props);
         this.state = {
             hexTag: this.props.payload.tag,
-            hexData: this.props.payload.data,
+            hexData: this.props.payload.data
         };
     }
 
@@ -24,7 +24,7 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
         if (prevProps.payload !== this.props.payload) {
             this.setState({
                 hexTag: this.props.payload.tag,
-                hexData: this.props.payload.data,
+                hexData: this.props.payload.data
             });
         }
     }
@@ -44,7 +44,10 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
                             <div className="label row middle">
                                 <span className="margin-r-t">Tag</span>
                             </div>
-                            <DataToggle sourceData={hexTag} withSpacedHex={true} />
+                            <DataToggle
+                                sourceData={hexTag}
+                                withSpacedHex={true}
+                            />
                         </React.Fragment>
                     )}
                     {hexData && (
@@ -52,7 +55,10 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
                             <div className="label row middle">
                                 <span className="margin-r-t">Data</span>
                             </div>
-                            <DataToggle sourceData={hexData} withSpacedHex={true} />
+                            <DataToggle
+                                sourceData={hexData}
+                                withSpacedHex={true}
+                            />
                         </React.Fragment>
                     )}
                 </div>
@@ -62,3 +68,4 @@ class TaggedDataPayload extends Component<TaggedDataPayloadProps, TaggedDataPayl
 }
 
 export default TaggedDataPayload;
+

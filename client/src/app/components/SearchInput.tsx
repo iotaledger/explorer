@@ -21,7 +21,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         this.state = {
             query: "",
             isValid: false,
-            showSearchInput: false,
+            showSearchInput: false
         };
     }
 
@@ -33,33 +33,45 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
         return (
             <React.Fragment>
                 {/* -------------- Desktop Search ---------------- */}
-                <div className="search-input">
-                    <span className="material-icons">search</span>
+                <div
+                    className="search-input"
+                >
+                    <span className="material-icons">
+                        search
+                    </span>
                     <input
                         className="search--text-input"
                         type="text"
                         autoFocus
                         value={this.state.query}
-                        onChange={(e) =>
-                            this.setState({
-                                query: this.props.protocolVersion === LEGACY ? e.target.value.toUpperCase().trim() : e.target.value,
-                                isValid: this.isValid(
-                                    this.props.protocolVersion === LEGACY ? e.target.value.toUpperCase().trim() : e.target.value,
-                                ),
-                            })
-                        }
-                        onKeyDown={(e) => {
+                        onChange={e => this.setState({
+                            query: this.props.protocolVersion === LEGACY
+                                ? e.target.value.toUpperCase().trim()
+                                : e.target.value,
+                                isValid: this.isValid(this.props.protocolVersion === LEGACY
+                                    ? e.target.value.toUpperCase().trim()
+                                    : e.target.value)
+                        })}
+                        onKeyDown={e => {
                             if (e.keyCode === 13 && this.state.isValid) {
                                 this.doSearch();
                             }
                         }}
                         placeholder="Search the tangle..."
                     />
+
                 </div>
                 {/* -------------- Mobile Search ---------------- */}
                 <div className="search-input--compact">
-                    <button type="button" onClick={() => this.setState({ showSearchInput: !this.state.showSearchInput })}>
-                        <span className="material-icons">search</span>
+                    <button
+                        type="button"
+                        onClick={() =>
+                            this.setState({ showSearchInput: !this.state.showSearchInput }
+                            )}
+                    >
+                        <span className="material-icons">
+                            search
+                        </span>
                     </button>
                     {this.state.showSearchInput && (
                         <React.Fragment>
@@ -69,20 +81,15 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                                     type="text"
                                     autoFocus
                                     value={this.state.query}
-                                    onChange={(e) =>
-                                        this.setState({
-                                            query:
-                                                this.props.protocolVersion === LEGACY
-                                                    ? e.target.value.toUpperCase().trim()
-                                                    : e.target.value,
-                                            isValid: this.isValid(
-                                                this.props.protocolVersion === LEGACY
-                                                    ? e.target.value.toUpperCase().trim()
-                                                    : e.target.value,
-                                            ),
-                                        })
-                                    }
-                                    onKeyDown={(e) => {
+                                    onChange={e => this.setState({
+                                        query: this.props.protocolVersion === LEGACY
+                                            ? e.target.value.toUpperCase().trim()
+                                            : e.target.value,
+                                        isValid: this.isValid(this.props.protocolVersion === LEGACY
+                                            ? e.target.value.toUpperCase().trim()
+                                            : e.target.value)
+                                    })}
+                                    onKeyDown={e => {
                                         if (e.keyCode === 13 && this.state.isValid) {
                                             this.doSearch();
                                             this.setState({ showSearchInput: false });
@@ -109,6 +116,7 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                     )}
                 </div>
             </React.Fragment>
+
         );
     }
 
@@ -133,7 +141,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
                 return false;
             }
 
-            return (query.trim().length > 0 && query.trim().length <= 27) || query.trim().length === 81 || query.trim().length === 90;
+            return ((query.trim().length > 0 && query.trim().length <= 27) ||
+                query.trim().length === 81 ||
+                query.trim().length === 90);
         }
 
         return query.trim().length > 0;
@@ -143,7 +153,9 @@ class SearchInput extends AsyncComponent<SearchInputProps, SearchInputState> {
      * Perform the search.
      */
     private doSearch(): void {
-        this.props.onSearch(this.props.protocolVersion === LEGACY ? this.state.query.trim().toUpperCase() : this.state.query.trim());
+        this.props.onSearch(this.props.protocolVersion === LEGACY
+            ? this.state.query.trim().toUpperCase()
+            : this.state.query.trim());
 
         // Clear search input field when a search has been made.
         this.setState({ query: "" });

@@ -12,7 +12,12 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param blockId The block id
  * @returns The children block ids, loading bool and an error string.
  */
-export function useBlockChildren(network: string, blockId: string | null): [HexEncodedString[] | null, boolean, string?] {
+export function useBlockChildren(network: string, blockId: string | null):
+    [
+        HexEncodedString[] | null,
+        boolean,
+        string?
+    ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [blockChildren, setBlockChildren] = useState<HexEncodedString[] | null>(null);
@@ -25,20 +30,17 @@ export function useBlockChildren(network: string, blockId: string | null): [HexE
         if (blockId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient
-                    .blockChildren({
-                        network,
-                        blockId: HexHelper.addPrefix(blockId),
-                    })
-                    .then((response) => {
-                        if (isMounted) {
-                            setBlockChildren(response.children ?? null);
-                            setError(response.error);
-                        }
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
+                apiClient.blockChildren({
+                    network,
+                    blockId: HexHelper.addPrefix(blockId)
+                }).then(response => {
+                    if (isMounted) {
+                        setBlockChildren(response.children ?? null);
+                        setError(response.error);
+                    }
+                }).finally(() => {
+                    setIsLoading(false);
+                });
             })();
         } else {
             setIsLoading(false);

@@ -14,11 +14,9 @@ import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
 import "./Landing.scss";
 
-export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
-    match: {
-        params: { network },
-    },
-}) => {
+export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = (
+    { match: { params: { network } } }
+) => {
     const { tokenInfo } = useContext(NetworkContext);
     const [milestones, latestMilestoneIndex] = useBlockFeed(network);
     const [networkConfig] = useNetworkConfig(network);
@@ -30,14 +28,12 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
 
     return (
         <div className="landing-stardust">
-            <div className={classNames("header-wrapper", { shimmer: isShimmer }, { iota: !isShimmer })}>
+            <div className={classNames("header-wrapper", { "shimmer": isShimmer }, { "iota": !isShimmer })}>
                 <div className="inner">
                     <div className="header">
                         <div className="header--title">
                             <h2>{networkConfig.isEnabled ? "Explore network" : ""}</h2>
-                            <div className="network-name">
-                                <h1>{networkConfig.label}</h1>
-                            </div>
+                            <div className="network-name"><h1>{networkConfig.label}</h1></div>
                         </div>
                         <InfoBox
                             baseToken={tokenInfo.unit}
@@ -49,7 +45,11 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
                         />
                     </div>
                 </div>
-                <AnalyticStats analytics={networkAnalytics} circulatingSupply={networkConfig.circulatingSupply} tokenInfo={tokenInfo} />
+                <AnalyticStats
+                    analytics={networkAnalytics}
+                    circulatingSupply={networkConfig.circulatingSupply}
+                    tokenInfo={tokenInfo}
+                />
             </div>
             <div className={classNames("wrapper feeds-wrapper")}>
                 <div className="inner">
@@ -67,12 +67,18 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
                             <div className="card--content description">{networkConfig.description}</div>
                             {networkConfig.faucet && (
                                 <div className="card--content faucet">
-                                    <span>
-                                        Get tokens from the{" "}
-                                        <a className="data-link link" href={networkConfig.faucet} target="_blank" rel="noopener noreferrer">
+                                    <span>Get tokens from the
+                                        {" "}
+                                        <a
+                                            className="data-link link"
+                                            href={networkConfig.faucet}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
                                             Faucet
                                         </a>
                                     </span>
+
                                 </div>
                             )}
                         </div>
@@ -91,3 +97,4 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
         </div>
     );
 };
+

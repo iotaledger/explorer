@@ -15,7 +15,12 @@ class Switcher extends Component<SwitcherProps> {
             <div className="switch-wrapper">
                 <span>{this.props.label}</span>
                 <label className="switch">
-                    <input type="checkbox" className="margin-l-t" checked={this.props.checked} onChange={this.props.onToggle} />
+                    <input
+                        type="checkbox"
+                        className="margin-l-t"
+                        checked={this.props.checked}
+                        onChange={this.props.onToggle}
+                    />
                     <span className="slider" />
                 </label>
             </div>

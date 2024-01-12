@@ -17,19 +17,21 @@ export const noDataView = () => (
     </div>
 );
 
+
 const formatToMagnituge = (val: number) => format(d3FormatSpecifier(val));
-export const useSingleValueTooltip = (data: { [name: string]: number; time: number }[], label?: string) => {
-    const buildTooltip = useCallback(
-        (dataPoint: { [name: string]: number }): string =>
-            `
+export const useSingleValueTooltip = (
+    data: { [name: string]: number; time: number }[],
+    label?: string
+) => {
+    const buildTooltip = useCallback((dataPoint: { [name: string]: number }): string => (
+        `
             <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
             <p>
                 <span class="label">${label ?? "count"}: </span>
                 <span class="value">${formatToMagnituge(dataPoint.n)(dataPoint.n)}</span>
             </p>
-        `,
-        [data, label],
-    );
+        `
+    ), [data, label]);
 
     return buildTooltip;
 };
@@ -37,32 +39,28 @@ export const useMultiValueTooltip = (
     data: { [name: string]: number; time: number }[],
     subgroups: string[],
     colors: string[],
-    groupLabels?: string[],
+    groupLabels?: string[]
 ) => {
-    const buildTooltip = useCallback(
-        (dataPoint: { [key: string]: number }): string => `
+    const buildTooltip = useCallback((dataPoint: { [key: string]: number }): string => (`
         <p>${moment.unix(dataPoint.time).format("DD-MM-YYYY")}</p>
-        ${subgroups
-            .map(
-                (subgroup, idx) => `
+        ${subgroups.map((subgroup, idx) => (`
                 <p>
                     <span class="dot" style="background-color: ${colors[idx]}"></span>
                     <span class="label">${groupLabels ? groupLabels[idx] : subgroup}: </span>
                     <span class="value">${formatToMagnituge(dataPoint[subgroup])(dataPoint[subgroup])}</span>
                 </p>
-        `,
-            )
-            .join("")}`,
-        [data, subgroups, groupLabels, colors],
-    );
+        `)).join("")}`
+    ), [data, subgroups, groupLabels, colors]);
 
     return buildTooltip;
 };
 
-export const useTokenDistributionTooltip = (data: IDistributionEntry[] | null, tokenInfo: INodeInfoBaseToken) => {
-    const buildTooltip = useCallback(
-        (dataPoint: IDistributionEntry): string =>
-            `
+export const useTokenDistributionTooltip = (
+    data: IDistributionEntry[] | null,
+    tokenInfo: INodeInfoBaseToken
+) => {
+    const buildTooltip = useCallback((dataPoint: IDistributionEntry): string => (
+        `
             <p>
                 <span class="label">${"Number of addresses"}: </span>
                 <span class="value">${dataPoint.addressCount}</span>
@@ -71,39 +69,35 @@ export const useTokenDistributionTooltip = (data: IDistributionEntry[] | null, t
                 <span class="label">${`Total ${tokenInfo.unit} held`}: </span>
                 <span class="value">~${formatAmount(Number(dataPoint.totalBalance), tokenInfo, false, 0)}</span>
             </p>
-        `,
-        [data],
-    );
+        `
+    ), [data]);
 
     return buildTooltip;
 };
 
 export const useChartWrapperSize: () => [
     { wrapperWidth?: number; wrapperHeight?: number },
-    React.Dispatch<React.SetStateAction<HTMLDivElement | null>>,
+    React.Dispatch<React.SetStateAction<HTMLDivElement | null>>
 ] = () => {
     const [chartWrapper, setChartWrapper] = useState<HTMLDivElement | null>(null);
     const [wrapperSize, setWrapperSize] = useState<{ wrapperWidth?: number; wrapperHeight?: number }>({
         wrapperWidth: undefined,
-        wrapperHeight: undefined,
+        wrapperHeight: undefined
     });
 
-    const handleResize = useCallback(
-        debounce(() => {
-            setWrapperSize({
-                wrapperWidth: chartWrapper?.clientWidth ?? 0,
-                wrapperHeight: chartWrapper?.clientHeight ?? 0,
-            });
-        }),
-        [chartWrapper],
-    );
+    const handleResize = useCallback(debounce(() => {
+        setWrapperSize({
+            wrapperWidth: chartWrapper?.clientWidth ?? 0,
+            wrapperHeight: chartWrapper?.clientHeight ?? 0
+        });
+    }), [chartWrapper]);
 
     useEffect(() => {
         handleResize();
 
         let observer: ResizeObserver | null = null;
         if (chartWrapper) {
-            observer = new ResizeObserver((resizeEntry) => {
+            observer = new ResizeObserver(resizeEntry => {
                 if (
                     resizeEntry?.length > 0 &&
                     resizeEntry[0].contentRect?.width !== wrapperSize.wrapperWidth &&
@@ -153,8 +147,10 @@ export const determineGraphLeftPadding = (dataMaxY: number) => {
 
 export const d3FormatSpecifier = (dataMaxY: number) => (dataMaxY < 1 ? "~g" : "~s");
 
-export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) =>
-    tokenInfo?.decimals && tokenInfo.decimals > 0 ? Math.pow(10, tokenInfo.decimals) : null;
+export const getSubunitThreshold = (tokenInfo: INodeInfoBaseToken) => (
+    tokenInfo?.decimals && tokenInfo.decimals > 0 ?
+        Math.pow(10, tokenInfo.decimals) : null
+);
 
 const formatHidden = timeFormat("");
 const formatDay = timeFormat("%a %d");
@@ -178,20 +174,23 @@ const tickMultiFormat = (date: Date | NumberValue) => {
     return formatYear(theDate);
 };
 
-export const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = (scale) =>
+export const buildXAxis: (scale: ScaleTime<number, number>) => Axis<Date> = scale =>
     axisBottom(scale).ticks(8).tickFormat(tickMultiFormat) as Axis<Date>;
 
 export const buildYAxis = (scale: ScaleLinear<number, number>, theYMax: number) =>
     axisLeft(scale.nice()).tickFormat(format(d3FormatSpecifier(theYMax)));
 
-export const timestampToDate = (timestamp: number) => moment.unix(timestamp).hours(0).minutes(0).toDate();
+export const timestampToDate = (timestamp: number) => moment.unix(timestamp)
+    .hours(0)
+    .minutes(0)
+    .toDate();
 
 export const computeDataIncludedInSelection = (
     scale: ScaleTime<number, number>,
     data: {
         [name: string]: number;
         time: number;
-    }[],
+    }[]
 ) => {
     const selectedData: { [name: string]: number; time: number }[] = [];
 
@@ -210,5 +209,12 @@ export const computeDataIncludedInSelection = (
     return selectedData;
 };
 
-export const computeHalfLineWidth = (data: { [name: string]: number; time: number }[], x: ScaleTime<number, number>) =>
-    data.length > 1 ? ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 : 0;
+export const computeHalfLineWidth = (
+    data: { [name: string]: number; time: number }[],
+    x: ScaleTime<number, number>
+) => (
+    data.length > 1 ?
+        ((x(timestampToDate(data[1].time)) ?? 0) - (x(timestampToDate(data[0].time)) ?? 0)) / 2 :
+        0
+);
+

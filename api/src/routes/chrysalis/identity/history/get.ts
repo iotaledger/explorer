@@ -26,7 +26,7 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
     if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             error: `Network is not supported. IOTA Identity only supports
-            chrysalis phase 2 networks, such as the IOTA main network.`,
+            chrysalis phase 2 networks, such as the IOTA main network.`
         };
     }
 
@@ -44,11 +44,15 @@ export async function get(config: IConfiguration, request: IIdentityDidHistoryRe
  * @param permaNodeUrl url of permanode.
  * @returns The response.
  */
-async function resolveHistory(did: string, nodeUrl: string, permaNodeUrl?: string): Promise<IIdentityDidHistoryResponse> {
+async function resolveHistory(
+    did: string,
+    nodeUrl: string,
+    permaNodeUrl?: string
+): Promise<IIdentityDidHistoryResponse> {
     try {
         const config: identity.IClientConfig = {
             nodes: [nodeUrl],
-            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined,
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
         };
 
         const client = await identity.Client.fromConfig(config);
@@ -61,7 +65,7 @@ async function resolveHistory(did: string, nodeUrl: string, permaNodeUrl?: strin
         for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
                 document: element.toJSON(),
-                messageId: element.toJSON().integrationMessageId,
+                messageId: element.toJSON().integrationMessageId
             };
             integrationChainData.push(integrationMessage);
         }
@@ -69,7 +73,7 @@ async function resolveHistory(did: string, nodeUrl: string, permaNodeUrl?: strin
         const history = {
             integrationChainData,
             diffChainData: receiptObj.diffChainData,
-            diffChainSpam: receiptObj.diffChainSpam,
+            diffChainSpam: receiptObj.diffChainSpam
         };
 
         return history;
@@ -83,7 +87,10 @@ async function resolveHistory(did: string, nodeUrl: string, permaNodeUrl?: strin
  * @param nodeUrl url of the network node.
  * @returns The response.
  */
-async function resolveLegacyHistory(did: string, nodeUrl: string): Promise<IIdentityDidHistoryResponse> {
+async function resolveLegacyHistory(
+    did: string,
+    nodeUrl: string
+): Promise<IIdentityDidHistoryResponse> {
     try {
         const config = new identityLegacy.Config();
         config.setNode(nodeUrl);
@@ -98,7 +105,7 @@ async function resolveLegacyHistory(did: string, nodeUrl: string): Promise<IIden
         for (const element of receipt.integrationChainData()) {
             const integrationMessage = {
                 document: IdentityHelper.convertLegacyDocument(element.toJSON() as Record<string, unknown>),
-                messageId: element.messageId,
+                messageId: element.messageId
             };
             integrationChainData.push(integrationMessage);
         }
@@ -106,7 +113,7 @@ async function resolveLegacyHistory(did: string, nodeUrl: string): Promise<IIden
         const history = {
             integrationChainData,
             diffChainData: receiptObj.diffChainData,
-            diffChainSpam: receiptObj.diffChainSpam,
+            diffChainSpam: receiptObj.diffChainSpam
         };
 
         return history;

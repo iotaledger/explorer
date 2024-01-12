@@ -30,7 +30,7 @@ const VotingSection: React.FC<VotingSectionProps> = ({ eventDetails }) => {
     }, [eventDetails]);
 
     useEffect(() => {
-        const filteredResults = eventDetails.filter((event) => event.status?.status.startsWith(currentTab ?? ""));
+        const filteredResults = eventDetails.filter(event => event.status?.status.startsWith(currentTab ?? ""));
         setFilteredEventDetails(filteredResults);
         setPageNumber(1);
     }, [currentTab]);
@@ -51,7 +51,7 @@ const VotingSection: React.FC<VotingSectionProps> = ({ eventDetails }) => {
                         <button
                             type="button"
                             key={idx}
-                            className={classNames("tab", { active: tab === currentTab })}
+                            className={classNames("tab", { "active": tab === currentTab })}
                             onClick={() => setCurrentTab(tab)}
                         >
                             {tab}
@@ -59,15 +59,22 @@ const VotingSection: React.FC<VotingSectionProps> = ({ eventDetails }) => {
                     ))}
                 </div>
             </div>
-            <div className="section--data">{currentPage?.map((event, idx) => <VotingEvent key={idx} event={event} />)}</div>
+            <div className="section--data">
+                {currentPage?.map((event, idx) => (
+                    <VotingEvent
+                        key={idx}
+                        event={event}
+                    />
+                ))}
+            </div>
             <Pagination
                 currentPage={pageNumber}
                 totalCount={filteredEventDetails.length}
                 pageSize={PAGE_SIZE}
                 siblingsCount={1}
-                onPageChange={(newPage) => setPageNumber(newPage)}
+                onPageChange={newPage => setPageNumber(newPage)}
             />
-        </div>
+        </div >
     );
 };
 

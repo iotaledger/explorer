@@ -16,7 +16,10 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IIdentityDidResolveRequest): Promise<IIdentityDidResolveResponse> {
+export async function get(
+    config: IConfiguration,
+    request: IIdentityDidResolveRequest
+): Promise<IIdentityDidResolveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 
@@ -27,7 +30,7 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
     if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             // eslint-disable-next-line max-len
-            error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. ",
+            error: "Network is not supported. IOTA Identity only supports chrysalis phase 2 networks, such as the IOTA main network. "
         };
     }
 
@@ -56,11 +59,15 @@ export async function get(config: IConfiguration, request: IIdentityDidResolveRe
  * @param permaNodeUrl url of permanode.
  * @returns The response.
  */
-async function resolveIdentity(did: string, nodeUrl: string, permaNodeUrl?: string): Promise<IIdentityDidResolveResponse> {
+async function resolveIdentity(
+    did: string,
+    nodeUrl: string,
+    permaNodeUrl?: string
+): Promise<IIdentityDidResolveResponse> {
     try {
         const config: identity.IClientConfig = {
             nodes: [nodeUrl],
-            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined,
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
         };
 
         const client = await identity.Client.fromConfig(config);
@@ -69,7 +76,7 @@ async function resolveIdentity(did: string, nodeUrl: string, permaNodeUrl?: stri
         return {
             document: res.toJSON(),
             version: "latest",
-            messageId: res.toJSON().integrationMessageId,
+            messageId: res.toJSON().integrationMessageId
         };
     } catch (e) {
         return { error: improveErrorMessage(e) };
@@ -82,7 +89,11 @@ async function resolveIdentity(did: string, nodeUrl: string, permaNodeUrl?: stri
  * @param permaNodeUrl url of permanode.
  * @returns The response.
  */
-async function resolveLegacyIdentity(did: string, nodeUrl: string, permaNodeUrl?: string): Promise<IIdentityDidResolveResponse> {
+ async function resolveLegacyIdentity(
+    did: string,
+    nodeUrl: string,
+    permaNodeUrl?: string
+): Promise<IIdentityDidResolveResponse> {
     try {
         const config = new identityLegacy.Config();
         config.setNode(nodeUrl);
@@ -96,7 +107,7 @@ async function resolveLegacyIdentity(did: string, nodeUrl: string, permaNodeUrl?
         return {
             document: IdentityHelper.convertLegacyDocument(document),
             messageId: res.messageId,
-            version: "legacy",
+            version: "legacy"
         };
     } catch (e) {
         return { error: improveErrorMessage(e) };

@@ -18,10 +18,7 @@
             font-weight: 700;
             letter-spacing: 0.5px;
             line-height: 24px;
-            font-feature-settings:
-                "pnum" on,
-                "lnum" on,
-                "ss01" on;
+            font-feature-settings: 'pnum' on, 'lnum' on, 'ss01' on;
 
             @include phone-down {
                 padding-left: 4px;
@@ -53,8 +50,8 @@
         }
     }
     .charts-css.legend li:first-child::before {
-        background-color: var(--modal-color, transparent);
-        border-color: var(--border-color, var(--border-color, #000));
+        background-color: var(--modal-color,transparent);
+        border-color: var(--border-color,var(--border-color,#000));
     }
 
     .charts-css.legend-circle li::before {
@@ -67,9 +64,10 @@
         content: "";
         display: inline-block;
         vertical-align: middle;
-        -webkit-margin-end: 0.5rem;
-        margin-inline-end: 0.5rem;
+        -webkit-margin-end: .5rem;
+        margin-inline-end: .5rem;
         border-width: 2px;
         border-style: solid;
     }
 }
+

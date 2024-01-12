@@ -2,10 +2,10 @@
     "title": "Assets in wallet",
     "description": "<p>Besides the base tokens, your address can also own native tokens. You can think of them as of a custom currency.</p>",
     "links": [
-        {
-            "label": "Read more",
-            "href": "https://wiki.iota.org/shimmer/introduction/explanations/what_is_stardust/tokenization",
-            "isExternal": true
-        }
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/shimmer/introduction/explanations/what_is_stardust/tokenization",
+        "isExternal": true
+      }
     ]
 }

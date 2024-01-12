@@ -13,7 +13,10 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: ITransactionDetailsRequest): Promise<ITransactionDetailsResponse> {
+export async function get(
+    config: IConfiguration,
+    request: ITransactionDetailsRequest
+): Promise<ITransactionDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");

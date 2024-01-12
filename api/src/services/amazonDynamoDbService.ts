@@ -48,38 +48,35 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
                 AttributeDefinitions: [
                     {
                         AttributeName: this._idName,
-                        AttributeType: "S",
-                    },
+                        AttributeType: "S"
+                    }
                 ],
                 KeySchema: [
                     {
                         AttributeName: this._idName,
-                        KeyType: "HASH",
-                    },
+                        KeyType: "HASH"
+                    }
                 ],
                 ProvisionedThroughput: {
                     ReadCapacityUnits: 1,
-                    WriteCapacityUnits: 1,
+                    WriteCapacityUnits: 1
                 },
-                TableName: this._fullTableName,
+                TableName: this._fullTableName
             };
 
             await dbConnection.createTable(tableParams).promise();
 
             log += `Waiting for '${this._fullTableName}'\n`;
 
-            await dbConnection
-                .waitFor("tableExists", {
-                    TableName: this._fullTableName,
-                })
-                .promise();
+            await dbConnection.waitFor("tableExists", {
+                TableName: this._fullTableName
+            }).promise();
 
             log += `Table '${this._fullTableName}' Created Successfully\n`;
         } catch (err) {
-            log +=
-                err.code === "ResourceInUseException"
-                    ? `Table '${this._fullTableName}' Already Exists\n`
-                    : `Table '${this._fullTableName}' Creation Failed\n${err.toString()}\n`;
+            log += err.code === "ResourceInUseException"
+                ? `Table '${this._fullTableName}' Already Exists\n`
+                : `Table '${this._fullTableName}' Creation Failed\n${err.toString()}\n`;
         }
 
         return log;
@@ -97,15 +94,14 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
             const key = {};
             key[this._idName] = id;
 
-            const response = await docClient
-                .get({
-                    TableName: this._fullTableName,
-                    Key: key,
-                })
-                .promise();
+            const response = await docClient.get({
+                TableName: this._fullTableName,
+                Key: key
+            }).promise();
 
             return response.Item as T;
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -115,12 +111,10 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
     public async set(item: T): Promise<void> {
         const docClient = this.createDocClient();
 
-        await docClient
-            .put({
-                TableName: this._fullTableName,
-                Item: item,
-            })
-            .promise();
+        await docClient.put({
+            TableName: this._fullTableName,
+            Item: item
+        }).promise();
     }
 
     /**
@@ -133,12 +127,10 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
         const key = {};
         key[this._idName] = itemKey;
 
-        await docClient
-            .delete({
-                TableName: this._fullTableName,
-                Key: key,
-            })
-            .promise();
+        await docClient.delete({
+            TableName: this._fullTableName,
+            Key: key
+        }).promise();
     }
 
     /**
@@ -153,19 +145,18 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
             let allItems: T[] = [];
 
             do {
-                const response = await docClient
-                    .scan({
-                        TableName: this._fullTableName,
-                        ExclusiveStartKey: lastKey,
-                    })
-                    .promise();
+                const response = await docClient.scan({
+                    TableName: this._fullTableName,
+                    ExclusiveStartKey: lastKey
+                }).promise();
 
                 if (allItems) {
                     allItems = allItems.concat(response.Items as T[]);
                 }
 
                 lastKey = response.LastEvaluatedKey;
-            } while (lastKey);
+            }
+            while (lastKey);
 
             return allItems;
         } catch {
@@ -183,18 +174,19 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
         for (let i = 0; i < Math.ceil(items.length / 25); i++) {
             const params: BatchWriteItemRequestMap = {};
 
-            params[this._fullTableName] = items.slice(i * 25, (i + 1) * 25).map((item) => ({
-                PutRequest: {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    Item: item as any,
-                },
-            }));
+            params[this._fullTableName] = items
+                .slice(i * 25, (i + 1) * 25)
+                .map(item => (
+                    {
+                        PutRequest: {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            Item: item as any
+                        }
+                    }));
 
-            await docClient
-                .batchWrite({
-                    RequestItems: params,
-                })
-                .promise();
+            await docClient.batchWrite({
+                RequestItems: params
+            }).promise();
         }
     }
 
@@ -205,7 +197,7 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
         const awsConfig = new aws.Config({
             accessKeyId: this._config.accessKeyId,
             secretAccessKey: this._config.secretAccessKey,
-            region: this._config.region,
+            region: this._config.region
         });
 
         aws.config.update(awsConfig);
@@ -230,7 +222,7 @@ export class AmazonDynamoDbService<T> implements IStorageService<T> {
 
         return new aws.DynamoDB.DocumentClient({
             apiVersion: "2012-10-08",
-            convertEmptyValues: true,
+            convertEmptyValues: true
         });
     }
 }

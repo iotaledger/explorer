@@ -9,7 +9,10 @@ export class HexHelper {
     /**
      * Const defining the maximum value for a 256 bit int.
      */
-    public static readonly BIG_INT_MAX_256_BIT: BigInteger = bigInt("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
+    public static readonly BIG_INT_MAX_256_BIT: BigInteger = bigInt(
+        "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        16
+    );
 
     /**
      * Convert the big int 256 bit to hex string.
@@ -65,3 +68,4 @@ export class HexHelper {
         return hex.startsWith("0x");
     }
 }
+

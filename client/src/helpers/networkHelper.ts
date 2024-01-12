@@ -1,13 +1,6 @@
 import {
-    ALPHANET,
-    CHRYSALIS_MAINNET,
-    CUSTOM,
-    DEVNET,
-    LEGACY_MAINNET,
-    MAINNET,
-    NetworkType,
-    SHIMMER,
-    TESTNET,
+    ALPHANET, CHRYSALIS_MAINNET, CUSTOM, DEVNET, LEGACY_MAINNET,
+    MAINNET, NetworkType, SHIMMER, TESTNET
 } from "~models/config/networkType";
 import { SHIMMER_UI, Theme } from "~models/config/uiTheme";
 
@@ -60,3 +53,4 @@ export const isMarketedNetwork = (networkType: NetworkType | string | undefined)
 
     return true;
 };
+

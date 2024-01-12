@@ -29,8 +29,8 @@ class AsyncComponent<P, S = unknown> extends Component<P, S> {
      * @param callback The callback for the setState.
      */
     public setState<K extends keyof S>(
-        state: ((prevState: Readonly<S>, props: Readonly<P>) => Pick<S, K> | S | null) | (Pick<S, K> | S | null),
-        callback?: () => void,
+        state: ((prevState: Readonly<S>, props: Readonly<P>) => (Pick<S, K> | S | null)) | (Pick<S, K> | S | null),
+        callback?: () => void
     ): void {
         if (this._isMounted) {
             super.setState(state, callback);

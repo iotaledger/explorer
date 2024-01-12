@@ -19,7 +19,7 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
         this.state = {
             currency: "USD",
             valueCurrency: "",
-            priceCurrency: "",
+            priceCurrency: ""
         };
     }
 
@@ -42,24 +42,34 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
 
         return (
             <div className="currency-button">
-                <div className="currency-button--label">Conversion</div>
-                <div className="currency-button--value">{this.state.valueCurrency}</div>
+                <div className="currency-button--label">
+                    Conversion
+                </div>
+                <div className="currency-button--value">
+                    {this.state.valueCurrency}
+                </div>
                 <div className="currency-button--selector">
                     <div className="rate--label">
                         Rate
-                        <Link to={this.props.marketsRoute} className="rate--value">
+                        <Link
+                            to={this.props.marketsRoute}
+                            className="rate--value"
+                        >
                             {this.state.priceCurrency}
                         </Link>
                     </div>
                     <div className="select-wrapper select-wrapper--small">
-                        <select value={this.state.currency} onChange={(e) => this.setCurrency(e.target.value)}>
-                            {supportedFiatCurrencies.map((cur) => (
-                                <option value={cur} key={cur}>
-                                    {cur}
-                                </option>
+                        <select
+                            value={this.state.currency}
+                            onChange={e => this.setCurrency(e.target.value)}
+                        >
+                            {supportedFiatCurrencies.map(cur => (
+                                <option value={cur} key={cur}>{cur}</option>
                             ))}
                         </select>
-                        <span className="material-icons">expand_more</span>
+                        <span className="material-icons">
+                            expand_more
+                        </span>
                     </div>
                 </div>
             </div>
@@ -72,10 +82,20 @@ class CurrencyButton extends Currency<CurrencyButtonProps, CurrencyButtonState> 
     protected updateCurrency(): void {
         if (this._currencyData) {
             this.setState({
-                valueCurrency: this._currencyService.convertIota(this.props.value, this._currencyData, true, 2),
-                priceCurrency: this._currencyData.coinStats?.iota?.price
-                    ? this._currencyService.convertFiatBase(this._currencyData.coinStats.iota.price, this._currencyData, true, 3, 8)
-                    : "--",
+                valueCurrency:
+                    this._currencyService.convertIota(
+                        this.props.value,
+                        this._currencyData,
+                        true,
+                        2),
+                priceCurrency: this._currencyData.coinStats?.iota?.price ?
+                    this._currencyService.convertFiatBase(
+                        this._currencyData.coinStats.iota.price,
+                        this._currencyData,
+                        true,
+                        3,
+                        8)
+                    : "--"
             });
         }
     }

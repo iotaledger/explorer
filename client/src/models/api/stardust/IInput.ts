@@ -31,3 +31,4 @@ export interface IInput {
      */
     isGenesis: boolean;
 }
+

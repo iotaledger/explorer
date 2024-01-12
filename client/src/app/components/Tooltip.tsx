@@ -45,7 +45,9 @@ const Tooltip: React.FC<TooltipProps> = ({ children, tooltipContent, childrenCla
 };
 
 Tooltip.defaultProps = {
-    childrenClass: undefined,
+    childrenClass: undefined
 };
 
 export default Tooltip;
+
+

@@ -39,7 +39,9 @@ const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenSchem
                 {tokenMetadata && isWhitelisted && (
                     <div className="token-metadata">
                         <div className="section--data">
-                            <div className="label">Name</div>
+                            <div className="label">
+                                Name
+                            </div>
                             <div className="value code row middle">
                                 {tokenMetadata.logoUrl && (
                                     <span className="margin-r-t">
@@ -50,24 +52,39 @@ const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenSchem
                                         />
                                     </span>
                                 )}
-                                <span className="margin-r-t">{tokenMetadata.name}</span>
-                                <span className="token-metadata__symbol margin-r-t">{tokenMetadata.symbol}</span>
+                                <span className="margin-r-t">
+                                    {tokenMetadata.name}
+                                </span>
+                                <span className="token-metadata__symbol margin-r-t">
+                                    {tokenMetadata.symbol}
+                                </span>
                             </div>
                         </div>
                         {tokenMetadata.description && (
                             <div className="section--data">
-                                <div className="label">Description</div>
+                                <div className="label">
+                                    Description
+                                </div>
                                 <div className="value code row middle">
-                                    <span className="margin-r-t">{tokenMetadata.description}</span>
+                                    <span className="margin-r-t">
+                                        {tokenMetadata.description}
+                                    </span>
                                 </div>
                             </div>
                         )}
                         {tokenMetadata.logoUrl && (
                             <div className="section--data">
-                                <div className="label">Resources</div>
+                                <div className="label">
+                                    Resources
+                                </div>
                                 <div className="value code row middle">
                                     <span className="margin-r-t">
-                                        <a href={tokenMetadata.logoUrl} target="_blank" rel="noreferrer" className="rate--value">
+                                        <a
+                                            href={tokenMetadata.logoUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="rate--value"
+                                        >
                                             {tokenMetadata.logoUrl}
                                         </a>
                                     </span>
@@ -77,27 +94,43 @@ const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenSchem
                     </div>
                 )}
                 <div className="section--data">
-                    <div className="label">Token scheme</div>
+                    <div className="label">
+                        Token scheme
+                    </div>
                     <div className="value code row middle">
-                        <span className="margin-r-t">{tokenScheme.type}</span>
+                        <span className="margin-r-t">
+                            {tokenScheme.type}
+                        </span>
                     </div>
                 </div>
                 <div className="section--data">
-                    <div className="label">Maximum supply</div>
+                    <div className="label">
+                        Maximum supply
+                    </div>
                     <div className="value code row middle">
-                        <span className="margin-r-t">{maximumSupply}</span>
+                        <span className="margin-r-t">
+                            {maximumSupply}
+                        </span>
                     </div>
                 </div>
                 <div className="section--data">
-                    <div className="label">Minted tokens</div>
+                    <div className="label">
+                        Minted tokens
+                    </div>
                     <div className="value code row middle">
-                        <span className="margin-r-t">{mintedTokens}</span>
+                        <span className="margin-r-t">
+                            {mintedTokens}
+                        </span>
                     </div>
                 </div>
                 <div className="section--data">
-                    <div className="label">Melted tokens</div>
+                    <div className="label">
+                        Melted tokens
+                    </div>
                     <div className="value code row middle">
-                        <span className="margin-r-t">{meltedTokens}</span>
+                        <span className="margin-r-t">
+                            {meltedTokens}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -105,7 +138,7 @@ const TokenInfoSection: React.FC<TokenInfoSectionProps> = ({ tokenId, tokenSchem
     );
 };
 TokenInfoSection.defaultProps = {
-    tokenMetadata: undefined,
+    tokenMetadata: undefined
 };
 
 export default TokenInfoSection;

@@ -1,37 +1,37 @@
-@import "../../scss/fonts";
-@import "../../scss/mixins";
-@import "../../scss/variables";
+@import '../../scss/fonts';
+@import '../../scss/mixins';
+@import '../../scss/variables';
 
 .spinner {
-    position: relative;
-    top: 20px;
-    left: 20px;
-    width: 40px;
-    height: 40px;
-    animation: pulse 1s ease-in-out infinite;
-    border-radius: 100%;
-    background-color: #c3d0e4;
+  position: relative;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  animation: pulse 1s ease-in-out infinite;
+  border-radius: 100%;
+  background-color: #c3d0e4;
 
-    &.spinner--compact {
-        top: 10px;
-        left: 10px;
-        width: 20px;
-        height: 20px;
-    }
+  &.spinner--compact {
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 @keyframes pulse {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 1;
-    }
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
 
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0;
-    }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
 }
 
 .spinner + * {
-    margin-left: 20px;
+  margin-left: 20px;
 }

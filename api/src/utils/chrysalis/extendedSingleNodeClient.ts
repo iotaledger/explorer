@@ -10,10 +10,9 @@ export class ExtendedSingleNodeClient extends SingleNodeClient {
             // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
             const { network, address, ...params } = request;
 
-            const res = await this.fetchJson<never, ITransactionHistoryResponse>(
-                "get",
-                `addresses/ed25519/${address}/tx-history${params ? `${FetchHelper.urlParams(params)}` : ""}`,
-            );
+            const res = await
+                this.fetchJson<never, ITransactionHistoryResponse>("get",
+                    `addresses/ed25519/${address}/tx-history${params ? `${FetchHelper.urlParams(params)}` : ""}`);
             return res;
         } catch (e) {
             return { error: e };

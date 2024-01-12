@@ -2,10 +2,10 @@
     "title": "Indexation Payload",
     "description": "<p>The concept of the payload allows for the addition of an index to the encapsulating message, as well as some arbitrary data. Nodes expose an application programming interface that enables the querying of messages by the index. Index payloads may also be contained within a transaction payload.</p>",
     "links": [
-        {
-            "label": "Read more",
-            "href": "https://wiki.iota.org/learn/about-iota/messages#indexation-payload",
-            "isExternal": true
-        }
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/learn/about-iota/messages#indexation-payload",
+        "isExternal": true
+      }
     ]
 }

@@ -18,7 +18,7 @@ export const BLOCK_DAILY_QUERY = {
         FROM "stardust_block_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const TRANSACTION_DAILY_QUERY = {
@@ -37,7 +37,7 @@ export const TRANSACTION_DAILY_QUERY = {
         FROM "stardust_block_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const OUTPUTS_DAILY_QUERY = {
@@ -60,7 +60,7 @@ export const OUTPUTS_DAILY_QUERY = {
         FROM "stardust_ledger_outputs"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
@@ -83,7 +83,7 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
         FROM "stardust_ledger_outputs"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
@@ -100,7 +100,7 @@ export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
         FROM "stardust_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
@@ -117,7 +117,7 @@ export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
         FROM "stardust_daily_active_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const TOKENS_TRANSFERRED_DAILY_QUERY = {
@@ -134,7 +134,7 @@ export const TOKENS_TRANSFERRED_DAILY_QUERY = {
         FROM "stardust_base_token_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const ALIAS_ACTIVITY_DAILY_QUERY = {
@@ -157,7 +157,7 @@ export const ALIAS_ACTIVITY_DAILY_QUERY = {
         FROM "stardust_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
@@ -178,7 +178,7 @@ export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
         FROM "stardust_unlock_conditions"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const NFT_ACTIVITY_DAILY_QUERY = {
@@ -199,7 +199,7 @@ export const NFT_ACTIVITY_DAILY_QUERY = {
         FROM "stardust_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
@@ -220,7 +220,7 @@ export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
         FROM "stardust_unlock_conditions"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const UNCLAIMED_TOKENS_DAILY_QUERY = {
@@ -237,7 +237,7 @@ export const UNCLAIMED_TOKENS_DAILY_QUERY = {
         FROM "stardust_unclaimed_rewards"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY = {
@@ -254,7 +254,7 @@ export const UNCLAIMED_GENESIS_OUTPUTS_DAILY_QUERY = {
         FROM "stardust_unclaimed_rewards"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const LEDGER_SIZE_DAILY_QUERY = {
@@ -273,7 +273,7 @@ export const LEDGER_SIZE_DAILY_QUERY = {
         FROM "stardust_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 export const STORAGE_DEPOSIT_DAILY_QUERY = {
@@ -290,7 +290,7 @@ export const STORAGE_DEPOSIT_DAILY_QUERY = {
         FROM "stardust_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
-    `,
+    `
 };
 
 /* ANALYTIC QUERIES */
@@ -346,3 +346,4 @@ export const MILESTONE_STATS_QUERY_BY_INDEX = `
     FROM "stardust_block_activity"
     WHERE "milestone_index" = $milestoneIndex
 `;
+

@@ -29,7 +29,9 @@ import { StardustStatsService } from "./services/stardust/stats/stardustStatsSer
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
-    networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS || networkConfig.protocolVersion === STARDUST;
+    networkConfig.protocolVersion === LEGACY ||
+    networkConfig.protocolVersion === CHRYSALIS ||
+    networkConfig.protocolVersion === STARDUST;
 
 /**
  * Initialise all the services for the workers.
@@ -42,7 +44,7 @@ export async function initServices(config: IConfiguration) {
     ServiceFactory.register("network", () => networkService);
     await networkService.buildCache();
     const networks = networkService.networks();
-    const enabledNetworks = networks.filter((v) => v.isEnabled);
+    const enabledNetworks = networks.filter(v => v.isEnabled);
 
     for (const networkConfig of enabledNetworks) {
         if (networkConfig.feedEndpoint) {
@@ -74,7 +76,9 @@ export async function initServices(config: IConfiguration) {
             }
 
             if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
-                const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(`items-${networkConfig.network}`);
+                const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
+                    `items-${networkConfig.network}`
+                );
                 if (itemsService) {
                     itemsService.init();
                 }
@@ -107,16 +111,24 @@ function initLegacyServices(networkConfig: INetwork): void {
     if (networkConfig.feedEndpoint) {
         logger.verbose(`Initializing Legacy services for ${networkConfig.network}`);
         ServiceFactory.register(
-            `zmq-${networkConfig.network}`,
-            () => new ZmqService(networkConfig.feedEndpoint, ["trytes", "sn", networkConfig.coordinatorAddress]),
+            `zmq-${networkConfig.network}`, () => new ZmqService(
+                networkConfig.feedEndpoint, [
+                "trytes",
+                "sn",
+                networkConfig.coordinatorAddress
+            ])
         );
         ServiceFactory.register(
-            `feed-${networkConfig.network}`,
-            () => new LegacyFeedService(networkConfig.network, networkConfig.coordinatorAddress),
+            `feed-${networkConfig.network}`, () => new LegacyFeedService(
+                networkConfig.network, networkConfig.coordinatorAddress)
         );
-        ServiceFactory.register(`items-${networkConfig.network}`, () => new LegacyItemsService(networkConfig.network));
+        ServiceFactory.register(
+            `items-${networkConfig.network}`,
+            () => new LegacyItemsService(networkConfig.network));
 
-        ServiceFactory.register(`stats-${networkConfig.network}`, () => new LegacyStatsService(networkConfig));
+        ServiceFactory.register(
+            `stats-${networkConfig.network}`,
+            () => new LegacyStatsService(networkConfig));
     }
 }
 
@@ -126,13 +138,22 @@ function initLegacyServices(networkConfig: INetwork): void {
  */
 function initChrysalisServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Chrysalis services for ${networkConfig.network}`);
-    ServiceFactory.register(`mqtt-${networkConfig.network}`, () => new ChrysalisMqttClient(networkConfig.feedEndpoint.split(";")));
     ServiceFactory.register(
-        `feed-${networkConfig.network}`,
-        () => new ChrysalisFeedService(networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password),
+        `mqtt-${networkConfig.network}`, () => new ChrysalisMqttClient(
+            networkConfig.feedEndpoint.split(";"))
     );
-    ServiceFactory.register(`items-${networkConfig.network}`, () => new ChrysalisItemsService(networkConfig.network));
-    ServiceFactory.register(`stats-${networkConfig.network}`, () => new ChrysalisStatsService(networkConfig));
+    ServiceFactory.register(
+        `feed-${networkConfig.network}`, () => new ChrysalisFeedService(
+            networkConfig.network, networkConfig.provider, networkConfig.user, networkConfig.password)
+    );
+    ServiceFactory.register(
+        `items-${networkConfig.network}`,
+        () => new ChrysalisItemsService(networkConfig.network)
+    );
+    ServiceFactory.register(
+        `stats-${networkConfig.network}`,
+        () => new ChrysalisStatsService(networkConfig)
+    );
 }
 
 /**
@@ -143,44 +164,62 @@ function initStardustServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
     const stardustClient = new StardustClient({
         nodes: [networkConfig.provider],
-        brokerOptions: { useWs: true },
+        brokerOptions: { useWs: true }
     });
-    ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
+    ServiceFactory.register(
+        `client-${networkConfig.network}`,
+        () => stardustClient
+    );
 
     if (networkConfig.permaNodeEndpoint) {
         // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
         // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
         const stardustPermanodeClient = new StardustClient({
             nodes: [networkConfig.permaNodeEndpoint],
-            ignoreNodeHealth: true,
+            ignoreNodeHealth: true
         });
-        ServiceFactory.register(`permanode-client-${networkConfig.network}`, () => stardustPermanodeClient);
+        ServiceFactory.register(
+            `permanode-client-${networkConfig.network}`,
+            () => stardustPermanodeClient
+        );
 
         const chronicleService = new ChronicleService(networkConfig);
-        ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
+        ServiceFactory.register(
+            `chronicle-${networkConfig.network}`,
+            () => chronicleService
+        );
     }
 
     // eslint-disable-next-line no-void
-    void NodeInfoService.build(networkConfig).then((nodeInfoService) => {
-        ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
+    void NodeInfoService.build(networkConfig).then(nodeInfoService => {
+        ServiceFactory.register(
+            `node-info-${networkConfig.network}`,
+            () => nodeInfoService
+        );
 
         const stardustFeed = new StardustFeed(networkConfig.network);
-        ServiceFactory.register(`feed-${networkConfig.network}`, () => stardustFeed);
+        ServiceFactory.register(
+            `feed-${networkConfig.network}`,
+            () => stardustFeed
+        );
     });
 
     const stardustStatsService = new StardustStatsService(networkConfig);
-    ServiceFactory.register(`stats-${networkConfig.network}`, () => stardustStatsService);
+    ServiceFactory.register(
+        `stats-${networkConfig.network}`,
+        () => stardustStatsService
+    );
 
     const influxDBService = new InfluxDBService(networkConfig);
-    influxDBService
-        .buildClient()
-        .then((hasClient) => {
-            logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
-            if (hasClient) {
-                ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
-            }
-        })
-        .catch((e) => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
+    influxDBService.buildClient().then(hasClient => {
+        logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
+        if (hasClient) {
+            ServiceFactory.register(
+                `influxdb-${networkConfig.network}`,
+                () => influxDBService
+            );
+        }
+    }).catch(e => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
 }
 
 /**
@@ -190,22 +229,18 @@ function initStardustServices(networkConfig: INetwork): void {
 async function registerStorageServices(config: IConfiguration): Promise<void> {
     if (config.rootStorageFolder) {
         logger.info("Registering 'local' persistence services...");
-        ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(config.rootStorageFolder, "network", "network"));
+        ServiceFactory.register("network-storage", () => new LocalStorageService<INetwork>(
+            config.rootStorageFolder, "network", "network"));
 
-        ServiceFactory.register(
-            "currency-storage",
-            () => new LocalStorageService<ICurrencyState>(config.rootStorageFolder, "currency", "id"),
-        );
+        ServiceFactory.register("currency-storage", () => new LocalStorageService<ICurrencyState>(
+            config.rootStorageFolder, "currency", "id"));
     } else if (config.dynamoDbConnection) {
         logger.info("Registering 'dynamoDB' persistence services...");
-        ServiceFactory.register(
-            "network-storage",
-            () => new AmazonDynamoDbService<INetwork>(config.dynamoDbConnection, "network", "network"),
-        );
+        ServiceFactory.register("network-storage", () => new AmazonDynamoDbService<INetwork>(
+            config.dynamoDbConnection, "network", "network"));
 
-        ServiceFactory.register(
-            "currency-storage",
-            () => new AmazonDynamoDbService<ICurrencyState>(config.dynamoDbConnection, "currency", "id"),
-        );
+        ServiceFactory.register("currency-storage", () => new AmazonDynamoDbService<ICurrencyState>(
+            config.dynamoDbConnection, "currency", "id"));
     }
 }
+

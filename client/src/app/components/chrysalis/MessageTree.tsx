@@ -11,7 +11,7 @@ const DESKTOP_CONFIG: TreeConfig = {
     verticalSpace: 20,
     horizontalSpace: 80,
     itemHeight: 40,
-    itemWidth: 300,
+    itemWidth: 300
 };
 
 /**
@@ -21,7 +21,7 @@ const MOBILE_CONFIG: TreeConfig = {
     verticalSpace: 18,
     horizontalSpace: 16,
     itemHeight: 24,
-    itemWidth: 98,
+    itemWidth: 98
 };
 
 /**
@@ -41,7 +41,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
             items: [],
             edges: [],
             currentMessage: this.props.messageId,
-            isBusy: false,
+            isBusy: false
         };
     }
 
@@ -52,12 +52,13 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         window.scrollTo({
             left: 0,
             top: 0,
-            behavior: "smooth",
+            behavior: "smooth"
         });
         window.addEventListener("resize", this.resize.bind(this));
         this.resize();
         this.loadItemsUI();
     }
+
 
     public resize() {
         const isMobile = window.innerWidth < 768;
@@ -67,15 +68,13 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
             this.setState(
                 {
                     config,
-                    width: config.itemWidth * 3 + config.horizontalSpace * 2,
-                    height:
-                        Math.max(this.props.parentsIds.length, this.props.childrenIds.length) * (config.itemHeight + config.verticalSpace) -
-                        config.verticalSpace,
-                },
-                () => {
+                    width: (config.itemWidth * 3) + (config.horizontalSpace * 2),
+                    height: (Math.max(this.props.parentsIds.length, this.props.childrenIds.length) *
+                        (config.itemHeight + config.verticalSpace)) -
+                        config.verticalSpace
+                }, () => {
                     this.loadItemsUI();
-                },
-            );
+                });
         }
     }
 
@@ -85,7 +84,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         window.scrollTo({
             left: 0,
             top: top - OFFSET,
-            behavior: "smooth",
+            behavior: "smooth"
         });
     }
 
@@ -93,16 +92,13 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
         if (prevProps !== this.props) {
             this.setState(
                 {
-                    height:
-                        Math.max(this.props.parentsIds.length, this.props.childrenIds.length) *
-                            (this.state.config.itemHeight + this.state.config.verticalSpace) -
-                        this.state.config.verticalSpace,
-                },
-                () => {
+                    height: (Math.max(this.props.parentsIds.length, this.props.childrenIds.length) *
+                        (this.state.config.itemHeight + this.state.config.verticalSpace)) -
+                        this.state.config.verticalSpace
+                }, () => {
                     this.loadItemsUI();
                     this.setState({ isBusy: false });
-                },
-            );
+                });
         }
     }
 
@@ -121,16 +117,17 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                 <div
                     className="message-tree-title row margin-b-m"
                     style={{
-                        width: `${this.state.width}px`,
+                        width: `${this.state.width}px`
                     }}
                 >
+
                     {/* Headings */}
                     <div className="parents-title">Parents</div>
-                    {this.state.items?.some((item) => item.type === "child") && (
+                    {this.state.items?.some(item => item.type === "child") && (
                         <div
                             className="children-title"
                             style={{
-                                right: `${this.state.config.itemWidth}px`,
+                                right: `${this.state.config.itemWidth}px`
                             }}
                         >
                             Children
@@ -142,11 +139,12 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                     className={classNames("tree", { busy: this.state.isBusy })}
                     style={{
                         height: `${this.state.height}px`,
-                        width: `${this.state.width}px`,
+                        width: `${this.state.width}px`
                     }}
                 >
+
                     {/* Parents and Children */}
-                    {this.state.items?.map((item) => (
+                    {this.state.items?.map(item => (
                         <div
                             style={{
                                 height: `${this.state.config.itemHeight}px`,
@@ -155,7 +153,7 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                                 right: item.type === "child" ? "0" : "none",
                                 top: `${item.top}px`,
                                 wordBreak: this.state.config === DESKTOP_CONFIG ? "break-word" : "normal",
-                                textAlign: "center",
+                                textAlign: "center"
                             }}
                             className="parent"
                             key={item.id}
@@ -166,13 +164,11 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                                 });
                             }}
                         >
-                            {this.state.config === DESKTOP_CONFIG ? (
-                                item.id
-                            ) : (
-                                <span>
-                                    {item.id.slice(0, 4)}...{item.id.slice(-4)}
-                                </span>
-                            )}
+                            {
+                                this.state.config === DESKTOP_CONFIG
+                                    ? item.id
+                                    : <span>{item.id.slice(0, 4)}...{item.id.slice(-4)}</span>
+                            }
                         </div>
                     ))}
 
@@ -183,62 +179,72 @@ class MessageTree extends Component<MessageTreeProps, MessageTreeState> {
                             height: `${this.state.config.itemHeight}px`,
                             width: `${this.state.config.itemWidth}px`,
                             wordBreak: this.state.config === DESKTOP_CONFIG ? "break-word" : "normal",
-                            textAlign: "center",
+                            textAlign: "center"
                         }}
                     >
-                        {this.state.config === DESKTOP_CONFIG ? (
-                            this.state.currentMessage
-                        ) : (
-                            // eslint-disable-next-line max-len
-                            <span>
-                                {this.state.currentMessage.slice(0, 4)}...{this.state.currentMessage.slice(-4)}
-                            </span>
-                        )}
+                        {
+                            this.state.config === DESKTOP_CONFIG
+                                ? this.state.currentMessage
+                                // eslint-disable-next-line max-len
+                                : <span>{this.state.currentMessage.slice(0, 4)}...{this.state.currentMessage.slice(-4)}</span>
+                        }
                     </div>
 
                     {/* Edges */}
                     <svg className="edge">
-                        {this.state.edges?.map((edge) => (
-                            <line key={edge.id} x1={edge.x1} x2={edge.x2} y1={edge.y1} y2={edge.y2} stroke="black" />
-                        ))}
+                        {this.state.edges?.map(edge =>
+                        (
+                            <line
+                                key={edge.id}
+                                x1={edge.x1}
+                                x2={edge.x2}
+                                y1={edge.y1}
+                                y2={edge.y2}
+                                stroke="black"
+                            />
+                        )
+                        )}
                     </svg>
                 </div>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 
+
     private loadItemsUI(): void {
-        const parentsHeight =
-            (this.state.config.itemHeight + this.state.config.verticalSpace) * this.props.parentsIds.length -
-            this.state.config.verticalSpace;
-        const childrenHeight =
-            (this.state.config.itemHeight + this.state.config.verticalSpace) * this.props.childrenIds.length -
-            this.state.config.verticalSpace;
+        const parentsHeight = ((this.state.config.itemHeight + this.state.config.verticalSpace) *
+            this.props.parentsIds.length) - this.state.config.verticalSpace;
+        const childrenHeight = ((this.state.config.itemHeight + this.state.config.verticalSpace) *
+            this.props.childrenIds.length) - this.state.config.verticalSpace;
 
         const parentsOffsetTop = childrenHeight > parentsHeight ? (childrenHeight - parentsHeight) / 2 : 0;
         const childrenOffsetTop = parentsHeight > childrenHeight ? (parentsHeight - childrenHeight) / 2 : 0;
 
-        const parents: ItemUI[] = this.props.parentsIds.map((parent, i) => ({
-            top: (this.state.config.itemHeight + this.state.config.verticalSpace) * i + parentsOffsetTop,
-            id: parent,
-            type: "parent",
-        }));
+        const parents: ItemUI[] = this.props.parentsIds.map((parent, i) => (
+            {
+                top: ((this.state.config.itemHeight + this.state.config.verticalSpace) * i) + parentsOffsetTop,
+                id: parent,
+                type: "parent"
+            }
+        ));
 
         const children: ItemUI[] = this.props.childrenIds.map((child, i) => ({
-            top: (this.state.config.itemHeight + this.state.config.verticalSpace) * i + childrenOffsetTop,
+            top: ((this.state.config.itemHeight + this.state.config.verticalSpace) * i) + childrenOffsetTop,
             id: child,
-            type: "child",
+            type: "child"
         }));
 
         const items: ItemUI[] = parents.concat(children);
 
-        const edges: EdgeUI[] = items.map((item, i) => ({
+        const edges: EdgeUI[] = items.map((item, i) =>
+        ({
             id: `edge--${item.type}-${item.id}`,
-            x1: item.type === "parent" ? this.state.config.itemWidth : this.state.width - this.state.config.itemWidth,
-            x2: (this.state.width - this.state.config.itemWidth * (item.type === "parent" ? 1 : -1)) * 0.5,
-            y1: item.top + this.state.config.itemHeight * 0.5,
-            y2: Math.max(parentsHeight, childrenHeight) * 0.5,
-        }));
+            x1: item.type === "parent" ? this.state.config.itemWidth : (this.state.width) - this.state.config.itemWidth,
+            x2: ((this.state.width) - (this.state.config.itemWidth * (item.type === "parent" ? 1 : -1))) * 0.5,
+            y1: item.top + (this.state.config.itemHeight * 0.5),
+            y2: Math.max(parentsHeight, childrenHeight) * 0.5
+        }
+        ));
         this.setState({ items, edges });
     }
 }

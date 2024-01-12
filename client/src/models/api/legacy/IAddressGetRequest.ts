@@ -1,3 +1,4 @@
+
 export interface IAddressGetRequest {
     /**
      * The network to search on.

@@ -1,13 +1,5 @@
 import { Blake2b } from "@iota/crypto.js";
-import {
-    Bech32Helper,
-    IAddressOutputsResponse,
-    IMessagesResponse,
-    IMilestoneResponse,
-    IOutputResponse,
-    serializeMessage,
-    SingleNodeClient,
-} from "@iota/iota.js-chrysalis";
+import { Bech32Helper, IAddressOutputsResponse, IMessagesResponse, IMilestoneResponse, IOutputResponse, serializeMessage, SingleNodeClient } from "@iota/iota.js-chrysalis";
 import { Converter, WriteStream } from "@iota/util.js";
 import { ExtendedSingleNodeClient } from "./extendedSingleNodeClient";
 import { IMessageDetailsResponse } from "../../models/api/chrysalis/IMessageDetailsResponse";
@@ -28,7 +20,8 @@ export class ChrysalisTangleHelper {
      * @returns The item found.
      */
     public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
-        const nodeResult = await ChrysalisTangleHelper.searchApi(network.provider, network.user, network.password, network.bechHrp, query);
+        const nodeResult = await ChrysalisTangleHelper.searchApi(
+            network.provider, network.user, network.password, network.bechHrp, query);
 
         return nodeResult;
     }
@@ -49,11 +42,10 @@ export class ChrysalisTangleHelper {
         password: string | undefined,
         bechHrp: string,
         query: string,
-        cursor?: string,
-    ): Promise<ISearchResponse> {
+        cursor?: string): Promise<ISearchResponse> {
         const client = new SingleNodeClient(provider, {
             userName: user,
-            password,
+            password
         });
         const queryLower = HexHelper.stripPrefix(query.toLowerCase());
 
@@ -61,20 +53,22 @@ export class ChrysalisTangleHelper {
             // If the query starts with did:iota: then lookup a Decentralized identifier
             if (queryLower.startsWith("did:iota:")) {
                 return {
-                    did: query,
+                    did: query
                 };
             }
-        } catch {}
+        } catch {
+        }
         try {
             // If the query is an integer then lookup a milestone
             if (/^\d+$/.test(query)) {
                 const milestone = await client.milestone(Number.parseInt(query, 10));
 
                 return {
-                    milestone,
+                    milestone
                 };
             }
-        } catch {}
+        } catch {
+        }
 
         try {
             // If the query is bech format lookup address
@@ -85,11 +79,12 @@ export class ChrysalisTangleHelper {
 
                     return {
                         address,
-                        addressOutputIds: addressOutputs.outputIds,
+                        addressOutputIds: addressOutputs.outputIds
                     };
                 }
             }
-        } catch {}
+        } catch {
+        }
 
         // If the query is 64 bytes hex, try and look for a message
         if (Converter.isHex(queryLower) && queryLower.length === 64) {
@@ -98,10 +93,11 @@ export class ChrysalisTangleHelper {
 
                 if (Object.keys(message).length > 0) {
                     return {
-                        message,
+                        message
                     };
                 }
-            } catch {}
+            } catch {
+            }
 
             // If the query is 64 bytes hex, try and look for a transaction included message
             try {
@@ -114,10 +110,11 @@ export class ChrysalisTangleHelper {
 
                     return {
                         message,
-                        includedMessageId,
+                        includedMessageId
                     };
                 }
-            } catch {}
+            } catch {
+            }
         }
 
         try {
@@ -126,10 +123,11 @@ export class ChrysalisTangleHelper {
                 const output = await client.output(queryLower);
 
                 return {
-                    output,
+                    output
                 };
             }
-        } catch {}
+        } catch {
+        }
 
         try {
             // If the query is bech format lookup address
@@ -140,20 +138,19 @@ export class ChrysalisTangleHelper {
                 const addressOutputs = await client.addressEd25519Outputs(queryLower);
 
                 if (addressOutputs.count > 0) {
-                    const state = (
-                        addressOutputs as IAddressOutputsResponse & {
-                            state?: unknown;
-                        }
-                    ).state;
+                    const state = (addressOutputs as (IAddressOutputsResponse & {
+                        state?: unknown;
+                    })).state;
 
                     return {
                         address,
                         addressOutputIds: addressOutputs.outputIds,
-                        cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined,
+                        cursor: state ? Converter.utf8ToHex(JSON.stringify(state)) : undefined
                     };
                 }
             }
-        } catch {}
+        } catch {
+        }
 
         try {
             if (query.length > 0) {
@@ -169,8 +166,7 @@ export class ChrysalisTangleHelper {
                 if (query.length >= 2 && query.length <= 128 && Converter.isHex(queryLower)) {
                     messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
                         "get",
-                        `messages?index=${queryLower}${cursorParam}`,
-                    );
+                        `messages?index=${queryLower}${cursorParam}`);
 
                     if (messages.count > 0) {
                         indexMessageType = "hex";
@@ -181,8 +177,7 @@ export class ChrysalisTangleHelper {
                 if (!indexMessageType && query.length <= 64) {
                     messages = await client.fetchJson<never, IMessagesResponse & { state?: string }>(
                         "get",
-                        `messages?index=${Converter.utf8ToHex(query)}${cursorParam}`,
-                    );
+                        `messages?index=${Converter.utf8ToHex(query)}${cursorParam}`);
 
                     if (messages.count > 0) {
                         indexMessageType = "utf8";
@@ -193,11 +188,12 @@ export class ChrysalisTangleHelper {
                     return {
                         indexMessageIds: messages.messageIds,
                         indexMessageType,
-                        cursor: messages.state,
+                        cursor: messages.state
                     };
                 }
             }
-        } catch {}
+        } catch {
+        }
 
         return {};
     }
@@ -212,7 +208,7 @@ export class ChrysalisTangleHelper {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,
-                password: network.password,
+                password: network.password
             });
 
             const metadata = await client.messageMetadata(messageId);
@@ -220,9 +216,10 @@ export class ChrysalisTangleHelper {
 
             return {
                 metadata,
-                childrenMessageIds: children ? children.childrenMessageIds : undefined,
+                childrenMessageIds: children ? children.childrenMessageIds : undefined
             };
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -235,10 +232,11 @@ export class ChrysalisTangleHelper {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,
-                password: network.password,
+                password: network.password
             });
             return await client.output(outputId);
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -247,17 +245,16 @@ export class ChrysalisTangleHelper {
      * @param request The request.
      * @returns The transactions.
      */
-    public static async transactionHistory(
-        network: INetwork,
-        request: ITransactionHistoryRequest,
-    ): Promise<ITransactionHistoryResponse | undefined> {
+    public static async transactionHistory(network: INetwork,
+        request: ITransactionHistoryRequest): Promise<ITransactionHistoryResponse | undefined> {
         try {
             const client = new ExtendedSingleNodeClient(network.provider, {
                 userName: network.user,
-                password: network.password,
+                password: network.password
             });
             return await client.transactionHistory(request);
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -266,13 +263,16 @@ export class ChrysalisTangleHelper {
      * @param milestoneIndex The milestone iindex to get the details.
      * @returns The item details.
      */
-    public static async milestoneDetails(network: INetwork, milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
+    public static async milestoneDetails(
+        network: INetwork, milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
         try {
             const client = new SingleNodeClient(network.provider, {
                 userName: network.user,
-                password: network.password,
+                password: network.password
             });
             return await client.milestone(milestoneIndex);
-        } catch {}
+        } catch {
+        }
     }
 }
+

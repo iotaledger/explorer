@@ -57,7 +57,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
             messageTangleStatus: "pending",
             resolvedHistory: undefined,
             historyError: false,
-            version: undefined,
+            version: undefined
         };
     }
 
@@ -68,7 +68,10 @@ class IdentityChrysalisResolver extends AsyncComponent<
             return;
         }
 
-        const res = await ServiceFactory.get<IdentityService>("identity").resolveIdentity(this.state.did, this.props.match.params.network);
+        const res = await ServiceFactory.get<IdentityService>("identity").resolveIdentity(
+            this.state.did,
+            this.props.match.params.network
+        );
 
         if (typeof res.error === "object") {
             res.error = JSON.stringify(res.error);
@@ -77,7 +80,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
         if (res.error) {
             this.setState({
                 error: true,
-                errorMessage: res.error,
+                errorMessage: res.error
             });
             return;
         }
@@ -87,7 +90,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
                 resolvedIdentity: res,
                 isIdentityResolved: true,
                 latestMessageId: res.messageId ?? undefined,
-                version: res.version,
+                version: res.version
             });
 
             await this.updateMessageDetails(res.messageId ?? "");
@@ -106,6 +109,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
         IdentityDiffStorageService.instance.clearAll();
     }
 
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -115,7 +119,9 @@ class IdentityChrysalisResolver extends AsyncComponent<
             <div>
                 <div className="row space-between wrap">
                     <div className="row middle">
-                        <h1>Decentralized Identifier</h1>
+                        <h1>
+                            Decentralized Identifier
+                        </h1>
                         <Modal icon="info" data={welcomeMessage} />
                     </div>
                 </div>
@@ -124,13 +130,18 @@ class IdentityChrysalisResolver extends AsyncComponent<
                         <div className="section">
                             <div className="legacy-method">
                                 <span>
-                                    This DID was created by a deprecated version of the identity library. If this is your DID you can
-                                    recreate it using the{" "}
+                                    This DID was created by a deprecated version of the identity
+                                    {" "}
+                                    library. If this is your DID you can recreate it using the
+                                    {" "}
                                 </span>
-                                <a href="https://github.com/iotaledger/identity.rs/releases" target="_blank" rel="noreferrer">
+                                <a
+                                    href="https://github.com/iotaledger/identity.rs/releases"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
                                     latest version
-                                </a>
-                                .
+                                </a>.
                             </div>
                         </div>
                     )}
@@ -138,22 +149,24 @@ class IdentityChrysalisResolver extends AsyncComponent<
                         <div className="section--header row space-between">
                             <div className="row row--tablet-responsive middle space-between w100">
                                 <h2>General</h2>
-                                {!this.state.error && !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
-                                    <MessageTangleState
-                                        network={this.props.match.params.network}
-                                        status={this.state.messageTangleStatus}
-                                        milestoneIndex={
-                                            this.state.metadata?.referencedByMilestoneIndex ?? this.state.metadata?.milestoneIndex
-                                        }
-                                        onClick={
-                                            this.state.metadata?.referencedByMilestoneIndex
-                                                ? (messageId: string) =>
-                                                      this.props.history.push(`/${this.props.match.params.network}/search/${messageId}`)
-                                                : undefined
-                                        }
-                                    />
-                                )}
+                                {!this.state.error &&
+                                    !(this.state.latestMessageId === this.EMPTY_MESSAGE_ID) && (
+                                        <MessageTangleState
+                                            network={this.props.match.params.network}
+                                            status={this.state.messageTangleStatus}
+                                            milestoneIndex={
+                                                this.state.metadata?.referencedByMilestoneIndex ??
+                                                this.state.metadata?.milestoneIndex
+                                            }
+                                            onClick={this.state.metadata?.referencedByMilestoneIndex
+                                                ? (messageId: string) => this.props.history.push(
+                                                    `/${this.props.match.params.network
+                                                    }/search/${messageId}`)
+                                                : undefined}
+                                        />
+                                    )}
                             </div>
+
                         </div>
                         <div className="section--data">
                             <div className="label">DID</div>
@@ -163,12 +176,17 @@ class IdentityChrysalisResolver extends AsyncComponent<
                             </div>
                             {this.state.resolvedIdentity &&
                                 !this.state.error &&
-                                this.state.resolvedIdentity?.messageId !== this.EMPTY_MESSAGE_ID && (
+                                this.state.resolvedIdentity?.messageId !==
+                                this.EMPTY_MESSAGE_ID && (
                                     <Fragment>
                                         <div className="label">Latest Message Id</div>
                                         <div className="value code row middle">
-                                            <div className="margin-r-t">{this.state.resolvedIdentity?.messageId}</div>
-                                            <CopyButton copy={this.state.resolvedIdentity?.messageId} />
+                                            <div className="margin-r-t">
+                                                {this.state.resolvedIdentity?.messageId}
+                                            </div>
+                                            <CopyButton
+                                                copy={this.state.resolvedIdentity?.messageId}
+                                            />
                                         </div>
                                     </Fragment>
                                 )}
@@ -177,8 +195,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
 
                     <div className="section">
                         <div className="section--header">
-                            <h2>
-                                Content
+                            <h2>Content
                                 <Modal icon="info" data={contentMessage} />
                             </h2>
                         </div>
@@ -197,19 +214,27 @@ class IdentityChrysalisResolver extends AsyncComponent<
                                             <div>
                                                 <IdentityMessageIdOverview
                                                     status="integration"
-                                                    messageId={this.state.resolvedIdentity.messageId}
+                                                    messageId={
+                                                        this.state.resolvedIdentity.messageId
+                                                    }
                                                     onClick={() => {
                                                         this.props.history.push(
                                                             // eslint-disable-next-line max-len
-                                                            `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`,
+                                                            `/${this.props.match.params.network}/message/${this.state.resolvedIdentity?.messageId}`
                                                         );
                                                     }}
                                                 />
                                             </div>
 
                                             <a
-                                                href={DownloadHelper.createJsonDataUrl(this.state.resolvedIdentity.document)}
-                                                download={DownloadHelper.filename(this.state.resolvedIdentity.messageId ?? "did", "json")}
+                                                href={DownloadHelper.createJsonDataUrl(
+                                                    this.state.resolvedIdentity.document
+                                                )}
+                                                download={DownloadHelper.filename(
+                                                    this.state.resolvedIdentity
+                                                        .messageId ?? "did",
+                                                    "json"
+                                                )}
                                                 role="button"
                                             >
                                                 <HiDownload />
@@ -224,7 +249,13 @@ class IdentityChrysalisResolver extends AsyncComponent<
                                                             card--value-textarea__json
                                                             "
                                         >
-                                            <JsonViewer json={JSON.stringify(this.state.resolvedIdentity.document.doc, null, 4)} />
+                                            <JsonViewer
+                                                json={JSON.stringify(
+                                                    this.state.resolvedIdentity.document.doc,
+                                                    null,
+                                                    4
+                                                )}
+                                            />
                                         </div>
                                     </div>
                                 )}
@@ -238,9 +269,9 @@ class IdentityChrysalisResolver extends AsyncComponent<
                         </div>
                     </div>
 
-                    {this.state.isIdentityResolved && this.state.version && (
-                        <IdentityHistory version={this.state.version} {...this.props} />
-                    )}
+                    {this.state.isIdentityResolved &&
+                        this.state.version &&
+                        <IdentityHistory version={this.state.version} {...this.props} />}
                 </div>
             </div>
         );
@@ -254,7 +285,7 @@ class IdentityChrysalisResolver extends AsyncComponent<
 
         this.setState({
             metadata: details?.metadata,
-            messageTangleStatus: this.calculateStatus(details?.metadata),
+            messageTangleStatus: this.calculateStatus(details?.metadata)
         });
 
         if (!details?.metadata?.referencedByMilestoneIndex) {

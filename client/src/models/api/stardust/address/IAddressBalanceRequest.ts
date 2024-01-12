@@ -9,3 +9,4 @@ export interface IAddressBalanceRequest {
      */
     address: string;
 }
+

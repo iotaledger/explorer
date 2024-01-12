@@ -19,10 +19,17 @@ export interface IEventDetails {
  * @param participations The participations
  * @returns The participation event details, status and loading bool.
  */
-export function useParticipationEventDetails(participations?: IParticipation[]): [IEventDetails[], boolean, string?] {
+export function useParticipationEventDetails(participations?: IParticipation[]):
+    [
+        IEventDetails[],
+        boolean,
+        string?
+    ] {
     const { name: network } = useContext(NetworkContext);
     const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+    const [apiClient] = useState(
+        ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`)
+    );
     const [error, setError] = useState<string>();
     const [eventDetails, setEventDetails] = useState<IEventDetails[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -34,35 +41,31 @@ export function useParticipationEventDetails(participations?: IParticipation[]):
             const events: IEventDetails[] = [];
 
             for (const participation of participations) {
-                const promise = apiClient
-                    .participationEventDetails({
+                const promise = apiClient.participationEventDetails({
                         network,
-                        eventId: participation.eventId,
-                    })
-                    .then((response) => {
-                        if (!response?.error && response.info) {
-                            const event: IEventDetails = {
-                                participation,
-                                info: response.info,
-                                status: response.status,
-                            };
-                            events.push(event);
-                        } else {
-                            setError(response.error);
-                        }
-                    })
-                    .catch((e) => console.log(e));
+                        eventId: participation.eventId
+                    }).then(response => {
+                    if (!response?.error && response.info) {
+                        const event: IEventDetails = {
+                            participation,
+                            info: response.info,
+                            status: response.status
+                        };
+                        events.push(event);
+                    } else {
+                        setError(response.error);
+                    }
+                }).catch(e => console.log(e));
 
                 promises.push(promise);
             }
 
             Promise.allSettled(promises)
-                .then((_) => {
+                .then(_ => {
                     if (isMounted) {
                         setEventDetails(events);
                     }
-                })
-                .catch((_) => {
+                }).catch(_ => {
                     setError("Failed loading event details!");
                 })
                 .finally(() => {

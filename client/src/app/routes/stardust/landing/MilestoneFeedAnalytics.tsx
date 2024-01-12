@@ -26,29 +26,31 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
             <div className="feed-item__content">
                 <span className="feed-item--label">Blocks</span>
                 <span className="feed-item--value ms-blocks">
-                    {isLoading ? (
-                        <Spinner compact />
-                    ) : (
+                    {isLoading ?
+                        <Spinner compact /> :
                         <div className="feed-item__ms-stat">
-                            <Link className="feed-item--hash ms-id" to={`/${network}/block/${blockId}?tab=RefBlocks`}>
+                            <Link
+                                className="feed-item--hash ms-id"
+                                to={`/${network}/block/${blockId}?tab=RefBlocks`}
+                            >
                                 {includedBlocks ?? "--"}
                             </Link>
-                        </div>
-                    )}
+                        </div>}
                 </span>
             </div>
             <div className="feed-item__content">
                 <span className="feed-item--label">Txs</span>
                 <span className="feed-item--value ms-txs">
-                    {isLoading ? (
-                        <Spinner compact />
-                    ) : (
+                    {isLoading ?
+                        <Spinner compact /> :
                         <div className="feed-item__ms-stat">
-                            <Link className="feed-item--hash ms-id" to={`/${network}/block/${blockId}?tab=RefBlocks`}>
+                            <Link
+                                className="feed-item--hash ms-id"
+                                to={`/${network}/block/${blockId}?tab=RefBlocks`}
+                            >
                                 {txs ?? "--"}
                             </Link>
-                        </div>
-                    )}
+                        </div>}
                 </span>
             </div>
         </React.Fragment>
@@ -56,3 +58,4 @@ const MilestoneFeedAnalyics: React.FC<MilestoneFeedAnalyicsProps> = ({ network, 
 };
 
 export default MilestoneFeedAnalyics;
+

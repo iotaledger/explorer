@@ -1,3 +1,4 @@
+
 /**
  * Fetch from an endpoint.
  */
@@ -18,7 +19,7 @@ export class FetchHelper {
         method: "get" | "post" | "put" | "delete",
         payload?: T,
         headers?: { [id: string]: string },
-        timeout?: number,
+        timeout?: number
     ): Promise<U> {
         headers ??= {};
         headers["Content-Type"] = "application/json";
@@ -28,20 +29,26 @@ export class FetchHelper {
 
         if (timeout !== undefined) {
             controller = new AbortController();
-            timerId = setTimeout(() => {
-                if (controller) {
-                    controller.abort();
-                }
-            }, timeout);
+            timerId = setTimeout(
+                () => {
+                    if (controller) {
+                        controller.abort();
+                    }
+                },
+                timeout
+            );
         }
 
         try {
-            const res = await fetch(`${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`, {
-                method,
-                headers,
-                body: payload ? JSON.stringify(payload) : undefined,
-                signal: controller ? controller.signal : undefined,
-            });
+            const res = await fetch(
+                `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`,
+                {
+                    method,
+                    headers,
+                    body: payload ? JSON.stringify(payload) : undefined,
+                    signal: controller ? controller.signal : undefined
+                }
+            );
 
             const json = await res.json();
             return json as U;
@@ -70,7 +77,7 @@ export class FetchHelper {
         method: "get" | "post" | "put" | "delete",
         payload?: unknown,
         headers?: { [id: string]: string },
-        timeout?: number,
+        timeout?: number
     ): Promise<Response> {
         headers ??= {};
 
@@ -79,20 +86,26 @@ export class FetchHelper {
 
         if (timeout !== undefined) {
             controller = new AbortController();
-            timerId = setTimeout(() => {
-                if (controller) {
-                    controller.abort();
-                }
-            }, timeout);
+            timerId = setTimeout(
+                () => {
+                    if (controller) {
+                        controller.abort();
+                    }
+                },
+                timeout
+            );
         }
 
         try {
-            const response = await fetch(`${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`, {
-                method,
-                headers,
-                body: payload ? JSON.stringify(payload) : undefined,
-                signal: controller ? controller.signal : undefined,
-            });
+            const response = await fetch(
+                `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`,
+                {
+                    method,
+                    headers,
+                    body: payload ? JSON.stringify(payload) : undefined,
+                    signal: controller ? controller.signal : undefined
+                }
+            );
 
             return response;
         } catch (err) {

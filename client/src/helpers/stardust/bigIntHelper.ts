@@ -29,7 +29,12 @@ export class BigIntHelper {
      * @returns The bigint.
      */
     public static read4(data: Uint8Array, byteOffset: number): BigInteger {
-        const v0 = (data[byteOffset + 0] + (data[byteOffset + 1] << 8) + (data[byteOffset + 2] << 16) + (data[byteOffset + 3] << 24)) >>> 0;
+        const v0 =
+            (data[byteOffset + 0] +
+                (data[byteOffset + 1] << 8) +
+                (data[byteOffset + 2] << 16) +
+                (data[byteOffset + 3] << 24)) >>>
+            0;
 
         return bigInt(v0);
     }
@@ -94,3 +99,4 @@ export class BigIntHelper {
         data.set(littleEndian, byteOffset);
     }
 }
+

@@ -15,7 +15,9 @@ const CHRONICLE_ANALYTICS_REFRESH_MINUTES = 5;
  * @param network The network in context.
  * @returns The Chronicle analytic stats.
  */
-export function useChronicleAnalytics(network: string): [IAnalyticStats | null] {
+export function useChronicleAnalytics(network: string): [
+    (IAnalyticStats | null)
+] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timer | null>(null);
@@ -32,13 +34,10 @@ export function useChronicleAnalytics(network: string): [IAnalyticStats | null] 
             void fetchAnalytics();
 
             setUpdateTimerId(
-                setInterval(
-                    () => {
-                        // eslint-disable-next-line no-void
-                        void fetchAnalytics();
-                    },
-                    CHRONICLE_ANALYTICS_REFRESH_MINUTES * 60 * 1000,
-                ),
+                setInterval(() => {
+                    // eslint-disable-next-line no-void
+                    void fetchAnalytics();
+                }, CHRONICLE_ANALYTICS_REFRESH_MINUTES * 60 * 1000)
             );
         }
 
@@ -61,7 +60,7 @@ export function useChronicleAnalytics(network: string): [IAnalyticStats | null] 
                     totalAddresses: analyticStats?.totalAddresses,
                     dailyAddresses: analyticStats?.dailyAddresses,
                     lockedStorageDeposit: analyticStats?.lockedStorageDeposit,
-                    unclaimedShimmer: analyticStats?.unclaimedShimmer,
+                    unclaimedShimmer: analyticStats?.unclaimedShimmer
                 });
             } else {
                 console.log("Analytics stats refresh failed.");

@@ -4,3 +4,4 @@ export interface ReceiptPayloadState {
      */
     formatFull: boolean;
 }
+

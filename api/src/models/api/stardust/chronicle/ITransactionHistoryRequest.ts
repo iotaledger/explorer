@@ -32,3 +32,4 @@ export interface ITransactionHistoryRequest {
      */
     cursor?: string;
 }
+

@@ -40,9 +40,7 @@ export class LegacyApiClient extends ApiClient {
      */
     public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
         return this.callApi<unknown, IStatsGetResponse>(
-            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-            "get",
-        );
+            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`, "get");
     }
 
     /**
@@ -51,7 +49,8 @@ export class LegacyApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async milestoneGet(request: IMilestoneGetRequest): Promise<IMilestoneGetResponse> {
-        return this.callApi<unknown, IMilestoneGetResponse>(`milestones/${request.network}/${request.milestoneIndex}`, "get");
+        return this.callApi<unknown, IMilestoneGetResponse>(
+            `milestones/${request.network}/${request.milestoneIndex}`, "get");
     }
 
     /**
@@ -62,7 +61,10 @@ export class LegacyApiClient extends ApiClient {
     public async transactionsGet(request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
         const { network, hash, ...rest } = request;
 
-        return this.callApi<unknown, ITransactionsGetResponse>(`transactions/${network}/${hash}/${FetchHelper.urlParams(rest)}`, "get");
+        return this.callApi<unknown, ITransactionsGetResponse>(
+            `transactions/${network}/${hash}/${FetchHelper.urlParams(rest)}`,
+            "get"
+        );
     }
 
     /**

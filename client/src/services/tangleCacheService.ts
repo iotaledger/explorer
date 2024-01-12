@@ -46,6 +46,7 @@ export class TangleCacheService {
              * The hash type.
              */
             [hashKey in TransactionsGetMode]?: {
+
                 /**
                  * The hash.
                  */
@@ -63,7 +64,7 @@ export class TangleCacheService {
                      */
                     cached: number;
                 };
-            };
+            }
         };
     };
 
@@ -149,7 +150,7 @@ export class TangleCacheService {
                 tag: {},
                 address: {},
                 bundle: {},
-                transaction: {},
+                transaction: {}
             };
 
             this._addressBalances[networkConfig.network] = {};

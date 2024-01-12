@@ -20,7 +20,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 export async function post(
     _: IConfiguration,
     request: ITransactionHistoryRequest,
-    body: ITransactionHistoryDownloadBody,
+    body: ITransactionHistoryDownloadBody
 ): Promise<IDataResponse | null> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
@@ -36,7 +36,9 @@ export async function post(
         return null;
     }
 
-    const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
+    const chronicleService = ServiceFactory.get<ChronicleService>(
+        `chronicle-${networkConfig.network}`
+    );
 
     const result = await chronicleService.transactionHistoryDownload(request.address, body.targetDate);
 
@@ -49,7 +51,7 @@ export async function post(
 
         response = {
             data: content,
-            contentType: "application/octet-stream",
+            contentType: "application/octet-stream"
         };
     } catch (e) {
         logger.error(`Failed to zip transaction history for download. Cause: ${e}`);
@@ -57,3 +59,4 @@ export async function post(
 
     return response;
 }
+

@@ -13,7 +13,10 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IMilestoneGetRequest): Promise<IMilestoneGetResponse> {
+export async function get(
+    config: IConfiguration,
+    request: IMilestoneGetRequest
+): Promise<IMilestoneGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 

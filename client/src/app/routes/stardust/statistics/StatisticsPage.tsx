@@ -7,7 +7,7 @@ import "./StatisticsPage.scss";
 
 enum STATISTICS_PAGE_TABS {
     Charts = "Charts",
-    TokenDistribution = "Token distribution",
+    TokenDistribution = "Token distribution"
 }
 
 interface StatisticsPageProps {
@@ -20,16 +20,21 @@ const StatisticsPage: React.FC<RouteComponentProps<StatisticsPageProps>> = () =>
             <div className="inner">
                 <div className="statistics-page--header">
                     <div className="row middle">
-                        <h1>Statistics</h1>
+                        <h1>
+                            Statistics
+                        </h1>
                     </div>
                 </div>
-                <TabbedSection tabsEnum={STATISTICS_PAGE_TABS}>
+                <TabbedSection
+                    tabsEnum={STATISTICS_PAGE_TABS}
+                >
                     <InfluxChartsTab />
                     <TokenDistributionTab />
                 </TabbedSection>
             </div>
-        </div>
-    </div>
+        </div >
+    </div >
 );
 
 export default StatisticsPage;
+

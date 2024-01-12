@@ -1,11 +1,4 @@
-import {
-    CONFLICT_REASON_STRINGS,
-    IMessageMetadata,
-    INDEXATION_PAYLOAD_TYPE,
-    MILESTONE_PAYLOAD_TYPE,
-    TRANSACTION_PAYLOAD_TYPE,
-    UnitsHelper,
-} from "@iota/iota.js";
+import { CONFLICT_REASON_STRINGS, IMessageMetadata, INDEXATION_PAYLOAD_TYPE, MILESTONE_PAYLOAD_TYPE, TRANSACTION_PAYLOAD_TYPE, UnitsHelper } from "@iota/iota.js";
 import React, { ReactNode } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "~assets/modals/chrysalis/message/main-header.json";
@@ -65,18 +58,23 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
     constructor(props: RouteComponentProps<MessageProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
+
         const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = this.props.match.params.network ? networkService.get(this.props.match.params.network) : undefined;
+        const networkConfig = this.props.match.params.network
+            ? networkService.get(this.props.match.params.network)
+            : undefined;
 
         this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
             messageTangleStatus: "pending",
             childrenBusy: true,
-            advancedMode: this._settingsService.get().advancedMode ?? false,
+            advancedMode: this._settingsService.get().advancedMode ?? false
         };
     }
 
@@ -110,20 +108,21 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                     <div className="inner">
                         <div className="message--header">
                             <div className="row middle">
-                                <h1>Message</h1>
+                                <h1>
+                                    Message
+                                </h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
                             </div>
                             <Switcher
                                 label="Advanced View"
                                 checked={this.state.advancedMode}
-                                onToggle={(e) =>
-                                    this.setState(
-                                        {
-                                            advancedMode: e.target.checked,
-                                        },
-                                        () => this._settingsService.saveSingle("advancedMode", this.state.advancedMode),
-                                    )
-                                }
+                                onToggle={e => this.setState(
+                                    {
+                                        advancedMode: e.target.checked
+                                    },
+                                    () => this._settingsService.saveSingle(
+                                        "advancedMode",
+                                        this.state.advancedMode))}
                             />
                         </div>
 
@@ -136,27 +135,33 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                 <MessageTangleState
                                     network={this.props.match.params.network}
                                     status={this.state.messageTangleStatus}
-                                    milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ?? this.state.metadata?.milestoneIndex}
+                                    milestoneIndex={this.state.metadata?.referencedByMilestoneIndex ??
+                                        this.state.metadata?.milestoneIndex}
                                     hasConflicts={this.state.metadata?.ledgerInclusionState === "conflicting"}
-                                    onClick={
-                                        this.state.metadata?.referencedByMilestoneIndex
-                                            ? (messageId: string) =>
-                                                  this.props.history.push(`/${this.props.match.params.network}/search/${messageId}`)
-                                            : undefined
-                                    }
+                                    onClick={this.state.metadata?.referencedByMilestoneIndex
+                                        ? (messageId: string) => this.props.history.push(
+                                            `/${this.props.match.params.network
+                                            }/search/${messageId}`)
+                                        : undefined}
                                 />
                             </div>
                             <div className="section--data">
-                                <div className="label">Message ID</div>
+                                <div className="label">
+                                    Message ID
+                                </div>
                                 <div className="value code row middle">
-                                    <span className="margin-r-t">{this.state.actualMessageId}</span>
+                                    <span className="margin-r-t">
+                                        {this.state.actualMessageId}
+                                    </span>
                                     <CopyButton copy={this.state.actualMessageId} />
                                 </div>
                             </div>
 
                             {this.state.transactionId && (
                                 <div className="section--data">
-                                    <div className="label">Transaction Id</div>
+                                    <div className="label">
+                                        Transaction Id
+                                    </div>
                                     <div className="value value__secondary row middle">
                                         <span className="margin-r-t">{this.state.transactionId}</span>
                                         <CopyButton copy={this.state.transactionId} />
@@ -164,43 +169,54 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                 </div>
                             )}
                             <div className="section--data">
-                                <div className="label">Payload Type</div>
+                                <div className="label">
+                                    Payload Type
+                                </div>
                                 <div className="value row middle">
-                                    {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE && "Transaction"}
-                                    {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE && "Milestone"}
-                                    {this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE && "Index"}
-                                    {this.state.message?.payload?.type === undefined && "No Payload"}
+                                    {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                        ("Transaction")}
+                                    {this.state.message?.payload?.type === MILESTONE_PAYLOAD_TYPE &&
+                                        ("Milestone")}
+                                    {this.state.message?.payload?.type === INDEXATION_PAYLOAD_TYPE &&
+                                        ("Index")}
+                                    {this.state.message?.payload?.type === undefined &&
+                                        ("No Payload")}
                                 </div>
                             </div>
                             {this.state.advancedMode && (
                                 <div className="section--data">
-                                    <div className="label">Nonce</div>
+                                    <div className="label">
+                                        Nonce
+                                    </div>
                                     <div className="value row middle">
                                         <span className="margin-r-t">{this.state.message?.nonce}</span>
                                     </div>
                                 </div>
                             )}
-                            {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE && this.state.transferTotal !== undefined && (
-                                <div className="section--data">
-                                    <div className="label">Value</div>
-                                    <div className="value row middle">
-                                        {UnitsHelper.formatUnits(
-                                            this.state.transferTotal,
-                                            UnitsHelper.calculateBest(this.state.transferTotal),
-                                        )}{" "}
-                                        (
-                                        <FiatValue value={this.state.transferTotal} />)
+                            {this.state.message?.payload?.type === TRANSACTION_PAYLOAD_TYPE &&
+                                this.state.transferTotal !== undefined && (
+                                    <div className="section--data">
+                                        <div className="label">
+                                            Value
+                                        </div>
+                                        <div className="value row middle">
+                                            {UnitsHelper.formatUnits(this.state.transferTotal,
+                                                UnitsHelper.calculateBest(this.state.transferTotal))}
+                                            {" "}
+                                            (<FiatValue value={this.state.transferTotal} />)
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
                         </div>
+
 
                         {this.state.message?.payload && (
                             <React.Fragment>
                                 {this.state.message.payload.type === TRANSACTION_PAYLOAD_TYPE &&
                                     this.state.inputs &&
                                     this.state.outputs &&
-                                    this.state.transferTotal !== undefined && (
+                                    this.state.transferTotal !== undefined &&
+                                    (
                                         <div className="section">
                                             <TransactionPayload
                                                 network={this.props.match.params.network}
@@ -220,8 +236,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                                 payload={this.state.message.payload.essence.payload}
                                                 advancedMode={this.state.advancedMode}
                                             />
-                                        </div>
-                                    )}
+                                        </div>)}
                                 {this.state.message.payload.type === MILESTONE_PAYLOAD_TYPE && (
                                     <React.Fragment>
                                         <div className="section">
@@ -267,28 +282,44 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                                     </div>
                                 </div>
                                 <div className="section--data">
-                                    {!this.state.metadata && !this.state.metadataError && <Spinner />}
+                                    {!this.state.metadata && !this.state.metadataError && (
+                                        <Spinner />
+                                    )}
                                     {this.state.metadataError && (
-                                        <p className="danger">Failed to retrieve metadata. {this.state.metadataError}</p>
+                                        <p className="danger">
+                                            Failed to retrieve metadata. {this.state.metadataError}
+                                        </p>
                                     )}
                                     {this.state.metadata && !this.state.metadataError && (
                                         <React.Fragment>
                                             <div className="section--data">
-                                                <div className="label">Is Solid</div>
+                                                <div className="label">
+                                                    Is Solid
+                                                </div>
                                                 <div className="value row middle">
-                                                    <span className="margin-r-t">{this.state.metadata?.isSolid ? "Yes" : "No"}</span>
+                                                    <span className="margin-r-t">
+                                                        {this.state.metadata?.isSolid ? "Yes" : "No"}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div className="section--data">
-                                                <div className="label">Ledger Inclusion</div>
+                                                <div className="label">
+                                                    Ledger Inclusion
+                                                </div>
                                                 <div className="value row middle">
-                                                    <InclusionState state={this.state.metadata?.ledgerInclusionState} />
+                                                    <InclusionState
+                                                        state={this.state.metadata?.ledgerInclusionState}
+                                                    />
                                                 </div>
                                             </div>
                                             {this.state.conflictReason && (
                                                 <div className="section--data">
-                                                    <div className="label">Conflict Reason</div>
-                                                    <div className="value">{this.state.conflictReason}</div>
+                                                    <div className="label">
+                                                        Conflict Reason
+                                                    </div>
+                                                    <div className="value">
+                                                        {this.state.conflictReason}
+                                                    </div>
                                                 </div>
                                             )}
                                         </React.Fragment>
@@ -300,7 +331,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                             <div className="section--header">
                                 <div>
                                     <div className="row middle">
-                                        <h2>Messages tree</h2>
+                                        <h2>
+                                            Messages tree
+                                        </h2>
                                         <Modal icon="info" data={treeMessage} />
                                     </div>
                                 </div>
@@ -316,7 +349,7 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -324,15 +357,17 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
      * Update the message details.
      */
     private async updateMessageDetails(): Promise<void> {
-        const details = await this._tangleCacheService.messageDetails(this.props.match.params.network, this.state.actualMessageId ?? "");
+        const details = await this._tangleCacheService.messageDetails(
+            this.props.match.params.network, this.state.actualMessageId ?? "");
 
         this.setState({
             metadata: details?.metadata,
             metadataError: details?.error,
             conflictReason: this.calculateConflictReason(details?.metadata),
-            childrenIds: details?.childrenIds && details?.childrenIds.length > 0 ? details?.childrenIds : this.state.childrenIds ?? [],
+            childrenIds: details?.childrenIds && details?.childrenIds.length > 0
+                ? details?.childrenIds : (this.state.childrenIds ?? []),
             messageTangleStatus: this.calculateStatus(details?.metadata),
-            childrenBusy: false,
+            childrenBusy: false
         });
 
         if (!details?.metadata?.referencedByMilestoneIndex) {
@@ -372,10 +407,9 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
         let conflictReason: string = "";
 
         if (metadata?.ledgerInclusionState === "conflicting") {
-            conflictReason =
-                metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
-                    ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
-                    : "The reason for the conflict is unknown";
+            conflictReason = metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                : "The reason for the conflict is unknown";
         }
 
         return conflictReason;
@@ -387,7 +421,8 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
      * @param updateUrl Update the url.
      */
     private async loadMessage(messageId: string, updateUrl: boolean): Promise<void> {
-        const result = await this._tangleCacheService.search(this.props.match.params.network, messageId);
+        const result = await this._tangleCacheService.search(
+            this.props.match.params.network, messageId);
 
         if (result?.message) {
             const message = result.message;
@@ -395,20 +430,21 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                 window.scrollTo({
                     left: 0,
                     top: 0,
-                    behavior: "smooth",
+                    behavior: "smooth"
                 });
             }
 
-            const { inputs, outputs, unlockAddresses, transferTotal } = await TransactionsHelper.getInputsAndOutputs(
-                message,
-                this.props.match.params.network,
-                this._bechHrp,
-                this._tangleCacheService,
-            );
+            const { inputs, outputs, unlockAddresses, transferTotal } =
+                await TransactionsHelper.getInputsAndOutputs(message,
+                    this.props.match.params.network,
+                    this._bechHrp,
+                    this._tangleCacheService);
             let transactionId;
 
             if (message.payload?.type === TRANSACTION_PAYLOAD_TYPE) {
-                transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(message.payload);
+                transactionId = TransactionsHelper.computeTransactionIdFromTransactionPayload(
+                    message.payload
+                );
             }
 
             this.setState({
@@ -416,29 +452,25 @@ class Message extends AsyncComponent<RouteComponentProps<MessageProps>, MessageS
                 outputs,
                 unlockAddresses,
                 transferTotal,
-                transactionId,
+                transactionId
             });
 
-            this.setState(
-                {
-                    actualMessageId: result.includedMessageId ?? messageId,
-                    message,
-                },
-                async () => {
-                    await this.updateMessageDetails();
-                },
-            );
+            this.setState({
+                actualMessageId: result.includedMessageId ?? messageId,
+                message
+            }, async () => {
+                await this.updateMessageDetails();
+            });
             if (updateUrl) {
-                window.history.pushState(
-                    undefined,
-                    window.document.title,
-                    `/${this.props.match.params.network}/message/${result.includedMessageId ?? messageId}`,
-                );
+                window.history.pushState(undefined, window.document.title, `/${this.props.match.params.network
+                    }/message/${result.includedMessageId ?? messageId}`);
             }
         } else {
-            this.props.history.replace(`/${this.props.match.params.network}/search/${messageId}`);
+            this.props.history.replace(`/${this.props.match.params.network
+                }/search/${messageId}`);
         }
     }
 }
 
 export default Message;
+

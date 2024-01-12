@@ -6,6 +6,7 @@ import { IndexationPayloadProps } from "./IndexationPayloadProps";
 import { IndexationPayloadState } from "./IndexationPayloadState";
 import Modal from "../../components/Modal";
 
+
 /**
  * Component which will display a indexation payload.
  */
@@ -18,7 +19,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         super(props);
         this.state = {
             hexIndex: this.props.payload.index,
-            hexData: this.props.payload.data,
+            hexData: this.props.payload.data
         };
     }
 
@@ -26,7 +27,7 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
         if (prevProps.payload !== this.props.payload) {
             this.setState({
                 hexIndex: this.props.payload.index,
-                hexData: this.props.payload.data,
+                hexData: this.props.payload.data
             });
         }
     }
@@ -40,7 +41,9 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
             <div>
                 <div className="section--header">
                     <div className="row middle">
-                        <h2>Indexation Payload</h2>
+                        <h2>
+                            Indexation Payload
+                        </h2>
                         <Modal icon="info" data={indexationMessage} />
                     </div>
                 </div>
@@ -59,7 +62,10 @@ class IndexationPayload extends Component<IndexationPayloadProps, IndexationPayl
                             <div className="label row middle">
                                 <span className="margin-r-t">Data</span>
                             </div>
-                            <DataToggle sourceData={this.state.hexData} withSpacedHex={true} />
+                            <DataToggle
+                                sourceData={this.state.hexData}
+                                withSpacedHex={true}
+                            />
                         </React.Fragment>
                     )}
                 </div>

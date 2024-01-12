@@ -41,7 +41,7 @@
 
         .nft-image-placeholder__content {
             @include font-size(16px);
-            letter-spacing: 0.1em;
+            letter-spacing: 0.10em;
             font-family: $metropolis-light;
             line-height: 1.5em;
             text-align: center;
@@ -49,3 +49,4 @@
         }
     }
 }
+

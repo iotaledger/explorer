@@ -20,30 +20,30 @@ export class LegacyTangleHelper {
         network: INetwork,
         hashTypeName: TransactionsGetMode,
         hash: string,
-        limit?: number,
-    ): Promise<{
-        /**
-         * The hashes we found in the lookup
-         */
-        hashes: string[];
-        /**
-         * Cursor for getting more items.
-         */
-        cursor?: ITransactionsCursor;
-    }> {
+        limit?: number): Promise<{
+            /**
+             * The hashes we found in the lookup
+             */
+            hashes: string[];
+            /**
+             * Cursor for getting more items.
+             */
+            cursor?: ITransactionsCursor;
+        }> {
         const findReq = {};
         findReq[hashTypeName] = [hash];
 
         let hashes: string[] = [];
 
-        const cursor: ITransactionsCursor = {};
+        const cursor: ITransactionsCursor = {
+        };
 
         try {
             const client = new LegacyClient(network.provider, network.user, network.password);
 
             const response = await client.findTransactions({
                 ...findReq,
-                maxresults: 5000,
+                maxresults: 5000
             });
 
             if (response?.txHashes && response.txHashes.length > 0) {
@@ -68,7 +68,7 @@ export class LegacyTangleHelper {
 
         return {
             hashes,
-            cursor,
+            cursor
         };
     }
 
@@ -80,18 +80,18 @@ export class LegacyTangleHelper {
      */
     public static async getTrytes(
         network: INetwork,
-        txHashes: string[],
-    ): Promise<{
-        /**
-         * The trytes for the requested transactions.
-         */
-        trytes?: string[];
+        txHashes: string[]): Promise<{
+            /**
+             * The trytes for the requested transactions.
+             */
+            trytes?: string[];
 
-        /**
-         * The confirmation state of the transactions.
-         */
-        milestoneIndexes?: number[];
-    }> {
+            /**
+             * The confirmation state of the transactions.
+             */
+            milestoneIndexes?: number[];
+        }
+        > {
         const allTrytes: {
             /**
              * The legacy index.
@@ -112,7 +112,7 @@ export class LegacyTangleHelper {
         }[] = txHashes.map((h, idx) => ({ index: idx, txHash: h, milestoneIndex: null }));
 
         try {
-            const missingTrytes = allTrytes.filter((a) => !a.trytes);
+            const missingTrytes = allTrytes.filter(a => !a.trytes);
 
             if (missingTrytes.length > 0) {
                 const client = new LegacyClient(network.provider, network.user, network.password);
@@ -129,7 +129,7 @@ export class LegacyTangleHelper {
         }
 
         try {
-            const missingState = allTrytes.filter((a) => a.milestoneIndex === null);
+            const missingState = allTrytes.filter(a => a.milestoneIndex === null);
             if (missingState.length > 0) {
                 const client = new LegacyClient(network.provider, network.user, network.password);
 
@@ -145,8 +145,8 @@ export class LegacyTangleHelper {
         }
 
         return {
-            trytes: allTrytes.map((t) => t.trytes || "9".repeat(2673)),
-            milestoneIndexes: allTrytes.map((t) => t.milestoneIndex ?? 0),
+            trytes: allTrytes.map(t => t.trytes || "9".repeat(2673)),
+            milestoneIndexes: allTrytes.map(t => t.milestoneIndex ?? 0)
         };
     }
 
@@ -156,7 +156,9 @@ export class LegacyTangleHelper {
      * @param addressHash The addresss hash to get the balance.
      * @returns The balance for the address.
      */
-    public static async getAddressBalance(network: INetwork, addressHash: string): Promise<number> {
+    public static async getAddressBalance(
+        network: INetwork,
+        addressHash: string): Promise<number> {
         try {
             const client = new LegacyClient(network.provider, network.user, network.password);
 

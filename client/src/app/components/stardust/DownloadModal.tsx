@@ -43,15 +43,26 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
 
     return (
         <div className="download-modal">
-            <button type="button" className="modal--icon" onClick={() => onModalToggle(true)}>
-                <span className="material-icons">download</span>
+            <button
+                type="button"
+                className="modal--icon"
+                onClick={() => onModalToggle(true)}
+            >
+                <span className="material-icons">
+                    download
+                </span>
             </button>
             {showModal && (
                 <React.Fragment>
                     <div className="modal--content">
                         <div className="modal--header">
-                            <div className="modal--title">Transaction History Download</div>
-                            <button type="button" onClick={() => onModalToggle(false)}>
+                            <div className="modal--title">
+                                Transaction History Download
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => onModalToggle(false)}
+                            >
                                 <span className="material-icons">close</span>
                             </button>
                         </div>
@@ -61,7 +72,9 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                     <div className="date-label">Select target date</div>
                                     <Tooltip tooltipContent={DOWNLOAD_INFO}>
                                         <div className="modal--icon">
-                                            <span className="material-icons">info</span>
+                                            <span className="material-icons">
+                                                info
+                                            </span>
                                         </div>
                                     </Tooltip>
                                 </div>
@@ -71,24 +84,36 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                                         isValidDate={(current: moment.Moment) => current.isBefore(moment())}
                                         inputProps={{ placeholder: "MM/DD/YYYY" }}
                                         timeFormat={false}
-                                        onChange={(value) => onDateSelect(value as string)}
+                                        onChange={value => onDateSelect(value as string)}
                                     />
                                 </div>
                             </div>
                             {isDownloading ? (
-                                <button className="confirm-button" type="button" disabled={true}>
+                                <button
+                                    className="confirm-button"
+                                    type="button"
+                                    disabled={true}
+                                >
                                     <div className="spinner-container">
                                         <Spinner compact={true} />
                                     </div>
                                 </button>
                             ) : (
-                                <button className="confirm-button" type="button" disabled={date === null} onClick={onDownload}>
+                                <button
+                                    className="confirm-button"
+                                    type="button"
+                                    disabled={date === null}
+                                    onClick={onDownload}
+                                >
                                     Confirm
                                 </button>
                             )}
                         </div>
                     </div>
-                    <div className="modal--bg" onClick={() => onModalToggle(false)} />
+                    <div
+                        className="modal--bg"
+                        onClick={() => onModalToggle(false)}
+                    />
                 </React.Fragment>
             )}
         </div>
@@ -96,3 +121,4 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
 };
 
 export default DownloadModal;
+

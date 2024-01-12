@@ -1,22 +1,11 @@
 /* eslint-disable react/static-property-placement */
 import {
-    AddressType,
-    AliasAddress,
-    AliasOutput,
-    CommonOutput,
-    ExpirationUnlockCondition,
-    FoundryOutput,
-    ImmutableAliasAddressUnlockCondition,
-    INodeInfoBaseToken,
-    NftOutput,
-    OutputType,
-    SimpleTokenScheme,
+    AddressType, AliasAddress, AliasOutput,
+    CommonOutput, ExpirationUnlockCondition, FoundryOutput, ImmutableAliasAddressUnlockCondition,
+    INodeInfoBaseToken, NftOutput, OutputType, SimpleTokenScheme,
     StorageDepositReturnUnlockCondition,
     TimelockUnlockCondition,
-    TokenSchemeType,
-    UnlockCondition as IUnlockCondition,
-    UnlockConditionType,
-    Utils,
+    TokenSchemeType, UnlockCondition as IUnlockCondition, UnlockConditionType, Utils
 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
@@ -62,7 +51,7 @@ class Output extends Component<OutputProps, OutputState> {
 
         this.state = {
             isExpanded: this.props.isPreExpanded ?? false,
-            isFormattedBalance: true,
+            isFormattedBalance: true
         };
     }
 
@@ -71,55 +60,61 @@ class Output extends Component<OutputProps, OutputState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId, isLinksDisabled } = this.props;
+        const {
+            outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId, isLinksDisabled
+        } = this.props;
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
         const aliasOrNftBech32 = this.buildAddressForAliasOrNft();
         const foundryId = this.buildFoundryId();
 
-        const outputIdTransactionPart = displayFullOutputId
-            ? `${outputId.slice(0, -4)}`
-            : `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
+        const outputIdTransactionPart = displayFullOutputId ?
+            `${outputId.slice(0, -4)}` :
+            `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
         const outputIdIndexPart = outputId.slice(-4);
         const isSpecialCondition = this.hasSpecialCondition();
         const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
 
-        const specialUnlockCondition =
-            output.type !== OutputType.Treasury &&
-            isSpecialCondition &&
-            (output as CommonOutput).unlockConditions.map((unlockCondition, idx) => (
-                <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
-                    <span className="material-icons unlock-condition-icon">
-                        {unlockCondition.type === UnlockConditionType.StorageDepositReturn && "arrow_back"}
-                        {unlockCondition.type === UnlockConditionType.Expiration && "hourglass_bottom"}
-                        {unlockCondition.type === UnlockConditionType.Timelock && "schedule"}
-                    </span>
-                </Tooltip>
-            ));
+        const specialUnlockCondition = (
+            output.type !== OutputType.Treasury && isSpecialCondition) && (
+                (output as CommonOutput).unlockConditions.map((unlockCondition, idx) => (
+                    <Tooltip key={idx} tooltipContent={this.getSpecialUnlockConditionContent(unlockCondition)}>
+                        <span className="material-icons unlock-condition-icon">
+                            {unlockCondition.type === UnlockConditionType.StorageDepositReturn && "arrow_back"}
+                            {unlockCondition.type === UnlockConditionType.Expiration && "hourglass_bottom"}
+                            {unlockCondition.type === UnlockConditionType.Timelock && "schedule"}
+                        </span>
+                    </Tooltip>
+                ))
+            );
 
         const outputHeader = (
-            <div onClick={() => this.setState({ isExpanded: !isExpanded })} className="card--value card-header--wrapper">
+            <div
+                onClick={() => this.setState({ isExpanded: !isExpanded })}
+                className="card--value card-header--wrapper"
+            >
                 <div className={classNames("card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
                 <div className="output-header">
-                    <button type="button" className="output-type--name color">
+                    <button
+                        type="button"
+                        className="output-type--name color"
+                    >
                         {NameHelper.getOutputTypeName(output.type)}
                     </button>
                     <div className="output-id--link">
                         (
-                        {isLinksDisabled ? (
+                        {isLinksDisabled ?
                             <div className="margin-r-t">
                                 <span className="highlight">{outputIdTransactionPart}</span>
                                 <span className="highlight">{outputIdIndexPart}</span>
-                            </div>
-                        ) : (
+                            </div> :
                             <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
                                 <span>{outputIdTransactionPart}</span>
                                 <span className="highlight">{outputIdIndexPart}</span>
-                            </Link>
-                        )}
+                            </Link>}
                         )
                         <CopyButton copy={String(outputId)} />
                     </div>
@@ -129,7 +124,7 @@ class Output extends Component<OutputProps, OutputState> {
                     <div className="card--value pointer amount-size row end">
                         <span
                             className="pointer"
-                            onClick={(e) => {
+                            onClick={e => {
                                 this.setState({ isFormattedBalance: !isFormattedBalance });
                                 e.stopPropagation();
                             }}
@@ -163,7 +158,10 @@ class Output extends Component<OutputProps, OutputState> {
                                     <React.Fragment>
                                         <div className="card--label">State metadata:</div>
                                         <div className="card--value row">
-                                            <DataToggle sourceData={(output as AliasOutput).stateMetadata ?? ""} withSpacedHex={true} />
+                                            <DataToggle
+                                                sourceData={(output as AliasOutput).stateMetadata ?? ""}
+                                                withSpacedHex={true}
+                                            />
                                         </div>
                                     </React.Fragment>
                                 )}
@@ -200,20 +198,31 @@ class Output extends Component<OutputProps, OutputState> {
                                 <div className="card--label">Serial number:</div>
                                 <div className="card--value row">{(output as FoundryOutput).serialNumber}</div>
                                 <div className="card--label">Token scheme type:</div>
-                                <div className="card--value row">{(output as FoundryOutput).tokenScheme.type}</div>
+                                <div className="card--value row">
+                                    {(output as FoundryOutput).tokenScheme.type}
+                                </div>
                                 {(output as FoundryOutput).tokenScheme.type === TokenSchemeType.Simple && (
                                     <React.Fragment>
                                         <div className="card--label">Minted tokens:</div>
                                         <div className="card--value row">
-                                            {Number(((output as FoundryOutput).tokenScheme as SimpleTokenScheme).mintedTokens)}
+                                            {Number(
+                                                ((output as FoundryOutput).tokenScheme as SimpleTokenScheme)
+                                                    .mintedTokens
+                                            )}
                                         </div>
                                         <div className="card--label">Melted tokens:</div>
                                         <div className="card--value row">
-                                            {Number(((output as FoundryOutput).tokenScheme as SimpleTokenScheme).meltedTokens)}
+                                            {Number(
+                                                ((output as FoundryOutput).tokenScheme as SimpleTokenScheme)
+                                                    .meltedTokens
+                                            )}
                                         </div>
                                         <div className="card--label">Maximum supply:</div>
                                         <div className="card--value row">
-                                            {Number(((output as FoundryOutput).tokenScheme as SimpleTokenScheme).maximumSupply)}
+                                            {Number(
+                                                ((output as FoundryOutput).tokenScheme as SimpleTokenScheme)
+                                                    .maximumSupply
+                                            )}
                                         </div>
                                     </React.Fragment>
                                 )}
@@ -224,7 +233,11 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => (
-                                    <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isPreExpanded} />
+                                    <UnlockCondition
+                                        key={idx}
+                                        unlockCondition={unlockCondition}
+                                        isPreExpanded={isPreExpanded}
+                                    />
                                 ))}
                                 {(output as CommonOutput).features?.map((feature, idx) => (
                                     <Feature
@@ -235,20 +248,46 @@ class Output extends Component<OutputProps, OutputState> {
                                         isParticipationEventMetadata={isParticipationOutput}
                                     />
                                 ))}
-                                {output.type === OutputType.Alias &&
-                                    (output as AliasOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                                        <Feature key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                                    ))}
-                                {output.type === OutputType.Nft &&
-                                    (output as NftOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                                        <Feature key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                                    ))}
-                                {output.type === OutputType.Foundry &&
-                                    (output as FoundryOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                                        <Feature key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                                    ))}
+                                {output.type === OutputType.Alias && (
+                                    (output as AliasOutput)
+                                        .immutableFeatures?.map((immutableFeature, idx) => (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isPreExpanded={isPreExpanded}
+                                                isImmutable={true}
+                                            />
+                                        ))
+                                )}
+                                {output.type === OutputType.Nft && (
+                                    (output as NftOutput)
+                                        .immutableFeatures?.map((immutableFeature, idx) => (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isPreExpanded={isPreExpanded}
+                                                isImmutable={true}
+                                            />
+                                        ))
+                                )}
+                                {output.type === OutputType.Foundry && (
+                                    (output as FoundryOutput)
+                                        .immutableFeatures?.map((immutableFeature, idx) => (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isPreExpanded={isPreExpanded}
+                                                isImmutable={true}
+                                            />
+                                        ))
+                                )}
                                 {(output as CommonOutput).nativeTokens?.map((token, idx) => (
-                                    <NativeToken key={idx} tokenId={token.id} amount={Number(token.amount)} isPreExpanded={isPreExpanded} />
+                                    <NativeToken
+                                        key={idx}
+                                        tokenId={token.id}
+                                        amount={Number(token.amount)}
+                                        isPreExpanded={isPreExpanded}
+                                    />
                                 ))}
                             </React.Fragment>
                         )}
@@ -277,7 +316,11 @@ class Output extends Component<OutputProps, OutputState> {
             addressType = AddressType.Nft;
         }
 
-        return Bech32AddressHelper.buildAddress(this.context.bech32Hrp, address, addressType).bech32;
+        return Bech32AddressHelper.buildAddress(
+            this.context.bech32Hrp,
+            address,
+            addressType
+        ).bech32;
     }
 
     /**
@@ -294,7 +337,11 @@ class Output extends Component<OutputProps, OutputState> {
             const serialNumber = (output as FoundryOutput).serialNumber;
             const tokenSchemeType = (output as FoundryOutput).tokenScheme.type;
 
-            return Utils.computeTokenId(aliasId, serialNumber, tokenSchemeType);
+            return Utils.computeTokenId(
+                aliasId,
+                serialNumber,
+                tokenSchemeType
+            );
         }
     }
 
@@ -342,11 +389,10 @@ class Output extends Component<OutputProps, OutputState> {
 
         if (this.props.output.type !== OutputType.Treasury) {
             const commonOutput = this.props.output as CommonOutput;
-            specialUnlockConditionExists = commonOutput.unlockConditions.some(
-                (condition) =>
-                    condition.type === UnlockConditionType.StorageDepositReturn ||
-                    condition.type === UnlockConditionType.Expiration ||
-                    condition.type === UnlockConditionType.Timelock,
+            specialUnlockConditionExists = commonOutput.unlockConditions.some(condition =>
+                condition.type === UnlockConditionType.StorageDepositReturn ||
+                condition.type === UnlockConditionType.Expiration ||
+                condition.type === UnlockConditionType.Timelock
             );
         }
         return specialUnlockConditionExists;

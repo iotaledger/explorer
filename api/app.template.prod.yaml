@@ -3,25 +3,25 @@ env: flex
 service: %SERVICE-ID%
 
 network:
-    session_affinity: true
+  session_affinity: true
 
 automatic_scaling:
-    min_num_instances: 1
-    max_num_instances: 6
-    cool_down_period_sec: 180
-    cpu_utilization:
-        target_utilization: 0.6
-    target_concurrent_requests: 80
+  min_num_instances: 1
+  max_num_instances: 6
+  cool_down_period_sec: 180
+  cpu_utilization:
+    target_utilization: 0.6
+  target_concurrent_requests: 80
 
 resources:
-    cpu: 2
-    memory_gb: 6
-    disk_size_gb: 20
+  cpu: 2
+  memory_gb: 6
+  disk_size_gb: 20
 
 handlers:
-    - url: /(.*)
-      static_files: dist/\1
-      upload: dist/(.*)
+  - url: /(.*)
+    static_files: dist/\1
+    upload: dist/(.*)
 
 env_variables:
-    CONFIG_ID: "%CONFIG-ID%"
+  CONFIG_ID: "%CONFIG-ID%"

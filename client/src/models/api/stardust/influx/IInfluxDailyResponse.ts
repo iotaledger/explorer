@@ -112,3 +112,4 @@ export interface IInfluxDailyResponse extends IResponse {
     ledgerSizeDaily?: ILedgerSizeDailyInflux[];
     storageDepositDaily?: IStorageDepositDailyInflux[];
 }
+

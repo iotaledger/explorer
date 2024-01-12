@@ -8,63 +8,93 @@ import { ITimedEntry } from "../../../models/influx/IInfluxTimedEntries";
  */
 export class InfluxDBService extends InfluxDbClient {
     public get blocksDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.blocksDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.blocksDaily
+        );
     }
 
     public get transactionsDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.transactionsDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.transactionsDaily
+        );
     }
 
     public get outputsDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.outputsDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.outputsDaily
+        );
     }
 
     public get tokensHeldDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.tokensHeldDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.tokensHeldDaily
+        );
     }
 
     public get addressesWithBalanceDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.addressesWithBalanceDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.addressesWithBalanceDaily
+        );
     }
 
     public get activeAddressesDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.activeAddressesDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.activeAddressesDaily
+        );
     }
 
     public get tokensTransferredDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.tokensTransferredDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.tokensTransferredDaily
+        );
     }
 
     public get aliasActivityDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.aliasActivityDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.aliasActivityDaily
+        );
     }
 
     public get unlockConditionsPerTypeDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.unlockConditionsPerTypeDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.unlockConditionsPerTypeDaily
+        );
     }
 
     public get nftActivityDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.nftActivityDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.nftActivityDaily
+        );
     }
 
     public get tokensHeldWithUnlockConditionDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.tokensHeldWithUnlockConditionDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.tokensHeldWithUnlockConditionDaily
+        );
     }
 
     public get unclaimedTokensDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.unclaimedTokensDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.unclaimedTokensDaily
+        );
     }
 
     public get unclaimedGenesisOutputsDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.unclaimedGenesisOutputsDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.unclaimedGenesisOutputsDaily
+        );
     }
 
     public get ledgerSizeDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.ledgerSizeDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.ledgerSizeDaily
+        );
     }
 
     public get storageDepositDaily() {
-        return this.mapToSortedValuesArray(this._dailyCache.storageDepositDaily);
+        return this.mapToSortedValuesArray(
+            this._dailyCache.storageDepositDaily
+        );
     }
 
     public get addressesWithBalance() {
@@ -96,7 +126,9 @@ export class InfluxDBService extends InfluxDbClient {
         return this._milestoneCache.get(milestoneIndex);
     }
 
-    public async fetchAnalyticsForMilestoneWithRetries(milestoneIndex: number): Promise<IMilestoneAnalyticStats | undefined> {
+    public async fetchAnalyticsForMilestoneWithRetries(
+        milestoneIndex: number
+    ): Promise<IMilestoneAnalyticStats | undefined> {
         const MAX_RETRY = 30;
         const RETRY_TIMEOUT = 350;
 
@@ -108,13 +140,16 @@ export class InfluxDBService extends InfluxDbClient {
             logger.debug(`[InfluxDbService] Try ${retries} of fetching milestone stats for ${milestoneIndex}`);
             maybeMsStats = this._milestoneCache.get(milestoneIndex);
 
-            await new Promise((f) => setTimeout(f, RETRY_TIMEOUT));
+            await new Promise(f => setTimeout(f, RETRY_TIMEOUT));
         }
 
         return maybeMsStats;
     }
 
     private mapToSortedValuesArray<T extends ITimedEntry>(cacheEntry: Map<string, T>): T[] {
-        return Array.from(cacheEntry.values()).sort(this.ENTRIES_ASC_SORT);
+        return Array.from(
+            cacheEntry.values()
+        ).sort(this.ENTRIES_ASC_SORT);
     }
 }
+

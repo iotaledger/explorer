@@ -15,7 +15,9 @@ import TruncatedId from "../../../TruncatedId";
 /**
  * Component which will display an asset.
  */
-const Asset: React.FC<AssetProps> = ({ network, tableFormat, token }) => {
+const Asset: React.FC<AssetProps> = (
+    { network, tableFormat, token }
+) => {
     const [foundryDetails, isLoading] = useFoundryDetails(network, token.id);
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>(null);
     const [isWhitelisted] = useTokenRegistryNativeTokenCheck(token.id);
@@ -24,7 +26,9 @@ const Asset: React.FC<AssetProps> = ({ network, tableFormat, token }) => {
         if (isWhitelisted && foundryDetails) {
             const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
 
-            const metadata = immutableFeatures?.find((feature) => feature.type === FeatureType.Metadata) as MetadataFeature;
+            const metadata = immutableFeatures?.find(
+                feature => feature.type === FeatureType.Metadata
+            ) as MetadataFeature;
 
             if (metadata) {
                 updateTokenInfo(metadata);
@@ -42,7 +46,7 @@ const Asset: React.FC<AssetProps> = ({ network, tableFormat, token }) => {
             if (result.valid) {
                 setTokenMetadata(tokenInfo);
             }
-        } catch {}
+        } catch { }
     };
 
     const buildTokenName = (name: string, logoUrl?: string): string | ReactElement => {
@@ -61,46 +65,68 @@ const Asset: React.FC<AssetProps> = ({ network, tableFormat, token }) => {
      * Render the component.
      * @returns The node to render.
      */
-    return tableFormat ? (
-        <tr>
-            <td className="truncate">
-                {isLoading ? <Spinner compact /> : tokenMetadata?.name ? buildTokenName(tokenMetadata.name, tokenMetadata.logoUrl) : "-"}
-            </td>
-            <td>{isLoading ? <Spinner compact /> : tokenMetadata?.symbol ?? "-"}</td>
-            <td className="highlight">
-                <TruncatedId id={token?.id} link={`/${network}/foundry/${token?.id}`} />
-            </td>
-            <td>{token.amount.toString() ?? "-"}</td>
-        </tr>
-    ) : (
-        <div className="asset-card">
-            <div className="field">
-                <div className="label">Name</div>
-                <div className="value truncate">
+    return (
+        tableFormat ? (
+            <tr>
+                <td className="truncate">
                     {isLoading ? (
                         <Spinner compact />
-                    ) : tokenMetadata?.name ? (
-                        buildTokenName(tokenMetadata.name, tokenMetadata.logoUrl)
                     ) : (
-                        "-"
+                        tokenMetadata?.name ? buildTokenName(tokenMetadata.name, tokenMetadata.logoUrl) : "-"
                     )}
+                </td>
+                <td>
+                    {isLoading ? (
+                        <Spinner compact />
+                    ) : (
+                        tokenMetadata?.symbol ?? "-"
+                    )}
+                </td>
+                <td className="highlight">
+                    <TruncatedId
+                        id={token?.id}
+                        link={`/${network}/foundry/${token?.id}`}
+                    />
+                </td>
+                <td>{token.amount.toString() ?? "-"}</td>
+            </tr>
+        ) : (
+            <div className="asset-card">
+                <div className="field">
+                    <div className="label">Name</div>
+                    <div className="value truncate">
+                        {isLoading ? (
+                            <Spinner compact />
+                        ) : (
+                            tokenMetadata?.name ? buildTokenName(tokenMetadata.name, tokenMetadata.logoUrl) : "-"
+                        )}
+                    </div>
+                </div>
+                <div className="field">
+                    <div className="label">Symbol</div>
+                    <div className="value">
+                        {isLoading ? (
+                            <Spinner compact />
+                        ) : (
+                            tokenMetadata?.symbol ?? "-"
+                        )}
+                    </div>
+                </div>
+                <div className="field">
+                    <div className="label">Token id</div>
+                    <div className="value">
+                        <TruncatedId
+                            id={token?.id}
+                            link={`/${network}/foundry/${token?.id}`}
+                        />
+                    </div>
+                </div>
+                <div className="field">
+                    <div className="label">Quantity</div>
+                    <div className="value">{token.amount.toString() ?? "-"}</div>
                 </div>
             </div>
-            <div className="field">
-                <div className="label">Symbol</div>
-                <div className="value">{isLoading ? <Spinner compact /> : tokenMetadata?.symbol ?? "-"}</div>
-            </div>
-            <div className="field">
-                <div className="label">Token id</div>
-                <div className="value">
-                    <TruncatedId id={token?.id} link={`/${network}/foundry/${token?.id}`} />
-                </div>
-            </div>
-            <div className="field">
-                <div className="label">Quantity</div>
-                <div className="value">{token.amount.toString() ?? "-"}</div>
-            </div>
-        </div>
+        )
     );
 };
 

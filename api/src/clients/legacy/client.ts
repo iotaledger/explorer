@@ -81,18 +81,18 @@ export class LegacyClient {
                 `core/v0/transactions${params}`,
                 "get",
                 null,
-                headers,
+                headers
             );
 
             if (response.error) {
-                logger.error(`[LegacyClient] findTransactions failed: ${response.error}\n
+                logger.error(`[LegacyClient] findTransactions failed: ${(response.error)}\n
                              ${FetchHelper.convertToCurl(this._endpoint, `core/v0/transactions${params}`, "post", headers, null)}
                              `);
             }
 
             return response;
         } catch (err) {
-            logger.error(`[LegacyClient] findTransactions error: ${err.response?.data?.error ?? err}`);
+            logger.error(`[LegacyClient] findTransactions error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 
@@ -114,24 +114,19 @@ export class LegacyClient {
                 `core/v0/transactions/${request.txHash}/trytes`,
                 "get",
                 null,
-                headers,
+                headers
             );
 
             if (response.error) {
-                logger.error(`[LegacyClient] getTrytes failed: ${response.error}\n
-                             ${FetchHelper.convertToCurl(
-                                 this._endpoint,
-                                 `core/v0/transactions/${request.txHash}/trytes`,
-                                 "get",
-                                 headers,
-                                 null,
-                             )}
+                logger.error(`[LegacyClient] getTrytes failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint,
+                    `core/v0/transactions/${request.txHash}/trytes`, "get", headers, null)}
                              `);
             }
 
             return response;
         } catch (err) {
-            logger.error(`[LegacyClient] getTrytes error: ${err.response?.data?.error ?? err}`);
+            logger.error(`[LegacyClient] getTrytes error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 
@@ -153,24 +148,19 @@ export class LegacyClient {
                 `core/v0/transactions/${request.txHash}/metadata`,
                 "get",
                 null,
-                headers,
+                headers
             );
 
             if (response.error) {
-                logger.error(`[LegacyClient] getTransactionMetadata failed: ${response.error}\n
-                             ${FetchHelper.convertToCurl(
-                                 this._endpoint,
-                                 `core/v0/transactions/${request.txHash}/metadata`,
-                                 "get",
-                                 headers,
-                                 null,
-                             )}
+                logger.error(`[LegacyClient] getTransactionMetadata failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint,
+                    `core/v0/transactions/${request.txHash}/metadata`, "get", headers, null)}
                              `);
             }
 
             return response;
         } catch (err) {
-            logger.error(`[LegacyClient] getTransactionMetadata error: ${err.response?.data?.error ?? err}`);
+            logger.error(`[LegacyClient] getTransactionMetadata error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 
@@ -192,24 +182,19 @@ export class LegacyClient {
                 `core/v0/addresses/${request.address}/balance`,
                 "get",
                 null,
-                headers,
+                headers
             );
 
             if (response.error) {
-                logger.error(`[LegacyClient] getBalance failed: ${response.error}\n
-                             ${FetchHelper.convertToCurl(
-                                 this._endpoint,
-                                 `core/v0/addresses/${request.address}/balance`,
-                                 "get",
-                                 headers,
-                                 null,
-                             )}
+                logger.error(`[LegacyClient] getBalance failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint,
+                    `core/v0/addresses/${request.address}/balance`, "get", headers, null)}
                              `);
             }
 
             return response;
         } catch (err) {
-            logger.error(`[LegacyClient] getBalance error: ${err.response?.data?.error ?? err}`);
+            logger.error(`[LegacyClient] getBalance error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 
@@ -231,24 +216,19 @@ export class LegacyClient {
                 `core/v0/milestones/by-index/${request.milestoneIndex}`,
                 "get",
                 null,
-                headers,
+                headers
             );
 
             if (response.error) {
-                logger.error(`[LegacyClient] milestoneByIndex failed: ${response.error}\n
-                             ${FetchHelper.convertToCurl(
-                                 this._endpoint,
-                                 `core/v0/milestones/by-index/${request.milestoneIndex}`,
-                                 "get",
-                                 headers,
-                                 null,
-                             )}
+                logger.error(`[LegacyClient] milestoneByIndex failed: ${(response.error)}\n
+                             ${FetchHelper.convertToCurl(this._endpoint,
+                    `core/v0/milestones/by-index/${request.milestoneIndex}`, "get", headers, null)}
                              `);
             }
 
             return response;
         } catch (err) {
-            logger.error(`[LegacyClient] milestoneByIndex error: ${err.response?.data?.error ?? err}`);
+            logger.error(`[LegacyClient] milestoneByIndex error: ${(err.response?.data?.error) ?? err}`);
         }
     }
 }

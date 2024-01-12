@@ -3,7 +3,7 @@ import { BigInteger } from "big-integer";
 /**
  * Address details with balance info.
  */
-export default interface IAddressDetailsWithBalance {
+ export default interface IAddressDetailsWithBalance {
     /**
      * The hex for the address the details are for.
      */
@@ -36,3 +36,4 @@ export default interface IAddressDetailsWithBalance {
      */
     ledgerIndex: number;
 }
+

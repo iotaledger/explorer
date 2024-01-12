@@ -1,6 +1,12 @@
 {
-    "extends": ["stylelint-config-standard-scss", "stylelint-config-sass-guidelines", "stylelint-config-property-sort-order-smacss"],
-    "plugins": ["stylelint-scss"],
+    "extends": [
+        "stylelint-config-standard-scss",
+        "stylelint-config-sass-guidelines",
+        "stylelint-config-property-sort-order-smacss"
+    ],
+    "plugins": [
+        "stylelint-scss"
+    ],
     "rules": {
         "order/properties-alphabetical-order": null,
         "order/properties-order": null,
@@ -10,9 +16,8 @@
         "max-nesting-depth": 5,
         "selector-max-compound-selectors": 6,
         "selector-no-qualifying-type": null,
-        "selector-class-pattern": ["^([a-z][a-z0-9]*)([-|_]{0,2}[a-z0-9]+)*$"],
-        "string-quotes": null,
-        "max-line-length": 140,
-        "indentation": 4
+        "selector-class-pattern": [
+            "^([a-z][a-z0-9]*)([-|_]{0,2}[a-z0-9]+)*$"
+        ]
     }
 }

@@ -46,7 +46,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status: "",
             completion: "",
             redirect: "",
-            invalidError: "",
+            invalidError: ""
         };
     }
 
@@ -77,82 +77,94 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     public render(): ReactNode {
         return this.state.redirect ? (
             <Redirect to={this.state.redirect} />
-        ) : (
-            <div className="search">
-                <div className="wrapper">
-                    <div className="inner">
-                        <h1 className="margin-b-s">Search</h1>
-                        {!this.state.completion && this.state.status && (
-                            <div className="card">
-                                <div className="card--header">
-                                    <h2>Searching</h2>
-                                </div>
-                                <div className="card--content middle row">
-                                    {this.state.statusBusy && <Spinner />}
-                                    <p className="status">{this.state.status}</p>
-                                </div>
-                            </div>
-                        )}
-                        {this.state.completion === "notFound" && (
-                            <div className="card">
-                                <div className="card--header">
-                                    <h2>Not found</h2>
-                                </div>
-                                <div className="card--content">
-                                    <p>We could not find any transactions, bundles, addresses, milestones or tags for the query.</p>
-                                    <br />
-                                    <div className="card--value">
-                                        <ul>
-                                            <li>
-                                                <span>Query</span>
-                                                <span>{this.props.match.params.query}</span>
-                                            </li>
-                                        </ul>
+        )
+            : (
+                <div className="search">
+                    <div className="wrapper">
+                        <div className="inner">
+                            <h1 className="margin-b-s">
+                                Search
+                            </h1>
+                            {!this.state.completion && this.state.status && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Searching</h2>
+                                    </div>
+                                    <div className="card--content middle row">
+                                        {this.state.statusBusy && (<Spinner />)}
+                                        <p className="status">
+                                            {this.state.status}
+                                        </p>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                        {this.state.completion === "invalid" && (
-                            <div className="card">
-                                <div className="card--header">
-                                    <h2>Incorrect query format</h2>
+                            )}
+                            {this.state.completion === "notFound" && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Not found</h2>
+                                    </div>
+                                    <div className="card--content">
+                                        <p>
+                                            We could not find any transactions, bundles, addresses, milestones
+                                            or tags for the query.
+                                        </p>
+                                        <br />
+                                        <div className="card--value">
+                                            <ul>
+                                                <li>
+                                                    <span>Query</span>
+                                                    <span>{this.props.match.params.query}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="card--content">
-                                    <p className="danger">The supplied hash does not appear to be valid, {this.state.invalidError}.</p>
-                                    <br />
-                                    <p>The following formats are supported:</p>
-                                    <br />
-                                    <ul>
-                                        <li>
-                                            <span>Tags</span>
-                                            <span>&lt;= 27 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Transactions</span>
-                                            <span>81 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Bundles</span>
-                                            <span>81 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Addresses</span>
-                                            <span>81 or 90 Trytes</span>
-                                        </li>
-                                        <li>
-                                            <span>Milestone Index</span>
-                                            <span>Numeric</span>
-                                        </li>
-                                    </ul>
-                                    <br />
-                                    <p>Please perform another search with a valid hash.</p>
+                            )}
+                            {this.state.completion === "invalid" && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Incorrect query format</h2>
+                                    </div>
+                                    <div className="card--content">
+                                        <p className="danger">
+                                            The supplied hash does not appear to be valid, {
+                                                this.state.invalidError
+                                            }.
+                                        </p>
+                                        <br />
+                                        <p>The following formats are supported:</p>
+                                        <br />
+                                        <ul>
+                                            <li>
+                                                <span>Tags</span>
+                                                <span>&lt;= 27 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Transactions</span>
+                                                <span>81 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Bundles</span>
+                                                <span>81 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Addresses</span>
+                                                <span>81 or 90 Trytes</span>
+                                            </li>
+                                            <li>
+                                                <span>Milestone Index</span>
+                                                <span>Numeric</span>
+                                            </li>
+                                        </ul>
+                                        <br />
+                                        <p>Please perform another search with a valid hash.</p>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
-                </div>
-            </div>
-        );
+                </div >
+            );
     }
 
     /**
@@ -173,28 +185,29 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                 status = "Searching milestone by index...";
                 statusBusy = true;
                 if (this._isMounted) {
-                    setTimeout(async () => {
-                        if (this._isMounted) {
-                            const { milestoneHash } = await this._apiClient.milestoneGet({
-                                network: this.props.match.params.network,
-                                milestoneIndex: index,
-                            });
+                    setTimeout(
+                        async () => {
+                            if (this._isMounted) {
+                                const { milestoneHash } = await this._apiClient.milestoneGet({
+                                    network: this.props.match.params.network,
+                                    milestoneIndex: index
+                                });
 
-                            if (milestoneHash) {
-                                this.setState({
-                                    status: "",
-                                    statusBusy: false,
-                                    redirect: `/${this.props.match.params.network}/transaction/${milestoneHash}`,
-                                });
-                            } else {
-                                this.setState({
-                                    completion: "notFound",
-                                    status: "",
-                                    statusBusy: false,
-                                });
+                                if (milestoneHash) {
+                                    this.setState({
+                                        status: "",
+                                        statusBusy: false,
+                                        redirect: `/${this.props.match.params.network}/transaction/${milestoneHash}`
+                                    });
+                                } else {
+                                    this.setState({
+                                        completion: "notFound",
+                                        status: "",
+                                        statusBusy: false
+                                    });
+                                }
                             }
-                        }
-                    }, 0);
+                        }, 0);
                 }
             } else if (TrytesHelper.isTrytes(query)) {
                 if (query.length <= 27) {
@@ -205,40 +218,41 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                     status = "Detecting hash type...";
                     statusBusy = true;
                     if (this._isMounted) {
-                        setTimeout(async () => {
-                            if (this._isMounted) {
-                                const { hashType } = await this._tangleCacheService.findTransactionHashes(
-                                    this.props.match.params.network,
-                                    undefined,
-                                    query,
-                                );
+                        setTimeout(
+                            async () => {
+                                if (this._isMounted) {
+                                    const { hashType } = await this._tangleCacheService.findTransactionHashes(
+                                        this.props.match.params.network,
+                                        undefined,
+                                        query
+                                    );
 
-                                if (hashType) {
-                                    let ht = "";
+                                    if (hashType) {
+                                        let ht = "";
 
-                                    if (hashType === "address") {
-                                        ht = "address";
-                                    } else if (hashType === "bundle") {
-                                        ht = "bundle";
-                                    } else if (hashType === "tag") {
-                                        ht = "tag";
-                                    } else if (hashType === "transaction") {
-                                        ht = "transaction";
+                                        if (hashType === "address") {
+                                            ht = "address";
+                                        } else if (hashType === "bundle") {
+                                            ht = "bundle";
+                                        } else if (hashType === "tag") {
+                                            ht = "tag";
+                                        } else if (hashType === "transaction") {
+                                            ht = "transaction";
+                                        }
+                                        this.setState({
+                                            status: "",
+                                            statusBusy: false,
+                                            redirect: `/${this.props.match.params.network}/${ht}/${query}`
+                                        });
+                                    } else {
+                                        this.setState({
+                                            completion: "notFound",
+                                            status: "",
+                                            statusBusy: false
+                                        });
                                     }
-                                    this.setState({
-                                        status: "",
-                                        statusBusy: false,
-                                        redirect: `/${this.props.match.params.network}/${ht}/${query}`,
-                                    });
-                                } else {
-                                    this.setState({
-                                        completion: "notFound",
-                                        status: "",
-                                        statusBusy: false,
-                                    });
                                 }
-                            }
-                        }, 0);
+                            }, 0);
                     }
                 } else {
                     invalidError = `the hash length ${query.length} is not valid`;
@@ -258,7 +272,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status,
             completion,
             redirect,
-            invalidError,
+            invalidError
         });
     }
 }

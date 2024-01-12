@@ -1,13 +1,13 @@
 ---
 name: Found a bug?
 description: Fill in this form to report it, and help us improve
-title: "[Bug]: "
+title: '[Bug]: '
 labels: type:bug report
 
 body:
     - type: markdown
       attributes:
-          value: "## Reporting a bug"
+          value: '## Reporting a bug'
     - type: markdown
       attributes:
           value: |
@@ -42,8 +42,8 @@ body:
       attributes:
           label: Can the issue reliably be reproduced?
           options:
-              - "Yes"
-              - "No"
+              - 'Yes'
+              - 'No'
       validations:
           required: true
 

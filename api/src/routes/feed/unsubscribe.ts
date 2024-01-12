@@ -18,7 +18,11 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function unsubscribe(_: IConfiguration, socket: SocketIO.Socket, request: IFeedUnsubscribeRequest): Promise<IResponse> {
+export async function unsubscribe(
+    _: IConfiguration,
+    socket: SocketIO.Socket,
+    request: IFeedUnsubscribeRequest
+): Promise<IResponse> {
     let response: IResponse;
     logger.verbose(`[unsubscribe] req = ${JSON.stringify(request)}`);
 
@@ -30,7 +34,10 @@ export async function unsubscribe(_: IConfiguration, socket: SocketIO.Socket, re
         const networkConfig = networkService.get(request.network);
 
         if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
-            const itemsService = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(`items-${request.network}`);
+            const itemsService = ServiceFactory.get<IItemsServiceLegacy |
+                IItemsServiceChrysalis>(
+                    `items-${request.network}`
+                );
 
             if (itemsService) {
                 itemsService.unsubscribe(request.subscriptionId);
@@ -50,14 +57,14 @@ export async function unsubscribe(_: IConfiguration, socket: SocketIO.Socket, re
             }
         } else {
             return {
-                error: "Network protocol not supported for feed.",
+                error: "Network protocol not supported for feed."
             };
         }
 
         response = {};
     } catch (err) {
         response = {
-            error: err.toString(),
+            error: err.toString()
         };
     }
 

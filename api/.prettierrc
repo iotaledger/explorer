@@ -3,7 +3,7 @@
     "bracketSameLine": false,
     "bracketSpacing": true,
     "semi": true,
-    "experimentalTernaries": false,
+    "experimentalTernaries": true,
     "singleQuote": false,
     "trailingComma": "all",
     "htmlWhitespaceSensitivity": "css",

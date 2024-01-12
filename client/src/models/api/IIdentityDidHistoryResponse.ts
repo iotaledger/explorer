@@ -11,3 +11,4 @@ interface IntegrationChainData {
     document: IIdentityDocument;
     messageId: string;
 }
+

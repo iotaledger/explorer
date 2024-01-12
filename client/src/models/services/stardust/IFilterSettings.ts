@@ -28,3 +28,5 @@ export interface IFilterSettings {
      */
     valueMaximumMagnitude?: Units;
 }
+
+

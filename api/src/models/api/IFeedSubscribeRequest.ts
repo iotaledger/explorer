@@ -11,3 +11,4 @@ export interface IFeedSubscribeRequest {
      */
     feedSelect?: IFeedSelect;
 }
+

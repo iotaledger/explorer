@@ -19,29 +19,40 @@ export default class BigDecimal {
         const [whole, fraction] = value.split(".").concat("");
         this.decimals = decimals;
         this.rounded = rounded;
-        this.n =
-            BigInt(whole + fraction.padEnd(this.decimals, "0").slice(0, this.decimals)) +
-            BigInt(this.rounded && fraction[this.decimals] >= "5");
+        this.n = BigInt(
+            whole + fraction.padEnd(this.decimals, "0").slice(0, this.decimals)
+        ) + BigInt(this.rounded && fraction[this.decimals] >= "5");
     }
 
     public static fromBigInt(bigint: bigint, decimals = 0, rounded = false): BigDecimal {
-        return Object.assign(Object.create(BigDecimal.prototype), { n: bigint, decimals, rounded }) as BigDecimal;
+        return Object.assign(
+            Object.create(BigDecimal.prototype),
+            { n: bigint, decimals, rounded }
+        ) as BigDecimal;
     }
 
     public divRound(dividend: bigint, divisor: bigint): BigDecimal {
         return BigDecimal.fromBigInt(
-            dividend / divisor + (this.rounded ? ((dividend * 2n) / divisor) % 2n : 0n),
+            (dividend / divisor) + (this.rounded ? dividend * 2n / divisor % 2n : 0n),
             this.decimals,
-            this.rounded,
+            this.rounded
         );
     }
 
     public add(other: string): BigDecimal {
-        return BigDecimal.fromBigInt(this.n + new BigDecimal(other, this.decimals, this.rounded).n, this.decimals, this.rounded);
+        return BigDecimal.fromBigInt(
+            this.n + new BigDecimal(other, this.decimals, this.rounded).n,
+            this.decimals,
+            this.rounded
+        );
     }
 
     public subtract(other: string): BigDecimal {
-        return BigDecimal.fromBigInt(this.n - new BigDecimal(other, this.decimals, this.rounded).n, this.decimals, this.rounded);
+        return BigDecimal.fromBigInt(
+            this.n - new BigDecimal(other, this.decimals, this.rounded).n,
+            this.decimals,
+            this.rounded
+        );
     }
 
     public multiply(other: string): BigDecimal {

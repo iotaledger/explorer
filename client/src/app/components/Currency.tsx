@@ -52,9 +52,11 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
             const currency = this._currencyService.getSettingsFiatCode();
             if (this._currencyData && currency) {
                 this._currencyData.fiatCode = currency;
-                this.setState({ currency }, () => {
-                    this.updateCurrency();
-                });
+                this.setState(
+                    { currency },
+                    () => {
+                        this.updateCurrency();
+                    });
             }
         });
     }
@@ -80,12 +82,11 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
             this._currencyService.saveFiatCode(currency);
             this.setState(
                 {
-                    currency,
+                    currency
                 },
                 () => {
                     this.updateCurrency();
-                },
-            );
+                });
         }
     }
 
@@ -97,7 +98,10 @@ abstract class Currency<P, S extends CurrencyState> extends AsyncComponent<P, S>
             if (isAvailable && currencyData && this._isMounted) {
                 this._currencyData = currencyData;
 
-                this.setState({ currency: this._currencyData.fiatCode }, () => this.updateCurrency());
+                this.setState(
+                    { currency: this._currencyData.fiatCode },
+                    () => this.updateCurrency()
+                );
             }
         });
     }

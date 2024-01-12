@@ -2,10 +2,10 @@
     "title": "Transaction Payload",
     "description": "<p>This block is a transaction: the outputs on the left got consumed to create outputs on the right. You can find the owners of the new outputs in their address unlock conditions.</p>",
     "links": [
-        {
-            "label": "Read more",
-            "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/simple_transfers",
-            "isExternal": true
-        }
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/simple_transfers",
+        "isExternal": true
+      }
     ]
 }

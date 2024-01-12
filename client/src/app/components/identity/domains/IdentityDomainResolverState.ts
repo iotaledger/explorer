@@ -5,11 +5,8 @@ export enum Status {
 }
 
 export interface IdentityDomainResolverState {
-    verifiedDomainsPresentation: Map<
-        string,
-        {
-            status: Status;
-            message?: string;
-        }
-    >;
+    verifiedDomainsPresentation: Map<string, {
+        status: Status;
+        message?: string;
+    }>;
 }

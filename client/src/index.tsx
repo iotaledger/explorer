@@ -32,25 +32,24 @@ import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
 
-initialiseServices()
-    .then(async () => {
-        // load the wasm
-        await initStardustSdk("/wasm/iota_sdk_stardust_wasm_bg.wasm");
+initialiseServices().then(async () => {
+    // load the wasm
+    await initStardustSdk("/wasm/iota_sdk_stardust_wasm_bg.wasm");
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const container = document.querySelector("#root")!;
-        const root = createRoot(container);
-        root.render(
-            <BrowserRouter>
-                <Route
-                    exact={true}
-                    path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
-                    component={(props: RouteComponentProps<AppRouteProps>) => <App {...props} />}
-                />
-            </BrowserRouter>,
-        );
-    })
-    .catch((err) => console.error(err));
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const container = document.querySelector("#root")!;
+    const root = createRoot(container);
+    root.render(
+        <BrowserRouter>
+            <Route
+                exact={true}
+                path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
+                component={(props: RouteComponentProps<AppRouteProps>) => (
+                    <App {...props} />)}
+            />
+        </BrowserRouter>
+    );
+}).catch(err => console.error(err));
 
 /**
  * Register all the services.
@@ -86,21 +85,21 @@ async function initialiseServices(): Promise<void> {
                 case LEGACY: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
-                        (serviceName) => new LegacyFeedClient(apiEndpoint, serviceName.slice(5)),
+                        serviceName => new LegacyFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
                 }
                 case CHRYSALIS: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
-                        (serviceName) => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5)),
+                        serviceName => new ChrysalisFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
                 }
                 case STARDUST: {
                     ServiceFactory.register(
                         `feed-${netConfig.network}`,
-                        (serviceName) => new StardustFeedClient(apiEndpoint, serviceName.slice(5)),
+                        serviceName => new StardustFeedClient(apiEndpoint, serviceName.slice(5))
                     );
                     break;
                 }

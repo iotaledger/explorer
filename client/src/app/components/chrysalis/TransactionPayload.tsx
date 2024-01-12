@@ -14,6 +14,7 @@ import CopyButton from "../CopyButton";
 import FiatValue from "../FiatValue";
 import Modal from "../Modal";
 
+
 /**
  * Component which will display a transaction payload.
  */
@@ -30,7 +31,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             showInputDetails: -1,
             showOutputDetails: -1,
             isInputBalanceFormatted: [],
-            isOutputBalanceFormatted: [],
+            isOutputBalanceFormatted: []
         };
     }
 
@@ -50,13 +51,16 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
             <div className="transaction-payload">
                 <div className="section--header">
                     <div className="row middle">
-                        <h2>Transaction Payload</h2>
+                        <h2>
+                            Transaction Payload
+                        </h2>
                         <Modal icon="info" data={transactionPayloadMessage} />
                     </div>
                     <div className="transaction-value">
                         <div>
                             <span className="value">
-                                {UnitsHelper.formatUnits(this.props.transferTotal, UnitsHelper.calculateBest(this.props.transferTotal))}
+                                {UnitsHelper.formatUnits(this.props.transferTotal,
+                                    UnitsHelper.calculateBest(this.props.transferTotal))}
                             </span>
                             <span className="dot-separator">•</span>
                             <span className="fiat-value">
@@ -77,18 +81,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div className="row middle">
                                         <div
-                                            className={classNames("card--content__input", {
-                                                "margin-b-s": idx + 1 < this.props.inputs.length,
-                                            })}
-                                            onClick={() =>
-                                                this.setState({ showInputDetails: this.state.showInputDetails === idx ? -1 : idx })
-                                            }
+                                            className={classNames("card--content__input", { "margin-b-s": idx + 1 < this.props.inputs.length })}
+                                            onClick={() => this.setState({ showInputDetails: this.state.showInputDetails === idx ? -1 : idx })}
                                         >
-                                            <div
-                                                className={classNames("margin-r-t", "card--content__input--dropdown", {
-                                                    opened: this.state.showInputDetails === idx,
-                                                })}
-                                            >
+                                            <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: this.state.showInputDetails === idx })}>
                                                 <DropdownIcon />
                                             </div>
                                             <Bech32Address
@@ -105,17 +101,15 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         <div className="card--value pointer amount-size row end">
                                             <span
                                                 className="margin-r-t"
-                                                onClick={() =>
-                                                    this.setState({
-                                                        isInputBalanceFormatted: this.state.isInputBalanceFormatted.includes(idx)
-                                                            ? this.state.isInputBalanceFormatted.filter((id) => id !== idx)
-                                                            : [...this.state.isInputBalanceFormatted, idx],
-                                                    })
-                                                }
+                                                onClick={() => this.setState({
+                                                    isInputBalanceFormatted: this.state.isInputBalanceFormatted.includes(idx)
+                                                        ? this.state.isInputBalanceFormatted.filter(id => id !== idx)
+                                                        : [...this.state.isInputBalanceFormatted, idx]
+                                                })}
                                             >
-                                                {this.state.isInputBalanceFormatted.includes(idx)
-                                                    ? `${input.amount} i`
-                                                    : UnitsHelper.formatBest(input.amount)}
+                                                {this.state.isInputBalanceFormatted.includes(idx) ?
+                                                    `${input.amount} i` :
+                                                    UnitsHelper.formatBest(input.amount)}
                                             </span>
                                             <CopyButton copy={String(input.amount)} />
                                         </div>
@@ -138,7 +132,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             </div>
                                             <div className="card--label"> Transaction Id</div>
                                             <div className="card--value">
-                                                <Link to={input.transactionUrl} className="margin-r-t">
+                                                <Link
+                                                    to={input.transactionUrl}
+                                                    className="margin-r-t"
+                                                >
                                                     {input.transactionId}
                                                 </Link>
                                             </div>
@@ -148,8 +145,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                             <div className="card--value">{input.signature}</div>
                                             <div className="card--label"> Public Key</div>
                                             <div className="card--value">{input.publicKey}</div>
-                                        </React.Fragment>
-                                    )}
+                                        </React.Fragment>)}
                                 </React.Fragment>
                             ))}
                         </div>
@@ -166,23 +162,10 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                 <React.Fragment key={idx}>
                                     <div className="row middle">
                                         <div
-                                            className={classNames("card--content__input", {
-                                                "margin-b-s": idx + 1 < this.props.outputs.length,
-                                            })}
-                                            onClick={() =>
-                                                this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })
-                                            }
+                                            className={classNames("card--content__input", { "margin-b-s": idx + 1 < this.props.outputs.length })}
+                                            onClick={() => this.setState({ showOutputDetails: this.state.showOutputDetails === idx ? -1 : idx })}
                                         >
-                                            <div
-                                                className={classNames(
-                                                    "margin-r-t",
-                                                    "card--content__input--dropdown",
-                                                    "card--content__flex_between",
-                                                    {
-                                                        opened: this.state.showOutputDetails === idx,
-                                                    },
-                                                )}
-                                            >
+                                            <div className={classNames("margin-r-t", "card--content__input--dropdown", "card--content__flex_between", { opened: this.state.showOutputDetails === idx })}>
                                                 <DropdownIcon />
                                             </div>
                                             <Bech32Address
@@ -199,17 +182,15 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                         <div className="card--value pointer amount-size row end">
                                             <span
                                                 className="margin-r-t"
-                                                onClick={() =>
-                                                    this.setState({
-                                                        isOutputBalanceFormatted: this.state.isOutputBalanceFormatted.includes(idx)
-                                                            ? this.state.isOutputBalanceFormatted.filter((id) => id !== idx)
-                                                            : [...this.state.isOutputBalanceFormatted, idx],
-                                                    })
-                                                }
+                                                onClick={() => this.setState({
+                                                    isOutputBalanceFormatted: this.state.isOutputBalanceFormatted.includes(idx) ?
+                                                        this.state.isOutputBalanceFormatted.filter(id => id !== idx) :
+                                                        [...this.state.isOutputBalanceFormatted, idx]
+                                                })}
                                             >
-                                                {this.state.isOutputBalanceFormatted.includes(idx)
-                                                    ? `${output.amount} i`
-                                                    : UnitsHelper.formatBest(output.amount)}
+                                                {this.state.isOutputBalanceFormatted.includes(idx) ?
+                                                    `${output.amount} i` :
+                                                    UnitsHelper.formatBest(output.amount)}
                                             </span>
                                             <CopyButton copy={String(output.amount)} />
                                         </div>
@@ -230,8 +211,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                                     labelPosition="bottom"
                                                 />
                                             </div>
-                                        </React.Fragment>
-                                    )}
+                                        </React.Fragment>)}
                                 </React.Fragment>
                             ))}
                         </div>

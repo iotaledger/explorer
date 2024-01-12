@@ -5,116 +5,116 @@
 @import "../../scss/themes";
 
 .search-input {
-    display: flex;
-    position: relative;
+  display: flex;
+  position: relative;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  max-width: 400px;
+  height: 40px;
+
+  span {
+    position: absolute;
+    left: 16px;
+    color: var(--search-svg);
+  }
+
+  .search--text-input {
+    @include font-size(14px);
+
     flex: 1;
-    flex-direction: row;
-    align-items: center;
-    max-width: 400px;
     height: 40px;
+    padding: 12px 12px 12px 52px;
+    transition: border-color 0.2s ease;
+    border: 1px solid var(--input-border-color);
+    border-radius: 6px;
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--body-color);
+    font-family: $inter;
 
-    span {
-        position: absolute;
-        left: 16px;
-        color: var(--search-svg);
+    &::placeholder {
+      color: var(--input-border-color);
     }
 
-    .search--text-input {
-        @include font-size(14px);
-
-        flex: 1;
-        height: 40px;
-        padding: 12px 12px 12px 52px;
-        transition: border-color 0.2s ease;
-        border: 1px solid var(--input-border-color);
-        border-radius: 6px;
-        background-color: transparent;
-        box-shadow: none;
-        color: var(--body-color);
-        font-family: $inter;
-
-        &::placeholder {
-            color: var(--input-border-color);
-        }
-
-        &:focus {
-            border-color: var(--input-focus-border-color);
-        }
-
-        @include phone-down {
-            @include font-size(12px);
-
-            height: 32px;
-        }
+    &:focus {
+      border-color: var(--input-focus-border-color);
     }
+
+    @include phone-down {
+      @include font-size(12px);
+
+      height: 32px;
+    }
+  }
 }
 
 .search-input--compact {
-    display: none;
-    z-index: 10;
-    margin-left: 8px;
+  display: none;
+  z-index: 10;
+  margin-left: 8px;
 
-    @include desktop-down {
-        display: block;
+  @include desktop-down {
+    display: block;
+  }
+
+  button {
+    @include phone-down {
+      padding: 2px 4px;
     }
 
-    button {
-        @include phone-down {
-            padding: 2px 4px;
-        }
+    border: 0;
+    background: none;
 
-        border: 0;
-        background: none;
-
-        &:focus {
-            box-shadow: none;
-        }
-
-        span {
-            color: var(--header-icon-color);
-        }
+    &:focus {
+      box-shadow: none;
     }
 
-    .text-input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: $navbar-height-mobile;
-        background: var(--body-background);
-        color: var(--body-color);
+    span {
+      color: var(--header-icon-color);
+    }
+  }
 
-        .search--text-input {
-            width: 100%;
-            height: 100%;
-            padding-right: 48px;
-            padding-left: 24px;
-            border: 0;
-            background: transparent;
-            font-family: $inter;
+  .text-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: $navbar-height-mobile;
+    background: var(--body-background);
+    color: var(--body-color);
 
-            &:focus {
-                box-shadow: none;
-            }
-        }
+    .search--text-input {
+      width: 100%;
+      height: 100%;
+      padding-right: 48px;
+      padding-left: 24px;
+      border: 0;
+      background: transparent;
+      font-family: $inter;
 
-        span {
-            position: absolute;
-            top: 50%;
-            right: 16px;
-            transform: translateY(-50%);
-            color: var(--header-icon-color);
-        }
+      &:focus {
+        box-shadow: none;
+      }
     }
 
-    .bg-placeholder {
-        position: absolute;
-        z-index: 3;
-        top: $navbar-height-mobile;
-        left: 0;
-        width: 100%;
-        height: 100vh;
-        opacity: var(--search-bg-opacity);
-        background: hsla(0, 0%, 90.6%, 0.8);
+    span {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      color: var(--header-icon-color);
     }
+  }
+
+  .bg-placeholder {
+    position: absolute;
+    z-index: 3;
+    top: $navbar-height-mobile;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    opacity: var(--search-bg-opacity);
+    background: hsla(0, 0%, 90.6%, 0.8);
+  }
 }

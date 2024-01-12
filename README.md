@@ -24,8 +24,8 @@ This repository is where the IOTA Foundation hosts the open-source code for the 
 
 The code is composed of the following packages:
 
--   [**`api`:**](api/README.md) Handles functionality such as lookups for the client
--   [**`client`:**](client/README.md) Provides a user interface for the explorer, using React.
+- [**`api`:**](api/README.md) Handles functionality such as lookups for the client
+- [**`client`:**](client/README.md) Provides a user interface for the explorer, using React.
 
 A demonstration of the API is available [here](https://explorer-api.iota.org).
 

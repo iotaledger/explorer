@@ -4,7 +4,7 @@ import { IResponse } from "../../IResponse";
 /**
  * Address details with balance info.
  */
-export default interface IAddressDetailsWithBalance extends IResponse {
+ export default interface IAddressDetailsWithBalance extends IResponse {
     /**
      * The hex for the address the details are for.
      */
@@ -37,3 +37,4 @@ export default interface IAddressDetailsWithBalance extends IResponse {
      */
     ledgerIndex: number;
 }
+

@@ -6,3 +6,4 @@ export interface FiatSelectorState extends CurrencyState {
      */
     isExpanded: boolean;
 }
+

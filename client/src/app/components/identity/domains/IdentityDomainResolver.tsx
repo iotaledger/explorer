@@ -7,11 +7,14 @@ import "./IdentityDomainResolver.scss";
 import Spinner from "../../Spinner";
 import Tooltip from "../../Tooltip";
 
-class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps, IdentityDomainResolverState> {
+
+class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
+    IdentityDomainResolverState
+> {
     constructor(props: IdentityDomainResolverProps) {
         super(props);
         this.state = {
-            verifiedDomainsPresentation: new Map(),
+            verifiedDomainsPresentation: new Map()
         };
     }
 
@@ -22,7 +25,7 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
 
     public componentDidUpdate(prevProps: IdentityDomainResolverProps) {
         if (prevProps !== this.props) {
-            this.computeVerifiedDomainsPresentation(this.props.verifiedDomains);
+          this.computeVerifiedDomainsPresentation(this.props.verifiedDomains);
         }
     }
 
@@ -33,28 +36,30 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
     public render(): ReactNode {
         return (
             <div className="row flex-wrap-wrap">
-                {this.state.verifiedDomainsPresentation.size ? (
-                    [...this.state.verifiedDomainsPresentation.keys()].map((key) => (
-                        <div key={key} className="value code inline-flex">
-                            <div className="margin-r-2">
-                                <a href={key}>{key}</a>
-                            </div>
-                            <div className="margin-r-t">
-                                {this.state.verifiedDomainsPresentation.get(key)?.status === Status.InFlight && <Spinner compact />}
-                                {this.state.verifiedDomainsPresentation.get(key)?.status === Status.Verified && (
-                                    <IoCheckmarkCircle color="green" style={{ verticalAlign: "middle" }} />
-                                )}
-                                {this.state.verifiedDomainsPresentation.get(key)?.status === Status.Error && (
-                                    <Tooltip key={key} tooltipContent={this.state.verifiedDomainsPresentation.get(key)?.message}>
-                                        <IoAlertCircle color="red" style={{ verticalAlign: "middle" }} />
-                                    </Tooltip>
-                                )}
-                            </div>
+                {this.state.verifiedDomainsPresentation.size ? [...this.state.verifiedDomainsPresentation.keys()].map(key => (
+                    <div key={key} className="value code inline-flex">
+                        <div className="margin-r-2">
+                            <a href={key}>
+                                {key}
+                            </a>
                         </div>
-                    ))
-                ) : (
-                    <div className="value code row middle">no linked domains</div>
-                )}
+                        <div className="margin-r-t">
+                            {this.state.verifiedDomainsPresentation.get(key)?.status === Status.InFlight &&
+                                <Spinner compact />}
+                            {this.state.verifiedDomainsPresentation.get(key)?.status === Status.Verified &&
+                                <IoCheckmarkCircle color="green" style={{ verticalAlign: "middle" }} />}
+                            {this.state.verifiedDomainsPresentation.get(key)?.status === Status.Error &&
+                                (
+                                <Tooltip
+                                    key={key}
+                                    tooltipContent={this.state.verifiedDomainsPresentation.get(key)?.message}
+                                >
+                                    <IoAlertCircle color="red" style={{ verticalAlign: "middle" }} />
+                                </Tooltip>
+                                )}
+                        </div>
+                    </div>
+            )) : <div className="value code row middle">no linked domains</div>}
             </div>
         );
     }
@@ -64,26 +69,23 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
         if (verifiedDomains) {
             for (const [key, value] of verifiedDomains.entries()) {
                 newVerifiedDomainsPresentation.set(key, { status: Status.InFlight });
-                value
-                    .then(() => {
-                        this.setState({
-                            verifiedDomainsPresentation: new Map(this.state.verifiedDomainsPresentation).set(key, {
-                                status: Status.Verified,
-                            }),
-                        });
-                    })
-                    .catch((err) => {
-                        this.setState({
-                            verifiedDomainsPresentation: new Map(this.state.verifiedDomainsPresentation).set(key, {
-                                status: Status.Error,
-                                message: err.message,
-                            }),
-                        });
+                value.then(() => {
+                    this.setState({
+                        verifiedDomainsPresentation: new Map(this.state.verifiedDomainsPresentation).set(key,
+                            { status: Status.Verified }
+                        )
                     });
+                }).catch(err => {
+                    this.setState({
+                        verifiedDomainsPresentation: new Map(this.state.verifiedDomainsPresentation).set(key,
+                            { status: Status.Error, message: err.message }
+                        )
+                    });
+                });
             }
         }
         this.setState({
-            verifiedDomainsPresentation: newVerifiedDomainsPresentation,
+            verifiedDomainsPresentation: newVerifiedDomainsPresentation
         });
     }
 }

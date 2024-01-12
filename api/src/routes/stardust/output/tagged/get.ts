@@ -15,7 +15,10 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: ITaggedOutputsRequest): Promise<IBasicOutputsResponse | INftOutputsResponse> {
+export async function get(
+    _: IConfiguration,
+    request: ITaggedOutputsRequest
+): Promise<IBasicOutputsResponse | INftOutputsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -38,3 +41,4 @@ export async function get(_: IConfiguration, request: ITaggedOutputsRequest): Pr
 
     return { error: "Unsupported output type" };
 }
+

@@ -20,7 +20,7 @@ export class ChrysalisStatsService extends BaseStatsService {
                     confirmedItemsPerSecond: info.referencedMessagesPerSecond,
                     confirmationRate: info.referencedRate,
                     latestMilestoneIndex: info.latestMilestoneIndex,
-                    latestMilestoneIndexTime: info.latestMilestoneTimestamp * 1000,
+                    latestMilestoneIndexTime: info.latestMilestoneTimestamp * 1000
                 });
 
                 if (this._statistics.length > 30) {

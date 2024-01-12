@@ -32,21 +32,25 @@ const AliasFoundriesSection: React.FC<AliasFoundriesSectionProps> = ({ network, 
                     <div className="card--label margin-b-t">Foundry Id</div>
                     {page?.map((foundryId, k) => (
                         <div key={k} className="card--value">
-                            <TruncatedId id={foundryId} link={`/${network}/foundry/${foundryId}`} />
+                            <TruncatedId
+                                id={foundryId}
+                                link={`/${network}/foundry/${foundryId}`}
+                            />
                         </div>
                     ))}
                 </div>
-            </div>
+            </div >
 
             <Pagination
                 currentPage={pageNumber}
                 totalCount={foundries?.length ?? 0}
                 pageSize={PAGE_SIZE}
                 siblingsCount={1}
-                onPageChange={(newPage) => setPageNumber(newPage)}
+                onPageChange={newPage => setPageNumber(newPage)}
             />
         </div>
     );
 };
 
 export default AliasFoundriesSection;
+

@@ -19,7 +19,9 @@ export class LegacyStatsService extends BaseStatsService {
      */
     constructor(networkConfiguration: INetwork) {
         super(networkConfiguration);
-        this._legacyItemsService = ServiceFactory.get<LegacyItemsService>(`items-${this._networkConfiguration.network}`);
+        this._legacyItemsService = ServiceFactory.get<LegacyItemsService>(
+            `items-${this._networkConfiguration.network}`
+        );
     }
 
     /**
@@ -34,7 +36,7 @@ export class LegacyStatsService extends BaseStatsService {
                 confirmedItemsPerSecond: stats.confirmedItemsPerSecond,
                 confirmationRate: stats.confirmationRate,
                 latestMilestoneIndex: stats.latestMilestoneIndex,
-                latestMilestoneIndexTime: stats.latestMilestoneIndexTime,
+                latestMilestoneIndexTime: stats.latestMilestoneIndexTime
             });
 
             if (this._statistics.length > 30) {

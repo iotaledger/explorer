@@ -9,3 +9,4 @@ export interface IMilestoneStatsRequest {
      */
     milestoneIndex: string;
 }
+

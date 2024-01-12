@@ -28,7 +28,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
 
         const networkService = ServiceFactory.get<NetworkService>("network");
         const protocolVersion: ProtocolVersion =
-            (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || CHRYSALIS;
+            (props.match.params.network &&
+                networkService.get(props.match.params.network)?.protocolVersion) || CHRYSALIS;
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
         this.state = {
@@ -37,7 +38,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status: "",
             completion: "",
             redirect: "",
-            invalidError: "",
+            invalidError: ""
         };
     }
 
@@ -68,90 +69,100 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
     public render(): ReactNode {
         return this.state.redirect ? (
             <Redirect to={this.state.redirect} />
-        ) : (
-            <div className="search">
-                <div className="wrapper">
-                    <div className="inner">
-                        <h1 className="margin-b-s">Search</h1>
-                        {!this.state.completion && this.state.status && (
-                            <div className="card">
-                                <div className="card--header">
-                                    <h2>Searching</h2>
+        )
+            : (
+                <div className="search">
+                    <div className="wrapper">
+                        <div className="inner">
+                            <h1 className="margin-b-s">
+                                Search
+                            </h1>
+                            {!this.state.completion && this.state.status && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Searching</h2>
+                                    </div>
+                                    <div className="card--content middle row">
+                                        {this.state.statusBusy && (<Spinner />)}
+                                        <p className="status">
+                                            {this.state.status}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="card--content middle row">
-                                    {this.state.statusBusy && <Spinner />}
-                                    <p className="status">{this.state.status}</p>
-                                </div>
-                            </div>
-                        )}
-                        {this.state.completion === "notFound" && (
-                            <div className="card">
-                                <div className="card--header">
-                                    <h2>Not found</h2>
-                                </div>
-                                <div className="card--content">
-                                    <p>We could not find any messages, addresses, outputs, milestones or indexes for the query.</p>
-                                    <br />
-                                    <div className="card--value">
+                            )}
+                            {this.state.completion === "notFound" && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Not found</h2>
+                                    </div>
+                                    <div className="card--content">
+                                        <p>
+                                            We could not find any messages, addresses, outputs, milestones
+                                            or indexes for the query.
+                                        </p>
+                                        <br />
+                                        <div className="card--value">
+                                            <ul>
+                                                <li>
+                                                    <span>Query</span>
+                                                    <span>{this.props.match.params.query}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <br />
+                                        <p>The following formats are supported:</p>
+                                        <br />
                                         <ul>
                                             <li>
-                                                <span>Query</span>
-                                                <span>{this.props.match.params.query}</span>
+                                                <span>Messages</span>
+                                                <span>64 Hex characters</span>
+                                            </li>
+                                            <li>
+                                                <span>Message using Transaction Id</span>
+                                                <span>64 Hex characters</span>
+                                            </li>
+                                            <li>
+                                                <span>Addresses</span>
+                                                <span>64 Hex characters or Bech32 Format</span>
+                                            </li>
+                                            <li>
+                                                <span>Outputs</span>
+                                                <span>68 Hex characters</span>
+                                            </li>
+                                            <li>
+                                                <span>Milestone Index</span>
+                                                <span>Numeric</span>
+                                            </li>
+                                            <li>
+                                                <span>Indexes</span>
+                                                <span>Maximum 64 UTF-8 chars or maximum 128 hex chars</span>
+                                            </li>
+                                            <li>
+                                                <span>DID</span>
+                                                <span>64 Hex characters starting with did:iota:</span>
                                             </li>
                                         </ul>
+                                        <br />
+                                        <p>Please perform another search with a valid hash.</p>
                                     </div>
-                                    <br />
-                                    <p>The following formats are supported:</p>
-                                    <br />
-                                    <ul>
-                                        <li>
-                                            <span>Messages</span>
-                                            <span>64 Hex characters</span>
-                                        </li>
-                                        <li>
-                                            <span>Message using Transaction Id</span>
-                                            <span>64 Hex characters</span>
-                                        </li>
-                                        <li>
-                                            <span>Addresses</span>
-                                            <span>64 Hex characters or Bech32 Format</span>
-                                        </li>
-                                        <li>
-                                            <span>Outputs</span>
-                                            <span>68 Hex characters</span>
-                                        </li>
-                                        <li>
-                                            <span>Milestone Index</span>
-                                            <span>Numeric</span>
-                                        </li>
-                                        <li>
-                                            <span>Indexes</span>
-                                            <span>Maximum 64 UTF-8 chars or maximum 128 hex chars</span>
-                                        </li>
-                                        <li>
-                                            <span>DID</span>
-                                            <span>64 Hex characters starting with did:iota:</span>
-                                        </li>
-                                    </ul>
-                                    <br />
-                                    <p>Please perform another search with a valid hash.</p>
                                 </div>
-                            </div>
-                        )}
-                        {this.state.completion === "invalid" && (
-                            <div className="card">
-                                <div className="card--header">
-                                    <h2>Incorrect query format</h2>
+                            )}
+                            {this.state.completion === "invalid" && (
+                                <div className="card">
+                                    <div className="card--header">
+                                        <h2>Incorrect query format</h2>
+                                    </div>
+                                    <div className="card--content">
+                                        <p className="danger">
+                                            {this.state.invalidError}.
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="card--content">
-                                    <p className="danger">{this.state.invalidError}.</p>
-                                </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
-                </div>
-            </div>
-        );
+                </div >
+            );
     }
 
     /**
@@ -170,43 +181,47 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status = "Detecting query type...";
             statusBusy = true;
             if (this._isMounted) {
-                setTimeout(async () => {
-                    if (this._isMounted) {
-                        const response = await this._tangleCacheService.search(this.props.match.params.network, query);
+                setTimeout(
+                    async () => {
+                        if (this._isMounted) {
+                            const response = await this._tangleCacheService.search(
+                                this.props.match.params.network,
+                                query
+                            );
 
-                        if (response) {
-                            let objType = "";
-                            let objParam = query;
-                            if (response.message) {
-                                objType = "message";
-                            } else if (response.address) {
-                                objType = "addr";
-                            } else if (response.indexMessageIds) {
-                                objType = "indexed";
-                            } else if (response.output) {
-                                objType = "message";
-                                objParam = response.output.messageId;
-                            } else if (response.milestone) {
-                                objType = "message";
-                                objParam = response.milestone?.messageId;
-                            } else if (response.did) {
-                                objType = "identity-resolver";
-                                objParam = response.did;
+                            if (response) {
+                                let objType = "";
+                                let objParam = query;
+                                if (response.message) {
+                                    objType = "message";
+                                } else if (response.address) {
+                                    objType = "addr";
+                                } else if (response.indexMessageIds) {
+                                    objType = "indexed";
+                                } else if (response.output) {
+                                    objType = "message";
+                                    objParam = response.output.messageId;
+                                } else if (response.milestone) {
+                                    objType = "message";
+                                    objParam = response.milestone?.messageId;
+                                } else if (response.did) {
+                                    objType = "identity-resolver";
+                                    objParam = response.did;
+                                }
+                                this.setState({
+                                    status: "",
+                                    statusBusy: false,
+                                    redirect: `/${this.props.match.params.network}/${objType}/${objParam}`
+                                });
+                            } else {
+                                this.setState({
+                                    completion: "notFound",
+                                    status: "",
+                                    statusBusy: false
+                                });
                             }
-                            this.setState({
-                                status: "",
-                                statusBusy: false,
-                                redirect: `/${this.props.match.params.network}/${objType}/${objParam}`,
-                            });
-                        } else {
-                            this.setState({
-                                completion: "notFound",
-                                status: "",
-                                statusBusy: false,
-                            });
                         }
-                    }
-                }, 0);
+                    }, 0);
             }
         } else {
             invalidError = "the query is empty";
@@ -218,7 +233,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status,
             completion,
             redirect,
-            invalidError,
+            invalidError
         });
     }
 }

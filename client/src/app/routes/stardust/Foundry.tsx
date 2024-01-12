@@ -1,10 +1,5 @@
 import {
-    AddressType,
-    AliasAddress,
-    FeatureType,
-    FoundryOutput,
-    ImmutableAliasAddressUnlockCondition,
-    MetadataFeature,
+    AddressType, AliasAddress, FeatureType, FoundryOutput, ImmutableAliasAddressUnlockCondition, MetadataFeature
 } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
@@ -35,14 +30,12 @@ import "./Foundry.scss";
 enum FOUNDRY_PAGE_TABS {
     TokenInfo = "Token Info",
     Features = "Features",
-    NativeTokens = "Native Tokens",
+    NativeTokens = "Native Tokens"
 }
 
-const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
-    match: {
-        params: { network, foundryId },
-    },
-}) => {
+const Foundry: React.FC<RouteComponentProps<FoundryProps>> = (
+    { match: { params: { network, foundryId } } }
+) => {
     const isMounted = useIsMounted();
     const { tokenInfo, bech32Hrp } = useContext(NetworkContext);
 
@@ -57,11 +50,14 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
     useEffect(() => {
         if (foundryDetails) {
             const output = foundryDetails?.output as FoundryOutput;
-            const immutableAliasUnlockCondition = output.unlockConditions[0] as ImmutableAliasAddressUnlockCondition;
+            const immutableAliasUnlockCondition =
+                output.unlockConditions[0] as ImmutableAliasAddressUnlockCondition;
             const aliasId = (immutableAliasUnlockCondition.address as AliasAddress).aliasId;
 
             const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
-            const metadataFeature = immutableFeatures?.find((feature) => feature.type === FeatureType.Metadata) as MetadataFeature;
+            const metadataFeature = immutableFeatures?.find(
+                feature => feature.type === FeatureType.Metadata
+            ) as MetadataFeature;
 
             if (isMounted && metadataFeature) {
                 const parsedMetadata = tryParseMetadata<ITokenMetadata>(metadataFeature.data, tokenSchemeIRC30);
@@ -80,9 +76,9 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
         const serialNumber = foundryOutput.serialNumber;
         const balance = Number(foundryOutput.amount);
 
-        const controllerAliasBech32 = controllerAlias
-            ? Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, AddressType.Alias)
-            : undefined;
+        const controllerAliasBech32 = controllerAlias ?
+            Bech32AddressHelper.buildAddress(bech32Hrp, controllerAlias, AddressType.Alias) :
+            undefined;
 
         foundryContent = (
             <React.Fragment>
@@ -93,14 +89,20 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
                         </div>
                     </div>
                     <div className="section--data">
-                        <div className="label">Serial number</div>
+                        <div className="label">
+                            Serial number
+                        </div>
                         <div className="value code row middle">
-                            <span className="margin-r-t">{serialNumber}</span>
+                            <span className="margin-r-t">
+                                {serialNumber}
+                            </span>
                         </div>
                     </div>
                     {controllerAlias && controllerAliasBech32 && (
                         <div className="section--data">
-                            <div className="label">Controller Alias</div>
+                            <div className="label">
+                                Controller Alias
+                            </div>
                             <div className="value code highlight">
                                 <TruncatedId
                                     id={controllerAlias}
@@ -114,11 +116,16 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
                         <div className="row middle">
                             <Icon icon="wallet" boxed />
                             <div className="balance">
-                                <div className="label">Balance</div>
+                                <div className="label">
+                                    Balance
+                                </div>
                                 <div className="value featured">
                                     {balance && (
                                         <React.Fragment>
-                                            <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
+                                            <span
+                                                onClick={() => setIsFormattedBalance(!isFormattedBalance)}
+                                                className="pointer margin-r-5"
+                                            >
                                                 {formatAmount(balance, tokenInfo, !isFormattedBalance)}
                                             </span>
                                             {isMarketed && (
@@ -142,18 +149,26 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
                         [FOUNDRY_PAGE_TABS.NativeTokens]: {
                             disabled: tokenCount === 0,
                             counter: tokenCount,
-                            infoContent: nativeTokensMessage,
+                            infoContent: nativeTokensMessage
                         },
                         [FOUNDRY_PAGE_TABS.Features]: {
-                            disabled: !foundryOutput.features && !foundryOutput.immutableFeatures,
-                        },
+                            disabled: !foundryOutput.features && !foundryOutput.immutableFeatures
+                        }
                     }}
                 >
-                    <TokenInfoSection tokenId={foundryId} tokenScheme={foundryOutput.tokenScheme} tokenMetadata={tokenMetadata} />
+                    <TokenInfoSection
+                        tokenId={foundryId}
+                        tokenScheme={foundryOutput.tokenScheme}
+                        tokenMetadata={tokenMetadata}
+                    />
                     <FeaturesSection output={foundryOutput} />
-                    <AssetsTable networkId={network} outputs={[foundryDetails]} setTokenCount={setTokenCount} />
+                    <AssetsTable
+                        networkId={network}
+                        outputs={[foundryDetails]}
+                        setTokenCount={setTokenCount}
+                    />
                 </TabbedSection>
-            </React.Fragment>
+            </React.Fragment >
         );
     }
 
@@ -163,12 +178,19 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
                 <div className="inner">
                     <div className="foundry--header">
                         <div className="row middle">
-                            <h1>Foundry</h1>
+                            <h1>
+                                Foundry
+                            </h1>
                             <Modal icon="info" data={foundryMainHeaderInfo} />
                             {isFoundryDetailsLoading && <Spinner />}
                         </div>
                     </div>
-                    {foundryError ? <NotFound searchTarget="foundry" query={foundryId} /> : foundryContent}
+                    {foundryError ?
+                        <NotFound
+                            searchTarget="foundry"
+                            query={foundryId}
+                        /> :
+                        foundryContent}
                 </div>
             </div>
         </div>
@@ -176,3 +198,4 @@ const Foundry: React.FC<RouteComponentProps<FoundryProps>> = ({
 };
 
 export default Foundry;
+

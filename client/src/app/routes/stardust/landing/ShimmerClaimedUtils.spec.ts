@@ -7,7 +7,7 @@ const TOKEN_INFO: INodeInfoBaseToken = {
     unit: "SMR",
     subunit: "glow",
     decimals: 6,
-    useMetricPrefix: false,
+    useMetricPrefix: false
 };
 
 test("buildShimmerClaimedStats should display percent", () => {
@@ -89,15 +89,27 @@ test("buildShimmerClaimedStats should not display magnitudes, but SMR formatted 
     expect(claimed).toBe("1,234,198,475 SMR");
     expect(percent).toBe("61.7%");
 
-    [claimed, percent] = buildShimmerClaimedStats("1234198475000000000", "2000000000000000000", TOKEN_INFO);
+    [claimed, percent] = buildShimmerClaimedStats(
+        "1234198475000000000",
+        "2000000000000000000",
+        TOKEN_INFO
+    );
     expect(claimed).toBe("1,234,198,475,000 SMR");
     expect(percent).toBe("61.7%");
 
-    [claimed, percent] = buildShimmerClaimedStats("1276198475000000000000", "2000000000000000000000", TOKEN_INFO);
+    [claimed, percent] = buildShimmerClaimedStats(
+        "1276198475000000000000",
+        "2000000000000000000000",
+        TOKEN_INFO
+    );
     expect(claimed).toBe("1,276,198,475,000,000 SMR");
     expect(percent).toBe("63.8%");
 
-    [claimed, percent] = buildShimmerClaimedStats("1234198475000000000000000", "2000000000000000000000000", TOKEN_INFO);
+    [claimed, percent] = buildShimmerClaimedStats(
+        "1234198475000000000000000",
+        "2000000000000000000000000",
+        TOKEN_INFO
+    );
     expect(claimed).toBe("1,234,198,475,000,000,000 SMR");
     expect(percent).toBe("61.7%");
 });

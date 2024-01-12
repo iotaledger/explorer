@@ -28,8 +28,8 @@ export abstract class BaseStatsService implements IStatsService {
                 confirmedItemsPerSecond: 0,
                 confirmationRate: 0,
                 latestMilestoneIndex: 0,
-                latestMilestoneIndexTime: 0,
-            },
+                latestMilestoneIndexTime: 0
+            }
         ];
 
         setInterval(async () => this.updateStatistics(), 2000);
@@ -48,7 +48,7 @@ export abstract class BaseStatsService implements IStatsService {
      * @returns The historical statistics for the network.
      */
     public getItemsPerSecondHistory(): number[] {
-        return this._statistics.map((s) => s.itemsPerSecond);
+        return this._statistics.map(s => s.itemsPerSecond);
     }
 
     /**

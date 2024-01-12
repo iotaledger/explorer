@@ -12,3 +12,4 @@ export interface IAnalyticStats extends IResponse {
     lockedStorageDeposit?: string;
     unclaimedShimmer?: string;
 }
+

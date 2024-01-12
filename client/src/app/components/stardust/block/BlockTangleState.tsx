@@ -6,7 +6,9 @@ import { useMilestoneDetails } from "~helpers/hooks/useMilestoneDetails";
 import Tooltip from "../../Tooltip";
 import "./BlockTangleState.scss";
 
-const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, milestoneIndex, hasConflicts, conflictReason, onClick }) => {
+const BlockTangleState: React.FC<BlockTangleStateProps> = (
+    { network, status, milestoneIndex, hasConflicts, conflictReason, onClick }
+) => {
     const [ago, setAgo] = useState<string | undefined>();
     const [blockId, setBlockId] = useState<string | undefined>();
     const [milestoneDetails] = useMilestoneDetails(network, milestoneIndex ?? null);
@@ -20,49 +22,57 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
 
     return (
         <div className="blocks-tangle-state">
-            {status === "milestone" && (
+            {status === "milestone" &&
                 <div className="block-tangle-reference">
                     <div className="row">
                         <div
-                            className={classNames(
-                                "block-tangle-state",
-                                { "block-tangle-state__no-click": !onClick },
-                                { "block-tangle-state__confirmed": milestoneIndex },
-                                { "block-tangle-state__pending": !milestoneIndex },
-                            )}
+                            className={
+                                classNames(
+                                    "block-tangle-state",
+                                    { "block-tangle-state__no-click": !onClick },
+                                    { "block-tangle-state__confirmed": milestoneIndex },
+                                    { "block-tangle-state__pending": !milestoneIndex }
+                                )
+                            }
                         >
-                            {milestoneIndex && "Confirmed"}
-                            {!milestoneIndex && "Pending"}
+                            {milestoneIndex && ("Confirmed")}
+                            {!milestoneIndex && ("Pending")}
                         </div>
-                        {milestoneIndex && <span className="row middle">Created {ago}</span>}
+                        {milestoneIndex && (
+                            <span className="row middle">
+                                Created {" "}{ago}
+                            </span>
+                        )}
                     </div>
-                </div>
-            )}
+                </div>}
 
-            {status !== "milestone" && (
+            {status !== "milestone" &&
                 <React.Fragment>
                     <div
-                        className={classNames(
-                            "block-tangle-state",
-                            { "block-tangle-state__no-click": !onClick },
-                            {
-                                "block-tangle-state__confirmed": status === "referenced" && !hasConflicts,
-                            },
-                            {
-                                "block-tangle-state__conflicting": status === "referenced" && hasConflicts,
-                            },
-                            { "block-tangle-state__pending": status === "pending" },
-                            { "block-tangle-state__unknown": status === "unknown" },
-                        )}
+                        className={
+                            classNames(
+                                "block-tangle-state",
+                                { "block-tangle-state__no-click": !onClick },
+                                {
+                                    "block-tangle-state__confirmed": status === "referenced" &&
+                                        !hasConflicts
+                                },
+                                {
+                                    "block-tangle-state__conflicting": status === "referenced" &&
+                                        hasConflicts
+                                },
+                                { "block-tangle-state__pending": status === "pending" },
+                                { "block-tangle-state__unknown": status === "unknown" }
+                            )
+                        }
                     >
-                        {status === "unknown" && "Unknown"}
-                        {status === "referenced" && !hasConflicts && "Confirmed"}
-                        {status === "pending" && "Pending"}
-                        {hasConflicts && (
+                        {status === "unknown" && ("Unknown")}
+                        {status === "referenced" && !hasConflicts && ("Confirmed")}
+                        {status === "pending" && ("Pending")}
+                        {hasConflicts &&
                             <Tooltip tooltipContent={conflictReason}>
                                 <span style={{ color: "#ca493d" }}>Conflicting</span>
-                            </Tooltip>
-                        )}
+                            </Tooltip>}
                     </div>
                     {status === "referenced" && milestoneIndex !== undefined && milestoneIndex > 1 ? (
                         <div className="block-tangle-reference">
@@ -74,16 +84,12 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                                         onClick(blockId);
                                     }
                                 }}
-                            >
-                                Milestone {milestoneIndex}
+                            >Milestone {milestoneIndex}
                             </span>
                             <span> {ago}</span>
                         </div>
-                    ) : (
-                        ""
-                    )}
-                </React.Fragment>
-            )}
+                    ) : ""}
+                </React.Fragment>}
         </div>
     );
 };

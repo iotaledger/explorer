@@ -13,7 +13,9 @@ export class Bech32AddressHelper {
      * @returns The parts of the address.
      */
     public static buildAddress(hrp: string, address: string | Address, typeHint?: number): IBech32AddressDetails {
-        return typeof address === "string" ? this.buildAddressFromString(hrp, address, typeHint) : this.buildAddressFromTypes(hrp, address);
+        return typeof address === "string"
+            ? this.buildAddressFromString(hrp, address, typeHint)
+            : this.buildAddressFromTypes(hrp, address);
     }
 
     private static buildAddressFromString(hrp: string, address: string, typeHint?: number): IBech32AddressDetails {
@@ -29,7 +31,8 @@ export class Bech32AddressHelper {
                     type = result.addressType;
                     hex = Converter.bytesToHex(result.addressBytes, true);
                 }
-            } catch {}
+            } catch {
+            }
         }
 
         if (!bech32) {
@@ -43,7 +46,7 @@ export class Bech32AddressHelper {
             bech32,
             hex,
             type,
-            typeLabel: Bech32AddressHelper.typeLabel(type),
+            typeLabel: Bech32AddressHelper.typeLabel(type)
         };
     }
 
@@ -51,11 +54,17 @@ export class Bech32AddressHelper {
         let hex: string = "";
 
         if (address.type === AddressType.Ed25519) {
-            hex = HexHelper.stripPrefix((address as Ed25519Address).pubKeyHash);
+            hex = HexHelper.stripPrefix(
+                (address as Ed25519Address).pubKeyHash
+            );
         } else if (address.type === AddressType.Alias) {
-            hex = HexHelper.stripPrefix((address as AliasAddress).aliasId);
+            hex = HexHelper.stripPrefix(
+                (address as AliasAddress).aliasId
+            );
         } else if (address.type === AddressType.Nft) {
-            hex = HexHelper.stripPrefix((address as NftAddress).nftId);
+            hex = HexHelper.stripPrefix(
+                (address as NftAddress).nftId
+            );
         }
 
         return this.buildAddressFromString(hrp, hex, address.type);

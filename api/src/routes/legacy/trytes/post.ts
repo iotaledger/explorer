@@ -13,7 +13,10 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function post(config: IConfiguration, request: ITrytesRetrieveRequest): Promise<ITrytesRetrieveResponse> {
+export async function post(
+    config: IConfiguration,
+    request: ITrytesRetrieveRequest
+): Promise<ITrytesRetrieveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -28,6 +31,6 @@ export async function post(config: IConfiguration, request: ITrytesRetrieveReque
 
     return {
         trytes,
-        milestoneIndexes,
+        milestoneIndexes
     };
 }

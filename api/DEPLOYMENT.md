@@ -29,7 +29,9 @@ e.g. To run the API locally
 {
     "fixerApiKey": "MY-KEY",
     "rootStorageFolder": "../.local-storage",
-    "allowedDomains": ["http://localhost:3000"],
+    "allowedDomains": [
+        "http://localhost:3000"
+    ],
     "verboseLogging": false
 }
 ```
@@ -114,9 +116,9 @@ A [Dockerfile](./Dockerfile) is also provided, so that you can run the API endpo
 }
 ```
 
-and copy it to `./src/data/config.local.json`.
+and copy it to  `./src/data/config.local.json`. 
 
-Afterwards, you need to create a new local folder (for instance `./application-data`) that will be used to store locally the temporary data used by the API implementation. Additionally, under such folder you need to include a `network` sub-folder that will contain the JSON configuration files of the networks managed, as explained in the [Deploy Section](#Deploy).
+Afterwards, you need to create a new local folder (for instance `./application-data`) that will be used to store locally the temporary data used by the API implementation. Additionally, under such folder you need to include a `network` sub-folder that will contain the JSON configuration files of the networks managed, as explained in the [Deploy Section](#Deploy). 
 
 When running the Docker container, the folder for data storage (named `/app/data/.local-storage` in our example) will have to be made available through a Volume (see example below) mapped to our folder on the host (`./application-data` in our example).
 
@@ -128,16 +130,16 @@ Build the Docker image:
 docker build --tag iotaledger/explorer-api .
 ```
 
-Create a network (named `explorer` in the example below) for your container (if not created yet). Such network allows you to isolate your container from other containers. If you also run the [client web application](../client) through Docker it is advisable that you run both containers on the same network:
+Create a network (named `explorer` in the example below) for your container (if not created yet). Such network allows you to isolate your container from other containers. If you also run the [client web application](../client) through Docker it is advisable that you run both containers on the same network: 
 
 ```shell
 docker network create explorer
 ```
 
-and finally run the container.
+and finally run the container. 
 
 ```shell
 docker run --name explorer-api --network explorer -p 4000:4000 --volume $(pwd)/application-data:/app/data/.local-storage -d iotaledger/explorer-api
 ```
 
-Your API endpoint will now be listening to the port `4000` of your localhost.
+Your API endpoint will now be listening to the port `4000` of your localhost. 

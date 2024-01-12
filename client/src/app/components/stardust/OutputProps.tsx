@@ -39,5 +39,5 @@ export interface OutputProps {
     /**
      * Disable links if block is conflicting.
      */
-    isLinksDisabled?: boolean;
+     isLinksDisabled?: boolean;
 }

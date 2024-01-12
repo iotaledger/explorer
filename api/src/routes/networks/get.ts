@@ -18,8 +18,7 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
             // Only return networks that are not hidden and enabled
             // and copy the fields needed by the client
             // as we don't want to expose all the information
-            .filter((n) => !n.isHidden && n.isEnabled)
-            .map((n) => ({
+            .filter(n => !n.isHidden && n.isEnabled).map(n => ({
                 network: n.network,
                 label: n.label,
                 protocolVersion: n.protocolVersion,
@@ -28,11 +27,12 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
                 isEnabled: n.isEnabled,
                 showMarket: n.showMarket,
                 uiTheme: n.uiTheme,
-                hasStatisticsSupport:
+                hasStatisticsSupport: (
                     Boolean(n.analyticsInfluxDbEndpoint) &&
                     Boolean(n.analyticsInfluxDbDatabase) &&
                     Boolean(n.analyticsInfluxDbUsername) &&
-                    Boolean(n.analyticsInfluxDbPassword),
+                    Boolean(n.analyticsInfluxDbPassword)
+                ),
                 description: n.description,
                 bechHrp: n.bechHrp,
                 didExample: n.didExample,
@@ -40,7 +40,7 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
                 milestoneInterval: n.milestoneInterval,
                 circulatingSupply: n.circulatingSupply,
                 identityResolverEnabled: n.identityResolverEnabled,
-                tokenRegistryEndpoint: n.tokenRegistryEndpoint,
-            })),
+                tokenRegistryEndpoint: n.tokenRegistryEndpoint
+            }))
     };
 }

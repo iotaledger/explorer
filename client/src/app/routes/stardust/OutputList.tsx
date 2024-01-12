@@ -11,14 +11,12 @@ const OUTPUTS_OVER_LIMIT_MESSAGE = "There are more than 100 outputs with this ta
 
 export enum OUTPUT_LIST_TABS {
     Basic = "Basic outputs",
-    Nft = "Nft outputs",
+    Nft = "Nft outputs"
 }
 
-const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
-    match: {
-        params: { network },
-    },
-}) => {
+const OutputList: React.FC<RouteComponentProps<OutputListProps>> = (
+    { match: { params: { network } } }
+) => {
     const [
         tag,
         currentPageBasic,
@@ -36,7 +34,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
         nftOutputLimitReached,
         hasMoreBasicOutputs,
         hasMoreNftOutputs,
-        loadMoreCallback,
+        loadMoreCallback
     ] = useTaggedOutputs(network);
 
     return (
@@ -53,12 +51,12 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
                         tabOptions={{
                             [OUTPUT_LIST_TABS.Basic]: {
                                 disabled: isBasicLoading || totalBasicItems === 0,
-                                isLoading: isBasicLoading,
+                                isLoading: isBasicLoading
                             },
                             [OUTPUT_LIST_TABS.Nft]: {
                                 disabled: isNftLoading || totalNftItems === 0,
-                                isLoading: isNftLoading,
-                            },
+                                isLoading: isNftLoading
+                            }
                         }}
                     >
                         <div className="output-list__basic">
@@ -82,14 +80,20 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
                                             totalCount={totalBasicItems}
                                             pageSize={pageSize}
                                             siblingsCount={1}
-                                            onPageChange={(page) => setPageNumberBasic(page)}
+                                            onPageChange={page => setPageNumberBasic(page)}
                                         />
                                     )}
-                                    {basicOutputLimitReached ? (
-                                        hasMoreBasicOutputs && <div className="card outputs-over-limit">{OUTPUTS_OVER_LIMIT_MESSAGE}</div>
+                                    {basicOutputLimitReached ? hasMoreBasicOutputs && (
+                                        <div className="card outputs-over-limit">
+                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
+                                        </div>
                                     ) : (
                                         <div className="card load-more--button">
-                                            <button type="button" onClick={async () => loadMoreCallback("basic")} disabled={isBasicLoading}>
+                                            <button
+                                                type="button"
+                                                onClick={async () => loadMoreCallback("basic")}
+                                                disabled={isBasicLoading}
+                                            >
                                                 Load more...
                                             </button>
                                         </div>
@@ -118,14 +122,20 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
                                             totalCount={totalNftItems}
                                             pageSize={pageSize}
                                             siblingsCount={1}
-                                            onPageChange={(page) => setPageNumberNft(page)}
+                                            onPageChange={page => setPageNumberNft(page)}
                                         />
                                     )}
-                                    {nftOutputLimitReached ? (
-                                        hasMoreNftOutputs && <div className="card outputs-over-limit">{OUTPUTS_OVER_LIMIT_MESSAGE}</div>
+                                    {nftOutputLimitReached ? hasMoreNftOutputs && (
+                                        <div className="card outputs-over-limit">
+                                            {OUTPUTS_OVER_LIMIT_MESSAGE}
+                                        </div>
                                     ) : (
                                         <div className="card load-more--button">
-                                            <button type="button" onClick={async () => loadMoreCallback("nft")} disabled={isNftLoading}>
+                                            <button
+                                                type="button"
+                                                onClick={async () => loadMoreCallback("nft")}
+                                                disabled={isNftLoading}
+                                            >
                                                 Load more...
                                             </button>
                                         </div>
@@ -141,3 +151,4 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
 };
 
 export default OutputList;
+

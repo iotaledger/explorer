@@ -68,15 +68,24 @@ export class FoundationDataHelper {
                 url: string;
             }[];
         },
-        key?: Key,
-    ): React.ReactNode {
+        key?: Key): React.ReactNode {
         return (
             <React.Fragment key={key}>
                 {info.label && (
-                    <span className="data-label" dangerouslySetInnerHTML={{ __html: FoundationDataHelper.buildLines(info.label) }} />
+                    <span
+                        className="data-label"
+                        dangerouslySetInnerHTML={
+                            { __html: FoundationDataHelper.buildLines(info.label) }
+                        }
+                    />
                 )}
                 {info.value && (
-                    <span className="data-value" dangerouslySetInnerHTML={{ __html: FoundationDataHelper.buildLines(info.value) }} />
+                    <span
+                        className="data-value"
+                        dangerouslySetInnerHTML={
+                            { __html: FoundationDataHelper.buildLines(info.value) }
+                        }
+                    />
                 )}
                 {info.urls?.map((link, idx) => (
                     <React.Fragment key={idx}>
@@ -117,7 +126,9 @@ export class FoundationDataHelper {
                     key={key}
                     target="_blank"
                     rel="noopener noreferrer"
-                    dangerouslySetInnerHTML={{ __html: FoundationDataHelper.buildLines(value) }}
+                    dangerouslySetInnerHTML={
+                        { __html: FoundationDataHelper.buildLines(value) }
+                    }
                 />
             );
         }
@@ -127,7 +138,9 @@ export class FoundationDataHelper {
                 className="data-link"
                 key={key}
                 to={url.replace("local:/", "")}
-                dangerouslySetInnerHTML={{ __html: FoundationDataHelper.buildLines(value) }}
+                dangerouslySetInnerHTML={
+                    { __html: FoundationDataHelper.buildLines(value) }
+                }
             />
         );
     }

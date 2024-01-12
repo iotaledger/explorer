@@ -14,3 +14,4 @@ export interface ITransactionHistoryDownloadResponse {
      */
     items?: ITransactionHistoryItem[];
 }
+

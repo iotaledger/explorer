@@ -44,3 +44,4 @@ export interface ITransactionHistoryResponse extends IResponse {
      */
     cursor?: string;
 }
+

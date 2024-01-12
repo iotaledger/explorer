@@ -46,10 +46,8 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
 
         let address;
         let checksum;
-        if (
-            (this.props.match.params.address.length === 81 || this.props.match.params.address.length === 90) &&
-            TrytesHelper.isTrytes(this.props.match.params.address)
-        ) {
+        if ((this.props.match.params.address.length === 81 || this.props.match.params.address.length === 90) &&
+            TrytesHelper.isTrytes(this.props.match.params.address)) {
             address = props.match.params.address.slice(0, 81);
             checksum = addChecksum(this.props.match.params.address.slice(0, 81)).slice(-9);
         }
@@ -61,7 +59,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
             address,
             checksum,
             showOnlyValueTransactions: false,
-            showOnlyConfirmedTransactions: false,
+            showOnlyConfirmedTransactions: false
         };
     }
 
@@ -78,7 +76,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
 
             const balance = await this._tangleCacheService.getAddressBalance(
                 this.props.match.params.network,
-                this.props.match.params.address,
+                this.props.match.params.address
             );
 
             this.setState(
@@ -86,14 +84,14 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                     showOnlyValueTransactions: settings.showOnlyValueTransactions ?? false,
                     showOnlyConfirmedTransactions: settings.showOnlyConfirmedTransactions ?? false,
                     formatFull: settings.formatFull,
-                    balance,
+                    balance
                 },
                 async () => {
                     const { txHashes, cursor } = await this._tangleCacheService.findTransactionHashes(
                         this.props.match.params.network,
                         "address",
                         this.props.match.params.address,
-                        250,
+                        250
                     );
 
                     let status = "";
@@ -102,17 +100,12 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                         status = "There are no transactions for the requested address.";
                     }
 
-                    const items = txHashes
-                        ? txHashes.map((h) => ({
-                              txHash: h,
-                          }))
-                        : undefined;
+                    const items = txHashes ? txHashes.map(h => ({
+                        txHash: h
+                    })) : undefined;
 
                     const filteredItems = this.filterItems(
-                        items,
-                        settings.showOnlyValueTransactions,
-                        settings.showOnlyConfirmedTransactions,
-                    );
+                        items, settings.showOnlyValueTransactions, settings.showOnlyConfirmedTransactions);
 
                     this.setState(
                         {
@@ -120,11 +113,13 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                             filteredItems,
                             status,
                             statusBusy: status.length > 0 ? -1 : 1,
-                            cursor,
+                            cursor
                         },
                         async () => {
                             if (txHashes) {
-                                const txs = await this._tangleCacheService.getTransactions(this.props.match.params.network, txHashes);
+                                const txs = await this._tangleCacheService.getTransactions(
+                                    this.props.match.params.network,
+                                    txHashes);
 
                                 const bundleConfirmations: { [id: string]: string } = {};
 
@@ -139,24 +134,17 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                     }
                                 }
 
-                                const fullItems = txHashes
-                                    .map((h, idx) => ({
-                                        txHash: h,
-                                        details: txs[idx],
-                                    }))
-                                    .sort(
-                                        (itemA, itemB) =>
-                                            DateHelper.milliseconds(
-                                                itemB.details.tx.timestamp === 0
-                                                    ? itemB.details.tx.attachmentTimestamp
-                                                    : itemB.details.tx.timestamp,
-                                            ) -
-                                            DateHelper.milliseconds(
-                                                itemA.details.tx.timestamp === 0
-                                                    ? itemA.details.tx.attachmentTimestamp
-                                                    : itemA.details.tx.timestamp,
-                                            ),
-                                    );
+                                const fullItems = txHashes.map((h, idx) => ({
+                                    txHash: h,
+                                    details: txs[idx]
+                                })).sort((itemA, itemB) =>
+                                    (DateHelper.milliseconds(itemB.details.tx.timestamp === 0
+                                        ? itemB.details.tx.attachmentTimestamp
+                                        : itemB.details.tx.timestamp)) -
+                                    (DateHelper.milliseconds(itemA.details.tx.timestamp === 0
+                                        ? itemA.details.tx.attachmentTimestamp
+                                        : itemA.details.tx.timestamp))
+                                );
 
                                 this.setState({
                                     items: fullItems,
@@ -164,14 +152,11 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                     filteredItems: this.filterItems(
                                         fullItems,
                                         this.state.showOnlyValueTransactions,
-                                        this.state.showOnlyConfirmedTransactions,
-                                    ),
+                                        this.state.showOnlyConfirmedTransactions)
                                 });
                             }
-                        },
-                    );
-                },
-            );
+                        });
+                });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
@@ -194,11 +179,15 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                         <h2>General</h2>
                                     </div>
                                     <div className="card--content">
-                                        <div className="card--label">Address</div>
+                                        <div className="card--label">
+                                            Address
+                                        </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-s">
                                                 {this.state.address}
-                                                <span className="card--value__light">{this.state.checksum}</span>
+                                                <span className="card--value__light">
+                                                    {this.state.checksum}
+                                                </span>
                                             </span>
                                             <CopyButton copy={`${this.state.address}${this.state.checksum}`} />
                                         </div>
@@ -217,34 +206,34 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                         )}
                                         {this.state.balance !== undefined && this.state.balance === 0 && (
                                             <div>
-                                                <div className="card--label">Balance</div>
-                                                <div className="card--value">0</div>
+                                                <div className="card--label">
+                                                    Balance
+                                                </div>
+                                                <div className="card--value">
+                                                    0
+                                                </div>
                                             </div>
                                         )}
-                                        <div className="card--label">Transaction Filter</div>
+                                        <div className="card--label">
+                                            Transaction Filter
+                                        </div>
                                         <div className="card--value">
                                             <span>Show Value Transactions Only</span>
                                             <input
                                                 type="checkbox"
                                                 checked={this.state.showOnlyValueTransactions}
                                                 className="margin-l-t"
-                                                onChange={(e) =>
-                                                    this.setState(
-                                                        {
-                                                            showOnlyValueTransactions: e.target.checked,
-                                                            filteredItems: this.filterItems(
-                                                                this.state.items,
-                                                                e.target.checked,
-                                                                this.state.showOnlyConfirmedTransactions,
-                                                            ),
-                                                        },
-                                                        () =>
-                                                            this._settingsService.saveSingle(
-                                                                "showOnlyValueTransactions",
-                                                                this.state.showOnlyValueTransactions,
-                                                            ),
-                                                    )
-                                                }
+                                                onChange={e => this.setState(
+                                                    {
+                                                        showOnlyValueTransactions: e.target.checked,
+                                                        filteredItems: this.filterItems(
+                                                            this.state.items,
+                                                            e.target.checked,
+                                                            this.state.showOnlyConfirmedTransactions)
+                                                    },
+                                                    () => this._settingsService.saveSingle(
+                                                        "showOnlyValueTransactions",
+                                                        this.state.showOnlyValueTransactions))}
                                             />
                                         </div>
                                         <div className="card--value">
@@ -253,23 +242,17 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                 type="checkbox"
                                                 checked={this.state.showOnlyConfirmedTransactions}
                                                 className="margin-l-t"
-                                                onChange={(e) =>
-                                                    this.setState(
-                                                        {
-                                                            showOnlyConfirmedTransactions: e.target.checked,
-                                                            filteredItems: this.filterItems(
-                                                                this.state.items,
-                                                                this.state.showOnlyValueTransactions,
-                                                                e.target.checked,
-                                                            ),
-                                                        },
-                                                        () =>
-                                                            this._settingsService.saveSingle(
-                                                                "showOnlyConfirmedTransactions",
-                                                                this.state.showOnlyConfirmedTransactions,
-                                                            ),
-                                                    )
-                                                }
+                                                onChange={e => this.setState(
+                                                    {
+                                                        showOnlyConfirmedTransactions: e.target.checked,
+                                                        filteredItems: this.filterItems(
+                                                            this.state.items,
+                                                            this.state.showOnlyValueTransactions,
+                                                            e.target.checked)
+                                                    },
+                                                    () => this._settingsService.saveSingle(
+                                                        "showOnlyConfirmedTransactions",
+                                                        this.state.showOnlyConfirmedTransactions))}
                                             />
                                         </div>
                                     </div>
@@ -277,8 +260,10 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                 {this.state.status && (
                                     <div className="card margin-t-s">
                                         <div className="card--content middle row margin-t-s">
-                                            {this.state.statusBusy === 0 && <Spinner />}
-                                            <p className="status">{this.state.status}</p>
+                                            {this.state.statusBusy === 0 && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
                                         </div>
                                     </div>
                                 )}
@@ -287,14 +272,16 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                         <div className="card--header row space-between">
                                             <div className="row">
                                                 <h2>Transactions</h2>
-                                                {this.state.items !== undefined && this.state.filteredItems !== undefined && (
-                                                    <span className="card--header-count">
-                                                        {this.state.filteredItems.length}
-                                                        {this.state.cursor?.hasMore && "+"}
-                                                    </span>
-                                                )}
+                                                {this.state.items !== undefined &&
+                                                    this.state.filteredItems !== undefined && (
+                                                        <span className="card--header-count">
+                                                            {this.state.filteredItems.length}{
+                                                                this.state.cursor?.hasMore && ("+")
+                                                            }
+                                                        </span>
+                                                    )}
                                             </div>
-                                            {this.state.statusBusy === 1 && <Spinner />}
+                                            {this.state.statusBusy === 1 && (<Spinner />)}
                                         </div>
                                         <div className="card--content">
                                             {this.state.items &&
@@ -305,67 +292,74 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                         There are no transactions visible with the current filter.
                                                     </div>
                                                 )}
-                                            {this.state.filteredItems?.map((item) => (
+                                            {this.state.filteredItems?.map(item => (
                                                 <div className="item-details" key={item.txHash}>
                                                     {item.details && (
-                                                        <div className="row row--tablet-responsive middle space-between">
+                                                        <div
+                                                            className="row row--tablet-responsive middle space-between"
+                                                        >
                                                             <div className="row middle card--value card--value__large">
                                                                 <button
                                                                     type="button"
                                                                     className={classNames(
                                                                         "value",
                                                                         {
-                                                                            value__zero:
+                                                                            "value__zero":
                                                                                 item.details.tx.value === 0 &&
-                                                                                item.details.confirmationState === "confirmed",
+                                                                                item.details.confirmationState ===
+                                                                                "confirmed"
                                                                         },
                                                                         {
-                                                                            value__positive:
+                                                                            "value__positive":
                                                                                 item.details.tx.value > 0 &&
-                                                                                item.details.confirmationState === "confirmed",
+                                                                                item.details.confirmationState ===
+                                                                                "confirmed"
                                                                         },
                                                                         {
-                                                                            value__negative:
+                                                                            "value__negative":
                                                                                 item.details.tx.value < 0 &&
-                                                                                item.details.confirmationState === "confirmed",
+                                                                                item.details.confirmationState ===
+                                                                                "confirmed"
                                                                         },
                                                                         {
-                                                                            value__inprogress:
-                                                                                item.details.confirmationState !== "confirmed",
-                                                                        },
+                                                                            "value__inprogress":
+                                                                                item.details.confirmationState !==
+                                                                                "confirmed"
+                                                                        }
                                                                     )}
-                                                                    onClick={() =>
-                                                                        this.setState(
-                                                                            {
-                                                                                formatFull: !this.state.formatFull,
-                                                                            },
-                                                                            () =>
-                                                                                this._settingsService.saveSingle(
-                                                                                    "formatFull",
-                                                                                    this.state.formatFull,
-                                                                                ),
-                                                                        )
-                                                                    }
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        },
+                                                                        () => this._settingsService.saveSingle(
+                                                                            "formatFull", this.state.formatFull))}
                                                                 >
                                                                     {this.state.formatFull
                                                                         ? `${item.details.tx.value} i`
-                                                                        : UnitsHelper.formatBest(item.details.tx.value)}
+                                                                        : UnitsHelper.formatBest(
+                                                                            item.details.tx.value)}
                                                                 </button>
-                                                                <Confirmation state={item.details.confirmationState} />
+                                                                <Confirmation
+                                                                    state={item.details.confirmationState}
+                                                                />
                                                             </div>
                                                             <div className="card--value card--value__light">
                                                                 {DateHelper.format(
                                                                     DateHelper.milliseconds(
                                                                         item.details.tx.timestamp === 0
                                                                             ? item.details.tx.attachmentTimestamp
-                                                                            : item.details.tx.timestamp,
-                                                                    ),
+                                                                            : item.details.tx.timestamp)
                                                                 )}
                                                             </div>
                                                         </div>
                                                     )}
                                                     <div className="card--value">
-                                                        <Link to={`/${this.props.match.params.network}/transaction/${item.txHash}`}>
+                                                        <Link
+                                                            to={
+                                                                `/${this.props.match.params.network
+                                                                }/transaction/${item.txHash}`
+                                                            }
+                                                        >
                                                             {item.txHash}
                                                         </Link>
                                                     </div>
@@ -373,13 +367,21 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                                                         <div className="row middle card--value">
                                                             <Link
                                                                 className="card--value__tertiary"
-                                                                to={`/${this.props.match.params.network}/bundle/${item.details?.tx.bundle}`}
+                                                                to={
+                                                                    `/${this.props.match.params.network
+                                                                    }/bundle/${item.details?.tx.bundle}`
+                                                                }
                                                             >
-                                                                <span className="material-icons arrow">chevron_right</span>
+                                                                <span className="material-icons arrow">
+                                                                    chevron_right
+                                                                </span>
                                                             </Link>
                                                             <Link
                                                                 className="card--value__tertiary"
-                                                                to={`/${this.props.match.params.network}/bundle/${item.details?.tx.bundle}`}
+                                                                to={
+                                                                    `/${this.props.match.params.network
+                                                                    }/bundle/${item.details?.tx.bundle}`
+                                                                }
                                                             >
                                                                 {item.details.tx.bundle}
                                                             </Link>
@@ -394,7 +396,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -418,30 +420,35 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
             details?: ICachedTransaction;
         }[],
         showOnlyValueTransactions?: boolean,
-        showOnlyConfirmedTransactions?: boolean,
-    ):
-        | {
-              /**
-               * The transaction hash.
-               */
-              txHash: string;
+        showOnlyConfirmedTransactions?: boolean
+    ): {
+        /**
+         * The transaction hash.
+         */
+        txHash: string;
 
-              /**
-               * The details details.
-               */
-              details?: ICachedTransaction;
-          }[]
-        | undefined {
+        /**
+         * The details details.
+         */
+        details?: ICachedTransaction;
+    }[] | undefined {
         if (!items) {
             return;
         }
-        return items.filter(
-            (i) =>
+        return items
+            .filter(i =>
                 !i.details ||
                 (i.details &&
-                    ((i.details.tx.value === 0 && !showOnlyValueTransactions) || i.details.tx.value !== 0) &&
-                    (!showOnlyConfirmedTransactions || (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed"))),
-        );
+                    (
+                        (i.details.tx.value === 0 && !showOnlyValueTransactions) ||
+                        (i.details.tx.value !== 0)
+                    ) &&
+                    (
+                        !showOnlyConfirmedTransactions ||
+                        (showOnlyConfirmedTransactions && i.details.confirmationState === "confirmed")
+                    )
+                )
+            );
     }
 }
 

@@ -58,7 +58,8 @@ export class LocalStorageService<T> implements IStorageService<T> {
             const buffer = await promises.readFile(fullPath);
 
             return JSON.parse(buffer.toString()) as T;
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -72,7 +73,8 @@ export class LocalStorageService<T> implements IStorageService<T> {
             await promises.mkdir(this._fullFolderPath, { recursive: true });
 
             await promises.writeFile(fullPath, Buffer.from(JSON.stringify(item, undefined, "\t")));
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -84,7 +86,8 @@ export class LocalStorageService<T> implements IStorageService<T> {
             const fullPath = path.join(this._fullFolderPath, `${itemKey}.json`);
 
             await promises.unlink(fullPath);
-        } catch {}
+        } catch {
+        }
     }
 
     /**
@@ -104,7 +107,8 @@ export class LocalStorageService<T> implements IStorageService<T> {
 
                 items.push(JSON.parse(buffer.toString()) as T);
             }
-        } catch {}
+        } catch {
+        }
 
         return items;
     }

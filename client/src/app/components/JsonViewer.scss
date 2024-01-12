@@ -3,26 +3,26 @@
 @import "../../scss/variables";
 
 .json-viewer {
-    font-family: "Courier New", Courier, monospace;
-    white-space: pre-wrap;
+  font-family: "Courier New", Courier, monospace;
+  white-space: pre-wrap;
 
-    .string {
-        color: green;
-    }
+  .string {
+    color: green;
+  }
 
-    .number {
-        color: darkorange;
-    }
+  .number {
+    color: darkorange;
+  }
 
-    .boolean {
-        color: blue;
-    }
+  .boolean {
+    color: blue;
+  }
 
-    .null {
-        color: magenta;
-    }
+  .null {
+    color: magenta;
+  }
 
-    .key {
-        color: $gray-10;
-    }
+  .key {
+    color: $gray-10;
+  }
 }

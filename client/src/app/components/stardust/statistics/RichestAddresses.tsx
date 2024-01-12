@@ -19,15 +19,26 @@ export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => 
             </div>
             <ul className="column richest-addr__list">
                 {data?.map((entry, idx) => (
-                    <li key={`radd-${entry.address}`} className="row middle richest-addr__entry">
+                    <li key={`radd-${entry.address}`} className="row middle richest-addr__entry" >
                         <div className="entry__left row">
                             <span className="entry__idx">{idx + 1}.</span>
                             <div className="entry__address">
-                                <TruncatedId id={entry.address} link={`/${network}/addr/${entry.address}`} showCopyButton />
+                                <TruncatedId
+                                    id={entry.address}
+                                    link={`/${network}/addr/${entry.address}`}
+                                    showCopyButton
+                                />
                             </div>
                         </div>
                         <div className="entry__right">
-                            <div className="entry__balance">{formatAmount(Number(entry.balance), tokenInfo, false, 0)}</div>
+                            <div className="entry__balance">
+                                {formatAmount(
+                                    Number(entry.balance),
+                                    tokenInfo,
+                                    false,
+                                    0
+                                )}
+                            </div>
                         </div>
                     </li>
                 ))}
@@ -35,3 +46,4 @@ export const RichestAddresses: React.FC<IRichestAddressesProps> = ({ data }) => 
         </div>
     );
 };
+

@@ -15,3 +15,4 @@ export interface ICurrenciesResponse extends IResponse, ISignedResponse {
         [coinCode: string]: ICoinStats;
     };
 }
+

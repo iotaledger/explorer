@@ -49,7 +49,7 @@ export class ChrysalisApiClient extends ApiClient {
     public async search(request: ISearchRequest): Promise<ISearchResponse> {
         return this.callApi<unknown, ISearchResponse>(
             `search/${request.network}/${request.query}${request.cursor ? `?cursor=${request.cursor}` : ""}`,
-            "get",
+            "get"
         );
     }
 
@@ -80,7 +80,7 @@ export class ChrysalisApiClient extends ApiClient {
         const { network, address, ...params } = request;
         return this.callApi<unknown, ITransactionHistoryResponse>(
             `transactionhistory/${network}/${address}${params ? FetchHelper.urlParams(params) : ""}`,
-            "get",
+            "get"
         );
     }
 
@@ -90,7 +90,10 @@ export class ChrysalisApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async milestoneDetails(request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
-        return this.callApi<unknown, IMilestoneDetailsResponse>(`milestone/${request.network}/${request.milestoneIndex}`, "get");
+        return this.callApi<unknown, IMilestoneDetailsResponse>(
+            `milestone/${request.network}/${request.milestoneIndex}`,
+            "get"
+        );
     }
 
     /**
@@ -101,7 +104,7 @@ export class ChrysalisApiClient extends ApiClient {
     public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
         return this.callApi<unknown, IStatsGetResponse>(
             `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
-            "get",
+            "get"
         );
     }
 
@@ -111,7 +114,9 @@ export class ChrysalisApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async didDocument(request: IIdentityDidResolveRequest): Promise<IIdentityDidResolveResponse> {
-        return this.callApi<unknown, IIdentityDidResolveResponse>(`chrysalis/did/${request.network}/${request.did}/document`, "get");
+        return this.callApi<unknown, IIdentityDidResolveResponse>(
+            `chrysalis/did/${request.network}/${request.did}/document`, "get"
+            );
     }
 
     /**
@@ -122,7 +127,7 @@ export class ChrysalisApiClient extends ApiClient {
     public async didHistory(request: IIdentityDidHistoryRequest): Promise<IIdentityDidHistoryResponse> {
         return this.callApi<unknown, IIdentityDidResolveResponse>(
             `chrysalis/did/${request.network}/${request.did}/history?version=${request.version}`,
-            "get",
+            "get"
         );
     }
 
@@ -132,11 +137,15 @@ export class ChrysalisApiClient extends ApiClient {
      * @param payload body of request
      * @returns The response from the request.
      */
-    public async diffHistory(request: IIdentityDiffHistoryRequest, payload: unknown): Promise<IIdentityDiffHistoryResponse> {
+    public async diffHistory(
+        request: IIdentityDiffHistoryRequest,
+        payload: unknown
+    ): Promise<IIdentityDiffHistoryResponse> {
         return this.callApi<unknown, IIdentityDiffHistoryResponse>(
             `chrysalis/did/${request.network}/diffHistory/${request.integrationMsgId}?version=${request.version}`,
             "post",
-            payload,
+            payload
         );
     }
 }
+

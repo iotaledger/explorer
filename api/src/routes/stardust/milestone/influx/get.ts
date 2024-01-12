@@ -7,13 +7,17 @@ import { NetworkService } from "../../../../services/networkService";
 import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
+
 /**
  * Find the object from the network.
  * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: IMilestoneStatsRequest): Promise<IMilestoneAnalyticStats> {
+export async function get(
+    _: IConfiguration,
+    request: IMilestoneStatsRequest
+): Promise<IMilestoneAnalyticStats> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -38,13 +42,13 @@ export async function get(_: IConfiguration, request: IMilestoneStatsRequest): P
         maybeMsStats = await influxService.fetchAnalyticsForMilestone(milestoneIndex);
     }
 
-    return maybeMsStats
-        ? {
-              milestoneIndex: maybeMsStats.milestoneIndex,
-              blockCount: maybeMsStats.blockCount,
-              perPayloadType: maybeMsStats.perPayloadType,
-          }
-        : {
-              message: `Could not fetch milestone analytics for ${request.milestoneIndex}`,
-          };
+
+    return maybeMsStats ? {
+        milestoneIndex: maybeMsStats.milestoneIndex,
+        blockCount: maybeMsStats.blockCount,
+        perPayloadType: maybeMsStats.perPayloadType
+    } : {
+        message: `Could not fetch milestone analytics for ${request.milestoneIndex}`
+    };
 }
+

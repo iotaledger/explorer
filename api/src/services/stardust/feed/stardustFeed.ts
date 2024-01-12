@@ -85,6 +85,7 @@ export class StardustFeed {
         }
     }
 
+
     /**
      * Get the latest milestone cache state.
      * @returns The cache state.
@@ -139,7 +140,7 @@ export class StardustFeed {
             try {
                 const block: Block = this.parseMqttPayloadMessage(Block, message);
                 const update: Partial<IFeedUpdate> = {
-                    block,
+                    block
                 };
 
                 // eslint-disable-next-line no-void
@@ -155,32 +156,30 @@ export class StardustFeed {
             const metadata: IBlockMetadata = JSON.parse(parsed.payload);
             // update cache
             let currentEntry = this.blockMetadataCache.get(metadata.blockId) ?? null;
-            currentEntry = currentEntry
-                ? {
-                      ...currentEntry,
-                      milestone: metadata.milestoneIndex,
-                      referenced: metadata.referencedByMilestoneIndex,
-                      solid: metadata.isSolid,
-                      conflicting: metadata.ledgerInclusionState === "conflicting",
-                      conflictReason: metadata.conflictReason,
-                      included: metadata.ledgerInclusionState === "included",
-                  }
-                : {
-                      milestone: metadata.milestoneIndex,
-                      referenced: metadata.referencedByMilestoneIndex,
-                      solid: metadata.isSolid,
-                      conflicting: metadata.ledgerInclusionState === "conflicting",
-                      conflictReason: metadata.conflictReason,
-                      included: metadata.ledgerInclusionState === "included",
-                  };
+            currentEntry = currentEntry ? {
+                ...currentEntry,
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                conflictReason: metadata.conflictReason,
+                included: metadata.ledgerInclusionState === "included"
+            } : {
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                conflictReason: metadata.conflictReason,
+                included: metadata.ledgerInclusionState === "included"
+            };
 
             this.blockMetadataCache.set(metadata.blockId, currentEntry);
 
             const update: Partial<IFeedUpdate> = {
                 blockMetadata: {
                     blockId: metadata.blockId,
-                    metadata: currentEntry,
-                },
+                    metadata: currentEntry
+                }
             };
 
             // eslint-disable-next-line no-void
@@ -205,8 +204,8 @@ export class StardustFeed {
                         milestoneId,
                         milestoneIndex,
                         timestamp,
-                        payload: milestonePayload,
-                    },
+                        payload: milestonePayload
+                    }
                 };
 
                 // eslint-disable-next-line no-void
@@ -228,7 +227,7 @@ export class StardustFeed {
                 // push data through callback
                 await this.blockSubscribers[subscriptionId]({
                     ...payload,
-                    subscriptionId,
+                    subscriptionId
                 });
             } catch (error) {
                 logger.warn(`[FeedClient] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
@@ -247,7 +246,7 @@ export class StardustFeed {
                 // push data through callback
                 await this.milestoneSubscribers[subscriptionId]({
                     ...payload,
-                    subscriptionId,
+                    subscriptionId
                 });
             } catch (error) {
                 logger.warn(`[FeedClient] Failed to send callback to milestone subscribers for ${subscriptionId}. Cause: ${error}`);
@@ -263,17 +262,14 @@ export class StardustFeed {
      * @param timestamp The milestone timestamp.
      */
     private async updateLatestMilestoneCache(
-        blockId: string,
-        milestoneIndex: number,
-        milestoneId: string,
-        timestamp: number,
+        blockId: string, milestoneIndex: number, milestoneId: string, timestamp: number
     ): Promise<void> {
-        if (!this.latestMilestonesCache.map((ms) => ms.blockId).includes(blockId)) {
+        if (!this.latestMilestonesCache.map(ms => ms.blockId).includes(blockId)) {
             this.latestMilestonesCache.unshift({
                 blockId,
                 milestoneId,
                 index: milestoneIndex,
-                timestamp,
+                timestamp
             });
 
             if (this.latestMilestonesCache.length > MAX_MILESTONE_LATEST) {
@@ -285,7 +281,10 @@ export class StardustFeed {
     private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
         try {
             const message: { topic: string; payload: string } = JSON.parse(serializedMessage);
-            const payload: T = plainToInstance<T, Record<string, unknown>>(cls, JSON.parse(message.payload) as Record<string, unknown>);
+            const payload: T = plainToInstance<T, Record<string, unknown>>(
+                cls,
+                JSON.parse(message.payload) as Record<string, unknown>
+            );
 
             return payload;
         } catch (error) {
@@ -314,3 +313,4 @@ export class StardustFeed {
         }, CACHE_TRIM_INTERVAL_MS);
     }
 }
+

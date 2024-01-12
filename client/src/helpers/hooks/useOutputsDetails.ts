@@ -17,7 +17,12 @@ interface IOutputDetails {
  * @param outputIds The output ids
  * @returns The outputs responses, loading bool and an error message.
  */
-export function useOutputsDetails(network: string, outputIds: string[] | null): [IOutputDetails[], boolean, string?] {
+export function useOutputsDetails(network: string, outputIds: string[] | null):
+    [
+        IOutputDetails[],
+        boolean,
+        string?
+    ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [outputs, setOutputs] = useState<IOutputDetails[]>([]);
@@ -31,39 +36,35 @@ export function useOutputsDetails(network: string, outputIds: string[] | null): 
             const items: IOutputDetails[] = [];
 
             for (const outputId of outputIds) {
-                const promise = apiClient
-                    .outputDetails({
-                        network,
-                        outputId: HexHelper.addPrefix(outputId),
-                    })
-                    .then((response) => {
-                        const details = response.output;
-                        if (!response?.error && details?.output && details?.metadata) {
-                            const fetchedOutputDetails = {
-                                output: details.output,
-                                metadata: details.metadata,
-                            };
-                            const item: IOutputDetails = {
-                                outputDetails: fetchedOutputDetails,
-                                outputId,
-                            };
-                            items.push(item);
-                        } else {
-                            setError(response.error);
-                        }
-                    })
-                    .catch((e) => console.log(e));
+                const promise = apiClient.outputDetails({
+                    network,
+                    outputId: HexHelper.addPrefix(outputId)
+                }).then(response => {
+                    const details = response.output;
+                    if (!response?.error && details?.output && details?.metadata) {
+                        const fetchedOutputDetails = {
+                            output: details.output,
+                            metadata: details.metadata
+                        };
+                        const item: IOutputDetails = {
+                            outputDetails: fetchedOutputDetails,
+                            outputId
+                        };
+                        items.push(item);
+                    } else {
+                        setError(response.error);
+                    }
+                }).catch(e => console.log(e));
 
                 promises.push(promise);
             }
 
             Promise.allSettled(promises)
-                .then((_) => {
+                .then(_ => {
                     if (isMounted) {
                         setOutputs(items);
                     }
-                })
-                .catch((_) => {
+                }).catch(_ => {
                     setError("Failed loading output details!");
                 })
                 .finally(() => {

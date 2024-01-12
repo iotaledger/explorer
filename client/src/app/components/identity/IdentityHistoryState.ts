@@ -2,6 +2,7 @@ import { IIdentityMessageWrapper } from "~models/identity/IIdentityMessageWrappe
 import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResponse";
 
 export interface IdentityHistoryState {
+
     /**
      * if history data are already loaded from Server.
      */

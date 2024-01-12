@@ -22,44 +22,44 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
             name: "Youtube",
             icon: <YoutubeIcon />,
             url: "https://www.youtube.com/c/iotafoundation",
-            color: "#131F37",
+            color: "#131F37"
         },
         {
             name: "GitHub",
             icon: <GithubIcon />,
             url: "https://github.com/iotaledger/",
-            color: "#2C3850",
+            color: "#2C3850"
         },
         {
             name: "Discord",
             icon: <DiscordIcon />,
             url: "https://discord.iota.org/",
-            color: "#4B576F",
+            color: "#4B576F"
         },
         {
             name: "Twitter",
             icon: <TwitterIcon />,
             url: "https://twitter.com/iota",
-            color: "#6A768E",
+            color: "#6A768E"
         },
         {
             name: "Reddit",
             icon: <RedditIcon />,
             url: "https://www.reddit.com/r/Iota/",
-            color: "#7D89A1",
+            color: "#7D89A1"
         },
         {
             name: "LinkedIn",
             icon: <LinkedinIcon />,
             url: "https://www.linkedin.com/company/iotafoundation/",
-            color: "#8995AD",
+            color: "#8995AD"
         },
         {
             name: "Instagram",
             icon: <InstagramIcon />,
             url: "https://www.instagram.com/iotafoundation/",
-            color: "#99A5BD",
-        },
+            color: "#99A5BD"
+        }
     ];
 
     /**
@@ -69,7 +69,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
     constructor(props: FooterProps) {
         super(props);
         this.state = {
-            siteFooterSection: this.buildSiteFooter(),
+            siteFooterSection: this.buildSiteFooter()
         };
     }
 
@@ -91,7 +91,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
     public componentDidUpdate(prevProps: FooterProps): void {
         if (this.props.dynamic !== prevProps.dynamic && this._isMounted) {
             this.setState({
-                siteFooterSection: this.buildSiteFooter(),
+                siteFooterSection: this.buildSiteFooter()
             });
         }
     }
@@ -106,14 +106,15 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                 <section className="footer--content">
                     <div className="inner">
                         <div className="footer-grid">
-                            {[this.state.siteFooterSection]
-                                .concat(this.state.foundationData?.footerSections ?? [])
+                            {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
                                 .map((section, sectionIdx) => (
                                     <section key={sectionIdx}>
                                         <h3>{section.label}</h3>
                                         <ul>
                                             {section.items.map((info, infoIdx) => (
-                                                <li key={infoIdx}>{FoundationDataHelper.buildLink(info.url, info.label)}</li>
+                                                <li key={infoIdx}>
+                                                    {FoundationDataHelper.buildLink(info.url, info.label)}
+                                                </li>
                                             ))}
                                         </ul>
                                     </section>
@@ -124,16 +125,21 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                             <div className="margin-t-m">
                                 <LogoFooter title="IOTA Foundation" />
                             </div>
-                            <section className="line-breaks">{this.state.foundationData?.registeredAddress.value.join("\n")}</section>
+                            <section className="line-breaks">
+                                {this.state.foundationData?.registeredAddress.value.join("\n")}
+                            </section>
                             <section>
                                 <ul>
                                     {this.state.foundationData?.information.map((info, infoIdx) => (
-                                        <li key={infoIdx}>{FoundationDataHelper.createValue(info)}</li>
+                                        <li key={infoIdx}>
+                                            {FoundationDataHelper.createValue(info)}
+                                        </li>
                                     ))}
                                 </ul>
                             </section>
                         </div>
                     </div>
+
                 </section>
                 <section className="social--media__wrapper">
                     {this.SOCIAL_LINKS.map((social, socialID) => (
@@ -181,10 +187,10 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
     } {
         return {
             label: "Explorer",
-            items: this.props.dynamic.map((n) => ({
+            items: this.props.dynamic.map(n => ({
                 label: n.label,
-                url: `local://${n.url}`,
-            })),
+                url: `local://${n.url}`
+            }))
         };
     }
 }

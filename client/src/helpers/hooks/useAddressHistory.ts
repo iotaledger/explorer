@@ -21,7 +21,7 @@ interface IOutputDetailsMap {
 export function useAddressHistory(
     network: string,
     address?: string,
-    setDisabled?: (isDisabled: boolean) => void,
+    setDisabled?: (isDisabled: boolean) => void
 ): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
@@ -45,11 +45,10 @@ export function useAddressHistory(
                 address,
                 pageSize: PAGE_SIZE,
                 sort: SORT,
-                cursor,
+                cursor
             };
 
-            apiClient
-                .transactionHistory(request)
+            apiClient.transactionHistory(request)
                 .then((response: ITransactionHistoryResponse | undefined) => {
                     const items = response?.items ?? [];
                     if (items.length > 0 && isMounted) {
@@ -72,26 +71,25 @@ export function useAddressHistory(
             const detailsPage: IOutputDetailsMap = {};
 
             for (const item of history) {
-                const promise = apiClient
-                    .outputDetails({ network, outputId: item.outputId })
-                    .then((response) => {
+                const promise = apiClient.outputDetails({ network, outputId: item.outputId })
+                    .then(response => {
                         const details = response.output;
                         if (!response.error && details?.output && details?.metadata) {
                             const outputDetails = {
                                 output: details.output,
-                                metadata: details.metadata,
+                                metadata: details.metadata
                             };
 
                             detailsPage[item.outputId] = outputDetails;
                         }
                     })
-                    .catch((e) => console.log(e));
+                    .catch(e => console.log(e));
 
                 promises.push(promise);
             }
 
             Promise.allSettled(promises)
-                .then((_) => {
+                .then(_ => {
                     if (isMounted) {
                         setOutputDetailsMap(detailsPage);
                         setIsAddressHistoryLoading(false);
@@ -106,8 +104,7 @@ export function useAddressHistory(
 
                         setHistoryView(updatedHistoryView);
                     }
-                })
-                .catch((_) => {
+                }).catch(_ => {
                     console.log("Failed loading transaction history details!");
                 })
                 .finally(() => {
@@ -118,3 +115,4 @@ export function useAddressHistory(
 
     return [historyView, outputDetailsMap, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
 }
+

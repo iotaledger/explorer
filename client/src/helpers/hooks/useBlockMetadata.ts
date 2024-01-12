@@ -13,7 +13,11 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param blockId The block id
  * @returns The block metadata and loading bool.
  */
-export function useBlockMetadata(network: string, blockId: string | null): [BlockMetadata, boolean] {
+export function useBlockMetadata(network: string, blockId: string | null):
+    [
+        BlockMetadata,
+        boolean
+    ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [blockMetadata, setBlockMetadata] = useState<BlockMetadata>({ blockTangleStatus: "pending" });
@@ -28,7 +32,7 @@ export function useBlockMetadata(network: string, blockId: string | null): [Bloc
                 try {
                     const details = await apiClient.blockDetails({
                         network,
-                        blockId: HexHelper.addPrefix(blockId),
+                        blockId: HexHelper.addPrefix(blockId)
                     });
 
                     if (isMounted) {
@@ -36,7 +40,7 @@ export function useBlockMetadata(network: string, blockId: string | null): [Bloc
                             metadata: details?.metadata,
                             metadataError: details?.error,
                             conflictReason: calculateConflictReason(details?.metadata),
-                            blockTangleStatus: calculateStatus(details?.metadata),
+                            blockTangleStatus: calculateStatus(details?.metadata)
                         });
 
                         if (!details?.metadata?.referencedByMilestoneIndex) {
@@ -49,7 +53,7 @@ export function useBlockMetadata(network: string, blockId: string | null): [Bloc
                     if (error instanceof Error && isMounted) {
                         setBlockMetadata({
                             metadataError: error.message,
-                            blockTangleStatus: "pending",
+                            blockTangleStatus: "pending"
                         });
                     }
                 } finally {

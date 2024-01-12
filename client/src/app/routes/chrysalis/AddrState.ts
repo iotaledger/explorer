@@ -3,6 +3,7 @@ import { IAddressResponse, IOutputResponse } from "@iota/iota.js";
 import { ITransactionHistoryResponse, ITransactionHistoryItem } from "~models/api/chrysalis/ITransactionHistoryResponse";
 import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
 
+
 export interface AddrState {
     /**
      * Address.

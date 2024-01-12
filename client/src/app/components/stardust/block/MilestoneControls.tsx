@@ -21,10 +21,14 @@ const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {
 
     useEffect(() => {
         if (previousMsDetails?.milestone) {
-            setPreviousMsBlockId(TransactionsHelper.blockIdFromMilestonePayload(protocolVersion, previousMsDetails.milestone));
+            setPreviousMsBlockId(
+                TransactionsHelper.blockIdFromMilestonePayload(protocolVersion, previousMsDetails.milestone)
+            );
         }
         if (nextMsDetails?.milestone) {
-            setNextMsBlockId(TransactionsHelper.blockIdFromMilestonePayload(protocolVersion, nextMsDetails.milestone));
+            setNextMsBlockId(
+                TransactionsHelper.blockIdFromMilestonePayload(protocolVersion, nextMsDetails.milestone)
+            );
         }
     }, [nextMsDetails, previousMsDetails]);
 
@@ -55,3 +59,4 @@ const MilestoneControls: React.FC<MilestoneControlProps> = ({ milestone }) => {
 };
 
 export default MilestoneControls;
+

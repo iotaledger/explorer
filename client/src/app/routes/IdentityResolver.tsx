@@ -13,6 +13,7 @@ import IdentitySearchInput from "../components/identity/IdentitySearchInput";
 import Modal from "../components/Modal";
 import "./IdentityResolver.scss";
 
+
 class IdentityResolver extends AsyncComponent<
     RouteComponentProps<IdentityResolverProps> & { protocolVersion: string },
     IdentityResolverState
@@ -21,7 +22,7 @@ class IdentityResolver extends AsyncComponent<
         super(props);
 
         this.state = {
-            didExample: undefined,
+            didExample: undefined
         };
     }
 
@@ -45,29 +46,33 @@ class IdentityResolver extends AsyncComponent<
                                 {!this.props.match.params.did && (
                                     <Fragment>
                                         {this.props.protocolVersion === LEGACY && (
-                                            <div className="unsupported-network">This network is not supported!</div>
+                                            <div className="unsupported-network">
+                                                This network is not supported!
+                                            </div>
                                         )}
 
                                         <div>
                                             <div className="row middle">
-                                                <h1>Decentralized Identifier</h1>
+                                                <h1>
+                                                    Decentralized Identifier
+                                                </h1>
                                                 <Modal icon="info" data={welcomeMessage} />
                                             </div>
 
                                             <div>
                                                 <p className="tool-description">
-                                                    The Identity Resolver is a tool for resolving Decentralized Identifiers (DIDs) into
-                                                    their associated DID Document, by retrieving the information from an IOTA or Shimmer
-                                                    network.
+                                                    The Identity Resolver is a tool for resolving Decentralized
+                                                    Identifiers (DIDs) into their associated DID Document, by retrieving
+                                                    the information from an IOTA or Shimmer network.
                                                 </p>
                                             </div>
                                             {this.props.protocolVersion !== LEGACY && (
                                                 <div className="row middle margin-b-s row--tablet-responsive">
                                                     <IdentitySearchInput
                                                         compact={false}
-                                                        onSearch={(e) => {
+                                                        onSearch={e => {
                                                             this.props.history.push(
-                                                                `/${this.props.match.params.network}/identity-resolver/${e}`,
+                                                                `/${this.props.match.params.network}/identity-resolver/${e}`
                                                             );
                                                         }}
                                                         network={this.props.match.params.network}
@@ -80,7 +85,7 @@ class IdentityResolver extends AsyncComponent<
                                                     className="load-history-button"
                                                     onClick={() => {
                                                         this.props.history.push(
-                                                            `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`,
+                                                            `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`
                                                         );
                                                     }}
                                                     type="button"
@@ -95,10 +100,14 @@ class IdentityResolver extends AsyncComponent<
                                     <div>
                                         {this.props.protocolVersion === LEGACY && (
                                             <div>
-                                                <div className="unsupported-network">This network is not supported!</div>
+                                                <div className="unsupported-network">
+                                                    This network is not supported!
+                                                </div>
                                             </div>
                                         )}
-                                        {this.props.protocolVersion === CHRYSALIS && <IdentityChrysalisResolver {...this.props} />}
+                                        {this.props.protocolVersion === CHRYSALIS && (
+                                            <IdentityChrysalisResolver {...this.props} />
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -113,9 +122,9 @@ class IdentityResolver extends AsyncComponent<
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networks = networkService.networks();
 
-        const network = networks.find((n) => n.network === this.props.match.params.network);
+        const network = networks.find(n => n.network === this.props.match.params.network);
         this.setState({
-            didExample: network?.didExample,
+            didExample: network?.didExample
         });
     }
 }

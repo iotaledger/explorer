@@ -9,3 +9,4 @@ export interface IAliasRequest {
      */
     aliasId: string;
 }
+

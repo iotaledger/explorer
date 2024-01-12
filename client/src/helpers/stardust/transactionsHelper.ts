@@ -2,30 +2,12 @@
 import {
     AddressUnlockCondition,
     BasicOutput,
-    Block,
-    CommonOutput,
-    FeatureType,
-    GovernorAddressUnlockCondition,
-    ImmutableAliasAddressUnlockCondition,
-    InputType,
-    IRent,
-    MilestonePayload,
-    Output,
-    OutputType,
-    PayloadType,
-    ReferenceUnlock,
-    RegularTransactionEssence,
-    SignatureUnlock,
+    Block, CommonOutput, FeatureType, GovernorAddressUnlockCondition,
+    ImmutableAliasAddressUnlockCondition, InputType, IRent, MilestonePayload, Output, OutputType, PayloadType,
+    ReferenceUnlock, RegularTransactionEssence, SignatureUnlock,
     StateControllerAddressUnlockCondition,
     TagFeature,
-    TransactionPayload,
-    TreasuryOutput,
-    Unlock,
-    UnlockCondition,
-    UnlockConditionType,
-    UnlockType,
-    Utils,
-    UTXOInput,
+    TransactionPayload, TreasuryOutput, Unlock, UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
 } from "@iota/sdk-wasm/web";
 import bigInt from "big-integer";
 import { Converter } from "./convertUtils";
@@ -56,11 +38,8 @@ const HEX_PARTICIPATE = "0x5041525449434950415445";
 export const STARDUST_GENESIS_MILESTONE = 7669900;
 
 export class TransactionsHelper {
-    public static async getInputsAndOutputs(
-        block: Block | undefined,
-        network: string,
-        _bechHrp: string,
-        apiClient: StardustApiClient,
+    public static async getInputsAndOutputs(block: Block | undefined, network: string,
+        _bechHrp: string, apiClient: StardustApiClient
     ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: IInput[] = [];
@@ -99,8 +78,8 @@ export class TransactionsHelper {
                 unlockAddresses.push(
                     Bech32AddressHelper.buildAddress(
                         _bechHrp,
-                        Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp),
-                    ),
+                        Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp)
+                    )
                 );
             }
 
@@ -118,7 +97,10 @@ export class TransactionsHelper {
                     const utxoInput = input as UTXOInput;
                     isGenesis = utxoInput.transactionId === GENESIS_HASH;
 
-                    const outputId = Utils.computeOutputId(utxoInput.transactionId, utxoInput.transactionOutputIndex);
+                    const outputId = Utils.computeOutputId(
+                        utxoInput.transactionId,
+                        utxoInput.transactionOutputIndex
+                    );
 
                     const response = await apiClient.outputDetails({ network, outputId });
                     const details = response.output;
@@ -126,7 +108,7 @@ export class TransactionsHelper {
                     if (!response.error && details?.output && details?.metadata) {
                         outputDetails = {
                             output: details.output,
-                            metadata: details.metadata,
+                            metadata: details.metadata
                         };
                         amount = Number(details.output.amount);
                     }
@@ -139,7 +121,7 @@ export class TransactionsHelper {
                         isGenesis,
                         outputId,
                         output: outputDetails,
-                        address,
+                        address
                     });
                 }
             }
@@ -154,18 +136,16 @@ export class TransactionsHelper {
                     outputs.push({
                         id: outputId,
                         output,
-                        amount: Number(payloadEssence.outputs[i].amount),
+                        amount: Number(payloadEssence.outputs[i].amount)
                     });
                 } else {
                     const output = payloadEssence.outputs[i] as CommonOutput;
 
                     const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
-                        output.unlockConditions,
-                        _bechHrp,
-                        output.type,
+                        output.unlockConditions, _bechHrp, output.type
                     );
 
-                    const isRemainder = inputs.some((input) => input.address.bech32 === address.bech32);
+                    const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
 
                     if (isRemainder) {
                         remainderOutputs.push({
@@ -173,7 +153,7 @@ export class TransactionsHelper {
                             address,
                             amount: Number(payloadEssence.outputs[i].amount),
                             isRemainder,
-                            output,
+                            output
                         });
                     } else {
                         outputs.push({
@@ -181,7 +161,7 @@ export class TransactionsHelper {
                             address,
                             amount: Number(payloadEssence.outputs[i].amount),
                             isRemainder,
-                            output,
+                            output
                         });
                     }
 
@@ -222,7 +202,9 @@ export class TransactionsHelper {
      * @returns The BLAKE2b-256 hash for Alias Id.
      */
     public static buildIdHashForAlias(aliasId: string, outputId: string): string {
-        return HexHelper.toBigInt256(aliasId).eq(bigInt.zero) ? Utils.computeAliasId(outputId) : aliasId;
+        return HexHelper.toBigInt256(aliasId).eq(bigInt.zero) ?
+            Utils.computeAliasId(outputId) :
+            aliasId;
     }
 
     /**
@@ -232,16 +214,18 @@ export class TransactionsHelper {
      * @returns The BLAKE2b-256 hash for Nft Id.
      */
     public static buildIdHashForNft(nftId: string, outputId: string): string {
-        return HexHelper.toBigInt256(nftId).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftId;
+        return HexHelper.toBigInt256(nftId).eq(bigInt.zero) ?
+            Utils.computeNftId(outputId) :
+            nftId;
     }
 
     public static computeStorageRentBalance(outputs: Output[], rentStructure: IRent): number {
-        const outputsWithoutSdruc = outputs.filter((output) => {
+        const outputsWithoutSdruc = outputs.filter(output => {
             if (output.type === OutputType.Treasury) {
                 return false;
             }
             const hasStorageDepositUnlockCondition = (output as CommonOutput).unlockConditions.some(
-                (uc) => uc.type === UnlockConditionType.StorageDepositReturn,
+                uc => uc.type === UnlockConditionType.StorageDepositReturn
             );
 
             return !hasStorageDepositUnlockCondition;
@@ -249,7 +233,7 @@ export class TransactionsHelper {
 
         const rentBalance = outputsWithoutSdruc.reduce(
             (acc, output) => acc + Number(Utils.computeStorageDeposit(output, rentStructure)),
-            0,
+            0
         );
         return rentBalance;
     }
@@ -261,7 +245,9 @@ export class TransactionsHelper {
      */
     public static isParticipationEventOutput(output: Output): boolean {
         if (output.type === OutputType.Basic) {
-            const tagFeature = (output as BasicOutput).features?.find((feature) => feature.type === FeatureType.Tag) as TagFeature;
+            const tagFeature = (output as BasicOutput).features?.find(
+                feature => feature.type === FeatureType.Tag
+            ) as TagFeature;
 
             if (tagFeature) {
                 return tagFeature.tag === HEX_PARTICIPATE;
@@ -299,30 +285,30 @@ export class TransactionsHelper {
     private static bechAddressFromAddressUnlockCondition(
         unlockConditions: UnlockCondition[],
         _bechHrp: string,
-        outputType: number,
+        outputType: number
     ): IBech32AddressDetails {
         let address: IBech32AddressDetails = { bech32: "" };
         let unlockCondition;
 
         if (outputType === OutputType.Basic || outputType === OutputType.Nft) {
-            unlockCondition = unlockConditions
-                ?.filter((ot) => ot.type === UnlockConditionType.Address)
-                .map((ot) => ot as AddressUnlockCondition)[0];
+            unlockCondition = unlockConditions?.filter(
+                ot => ot.type === UnlockConditionType.Address
+            ).map(ot => ot as AddressUnlockCondition)[0];
         } else if (outputType === OutputType.Alias) {
-            if (unlockConditions.some((ot) => ot.type === UnlockConditionType.StateControllerAddress)) {
-                unlockCondition = unlockConditions
-                    ?.filter((ot) => ot.type === UnlockConditionType.StateControllerAddress)
-                    .map((ot) => ot as StateControllerAddressUnlockCondition)[0];
+            if (unlockConditions.some(ot => ot.type === UnlockConditionType.StateControllerAddress)) {
+                unlockCondition = unlockConditions?.filter(
+                    ot => ot.type === UnlockConditionType.StateControllerAddress
+                ).map(ot => ot as StateControllerAddressUnlockCondition)[0];
             }
-            if (unlockConditions.some((ot) => ot.type === UnlockConditionType.GovernorAddress)) {
-                unlockCondition = unlockConditions
-                    ?.filter((ot) => ot.type === UnlockConditionType.GovernorAddress)
-                    .map((ot) => ot as GovernorAddressUnlockCondition)[0];
+            if (unlockConditions.some(ot => ot.type === UnlockConditionType.GovernorAddress)) {
+                unlockCondition = unlockConditions?.filter(
+                    ot => ot.type === UnlockConditionType.GovernorAddress
+                ).map(ot => ot as GovernorAddressUnlockCondition)[0];
             }
         } else if (outputType === OutputType.Foundry) {
-            unlockCondition = unlockConditions
-                ?.filter((ot) => ot.type === UnlockConditionType.ImmutableAliasAddress)
-                .map((ot) => ot as ImmutableAliasAddressUnlockCondition)[0];
+            unlockCondition = unlockConditions?.filter(
+                ot => ot.type === UnlockConditionType.ImmutableAliasAddress
+            ).map(ot => ot as ImmutableAliasAddressUnlockCondition)[0];
         }
 
         if (unlockCondition?.address) {
@@ -332,3 +318,4 @@ export class TransactionsHelper {
         return address;
     }
 }
+

@@ -12,7 +12,12 @@ class Spinner extends Component<SpinnerProps> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        return <div className={classNames("spinner", { "spinner--compact": this.props.compact })} />;
+        return (
+            <div className={
+                classNames("spinner", { "spinner--compact": this.props.compact })
+            }
+            />
+        );
     }
 }
 

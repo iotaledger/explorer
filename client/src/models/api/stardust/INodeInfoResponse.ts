@@ -25,3 +25,4 @@ export interface INodeInfoResponse extends IResponse {
      */
     rentStructure?: IRent;
 }
+

@@ -4,85 +4,85 @@
 @import "../../../scss/variables";
 
 .section .transaction-payload {
-    .section--header {
-        .transaction-value {
-            display: flex;
-            margin-left: auto;
-            color: $gray-5;
-            font-family: $inter;
-            font-weight: 700;
-            text-align: end;
+  .section--header {
+    .transaction-value {
+      display: flex;
+      margin-left: auto;
+      color: $gray-5;
+      font-family: $inter;
+      font-weight: 700;
+      text-align: end;
 
-            @include tablet-down {
-                display: none;
-            }
+      @include tablet-down {
+        display: none;
+      }
 
-            @include font-size(16px, 24px);
+      @include font-size(16px, 24px);
 
-            .value {
-                margin-right: 8px;
-                color: var(--body-color);
-
-                @include tablet-down {
-                    margin-right: 0;
-                }
-            }
-
-            .dot-separator {
-                @include tablet-down {
-                    margin-right: 0;
-                }
-            }
-
-            .fiat-value {
-                margin-left: 8px;
-                white-space: nowrap;
-            }
-        }
+      .value {
+        margin-right: 8px;
+        color: var(--body-color);
 
         @include tablet-down {
-            flex-direction: column;
-            align-items: flex-start;
+          margin-right: 0;
         }
+      }
+
+      .dot-separator {
+        @include tablet-down {
+          margin-right: 0;
+        }
+      }
+
+      .fiat-value {
+        margin-left: 8px;
+        white-space: nowrap;
+      }
     }
 
-    .card {
-        & + .card {
-            margin-top: 0;
-            margin-left: 23px;
-
-            @include tablet-down {
-                margin-top: 23px;
-                margin-left: 0;
-            }
-        }
-
-        .card--content {
-            .card--value {
-                margin-left: auto;
-                color: var(--type-color);
-            }
-
-            .pointer {
-                cursor: pointer;
-            }
-
-            .amount-size {
-                width: 200px;
-                text-align: end;
-            }
-
-            .bech32-address {
-                .value {
-                    @include font-size(14px);
-
-                    color: $blue-5;
-                    font-family: $ibm-plex-mono;
-                    font-weight: normal;
-                    letter-spacing: 0.02em;
-                    line-height: 20px;
-                }
-            }
-        }
+    @include tablet-down {
+      flex-direction: column;
+      align-items: flex-start;
     }
+  }
+
+  .card {
+    & + .card {
+      margin-top: 0;
+      margin-left: 23px;
+
+      @include tablet-down {
+        margin-top: 23px;
+        margin-left: 0;
+      }
+    }
+
+    .card--content {
+      .card--value {
+        margin-left: auto;
+        color: var(--type-color);
+      }
+
+      .pointer {
+        cursor: pointer;
+      }
+      
+      .amount-size {
+        width: 200px;
+        text-align: end;
+      }
+
+      .bech32-address {
+        .value {
+          @include font-size(14px);
+
+          color: $blue-5;
+          font-family: $ibm-plex-mono;
+          font-weight: normal;
+          letter-spacing: 0.02em;
+          line-height: 20px;
+        }
+      }
+    }
+  }
 }

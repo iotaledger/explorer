@@ -1,18 +1,8 @@
 /* eslint-disable no-warning-comments */
 import {
     __ClientMethods__,
-    OutputResponse,
-    Client,
-    IBlockMetadata,
-    MilestonePayload,
-    IOutputsResponse,
-    HexEncodedString,
-    Block,
-    Utils,
-    QueryParameter,
-    NftQueryParameter,
-    AliasQueryParameter,
-    FoundryQueryParameter,
+    OutputResponse, Client, IBlockMetadata, MilestonePayload, IOutputsResponse,
+    HexEncodedString, Block, Utils, QueryParameter, NftQueryParameter, AliasQueryParameter, FoundryQueryParameter
 } from "@iota/sdk";
 import { SearchExecutor } from "./searchExecutor";
 import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
@@ -54,7 +44,9 @@ export class StardustTangleHelper {
      * @param addressBech32 The address to get the details for in bech32 format.
      * @returns The address details.
      */
-    public static async addressDetails(network: INetwork, addressBech32: string): Promise<IAddressDetailsWithBalance | undefined> {
+    public static async addressDetails(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsWithBalance | undefined> {
         const { bechHrp } = network;
         const client = ServiceFactory.get<Client>(`client-${network.network}`);
         const searchQuery: SearchQuery = new SearchQueryBuilder(addressBech32, bechHrp).build();
@@ -72,12 +64,12 @@ export class StardustTangleHelper {
                     ...addressBalanceDetails,
                     hex: searchQuery.address.hex,
                     bech32: searchQuery.address.bech32,
-                    type: searchQuery.address.type,
+                    type: searchQuery.address.type
                 };
 
                 return addressDetails;
             }
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -88,7 +80,11 @@ export class StardustTangleHelper {
      */
     public static async block(network: INetwork, blockId: string): Promise<IBlockResponse> {
         blockId = HexHelper.addPrefix(blockId);
-        const block = await this.tryFetchNodeThenPermanode<string, Block>(blockId, "getBlock", network);
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(
+            blockId,
+            "getBlock",
+            network
+        );
 
         if (!block) {
             return { error: `Couldn't find block with id ${blockId}` };
@@ -97,7 +93,7 @@ export class StardustTangleHelper {
         try {
             if (block && Object.keys(block).length > 0) {
                 return {
-                    block,
+                    block
                 };
             }
         } catch (e) {
@@ -114,11 +110,15 @@ export class StardustTangleHelper {
      */
     public static async blockDetails(network: INetwork, blockId: string): Promise<IBlockDetailsResponse> {
         blockId = HexHelper.addPrefix(blockId);
-        const metadata = await this.tryFetchNodeThenPermanode<string, IBlockMetadata>(blockId, "getBlockMetadata", network);
+        const metadata = await this.tryFetchNodeThenPermanode<string, IBlockMetadata>(
+            blockId,
+            "getBlockMetadata",
+            network
+        );
 
         if (metadata) {
             return {
-                metadata,
+                metadata
             };
         }
     }
@@ -129,9 +129,16 @@ export class StardustTangleHelper {
      * @param transactionId The transaction id to get the details.
      * @returns The item details.
      */
-    public static async transactionIncludedBlock(network: INetwork, transactionId: string): Promise<ITransactionDetailsResponse> {
+    public static async transactionIncludedBlock(
+        network: INetwork,
+        transactionId: string
+    ): Promise<ITransactionDetailsResponse> {
         transactionId = HexHelper.addPrefix(transactionId);
-        const block = await this.tryFetchNodeThenPermanode<string, Block>(transactionId, "getIncludedBlock", network);
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(
+            transactionId,
+            "getIncludedBlock",
+            network
+        );
 
         if (!block) {
             return { error: `Couldn't find block from transaction id ${transactionId}` };
@@ -140,7 +147,7 @@ export class StardustTangleHelper {
         try {
             if (block && Object.keys(block).length > 0) {
                 return {
-                    block,
+                    block
                 };
             }
         } catch (e) {
@@ -155,9 +162,15 @@ export class StardustTangleHelper {
      * @returns The item details.
      */
     public static async outputDetails(network: INetwork, outputId: string): Promise<IOutputDetailsResponse> {
-        const outputResponse = await this.tryFetchNodeThenPermanode<string, OutputResponse>(outputId, "getOutput", network);
+        const outputResponse = await this.tryFetchNodeThenPermanode<string, OutputResponse>(
+            outputId,
+            "getOutput",
+            network
+        );
 
-        return outputResponse ? { output: outputResponse } : { message: "Output not found" };
+        return outputResponse ?
+            { output: outputResponse } :
+            { message: "Output not found" };
     }
 
     /**
@@ -175,13 +188,14 @@ export class StardustTangleHelper {
             promises.push(promise);
         }
         try {
-            await Promise.all(promises).then((results) => {
-                for (const outputDetails of results) {
-                    if (outputDetails.output?.output && outputDetails.output?.metadata) {
-                        outputResponses.push(outputDetails.output);
+            await Promise.all(promises)
+                .then(results => {
+                    for (const outputDetails of results) {
+                        if (outputDetails.output?.output && outputDetails.output?.metadata) {
+                            outputResponses.push(outputDetails.output);
+                        }
                     }
-                }
-            });
+                });
 
             return outputResponses;
         } catch (e) {
@@ -195,8 +209,14 @@ export class StardustTangleHelper {
      * @param milestoneId The milestone id to get the details.
      * @returns The milestone details.
      */
-    public static async milestoneDetailsById(network: INetwork, milestoneId: string): Promise<IMilestoneDetailsResponse | undefined> {
-        const milestonePayload = await this.tryFetchNodeThenPermanode<string, MilestonePayload>(milestoneId, "getMilestoneById", network);
+    public static async milestoneDetailsById(
+        network: INetwork, milestoneId: string
+    ): Promise<IMilestoneDetailsResponse | undefined> {
+        const milestonePayload = await this.tryFetchNodeThenPermanode<string, MilestonePayload>(
+            milestoneId,
+            "getMilestoneById",
+            network
+        );
 
         if (milestonePayload) {
             const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${network.network}`);
@@ -206,7 +226,7 @@ export class StardustTangleHelper {
             return {
                 blockId,
                 milestoneId,
-                milestone: milestonePayload,
+                milestone: milestonePayload
             };
         }
     }
@@ -217,11 +237,13 @@ export class StardustTangleHelper {
      * @param milestoneIndex The milestone index to get the details.
      * @returns The milestone details.
      */
-    public static async milestoneDetailsByIndex(network: INetwork, milestoneIndex: number): Promise<IMilestoneDetailsResponse | undefined> {
+    public static async milestoneDetailsByIndex(
+        network: INetwork, milestoneIndex: number
+    ): Promise<IMilestoneDetailsResponse | undefined> {
         const milestonePayload = await this.tryFetchNodeThenPermanode<number, MilestonePayload>(
             milestoneIndex,
             "getMilestoneByIndex",
-            network,
+            network
         );
 
         if (milestonePayload) {
@@ -234,7 +256,7 @@ export class StardustTangleHelper {
             return {
                 blockId,
                 milestoneId,
-                milestone: milestonePayload,
+                milestone: milestonePayload
             };
         }
     }
@@ -245,7 +267,9 @@ export class StardustTangleHelper {
      * @param addressBech32 The address in bech32 format.
      * @returns The basic output details.
      */
-    public static async basicOutputDetailsByAddress(network: INetwork, addressBech32: string): Promise<IAddressDetailsResponse> {
+    public static async basicOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
 
@@ -253,7 +277,7 @@ export class StardustTangleHelper {
             const outputIdsResponse = await this.tryFetchNodeThenPermanode<QueryParameter[], IOutputsResponse>(
                 [{ address: addressBech32 }, { cursor: cursor ?? "" }],
                 "basicOutputIds",
-                network,
+                network
             );
 
             outputIds = outputIds.concat(outputIdsResponse.items);
@@ -263,7 +287,7 @@ export class StardustTangleHelper {
         const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
-            outputs: outputResponses,
+            outputs: outputResponses
         };
     }
 
@@ -273,7 +297,9 @@ export class StardustTangleHelper {
      * @param addressBech32 The address in bech32 format.
      * @returns The alias output details.
      */
-    public static async aliasOutputDetailsByAddress(network: INetwork, addressBech32: string): Promise<IAddressDetailsResponse> {
+    public static async aliasOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
 
@@ -281,7 +307,7 @@ export class StardustTangleHelper {
             const outputIdsResponse = await this.tryFetchNodeThenPermanode<AliasQueryParameter[], IOutputsResponse>(
                 [{ stateController: addressBech32 }, { cursor: cursor ?? "" }],
                 "aliasOutputIds",
-                network,
+                network
             );
 
             outputIds = outputIds.concat(outputIdsResponse.items);
@@ -291,7 +317,7 @@ export class StardustTangleHelper {
         const outputResponses = await this.outputsDetails(network, outputIds);
 
         return {
-            outputs: outputResponses,
+            outputs: outputResponses
         };
     }
 
@@ -301,7 +327,9 @@ export class StardustTangleHelper {
      * @param addressBech32 The address in bech32 format.
      * @returns The alias output details.
      */
-    public static async nftOutputDetailsByAddress(network: INetwork, addressBech32: string): Promise<IAddressDetailsResponse> {
+    public static async nftOutputDetailsByAddress(
+        network: INetwork, addressBech32: string
+    ): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
 
@@ -309,7 +337,7 @@ export class StardustTangleHelper {
             const outputIdsResponse = await this.tryFetchNodeThenPermanode<NftQueryParameter[], IOutputsResponse>(
                 [{ address: addressBech32 }, { cursor: cursor ?? "" }],
                 "nftOutputIds",
-                network,
+                network
             );
 
             outputIds = outputIds.concat(outputIdsResponse.items);
@@ -318,7 +346,7 @@ export class StardustTangleHelper {
 
         const outputResponses = await this.outputsDetails(network, outputIds);
         return {
-            outputs: outputResponses,
+            outputs: outputResponses
         };
     }
 
@@ -328,13 +356,22 @@ export class StardustTangleHelper {
      * @param aliasId The aliasId to get the details for.
      * @returns The alias details.
      */
-    public static async aliasDetails(network: INetwork, aliasId: string): Promise<IAliasResponse | undefined> {
-        const aliasOutputId = await this.tryFetchNodeThenPermanode<string, string>(aliasId, "aliasOutputId", network);
+    public static async aliasDetails(
+        network: INetwork,
+        aliasId: string
+    ): Promise<IAliasResponse | undefined> {
+        const aliasOutputId = await this.tryFetchNodeThenPermanode<string, string>(
+            aliasId,
+            "aliasOutputId",
+            network
+        );
 
         if (aliasOutputId) {
             const outputResponse = await this.outputDetails(network, aliasOutputId);
 
-            return outputResponse.error ? { error: outputResponse.error } : { aliasDetails: outputResponse.output };
+            return outputResponse.error ?
+                { error: outputResponse.error } :
+                { aliasDetails: outputResponse.output };
         }
 
         return { message: "Alias output not found" };
@@ -346,22 +383,25 @@ export class StardustTangleHelper {
      * @param aliasAddress The alias address to get the controlled Foundries for.
      * @returns The foundry outputs.
      */
-    public static async aliasFoundries(network: INetwork, aliasAddress: string): Promise<IFoundriesResponse | undefined> {
+    public static async aliasFoundries(
+        network: INetwork,
+        aliasAddress: string
+    ): Promise<IFoundriesResponse | undefined> {
         try {
             const response = await this.tryFetchNodeThenPermanode<FoundryQueryParameter[], IOutputsResponse>(
                 [{ aliasAddress }],
                 "foundryOutputIds",
-                network,
+                network
             );
 
             if (response) {
                 return {
-                    foundryOutputsResponse: response,
+                    foundryOutputsResponse: response
                 };
             }
 
             return { message: "Foundries output not found" };
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -370,13 +410,22 @@ export class StardustTangleHelper {
      * @param foundryId The foundryId to get the details for.
      * @returns The foundry details.
      */
-    public static async foundryDetails(network: INetwork, foundryId: string): Promise<IFoundryResponse | undefined> {
-        const foundryOutputId = await this.tryFetchNodeThenPermanode<string, string>(foundryId, "foundryOutputId", network);
+    public static async foundryDetails(
+        network: INetwork,
+        foundryId: string
+    ): Promise<IFoundryResponse | undefined> {
+        const foundryOutputId = await this.tryFetchNodeThenPermanode<string, string>(
+            foundryId,
+            "foundryOutputId",
+            network
+        );
 
         if (foundryOutputId) {
             const outputResponse = await this.outputDetails(network, foundryOutputId);
 
-            return outputResponse.error ? { error: outputResponse.error } : { foundryDetails: outputResponse.output };
+            return outputResponse.error ?
+                { error: outputResponse.error } :
+                { foundryDetails: outputResponse.output };
         }
 
         return { message: "Foundry output not found" };
@@ -388,18 +437,27 @@ export class StardustTangleHelper {
      * @param nftId The nftId to get the details for.
      * @returns The nft details.
      */
-    public static async nftDetails(network: INetwork, nftId: string): Promise<INftDetailsResponse | undefined> {
+    public static async nftDetails(
+        network: INetwork,
+        nftId: string
+    ): Promise<INftDetailsResponse | undefined> {
         try {
-            const nftOutputId = await this.tryFetchNodeThenPermanode<string, string>(nftId, "nftOutputId", network);
+            const nftOutputId = await this.tryFetchNodeThenPermanode<string, string>(
+                nftId,
+                "nftOutputId",
+                network
+            );
 
             if (nftOutputId) {
                 const outputResponse = await this.outputDetails(network, nftOutputId);
 
-                return outputResponse.error ? { error: outputResponse.error } : { nftDetails: outputResponse.output };
+                return outputResponse.error ?
+                    { error: outputResponse.error } :
+                    { nftDetails: outputResponse.output };
             }
 
             return { message: "Nft output not found" };
-        } catch {}
+        } catch { }
     }
 
     /**
@@ -414,20 +472,23 @@ export class StardustTangleHelper {
         network: INetwork,
         encodedTag: HexEncodedString,
         pageSize: number,
-        cursor?: string,
+        cursor?: string
     ): Promise<IBasicOutputsResponse | undefined> {
         try {
             const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
-            const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<QueryParameter[], IOutputsResponse>(
+            const basicOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
+                QueryParameter[],
+                IOutputsResponse
+            >(
                 params,
                 "basicOutputIds",
-                network,
+                network
             );
 
             if (basicOutputIdsResponse?.items.length > 0) {
                 return { outputs: basicOutputIdsResponse };
             }
-        } catch {}
+        } catch { }
 
         return { error: `Basic outputs not found with given tag ${encodedTag}` };
     }
@@ -444,20 +505,23 @@ export class StardustTangleHelper {
         network: INetwork,
         encodedTag: HexEncodedString,
         pageSize: number,
-        cursor?: string,
+        cursor?: string
     ): Promise<INftOutputsResponse | undefined> {
         try {
             const params: NftQueryParameter[] = [{ tag: encodedTag }, { pageSize }, { cursor: cursor ?? "" }];
-            const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<NftQueryParameter[], IOutputsResponse>(
+            const nftOutputIdsResponse: IOutputsResponse = await this.tryFetchNodeThenPermanode<
+                NftQueryParameter[],
+                IOutputsResponse
+            >(
                 params,
                 "nftOutputIds",
-                network,
+                network
             );
 
             if (nftOutputIdsResponse?.items.length > 0) {
                 return { outputs: nftOutputIdsResponse };
             }
-        } catch {}
+        } catch { }
 
         return { error: `Nft outputs not found with given tag ${encodedTag}` };
     }
@@ -468,13 +532,16 @@ export class StardustTangleHelper {
      * @param tag The tag hex.
      * @returns .
      */
-    public static async taggedOutputs(network: INetwork, tag: HexEncodedString): Promise<ITaggedOutputsResponse | undefined> {
+    public static async taggedOutputs(
+        network: INetwork,
+        tag: HexEncodedString
+    ): Promise<ITaggedOutputsResponse | undefined> {
         const basicOutputs = await this.taggedBasicOutputs(network, tag, 10);
         const nftOutputs = await this.taggedNftOutputs(network, tag, 10);
 
         return {
             basicOutputs,
-            nftOutputs,
+            nftOutputs
         };
     }
 
@@ -484,16 +551,28 @@ export class StardustTangleHelper {
      * @param eventId The id of the event.
      * @returns The participation event details.
      */
-    public static async participationEventDetails(network: INetwork, eventId: string): Promise<IParticipationEventResponse | undefined> {
+    public static async participationEventDetails(
+        network: INetwork, eventId: string
+    ): Promise<IParticipationEventResponse | undefined> {
         const basePluginPath: string = "api/participation/v1/";
         const method = "GET";
         const methodPath: string = `events/${eventId}`;
-        const info = await this.nodePluginFetch<IParticipationEventInfo>(network, basePluginPath, method, methodPath);
-        const status = await this.nodePluginFetch<IParticipationEventStatus>(network, basePluginPath, method, `${methodPath}/status`);
+        const info = await this.nodePluginFetch<IParticipationEventInfo>(
+            network,
+            basePluginPath,
+            method,
+            methodPath
+        );
+        const status = await this.nodePluginFetch<IParticipationEventStatus>(
+            network,
+            basePluginPath,
+            method,
+            `${methodPath}/status`
+        );
 
         return {
             info,
-            status,
+            status
         };
     }
 
@@ -503,8 +582,14 @@ export class StardustTangleHelper {
      * @param query The query to use for finding items.
      * @returns The item found.
      */
-    public static async search(network: INetwork, query: string): Promise<ISearchResponse> {
-        return new SearchExecutor(network, new SearchQueryBuilder(query, network.bechHrp).build()).run();
+    public static async search(
+        network: INetwork,
+        query: string
+    ): Promise<ISearchResponse> {
+        return new SearchExecutor(
+            network,
+            new SearchQueryBuilder(query, network.bechHrp).build()
+        ).run();
     }
 
     /**
@@ -515,7 +600,11 @@ export class StardustTangleHelper {
      * @param network The network config in context.
      * @returns The results or null if call(s) failed.
      */
-    public static async tryFetchNodeThenPermanode<A, R>(args: A, methodName: ExtractedMethodNames, network: INetwork): Promise<R> | null {
+    public static async tryFetchNodeThenPermanode<A, R>(
+        args: A,
+        methodName: ExtractedMethodNames,
+        network: INetwork
+    ): Promise<R> | null {
         const { permaNodeEndpoint, disableApiFallback } = network;
         const isFallbackEnabled = !disableApiFallback;
         const client = ServiceFactory.get<Client>(`client-${network.network}`);
@@ -524,7 +613,7 @@ export class StardustTangleHelper {
             // try fetch from node
             const result: Promise<R> = client[methodName](args);
             return await result;
-        } catch {}
+        } catch { }
 
         if (permaNodeEndpoint && isFallbackEnabled) {
             const permanodeClient = ServiceFactory.get<Client>(`permanode-client-${network.network}`);
@@ -532,7 +621,7 @@ export class StardustTangleHelper {
                 // try fetch from permanode (chronicle)
                 const result: Promise<R> = permanodeClient[methodName](args);
                 return await result;
-            } catch {}
+            } catch { }
         }
 
         return null;
@@ -554,15 +643,21 @@ export class StardustTangleHelper {
         method: "GET" | "POST",
         methodPath: string,
         queryParams?: string[],
-        request?: string,
+        request?: string
     ): Promise<S> | null {
         const client = ServiceFactory.get<Client>(`client-${network.network}`);
 
         try {
-            const response: S = (await client.callPluginRoute(basePluginPath, method, methodPath, queryParams, request)) as S;
+            const response: S = await client.callPluginRoute(
+                basePluginPath,
+                method,
+                methodPath,
+                queryParams,
+                request
+            ) as S;
 
             return response;
-        } catch {}
+        } catch { }
 
         return null;
     }

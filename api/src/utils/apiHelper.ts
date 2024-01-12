@@ -18,15 +18,10 @@ import { IConfiguration } from "../models/configuration/IConfiguration";
  * @param url The url to find.
  * @returns The params if the item matches.
  */
-export function matchRouteUrl(
-    matchUrls: string[],
-    url: string,
-):
-    | {
-          index: number;
-          params: { [id: string]: string };
-      }
-    | undefined {
+export function matchRouteUrl(matchUrls: string[], url: string): {
+    index: number;
+    params: { [id: string]: string };
+} | undefined {
     const urlParts = url.replace(/\/$/, "").split("/");
 
     for (let m = 0; m < matchUrls.length; m++) {
@@ -38,7 +33,9 @@ export function matchRouteUrl(
             for (i = 0; i < urlParts.length && i < routeParts.length; i++) {
                 if (routeParts[i] === urlParts[i]) {
                     // This segment matches OK
-                } else if (routeParts[i].startsWith(":") && (i < urlParts.length || routeParts[i].endsWith("?"))) {
+                } else if (routeParts[i].startsWith(":") &&
+                    (i < urlParts.length || routeParts[i].endsWith("?"))
+                ) {
                     // Its a param match in the url
                     // or an undefined parameter past the end of the match
                     if (i < urlParts.length) {
@@ -51,7 +48,7 @@ export function matchRouteUrl(
             if (i === urlParts.length) {
                 return {
                     index: m,
-                    params,
+                    params
                 };
             }
         }
@@ -73,8 +70,7 @@ export async function executeRoute(
     config: IConfiguration,
     route: IRoute,
     pathParams: { [id: string]: string },
-    verboseLogging: boolean,
-): Promise<void> {
+    verboseLogging: boolean): Promise<void> {
     let response: IResponse;
     const start = Date.now();
     let filteredParams;
@@ -116,7 +112,7 @@ export async function executeRoute(
                     }
                 } else {
                     response = {
-                        error: `Route '${route.path}' module '${modulePath}' does not contain a method '${route.func}'`,
+                        error: `Route '${route.path}' module '${modulePath}' does not contain a method '${route.func}'`
                     };
                 }
             } else {
@@ -135,15 +131,16 @@ export async function executeRoute(
         response = { error: err.message };
     }
 
-    if (verboseLogging || response?.error) {
+    if (verboseLogging || (response?.error)) {
         logger.debug(`<=== duration: ${Date.now() - start}ms`);
         logger.debug(inspect(response, false, undefined, false));
     }
 
     if (route.sign && config.privateKeyEd25519 && config.privateKeyEd25519.length === 128) {
-        (response as ISignedResponse).signature = Converter.bytesToHex(
-            Ed25519.sign(Converter.hexToBytes(config.privateKeyEd25519), Converter.utf8ToBytes(JSON.stringify(response))),
-        );
+        (response as ISignedResponse).signature =
+            Converter.bytesToHex(Ed25519.sign(
+                Converter.hexToBytes(config.privateKeyEd25519),
+                Converter.utf8ToBytes(JSON.stringify(response))));
     }
 
     if (route.dataResponse) {
@@ -157,10 +154,13 @@ export async function executeRoute(
         if (dataResponse.filename) {
             filename = `; filename="${dataResponse.filename}"`;
         }
-        res.setHeader("Content-Disposition", `${dataResponse.inline ? "inline" : "attachment"}${filename}`);
+        res.setHeader(
+            "Content-Disposition", `${dataResponse.inline ? "inline" : "attachment"}${filename}`
+        );
 
         if (dataResponse.data) {
-            res.setHeader("Content-Length", dataResponse.data.length);
+            res.setHeader(
+                "Content-Length", dataResponse.data.length);
 
             res.send(dataResponse.data);
         }
@@ -188,7 +188,7 @@ function logParams(obj: { [id: string]: unknown }): { [id: string]: unknown } {
             if (prop.constructor.name === "Object") {
                 newobj[key] = logParams(prop as { [id: string]: unknown });
             } else if (Array.isArray(prop)) {
-                newobj[key] = prop.map((item) => logParams(item));
+                newobj[key] = prop.map(item => logParams(item));
             } else {
                 newobj[key] = prop;
             }
@@ -212,8 +212,7 @@ export function cors(
     res: IHttpResponse,
     allowDomains: string | (string | RegExp)[] | undefined,
     allowMethods: string | undefined,
-    allowHeaders: string | undefined,
-): void {
+    allowHeaders: string | undefined): void {
     if (!allowDomains || allowDomains === "*") {
         res.setHeader("Access-Control-Allow-Origin", "*");
     } else if (allowDomains) {
@@ -237,20 +236,22 @@ export function cors(
     }
 
     if (req.method === "OPTIONS") {
-        res.setHeader("Access-Control-Allow-Methods", allowMethods || "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+        res.setHeader(
+            "Access-Control-Allow-Methods",
+            allowMethods || "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+        );
 
         res.setHeader(
             "Access-Control-Allow-Headers",
-            allowHeaders ||
-                [
-                    "X-Requested-With",
-                    "Access-Control-Allow-Origin",
-                    "X-HTTP-Method-Override",
-                    "Content-Type",
-                    "Authorization",
-                    "Accept",
-                    "Accept-Encoding",
-                ].join(","),
+            allowHeaders || [
+                "X-Requested-With",
+                "Access-Control-Allow-Origin",
+                "X-HTTP-Method-Override",
+                "Content-Type",
+                "Authorization",
+                "Accept",
+                "Accept-Encoding"
+            ].join(",")
         );
     }
 }

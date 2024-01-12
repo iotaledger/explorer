@@ -1,6 +1,6 @@
 import { IdentityMsgStatus } from "~models/identityMsgStatus";
 
-export interface IdentityMsgStatusIconProps {
+export interface IdentityMsgStatusIconProps{
     /**
      * status of the Identity Message
      */

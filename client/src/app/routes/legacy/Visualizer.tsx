@@ -33,17 +33,17 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     /**
      * Edge colour default.
      */
-    private static readonly EDGE_COLOR_DARK: number = 0xffffff33;
+    private static readonly EDGE_COLOR_DARK: number = 0xFFFFFF33;
 
     /**
      * Edge color confirming.
      */
-    private static readonly EDGE_COLOR_CONFIRMING: number = 0xff5aaaff;
+    private static readonly EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
 
     /**
      * Edge color confirmed by.
      */
-    private static readonly EDGE_COLOR_CONFIRMED_BY: number = 0x0000ffff;
+    private static readonly EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
 
     /**
      * Vertex pending zero colour.
@@ -160,7 +160,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             itemCount: 0,
             selectedFeedItem: undefined,
             filter: "",
-            isActive: true,
+            isActive: true
         };
     }
 
@@ -175,7 +175,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         window.scrollTo({
             left: 0,
             top: 0,
-            behavior: "smooth",
+            behavior: "smooth"
         });
     }
 
@@ -193,8 +193,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { itemCount, selectedFeedItem, filter, isActive, itemsPerSecond, confirmedItemsPerSecond, confirmedItemsPerSecondPercent } =
-            this.state;
+        const {
+            itemCount, selectedFeedItem, filter, isActive,
+            itemsPerSecond, confirmedItemsPerSecond, confirmedItemsPerSecondPercent
+        } = this.state;
         if (this._darkMode !== this._settingsService.get().darkMode) {
             this._darkMode = this._settingsService.get().darkMode;
             this.styleConnections();
@@ -208,19 +210,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     </div>
                     <div className="card margin-b-s filter fill">
                         <div className="card--content row middle">
-                            <div className="card--label margin-r-s">Search</div>
+                            <div className="card--label margin-r-s">
+                                Search
+                            </div>
                             <input
                                 className="input form-input-long"
                                 type="text"
                                 value={filter}
-                                onChange={(e) =>
-                                    this.setState(
-                                        {
-                                            filter: e.target.value.toUpperCase(),
-                                        },
-                                        () => this.restyleNodes(),
-                                    )
-                                }
+                                onChange={e => this.setState(
+                                    {
+                                        filter: e.target.value.toUpperCase()
+                                    },
+                                    () => this.restyleNodes())}
                                 maxLength={90}
                             />
                         </div>
@@ -232,14 +233,24 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                             <h2>Statistics</h2>
                         </div>
                         <div className="card--content">
-                            <div className="card--label">Transactions</div>
-                            <div className="card--value">{itemCount}</div>
-                            <div className="card--label">TPS / CTPS</div>
+                            <div className="card--label">
+                                Transactions
+                            </div>
+                            <div className="card--value">
+                                {itemCount}
+                            </div>
+                            <div className="card--label">
+                                TPS / CTPS
+                            </div>
                             <div className="card--value">
                                 {itemsPerSecond} / {confirmedItemsPerSecond}
                             </div>
-                            <div className="card--label">Confirmation Rate</div>
-                            <div className="card--value">{confirmedItemsPerSecondPercent}</div>
+                            <div className="card--label">
+                                Confirmation Rate
+                            </div>
+                            <div className="card--value">
+                                {confirmedItemsPerSecondPercent}
+                            </div>
                         </div>
                         {selectedFeedItem && (
                             <>
@@ -248,31 +259,38 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                 </div>
                                 <div className="card--content">
                                     <>
-                                        <div className="card--label">Transaction</div>
+                                        <div className="card--label">
+                                            Transaction
+                                        </div>
                                         <div className="card--value overflow-ellipsis">
                                             <a
                                                 className="button"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                href={`${window.location.origin}${RouteBuilder.buildItem(
-                                                    this._networkConfig,
-                                                    selectedFeedItem.id,
-                                                )}`}
+                                                href={
+                                                    `${window.location.origin}${RouteBuilder.buildItem(
+                                                        this._networkConfig, selectedFeedItem.id)}`
+                                                }
                                             >
                                                 {selectedFeedItem.id}
                                             </a>
                                         </div>
                                         {selectedFeedItem?.properties?.Address && (
                                             <>
-                                                <div className="card--label">Address</div>
+                                                <div className="card--label">
+                                                    Address
+                                                </div>
                                                 <div className="card--value overflow-ellipsis">
                                                     <a
                                                         className="button"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        href={`${window.location.origin}/${this.props.match.params.network}/address/${
-                                                            selectedFeedItem?.properties.Address as string
-                                                        }`}
+                                                        href={
+                                                            `${window.location.origin
+                                                            }/${this.props.match.params.network
+                                                            }/address/${selectedFeedItem?.properties
+                                                                .Address as string}`
+                                                        }
                                                     >
                                                         {selectedFeedItem?.properties.Address as string}
                                                     </a>
@@ -281,51 +299,67 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                         )}
                                         {selectedFeedItem?.properties?.Bundle && (
                                             <>
-                                                <div className="card--label">Bundle</div>
+                                                <div className="card--label">
+                                                    Bundle
+                                                </div>
                                                 <div className="card--value overflow-ellipsis">
                                                     <a
                                                         className="button"
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        href={`${window.location.origin}/${this.props.match.params.network}/bundle/${
-                                                            selectedFeedItem?.properties.Bundle as string
-                                                        }`}
+                                                        href={
+                                                            `${window.location.origin
+                                                            }/${this.props.match.params.network
+                                                            }/bundle/${selectedFeedItem?.properties
+                                                                .Bundle as string}`
+                                                        }
                                                     >
                                                         {selectedFeedItem?.properties.Bundle as string}
                                                     </a>
                                                 </div>
                                             </>
                                         )}
-                                        {selectedFeedItem?.properties?.Tag && selectedFeedItem.metaData?.milestone === undefined && (
+                                        {selectedFeedItem?.properties?.Tag &&
+                                            selectedFeedItem.metaData?.milestone === undefined && (
+                                                <>
+                                                    <div className="card--label">
+                                                        Tag
+                                                    </div>
+                                                    <div className="card--value overflow-ellipsis">
+                                                        <a
+                                                            className="button"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            href={`${window.location.origin}/
+                                                                ${this.props.match.params.network
+                                                                }/tag/${selectedFeedItem?.properties.Tag as string}`}
+                                                        >
+                                                            {selectedFeedItem?.properties.Tag as string}
+                                                        </a>
+                                                    </div>
+                                                </>
+                                            )}
+                                        {selectedFeedItem.metaData?.milestone !== undefined && (
                                             <>
-                                                <div className="card--label">Tag</div>
-                                                <div className="card--value overflow-ellipsis">
-                                                    <a
-                                                        className="button"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        href={`${window.location.origin}/
-                                                                ${this.props.match.params.network}/tag/${
-                                                                    selectedFeedItem?.properties.Tag as string
-                                                                }`}
-                                                    >
-                                                        {selectedFeedItem?.properties.Tag as string}
-                                                    </a>
+                                                <div className="card--label">
+                                                    Milestone
+                                                </div>
+                                                <div className="card--value">
+                                                    {selectedFeedItem.metaData.milestone}
                                                 </div>
                                             </>
                                         )}
-                                        {selectedFeedItem.metaData?.milestone !== undefined && (
-                                            <>
-                                                <div className="card--label">Milestone</div>
-                                                <div className="card--value">{selectedFeedItem.metaData.milestone}</div>
-                                            </>
-                                        )}
-                                        {selectedFeedItem?.value !== undefined && selectedFeedItem.metaData?.milestone === undefined && (
-                                            <>
-                                                <div className="card--label">Value</div>
-                                                <div className="card--value">{UnitsHelper.formatBest(selectedFeedItem?.value)}</div>
-                                            </>
-                                        )}
+                                        {selectedFeedItem?.value !== undefined &&
+                                            selectedFeedItem.metaData?.milestone === undefined && (
+                                                <>
+                                                    <div className="card--label">
+                                                        Value
+                                                    </div>
+                                                    <div className="card--value">
+                                                        {UnitsHelper.formatBest(selectedFeedItem?.value)}
+                                                    </div>
+                                                </>
+                                            )}
                                     </>
                                 </div>
                             </>
@@ -339,16 +373,18 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                                     this.selectNode();
                                 }
                             }}
-                            ref={(r) => this.setupGraph(r)}
+                            ref={r => this.setupGraph(r)}
                         />
                         <div className="action-panel-container">
                             <div className="card">
-                                <button className="pause-button" type="button" onClick={() => this.toggleActivity()}>
-                                    {isActive ? (
-                                        <span className="material-icons">pause</span>
-                                    ) : (
-                                        <span className="material-icons">play_arrow</span>
-                                    )}
+                                <button
+                                    className="pause-button"
+                                    type="button"
+                                    onClick={() => this.toggleActivity()}
+                                >
+                                    {isActive
+                                        ? <span className="material-icons">pause</span>
+                                        : <span className="material-icons">play_arrow</span>}
                                 </button>
                             </div>
                         </div>
@@ -357,18 +393,34 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 <div className="row middle margin-t-s">
                     <div className="card key fill">
                         <div className="card--content row row--tablet-responsive middle wrap">
-                            <div className="card--label margin-r-s margin-b-t">Key</div>
-                            <div className="visualizer--key visualizer--key__value pending">Pending</div>
+                            <div className="card--label margin-r-s margin-b-t">
+                                Key
+                            </div>
+                            <div className="visualizer--key visualizer--key__value pending">
+                                Pending
+                            </div>
                             <>
-                                <div className="visualizer--key visualizer--key__value confirmed-value">Value Confirmed</div>
-                                <div className="visualizer--key visualizer--key__value confirmed-zero">Zero Confirmed</div>
+                                <div
+                                    className="visualizer--key visualizer--key__value confirmed-value"
+                                >
+                                    Value Confirmed
+                                </div>
+                                <div
+                                    className="visualizer--key visualizer--key__value confirmed-zero"
+                                >
+                                    Zero Confirmed
+                                </div>
                             </>
-                            <div className="visualizer--key visualizer--key__value milestone">Milestone</div>
-                            <div className="visualizer--key visualizer--key__value search-result">Search Result</div>
+                            <div className="visualizer--key visualizer--key__value milestone">
+                                Milestone
+                            </div>
+                            <div className="visualizer--key visualizer--key__value search-result">
+                                Search Result
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -387,7 +439,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (!existingNode) {
                         this._graph.addNode(item.id, {
                             feedItem: item,
-                            added: now,
+                            added: now
                         });
                         this._existingIds.push(item.id);
 
@@ -431,7 +483,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                     if (node.data) {
                         node.data.feedItem.metaData = {
                             ...node.data.feedItem.metaData,
-                            ...metaData[meta],
+                            ...metaData[meta]
                         };
                     }
                     this.styleNode(node, this.testForHighlight(highlightRegEx, node.id, node.data));
@@ -459,30 +511,31 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 gravity: -2,
                 dragCoeff: 0.02,
                 timeStep: 20,
-                theta: 0.8,
+                theta: 0.8
             });
 
             this._graphics.setNodeProgram(buildNodeShader());
 
-            this._graphics.node((node) =>
-                this.calculateNodeStyle(node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)),
-            );
+            this._graphics.node(node => this.calculateNodeStyle(
+                node, this.testForHighlight(this.highlightNodesRegEx(), node.id, node.data)));
 
-            this._graphics.link(() => Viva.Graph.View.webglLine(this._darkMode ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
+            this._graphics.link(() => Viva.Graph.View.webglLine(this._darkMode
+                ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT));
 
             const events = Viva.Graph.webglInputEvents(this._graphics, this._graph);
-            events.click((node) => this.selectNode(node));
-            events.dblClick((node) => {
-                window.open(`${window.location.origin}${RouteBuilder.buildItem(this._networkConfig, node.id)}`, "_blank");
+            events.click(node => this.selectNode(node));
+            events.dblClick(node => {
+                window.open(`${window.location.origin}${RouteBuilder.buildItem(
+                    this._networkConfig, node.id)}`, "_blank");
             });
 
-            events.mouseEnter((node) => {
+            events.mouseEnter(node => {
                 if (!this.state.selectedFeedItem) {
                     this.highlightConnections(node.id);
                 }
             });
 
-            events.mouseLeave((_node) => {
+            events.mouseLeave(_node => {
                 if (!this.state.selectedFeedItem) {
                     this.styleConnections();
                 }
@@ -492,7 +545,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
                 container: graphElem,
                 graphics: this._graphics,
                 layout,
-                renderLinks: true,
+                renderLinks: true
             });
 
             this._renderer.run();
@@ -546,10 +599,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param highlight Highlight the node.
      * @returns The size and color for the node.
      */
-    private calculateNodeStyle(
-        node: Viva.Graph.INode<INodeData, unknown> | undefined,
-        highlight: boolean,
-    ): {
+    private calculateNodeStyle(node: Viva.Graph.INode<INodeData, unknown> | undefined, highlight: boolean): {
         color: string;
         size: number;
     } {
@@ -584,7 +634,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
 
         return {
             color,
-            size,
+            size
         };
     }
 
@@ -622,7 +672,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
     private selectNode(node?: Viva.Graph.INode<INodeData, unknown>): void {
         const isDeselect = !node || this.state.selectedFeedItem?.id === node.id;
         this.setState({
-            selectedFeedItem: isDeselect || !node ? undefined : node.data?.feedItem,
+            selectedFeedItem: isDeselect || !node
+                ? undefined
+                : node.data?.feedItem
         });
 
         this.styleConnections();
@@ -666,7 +718,9 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graph.forEachLink((link: Viva.Graph.ILink<unknown>) => {
                 const linkUI = this._graphics?.getLinkUI(link.id);
                 if (linkUI) {
-                    linkUI.color = this._darkMode ? Visualizer.EDGE_COLOR_DARK : Visualizer.EDGE_COLOR_LIGHT;
+                    linkUI.color = this._darkMode
+                        ? Visualizer.EDGE_COLOR_DARK
+                        : Visualizer.EDGE_COLOR_LIGHT;
                 }
             });
         }
@@ -704,7 +758,10 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
      * @param data The data node to match.
      * @returns True if we should highlight the node.
      */
-    private testForHighlight(regEx: RegExp | undefined, nodeId: string | undefined, data: INodeData | undefined): boolean {
+    private testForHighlight(
+        regEx: RegExp | undefined,
+        nodeId: string | undefined,
+        data: INodeData | undefined): boolean {
         if (!regEx || !nodeId || !data) {
             return false;
         }
@@ -716,7 +773,8 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
         if (data.feedItem) {
             for (const key in data.feedItem.properties) {
                 const val = data.feedItem.properties[key] as string;
-                if (regEx.test(val) || (Converter.isHex(val) && regEx.test(Converter.hexToUtf8(val)))) {
+                if (regEx.test(val) ||
+                    (Converter.isHex(val) && regEx.test(Converter.hexToUtf8(val)))) {
                     return true;
                 }
             }
@@ -733,7 +791,7 @@ class Visualizer extends Feeds<RouteComponentProps<VisualizerRouteProps>, Visual
             this._graphics.updateSize();
             this._graphics.scale(1, {
                 x: this._graphElement.clientWidth / 2,
-                y: this._graphElement.clientHeight / 2,
+                y: this._graphElement.clientHeight / 2
             });
         }
     }

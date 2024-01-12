@@ -25,7 +25,10 @@ const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => {
                     <div>
                         <div className="label margin-t-m">State Metadata</div>
                         <div className="value row middle margin-t-t">
-                            <DataToggle sourceData={stateMetadata} withSpacedHex={true} />
+                            <DataToggle
+                                sourceData={stateMetadata}
+                                withSpacedHex={true}
+                            />
                         </div>
                     </div>
                 )}
@@ -35,3 +38,4 @@ const AliasStateSection: React.FC<AliasStateSectionProps> = ({ output }) => {
 };
 
 export default AliasStateSection;
+

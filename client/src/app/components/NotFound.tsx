@@ -15,7 +15,9 @@ const NotFound: React.FC<NotFoundProps> = ({ query, searchTarget }) => (
                         <h2>Not found</h2>
                     </div>
                     <div className="card--content">
-                        <p>{`We could not find any ${searchTarget} with that query.`}</p>
+                        <p>
+                            {`We could not find any ${searchTarget} with that query.`}
+                        </p>
                         <br />
                         <div className="card--value">
                             <ul>
@@ -33,3 +35,4 @@ const NotFound: React.FC<NotFoundProps> = ({ query, searchTarget }) => (
 );
 
 export default NotFound;
+

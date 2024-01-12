@@ -53,14 +53,19 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");
-        const networkConfig = this.props.match.params.network ? networkService.get(this.props.match.params.network) : undefined;
+        const networkConfig = this.props.match.params.network
+            ? networkService.get(this.props.match.params.network)
+            : undefined;
 
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
         this._bechHrp = networkConfig?.bechHrp ?? "iota";
 
         this.state = {
-            ...Bech32AddressHelper.buildAddress(this._bechHrp, props.match.params.address),
+            ...Bech32AddressHelper.buildAddress(
+                this._bechHrp,
+                props.match.params.address
+            ),
             formatFull: false,
             statusBusy: true,
             status: "Loading transactions...",
@@ -69,21 +74,18 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
             currentPage: 1,
             pageSize: 10,
             currentPageTransactions: [],
-            isFormattedBalance: false,
+            isFormattedBalance: false
         };
     }
 
     private get currentPageTransactions() {
         const firstPageIndex = (this.state.currentPage - 1) * this.state.pageSize;
-        const lastPageIndex =
-            this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)
-                ? this.txsHistory.length
-                : firstPageIndex + this.state.pageSize;
+        const lastPageIndex = (this.state.currentPage === Math.ceil(this.txsHistory.length / this.state.pageSize)) ? this.txsHistory.length : firstPageIndex + this.state.pageSize;
         const transactionsPage = this.txsHistory.slice(firstPageIndex, lastPageIndex);
 
-        const sortedTransactions: ITransactionHistoryItem[] = transactionsPage.sort((a, b) =>
-            a.referencedByMilestoneIndex > b.referencedByMilestoneIndex ? -1 : 1,
-        );
+        const sortedTransactions: ITransactionHistoryItem[] = transactionsPage.sort((a, b) => (
+            a.referencedByMilestoneIndex > b.referencedByMilestoneIndex ? -1 : 1
+        ));
         return sortedTransactions;
     }
 
@@ -96,34 +98,33 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
      */
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-        const result = await this._tangleCacheService.search(this.props.match.params.network, this.props.match.params.address);
+        const result = await this._tangleCacheService.search(
+            this.props.match.params.network, this.props.match.params.address);
         if (result?.address) {
             window.scrollTo({
                 left: 0,
                 top: 0,
-                behavior: "smooth",
+                behavior: "smooth"
             });
 
-            this.setState(
-                {
-                    address: result.address,
-                    bech32AddressDetails: Bech32AddressHelper.buildAddress(
-                        this._bechHrp,
-                        result.address.address,
-                        result.address.addressType,
-                    ),
-                    balance: result.address.balance,
-                    outputIds: result.addressOutputIds,
-                    historicOutputIds: result.historicAddressOutputIds,
-                },
-                async () => {
-                    await this.getTransactionHistory();
-                },
-            );
+            this.setState({
+                address: result.address,
+                bech32AddressDetails: Bech32AddressHelper.buildAddress(
+                    this._bechHrp,
+                    result.address.address,
+                    result.address.addressType
+                ),
+                balance: result.address.balance,
+                outputIds: result.addressOutputIds,
+                historicOutputIds: result.historicAddressOutputIds
+            }, async () => {
+                await this.getTransactionHistory();
+            });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.address}`);
         }
     }
+
 
     /**
      * Render the component.
@@ -136,7 +137,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>Address</h1>
+                                <h1>
+                                    Address
+                                </h1>
                                 <Modal icon="info" data={mainHeaderMessage} />
                             </div>
                         </div>
@@ -145,7 +148,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                 <div className="section">
                                     <div className="section--header">
                                         <div className="row middle">
-                                            <h2>General</h2>
+                                            <h2>
+                                                General
+                                            </h2>
                                         </div>
                                     </div>
                                     <div className="row space-between general-content">
@@ -195,47 +200,46 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                                 <div className="row middle margin-t-m">
                                                     <Icon icon="wallet" boxed />
                                                     <div className="balance">
-                                                        <div className="label">Final balance</div>
+                                                        <div className="label">
+                                                            Final balance
+                                                        </div>
                                                         <div className="value featured">
                                                             {this.state.balance > 0 ? (
                                                                 <div className="row middle">
                                                                     <span
-                                                                        onClick={() =>
-                                                                            this.setState({
-                                                                                isFormattedBalance: !this.state.isFormattedBalance,
-                                                                            })
-                                                                        }
+                                                                        onClick={() => this.setState({
+                                                                            isFormattedBalance: !this.state.isFormattedBalance
+                                                                        })}
                                                                         className="pointer margin-r-5"
                                                                     >
-                                                                        {this.state.isFormattedBalance
-                                                                            ? this.state.balance
-                                                                            : UnitsHelper.formatBest(this.state.balance)}
+                                                                        {this.state.isFormattedBalance ? this.state.balance : UnitsHelper.formatBest(this.state.balance)}
                                                                     </span>
                                                                     <span>(</span>
                                                                     <FiatValue value={this.state.balance} />
                                                                     <span>)</span>
                                                                     <CopyButton copy={String(this.state.balance)} />
                                                                 </div>
-                                                            ) : (
-                                                                0
-                                                            )}
+                                                            ) : 0}
                                                         </div>
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
                                         <div className="section--data">
-                                            {this.state.bech32AddressDetails?.bech32 && (
-                                                //  eslint-disable-next-line react/jsx-pascal-case
-                                                <QR data={this.state.bech32AddressDetails.bech32} />
-                                            )}
+                                            {this.state.bech32AddressDetails?.bech32 &&
+                                                (
+                                                    //  eslint-disable-next-line react/jsx-pascal-case
+                                                    <QR data={this.state.bech32AddressDetails.bech32} />
+                                                )}
                                         </div>
                                     </div>
                                 </div>
                                 {this.state.outputs && this.state.outputs.length === 0 && (
                                     <div className="section">
                                         <div className="section--data">
-                                            <p>There are no transactions for this address.</p>
+                                            <p>
+                                                There are no transactions for this address.
+                                            </p>
                                         </div>
                                     </div>
                                 )}
@@ -244,13 +248,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
                                             <div className="row middle">
-                                                <h2>Transaction History</h2>
+                                                <h2>
+                                                    Transaction History
+                                                </h2>
                                                 <Modal icon="info" data={transactionHistoryMessage} />
                                             </div>
                                             {this.state.status && (
                                                 <div className="margin-t-s middle row">
-                                                    {this.state.statusBusy && <Spinner />}
-                                                    <p className="status">{this.state.status}</p>
+                                                    {this.state.statusBusy && (<Spinner />)}
+                                                    <p className="status">
+                                                        {this.state.status}
+                                                    </p>
                                                 </div>
                                             )}
                                         </div>
@@ -273,7 +281,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {this.currentPageTransactions.map((transaction, k) => (
+                                                {this.currentPageTransactions.map((transaction, k) =>
+                                                (
                                                     <React.Fragment key={`${transaction?.messageId}${k}`}>
                                                         <Transaction
                                                             key={transaction?.messageId}
@@ -285,10 +294,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                                             date={DateHelper.formatShort(transaction?.milestoneTimestampReferenced * 1000)}
                                                             amount={transaction?.addressBalanceChange}
                                                             tableFormat={true}
-                                                            hasConflicts={
-                                                                !transaction.ledgerInclusionState ||
-                                                                transaction.ledgerInclusionState === "conflicting"
-                                                            }
+                                                            hasConflicts={!transaction.ledgerInclusionState ||
+                                                                transaction.ledgerInclusionState === "conflicting"}
                                                         />
                                                     </React.Fragment>
                                                 ))}
@@ -297,7 +304,8 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
 
                                         {/* Only visible in mobile -- Card transactions*/}
                                         <div className="transaction-cards">
-                                            {this.currentPageTransactions.map((transaction, k) => (
+                                            {this.currentPageTransactions.map((transaction, k) =>
+                                            (
                                                 <React.Fragment key={`${transaction?.messageId}${k}`}>
                                                     <Transaction
                                                         key={transaction?.messageId}
@@ -318,10 +326,9 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                             pageSize={this.state.pageSize}
                                             extraPageRangeLimit={20}
                                             siblingsCount={1}
-                                            onPageChange={(page) => this.setState({ currentPage: page })}
+                                            onPageChange={page => this.setState({ currentPage: page })}
                                         />
-                                    </div>
-                                )}
+                                    </div>)}
                             </div>
                         </div>
                     </div>
@@ -331,18 +338,15 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
     }
 
     private async getTransactionHistory() {
-        const transactionHistory = await this._tangleCacheService.transactionsHistory(
-            {
-                network: this.props.match.params.network,
-                address: this.state.address?.address ?? "",
-            },
-            false,
-        );
+        const transactionHistory = await this._tangleCacheService.transactionsHistory({
+            network: this.props.match.params.network,
+            address: this.state.address?.address ?? ""
+        }, false);
 
         this.setState({
             status: "",
             statusBusy: false,
-            transactionHistory,
+            transactionHistory
         });
     }
 }

@@ -2,10 +2,10 @@
     "title": "Address",
     "description": "<p>Addresses are similar to a personal account, something viewable and sendable to people you want to do business with. This personal account belongs to a seed. In the world of cryptography, a seed refers to a 'private key'. Simply put, you have the seed (your private key) keeping your address (your account) safe.</p>",
     "links": [
-        {
-            "label": "Read more",
-            "href": "https://wiki.iota.org/iota.rs/explanations/address_key_space",
-            "isExternal": true
-        }
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/iota.rs/explanations/address_key_space",
+        "isExternal": true
+      }
     ]
 }

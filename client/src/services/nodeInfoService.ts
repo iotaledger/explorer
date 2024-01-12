@@ -50,7 +50,7 @@ export class NodeInfoService {
      */
     public async buildCache(): Promise<void> {
         const networksService = ServiceFactory.get<NetworkService>("network");
-        const stardustNetworks = networksService.networks().filter((n) => n.protocolVersion === STARDUST);
+        const stardustNetworks = networksService.networks().filter(n => n.protocolVersion === STARDUST);
 
         for (const networkDetails of stardustNetworks) {
             const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
@@ -64,3 +64,4 @@ export class NodeInfoService {
         }
     }
 }
+

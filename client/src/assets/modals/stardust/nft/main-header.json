@@ -2,10 +2,10 @@
     "title": "NFT as a wallet",
     "description": "<p>NFT addresses are how non-fungible tokens are implemented in the protocol. Each NFT address stores some immutable data and is controlled by another address (for example, by someone's wallet).</p>",
     "links": [
-        {
-            "label": "Read more",
-            "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/nft",
-            "isExternal": true
-        }
+      {
+        "label": "Read more",
+        "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/nft",
+        "isExternal": true
+      }
     ]
 }

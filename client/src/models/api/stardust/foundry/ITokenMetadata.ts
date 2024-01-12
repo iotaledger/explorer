@@ -32,3 +32,4 @@ export interface ITokenMetadata {
      */
     logo?: string;
 }
+

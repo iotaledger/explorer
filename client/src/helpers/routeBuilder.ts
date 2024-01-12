@@ -13,19 +13,16 @@ export class RouteBuilder {
      * @param item.milestoneIndex The milestone index for the item.
      * @returns The milestone route.
      */
-    public static buildMilestone(
-        networkConfig: INetwork | undefined,
-        item: {
-            /**
-             * The id.
-             */
-            id: string;
-            /**
-             * The milestone index.
-             */
-            milestoneIndex: number;
-        },
-    ): string {
+    public static buildMilestone(networkConfig: INetwork | undefined, item: {
+        /**
+         * The id.
+         */
+        id: string;
+        /**
+         * The milestone index.
+         */
+        milestoneIndex: number;
+    }): string {
         const parts = [];
         if (networkConfig) {
             parts.push(networkConfig.network);

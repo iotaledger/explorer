@@ -70,100 +70,116 @@ const AssociationSection: React.FC<IAssociatedSectionProps> = ({ association, ou
     };
 
     const onLoadMore = () => {
-        setLoadMoreCounter(loadMoreCounter === undefined ? 0 : loadMoreCounter + 1);
+        setLoadMoreCounter(
+            loadMoreCounter === undefined ?
+                0 :
+                loadMoreCounter + 1
+        );
     };
 
     const count = outputIds?.length;
 
-    return count ? (
-        <div className="section association-section">
-            <div className="row association-section--header middle pointer" onClick={onExpandSection}>
-                <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
-                    <DropdownIcon />
-                </div>
-                <h3 className="association-label">
-                    {ASSOCIATION_TYPE_TO_LABEL[association]} ({count})
-                </h3>
-                {isExpanded && isLoading && (
-                    <div className="margin-l-t">
-                        <Spinner />
+    return (
+        count ?
+            <div className="section association-section">
+                <div
+                    className="row association-section--header middle pointer"
+                    onClick={onExpandSection}
+                >
+                    <div className={classNames("margin-r-t", "dropdown", { opened: isExpanded })}>
+                        <DropdownIcon />
                     </div>
-                )}
-            </div>
-            {!isExpanded || outputTableItems.length === 0 ? null : (
-                <React.Fragment>
-                    <table className="association-section--table">
-                        <thead>
-                            <tr>
-                                <th>OUTPUT ID</th>
-                                <th>DATE CREATED</th>
-                                <th>AMOUNT</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <h3 className="association-label">{ASSOCIATION_TYPE_TO_LABEL[association]} ({count})</h3>
+                    {isExpanded && isLoading && (
+                        <div className="margin-l-t">
+                            <Spinner />
+                        </div>
+                    )}
+                </div>
+                {!isExpanded || outputTableItems.length === 0 ? null : (
+                    <React.Fragment>
+                        <table className="association-section--table">
+                            <thead>
+                                <tr>
+                                    <th>OUTPUT ID</th>
+                                    <th>DATE CREATED</th>
+                                    <th>AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {outputTableItems.map((details, idx) => {
+                                    const { outputId, dateCreated, ago, amount } = details;
+
+                                    return (
+                                        <tr key={idx}>
+                                            <td className="association__output">
+                                                <TruncatedId
+                                                    id={outputId}
+                                                    link={`/${network}/output/${outputId}`}
+                                                    showCopyButton
+                                                />
+                                            </td>
+                                            <td className="date-created">{dateCreated} ({ago})</td>
+                                            <td className="amount">
+                                                <span
+                                                    onClick={() => setIsFormatBalance(!isFormatBalance)}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+
+                        <div className="association-section--cards">
                             {outputTableItems.map((details, idx) => {
                                 const { outputId, dateCreated, ago, amount } = details;
 
                                 return (
-                                    <tr key={idx}>
-                                        <td className="association__output">
-                                            <TruncatedId id={outputId} link={`/${network}/output/${outputId}`} showCopyButton />
-                                        </td>
-                                        <td className="date-created">
-                                            {dateCreated} ({ago})
-                                        </td>
-                                        <td className="amount">
-                                            <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
-                                                {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                    <div key={idx} className="card">
+                                        <div className="field">
+                                            <div className="label">Output Id</div>
+                                            <Link
+                                                to={`/${network}/output/${outputId}`}
+                                                className="row margin-r-t value highlight"
+                                            >
+                                                <TruncatedId id={outputId} />
+                                            </Link>
+                                        </div>
+                                        <div className="field">
+                                            <div className="label">Date Created</div>
+                                            <div className="value date-created">{dateCreated} ({ago})</div>
+                                        </div>
+                                        <div className="field">
+                                            <div className="label">Amount</div>
+                                            <div className="value amount">
+                                                <span
+                                                    onClick={() => setIsFormatBalance(!isFormatBalance)}
+                                                    className="pointer margin-r-5"
+                                                >
+                                                    {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 );
                             })}
-                        </tbody>
-                    </table>
-
-                    <div className="association-section--cards">
-                        {outputTableItems.map((details, idx) => {
-                            const { outputId, dateCreated, ago, amount } = details;
-
-                            return (
-                                <div key={idx} className="card">
-                                    <div className="field">
-                                        <div className="label">Output Id</div>
-                                        <Link to={`/${network}/output/${outputId}`} className="row margin-r-t value highlight">
-                                            <TruncatedId id={outputId} />
-                                        </Link>
-                                    </div>
-                                    <div className="field">
-                                        <div className="label">Date Created</div>
-                                        <div className="value date-created">
-                                            {dateCreated} ({ago})
-                                        </div>
-                                    </div>
-                                    <div className="field">
-                                        <div className="label">Amount</div>
-                                        <div className="value amount">
-                                            <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
-                                                {formatAmount(Number(amount), tokenInfo, isFormatBalance)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    {outputTableItems.length < count && (
-                        <div className="card load-more--button">
-                            <button onClick={onLoadMore} type="button" disabled={isLoading}>
-                                Load more...
-                            </button>
                         </div>
-                    )}
-                </React.Fragment>
-            )}
-        </div>
-    ) : null;
+                        {outputTableItems.length < count && (
+                            <div className="card load-more--button">
+                                <button onClick={onLoadMore} type="button" disabled={isLoading} >
+                                    Load more...
+                                </button>
+                            </div>
+                        )}
+                    </React.Fragment>
+                )}
+            </div> : null
+    );
 };
 
 export default AssociationSection;
+

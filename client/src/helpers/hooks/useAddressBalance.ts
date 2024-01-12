@@ -10,7 +10,12 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @param address The bech32 address
  * @returns The address balance, signature locked balance and a loading bool.
  */
-export function useAddressBalance(network: string, address: string | null): [number | null, number | null, boolean] {
+export function useAddressBalance(network: string, address: string | null):
+    [
+        number | null,
+        number | null,
+        boolean
+    ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [balance, setBalance] = useState<number | null>(null);

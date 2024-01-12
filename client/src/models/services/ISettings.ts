@@ -1,3 +1,4 @@
+
 import { ICurrencySettings } from "./ICurrencySettings";
 import { IFilterSettings } from "./IFilterSettings";
 import { IFilterSettings as IStardustFilterSettings } from "./stardust/IFilterSettings";

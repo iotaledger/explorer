@@ -33,23 +33,23 @@ interface INetworkContextProps {
 }
 
 const defaultState = {
-    name: "",
-    tokenInfo: {
-        name: "",
-        tickerSymbol: "",
-        unit: "",
-        decimals: 0,
-        subunit: undefined,
-        useMetricPrefix: true,
-    },
-    bech32Hrp: "",
-    protocolVersion: -1,
-    rentStructure: {
-        vByteCost: -1,
-        vByteFactorData: -1,
-        vByteFactorKey: -1,
-    },
-    uiTheme: IOTA_UI,
+  name: "",
+  tokenInfo: {
+      name: "",
+      tickerSymbol: "",
+      unit: "",
+      decimals: 0,
+      subunit: undefined,
+      useMetricPrefix: true
+  },
+  bech32Hrp: "",
+  protocolVersion: -1,
+  rentStructure: {
+      vByteCost: -1,
+      vByteFactorData: -1,
+      vByteFactorKey: -1
+  },
+  uiTheme: IOTA_UI
 };
 
 const networkContext = createContext<INetworkContextProps>(defaultState);

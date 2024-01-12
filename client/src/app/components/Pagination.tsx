@@ -12,7 +12,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
     /**
      * Dots for pagination.
      */
-    private static readonly DOTS: string = "...";
+     private static readonly DOTS: string = "...";
 
     /**
      * Create a new instance of Pagination.
@@ -23,7 +23,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         this.state = {
             paginationRange: [],
             lastPage: 0,
-            isMobile: false,
+            isMobile: false
         };
     }
 
@@ -33,8 +33,11 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
      */
     public componentDidUpdate(prevProps: PaginationProps): void {
         if (this.props !== prevProps) {
-            this.setState({ paginationRange: this.updatePaginationRange() }, () =>
-                this.setState({ lastPage: this.state.paginationRange.at(-1) as number }),
+            this.setState(
+                { paginationRange: this.updatePaginationRange() },
+                () => this.setState(
+                    { lastPage: this.state.paginationRange.at(-1) as number }
+                )
             );
         }
     }
@@ -44,8 +47,11 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
      */
     public componentDidMount(): void {
         super.componentDidMount();
-        this.setState({ paginationRange: this.updatePaginationRange() }, () =>
-            this.setState({ lastPage: this.state.paginationRange.at(-1) as number }),
+        this.setState(
+            { paginationRange: this.updatePaginationRange() },
+            () => this.setState(
+                { lastPage: this.state.paginationRange.at(-1) as number }
+            )
         );
         window.addEventListener("resize", this.resize.bind(this));
         this.resize();
@@ -55,7 +61,10 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         const isMobileViewPort = window.innerWidth < 768;
 
         if (this.state.isMobile !== isMobileViewPort && this._isMounted) {
-            this.setState({ isMobile: isMobileViewPort }, () => this.setState({ paginationRange: this.updatePaginationRange() }));
+            this.setState(
+                { isMobile: isMobileViewPort },
+                () => this.setState({ paginationRange: this.updatePaginationRange() })
+            );
         }
     }
 
@@ -77,13 +86,13 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
             <ul
                 className={classNames("pagination", {
                     [this.props.classNames as string]: this.props.classNames !== undefined,
-                    hidden: this.props.currentPage === 0 || this.state.paginationRange.length < 2,
+                    hidden: (this.props.currentPage === 0 || this.state.paginationRange.length < 2)
                 })}
             >
                 <li
                     className={classNames("pagination-item", {
                         disabled: this.props.currentPage === 1,
-                        hidden: this.state.isMobile,
+                        hidden: this.state.isMobile
                     })}
                     onClick={() => {
                         const page = this.props.currentPage < 11 ? 1 : this.props.currentPage - 10;
@@ -95,7 +104,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
                 </li>
                 <li
                     className={classNames("pagination-item", {
-                        disabled: this.props.currentPage === 1,
+                        disabled: this.props.currentPage === 1
                     })}
                     onClick={() => {
                         this.props.onPageChange(this.props.currentPage - 1);
@@ -103,20 +112,16 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
                 >
                     <div className="arrow left" />
                 </li>
-                {this.state.paginationRange.map((pageNumber: number | string, idx: number) => {
+                {this.state.paginationRange.map((pageNumber: (number|string), idx: number) => {
                     if (pageNumber === Pagination.DOTS) {
-                        return (
-                            <li key={idx} className="pagination-item dots">
-                                {pageNumber}
-                            </li>
-                        );
+                        return <li key={idx} className="pagination-item dots">{pageNumber}</li>;
                     }
 
                     return (
                         <li
                             key={idx}
                             className={classNames("pagination-item", {
-                                selected: pageNumber === this.props.currentPage,
+                                selected: pageNumber === this.props.currentPage
                             })}
                             onClick={() => this.props.onPageChange(pageNumber as number)}
                         >
@@ -126,7 +131,7 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
                 })}
                 <li
                     className={classNames("pagination-item", {
-                        disabled: this.props.currentPage === this.state.lastPage,
+                        disabled: this.props.currentPage === this.state.lastPage
                     })}
                     onClick={() => {
                         this.props.onPageChange(this.props.currentPage + 1);
@@ -137,10 +142,12 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
                 <li
                     className={classNames("pagination-item", {
                         disabled: this.props.currentPage === this.state.lastPage,
-                        hidden: this.state.isMobile,
+                        hidden: this.state.isMobile
                     })}
                     onClick={() => {
-                        const page = this.props.currentPage > this.state.lastPage - 10 ? this.state.lastPage : this.props.currentPage + 10;
+                        const page = this.props.currentPage > this.state.lastPage - 10
+                                ? this.state.lastPage
+                                : this.props.currentPage + 10;
                         this.props.onPageChange(page);
                     }}
                 >
@@ -151,12 +158,13 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         );
     }
 
+
     /**
      * Update pagination range.
      * @returns The range of available pages.
      */
-    protected updatePaginationRange(): (string | number)[] {
-        let paginationRange: (string | number)[] = [];
+    protected updatePaginationRange(): (string|number)[] {
+        let paginationRange: (string|number)[] = [];
 
         const totalPageCount: number = Math.ceil(this.props.totalCount / this.props.pageSize);
 
@@ -168,7 +176,10 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         }
 
         const leftSiblingIndex = Math.max(this.props.currentPage - this.props.siblingsCount, 1);
-        const rightSiblingIndex = Math.min(this.props.currentPage + this.props.siblingsCount, totalPageCount);
+        const rightSiblingIndex = Math.min(
+            this.props.currentPage + this.props.siblingsCount,
+            totalPageCount
+        );
 
         /*
          *  Do not show dots if there is only one position left
@@ -181,15 +192,18 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         const lastPageIndex = totalPageCount;
 
         if (!shouldShowLeftDots && shouldShowRightDots) {
-            const leftItemCount = 3 + 2 * this.props.siblingsCount;
+            const leftItemCount = 3 + (2 * this.props.siblingsCount);
             const leftRange = this.range(1, leftItemCount);
 
             paginationRange = [...leftRange, Pagination.DOTS, totalPageCount];
         }
 
         if (shouldShowLeftDots && !shouldShowRightDots) {
-            const rightItemCount = 3 + 2 * this.props.siblingsCount;
-            const rightRange = this.range(totalPageCount - rightItemCount + 1, totalPageCount);
+            const rightItemCount = 3 + (2 * this.props.siblingsCount);
+            const rightRange = this.range(
+              totalPageCount - rightItemCount + 1,
+              totalPageCount
+            );
 
             paginationRange = [firstPageIndex, Pagination.DOTS, ...rightRange];
         }
@@ -206,17 +220,21 @@ class Pagination extends AsyncComponent<PaginationProps, PaginationState> {
         const rightRemainingPages = totalPageCount - (this.props.currentPage + this.props.siblingsCount);
         const leftRemainingPages = this.props.currentPage - this.props.siblingsCount;
 
-        if (!this.state.isMobile && this.props.extraPageRangeLimit && rightRemainingPages > this.props.extraPageRangeLimit) {
-            const remainderMidPoint = Math.floor(rightRemainingPages / 2) + this.props.currentPage;
-            const rMiddleRange: (string | number)[] = this.range(remainderMidPoint - 1, remainderMidPoint + 1);
+        if (!this.state.isMobile &&
+            this.props.extraPageRangeLimit &&
+            rightRemainingPages > this.props.extraPageRangeLimit) {
+            const remainderMidPoint = Math.floor((rightRemainingPages) / 2) + this.props.currentPage;
+            const rMiddleRange: (string|number)[] = this.range(remainderMidPoint - 1, remainderMidPoint + 1);
             rMiddleRange.push(Pagination.DOTS);
             const lastItemIndex = paginationRange.length - 1;
             paginationRange.splice(lastItemIndex, 0, ...rMiddleRange);
         }
 
-        if (!this.state.isMobile && this.props.extraPageRangeLimit && leftRemainingPages > this.props.extraPageRangeLimit) {
+        if (!this.state.isMobile &&
+            this.props.extraPageRangeLimit &&
+            leftRemainingPages > this.props.extraPageRangeLimit) {
             const remainderMidPoint = Math.floor(leftRemainingPages / 2);
-            const lMiddleRange: (string | number)[] = this.range(remainderMidPoint - 1, remainderMidPoint + 1);
+            const lMiddleRange: (string|number)[] = this.range(remainderMidPoint - 1, remainderMidPoint + 1);
             lMiddleRange.unshift(Pagination.DOTS);
             paginationRange.splice(1, 0, ...lMiddleRange);
         }

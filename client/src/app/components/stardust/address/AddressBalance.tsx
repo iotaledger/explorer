@@ -39,24 +39,28 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
         setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
         showInfo: boolean,
         showWallet: boolean,
-        amount: number | null,
+        amount: number | null
     ) => (
         <div className="balance">
             {showWallet && <Icon icon="wallet" boxed />}
             <div>
                 <div className="row middle balance-heading">
                     <div className="label">{label}</div>
-                    {showInfo && (
+                    {showInfo &&
                         <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
-                            <span className="material-icons">info</span>
-                        </Tooltip>
-                    )}
+                            <span className="material-icons">
+                                info
+                            </span>
+                        </Tooltip>}
                 </div>
                 <div className="value featured">
                     {amount !== null && amount > 0 ? (
                         <div className="balance-value middle">
                             <div className="row middle">
-                                <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-smr pointer margin-r-5">
+                                <span
+                                    onClick={() => setIsFormatFull(!isFormatFull)}
+                                    className="balance-smr pointer margin-r-5"
+                                >
                                     {formatAmount(amount, tokenInfo, isFormatFull)}
                                 </span>
                                 <CopyButton copy={String(amount)} />
@@ -69,16 +73,16 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                                 </div>
                             )}
                         </div>
-                    ) : (
-                        <span className="margin-r-5">0</span>
-                    )}
+                    ) : <span className="margin-r-5">0</span>}
                 </div>
             </div>
         </div>
     );
 
     const isMarketed = isMarketedNetwork(network);
-    const conditionalBalance = spendableBalance === null ? undefined : balance - spendableBalance;
+    const conditionalBalance = spendableBalance === null ?
+        undefined :
+        balance - spendableBalance;
     const shouldShowExtendedBalance = conditionalBalance !== undefined && spendableBalance !== undefined;
 
     return (
@@ -90,24 +94,25 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                     setFormatBalanceFull,
                     false,
                     true,
-                    shouldShowExtendedBalance ? spendableBalance : balance,
+                    shouldShowExtendedBalance ? spendableBalance : balance
                 )}
-                {shouldShowExtendedBalance &&
+                {shouldShowExtendedBalance && (
                     buildBalanceView(
                         "Conditionally Locked Balance",
                         formatConditionalBalanceFull,
                         setFormatConditionalBalanceFull,
                         true,
                         false,
-                        conditionalBalance,
-                    )}
+                        conditionalBalance
+                    )
+                )}
                 {buildBalanceView(
                     "Storage Deposit",
                     formatStorageBalanceFull,
                     setFormatStorageBalanceFull,
                     false,
                     false,
-                    storageRentBalance,
+                    storageRentBalance
                 )}
             </div>
         </div>
@@ -115,3 +120,4 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
 };
 
 export default AddressBalance;
+

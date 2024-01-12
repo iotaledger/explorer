@@ -5,56 +5,56 @@
 @import "../../scss/themes";
 
 .data-toggle {
-    @include font-size(14px, 21px);
-    width: 100%;
+  @include font-size(14px, 21px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 16px;
+  border-radius: 6px;
+  background-color: var(--light-bg);
+  color: var(--body-color);
+  font-family: $inter;
+  white-space: pre-wrap;
+
+  @include phone-down {
+    display: block;
+    flex-wrap: wrap;
+  }
+
+  .data-toggle--content {
+    word-break: break-word;
+
+    .json-viewer {
+      max-height: 1000px;
+      overflow-y: auto;
+    }
+  }
+
+  .data-toggle--tabs {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 56px;
-    padding: 16px;
-    border-radius: 6px;
-    background-color: var(--light-bg);
-    color: var(--body-color);
-    font-family: $inter;
-    white-space: pre-wrap;
+    align-self: flex-start;
+    justify-content: flex-end;
+    margin-left: 16px;
 
     @include phone-down {
-        display: block;
-        flex-wrap: wrap;
+      margin-top: 16px;
     }
 
-    .data-toggle--content {
-        word-break: break-word;
+    .data-toggle--tab {
+      width: max-content;
+      margin: 0 2px;
+      padding: 2px 12px;
+      color: var(--type-color);
+      cursor: pointer;
 
-        .json-viewer {
-            max-height: 1000px;
-            overflow-y: auto;
-        }
+      &.data-toggle--tab__active {
+        border-radius: 12px;
+        background: $gray-7;
+        color: $white;
+        font-weight: 700;
+      }
     }
-
-    .data-toggle--tabs {
-        display: flex;
-        align-self: flex-start;
-        justify-content: flex-end;
-        margin-left: 16px;
-
-        @include phone-down {
-            margin-top: 16px;
-        }
-
-        .data-toggle--tab {
-            width: max-content;
-            margin: 0 2px;
-            padding: 2px 12px;
-            color: var(--type-color);
-            cursor: pointer;
-
-            &.data-toggle--tab__active {
-                border-radius: 12px;
-                background: $gray-7;
-                color: $white;
-                font-weight: 700;
-            }
-        }
-    }
+  }
 }

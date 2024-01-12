@@ -9,3 +9,4 @@ export interface INftDetailsRequest {
      */
     nftId?: string;
 }
+

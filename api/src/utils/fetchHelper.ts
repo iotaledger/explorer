@@ -21,7 +21,7 @@ export class FetchHelper {
         method: "get" | "post" | "put" | "delete",
         payload?: T,
         headers?: { [id: string]: string },
-        timeout?: number,
+        timeout?: number
     ): Promise<U> {
         headers = headers ?? {};
         headers["Content-Type"] = "application/json";
@@ -32,20 +32,26 @@ export class FetchHelper {
 
         if (timeout !== undefined) {
             controller = new AbortController();
-            timerId = setTimeout(() => {
-                if (controller) {
-                    controller.abort();
-                }
-            }, timeout);
+            timerId = setTimeout(
+                () => {
+                    if (controller) {
+                        controller.abort();
+                    }
+                },
+                timeout
+            );
         }
 
         try {
-            const res = await fetch(`${baseUrl.replace(/\/$/, "")}${path.length > 0 ? `/${path.replace(/^\//, "")}` : ""}`, {
-                method,
-                headers,
-                body: payload ? JSON.stringify(payload) : undefined,
-                signal: controller ? controller.signal : undefined,
-            });
+            const res = await fetch(
+                `${baseUrl.replace(/\/$/, "")}${path.length > 0 ? `/${path.replace(/^\//, "")}` : ""}`,
+                {
+                    method,
+                    headers,
+                    body: payload ? JSON.stringify(payload) : undefined,
+                    signal: controller ? controller.signal : undefined
+                }
+            );
 
             const json = await res.json();
             return json as U;
@@ -83,7 +89,8 @@ export class FetchHelper {
      * @param req The request.
      * @returns The curl command.
      */
-    public static convertToCurl(baseUrl: string, path: string, method: string, headers: { [id: string]: string }, req?: unknown): string {
+    public static convertToCurl(
+        baseUrl: string, path: string, method: string, headers: { [id: string]: string }, req?: unknown): string {
         const endpoint = `${baseUrl.replace(/\/$/, "")}${path.length > 0 ? `/${path.replace(/^\//, "")}` : ""}`;
 
         const curl = [`curl ${endpoint} \\`];

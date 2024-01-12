@@ -12,8 +12,14 @@ const ChartLegend: React.FC<ChartLegendProps> = ({ labels, colors }) => (
             const thisColor = colors[idx];
 
             return (
-                <div key={`entry-${idx}`} className="chart-legend__entry">
-                    <div className="chart-legend__circle" style={{ backgroundColor: thisColor }} />
+                <div
+                    key={`entry-${idx}`}
+                    className="chart-legend__entry"
+                >
+                    <div
+                        className="chart-legend__circle"
+                        style={{ backgroundColor: thisColor }}
+                    />
                     <span className="chart-legend__label">{label}</span>
                 </div>
             );
@@ -22,3 +28,4 @@ const ChartLegend: React.FC<ChartLegendProps> = ({ labels, colors }) => (
 );
 
 export default ChartLegend;
+

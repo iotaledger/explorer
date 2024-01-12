@@ -35,7 +35,8 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
         this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
 
         let bundle;
-        if (this.props.match.params.bundle.length === 81 && TrytesHelper.isTrytes(this.props.match.params.bundle)) {
+        if (this.props.match.params.bundle.length === 81 &&
+            TrytesHelper.isTrytes(this.props.match.params.bundle)) {
             bundle = props.match.params.bundle;
         }
 
@@ -45,7 +46,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             bundle,
             groups: [],
             currency: "USD",
-            formatFull: false,
+            formatFull: false
         };
     }
 
@@ -61,12 +62,15 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             const { txHashes } = await this._tangleCacheService.findTransactionHashes(
                 this.props.match.params.network,
                 "bundle",
-                this.props.match.params.bundle,
+                this.props.match.params.bundle
             );
 
-            const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(this.props.match.params.network, txHashes);
+            const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(
+                this.props.match.params.network,
+                txHashes
+            );
 
-            const confirmationStates = bundleGroupsPlain.map((bg) => bg[0].confirmationState);
+            const confirmationStates = bundleGroupsPlain.map(bg => bg[0].confirmationState);
 
             const confirmedIndex = confirmationStates.indexOf("confirmed");
 
@@ -111,7 +115,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
             }[] = [];
 
             for (let i = 0; i < bundleGroupsPlain.length; i++) {
-                const isMissing = bundleGroupsPlain[i].some((t) => t.isEmpty);
+                const isMissing = bundleGroupsPlain[i].some(t => t.isEmpty);
 
                 if (!isMissing) {
                     let total = 0;
@@ -131,36 +135,34 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                         confirmationState = confirmationStates[i];
                     }
 
-                    let inputAddresses = new Set(bundleGroupsPlain[i].filter((t) => t.tx.value < 0).map((t) => t.tx.address));
-                    const outputAddresses = new Set(bundleGroupsPlain[i].filter((t) => t.tx.value > 0).map((t) => t.tx.address));
+                    let inputAddresses = new Set(bundleGroupsPlain[i]
+                        .filter(t => t.tx.value < 0).map(t => t.tx.address));
+                    const outputAddresses = new Set(bundleGroupsPlain[i]
+                        .filter(t => t.tx.value > 0).map(t => t.tx.address));
 
                     if (inputAddresses.size === 0) {
-                        inputAddresses = new Set(bundleGroupsPlain[i].map((t) => t.tx.address));
+                        inputAddresses = new Set(bundleGroupsPlain[i].map(t => t.tx.address));
                     }
 
                     bundleGroups.push({
                         inputs: bundleGroupsPlain[i]
-                            .filter((t) => inputAddresses.has(t.tx.address) && t.tx.value <= 0)
-                            .map((t) => ({
+                            .filter(t => inputAddresses.has(t.tx.address) && t.tx.value <= 0)
+                            .map(t => ({
                                 details: t,
                                 valueCurrency: this._currencyData
-                                    ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2)
-                                    : "",
+                                    ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                             })),
                         outputs: bundleGroupsPlain[i]
-                            .filter((t) => outputAddresses.has(t.tx.address) && t.tx.value >= 0)
-                            .map((t) => ({
+                            .filter(t => outputAddresses.has(t.tx.address) && t.tx.value >= 0)
+                            .map(t => ({
                                 details: t,
                                 valueCurrency: this._currencyData
-                                    ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2)
-                                    : "",
+                                    ? this._currencyService.convertIota(t.tx.value, this._currencyData, true, 2) : ""
                             })),
-                        timestamp: DateHelper.milliseconds(
-                            bundleGroupsPlain[i][0].tx.timestamp === 0
-                                ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
-                                : bundleGroupsPlain[i][0].tx.timestamp,
-                        ),
-                        confirmationState,
+                        timestamp: DateHelper.milliseconds(bundleGroupsPlain[i][0].tx.timestamp === 0
+                            ? bundleGroupsPlain[i][0].tx.attachmentTimestamp
+                            : bundleGroupsPlain[i][0].tx.timestamp),
+                        confirmationState
                     });
                 }
             }
@@ -169,7 +171,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                 groups: bundleGroups,
                 formatFull: this._settingsService.get().formatFull,
                 statusBusy: false,
-                status: "",
+                status: ""
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.bundle}`);
@@ -194,18 +196,23 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                     <div className="card--header card--header__space-between">
                                         <h2>General</h2>
                                         <div className="select-wrapper select-wrapper--small">
-                                            <select value={this.state.currency} onChange={(e) => this.setCurrency(e.target.value)}>
-                                                {supportedFiatCurrencies.map((cur) => (
-                                                    <option value={cur} key={cur}>
-                                                        {cur}
-                                                    </option>
+                                            <select
+                                                value={this.state.currency}
+                                                onChange={e => this.setCurrency(e.target.value)}
+                                            >
+                                                {supportedFiatCurrencies.map(cur => (
+                                                    <option value={cur} key={cur}>{cur}</option>
                                                 ))}
                                             </select>
-                                            <span className="material-icons">expand_more</span>
+                                            <span className="material-icons">
+                                                expand_more
+                                            </span>
                                         </div>
                                     </div>
                                     <div className="card--content">
-                                        <div className="card--label">Bundle</div>
+                                        <div className="card--label">
+                                            Bundle
+                                        </div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.bundle}</span>
                                             <CopyButton copy={this.state.bundle} />
@@ -215,8 +222,10 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                 {this.state.status && (
                                     <div className="card margin-t-s">
                                         <div className="card--content middle row margin-t-s">
-                                            {this.state.statusBusy && <Spinner />}
-                                            <p className="status">{this.state.status}</p>
+                                            {this.state.statusBusy && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
                                         </div>
                                     </div>
                                 )}
@@ -227,137 +236,158 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                                         </div>
                                     </div>
                                 )}
-                                {!this.state.statusBusy &&
-                                    this.state.groups?.map((group, idx) => (
-                                        <React.Fragment key={idx}>
-                                            <div className="row space-between margin-t-s middle">
-                                                <p>{DateHelper.format(group.timestamp)}</p>
-                                                <Confirmation state={group.confirmationState} />
-                                            </div>
-                                            <div className="row top inputs-outputs">
-                                                <div className="card">
-                                                    <div className="card--header">
-                                                        <h2>Inputs</h2>
-                                                        <span className="card--header-count">{group.inputs.length}</span>
-                                                    </div>
-                                                    <div className="card--content">
-                                                        {group.inputs.length === 0 && <p>There are no inputs.</p>}
-                                                        {group.inputs.map((item, idx2) => (
-                                                            <div className="card--row" key={idx2}>
-                                                                <div className="row middle space-between card--value">
-                                                                    <button
-                                                                        type="button"
-                                                                        className="card--value__large"
-                                                                        onClick={() =>
-                                                                            this.setState(
-                                                                                {
-                                                                                    formatFull: !this.state.formatFull,
-                                                                                },
-                                                                                () =>
-                                                                                    this._settingsService.saveSingle(
-                                                                                        "formatFull",
-                                                                                        this.state.formatFull,
-                                                                                    ),
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {this.state.formatFull
-                                                                            ? `${item.details.tx.value} i`
-                                                                            : UnitsHelper.formatBest(item.details.tx.value)}
-                                                                    </button>
-                                                                    <span className="card--value__secondary">{item.valueCurrency}</span>
-                                                                </div>
-                                                                <div className="card--value">
-                                                                    <Link
-                                                                        to={`/${this.props.match.params.network}/transaction/${item.details.tx.hash}`}
-                                                                    >
-                                                                        {item.details.tx.hash}
-                                                                    </Link>
-                                                                </div>
-                                                                <div className="row middle card--value">
-                                                                    <Link
-                                                                        className="card--value__tertiary"
-                                                                        to={`/${this.props.match.params.network}/address/${item.details.tx.address}`}
-                                                                    >
-                                                                        <span className="material-icons arrow">chevron_left</span>
-                                                                    </Link>
-                                                                    <Link
-                                                                        className="card--value__tertiary"
-                                                                        to={`/${this.props.match.params.network}/address/${item.details.tx.address}`}
-                                                                    >
-                                                                        {item.details.tx.address}
-                                                                    </Link>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                {!this.state.statusBusy && this.state.groups?.map((group, idx) => (
+                                    <React.Fragment key={idx}>
+                                        <div className="row space-between margin-t-s middle">
+                                            <p>
+                                                {DateHelper.format(group.timestamp)}
+                                            </p>
+                                            <Confirmation state={group.confirmationState} />
+                                        </div>
+                                        <div className="row top inputs-outputs">
+                                            <div className="card">
+                                                <div className="card--header">
+                                                    <h2>Inputs</h2>
+                                                    <span className="card--header-count">{group.inputs.length}</span>
                                                 </div>
-                                                <div className="card">
-                                                    <div className="card--header">
-                                                        <h2>Outputs</h2>
-                                                        <span className="card--header-count">{group.outputs.length}</span>
-                                                    </div>
+                                                <div className="card--content">
+                                                    {group.inputs.length === 0 && (
+                                                        <p>There are no inputs.</p>
+                                                    )}
+                                                    {group.inputs.map((item, idx2) => (
+                                                        <div className="card--row" key={idx2}>
+                                                            <div className="row middle space-between card--value">
+                                                                <button
+                                                                    type="button"
+                                                                    className="card--value__large"
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        },
+                                                                        () => this._settingsService.saveSingle(
+                                                                            "formatFull", this.state.formatFull)
+                                                                    )}
+                                                                >
+                                                                    {this.state.formatFull
+                                                                        ? `${item.details.tx.value} i`
+                                                                        : UnitsHelper.formatBest(item.details.tx.value)}
+                                                                </button>
+                                                                <span className="card--value__secondary">
+                                                                    {item.valueCurrency}
+                                                                </span>
+                                                            </div>
+                                                            <div className="card--value">
+                                                                <Link
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/transaction/${item.details.tx.hash}`
+                                                                    }
+                                                                >
+                                                                    {item.details.tx.hash}
+                                                                </Link>
+                                                            </div>
+                                                            <div className="row middle card--value">
+                                                                <Link
+                                                                    className="card--value__tertiary"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
+                                                                >
+                                                                    <span className="material-icons arrow">
+                                                                        chevron_left
+                                                                    </span>
+                                                                </Link>
+                                                                <Link
+                                                                    className="card--value__tertiary"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
+                                                                >
+                                                                    {item.details.tx.address}
+                                                                </Link>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="card">
+                                                <div className="card--header">
+                                                    <h2>Outputs</h2>
+                                                    <span className="card--header-count">{group.outputs.length}</span>
+                                                </div>
 
-                                                    <div className="card--content">
-                                                        {group.outputs.length === 0 && <p>There are no outputs.</p>}
-                                                        {group.outputs.map((item, idx2) => (
-                                                            <div className="card--row" key={idx2}>
-                                                                <div className="row middle space-between card--value">
-                                                                    <button
-                                                                        type="button"
-                                                                        className="card--value__large"
-                                                                        onClick={() =>
-                                                                            this.setState(
-                                                                                {
-                                                                                    formatFull: !this.state.formatFull,
-                                                                                },
-                                                                                () =>
-                                                                                    this._settingsService.saveSingle(
-                                                                                        "formatFull",
-                                                                                        this.state.formatFull,
-                                                                                    ),
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {this.state.formatFull
-                                                                            ? `${item.details.tx.value} i`
-                                                                            : UnitsHelper.formatBest(item.details.tx.value)}
-                                                                    </button>
-                                                                    <span className="card--value__secondary">{item.valueCurrency}</span>
-                                                                </div>
-                                                                <div className="card--value">
-                                                                    <Link
-                                                                        to={`/${this.props.match.params.network}/transaction/${item.details.tx.hash}`}
-                                                                    >
-                                                                        {item.details.tx.hash}
-                                                                    </Link>
-                                                                </div>
-                                                                <div className="row middle card--value">
-                                                                    <Link
-                                                                        className="card--value__tertiary"
-                                                                        to={`/${this.props.match.params.network}/address/${item.details.tx.address}`}
-                                                                    >
-                                                                        {item.details.tx.address}
-                                                                    </Link>
-                                                                    <Link
-                                                                        className="card--value__tertiary"
-                                                                        to={`/${this.props.match.params.network}/address/${item.details.tx.address}`}
-                                                                    >
-                                                                        <span className="material-icons arrow">chevron_right</span>
-                                                                    </Link>
-                                                                </div>
+                                                <div className="card--content">
+                                                    {group.outputs.length === 0 && (
+                                                        <p>There are no outputs.</p>
+                                                    )}
+                                                    {group.outputs.map((item, idx2) => (
+                                                        <div className="card--row" key={idx2}>
+                                                            <div className="row middle space-between card--value">
+                                                                <button
+                                                                    type="button"
+                                                                    className="card--value__large"
+                                                                    onClick={() => this.setState(
+                                                                        {
+                                                                            formatFull: !this.state.formatFull
+                                                                        },
+                                                                        () => this._settingsService.saveSingle(
+                                                                            "formatFull", this.state.formatFull)
+                                                                    )}
+                                                                >
+                                                                    {this.state.formatFull
+                                                                        ? `${item.details.tx.value} i`
+                                                                        : UnitsHelper.formatBest(item.details.tx.value)}
+                                                                </button>
+                                                                <span className="card--value__secondary">
+                                                                    {item.valueCurrency}
+                                                                </span>
                                                             </div>
-                                                        ))}
-                                                    </div>
+                                                            <div className="card--value">
+                                                                <Link
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/transaction/${item.details.tx.hash}`
+                                                                    }
+                                                                >
+                                                                    {item.details.tx.hash}
+                                                                </Link>
+                                                            </div>
+                                                            <div className="row middle card--value">
+                                                                <Link
+                                                                    className="card--value__tertiary"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
+                                                                >
+                                                                    {item.details.tx.address}
+                                                                </Link>
+                                                                <Link
+                                                                    className="card--value__tertiary"
+                                                                    to={
+                                                                        `/${this.props.match.params.network
+                                                                        }/address/${item.details.tx.address}`
+                                                                    }
+                                                                >
+                                                                    <span className="material-icons arrow">
+                                                                        chevron_right
+                                                                    </span>
+                                                                </Link>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        </React.Fragment>
-                                    ))}
+                                        </div>
+                                    </React.Fragment>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -370,15 +400,17 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
 
             for (const group of groups) {
                 for (const input of group.inputs) {
-                    input.valueCurrency = this._currencyService.convertIota(input.details.tx.value, this._currencyData, true, 2);
+                    input.valueCurrency = this._currencyService.convertIota(
+                        input.details.tx.value, this._currencyData, true, 2);
                 }
                 for (const output of group.outputs) {
-                    output.valueCurrency = this._currencyService.convertIota(output.details.tx.value, this._currencyData, true, 2);
+                    output.valueCurrency = this._currencyService.convertIota(
+                        output.details.tx.value, this._currencyData, true, 2);
                 }
             }
 
             this.setState({
-                groups,
+                groups
             });
         }
     }

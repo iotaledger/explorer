@@ -20,7 +20,10 @@ type IAnalyticStatsReponse = IAnalyticStats & IShimmerClaimedResponse & IRespons
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: INetworkBoundGetRequest): Promise<IAnalyticStatsReponse> {
+export async function get(
+    _: IConfiguration,
+    request: INetworkBoundGetRequest
+): Promise<IAnalyticStatsReponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     const networkConfig = networkService.get(request.network);
@@ -32,16 +35,15 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
 
     const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
 
-    return influxService
-        ? {
-              nativeTokens: influxService.nativeTokensCount,
-              nfts: influxService.nftsCount,
-              totalAddresses: influxService.addressesWithBalance,
-              dailyAddresses: "",
-              lockedStorageDeposit: influxService.lockedStorageDeposit,
-              unclaimedShimmer: influxService.totalUnclaimedShimmer,
-          }
-        : {
-              error: "Influx service not found for this network.",
-          };
+    return influxService ? {
+        nativeTokens: influxService.nativeTokensCount,
+        nfts: influxService.nftsCount,
+        totalAddresses: influxService.addressesWithBalance,
+        dailyAddresses: "",
+        lockedStorageDeposit: influxService.lockedStorageDeposit,
+        unclaimedShimmer: influxService.totalUnclaimedShimmer
+    } : {
+        error: "Influx service not found for this network."
+    };
 }
+

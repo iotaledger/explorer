@@ -30,11 +30,13 @@ export const InfluxChartsTab: React.FC = () => {
         unclaimedGenesisOutputs,
         ledgerSize,
         storageDeposit,
-        analyticStats,
+        analyticStats
     ] = useChartsState();
 
-    const lockedStorageDepositValue =
-        formatAmount(Number(analyticStats?.lockedStorageDeposit), tokenInfo).replace(COMMAS_REGEX, ",") ?? "-";
+    const lockedStorageDepositValue = formatAmount(
+        Number(analyticStats?.lockedStorageDeposit),
+        tokenInfo
+    ).replace(COMMAS_REGEX, ",") ?? "-";
 
     const ids = idGenerator();
 
@@ -98,9 +100,18 @@ export const InfluxChartsTab: React.FC = () => {
                     <Modal icon="info" data={graphMessages.addressesAndTokens} />
                 </div>
                 <div className="row info-panel">
-                    <ChartInfoPanel label="Native tokens minted" value={analyticStats?.nativeTokens ?? "-"} />
-                    <ChartInfoPanel label="NFTs minted" value={analyticStats?.nfts ?? "-"} />
-                    <ChartInfoPanel label="Locked storage deposit" value={lockedStorageDepositValue} />
+                    <ChartInfoPanel
+                        label="Native tokens minted"
+                        value={analyticStats?.nativeTokens ?? "-"}
+                    />
+                    <ChartInfoPanel
+                        label="NFTs minted"
+                        value={analyticStats?.nfts ?? "-"}
+                    />
+                    <ChartInfoPanel
+                        label="Locked storage deposit"
+                        value={lockedStorageDepositValue}
+                    />
                 </div>
                 <div className="row statistics-row margin-b-s">
                     <LineChart
@@ -235,5 +246,6 @@ export const InfluxChartsTab: React.FC = () => {
                 </div>
             </div>
         </div>
+
     );
 };

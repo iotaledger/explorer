@@ -1,3 +1,4 @@
+
 @import "../../../../../scss/mixins";
 @import "../../../../../scss/variables";
 @import "../../../../../scss/fonts";
@@ -5,7 +6,7 @@
 @import "../../../../../scss/media-queries";
 
 .range-chart-wrapper {
-    &.chart-wrapper--no-data {
+    &.chart-wrapper--no-data{
         height: 350px;
     }
 
@@ -63,8 +64,7 @@
             }
         }
 
-        text.axis-x-label,
-        text.axis-y-label {
+        text.axis-x-label, text.axis-y-label {
             @include font-size(16px);
             font-weight: bold;
             fill: $gray-6;

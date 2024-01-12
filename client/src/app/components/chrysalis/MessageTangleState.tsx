@@ -24,9 +24,11 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
      */
     constructor(props: MessageTangleStateProps) {
         super(props);
-        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
+            `tangle-cache-${CHRYSALIS}`
+        );
         this.state = {
-            messageId: "",
+            messageId: ""
         };
     }
 
@@ -56,72 +58,71 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
     public render(): ReactNode {
         return (
             <div className="messages-tangle-state">
-                {this.props.status === "referenced" && (
+                {this.props.status === "referenced" &&
                     <div className="message-tangle-reference">
-                        {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1 ? (
-                            <div>
-                                Referenced by{" "}
-                                <span
-                                    className="message-tangle-reference__link"
-                                    onClick={() => {
-                                        if (this.props.onClick) {
-                                            this.props.onClick(this.state.messageId);
-                                        }
-                                    }}
-                                >
-                                    Milestone {this.props.milestoneIndex}
-                                </span>{" "}
-                                {this.state.timestamp}
-                            </div>
-                        ) : (
-                            ""
-                        )}
-                    </div>
-                )}
 
-                {this.props.status === "milestone" && (
+                        {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
+                            ? (
+                                <div>
+                                    Referenced by {" "}
+                                    <span
+                                        className="message-tangle-reference__link"
+                                        onClick={() => {
+                                            if (this.props.onClick) {
+                                                this.props.onClick(this.state.messageId);
+                                            }
+                                        }}
+                                    >Milestone {this.props.milestoneIndex}
+                                    </span>
+                                    {" "} {this.state.timestamp}
+                                </div>
+                            ) : ""}
+                    </div>}
+
+                {this.props.status === "milestone" &&
                     <div className="message-tangle-reference">
-                        {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1 ? (
-                            <div>
-                                <span
-                                    className="message-tangle-reference__link"
-                                    onClick={() => {
-                                        if (this.props.onClick) {
-                                            this.props.onClick(this.state.messageId);
-                                        }
-                                    }}
-                                >
-                                    Milestone {this.props.milestoneIndex}
-                                </span>{" "}
-                                created at {this.state.timestamp}
-                            </div>
-                        ) : (
-                            ""
-                        )}
-                    </div>
-                )}
 
-                {this.props.status !== "milestone" && (
+                        {this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
+                            ? (
+                                <div>
+                                    <span
+                                        className="message-tangle-reference__link"
+                                        onClick={() => {
+                                            if (this.props.onClick) {
+                                                this.props.onClick(this.state.messageId);
+                                            }
+                                        }}
+                                    >Milestone  {" "} {this.props.milestoneIndex}
+                                    </span>
+                                    {" "} created at {this.state.timestamp}
+                                </div>
+                            ) : ""}
+                    </div>}
+
+                {this.props.status !== "milestone" &&
                     <div
-                        className={classNames(
-                            "message-tangle-state",
-                            { "message-tangle-state__no-click": !this.props.onClick },
-                            {
-                                "message-tangle-state__confirmed": this.props.status === "referenced" && !this.props.hasConflicts,
-                            },
-                            {
-                                "message-tangle-state__conflicting": this.props.status === "referenced" && this.props.hasConflicts,
-                            },
-                            { "message-tangle-state__pending": this.props.status === "pending" },
-                            { "message-tangle-state__unknown": this.props.status === "unknown" },
-                        )}
+                        className={
+                            classNames(
+                                "message-tangle-state",
+                                { "message-tangle-state__no-click": !this.props.onClick },
+                                {
+                                    "message-tangle-state__confirmed": this.props.status === "referenced" &&
+                                        !this.props.hasConflicts
+                                },
+                                {
+                                    "message-tangle-state__conflicting": this.props.status === "referenced" &&
+                                        this.props.hasConflicts
+                                },
+                                { "message-tangle-state__pending": this.props.status === "pending" },
+                                { "message-tangle-state__unknown": this.props.status === "unknown" }
+                            )
+                        }
                     >
-                        {this.props.status === "unknown" && "Unknown"}
-                        {this.props.status === "referenced" && !this.props.hasConflicts && "Confirmed"}
-                        {this.props.status === "pending" && "Pending"}
-                        {this.props.hasConflicts && "Conflicting"}
-                    </div>
-                )}
+                        {this.props.status === "unknown" && ("Unknown")}
+                        {this.props.status === "referenced" && !this.props.hasConflicts && ("Confirmed")}
+                        {this.props.status === "pending" && ("Pending")}
+                        {this.props.hasConflicts && ("Conflicting")}
+                    </div>}
             </div>
         );
     }
@@ -131,11 +132,14 @@ class MessageTangleState extends AsyncComponent<MessageTangleStateProps, Message
      */
     private async updateMilestone(): Promise<void> {
         if (this.props.milestoneIndex) {
-            const result = await this._tangleCacheService.milestoneDetails(this.props.network, this.props.milestoneIndex);
+            const result = await this._tangleCacheService.milestoneDetails(
+                this.props.network, this.props.milestoneIndex);
             if (result) {
                 this.setState({
-                    timestamp: result.timestamp ? ` at ${DateHelper.formatShort(DateHelper.milliseconds(result.timestamp))}` : undefined,
-                    messageId: result.messageId,
+                    timestamp: result.timestamp
+                        ? ` at ${DateHelper.formatShort(DateHelper.milliseconds(result.timestamp))}`
+                        : undefined,
+                    messageId: result.messageId
                 });
             }
         }

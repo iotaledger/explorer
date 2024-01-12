@@ -31,7 +31,11 @@ export class TokenRegistryClient {
 
         let response;
         try {
-            response = await FetchHelper.json<unknown, IWhitelistedResponse>(endpoint, `${BASE_PATH}${network}${NFTS_PATH}${id}`, "get");
+            response = await FetchHelper.json<unknown, IWhitelistedResponse>(
+                endpoint,
+                `${BASE_PATH}${network}${NFTS_PATH}${id}`,
+                "get"
+            );
         } catch (e) {
             console.log("Failed to check token registry", e);
         }
@@ -53,7 +57,7 @@ export class TokenRegistryClient {
             response = await FetchHelper.json<unknown, IWhitelistedResponse>(
                 endpoint,
                 `${BASE_PATH}${network}${NATIVE_TOKENS_PATH}${id}`,
-                "get",
+                "get"
             );
         } catch (e) {
             console.log("Failed to check token registry", e);
@@ -62,3 +66,4 @@ export class TokenRegistryClient {
         return response?.success ?? false;
     }
 }
+

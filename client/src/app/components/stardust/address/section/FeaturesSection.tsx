@@ -19,7 +19,9 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ output }) => (
                         <h2>Features</h2>
                     </div>
                 </div>
-                {output?.features?.map((feature, idx) => <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />)}
+                {output?.features?.map((feature, idx) => (
+                    <Feature key={idx} feature={feature} isPreExpanded={true} isImmutable={false} />
+                ))}
             </div>
         )}
         {optional(output?.immutableFeatures).nonEmpty() && (
@@ -38,7 +40,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ output }) => (
 );
 
 FeaturesSection.defaultProps = {
-    output: undefined,
+    output: undefined
 };
 
 export default FeaturesSection;

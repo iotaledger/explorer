@@ -10,7 +10,7 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
 
     const getPosition = useCallback(
         ({ clientX, clientY }: { clientX: number; clientY: number }) => setPosition({ x: clientX, y: clientY }),
-        [],
+        []
     );
 
     useLayoutEffect(() => {
@@ -27,7 +27,7 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
         const remainingWidthLeft = position.x;
 
         if (remainingWidthRight <= tooltipWidth && remainingWidthLeft <= tooltipWidth) {
-            x = position.x - tooltipWidth / 2;
+            x = position.x - (tooltipWidth / 2);
         } else if (remainingWidthRight <= tooltipWidth) {
             x = position.x - tooltipWidth;
         }
@@ -41,7 +41,7 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
             ref={tooltipRef}
             style={{
                 top: position.y + 16,
-                left: getX(),
+                left: getX()
             }}
         >
             <div id="content" />
@@ -50,3 +50,4 @@ const ChartTooltip: React.FC<ChartTooltipProps> = ({ tooltipRef }) => {
 };
 
 export default ChartTooltip;
+

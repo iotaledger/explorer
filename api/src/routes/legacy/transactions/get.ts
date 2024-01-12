@@ -16,7 +16,10 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: ITransactionsGetRequest): Promise<ITransactionsGetResponse> {
+export async function get(
+    config: IConfiguration,
+    request: ITransactionsGetRequest
+): Promise<ITransactionsGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -49,7 +52,8 @@ export async function get(config: IConfiguration, request: ITransactionsGetReque
         }
 
         for (const mode of modes) {
-            const { hashes, cursor } = await LegacyTangleHelper.findHashes(networkConfig, mode, request.hash, request.limit);
+            const { hashes, cursor } =
+                await LegacyTangleHelper.findHashes(networkConfig, mode, request.hash, request.limit);
 
             if (hashes && hashes.length > 0) {
                 foundMode = mode;
@@ -74,6 +78,6 @@ export async function get(config: IConfiguration, request: ITransactionsGetReque
     return {
         mode: foundMode,
         txHashes,
-        cursor: txCursor,
+        cursor: txCursor
     };
 }

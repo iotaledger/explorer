@@ -21,61 +21,80 @@ const ReferencedBlocksSectionRow: React.FC<Props> = ({ blockId, isTable }) => {
     const [isFormattedValue, setIsFormattedValue] = useState<boolean>(true);
 
     const payloadType = NameHelper.getPayloadType(block ?? undefined);
-    const transactionValue = transferTotal ? formatAmount(Number(transferTotal), tokenInfo, !isFormattedValue) : "--";
+    const transactionValue = transferTotal ?
+        formatAmount(Number(transferTotal), tokenInfo, !isFormattedValue) :
+        "--";
 
-    return isTable ? (
-        <tr>
-            <td className="refblocks__block-id">
-                <TruncatedId id={blockId} link={`/${network}/block/${blockId}`} />
-            </td>
-            <td>{isLoading ? <Spinner compact /> : payloadType}</td>
-            <td className="refblocks__tx-value">
-                {isLoading ? (
-                    <Spinner compact />
-                ) : (
-                    <div
-                        onClick={() => setIsFormattedValue(!isFormattedValue)}
-                        className={classNames({ pointer: transactionValue !== "--" })}
-                    >
-                        {transactionValue}
+    return (
+        isTable ? (
+            <tr>
+                <td className="refblocks__block-id">
+                    <TruncatedId
+                        id={blockId}
+                        link={`/${network}/block/${blockId}`}
+                    />
+                </td>
+                <td>{isLoading ? <Spinner compact /> : payloadType}</td>
+                <td className="refblocks__tx-value">{
+                    isLoading ?
+                        <Spinner compact /> :
+                        <div
+                            onClick={() => setIsFormattedValue(!isFormattedValue)}
+                            className={classNames({ "pointer": transactionValue !== "--" })}
+                        >
+                            {transactionValue}
+                        </div>
+                }
+                </td>
+            </tr>
+        ) : (
+            <div className="card">
+                <div className="field">
+                    <div className="label">
+                        Block Id:
                     </div>
-                )}
-            </td>
-        </tr>
-    ) : (
-        <div className="card">
-            <div className="field">
-                <div className="label">Block Id:</div>
-                <div className="card--value value__block-id">
-                    <TruncatedId id={blockId} link={`/${network}/block/${blockId}`} />
+                    <div className="card--value value__block-id">
+                        <TruncatedId
+                            id={blockId}
+                            link={`/${network}/block/${blockId}`}
+                        />
+                    </div>
                 </div>
-            </div>
-            {isLoading ? (
-                <Spinner compact />
-            ) : (
-                <React.Fragment>
-                    <div className="field">
-                        <div className="label">Payload type:</div>
-                        <div className="card--value card--value--payload">{payloadType}</div>
-                    </div>
-                    {transactionValue !== "--" && (
+                {isLoading ? <Spinner compact /> : (
+                    <React.Fragment>
                         <div className="field">
-                            <div className="label">Value:</div>
-                            <div className="card--value card--value--tx-value">
-                                <span onClick={() => setIsFormattedValue(!isFormattedValue)} className="pointer margin-r-5">
-                                    {transactionValue}
-                                </span>
+                            <div className="label">
+                                Payload type:
+                            </div>
+                            <div className="card--value card--value--payload">
+                                {payloadType}
                             </div>
                         </div>
-                    )}
-                </React.Fragment>
-            )}
-        </div>
+                        {transactionValue !== "--" && (
+                            <div className="field">
+                                <div className="label">
+                                    Value:
+                                </div>
+                                <div className="card--value card--value--tx-value">
+                                    <span
+                                        onClick={() => setIsFormattedValue(!isFormattedValue)}
+                                        className="pointer margin-r-5"
+                                    >
+                                        {transactionValue}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </React.Fragment>
+                )}
+            </div>
+        )
     );
 };
 
 ReferencedBlocksSectionRow.defaultProps = {
-    isTable: undefined,
+    isTable: undefined
 };
 
 export default ReferencedBlocksSectionRow;
+

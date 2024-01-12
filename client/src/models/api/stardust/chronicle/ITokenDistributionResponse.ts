@@ -10,3 +10,4 @@ export interface ITokenDistributionResponse extends IResponse {
     distribution?: IDistributionEntry[];
     ledgerIndex?: number;
 }
+

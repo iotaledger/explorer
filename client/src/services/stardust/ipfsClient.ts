@@ -50,8 +50,12 @@ export class IpfsClient {
     public static async ls(path: string): Promise<IIPfsEntry | undefined> {
         let ipfsEntry;
         try {
-            const response = await FetchHelper.raw(IPFS_ENDPOINT, `${IPFS_PATH}?arg=${path}`, "get");
-            const lsResponse = (await response.json()) as ILSResponse;
+            const response = await FetchHelper.raw(
+                IPFS_ENDPOINT,
+                `${IPFS_PATH}?arg=${path}`,
+                "get"
+            );
+            const lsResponse = await response.json() as ILSResponse;
             const result = lsResponse.Objects[0];
 
             if (result) {
@@ -60,7 +64,7 @@ export class IpfsClient {
                     ipfsEntry = IpfsClient.mapLinkToIpfsEntry(links[0], path);
                 }
             }
-        } catch {}
+        } catch { }
 
         return ipfsEntry;
     }
@@ -73,7 +77,7 @@ export class IpfsClient {
             path: path + (link.Name ? `/${link.Name}` : ""),
             size: link.Size,
             cid: hash,
-            type: IpfsClient.typeOf(link),
+            type: IpfsClient.typeOf(link)
         };
 
         if (link.Mode) {
@@ -82,7 +86,7 @@ export class IpfsClient {
 
         if (link.Mtime !== undefined && link.Mtime !== null) {
             entry.mtime = {
-                secs: link.Mtime,
+                secs: link.Mtime
             };
 
             if (link.MtimeNsecs !== undefined && link.MtimeNsecs !== null) {

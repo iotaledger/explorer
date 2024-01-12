@@ -41,8 +41,9 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
             const width = wrapperWidth;
             const height = wrapperHeight;
             // data dependent vars
-            const dataY =
-                yField === "addressCount" ? data.map((d) => Number(d[yField])) : data.map((d) => Number(d[yField]) / subunitThreshold);
+            const dataY = yField === "addressCount" ?
+                data.map(d => Number(d[yField])) :
+                data.map(d => Number(d[yField]) / subunitThreshold);
             const dataMaxY = Math.max(...dataY);
             const leftMargin = width < 600 ? 50 : 60;
             const rangeLabel = (range: { start: number; end: number }) => {
@@ -50,7 +51,7 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                 const end = format(d3FormatSpecifier(range.end / subunitThreshold))(range.end / subunitThreshold);
                 return `${start} - ${end}`;
             };
-            const ranges = data.map((d) => rangeLabel(d.range));
+            const ranges = data.map(d => rangeLabel(d.range));
 
             const MARGIN = { top: 20, right: 20, bottom: 60, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
@@ -62,9 +63,13 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                 .append("g")
                 .attr("transform", `translate(${MARGIN.left}, ${MARGIN.top})`);
 
-            const x = scaleBand().domain(ranges).range([0, INNER_WIDTH]).paddingInner(0.2);
+            const x = scaleBand().domain(ranges)
+                .range([0, INNER_WIDTH])
+                .paddingInner(0.2);
 
-            const y = scaleLinear().domain([0, dataMaxY]).range([INNER_HEIGHT, 0]);
+            const y = scaleLinear()
+                .domain([0, dataMaxY])
+                .range([INNER_HEIGHT, 0]);
 
             // x axis
             svg.append("g")
@@ -100,14 +105,19 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                 .data(data)
                 .join("rect")
                 .attr("class", "bar")
-                .attr("x", (d) => x(rangeLabel(d.range)) ?? 0)
+                .attr("x", d => x(rangeLabel(d.range)) ?? 0)
                 .attr("width", x.bandwidth())
-                .attr("y", (d) => y(yField === "addressCount" ? Number(d[yField]) : Number(d[yField]) / subunitThreshold))
+                .attr("y", d => y(
+                    yField === "addressCount" ?
+                        Number(d[yField]) :
+                        Number(d[yField]) / subunitThreshold
+                ))
                 .attr("rx", 2)
-                .attr(
-                    "height",
-                    (d) => INNER_HEIGHT - y(yField === "addressCount" ? Number(d[yField]) : Number(d[yField]) / subunitThreshold),
-                )
+                .attr("height", d => INNER_HEIGHT - y(
+                    yField === "addressCount" ?
+                        Number(d[yField]) :
+                        Number(d[yField]) / subunitThreshold
+                ))
                 .style("fill", isShimmerUi ? "#14CABF" : "#3ca2ff");
 
             // hidden hover areas
@@ -118,7 +128,7 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
                 .enter()
                 .append("rect")
                 .attr("fill", "transparent")
-                .attr("x", (d) => x(rangeLabel(d.range)) ?? 0)
+                .attr("x", d => x(rangeLabel(d.range)) ?? 0)
                 .attr("y", 0)
                 .attr("class", (_, i) => `rect rect-${i}`)
                 .attr("rx", 3)
@@ -135,9 +145,16 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
      * @param _ The unused event param
      * @param dataPoint The distribution entry
      */
-    function mouseoverHandler(this: SVGRectElement | BaseType, _: unknown, dataPoint: IDistributionEntry) {
+    function mouseoverHandler(
+        this: SVGRectElement | BaseType,
+        _: unknown,
+        dataPoint: IDistributionEntry
+    ) {
         // show tooltip
-        select(theTooltip.current).style("display", "block").select("#content").html(buildTooltip(dataPoint));
+        select(theTooltip.current)
+            .style("display", "block")
+            .select("#content")
+            .html(buildTooltip(dataPoint));
         // add highlight
         select(this).classed("active", true);
     }
@@ -149,7 +166,9 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        select(theSvg.current).select(".active").classed("active", false);
+        select(theSvg.current)
+            .select(".active")
+            .classed("active", false);
     }
 
     return (
@@ -165,3 +184,4 @@ export const RangeBarChart: React.FC<IRangeBarChartProps> = ({ data, yField, yLa
         </div>
     );
 };
+

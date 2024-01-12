@@ -1,8 +1,8 @@
 name: "CodeQL Config"
 
 queries:
-    - uses: security-and-quality
+  - uses: security-and-quality
 paths:
-    - api
-    - client
-    - discord-bot
+  - api
+  - client
+  - discord-bot

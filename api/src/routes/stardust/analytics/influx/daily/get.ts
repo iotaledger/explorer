@@ -3,21 +3,11 @@ import { INetworkBoundGetRequest } from "../../../../../models/api/INetworkBound
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import {
-    IAddressesWithBalanceDailyInflux,
-    IAliasActivityDailyInflux,
-    IActiveAddressesDailyInflux,
-    IBlocksDailyInflux,
-    ILedgerSizeDailyInflux,
-    INftActivityDailyInflux,
-    IOutputsDailyInflux,
-    IStorageDepositDailyInflux,
-    ITokensHeldPerOutputDailyInflux,
-    ITokensHeldWithUnlockConditionDailyInflux,
-    ITokensTransferredDailyInflux,
-    ITransactionsDailyInflux,
-    IUnclaimedGenesisOutputsDailyInflux,
-    IUnclaimedTokensDailyInflux,
-    IUnlockConditionsPerTypeDailyInflux,
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
+    IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
+    IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
+    ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
+    IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
 } from "../../../../../models/influx/IInfluxTimedEntries";
 import { NetworkService } from "../../../../../services/networkService";
 import { InfluxDBService } from "../../../../../services/stardust/influx/influxDbService";
@@ -51,7 +41,10 @@ export interface IDailyAnalyticsResponse {
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: INetworkBoundGetRequest): Promise<IDailyAnalyticsResponse> {
+export async function get(
+    _: IConfiguration,
+    request: INetworkBoundGetRequest
+): Promise<IDailyAnalyticsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     const networkConfig = networkService.get(request.network);
@@ -63,25 +56,24 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
 
     const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
 
-    return influxService
-        ? {
-              blocksDaily: influxService.blocksDaily,
-              transactionsDaily: influxService.transactionsDaily,
-              outputsDaily: influxService.outputsDaily,
-              tokensHeldDaily: influxService.tokensHeldDaily,
-              addressesWithBalanceDaily: influxService.addressesWithBalanceDaily,
-              activeAddressesDaily: influxService.activeAddressesDaily,
-              tokensTransferredDaily: influxService.tokensTransferredDaily,
-              aliasActivityDaily: influxService.aliasActivityDaily,
-              unlockConditionsPerTypeDaily: influxService.unlockConditionsPerTypeDaily,
-              nftActivityDaily: influxService.nftActivityDaily,
-              tokensHeldWithUnlockConditionDaily: influxService.tokensHeldWithUnlockConditionDaily,
-              unclaimedTokensDaily: influxService.unclaimedTokensDaily,
-              unclaimedGenesisOutputsDaily: influxService.unclaimedGenesisOutputsDaily,
-              ledgerSizeDaily: influxService.ledgerSizeDaily,
-              storageDepositDaily: influxService.storageDepositDaily,
-          }
-        : {
-              error: "Influx service not found for this network.",
-          };
+    return influxService ? {
+        blocksDaily: influxService.blocksDaily,
+        transactionsDaily: influxService.transactionsDaily,
+        outputsDaily: influxService.outputsDaily,
+        tokensHeldDaily: influxService.tokensHeldDaily,
+        addressesWithBalanceDaily: influxService.addressesWithBalanceDaily,
+        activeAddressesDaily: influxService.activeAddressesDaily,
+        tokensTransferredDaily: influxService.tokensTransferredDaily,
+        aliasActivityDaily: influxService.aliasActivityDaily,
+        unlockConditionsPerTypeDaily: influxService.unlockConditionsPerTypeDaily,
+        nftActivityDaily: influxService.nftActivityDaily,
+        tokensHeldWithUnlockConditionDaily: influxService.tokensHeldWithUnlockConditionDaily,
+        unclaimedTokensDaily: influxService.unclaimedTokensDaily,
+        unclaimedGenesisOutputsDaily: influxService.unclaimedGenesisOutputsDaily,
+        ledgerSizeDaily: influxService.ledgerSizeDaily,
+        storageDepositDaily: influxService.storageDepositDaily
+    } : {
+        error: "Influx service not found for this network."
+    };
 }
+

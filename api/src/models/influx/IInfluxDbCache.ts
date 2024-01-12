@@ -1,19 +1,9 @@
 import {
-    IAddressesWithBalanceDailyInflux,
-    IAliasActivityDailyInflux,
-    IActiveAddressesDailyInflux,
-    IBlocksDailyInflux,
-    ILedgerSizeDailyInflux,
-    INftActivityDailyInflux,
-    IOutputsDailyInflux,
-    IStorageDepositDailyInflux,
-    ITokensHeldPerOutputDailyInflux,
-    ITokensHeldWithUnlockConditionDailyInflux,
-    ITokensTransferredDailyInflux,
-    ITransactionsDailyInflux,
-    IUnclaimedGenesisOutputsDailyInflux,
-    IUnclaimedTokensDailyInflux,
-    IUnlockConditionsPerTypeDailyInflux,
+    IAddressesWithBalanceDailyInflux, IAliasActivityDailyInflux, IActiveAddressesDailyInflux,
+    IBlocksDailyInflux, ILedgerSizeDailyInflux, INftActivityDailyInflux, IOutputsDailyInflux,
+    IStorageDepositDailyInflux, ITokensHeldPerOutputDailyInflux, ITokensHeldWithUnlockConditionDailyInflux,
+    ITokensTransferredDailyInflux, ITransactionsDailyInflux, IUnclaimedGenesisOutputsDailyInflux,
+    IUnclaimedTokensDailyInflux, IUnlockConditionsPerTypeDailyInflux
 } from "./IInfluxTimedEntries";
 
 /**
@@ -97,5 +87,6 @@ export const initializeEmptyDailyCache = () => ({
     unclaimedTokensDaily: new Map(),
     unclaimedGenesisOutputsDaily: new Map(),
     ledgerSizeDaily: new Map(),
-    storageDepositDaily: new Map(),
+    storageDepositDaily: new Map()
 });
+

@@ -2,10 +2,10 @@
     "title": "Milestone Payload",
     "description": "<p>This block is a milestone. To be valid, all blocks must directly or indirectly refer to one of the milestones that are issued by the Coordinator node of the network.</p>",
     "links": [
-        {
-            "label": "Read more",
-            "href": "https://github.com/iotaledger/tips/blob/milestone-with-signature-blocks/tips/TIP-0029/tip-0029.md",
-            "isExternal": true
-        }
+      {
+        "label": "Read more",
+        "href": "https://github.com/iotaledger/tips/blob/milestone-with-signature-blocks/tips/TIP-0029/tip-0029.md",
+        "isExternal": true
+      }
     ]
 }

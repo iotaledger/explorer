@@ -85,36 +85,58 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
     const tabsView = (
         <div className="tabbed-section--tabs-wrapper">
             {TABS.map((tab, idx) => {
-                const isDisabled = tabOptions ? (tabOptions[tab]?.disabled === undefined ? false : tabOptions[tab].disabled) : false;
+                const isDisabled = tabOptions ?
+                    (tabOptions[tab]?.disabled === undefined ? false : tabOptions[tab].disabled)
+                    : false;
 
-                const counter = tabOptions ? (tabOptions[tab]?.counter === undefined ? 0 : tabOptions[tab].counter) : 0;
+                const counter = tabOptions ?
+                    (tabOptions[tab]?.counter === undefined ? 0 : tabOptions[tab].counter)
+                    : 0;
 
-                const isLoading = tabOptions ? (tabOptions[tab]?.isLoading === undefined ? false : tabOptions[tab].isLoading) : false;
+                const isLoading = tabOptions ?
+                    (tabOptions[tab]?.isLoading === undefined ? false : tabOptions[tab].isLoading)
+                    : false;
 
-                const infoContent = tabOptions
-                    ? tabOptions[tab]?.infoContent === undefined
-                        ? undefined
-                        : tabOptions[tab].infoContent
+                const infoContent = tabOptions ?
+                    (tabOptions[tab]?.infoContent === undefined ? undefined : tabOptions[tab].infoContent)
                     : undefined;
 
-                const hidden = tabOptions ? (tabOptions[tab]?.hidden === undefined ? false : tabOptions[tab].hidden) : false;
+                const hidden = tabOptions ?
+                    (tabOptions[tab]?.hidden === undefined ? false : tabOptions[tab].hidden)
+                    : false;
 
                 return (
                     <div
                         key={`tab-btn-${idx}`}
-                        className={classNames("tab-wrapper", { active: idx === selectedTab }, { hidden }, { disabled: isDisabled })}
+                        className={classNames("tab-wrapper",
+                            { "active": idx === selectedTab },
+                            { hidden },
+                            { "disabled": isDisabled })}
                         onClick={() => {
                             if (!isDisabled) {
                                 onTabSelected(idx);
                             }
                         }}
                     >
-                        <button className="tab" type="button" key={idx} disabled={isDisabled}>
+                        <button
+                            className="tab"
+                            type="button"
+                            key={idx}
+                            disabled={isDisabled}
+                        >
                             {tab}
                         </button>
-                        {infoContent && <Modal icon="info" data={infoContent} />}
-                        {isLoading && <Spinner />}
-                        {counter !== 0 && <div className="tab-counter">{counter}</div>}
+                        {infoContent && (
+                            <Modal icon="info" data={infoContent} />
+                        )}
+                        {isLoading && (
+                            <Spinner />
+                        )}
+                        {counter !== 0 && (
+                            <div className="tab-counter">
+                                {counter}
+                            </div>
+                        )}
                     </div>
                 );
             })}
@@ -125,7 +147,10 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
         <div className="tabbed-section">
             {tabsView}
             {children.map((child, idx) => (
-                <div key={`tab-${idx}`} className={classNames("tab-content", { active: idx === selectedTab })}>
+                <div
+                    key={`tab-${idx}`}
+                    className={classNames("tab-content", { "active": idx === selectedTab })}
+                >
                     {child}
                 </div>
             ))}
@@ -134,7 +159,8 @@ const TabbedSection: React.FC<TabbedSectionProps> = ({ tabsEnum, children, tabOp
 };
 
 TabbedSection.defaultProps = {
-    tabOptions: undefined,
+    tabOptions: undefined
 };
 
 export default TabbedSection;
+

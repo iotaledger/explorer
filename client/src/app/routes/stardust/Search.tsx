@@ -41,8 +41,8 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
         super(props);
 
         const networkService = ServiceFactory.get<NetworkService>("network");
-        const protocolVersion: ProtocolVersion =
-            (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || STARDUST;
+        const protocolVersion: ProtocolVersion = (props.match.params.network &&
+            networkService.get(props.match.params.network)?.protocolVersion) || STARDUST;
 
         this._apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
 
@@ -53,7 +53,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             completion: "",
             redirect: "",
             search: "",
-            invalidError: "",
+            invalidError: ""
         };
     }
 
@@ -83,26 +83,29 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
      */
     public render(): ReactNode {
         return this.state.redirect ? (
-            <Redirect
-                to={{
-                    pathname: this.state.redirect,
-                    search: this.state.search,
-                    state: this.state.redirectState,
-                }}
+            <Redirect to={{
+                pathname: this.state.redirect,
+                search: this.state.search,
+                state: this.state.redirectState
+            }}
             />
         ) : (
             <div className="search">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1 className="margin-b-s">Search</h1>
+                        <h1 className="margin-b-s">
+                            Search
+                        </h1>
                         {!this.state.completion && this.state.status && (
                             <div className="card">
                                 <div className="card--header">
                                     <h2>Searching</h2>
                                 </div>
                                 <div className="card--content middle row">
-                                    {this.state.statusBusy && <Spinner />}
-                                    <p className="status">{this.state.status}</p>
+                                    {this.state.statusBusy && (<Spinner />)}
+                                    <p className="status">
+                                        {this.state.status}
+                                    </p>
                                 </div>
                             </div>
                         )}
@@ -112,7 +115,10 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     <h2>Not found</h2>
                                 </div>
                                 <div className="card--content">
-                                    <p>We could not find any blocks, addresses, outputs, milestones or indexes for the query.</p>
+                                    <p>
+                                        We could not find any blocks, addresses, outputs, milestones
+                                        or indexes for the query.
+                                    </p>
                                     <br />
                                     <div className="card--value">
                                         <ul>
@@ -182,13 +188,17 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
                                     <h2>Incorrect query format</h2>
                                 </div>
                                 <div className="card--content">
-                                    {this.state.protocolVersion === STARDUST && <p className="danger">{this.state.invalidError}.</p>}
+                                    {this.state.protocolVersion === STARDUST && (
+                                        <p className="danger">
+                                            {this.state.invalidError}.
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -208,95 +218,101 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status = "Detecting query type...";
             statusBusy = true;
             if (this._isMounted) {
-                setTimeout(async () => {
-                    if (this._isMounted) {
-                        const response = await this._apiClient.search({
-                            network: this.props.match.params.network,
-                            query,
-                        });
+                setTimeout(
+                    async () => {
+                        if (this._isMounted) {
+                            const response = await this._apiClient.search({
+                                network: this.props.match.params.network,
+                                query
+                            });
 
-                        if (response && Object.keys(response).length > 0) {
-                            const routeSearch = new Map<string, string>();
-                            let route = "";
-                            let routeParam = query;
-                            let redirectState = {};
-                            if (response.block) {
-                                route = "block";
-                            } else if (response.addressDetails?.hex) {
-                                route = "addr";
-                                redirectState = {
-                                    addressDetails: response.addressDetails,
-                                };
-                            } else if (response.output) {
-                                route = "output";
-                                const outputId = Utils.computeOutputId(
-                                    response.output.metadata.transactionId,
-                                    response.output.metadata.outputIndex,
-                                );
-                                routeParam = outputId;
-                            } else if (response.taggedOutputs) {
-                                route = "outputs";
-                                redirectState = {
-                                    outputIds: response.taggedOutputs,
-                                    tag: query,
-                                };
-                                routeParam = "";
-                            } else if (response.transactionBlock) {
-                                route = "transaction";
-                            } else if (response.aliasId) {
-                                route = "addr";
-                                const aliasAddress = this.buildAddressFromIdAndType(response.aliasId, AddressType.Alias);
-                                redirectState = {
-                                    addressDetails: aliasAddress,
-                                };
-                                routeParam = aliasAddress.bech32;
-                                if (response.did) {
-                                    routeSearch.set("tab", "DID");
+                            if (response && Object.keys(response).length > 0) {
+                                const routeSearch = new Map<string, string>();
+                                let route = "";
+                                let routeParam = query;
+                                let redirectState = {};
+                                if (response.block) {
+                                    route = "block";
+                                } else if (response.addressDetails?.hex) {
+                                    route = "addr";
+                                    redirectState = {
+                                        addressDetails: response.addressDetails
+                                    };
+                                } else if (response.output) {
+                                    route = "output";
+                                    const outputId = Utils.computeOutputId(
+                                        response.output.metadata.transactionId,
+                                        response.output.metadata.outputIndex
+                                    );
+                                    routeParam = outputId;
+                                } else if (response.taggedOutputs) {
+                                    route = "outputs";
+                                    redirectState = {
+                                        outputIds: response.taggedOutputs,
+                                        tag: query
+                                    };
+                                    routeParam = "";
+                                } else if (response.transactionBlock) {
+                                    route = "transaction";
+                                } else if (response.aliasId) {
+                                    route = "addr";
+                                    const aliasAddress = this.buildAddressFromIdAndType(
+                                        response.aliasId, AddressType.Alias
+                                    );
+                                    redirectState = {
+                                        addressDetails: aliasAddress
+                                    };
+                                    routeParam = aliasAddress.bech32;
+                                    if (response.did) {
+                                        routeSearch.set("tab", "DID");
+                                    }
+                                } else if (response.foundryId) {
+                                    route = "foundry";
+                                    routeParam = response.foundryId;
+                                } else if (response.nftId) {
+                                    route = "addr";
+                                    const nftAddress = this.buildAddressFromIdAndType(
+                                        response.nftId,
+                                        AddressType.Nft
+                                    );
+                                    redirectState = {
+                                        addressDetails: nftAddress
+                                    };
+                                    routeParam = nftAddress.bech32;
+                                } else if (response.milestone?.blockId) {
+                                    route = "block";
+                                    routeParam = response.milestone?.blockId;
                                 }
-                            } else if (response.foundryId) {
-                                route = "foundry";
-                                routeParam = response.foundryId;
-                            } else if (response.nftId) {
-                                route = "addr";
-                                const nftAddress = this.buildAddressFromIdAndType(response.nftId, AddressType.Nft);
-                                redirectState = {
-                                    addressDetails: nftAddress,
+
+                                const getEncodedSearch = () => {
+                                    if (routeSearch.size === 0) {
+                                        return "";
+                                    }
+
+                                    const searchParams = new URLSearchParams();
+                                    for (const [key, value] of routeSearch.entries()) {
+                                        searchParams.append(key, value);
+                                    }
+
+                                    return `?${searchParams.toString()}`;
                                 };
-                                routeParam = nftAddress.bech32;
-                            } else if (response.milestone?.blockId) {
-                                route = "block";
-                                routeParam = response.milestone?.blockId;
+
+                                this.setState({
+                                    status: "",
+                                    statusBusy: false,
+                                    redirect: `/${this.props.match.params.network}/${route}/${routeParam}`,
+                                    search: getEncodedSearch(),
+                                    redirectState
+                                });
+                            } else {
+                                this.setState({
+                                    completion: "notFound",
+                                    status: "",
+                                    statusBusy: false
+                                });
                             }
-
-                            const getEncodedSearch = () => {
-                                if (routeSearch.size === 0) {
-                                    return "";
-                                }
-
-                                const searchParams = new URLSearchParams();
-                                for (const [key, value] of routeSearch.entries()) {
-                                    searchParams.append(key, value);
-                                }
-
-                                return `?${searchParams.toString()}`;
-                            };
-
-                            this.setState({
-                                status: "",
-                                statusBusy: false,
-                                redirect: `/${this.props.match.params.network}/${route}/${routeParam}`,
-                                search: getEncodedSearch(),
-                                redirectState,
-                            });
-                        } else {
-                            this.setState({
-                                completion: "notFound",
-                                status: "",
-                                statusBusy: false,
-                            });
                         }
-                    }
-                }, 0);
+                    }, 0);
             }
         } else {
             invalidError = "the query is empty";
@@ -308,7 +324,7 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
             status,
             completion,
             redirect,
-            invalidError,
+            invalidError
         });
     }
 
@@ -318,3 +334,4 @@ class Search extends AsyncComponent<RouteComponentProps<SearchRouteProps>, Searc
 }
 
 export default Search;
+

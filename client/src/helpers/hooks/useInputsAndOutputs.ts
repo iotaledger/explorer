@@ -15,10 +15,14 @@ import { TransactionsHelper } from "../stardust/transactionsHelper";
  * @param block The block
  * @returns The inputs, unlocks, outputs, transfer total an a loading bool.
  */
-export function useInputsAndOutputs(
-    network: string,
-    block: Block | null,
-): [IInput[] | null, Unlock[] | null, IOutput[] | null, number | null, boolean] {
+export function useInputsAndOutputs(network: string, block: Block | null):
+    [
+        IInput[] | null,
+        Unlock[] | null,
+        IOutput[] | null,
+        number | null,
+        boolean
+    ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const { bech32Hrp } = useContext(NetworkContext);
@@ -34,12 +38,13 @@ export function useInputsAndOutputs(
         if (block?.payload?.type === PayloadType.Transaction) {
             // eslint-disable-next-line no-void
             void (async () => {
-                const { inputs, unlocks, outputs, transferTotal } = await TransactionsHelper.getInputsAndOutputs(
-                    block,
-                    network,
-                    bech32Hrp,
-                    apiClient,
-                );
+                const { inputs, unlocks, outputs, transferTotal } =
+                    await TransactionsHelper.getInputsAndOutputs(
+                        block,
+                        network,
+                        bech32Hrp,
+                        apiClient
+                    );
                 if (isMounted) {
                     setInputs(inputs);
                     setUnlocks(unlocks);

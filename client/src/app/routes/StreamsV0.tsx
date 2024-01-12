@@ -56,7 +56,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
             sideKey: props.match.params.key ?? "",
             sideKeyValidation: "",
             isValid: false,
-            packets: [],
+            packets: []
         };
     }
 
@@ -73,7 +73,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         window.scrollTo({
             left: 0,
             top: 0,
-            behavior: "smooth",
+            behavior: "smooth"
         });
     }
 
@@ -102,13 +102,15 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                     </div>
                                     <div className="card--content">
                                         <div className="row middle margin-b-s row--tablet-responsive">
-                                            <div className="card--label form-label-width">Root</div>
+                                            <div className="card--label form-label-width">
+                                                Root
+                                            </div>
                                             <input
                                                 type="text"
                                                 value={this.state.root}
-                                                onChange={(e) =>
-                                                    this.setState({ root: e.target.value.toUpperCase() }, () => this.validate())
-                                                }
+                                                onChange={e => this.setState(
+                                                    { root: e.target.value.toUpperCase() }, () => this.validate()
+                                                )}
                                                 disabled={this.state.statusBusy}
                                                 className="form-input-long"
                                                 maxLength={81}
@@ -121,34 +123,51 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                             </div>
                                         )}
                                         <div className="row margin-b-t row--tablet-responsive">
-                                            <div className="card--label form-label-width">Mode</div>
+                                            <div className="card--label form-label-width">
+                                                Mode
+                                            </div>
                                             <div className="row wrap">
                                                 <button
                                                     type="button"
-                                                    className={classNames("form-button", "margin-r-t", "margin-b-t", {
-                                                        selected: this.state.mode === "public",
-                                                    })}
-                                                    onClick={() => this.setState({ mode: "public", sideKey: "" }, () => this.validate())}
+                                                    className={classNames(
+                                                        "form-button",
+                                                        "margin-r-t",
+                                                        "margin-b-t",
+                                                        { selected: this.state.mode === "public" }
+                                                    )}
+                                                    onClick={() => this.setState(
+                                                        { mode: "public", sideKey: "" }, () => this.validate()
+                                                    )}
                                                     disabled={this.state.statusBusy}
                                                 >
                                                     Public
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={classNames("form-button", "margin-r-t", "margin-b-t", {
-                                                        selected: this.state.mode === "private",
-                                                    })}
-                                                    onClick={() => this.setState({ mode: "private", sideKey: "" }, () => this.validate())}
+                                                    className={classNames(
+                                                        "form-button",
+                                                        "margin-r-t",
+                                                        "margin-b-t",
+                                                        { selected: this.state.mode === "private" }
+                                                    )}
+                                                    onClick={() => this.setState(
+                                                        { mode: "private", sideKey: "" }, () => this.validate()
+                                                    )}
                                                     disabled={this.state.statusBusy}
                                                 >
                                                     Private
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className={classNames("form-button", "margin-r-t", "margin-b-t", {
-                                                        selected: this.state.mode === "restricted",
-                                                    })}
-                                                    onClick={() => this.setState({ mode: "restricted" }, () => this.validate())}
+                                                    className={classNames(
+                                                        "form-button",
+                                                        "margin-r-t",
+                                                        "margin-b-t",
+                                                        { selected: this.state.mode === "restricted" }
+                                                    )}
+                                                    onClick={() => this.setState(
+                                                        { mode: "restricted" }, () => this.validate()
+                                                    )}
                                                     disabled={this.state.statusBusy}
                                                 >
                                                     Restricted
@@ -156,20 +175,24 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                             </div>
                                         </div>
                                         <div className="row margin-b-s row--tablet-responsive">
-                                            <div className="card--label form-label-width">Side Key</div>
+                                            <div className="card--label form-label-width">
+                                                Side Key
+                                            </div>
                                             <input
                                                 type="text"
                                                 value={this.state.sideKey}
-                                                onChange={(e) =>
-                                                    this.setState({ sideKey: e.target.value.toUpperCase() }, () => this.validate())
-                                                }
+                                                onChange={e => this.setState(
+                                                    { sideKey: e.target.value.toUpperCase() }, () => this.validate()
+                                                )}
                                                 disabled={this.state.mode !== "restricted" || this.state.statusBusy}
                                                 className="form-input-long"
                                                 maxLength={81}
                                             />
                                         </div>
                                         <div className="row margin-b-s row--tablet-responsive">
-                                            <div className="card--label form-label-width">&nbsp;</div>
+                                            <div className="card--label form-label-width">
+                                                &nbsp;
+                                            </div>
                                             <button
                                                 type="button"
                                                 className="form-button selected margin-r-t margin-b-t"
@@ -193,10 +216,18 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                     <div className="card margin-t-s" key={item.root}>
                                         <div className="card--content">
                                             <div className="item-details">
-                                                <div className="card--label">Root</div>
-                                                <div className="card--value">{item.root}</div>
-                                                <div className="card--label">Tag</div>
-                                                <div className="card--value">{item.tag}</div>
+                                                <div className="card--label">
+                                                    Root
+                                                </div>
+                                                <div className="card--value">
+                                                    {item.root}
+                                                </div>
+                                                <div className="card--label">
+                                                    Tag
+                                                </div>
+                                                <div className="card--value">
+                                                    {item.tag}
+                                                </div>
                                                 <div className="card--label row middle margin-b-2">
                                                     <span className="margin-r-s">
                                                         {item.messageType !== "Trytes" && (
@@ -207,38 +238,51 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                                                     oldPackets[idx].showRawMessageTrytes =
                                                                         !oldPackets[idx].showRawMessageTrytes;
                                                                     this.setState({
-                                                                        packets: oldPackets,
+                                                                        packets: oldPackets
                                                                     });
                                                                 }}
                                                             >
-                                                                Message {item.showRawMessageTrytes ? "Trytes" : item.messageType}
+                                                                Message {item.showRawMessageTrytes
+                                                                    ? "Trytes" : item.messageType}
                                                             </button>
                                                         )}
-                                                        {item.messageType === "Trytes" && `Message ${item.messageType}`}
+                                                        {item.messageType === "Trytes" && (
+                                                            `Message ${item.messageType}`
+                                                        )}
                                                     </span>
-                                                    <CopyButton copy={item.showRawMessageTrytes ? item.rawMessageTrytes : item.message} />
+                                                    <CopyButton
+                                                        copy={
+                                                            item.showRawMessageTrytes ?
+                                                            item.rawMessageTrytes :
+                                                            item.message
+                                                        }
+                                                    />
                                                 </div>
                                                 <div
-                                                    className={classNames(
-                                                        "card--value",
-                                                        "card--value-textarea",
-                                                        `card--value-textarea__${
-                                                            item.showRawMessageTrytes ? "trytes" : item.messageType?.toLowerCase()
-                                                        }`,
-                                                    )}
+                                                    className={
+                                                        classNames(
+                                                            "card--value",
+                                                            "card--value-textarea",
+                                                            `card--value-textarea__${item.showRawMessageTrytes
+                                                                ? "trytes"
+                                                                : item.messageType?.toLowerCase()}`
+                                                        )
+                                                    }
                                                 >
-                                                    {item.showRawMessageTrytes ? (
-                                                        item.rawMessageTrytes
-                                                    ) : item.messageType === "JSON" ? (
-                                                        <JsonViewer json={item.message} />
-                                                    ) : (
-                                                        item.message
-                                                    )}
+                                                    {item.showRawMessageTrytes
+                                                        ? item.rawMessageTrytes
+                                                        : (item.messageType === "JSON"
+                                                            ? <JsonViewer json={item.message} />
+                                                            : item.message)}
                                                 </div>
                                                 {this.state.packets.length - 1 === idx && (
                                                     <React.Fragment>
-                                                        <div className="card--label">Next Root</div>
-                                                        <div className="card--value">{item.nextRoot}</div>
+                                                        <div className="card--label">
+                                                            Next Root
+                                                        </div>
+                                                        <div className="card--value">
+                                                            {item.nextRoot}
+                                                        </div>
                                                     </React.Fragment>
                                                 )}
                                             </div>
@@ -248,8 +292,10 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                                 {this.state.status && (
                                     <div className="card margin-t-s">
                                         <div className="card--content middle row margin-t-s">
-                                            {this.state.statusBusy && <Spinner />}
-                                            <p className="status">{this.state.status}</p>
+                                            {this.state.statusBusy && (<Spinner />)}
+                                            <p className="status">
+                                                {this.state.status}
+                                            </p>
                                         </div>
                                     </div>
                                 )}
@@ -257,7 +303,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -287,7 +333,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
         this.setState({
             rootValidation,
             sideKeyValidation,
-            isValid: root.length > 0 && rootValidation.length === 0 && sideKeyValidation.length === 0,
+            isValid: root.length > 0 && rootValidation.length === 0 && sideKeyValidation.length === 0
         });
 
         return rootValidation.length === 0 && sideKeyValidation.length === 0;
@@ -311,14 +357,13 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                 {
                     statusBusy: true,
                     status: "Waiting for channel data...",
-                    packets: [],
+                    packets: []
                 },
                 async () => {
                     this._nextRoot = this.state.root;
                     this._timeout = 100;
                     await this.loadNextPacket(true);
-                },
-            );
+                });
         }
     }
 
@@ -340,11 +385,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
     private async loadNextPacket(force?: boolean): Promise<void> {
         if (this._nextRoot && (this._updateTimer || force) && this.state.statusBusy) {
             const packet = await this._tangleCacheService.getStreamsV0Packet(
-                this.props.match.params.network,
-                this._nextRoot,
-                this.state.mode,
-                this.state.sideKey,
-            );
+                this.props.match.params.network, this._nextRoot, this.state.mode, this.state.sideKey);
 
             if (packet) {
                 const packets = this.state.packets;
@@ -357,7 +398,7 @@ class StreamsV0 extends AsyncComponent<RouteComponentProps<StreamsV0RouteProps>,
                     message: decoded.message,
                     messageType: decoded.messageType,
                     rawMessageTrytes: packet.payload,
-                    showRawMessageTrytes: false,
+                    showRawMessageTrytes: false
                 });
 
                 this.setState({ packets });

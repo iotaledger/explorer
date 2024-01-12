@@ -45,3 +45,4 @@ export interface ITransactionEntryProps {
      */
     darkBackgroundRow?: boolean;
 }
+

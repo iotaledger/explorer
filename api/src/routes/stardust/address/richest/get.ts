@@ -13,7 +13,10 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: INetworkBoundGetRequest): Promise<IRichestAddressesResponse> {
+export async function get(
+    _: IConfiguration,
+    request: INetworkBoundGetRequest
+): Promise<IRichestAddressesResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -28,7 +31,10 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
         return {};
     }
 
-    const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
+    const chronicleService = ServiceFactory.get<ChronicleService>(
+        `chronicle-${networkConfig.network}`
+    );
 
     return chronicleService.richestAddressesLatest ?? { error: { code: "404", message: "no chronicle data" } };
 }
+

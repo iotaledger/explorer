@@ -76,3 +76,4 @@ interface INetworkView {
      */
     identityResolverEnabled?: boolean;
 }
+

@@ -2,6 +2,7 @@
  * The state for the Header component.
  */
 export interface HeaderState {
+
     /**
      * Is the network switcher menu expanded.
      */
@@ -25,5 +26,5 @@ export interface HeaderState {
     /**
      * Show info modal on full page.
      */
-    show: boolean;
+     show: boolean;
 }

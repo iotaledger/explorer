@@ -24,7 +24,7 @@
 
         &.seconds {
             display: inline-block;
-            min-width: 44px !important;
+            min-width: 44px!important;
         }
     }
 }
@@ -55,11 +55,7 @@
                 display: none;
             }
 
-            &.ms-index,
-            &.ms-id,
-            &.ms-blocks,
-            &.ms-txs,
-            &.ms-timestamp {
+            &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
                 text-align: left;
             }
 
@@ -71,8 +67,7 @@
                 min-width: 136px;
             }
 
-            &.ms-blocks,
-            &.ms-txs {
+            &.ms-blocks, &.ms-txs {
                 min-width: 60px;
             }
 
@@ -125,6 +120,7 @@
                     }
                 }
             }
+
         }
 
         .feed-item--label {
@@ -165,8 +161,7 @@
                 text-align: left;
             }
 
-            &.ms-blocks,
-            &.ms-txs {
+            &.ms-blocks, &.ms-txs {
                 text-align: left;
                 min-width: 60px;
             }
@@ -179,7 +174,7 @@
 
                 @include tablet-down {
                     @include font-size(14px, 20px);
-
+                    
                     padding-left: 8px;
                     font-weight: 400;
                     font-family: $ibm-plex-mono;
@@ -189,11 +184,7 @@
             }
 
             @include tablet-down {
-                &.ms-index,
-                &.ms-id,
-                &.ms-blocks,
-                &.ms-txs,
-                &.ms-timestamp {
+                &.ms-index, &.ms-id, &.ms-blocks, &.ms-txs, &.ms-timestamp {
                     text-align: left;
                 }
             }
@@ -223,3 +214,4 @@
         }
     }
 }
+

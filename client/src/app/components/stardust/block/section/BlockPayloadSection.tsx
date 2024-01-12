@@ -1,11 +1,6 @@
 import {
-    Block,
-    PayloadType,
-    Unlock,
-    TransactionPayload as ITransactionPayload,
-    MilestonePayload as IMilestonePayload,
-    RegularTransactionEssence,
-    TaggedDataPayload as ITaggedDataPayload,
+    Block, PayloadType, Unlock, TransactionPayload as ITransactionPayload,
+    MilestonePayload as IMilestonePayload, RegularTransactionEssence, TaggedDataPayload as ITaggedDataPayload
 } from "@iota/sdk-wasm/web";
 import * as H from "history";
 import React from "react";
@@ -27,18 +22,13 @@ interface BlockPayloadSectionProps {
     readonly isLinksDisabled: boolean;
 }
 
-const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({
-    network,
-    protocolVersion,
-    block,
-    inputs,
-    outputs,
-    unlocks,
-    transferTotal,
-    history,
-    isLinksDisabled,
-}) => {
-    if (block.payload?.type === PayloadType.Transaction && inputs && unlocks && outputs && transferTotal !== undefined) {
+const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
+    { network, protocolVersion, block, inputs, outputs, unlocks, transferTotal, history, isLinksDisabled }
+) => {
+    if (
+        block.payload?.type === PayloadType.Transaction &&
+        inputs && unlocks && outputs && transferTotal !== undefined
+    ) {
         const transactionPayload = block.payload as ITransactionPayload;
         const transactionEssence = transactionPayload.essence as RegularTransactionEssence;
 
@@ -53,14 +43,21 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({
                         isLinksDisabled={isLinksDisabled}
                     />
                 </div>
-                {transactionEssence.payload?.type === PayloadType.TaggedData && (
+                {
+                    transactionEssence.payload?.type === PayloadType.TaggedData &&
                     <div className="section">
-                        <TaggedDataPayload network={network} history={history} payload={transactionEssence.payload as ITaggedDataPayload} />
+                        <TaggedDataPayload
+                            network={network}
+                            history={history}
+                            payload={transactionEssence.payload as ITaggedDataPayload}
+                        />
                     </div>
-                )}
+                }
             </React.Fragment>
         );
-    } else if (block.payload?.type === PayloadType.Milestone) {
+    } else if (
+        block.payload?.type === PayloadType.Milestone
+    ) {
         return (
             <MilestonePayload
                 network={network}
@@ -69,10 +66,16 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({
                 protocolVersion={protocolVersion}
             />
         );
-    } else if (block.payload?.type === PayloadType.TaggedData) {
+    } else if (
+        block.payload?.type === PayloadType.TaggedData
+    ) {
         return (
             <div className="section">
-                <TaggedDataPayload network={network} history={history} payload={block.payload as ITaggedDataPayload} />
+                <TaggedDataPayload
+                    network={network}
+                    history={history}
+                    payload={block.payload as ITaggedDataPayload}
+                />
             </div>
         );
     }
@@ -84,7 +87,8 @@ BlockPayloadSection.defaultProps = {
     inputs: undefined,
     outputs: undefined,
     transferTotal: undefined,
-    unlocks: undefined,
+    unlocks: undefined
 };
 
 export default BlockPayloadSection;
+

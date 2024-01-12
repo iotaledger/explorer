@@ -10,14 +10,27 @@ interface TruncatedIdProps {
 }
 
 const TruncatedId: React.FC<TruncatedIdProps> = ({ id, link, showCopyButton }) => {
-    const content =
-        link && link.length > 0 ? (
-            <Link to={link} className={classNames("truncate", "highlight", { "margin-r-t": showCopyButton })}>
-                {id}
-            </Link>
-        ) : (
-            <span className={classNames("truncate", { "margin-r-t": showCopyButton })}>{id}</span>
-        );
+    const content = link && link.length > 0 ? (
+        <Link
+            to={link}
+            className={classNames(
+                "truncate",
+                "highlight",
+                { "margin-r-t": showCopyButton }
+            )}
+        >
+            {id}
+        </Link>
+    ) : (
+        <span
+            className={classNames(
+                "truncate",
+                { "margin-r-t": showCopyButton }
+            )}
+        >
+            {id}
+        </span>
+    );
 
     return (
         <div className="row middle truncate">
@@ -29,7 +42,8 @@ const TruncatedId: React.FC<TruncatedIdProps> = ({ id, link, showCopyButton }) =
 
 TruncatedId.defaultProps = {
     link: undefined,
-    showCopyButton: undefined,
+    showCopyButton: undefined
 };
 
 export default TruncatedId;
+

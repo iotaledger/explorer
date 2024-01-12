@@ -19,7 +19,7 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
         const bestUnits = UnitsHelper.calculateBest(props.value);
 
         this.state = {
-            units: bestUnits,
+            units: bestUnits
         };
     }
 
@@ -32,7 +32,7 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
             const bestUnits = UnitsHelper.calculateBest(this.props.value);
 
             this.setState({
-                units: bestUnits,
+                units: bestUnits
             });
         }
     }
@@ -44,10 +44,14 @@ class ValueButton extends Component<ValueButtonProps, ValueButtonState> {
     public render(): ReactNode {
         return (
             <div className="value-button">
-                <div className="value-button--label">{this.props.label ?? "Value"}</div>
-                <div className="value-button--value">{UnitsHelper.formatUnits(this.props.value, this.state.units)}</div>
+                <div className="value-button--label">
+                    {this.props.label ?? "Value"}
+                </div>
+                <div className="value-button--value">
+                    {UnitsHelper.formatUnits(this.props.value, this.state.units)}
+                </div>
                 <div className="value-button--selector">
-                    {Object.keys(UnitsHelper.UNIT_MAP).map((unit) => (
+                    {Object.keys(UnitsHelper.UNIT_MAP).map(unit => (
                         <button
                             type="button"
                             key={unit}

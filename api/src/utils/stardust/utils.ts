@@ -25,7 +25,7 @@ export function blockIdFromMilestonePayload(protocolVersion: number, payload: Mi
  */
 export async function addressBalance(
     client: Client,
-    address: string,
+    address: string
 ): Promise<{
     balance: BigInteger;
     nativeTokens: { [id: string]: BigInteger };
@@ -65,7 +65,7 @@ export async function addressBalance(
         expirationResponse = await client.basicOutputIds([
             { expirationReturnAddress: address },
             { expiresBefore: Math.floor(Date.now() / 1000) },
-            { cursor: expirationCursor },
+            { cursor: expirationCursor }
         ]);
 
         for (const outputId of expirationResponse.items) {
@@ -81,6 +81,7 @@ export async function addressBalance(
     return {
         balance: total,
         nativeTokens,
-        ledgerIndex,
+        ledgerIndex
     };
 }
+

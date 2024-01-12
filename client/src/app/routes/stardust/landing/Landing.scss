@@ -54,6 +54,7 @@
                 transform: translate(-130px, -40px);
             }
         }
+
     }
 
     .header-wrapper.shimmer {
@@ -256,12 +257,14 @@
             }
 
             .card--content {
-                padding: 10px 0px;
+                padding:10px 0px;
             }
 
             @include phone-down {
                 margin-top: 0px;
             }
         }
+
     }
 }
+

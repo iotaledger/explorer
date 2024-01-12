@@ -34,7 +34,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             network: CUSTOM,
             protocolVersion: LEGACY,
             hasStatisticsSupport: false,
-            isEnabled: false,
+            isEnabled: false
         };
 
         this.state = {
@@ -57,7 +57,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             currency: "USD",
             formatFull: false,
             isFeedPaused: false,
-            isFilterExpanded: false,
+            isFilterExpanded: false
         };
     }
 
@@ -68,6 +68,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
         await super.componentDidMount();
 
         const settings = this._settingsService.get();
+
 
         let filterSettings: IFilterSettings | undefined;
 
@@ -80,8 +81,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
             valueMinimumUnits: filterSettings?.valueMinimumUnits ?? "i",
             valueMaximum: filterSettings?.valueMaximum ?? "3",
             valueMaximumUnits: filterSettings?.valueMaximumUnits ?? "Pi",
-            valuesFilter: filterSettings?.valuesFilter ?? getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? LEGACY),
-            formatFull: settings.formatFull,
+            valuesFilter: filterSettings?.valuesFilter ??
+                getFilterFieldDefaults(this._networkConfig?.protocolVersion ?? LEGACY),
+            formatFull: settings.formatFull
         });
     }
 
@@ -90,8 +92,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const isLatestMilestoneFeedInfoEnabled =
-            this._networkConfig && this._networkConfig.network !== LEGACY_MAINNET && this._networkConfig.network !== CUSTOM;
+        const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
+            this._networkConfig.network !== LEGACY_MAINNET &&
+            this._networkConfig.network !== CUSTOM;
 
         return (
             <div className="landing-legacy">
@@ -107,7 +110,8 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             {this.state.networkConfig.isEnabled && (
                                 <div className="row space-between info-boxes">
                                     <div className="info-box">
-                                        <span className="info-box--title">Transactions per sec</span>
+                                        <span className="info-box--title">Transactions per sec
+                                        </span>
                                         <div className="info-box--value">
                                             <span className="download-rate">
                                                 {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
@@ -116,7 +120,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                     <div className="info-box">
                                         <span className="info-box--title">Inclusion rate</span>
-                                        <span className="info-box--value">{this.state.confirmedItemsPerSecondPercent}</span>
+                                        <span className="info-box--value">
+                                            {this.state.confirmedItemsPerSecondPercent}
+                                        </span>
                                     </div>
                                     {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
@@ -127,7 +133,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
                                             <span className="info-box--title">Price / MI</span>
-                                            <span className="info-box--value">{this.state.priceCurrency}</span>
+                                            <span className="info-box--value">
+                                                {this.state.priceCurrency}
+                                            </span>
                                         </div>
                                     )}
                                 </div>
@@ -149,15 +157,13 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                 onClick={() => {
                                                     this.setState({
                                                         isFeedPaused: !this.state.isFeedPaused,
-                                                        frozenMessages: this.state.filteredItems,
+                                                        frozenMessages: this.state.filteredItems
                                                     });
                                                 }}
                                             >
-                                                {this.state.isFeedPaused ? (
-                                                    <span className="material-icons">play_arrow</span>
-                                                ) : (
-                                                    <span className="material-icons">pause</span>
-                                                )}
+                                                {this.state.isFeedPaused
+                                                    ? <span className="material-icons">play_arrow</span>
+                                                    : <span className="material-icons">pause</span>}
                                             </button>
                                             <div className="filters-button-wrapper">
                                                 <button
@@ -165,14 +171,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     className="button--unstyled toggle-filters-button"
                                                     onClick={() => {
                                                         this.setState({
-                                                            isFilterExpanded: !this.state.isFilterExpanded,
+                                                            isFilterExpanded: !this.state.isFilterExpanded
                                                         });
                                                     }}
                                                 >
-                                                    <span className="material-icons">tune</span>
+                                                    <span className="material-icons">
+                                                        tune
+                                                    </span>
                                                 </button>
                                                 <div className="filters-button-wrapper__counter">
-                                                    {this.state.valuesFilter.filter((f) => f.isEnabled).length}
+                                                    {this.state.valuesFilter.filter(f => f.isEnabled).length}
                                                 </div>
                                             </div>
                                             {this.state.isFilterExpanded && (
@@ -190,30 +198,35 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                             <button
                                                                 className="done-button"
                                                                 type="button"
-                                                                onClick={() =>
-                                                                    this.setState({
-                                                                        isFilterExpanded: false,
-                                                                    })
-                                                                }
+                                                                onClick={() => this.setState({
+                                                                    isFilterExpanded: false
+                                                                })}
                                                             >
                                                                 Done
                                                             </button>
                                                         </div>
 
                                                         <div className="filter-content">
-                                                            {this.state.valuesFilter.map((payload) => (
+                                                            {this.state.valuesFilter.map(payload => (
                                                                 <React.Fragment key={payload.label}>
-                                                                    <label>
+                                                                    <label >
                                                                         <input
                                                                             type="checkbox"
                                                                             checked={payload.isEnabled}
-                                                                            onChange={() => this.toggleFilter(payload.label)}
+                                                                            onChange={
+                                                                                () => (
+                                                                                    this.toggleFilter(payload.label)
+                                                                                )
+                                                                            }
                                                                         />
                                                                         {payload.label}
                                                                     </label>
-                                                                    {this.state.networkConfig.protocolVersion === LEGACY &&
+                                                                    {((this.state
+                                                                        .networkConfig
+                                                                        .protocolVersion === LEGACY &&
                                                                         payload.label === "Non-zero only" &&
-                                                                        payload.isEnabled}
+                                                                        payload.isEnabled)
+                                                                    )}
                                                                 </React.Fragment>
                                                             ))}
                                                         </div>
@@ -221,7 +234,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     <div
                                                         className="filter--bg"
                                                         onClick={() => {
-                                                            this.setState({ isFilterExpanded: !this.state.isFilterExpanded });
+                                                            this.setState(
+                                                                { isFilterExpanded: !this.state.isFilterExpanded }
+                                                            );
                                                         }}
                                                     />
                                                 </div>
@@ -236,14 +251,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     )}
                                     <div className="feed-items">
                                         <div className="row feed-item--header">
-                                            <span className="label">Transaction</span>
-                                            <span className="label">Amount</span>
+                                            <span className="label">
+                                                Transaction
+                                            </span>
+                                            <span className="label">
+                                                Amount
+                                            </span>
                                         </div>
-                                        {this.state.filteredItems.length === 0 && <p>There are no items with the current filter.</p>}
-                                        {this.state.filteredItems.map((item) => (
+                                        {this.state.filteredItems.length === 0 && (
+                                            <p>There are no items with the current filter.</p>
+                                        )}
+                                        {this.state.filteredItems.map(item => (
                                             <div className="feed-item" key={item.id}>
                                                 <div className="feed-item__content">
-                                                    <span className="feed-item--label">Transaction</span>
+                                                    <span className="feed-item--label">
+                                                        Transaction
+                                                    </span>
                                                     <Link
                                                         className="feed-item--hash"
                                                         to={RouteBuilder.buildItem(this.state.networkConfig, item.id)}
@@ -252,22 +275,20 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                                     </Link>
                                                 </div>
                                                 <div className="feed-item__content">
-                                                    <span className="feed-item--label">Amount</span>
+                                                    <span className="feed-item--label">
+                                                        Amount
+                                                    </span>
                                                     <span className="feed-item--value">
                                                         <button
                                                             type="button"
-                                                            onClick={() =>
-                                                                this.setState(
-                                                                    {
-                                                                        formatFull: !this.state.formatFull,
-                                                                    },
-                                                                    () =>
-                                                                        this._settingsService.saveSingle(
-                                                                            "formatFull",
-                                                                            this.state.formatFull,
-                                                                        ),
-                                                                )
-                                                            }
+                                                            onClick={() => this.setState(
+                                                                {
+                                                                    formatFull: !this.state.formatFull
+                                                                },
+                                                                () => this._settingsService.saveSingle(
+                                                                    "formatFull",
+                                                                    this.state.formatFull)
+                                                            )}
                                                         >
                                                             {item.payloadType}
                                                         </button>
@@ -276,10 +297,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                             </div>
                                         ))}
                                     </div>
-                                </div>
-                            </div>
+                                </div >
+                            </div >
                             <div className="card margin-t-m">
-                                <div className="card--content description">{this.state.networkConfig.description}</div>
+                                <div className="card--content description">
+                                    {this.state.networkConfig.description}
+                                </div>
                                 {this.state.networkConfig.faucet && (
                                     <div className="card--content description">
                                         <span>Get tokens from the Faucet:</span>
@@ -294,19 +317,22 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                                     </div>
                                 )}
                             </div>
-                            {!this.state.networkConfig.isEnabled && (
-                                <div className="card margin-t-m">
-                                    <div className="card--content description">
-                                        {this.state.networkConfig.isEnabled === undefined
-                                            ? "This network is not recognised."
-                                            : "This network is currently disabled in explorer."}
+                            {
+                                !this.state.networkConfig.isEnabled && (
+                                    <div className="card margin-t-m">
+                                        <div className="card--content description">
+                                            {this.state.networkConfig.isEnabled === undefined
+                                                ? "This network is not recognised."
+                                                : "This network is currently disabled in explorer."}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                )
+                            }
+                        </div >
+
+                    </div >
+                </div >
+            </div >
         );
     }
 
@@ -316,19 +342,24 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
     protected updateCurrency(): void {
         if (this._currencyData) {
             this.setState({
-                marketCapCurrency: this._currencyData.coinStats?.iota?.marketCap
-                    ? this._currencyService.convertFiatBase(
-                          this._currencyData.coinStats.iota.marketCap,
-                          this._currencyData,
-                          true,
-                          2,
-                          undefined,
-                          true,
-                      )
-                    : "--",
-                priceCurrency: this._currencyData.coinStats?.iota?.price
-                    ? this._currencyService.convertFiatBase(this._currencyData.coinStats.iota.price, this._currencyData, true, 3, 8)
-                    : "--",
+                marketCapCurrency:
+                    this._currencyData.coinStats?.iota?.marketCap ?
+                        this._currencyService.convertFiatBase(
+                            this._currencyData.coinStats.iota.marketCap,
+                            this._currencyData,
+                            true,
+                            2,
+                            undefined,
+                            true)
+                        : "--",
+                priceCurrency: this._currencyData.coinStats?.iota?.price ?
+                    this._currencyService.convertFiatBase(
+                        this._currencyData.coinStats.iota.price,
+                        this._currencyData,
+                        true,
+                        3,
+                        8)
+                    : "--"
             });
         }
     }
@@ -347,13 +378,15 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      */
     private applyFilters(): void {
         if (this._isMounted && this._feedClient) {
-            const minLimit = UnitsHelper.convertUnits(Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
-            const maxLimit = UnitsHelper.convertUnits(Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
+            const minLimit = UnitsHelper.convertUnits(
+                Number.parseFloat(this.state.valueMinimum), this.state.valueMinimumUnits, "i");
+            const maxLimit = UnitsHelper.convertUnits(
+                Number.parseFloat(this.state.valueMaximum), this.state.valueMaximumUnits, "i");
 
             const filters = [
                 {
                     payloadType: "Zero only",
-                    filter: (item: IFeedItem) => item.value === 0,
+                    filter: (item: IFeedItem) => item.value === 0
                 },
                 {
                     payloadType: "Non-zero only",
@@ -361,7 +394,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         item.value !== undefined &&
                         item.value !== 0 &&
                         Math.abs(item.value) >= minLimit &&
-                        Math.abs(item.value) <= maxLimit,
+                        Math.abs(item.value) <= maxLimit
                 },
                 {
                     payloadType: "Transaction",
@@ -369,21 +402,26 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                         item.value !== undefined &&
                         item.value !== 0 &&
                         Math.abs(item.value) >= minLimit &&
-                        Math.abs(item.value) <= maxLimit,
+                        Math.abs(item.value) <= maxLimit
                 },
                 {
                     payloadType: "Milestone",
-                    filter: (item: IFeedItem) => item.payloadType === "MS",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "MS"
+
                 },
                 {
                     payloadType: "Indexed",
-                    filter: (item: IFeedItem) => item.payloadType === "Index",
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "Index"
                 },
                 {
                     payloadType: "No payload",
-                    filter: (item: IFeedItem) => item.payloadType === "None",
-                },
-            ].filter((f) => {
+                    filter: (item: IFeedItem) =>
+                        item.payloadType === "None"
+
+                }
+            ].filter(f => {
                 let aux = false;
                 for (const payload of this.state.valuesFilter) {
                     if (f.payloadType === payload.label && payload.isEnabled) {
@@ -393,10 +431,12 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 return aux;
             });
 
-            const filteredMessages = this.state.isFeedPaused ? this.state.frozenMessages : this._feedClient.getItems();
+            const filteredMessages = this.state.isFeedPaused
+                ? this.state.frozenMessages
+                : this._feedClient.getItems();
             this.setState({
                 filteredItems: filteredMessages
-                    .filter((item) => {
+                    .filter(item => {
                         let aux = false;
                         for (const f of filters) {
                             const filter = f.filter;
@@ -405,8 +445,9 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             }
                         }
                         return aux;
-                    })
-                    .slice(0, 10),
+                    }
+                    )
+                    .slice(0, 10)
             });
         }
     }
@@ -424,7 +465,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                 valueMinimum: this.state.valueMinimum,
                 valueMinimumUnits: this.state.valueMinimumUnits,
                 valueMaximum: this.state.valueMaximum,
-                valueMaximumUnits: this.state.valueMaximumUnits,
+                valueMaximumUnits: this.state.valueMaximumUnits
             };
 
             this._settingsService.save();
@@ -438,7 +479,7 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * @param payloadType The payload type to toggle.
      */
     private toggleFilter(payloadType: string): void {
-        const valuesFilter = this.state.valuesFilter.map((payload) => {
+        const valuesFilter = this.state.valuesFilter.map(payload => {
             if (payload.label === payloadType) {
                 payload.isEnabled = !payload.isEnabled;
             }
@@ -451,17 +492,16 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
      * Reset filters to default values
      */
     private resetFilters(): void {
-        this.setState(
-            {
-                valueMinimum: "0",
-                valueMinimumUnits: "i",
-                valueMaximum: "1",
-                valueMaximumUnits: "Ti",
-                valuesFilter: this.state.valuesFilter.map((filter) => ({ ...filter, isEnabled: true })),
-            },
-            async () => this.updateFilters(),
-        );
+        this.setState({
+            valueMinimum: "0",
+            valueMinimumUnits: "i",
+            valueMaximum: "1",
+            valueMaximumUnits: "Ti",
+            valuesFilter: this.state.valuesFilter.map(filter => ({ ...filter, isEnabled: true }))
+        }, async () => this.updateFilters());
     }
 }
 
+
 export default Landing;
+

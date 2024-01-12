@@ -30,4 +30,5 @@ export interface IdentityJsonCompareProps {
      * @param message message that has been clicked.
      */
     onCompareSelectionChange(message?: IIdentityMessageWrapper): void;
+
 }

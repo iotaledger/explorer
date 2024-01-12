@@ -32,7 +32,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
         super(props);
 
         this.state = {
-            isFormattedBalance: true,
+            isFormattedBalance: true
         };
     }
 
@@ -68,9 +68,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span>{inputs.length}</span>
                         </div>
                         <div className="transaction-payload_outputs card--content">
-                            {inputs.map((input, idx) => (
-                                <Input key={idx} network={network} input={input} />
-                            ))}
+                            {inputs.map((input, idx) => <Input key={idx} network={network} input={input} />)}
                             <Unlocks unlocks={unlocks} />
                         </div>
                     </div>
@@ -102,3 +100,4 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
 }
 
 export default TransactionPayload;
+

@@ -11,24 +11,24 @@ interface InfoBoxProps {
     readonly showMarket: boolean;
 }
 
-const InfoBox: React.FC<InfoBoxProps> = ({
-    baseToken,
-    itemsPerSecond,
-    confirmedItemsPerSecondPercent,
-    marketCapCurrency,
-    priceCurrency,
-    showMarket,
-}) => (
+const InfoBox: React.FC<InfoBoxProps> = (
+    { baseToken, itemsPerSecond, confirmedItemsPerSecondPercent, marketCapCurrency, priceCurrency, showMarket }
+) => (
     <div className="main-info-boxes">
         <div className="info-box">
-            <span className="info-box--title">Blocks per sec</span>
+            <span className="info-box--title">Blocks per sec
+            </span>
             <div className="info-box--value">
-                <span className="download-rate">{NumberHelper.roundTo(Number(itemsPerSecond), 1) || "--"}</span>
+                <span className="download-rate">
+                    {NumberHelper.roundTo(Number(itemsPerSecond), 1) || "--"}
+                </span>
             </div>
         </div>
         <div className="info-box">
             <span className="info-box--title">Inclusion rate</span>
-            <span className="info-box--value">{confirmedItemsPerSecondPercent}</span>
+            <span className="info-box--value">
+                {confirmedItemsPerSecondPercent}
+            </span>
         </div>
         {showMarket && (
             <div className="info-box">
@@ -39,7 +39,9 @@ const InfoBox: React.FC<InfoBoxProps> = ({
         {showMarket && (
             <div className="info-box">
                 <span className="info-box--title">Price</span>
-                <span className="info-box--value">{priceCurrency}</span>
+                <span className="info-box--value">
+                    {priceCurrency}
+                </span>
             </div>
         )}
     </div>

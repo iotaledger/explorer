@@ -18,19 +18,19 @@ interface NftRedirectRouteProps {
 
 const ADDRESS_ROUTE = "addr";
 
-const NftRedirectRoute: React.FC<RouteComponentProps<NftRedirectRouteProps>> = ({
-    match: {
-        params: { network, nftId },
-    },
-}) => {
+const NftRedirectRoute: React.FC<RouteComponentProps<NftRedirectRouteProps>> = (
+    { match: { params: { network, nftId } } }
+) => {
     const { bech32Hrp } = useContext(NetworkContext);
     const nftAddress = Bech32AddressHelper.buildAddress(bech32Hrp, nftId, AddressType.Nft);
     const redirectState = {
-        addressDetails: nftAddress,
+        addressDetails: nftAddress
     };
     const routeParam = nftAddress.bech32;
     const redirect = `/${network}/${ADDRESS_ROUTE}/${routeParam}`;
-    return <Redirect to={{ pathname: redirect, state: redirectState }} />;
+    return (
+        <Redirect to={{ pathname: redirect, state: redirectState }} />
+    );
 };
 
 export default NftRedirectRoute;
