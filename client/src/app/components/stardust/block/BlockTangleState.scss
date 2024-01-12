@@ -22,7 +22,7 @@
         font-weight: 500;
         letter-spacing: 0.5px;
 
-        @include phone-down {
+        @include tablet-down {
             margin-left: 8px;
             flex-direction: column;
             white-space: normal;

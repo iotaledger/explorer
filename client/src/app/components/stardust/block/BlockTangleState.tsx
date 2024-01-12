@@ -5,17 +5,21 @@ import { BlockTangleStateProps } from "./BlockTangleStateProps";
 import { useMilestoneDetails } from "~helpers/hooks/useMilestoneDetails";
 import Tooltip from "../../Tooltip";
 import "./BlockTangleState.scss";
+import { DateHelper } from '~/helpers/dateHelper'
 
 const BlockTangleState: React.FC<BlockTangleStateProps> = (
     { network, status, milestoneIndex, hasConflicts, conflictReason, onClick }
 ) => {
-    const [ago, setAgo] = useState<string | undefined>();
+    const [readableTimestamp, setReadableTimestamp] = useState<string | undefined>();
     const [blockId, setBlockId] = useState<string | undefined>();
     const [milestoneDetails] = useMilestoneDetails(network, milestoneIndex ?? null);
 
     useEffect(() => {
         if (milestoneDetails?.milestone?.timestamp) {
-            setAgo(moment(milestoneDetails.milestone?.timestamp * 1000).fromNow());
+            const readableTimestamp = DateHelper.format(
+                DateHelper.milliseconds(milestoneDetails.milestone.timestamp)
+            )
+            setReadableTimestamp(readableTimestamp);
         }
         setBlockId(milestoneDetails?.blockId);
     }, [milestoneDetails]);
@@ -40,7 +44,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = (
                         </div>
                         {milestoneIndex && (
                             <span className="row middle">
-                                Created {" "}{ago}
+                                Created {readableTimestamp}
                             </span>
                         )}
                     </div>
@@ -86,7 +90,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = (
                                 }}
                             >Milestone {milestoneIndex}
                             </span>
-                            <span> {ago}</span>
+                            <span> {readableTimestamp}</span>
                         </div>
                     ) : ""}
                 </React.Fragment>}
