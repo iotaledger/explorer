@@ -35,4 +35,3 @@ export interface ICoinStats {
      */
     volume24h: number;
 }
-

@@ -3,30 +3,33 @@
 @import "../../scss/variables";
 
 .json-viewer {
-  @include font-size(12px, 20px);
+    font-family: "Courier New", Courier, monospace;
+    white-space: pre-wrap;
 
-  color: var(--did-color);
-  font-family: $ibm-plex-mono;
-  letter-spacing: 0.02em;
-  white-space: pre-wrap;
+    @include font-size(12px, 20px);
 
-  .string {
-    color: green;
-  }
-
-  .number {
-    color: darkorange;
-  }
-
-  .boolean {
-    color: blue;
-  }
-
-  .null {
-    color: magenta;
-  }
-
-  .key {
     color: var(--did-color);
-  }
+    font-family: $ibm-plex-mono;
+    letter-spacing: 0.02em;
+    white-space: pre-wrap;
+
+    .string {
+        color: green;
+    }
+
+    .number {
+        color: darkorange;
+    }
+
+    .boolean {
+        color: blue;
+    }
+
+    .null {
+        color: magenta;
+    }
+
+    .key {
+        color: $gray-10;
+    }
 }

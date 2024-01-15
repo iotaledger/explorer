@@ -1,5 +1,4 @@
 export interface TransactionPayloadState {
-
     /**
      * Shows details of the specified input id
      */

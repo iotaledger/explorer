@@ -14,7 +14,8 @@
     z-index: 10;
 
     #content {
-        p, span {
+        p,
+        span {
             font-family: $inter;
             letter-spacing: 0.5px;
         }
@@ -34,7 +35,8 @@
         }
 
         @include phone-down {
-            p, span {
+            p,
+            span {
                 @include font-size(10px);
             }
         }

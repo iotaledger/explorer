@@ -28,4 +28,3 @@ export interface ILatestMilestonesReponse extends IResponse {
      */
     milestones: ILatestMilestone[];
 }
-

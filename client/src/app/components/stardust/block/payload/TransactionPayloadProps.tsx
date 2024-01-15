@@ -33,4 +33,3 @@ export interface TransactionPayloadProps {
      */
     isLinksDisabled?: boolean;
 }
-

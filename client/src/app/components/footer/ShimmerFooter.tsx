@@ -17,18 +17,18 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
         {
             name: "Twitter",
             icon: <TwitterIcon />,
-            url: "https://twitter.com/iota"
+            url: "https://twitter.com/iota",
         },
         {
             name: "Discord",
             icon: <DiscordIcon />,
-            url: "https://discord.iota.org/"
+            url: "https://discord.iota.org/",
         },
         {
             name: "GitHub",
             icon: <GithubIcon />,
-            url: "https://github.com/iotaledger/"
-        }
+            url: "https://github.com/iotaledger/",
+        },
     ];
 
     /**
@@ -38,7 +38,7 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
     constructor(props: FooterProps) {
         super(props);
         this.state = {
-            siteFooterSection: this.buildSiteFooter()
+            siteFooterSection: this.buildSiteFooter(),
         };
     }
 
@@ -58,7 +58,7 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
     public componentDidUpdate(prevProps: FooterProps): void {
         if (this.props.dynamic !== prevProps.dynamic) {
             this.setState({
-                siteFooterSection: this.buildSiteFooter()
+                siteFooterSection: this.buildSiteFooter(),
             });
         }
     }
@@ -76,15 +76,14 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
                     </div>
                     <div className="shimmer-inner">
                         <div className="footer-grid">
-                            {[this.state.siteFooterSection].concat(this.state.foundationData?.footerSections ?? [])
+                            {[this.state.siteFooterSection]
+                                .concat(this.state.foundationData?.footerSections ?? [])
                                 .map((section, sectionIdx) => (
                                     <section key={sectionIdx}>
                                         <h3>{section.label}</h3>
                                         <ul>
                                             {section.items.map((info, infoIdx) => (
-                                                <li key={infoIdx}>
-                                                    {FoundationDataHelper.buildLink(info.url, info.label)}
-                                                </li>
+                                                <li key={infoIdx}>{FoundationDataHelper.buildLink(info.url, info.label)}</li>
                                             ))}
                                         </ul>
                                     </section>
@@ -105,21 +104,16 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
                         </div>
                         <hr className="sep" />
                         <div className="row foundation-data">
-                            <section className="line-breaks">
-                                {this.state.foundationData?.registeredAddress.value.join("\n")}
-                            </section>
+                            <section className="line-breaks">{this.state.foundationData?.registeredAddress.value.join("\n")}</section>
                             <section>
                                 <ul>
                                     {this.state.foundationData?.information.map((info, infoIdx) => (
-                                        <li key={infoIdx}>
-                                            {FoundationDataHelper.createValue(info)}
-                                        </li>
+                                        <li key={infoIdx}>{FoundationDataHelper.createValue(info)}</li>
                                     ))}
                                 </ul>
                             </section>
                         </div>
                     </div>
-
                 </section>
             </footer>
         );
@@ -152,10 +146,10 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
     } {
         return {
             label: "Explorer",
-            items: this.props.dynamic.map(n => ({
+            items: this.props.dynamic.map((n) => ({
                 label: n.label,
-                url: `local://${n.url}`
-            }))
+                url: `local://${n.url}`,
+            })),
         };
     }
 }
