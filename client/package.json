@@ -13,10 +13,12 @@
         "postinstall": "./script/postinstall.sh",
         "start": "vite",
         "preview": "vite preview",
-        "lint": "eslint src --ext .tsx,.ts",
+        "format": "prettier --ignore-path=.prettierignore --write src && eslint src --ext .tsx,.ts --fix",
+        "lint:check": "eslint src --ext .tsx,.ts",
+        "format:check": "prettier --ignore-path=.prettierignore --check src",
         "sass-lint": "stylelint ./src/**/*.scss",
         "build-internal": "tsc && vite build",
-        "build": "run-s lint sass-lint build-internal",
+        "build": "run-s lint:check sass-lint build-internal",
         "test": "vitest"
     },
     "dependencies": {
@@ -24,6 +26,7 @@
         "@fontsource/ibm-plex-mono": "^4.5.12",
         "@fontsource/material-icons": "^4.5.4",
         "@iota/crypto.js": "^1.8.6",
+        "@iota/identity-wasm": "^1.0.0",
         "@iota/iota.js": "^1.8.6",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.6.2",
@@ -80,12 +83,15 @@
         "class-transformer": "^0.5.1",
         "copyfiles": "^2.4.1",
         "eslint": "^8.1.0",
+        "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-jsdoc": "^39.3.6",
         "eslint-plugin-react": "^7.31.1",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-unicorn": "^49.0.0",
+        "lint-staged": "^14.0.1",
         "npm-run-all": "^4.1.5",
+        "prettier": "^3.1.1",
         "sass": "^1.54.6",
         "stylelint": "^14.11.0",
         "stylelint-config-property-sort-order-smacss": "^9.0.0",
@@ -106,5 +112,9 @@
         "not dead",
         "not ie <= 11",
         "not op_mini all"
-    ]
+    ],
+    "lint-staged": {
+        "src/**/*.{ts,js,tsx,jsx}": "eslint --cache --fix",
+        "src/**/*.{ts,js,scss,css}": "prettier --ignore-path=.prettierignore --write"
+    }
 }

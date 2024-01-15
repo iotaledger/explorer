@@ -26,9 +26,7 @@ interface AssociatedOutputsProps {
     readonly setIsLoading?: (isLoading: boolean) => void;
 }
 
-const AssociatedOutputs: React.FC<AssociatedOutputsProps> = (
-    { network, addressDetails, setOutputCount, setIsLoading }
-) => {
+const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, addressDetails, setOutputCount, setIsLoading }) => {
     const [currentTab, setCurrentTab] = useState<AssociatedOutputTab>("Basic");
     const [associations, isLoading] = useAssociatedOutputs(network, addressDetails, setOutputCount);
     const [tabsToRender, setTabsToRender] = useState<AssociatedOutputTab[]>([]);
@@ -49,44 +47,41 @@ const AssociatedOutputs: React.FC<AssociatedOutputsProps> = (
 
     const associationTypesToRender: AssociationType[] | undefined = outputTypeToAssociations.get(currentTab);
 
-    return (
-        associations.length === 0 ? null : (
-            <div className="section associated-outputs">
-                <div className="section--header">
-                    <div className="tabs-wrapper">
-                        {tabsToRender.map((tab, idx) => (
-                            <button
-                                type="button"
-                                key={idx}
-                                className={classNames("tab", { "active": tab === currentTab })}
-                                onClick={() => setCurrentTab(tab)}
-                            >
-                                {tab}
-                            </button>
-                        ))}
-                    </div>
+    return associations.length === 0 ? null : (
+        <div className="section associated-outputs">
+            <div className="section--header">
+                <div className="tabs-wrapper">
+                    {tabsToRender.map((tab, idx) => (
+                        <button
+                            type="button"
+                            key={idx}
+                            className={classNames("tab", { active: tab === currentTab })}
+                            onClick={() => setCurrentTab(tab)}
+                        >
+                            {tab}
+                        </button>
+                    ))}
                 </div>
-                {associationTypesToRender?.map((associationType, idx) => {
-                    const targetAssociation: IAssociation | undefined = associations.find(
-                        association => association.type === associationType
-                    );
-                    return (
-                        <AssociationSection
-                            key={`${currentTab}-${idx}`}
-                            association={associationType}
-                            outputIds={targetAssociation?.outputIds}
-                        />
-                    );
-                })}
             </div>
-        )
+            {associationTypesToRender?.map((associationType, idx) => {
+                const targetAssociation: IAssociation | undefined = associations.find(
+                    (association) => association.type === associationType,
+                );
+                return (
+                    <AssociationSection
+                        key={`${currentTab}-${idx}`}
+                        association={associationType}
+                        outputIds={targetAssociation?.outputIds}
+                    />
+                );
+            })}
+        </div>
     );
 };
 
 AssociatedOutputs.defaultProps = {
     setIsLoading: undefined,
-    setOutputCount: undefined
+    setOutputCount: undefined,
 };
 
 export default AssociatedOutputs;
-

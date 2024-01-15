@@ -13,10 +13,7 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: IAddressGetRequest
-): Promise<IAddressGetResponse> {
+export async function get(config: IConfiguration, request: IAddressGetRequest): Promise<IAddressGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -31,6 +28,6 @@ export async function get(
     const balance = await LegacyTangleHelper.getAddressBalance(networkConfig, request.address);
 
     return {
-        balance
+        balance,
     };
 }

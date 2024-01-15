@@ -17,4 +17,3 @@ export interface TaggedDataPayloadProps {
      */
     history: H.History;
 }
-

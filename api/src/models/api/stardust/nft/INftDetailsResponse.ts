@@ -7,4 +7,3 @@ export interface INftDetailsResponse extends IResponse {
      */
     nftDetails?: OutputResponse;
 }
-

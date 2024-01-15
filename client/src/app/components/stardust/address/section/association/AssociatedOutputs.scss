@@ -14,7 +14,6 @@
             @include phone-down {
                 font-size: 16px;
             }
-
         }
 
         .tabs-wrapper {
@@ -50,7 +49,6 @@
                     padding: 3px 5px;
                 }
             }
-
         }
     }
 
@@ -117,7 +115,8 @@
             }
         }
 
-        tr, .card {
+        tr,
+        .card {
             .found-in--wrapper {
                 display: flex;
 
@@ -128,7 +127,8 @@
         }
 
         tr {
-            .found-in, .date-created {
+            .found-in,
+            .date-created {
                 color: $gray-6;
             }
 
@@ -144,7 +144,8 @@
         }
 
         .card {
-            .found-in, .date-created {
+            .found-in,
+            .date-created {
                 .value {
                     color: $gray-6;
                 }

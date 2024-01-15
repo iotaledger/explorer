@@ -28,195 +28,191 @@ export class SearchExecutor {
         const searchQuery = this.query;
         const promises: Promise<void>[] = [];
         let promisesResult: ISearchResponse | null = null;
-
         if (searchQuery.did) {
-            return {
-                did: searchQuery.did
-            };
+            promises.push(
+                new Promise((resolve, reject) => {
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.aliasId, "aliasOutputId", network)
+                        .then((aliasOutputs) => {
+                            if (aliasOutputs) {
+                                promisesResult = {
+                                    aliasId: searchQuery.aliasId,
+                                    did: searchQuery.did,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Output (aliasId) not present"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Output (aliasId) fetch failed"));
+                        });
+                }),
+            );
         }
 
         if (searchQuery.milestoneIndex) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.milestoneDetailsByIndex(network, searchQuery.milestoneIndex).then(
-                        milestoneDetails => {
+                    StardustTangleHelper.milestoneDetailsByIndex(network, searchQuery.milestoneIndex)
+                        .then((milestoneDetails) => {
                             if (milestoneDetails) {
                                 promisesResult = {
-                                    milestone: milestoneDetails
+                                    milestone: milestoneDetails,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Milestone (by index) details not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Milestone by index failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Milestone by index failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.milestoneId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.milestoneDetailsById(network, searchQuery.milestoneId).then(
-                        milestoneDetails => {
+                    StardustTangleHelper.milestoneDetailsById(network, searchQuery.milestoneId)
+                        .then((milestoneDetails) => {
                             if (milestoneDetails) {
                                 promisesResult = {
-                                    milestone: milestoneDetails
+                                    milestone: milestoneDetails,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Milestone (by milestoneId) details not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Milestone by milestoneId failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Milestone by milestoneId failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.blockId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.block(network, searchQuery.blockId).then(
-                        blockResponse => {
+                    StardustTangleHelper.block(network, searchQuery.blockId)
+                        .then((blockResponse) => {
                             if (blockResponse && !blockResponse.error) {
                                 promisesResult = {
-                                    block: blockResponse.block
+                                    block: blockResponse.block,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Block response not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Block fetch failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Block fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.transactionId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.transactionIncludedBlock(
-                        network,
-                        searchQuery.transactionId
-                    ).then(
-                        txDetailsResponse => {
+                    StardustTangleHelper.transactionIncludedBlock(network, searchQuery.transactionId)
+                        .then((txDetailsResponse) => {
                             if (txDetailsResponse.block && Object.keys(txDetailsResponse.block).length > 0) {
                                 promisesResult = {
-                                    transactionBlock: txDetailsResponse.block
+                                    transactionBlock: txDetailsResponse.block,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Block (by transactionId) response not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Block (by transactionId) fetch failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Block (by transactionId) fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.output) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, OutputResponse>(
-                        searchQuery.output,
-                        "getOutput",
-                        network
-                    ).then(
-                        output => {
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, OutputResponse>(searchQuery.output, "getOutput", network)
+                        .then((output) => {
                             if (output) {
                                 promisesResult = { output };
                                 resolve();
                             } else {
                                 reject(new Error("Output response not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Output fetch failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Output fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.aliasId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(
-                        searchQuery.aliasId,
-                        "aliasOutputId",
-                        network
-                    ).then(
-                        aliasOutputs => {
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.aliasId, "aliasOutputId", network)
+                        .then((aliasOutputs) => {
                             if (aliasOutputs) {
                                 promisesResult = {
-                                    aliasId: searchQuery.aliasId
+                                    aliasId: searchQuery.aliasId,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Output (aliasId) not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Output (aliasId) fetch failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Output (aliasId) fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.nftId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(
-                        searchQuery.nftId,
-                        "nftOutputId",
-                        network
-                    ).then(
-                        nftOutputs => {
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.nftId, "nftOutputId", network)
+                        .then((nftOutputs) => {
                             if (nftOutputs) {
                                 promisesResult = {
-                                    nftId: searchQuery.nftId
+                                    nftId: searchQuery.nftId,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Output (nftId) not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Output (nftId) fetch failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Output (nftId) fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.foundryId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(
-                        searchQuery.foundryId,
-                        "foundryOutputId",
-                        network
-                    ).then(
-                        foundryOutput => {
+                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.foundryId, "foundryOutputId", network)
+                        .then((foundryOutput) => {
                             if (foundryOutput) {
                                 promisesResult = {
-                                    foundryId: searchQuery.foundryId
+                                    foundryId: searchQuery.foundryId,
                                 };
                                 resolve();
                             } else {
                                 reject(new Error("Output (foundryId) not present"));
                             }
-                        }
-                    ).catch(_ => {
-                        reject(new Error("Output (foundryId) fetch failed"));
-                    });
-                })
+                        })
+                        .catch((_) => {
+                            reject(new Error("Output (foundryId) fetch failed"));
+                        });
+                }),
             );
         }
 
@@ -224,25 +220,24 @@ export class SearchExecutor {
             promises.push(
                 new Promise((resolve, reject) => {
                     StardustTangleHelper.taggedOutputs(network, searchQuery.tag)
-                        .then(
-                            response => {
-                                if (!response.basicOutputs.error || !response.nftOutputs.error) {
-                                    promisesResult = {
-                                        taggedOutputs: response
-                                    };
-                                    resolve();
-                                } else {
-                                    reject(new Error("Tagged outputs not present"));
-                                }
+                        .then((response) => {
+                            if (!response.basicOutputs.error || !response.nftOutputs.error) {
+                                promisesResult = {
+                                    taggedOutputs: response,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Tagged outputs not present"));
                             }
-                        ).catch(_ => {
+                        })
+                        .catch((_) => {
                             reject(new Error("Tagged outputs not present"));
                         });
-                })
+                }),
             );
         }
 
-        await Promise.any(promises).catch(_ => { });
+        await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {
             return promisesResult;
@@ -250,7 +245,7 @@ export class SearchExecutor {
 
         if (searchQuery.address?.bech32) {
             return {
-                addressDetails: searchQuery.address
+                addressDetails: searchQuery.address,
             };
         }
 

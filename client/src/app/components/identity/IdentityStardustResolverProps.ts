@@ -1,11 +1,7 @@
-export interface IdentityStardustResolverProps {
-    /**
-     * The network channel details to lookup.
-     */
-    network: string;
+import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
-    /**
-     * The DID to be resoloved/debugged
-     */
-    did?: string;
+export interface IdentityStardustResolverProps {
+    resolvedDID: IIdentityStardustResolveResponse | null;
+
+    network: string;
 }

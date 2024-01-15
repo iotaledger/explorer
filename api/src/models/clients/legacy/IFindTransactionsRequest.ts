@@ -1,4 +1,3 @@
-
 export interface IFindTransactionsRequest {
     /**
      * The address of the searched transactions.

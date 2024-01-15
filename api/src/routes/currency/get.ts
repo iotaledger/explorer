@@ -21,7 +21,7 @@ export async function get(_: IConfiguration): Promise<ICurrenciesResponse> {
 
         return {
             fiatExchangeRatesEur: currency.fiatExchangeRatesEur,
-            coinStats: currency.coinStats
+            coinStats: currency.coinStats,
         };
     }
 

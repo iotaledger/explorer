@@ -14,10 +14,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param request The request.
  * @returns Resolved document or error.
  */
-export async function get(
-    _config: IConfiguration,
-    request: IIdentityStardustResolveRequest
-): Promise<IIdentityStardustResolveResponse> {
+export async function get(_config: IConfiguration, request: IIdentityStardustResolveRequest): Promise<IIdentityStardustResolveResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -35,14 +32,14 @@ export async function get(
         return {
             document: {
                 doc: document,
-                meta: resolvedDocument.metadata().toJSON()
+                meta: resolvedDocument.metadata().toJSON(),
             },
             governorAddress,
-            stateControllerAddress
+            stateControllerAddress,
         };
     } catch (e) {
         return {
-            error: buildErrorMessage(e.name as string)
+            error: buildErrorMessage(e.name as string),
         };
     }
 }
@@ -70,8 +67,7 @@ async function resolveIdentity(network: string, did: string): Promise<IotaDocume
  * @returns Improved error message.
  */
 function buildErrorMessage(errorName: string): string {
-    const didInvalidMessage =
-        "The provided DID is invalid. A valid DID has the following format 'did:iota:<network>:<tag>'";
+    const didInvalidMessage = "The provided DID is invalid. A valid DID has the following format 'did:iota:<network>:<tag>'";
     if (errorName === "InvalidMethodName" || errorName === "InvalidMethodId") {
         return `${errorName} error: ${didInvalidMessage}`;
     }

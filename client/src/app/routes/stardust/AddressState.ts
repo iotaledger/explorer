@@ -1,7 +1,14 @@
 import { Bech32Helper } from "@iota/iota.js";
 import {
-    HexEncodedString, AliasOutput, MetadataFeature, OutputResponse,
-    OutputType, AddressType, Output, BasicOutput, FeatureType
+    HexEncodedString,
+    AliasOutput,
+    MetadataFeature,
+    OutputResponse,
+    OutputType,
+    AddressType,
+    Output,
+    BasicOutput,
+    FeatureType,
 } from "@iota/sdk-wasm/web";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
@@ -23,6 +30,9 @@ import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
 import { IParticipation } from "~models/api/stardust/participation/IParticipation";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
+import { useAliasContainsDID } from "~/helpers/hooks/useAliasContainsDID";
+import { useResolvedDID } from "~/helpers/hooks/useResolvedDID";
+import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
 export interface IAddressState {
     bech32AddressDetails: IBech32AddressDetails | null;
@@ -51,6 +61,9 @@ export interface IAddressState {
     tokensCount: number;
     nftCount: number;
     associatedOutputCount: number;
+    aliasContainsDID: boolean;
+    isDIDLoading: boolean;
+    resolvedDID: IIdentityStardustResolveResponse | null;
 }
 
 const initialState = {
@@ -79,7 +92,10 @@ const initialState = {
     eventDetails: null,
     tokensCount: 0,
     nftCount: 0,
-    associatedOutputCount: 0
+    associatedOutputCount: 0,
+    aliasContainsDID: false,
+    isDIDLoading: true,
+    resolvedDID: null,
 };
 
 /**
@@ -95,7 +111,8 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const { bech32Hrp, rentStructure } = useContext(NetworkContext);
 
     const [state, setState] = useReducer<Reducer<IAddressState, Partial<IAddressState>>>(
-        (currentState, newState) => ({ ...currentState, ...newState }), initialState
+        (currentState, newState) => ({ ...currentState, ...newState }),
+        initialState,
     );
 
     const addressBech32: string | null = state.bech32AddressDetails?.bech32 ?? null;
@@ -104,25 +121,23 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
-    const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(
-        network, addressType === AddressType.Nft ? addressHex : null
-    );
-    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(
-        network, addressType === AddressType.Alias ? addressHex : null
-    );
+    const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(network, addressType === AddressType.Nft ? addressHex : null);
+    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressType === AddressType.Alias ? addressHex : null);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
-        network, addressType === AddressType.Alias ? state.bech32AddressDetails : null
+        network,
+        addressType === AddressType.Alias ? state.bech32AddressDetails : null,
     );
-    const [balance, sigLockedBalance] = useAddressBalance(
-        network, state.bech32AddressDetails?.bech32 ?? null
-    );
+    const [balance, sigLockedBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null);
     const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
 
+    const [aliasContainsDID] = useAliasContainsDID(aliasOutput);
+    const [resolvedDID, isDIDLoading] = useResolvedDID(network, bech32Hrp, addressHex);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
-        const { addressDetails } = locationState?.addressDetails ? locationState :
-            { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, addressFromPath) };
+        const { addressDetails } = locationState?.addressDetails
+            ? locationState
+            : { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, addressFromPath) };
 
         const isBech32 = Bech32Helper.matches(addressFromPath, bech32Hrp);
 
@@ -130,7 +145,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             scrollToTop();
             setState({
                 ...initialState,
-                bech32AddressDetails: addressDetails
+                bech32AddressDetails: addressDetails,
             });
         } else {
             setState(initialState);
@@ -139,40 +154,68 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
 
     useEffect(() => {
         setState({
-            addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
-            addressNftOutputs, isNftOutputsLoading, nftMetadata, nftIssuerId: issuerId, isNftDetailsLoading,
-            aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading,
-            balance, sigLockedBalance, eventDetails
+            addressBasicOutputs,
+            isBasicOutputsLoading,
+            addressAliasOutputs,
+            isAliasOutputsLoading,
+            addressNftOutputs,
+            isNftOutputsLoading,
+            nftMetadata,
+            nftIssuerId: issuerId,
+            isNftDetailsLoading,
+            aliasOutput,
+            isAliasDetailsLoading,
+            aliasFoundries,
+            isAliasFoundriesLoading,
+            balance,
+            sigLockedBalance,
+            eventDetails,
+            aliasContainsDID,
+            resolvedDID,
+            isDIDLoading,
         });
     }, [
-        addressBasicOutputs, isBasicOutputsLoading, addressAliasOutputs, isAliasOutputsLoading,
-        addressNftOutputs, isNftOutputsLoading, nftMetadata, issuerId, isNftDetailsLoading,
-        aliasOutput, isAliasDetailsLoading, aliasFoundries, isAliasFoundriesLoading,
-        balance, sigLockedBalance, eventDetails
+        addressBasicOutputs,
+        isBasicOutputsLoading,
+        addressAliasOutputs,
+        isAliasOutputsLoading,
+        addressNftOutputs,
+        isNftOutputsLoading,
+        nftMetadata,
+        issuerId,
+        isNftDetailsLoading,
+        aliasOutput,
+        isAliasDetailsLoading,
+        aliasFoundries,
+        isAliasFoundriesLoading,
+        balance,
+        sigLockedBalance,
+        eventDetails,
+        aliasContainsDID,
+        resolvedDID,
+        isDIDLoading,
     ]);
 
     useEffect(() => {
         if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
             const mergedOutputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
-            const outputs = mergedOutputResponses.map<Output>(or => or.output);
-            const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(
-                outputs,
-                rentStructure
-            );
+            const outputs = mergedOutputResponses.map<Output>((or) => or.output);
+            const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(outputs, rentStructure);
 
             setState({
                 addressOutputs: mergedOutputResponses,
-                storageRentBalance: storageRentBalanceUpdate
+                storageRentBalance: storageRentBalanceUpdate,
             });
         }
         if (addressBasicOutputs && !state.participations) {
             let foundParticipations: IParticipation[] = [];
             for (const outputResponse of addressBasicOutputs) {
-                if (outputResponse.output.type === OutputType.Basic &&
+                if (
+                    outputResponse.output.type === OutputType.Basic &&
                     TransactionsHelper.isParticipationEventOutput(outputResponse.output)
                 ) {
                     const metadataFeature = (outputResponse.output as BasicOutput).features?.find(
-                        feature => feature.type === FeatureType.Metadata
+                        (feature) => feature.type === FeatureType.Metadata,
                     ) as MetadataFeature;
 
                     if (metadataFeature) {
@@ -184,7 +227,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             }
             if (foundParticipations.length > 0) {
                 setState({
-                    participations: foundParticipations
+                    participations: foundParticipations,
                 });
             }
         }
@@ -192,4 +235,3 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
 
     return [state, setState];
 };
-

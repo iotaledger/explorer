@@ -1,4 +1,3 @@
-
 export class NumberHelper {
     /**
      * Get the number rounded to n decimals.
@@ -14,4 +13,3 @@ export class NumberHelper {
         return /^-?\d+$/.test(value);
     }
 }
-

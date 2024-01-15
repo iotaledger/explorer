@@ -187,9 +187,9 @@ export class LegacyItemsService implements IItemsService {
         return {
             itemsPerSecond: Number.parseFloat(ips.toFixed(2)),
             confirmedItemsPerSecond: Number.parseFloat(cips.toFixed(2)),
-            confirmationRate: Number.parseFloat((ips > 0 ? cips / ips * 100 : 0).toFixed(2)),
+            confirmationRate: Number.parseFloat((ips > 0 ? (cips / ips) * 100 : 0).toFixed(2)),
             latestMilestoneIndex: this._latestMilestoneIndex,
-            latestMilestoneIndexTime: this._latestMilestoneIndexTime
+            latestMilestoneIndexTime: this._latestMilestoneIndexTime,
         };
     }
 
@@ -199,31 +199,28 @@ export class LegacyItemsService implements IItemsService {
     private startSubscription(): void {
         this.stopSubscription();
 
-        this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
-            (milestone: number, id: string, timestamp: number) => {
-                this._latestMilestoneIndex = milestone;
-                this._latestMilestoneIndexTime = timestamp;
-                this._itemMetadata[id] = {
-                    milestone,
-                    ...this._itemMetadata[id]
-                };
-            });
+        this._milestoneSubscriptionId = this._feedService.subscribeMilestones((milestone: number, id: string, timestamp: number) => {
+            this._latestMilestoneIndex = milestone;
+            this._latestMilestoneIndexTime = timestamp;
+            this._itemMetadata[id] = {
+                milestone,
+                ...this._itemMetadata[id],
+            };
+        });
 
-        this._itemSubscriptionId = this._zmqService.subscribe(
-            "trytes", async (evnt: string, message: ITxTrytes) => {
-                this._totalItems++;
+        this._itemSubscriptionId = this._zmqService.subscribe("trytes", async (evnt: string, message: ITxTrytes) => {
+            this._totalItems++;
 
-                this._items.push(message.trytes);
-            });
+            this._items.push(message.trytes);
+        });
 
-        this._confirmedSubscriptionId = this._zmqService.subscribe(
-            "sn", async (evnt: string, message: ISn) => {
-                this._totalConfirmed++;
-                this._itemMetadata[message.transaction] = {
-                    confirmed: message.index,
-                    ...this._itemMetadata[message.transaction]
-                };
-            });
+        this._confirmedSubscriptionId = this._zmqService.subscribe("sn", async (evnt: string, message: ISn) => {
+            this._totalConfirmed++;
+            this._itemMetadata[message.transaction] = {
+                confirmed: message.index,
+                ...this._itemMetadata[message.transaction],
+            };
+        });
     }
 
     /**
@@ -252,12 +249,10 @@ export class LegacyItemsService implements IItemsService {
      */
     private startTimer(): void {
         this.stopTimer();
-        this._timerId = setTimeout(
-            async () => {
-                this.handleTps();
-                await this.updateSubscriptions();
-            },
-            500);
+        this._timerId = setTimeout(async () => {
+            this.handleTps();
+            await this.updateSubscriptions();
+        }, 500);
     }
 
     /**
@@ -274,18 +269,17 @@ export class LegacyItemsService implements IItemsService {
      * Update the subscriptions with newest trytes.
      */
     private async updateSubscriptions(): Promise<void> {
-        if (this._items.length > 0 ||
-            Object.keys(this._itemMetadata).length > 0) {
+        if (this._items.length > 0 || Object.keys(this._itemMetadata).length > 0) {
             for (const subscriptionId in this._subscribers) {
                 const data: IFeedSubscriptionItem = {
                     subscriptionId,
                     items: this._items,
-                    itemsMetadata: this._itemMetadata
+                    itemsMetadata: this._itemMetadata,
                 };
 
                 try {
                     await this._subscribers[subscriptionId](data);
-                } catch { }
+                } catch {}
             }
 
             this._items = [];
@@ -306,7 +300,7 @@ export class LegacyItemsService implements IItemsService {
         this._ips.unshift({
             itemCount: lastTxTotal,
             confirmedCount: lastConfirmedTotal,
-            ts: Date.now()
+            ts: Date.now(),
         });
         this._ips = this._ips.slice(0, 100);
     }

@@ -31,7 +31,6 @@ interface QueryDetails {
     isBech32: boolean;
 }
 
-
 export interface SearchQuery {
     /**
      * The query string in lower case.
@@ -128,7 +127,7 @@ export class SearchQueryBuilder {
         let foundryId: string;
         let tag: HexEncodedString;
 
-        const did = this.queryLower.startsWith("did:iota:") ? this.query : undefined;
+        const did = this.isDIDString(this.queryLower) ? this.query : undefined;
         const milestoneIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
         const queryDetails = this.buildQueryDetails();
 
@@ -146,7 +145,8 @@ export class SearchQueryBuilder {
             } else if (
                 // if the hex without prefix is 76 characters and first byte is 08,
                 // it might be a FoundryId (tokenId)
-                queryDetails.hex && queryDetails.hexNoPrefix &&
+                queryDetails.hex &&
+                queryDetails.hexNoPrefix &&
                 Converter.isHex(queryDetails.hex, true) &&
                 queryDetails.hexNoPrefix.length === 76 &&
                 Number.parseInt(queryDetails.hexNoPrefix.slice(0, 2), 16) === AddressType.Alias
@@ -154,15 +154,14 @@ export class SearchQueryBuilder {
                 foundryId = queryDetails.hex;
             } else if (
                 // if the hex is 70 characters it might be an output
-                queryDetails?.hex && queryDetails.hex.length === 70
+                queryDetails?.hex &&
+                queryDetails.hex.length === 70
             ) {
                 output = queryDetails.hex;
             }
 
             // also perform a tag search
-            const maybeTag = Converter.isHex(this.query, true) ?
-                HexHelper.addPrefix(this.query) :
-                Converter.utf8ToHex(this.query, true);
+            const maybeTag = Converter.isHex(this.query, true) ? HexHelper.addPrefix(this.query) : Converter.utf8ToHex(this.query, true);
             if (maybeTag.length < 66) {
                 tag = maybeTag;
             }
@@ -180,7 +179,7 @@ export class SearchQueryBuilder {
             aliasId,
             nftId,
             foundryId,
-            tag
+            tag,
         };
     }
 
@@ -194,8 +193,13 @@ export class SearchQueryBuilder {
         let addressType: number;
         let isBech32: boolean = false;
 
-        const q = this.queryLower;
+        let q = this.queryLower;
         const hrp = this.networkBechHrp;
+
+        const did = this.isDIDString(this.queryLower) ? this.query : undefined;
+        if (did) {
+            q = this.extractHexFromDID(did);
+        }
 
         if (Bech32Helper.matches(q, hrp)) {
             isBech32 = true;
@@ -208,7 +212,7 @@ export class SearchQueryBuilder {
                     hex = HexHelper.addPrefix(result.toString());
                     hexNoPrefix = HexHelper.stripPrefix(result.toString());
                 }
-            } catch { }
+            } catch {}
         }
 
         if (!isBech32) {
@@ -225,7 +229,7 @@ export class SearchQueryBuilder {
             hexNoPrefix,
             type: addressType,
             typeLabel: this.typeLabel(addressType),
-            isBech32
+            isBech32,
         };
     }
 
@@ -243,5 +247,13 @@ export class SearchQueryBuilder {
             return "NFT";
         }
     }
-}
 
+    private isDIDString(searchString: string): boolean {
+        return searchString.startsWith("did:iota:");
+    }
+
+    private extractHexFromDID(did: string): string {
+        // cut off the first two chars
+        return did.slice(Math.max(0, did.lastIndexOf(":") + 3));
+    }
+}

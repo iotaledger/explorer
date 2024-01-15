@@ -39,5 +39,5 @@ export interface IParticipationEventPayload {
     /**
      * The additional description text about the participation event.
      */
-     additionalInfo?: string;
+    additionalInfo?: string;
 }

@@ -22,4 +22,3 @@ export interface IFeedUpdate {
     blockMetadata?: IFeedBlockMetadataUpdate;
     milestone?: IFeedMilestoneUpdate;
 }
-

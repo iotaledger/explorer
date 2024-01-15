@@ -24,7 +24,7 @@ export class LegacyFeedClient extends FeedClient {
         try {
             if (!this._subscriptionId) {
                 const subscribeRequest: INetworkBoundGetRequest = {
-                    network: this._networkId
+                    network: this._networkId,
                 };
 
                 this._socket.emit("subscribe", subscribeRequest);
@@ -37,40 +37,41 @@ export class LegacyFeedClient extends FeedClient {
                     if (subscriptionMessage.subscriptionId === this._subscriptionId) {
                         if (subscriptionMessage.itemsMetadata) {
                             for (const metadataId in subscriptionMessage.itemsMetadata) {
-                                const existing = this._items.find(c => c.id === metadataId);
+                                const existing = this._items.find((c) => c.id === metadataId);
                                 if (existing) {
                                     existing.metaData = {
                                         ...existing.metaData,
-                                        ...subscriptionMessage.itemsMetadata[metadataId]
+                                        ...subscriptionMessage.itemsMetadata[metadataId],
                                     };
                                 }
                             }
                         }
 
                         const filteredNewItems = subscriptionMessage.items
-                            .map(item => this.convertItem(item))
-                            .filter(nh => !this._existingIds.includes(nh.id));
+                            .map((item) => this.convertItem(item))
+                            .filter((nh) => !this._existingIds.includes(nh.id));
 
                         if (filteredNewItems.length > 0) {
                             this._items = filteredNewItems.slice().concat(this._items);
 
                             let removeItems: IFeedItem[] = [];
 
-                            const zero = this._items.filter(t => t.payloadType === "Transaction" && t.value === 0);
+                            const zero = this._items.filter((t) => t.payloadType === "Transaction" && t.value === 0);
                             const zeroToRemoveCount = zero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (zeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(zero.slice(-zeroToRemoveCount));
                             }
-                            const nonZero = this._items.filter(t => t.payloadType === "Transaction" &&
-                                t.value !== 0 && t.value !== undefined);
+                            const nonZero = this._items.filter(
+                                (t) => t.payloadType === "Transaction" && t.value !== 0 && t.value !== undefined,
+                            );
                             const nonZeroToRemoveCount = nonZero.length - FeedClient.MIN_ITEMS_PER_TYPE;
                             if (nonZeroToRemoveCount > 0) {
                                 removeItems = removeItems.concat(nonZero.slice(-nonZeroToRemoveCount));
                             }
 
-                            this._items = this._items.filter(t => !removeItems.includes(t));
+                            this._items = this._items.filter((t) => !removeItems.includes(t));
 
-                            this._existingIds = this._items.map(t => t.id);
+                            this._existingIds = this._items.map((t) => t.id);
                         }
 
                         for (const sub in this._subscribers) {
@@ -79,7 +80,7 @@ export class LegacyFeedClient extends FeedClient {
                     }
                 });
             }
-        } catch { }
+        } catch {}
 
         return subscriptionId;
     }
@@ -95,10 +96,10 @@ export class LegacyFeedClient extends FeedClient {
             if (this._subscriptionId && Object.keys(this._subscribers).length === 0) {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkId,
-                    subscriptionId: this._subscriptionId
+                    subscriptionId: this._subscriptionId,
                 };
                 this._socket.emit("unsubscribe", unsubscribeRequest);
-                this._socket.on("unsubscribe", () => { });
+                this._socket.on("unsubscribe", () => {});
             }
         } catch {
         } finally {
@@ -125,17 +126,13 @@ export class LegacyFeedClient extends FeedClient {
         return {
             id: tx.hash,
             value: tx.value,
-            parents: [
-                tx.trunkTransaction,
-                tx.branchTransaction
-            ],
+            parents: [tx.trunkTransaction, tx.branchTransaction],
             properties: {
-                "Tag": tx.tag,
-                "Address": tx.address,
-                "Bundle": tx.bundle
+                Tag: tx.tag,
+                Address: tx.address,
+                Bundle: tx.bundle,
             },
-            payloadType: "Transaction"
+            payloadType: "Transaction",
         };
     }
 }
-

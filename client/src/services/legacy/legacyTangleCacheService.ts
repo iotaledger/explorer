@@ -31,7 +31,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
         hashType: TransactionsGetMode | undefined,
         hash: string,
         limit?: number,
-        nextCursor?: ITransactionsCursor
+        nextCursor?: ITransactionsCursor,
     ): Promise<{
         /**
          * The lookup hashes.
@@ -85,11 +85,11 @@ export class LegacyTangleCacheService extends TangleCacheService {
                 hash,
                 mode: hashType,
                 limit,
-                cursor: nextCursor
+                cursor: nextCursor,
             });
 
             if (!response.error) {
-                if ((response.txHashes && response.txHashes.length > 0)) {
+                if (response.txHashes && response.txHashes.length > 0) {
                     txHashes = response.txHashes ?? [];
                     hashType ??= response.mode;
                     cursor = response.cursor ?? {};
@@ -100,7 +100,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                             cacheHashType[hash] = {
                                 txHashes,
                                 cached: Date.now(),
-                                cursor
+                                cursor,
                             };
                         }
                     }
@@ -114,7 +114,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
         return {
             txHashes: txHashes ?? [],
             cursor,
-            hashType
+            hashType,
         };
     }
 
@@ -125,23 +125,22 @@ export class LegacyTangleCacheService extends TangleCacheService {
      * @param skipCache Skip looking in the cache.
      * @returns The trytes for the hashes.
      */
-    public async getTransactions(
-        networkId: string,
-        txHashes: string[],
-        skipCache: boolean = false
-    ):
-        Promise<ICachedTransaction[]> {
+    public async getTransactions(networkId: string, txHashes: string[], skipCache: boolean = false): Promise<ICachedTransaction[]> {
         let cachedTransactions: ICachedTransaction[] | undefined;
         const tranCache = this._transactionCache[networkId];
 
         if (tranCache) {
             const now = Date.now();
 
-            const unknownHashes = skipCache ? txHashes : txHashes.filter(h =>
-                !tranCache[h] ||
-                tranCache[h].tx === undefined ||
-                tranCache[h].confirmationState === "unknown" ||
-                now - tranCache[h].cached > 60000);
+            const unknownHashes = skipCache
+                ? txHashes
+                : txHashes.filter(
+                      (h) =>
+                          !tranCache[h] ||
+                          tranCache[h].tx === undefined ||
+                          tranCache[h].confirmationState === "unknown" ||
+                          now - tranCache[h].cached > 60000,
+                  );
 
             if (unknownHashes.length > 0) {
                 try {
@@ -149,12 +148,10 @@ export class LegacyTangleCacheService extends TangleCacheService {
 
                     const response = await apiClient.trytesRetrieve({
                         network: networkId,
-                        txHashes: unknownHashes
+                        txHashes: unknownHashes,
                     });
 
-                    if (!response.error &&
-                        response.trytes &&
-                        response.milestoneIndexes) {
+                    if (!response.error && response.trytes && response.milestoneIndexes) {
                         for (let i = 0; i < response.trytes.length; i++) {
                             const unknownHash = unknownHashes[i];
                             tranCache[unknownHash] = tranCache[unknownHash] || {};
@@ -180,7 +177,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                             tranCache[unknownHash].tx = {
                                 ...tx,
                                 timestamp,
-                                attachmentTimestamp
+                                attachmentTimestamp,
                             };
                             tranCache[unknownHash].isEmpty = TrytesHelper.isEmpty(response.trytes[i]);
 
@@ -194,8 +191,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                             tranCache[unknownHash].milestoneIndex = response.milestoneIndexes[i];
                         }
                     }
-                } catch {
-                }
+                } catch {}
             }
 
             for (const txHash of txHashes) {
@@ -204,23 +200,25 @@ export class LegacyTangleCacheService extends TangleCacheService {
                 }
             }
 
-            cachedTransactions = txHashes.map(h =>
-                tranCache[h] || {
-                    tx: asTransactionObject("9".repeat(2673)),
-                    confirmationState: "unknown",
-                    cached: 0,
-                    manual: false,
-                    isEmpty: true
-                });
+            cachedTransactions = txHashes.map(
+                (h) =>
+                    tranCache[h] || {
+                        tx: asTransactionObject("9".repeat(2673)),
+                        confirmationState: "unknown",
+                        cached: 0,
+                        manual: false,
+                        isEmpty: true,
+                    },
+            );
         }
 
         if (!cachedTransactions) {
-            cachedTransactions = txHashes.map(h => ({
+            cachedTransactions = txHashes.map((h) => ({
                 tx: asTransactionObject("9".repeat(2673)),
                 confirmationState: "unknown",
                 milestoneIndex: 0,
                 cached: 0,
-                isEmpty: true
+                isEmpty: true,
             }));
         }
 
@@ -233,11 +231,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
      * @param txHash The hashes of the transactions to get.
      * @returns The trytes for the children.
      */
-    public async getTransactionChildren(
-        networkId: string,
-        txHash: string
-    ):
-        Promise<string[]> {
+    public async getTransactionChildren(networkId: string, txHash: string): Promise<string[]> {
         if (!this._transactionCache[networkId]?.[txHash]?.children) {
             try {
                 const apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
@@ -245,7 +239,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                 const response = await apiClient.transactionsGet({
                     network: networkId,
                     hash: txHash,
-                    mode: "approvee"
+                    mode: "approvee",
                 });
 
                 if (!response.error) {
@@ -253,8 +247,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                     this._transactionCache[networkId][txHash] = this._transactionCache[networkId][txHash] || {};
                     this._transactionCache[networkId][txHash].children = [...new Set(response.txHashes)];
                 }
-            } catch {
-            }
+            } catch {}
         }
 
         return this._transactionCache[networkId]?.[txHash]?.children ?? [];
@@ -266,12 +259,8 @@ export class LegacyTangleCacheService extends TangleCacheService {
      * @param txHashes The transaction hashes in the bundle.
      * @returns The grouped transactions in the bundle.
      */
-    public async getBundleGroups(
-        networkId: string,
-        txHashes: string[]
-    ): Promise<ICachedTransaction[][]> {
-        const cachedTransactions =
-            await this.getTransactions(networkId, txHashes);
+    public async getBundleGroups(networkId: string, txHashes: string[]): Promise<ICachedTransaction[][]> {
+        const cachedTransactions = await this.getTransactions(networkId, txHashes);
 
         const byHash: { [id: string]: ICachedTransaction } = {};
         const bundleGroups: ICachedTransaction[][] = [];
@@ -317,27 +306,24 @@ export class LegacyTangleCacheService extends TangleCacheService {
      * @param addressHash The addresss hash to get the balance.
      * @returns The balance for the address.
      */
-    public async getAddressBalance(
-        networkId: string,
-        addressHash: string): Promise<number> {
+    public async getAddressBalance(networkId: string, addressHash: string): Promise<number> {
         const addrBalance = this._addressBalances[networkId];
 
         if (addrBalance) {
             const now = Date.now();
 
-            if (!addrBalance[addressHash] ||
-                now - addrBalance[addressHash].balance > 30000) {
+            if (!addrBalance[addressHash] || now - addrBalance[addressHash].balance > 30000) {
                 try {
                     const apiClient = ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`);
 
                     const response = await apiClient.addressGet({
                         network: networkId,
-                        address: addressHash
+                        address: addressHash,
                     });
 
                     addrBalance[addressHash] = {
                         balance: response.balance ?? 0,
-                        cached: now
+                        cached: now,
                     };
                 } catch (err) {
                     console.error(err);
@@ -356,9 +342,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
      * @param transaction The transaction to use as the starting point.
      * @returns The transactions bundle group.
      */
-    public async getTransactionBundleGroup(
-        networkId: string,
-        transaction: ICachedTransaction): Promise<ICachedTransaction[]> {
+    public async getTransactionBundleGroup(networkId: string, transaction: ICachedTransaction): Promise<ICachedTransaction[]> {
         let thisGroup: ICachedTransaction[] = [];
         if (transaction.tx.lastIndex === 0) {
             thisGroup = [transaction];
@@ -369,8 +353,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
             let trunk = transaction.tx.trunkTransaction;
             thisGroup = [transaction];
             for (let i = 1; i <= transaction.tx.lastIndex; i++) {
-                const cachedTransactions =
-                    await this.getTransactions(networkId, [trunk]);
+                const cachedTransactions = await this.getTransactions(networkId, [trunk]);
                 if (cachedTransactions.length > 0) {
                     const txo = cachedTransactions[0];
                     if (txo) {
@@ -386,7 +369,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
             if (txHashes.length > 0) {
                 const bundleGroups = await this.getBundleGroups(networkId, txHashes);
 
-                const bg = bundleGroups.find(group => group.findIndex(t => t.tx.hash === transaction.tx.hash) >= 0);
+                const bg = bundleGroups.find((group) => group.findIndex((t) => t.tx.hash === transaction.tx.hash) >= 0);
                 if (bg) {
                     thisGroup = [...bg];
                 }
@@ -403,28 +386,34 @@ export class LegacyTangleCacheService extends TangleCacheService {
      * @param key The key for the fetch if restricted mode.
      * @returns The balance for the address.
      */
-    public async getStreamsV0Packet(network: string, root: string, mode: MamMode, key: string): Promise<{
-        /**
-         * The payload at the given root.
-         */
-        payload: string;
-        /**
-         * The next root.
-         */
-        nextRoot: string;
-        /**
-         * The tag.
-         */
-        tag: string;
-    } | undefined> {
+    public async getStreamsV0Packet(
+        network: string,
+        root: string,
+        mode: MamMode,
+        key: string,
+    ): Promise<
+        | {
+              /**
+               * The payload at the given root.
+               */
+              payload: string;
+              /**
+               * The next root.
+               */
+              nextRoot: string;
+              /**
+               * The tag.
+               */
+              tag: string;
+          }
+        | undefined
+    > {
         const streamsV0Cache = this._streamsV0[network];
 
         if (streamsV0Cache) {
             if (!streamsV0Cache[root]) {
                 try {
-                    const api = new LegacyApiStreamsV0Client(
-                        ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`), network
-                    );
+                    const api = new LegacyApiStreamsV0Client(ServiceFactory.get<LegacyApiClient>(`api-client-${LEGACY}`), network);
 
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const result = await mamFetch(api as any, root, mode, key);
@@ -434,7 +423,7 @@ export class LegacyTangleCacheService extends TangleCacheService {
                             payload: result.message,
                             nextRoot: result.nextRoot,
                             tag: result.tag,
-                            cached: Date.now()
+                            cached: Date.now(),
                         };
                     }
                 } catch (err) {
@@ -453,4 +442,3 @@ export class LegacyTangleCacheService extends TangleCacheService {
         super.staleCheck();
     }
 }
-

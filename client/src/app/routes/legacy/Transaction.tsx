@@ -48,8 +48,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
 
         let hash;
-        if (this.props.match.params.txHash.length === 81 &&
-            TrytesHelper.isTrytes(this.props.match.params.txHash)) {
+        if (this.props.match.params.txHash.length === 81 && TrytesHelper.isTrytes(this.props.match.params.txHash)) {
             hash = props.match.params.txHash;
         }
 
@@ -58,7 +57,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             status: "Building transaction details...",
             hash,
             showRawMessageTrytes: false,
-            childrenBusy: true
+            childrenBusy: true,
         };
     }
 
@@ -72,11 +71,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             window.scrollTo({
                 left: 0,
                 top: 0,
-                behavior: "smooth"
+                behavior: "smooth",
             });
 
-            const transactions = await this._tangleCacheService.getTransactions(
-                this.props.match.params.network, [this.props.match.params.txHash]);
+            const transactions = await this._tangleCacheService.getTransactions(this.props.match.params.network, [
+                this.props.match.params.txHash,
+            ]);
 
             let details: ICachedTransaction | undefined;
 
@@ -84,7 +84,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                 if (TrytesHelper.isEmpty(asTransactionTrytes(transactions[0].tx))) {
                     this.setState({
                         status: "There is no data for this transaction.",
-                        statusBusy: false
+                        statusBusy: false,
                     });
                 } else {
                     details = transactions[0];
@@ -94,7 +94,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             } else {
                 this.setState({
                     status: "Unable to load the details for this transaction.",
-                    statusBusy: false
+                    statusBusy: false,
                 });
             }
         } else {
@@ -122,9 +122,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             <div className="transaction">
                 <div className="wrapper">
                     <div className="inner">
-                        <h1>
-                            Transaction
-                        </h1>
+                        <h1>Transaction</h1>
                         <div className="row top">
                             <div className="cards">
                                 <div className="card">
@@ -145,18 +143,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         </h2>
                                         {this.state.details && (
                                             <div className="h1-sub">
-                                                {DateHelper.format(
-                                                    DateHelper.milliseconds(
-                                                        this.state.details.tx.timestamp
-                                                    )
-                                                )}
+                                                {DateHelper.format(DateHelper.milliseconds(this.state.details.tx.timestamp))}
                                             </div>
                                         )}
                                     </div>
                                     <div className="card--content">
-                                        <div className="card--label">
-                                            Hash
-                                        </div>
+                                        <div className="card--label">Hash</div>
                                         <div className="card--value row middle">
                                             <span className="margin-r-t">{this.state.hash}</span>
                                             <CopyButton copy={this.state.hash} />
@@ -170,9 +162,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                         <div className="col">
                                                             <CurrencyButton
-                                                                marketsRoute={
-                                                                    `/${this.props.match.params.network}/markets`
-                                                                }
+                                                                marketsRoute={`/${this.props.match.params.network}/markets`}
                                                                 value={this.state.details.tx.value}
                                                             />
                                                         </div>
@@ -180,27 +170,18 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 )}
                                                 {this.state.details.tx.value === 0 && (
                                                     <React.Fragment>
-                                                        <div className="card--label">
-                                                            Value
-                                                        </div>
-                                                        <div className="card--value">
-                                                            0
-                                                        </div>
+                                                        <div className="card--label">Value</div>
+                                                        <div className="card--value">0</div>
                                                     </React.Fragment>
                                                 )}
-                                                <div className="card--label">
-                                                    Address
-                                                </div>
+                                                <div className="card--label">Address</div>
                                                 <div className="card--value row middle">
                                                     <Link
-                                                        to={`/${this.props.match.params.network
-                                                            }/address/${this.state.address}`}
+                                                        to={`/${this.props.match.params.network}/address/${this.state.address}`}
                                                         className="margin-r-t"
                                                     >
                                                         {this.state.address}
-                                                        <span className="card--value__light">
-                                                            {this.state.checksum}
-                                                        </span>
+                                                        <span className="card--value__light">{this.state.checksum}</span>
                                                     </Link>
                                                     <CopyButton copy={`${this.state.address}${this.state.checksum}`} />
                                                 </div>
@@ -211,10 +192,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 {this.state.status && (
                                     <div className="card margin-t-s">
                                         <div className="card--content middle row margin-t-s">
-                                            {this.state.statusBusy && (<Spinner />)}
-                                            <p className="status">
-                                                {this.state.status}
-                                            </p>
+                                            {this.state.statusBusy && <Spinner />}
+                                            <p className="status">{this.state.status}</p>
                                         </div>
                                     </div>
                                 )}
@@ -230,16 +209,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                             {
                                                                 "card--header-count__error":
                                                                     this.state.isBundleValid === "invalid" ||
-                                                                    this.state.isBundleValid === "consistency"
+                                                                    this.state.isBundleValid === "consistency",
                                                             },
                                                             {
-                                                                "card--header-count__warning":
-                                                                    this.state.isBundleValid === "warning"
+                                                                "card--header-count__warning": this.state.isBundleValid === "warning",
                                                             },
                                                             {
-                                                                "card--header-count__success":
-                                                                    this.state.isBundleValid === "valid"
-                                                            }
+                                                                "card--header-count__success": this.state.isBundleValid === "valid",
+                                                            },
                                                         )}
                                                     >
                                                         {this.state.isBundleValidMessage}
@@ -247,15 +224,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 )}
                                             </div>
                                             <div className="card--content">
-                                                <div className="card--label">
-                                                    Bundle Hash
-                                                </div>
+                                                <div className="card--label">Bundle Hash</div>
                                                 <div className="card--value row middle">
                                                     <Link
-                                                        to={
-                                                            `/${this.props.match.params.network
-                                                            }/bundle/${this.state.details?.tx.bundle}`
-                                                        }
+                                                        to={`/${this.props.match.params.network}/bundle/${this.state.details?.tx.bundle}`}
                                                         className="margin-r-t"
                                                     >
                                                         {this.state.details?.tx.bundle}
@@ -263,23 +235,15 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     <CopyButton copy={this.state.details?.tx.bundle} />
                                                 </div>
 
-                                                <div className="card--label">
-                                                    Index
-                                                </div>
+                                                <div className="card--label">Index</div>
                                                 <div className="card--value row middle">
                                                     <Link
-                                                        to={
-                                                            `/${this.props.match.params.network
-                                                            }/transaction/${this.state.previousTransaction}`
-                                                        }
-                                                        className={classNames(
-                                                            "btn-navigation",
-                                                            { disabled: this.state.previousTransaction === undefined }
-                                                        )}
+                                                        to={`/${this.props.match.params.network}/transaction/${this.state.previousTransaction}`}
+                                                        className={classNames("btn-navigation", {
+                                                            disabled: this.state.previousTransaction === undefined,
+                                                        })}
                                                     >
-                                                        <span className="material-icons arrow">
-                                                            chevron_left
-                                                        </span>
+                                                        <span className="material-icons arrow">chevron_left</span>
                                                     </Link>
                                                     <span>
                                                         {this.state.details.tx.currentIndex + 1}
@@ -287,18 +251,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         {this.state.details.tx.lastIndex + 1}
                                                     </span>
                                                     <Link
-                                                        to={
-                                                            `/${this.props.match.params.network
-                                                            }/transaction/${this.state.nextTransaction}`
-                                                        }
-                                                        className={classNames(
-                                                            "btn-navigation",
-                                                            { disabled: this.state.nextTransaction === undefined }
-                                                        )}
+                                                        to={`/${this.props.match.params.network}/transaction/${this.state.nextTransaction}`}
+                                                        className={classNames("btn-navigation", {
+                                                            disabled: this.state.nextTransaction === undefined,
+                                                        })}
                                                     >
-                                                        <span className="material-icons arrow">
-                                                            chevron_right
-                                                        </span>
+                                                        <span className="material-icons arrow">chevron_right</span>
                                                     </Link>
                                                 </div>
                                             </div>
@@ -310,15 +268,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                             <div className="card--content">
                                                 <div className="row row--tablet-responsive">
                                                     <div className="col fill">
-                                                        <div className="card--label">
-                                                            Tag
-                                                        </div>
+                                                        <div className="card--label">Tag</div>
                                                         <div className="card--value row middle">
                                                             <Link
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/tag/${this.state.details?.tx.tag}`
-                                                                }
+                                                                to={`/${this.props.match.params.network}/tag/${this.state.details?.tx.tag}`}
                                                                 className="margin-r-t"
                                                             >
                                                                 {this.state.details.tx.tag}
@@ -327,15 +280,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         </div>
                                                     </div>
                                                     <div className="col fill">
-                                                        <div className="card--label">
-                                                            Obsolete Tag
-                                                        </div>
+                                                        <div className="card--label">Obsolete Tag</div>
                                                         <div className="card--value row middle">
                                                             <Link
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/tag/${this.state.details?.tx.obsoleteTag}`
-                                                                }
+                                                                to={`/${this.props.match.params.network}/tag/${this.state.details?.tx.obsoleteTag}`}
                                                                 className="margin-r-t"
                                                             >
                                                                 {this.state.details.tx.obsoleteTag}
@@ -346,15 +294,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                 </div>
                                                 {this.state.streamsV0Root && (
                                                     <div className="col fill">
-                                                        <div className="card--label">
-                                                            Streams v0 Decoder Root
-                                                        </div>
+                                                        <div className="card--label">Streams v0 Decoder Root</div>
                                                         <div className="card--value row middle">
                                                             <Link
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/streams/0/${this.state.streamsV0Root}`
-                                                                }
+                                                                to={`/${this.props.match.params.network}/streams/0/${this.state.streamsV0Root}`}
                                                                 className="margin-r-t"
                                                             >
                                                                 {this.state.streamsV0Root}
@@ -369,43 +312,47 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                                 {this.state.messageType !== "Trytes" && (
                                                                     <button
                                                                         type="button"
-                                                                        onClick={() => this.setState(
-                                                                            {
-                                                                                showRawMessageTrytes:
-                                                                                    !this.state.showRawMessageTrytes
-                                                                            })}
+                                                                        onClick={() =>
+                                                                            this.setState({
+                                                                                showRawMessageTrytes: !this.state.showRawMessageTrytes,
+                                                                            })
+                                                                        }
                                                                     >
-                                                                        Message {this.state.showRawMessageTrytes
-                                                                            ? "Trytes" : this.state.messageType}
+                                                                        Message{" "}
+                                                                        {this.state.showRawMessageTrytes
+                                                                            ? "Trytes"
+                                                                            : this.state.messageType}
                                                                     </button>
                                                                 )}
-                                                                {this.state.messageType === "Trytes" && (
-                                                                    `Message ${this.state.messageType}`
-                                                                )}
+                                                                {this.state.messageType === "Trytes" && `Message ${this.state.messageType}`}
                                                             </span>
-                                                            <CopyButton copy={this.state.showRawMessageTrytes ?
-                                                                this.state.rawMessageTrytes :
-                                                                this.state.message}
+                                                            <CopyButton
+                                                                copy={
+                                                                    this.state.showRawMessageTrytes
+                                                                        ? this.state.rawMessageTrytes
+                                                                        : this.state.message
+                                                                }
                                                             />
                                                         </div>
                                                         <div
-                                                            className={
-                                                                classNames(
-                                                                    "card--value",
-                                                                    "card--value-textarea",
-                                                                    `card--value-textarea__
-                                                                    ${this.state.showRawMessageTrytes
-                                                                        ? "trytes"
-                                                                        : this.state.messageType?.toLowerCase()
-                                                                    }`
-                                                                )
-                                                            }
+                                                            className={classNames(
+                                                                "card--value",
+                                                                "card--value-textarea",
+                                                                `card--value-textarea__
+                                                                    ${
+                                                                        this.state.showRawMessageTrytes
+                                                                            ? "trytes"
+                                                                            : this.state.messageType?.toLowerCase()
+                                                                    }`,
+                                                            )}
                                                         >
-                                                            {this.state.showRawMessageTrytes
-                                                                ? this.state.rawMessageTrytes
-                                                                : (this.state.messageType === "JSON"
-                                                                    ? <JsonViewer json={this.state.message} />
-                                                                    : this.state.message)}
+                                                            {this.state.showRawMessageTrytes ? (
+                                                                this.state.rawMessageTrytes
+                                                            ) : this.state.messageType === "JSON" ? (
+                                                                <JsonViewer json={this.state.message} />
+                                                            ) : (
+                                                                this.state.message
+                                                            )}
                                                         </div>
                                                         {this.state.messageSpan && (
                                                             <div className="card--value">
@@ -423,32 +370,20 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         <h2>Parents</h2>
                                                     </div>
                                                     <div className="card--content">
-                                                        <div className="card--label">
-                                                            Trunk
-                                                        </div>
+                                                        <div className="card--label">Trunk</div>
                                                         <div className="card--value">
                                                             <Link
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/transaction/
-                                                                    ${this.state.details?.tx.trunkTransaction
-                                                                    }`
-                                                                }
+                                                                to={`/${this.props.match.params.network}/transaction/
+                                                                    ${this.state.details?.tx.trunkTransaction}`}
                                                             >
                                                                 {this.state.details.tx.trunkTransaction}
                                                             </Link>
                                                         </div>
-                                                        <div className="card--label">
-                                                            Branch
-                                                        </div>
+                                                        <div className="card--label">Branch</div>
                                                         <div className="card--value">
                                                             <Link
-                                                                to={
-                                                                    `/${this.props.match.params.network
-                                                                    }/transaction/
-                                                                    ${this.state.details?.tx.branchTransaction
-                                                                    }`
-                                                                }
+                                                                to={`/${this.props.match.params.network}/transaction/
+                                                                    ${this.state.details?.tx.branchTransaction}`}
                                                             >
                                                                 {this.state.details.tx.branchTransaction}
                                                             </Link>
@@ -462,40 +397,24 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                         <h2>PoW</h2>
                                                     </div>
                                                     <div className="card--content">
-                                                        <div className="card--label">
-                                                            Weight Magnitude
-                                                        </div>
-                                                        <div className="card--value">
-                                                            {this.state.mwm}
-                                                        </div>
-                                                        <div className="card--label">
-                                                            Nonce
-                                                        </div>
-                                                        <div className="card--value">
-                                                            {this.state.details.tx.nonce}
-                                                        </div>
-                                                        <div className="card--label">
-                                                            Attachment Lower Bound
-                                                        </div>
+                                                        <div className="card--label">Weight Magnitude</div>
+                                                        <div className="card--value">{this.state.mwm}</div>
+                                                        <div className="card--label">Nonce</div>
+                                                        <div className="card--value">{this.state.details.tx.nonce}</div>
+                                                        <div className="card--label">Attachment Lower Bound</div>
                                                         <div className="card--value">
                                                             {this.state.details.tx.attachmentTimestampLowerBound}
                                                         </div>
-                                                        <div className="card--label">
-                                                            Attachment Upper Bound
-                                                        </div>
+                                                        <div className="card--label">Attachment Upper Bound</div>
                                                         <div className="card--value">
                                                             {this.state.details.tx.attachmentTimestampUpperBound}
                                                         </div>
                                                         {this.state.details.tx.attachmentTimestamp !== 0 && (
                                                             <React.Fragment>
-                                                                <div className="card--label">
-                                                                    Attachment Timestamp
-                                                                </div>
+                                                                <div className="card--label">Attachment Timestamp</div>
                                                                 <div className="card--value">
                                                                     {DateHelper.format(
-                                                                        DateHelper.milliseconds(
-                                                                            this.state.details.tx.attachmentTimestamp
-                                                                        )
+                                                                        DateHelper.milliseconds(this.state.details.tx.attachmentTimestamp),
                                                                     )}
                                                                 </div>
                                                             </React.Fragment>
@@ -510,18 +429,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                                     </div>
                                                     <div className="card--content">
                                                         <div className="card--label row middle margin-b-2">
-                                                            <span className="margin-r-s">
-                                                                Trytes
-                                                            </span>
-                                                            {this.state.details && (
-                                                                <CopyButton copy={this.state.raw} />
-                                                            )}
+                                                            <span className="margin-r-s">Trytes</span>
+                                                            {this.state.details && <CopyButton copy={this.state.raw} />}
                                                         </div>
                                                         <div
                                                             className={classNames(
                                                                 "card--value",
                                                                 "card--value-textarea",
-                                                                "card--value-textarea__tall"
+                                                                "card--value-textarea__tall",
                                                             )}
                                                         >
                                                             {this.state.raw}
@@ -534,36 +449,22 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                             <div className="card--header">
                                                 <h2>Children</h2>
                                                 {this.state.children !== undefined && (
-                                                    <span className="card--header-count">
-                                                        {this.state.children.length}
-                                                    </span>
+                                                    <span className="card--header-count">{this.state.children.length}</span>
                                                 )}
                                             </div>
                                             <div className="card--content children-container">
-                                                {this.state.childrenBusy && (<Spinner />)}
-                                                {this.state.children?.map(child => (
+                                                {this.state.childrenBusy && <Spinner />}
+                                                {this.state.children?.map((child) => (
                                                     <div className="card--value" key={child}>
-                                                        <Link
-                                                            to={
-                                                                `/${this.props.match.params.network
-                                                                }/transaction/${child}`
-                                                            }
-                                                        >
-                                                            {child}
-                                                        </Link>
+                                                        <Link to={`/${this.props.match.params.network}/transaction/${child}`}>{child}</Link>
                                                     </div>
                                                 ))}
-                                                {!this.state.childrenBusy &&
-                                                    this.state.children &&
-                                                    this.state.children.length === 0 && (
-                                                        <p>There are no children for this message.</p>
-                                                    )}
-
+                                                {!this.state.childrenBusy && this.state.children && this.state.children.length === 0 && (
+                                                    <p>There are no children for this message.</p>
+                                                )}
                                             </div>
                                         </div>
-
                                     </React.Fragment>
-
                                 )}
                             </div>
                         </div>
@@ -589,7 +490,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     messageTrytes = parsedStreamsV0.message;
                     streamsV0Root = details.tx.address;
                 }
-            } catch { }
+            } catch {}
 
             const singleDecoded = TrytesHelper.decodeMessage(messageTrytes);
 
@@ -603,28 +504,26 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                     messageSpan: false,
                     mwm: TrytesHelper.calculateMwm(details.tx.hash),
                     raw: asTransactionTrytes(details.tx),
-                    nextTransaction: details.tx.currentIndex < details.tx.lastIndex
-                        ? details.tx.trunkTransaction : undefined,
+                    nextTransaction: details.tx.currentIndex < details.tx.lastIndex ? details.tx.trunkTransaction : undefined,
                     rawMessageTrytes: details?.tx.signatureMessageFragment,
                     streamsV0Root,
                     address: details?.tx.address,
-                    checksum: addChecksum(details?.tx.address).slice(-9)
+                    checksum: addChecksum(details?.tx.address).slice(-9),
                 },
                 async () => {
                     if (this.state.details) {
-                        const thisGroup =
-                            await this._tangleCacheService.getTransactionBundleGroup(
-                                this.props.match.params.network,
-                                this.state.details);
+                        const thisGroup = await this._tangleCacheService.getTransactionBundleGroup(
+                            this.props.match.params.network,
+                            this.state.details,
+                        );
 
                         if (thisGroup.length > 0) {
-                            const thisIndex = thisGroup.findIndex(t => t.tx.hash === this.state.details?.tx.hash);
+                            const thisIndex = thisGroup.findIndex((t) => t.tx.hash === this.state.details?.tx.hash);
 
                             // Some really old bundle formats dont pass the isBundle test, so if they are already
                             // confirmed use that knowledge instead.
-                            const isBundleValid = this.state.details.confirmationState === "confirmed"
-                                ? true
-                                : isBundle(thisGroup.map(t => t.tx));
+                            const isBundleValid =
+                                this.state.details.confirmationState === "confirmed" ? true : isBundle(thisGroup.map((t) => t.tx));
                             let total = 0;
                             for (const g of thisGroup) {
                                 total += g.tx.value;
@@ -636,7 +535,7 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                             let messageSpan = this.state.messageSpan;
                             let rawMessageTrytes = this.state.rawMessageTrytes;
                             if (thisGroup.length < 10) {
-                                let combinedMessages = thisGroup.map(t => t.tx.signatureMessageFragment).join("");
+                                let combinedMessages = thisGroup.map((t) => t.tx.signatureMessageFragment).join("");
 
                                 try {
                                     const parsedStreamsV0 = parseMessage(combinedMessages, details.tx.address);
@@ -644,13 +543,14 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                         combinedMessages = parsedStreamsV0.message;
                                         streamsV0Root = details.tx.address;
                                     }
-                                } catch { }
+                                } catch {}
 
                                 const spanMessage = TrytesHelper.decodeMessage(combinedMessages);
 
-                                if ((spanMessage.messageType === "ascii" ||
-                                    spanMessage.messageType === "JSON") &&
-                                    spanMessage.message !== this.state.message) {
+                                if (
+                                    (spanMessage.messageType === "ascii" || spanMessage.messageType === "JSON") &&
+                                    spanMessage.message !== this.state.message
+                                ) {
                                     message = spanMessage.message;
                                     messageType = spanMessage.messageType;
                                     rawMessageTrytes = combinedMessages;
@@ -662,48 +562,53 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
                                 this._timerId = setInterval(async () => this.checkConfirmation(), 10000);
                             }
 
-                            const isBundleValidState = isConsistent
-                                ? (isBundleValid ? "valid" : "invalid")
-                                : "consistency";
+                            const isBundleValidState = isConsistent ? (isBundleValid ? "valid" : "invalid") : "consistency";
 
                             let isBundleValidMessage = "Valid";
                             if (isBundleValidState !== "valid") {
-                                isBundleValidMessage = this.state.isBundleValid === "consistency"
-                                    ? "Invalid consistency - transaction will never confirm"
-                                    : "Invalid - transaction will never confirm";
+                                isBundleValidMessage =
+                                    this.state.isBundleValid === "consistency"
+                                        ? "Invalid consistency - transaction will never confirm"
+                                        : "Invalid - transaction will never confirm";
                             }
 
-                            this.setState({
-                                nextTransaction:
-                                    this.state.details.tx.currentIndex < this.state.details.tx.lastIndex
-                                        ? this.state.details.tx.trunkTransaction : undefined,
-                                previousTransaction:
-                                    thisIndex > 0 ? thisGroup[thisIndex - 1].tx.hash : undefined,
-                                isBundleValid: isBundleValidState,
-                                isBundleValidMessage,
-                                milestoneIndex: this.getMilestoneIndex(thisGroup),
-                                message,
-                                messageType,
-                                messageSpan,
-                                rawMessageTrytes,
-                                streamsV0Root
-                            }, async () => {
-                                const children = await this._tangleCacheService.getTransactionChildren(
-                                    this.props.match.params.network, this.props.match.params.txHash);
+                            this.setState(
+                                {
+                                    nextTransaction:
+                                        this.state.details.tx.currentIndex < this.state.details.tx.lastIndex
+                                            ? this.state.details.tx.trunkTransaction
+                                            : undefined,
+                                    previousTransaction: thisIndex > 0 ? thisGroup[thisIndex - 1].tx.hash : undefined,
+                                    isBundleValid: isBundleValidState,
+                                    isBundleValidMessage,
+                                    milestoneIndex: this.getMilestoneIndex(thisGroup),
+                                    message,
+                                    messageType,
+                                    messageSpan,
+                                    rawMessageTrytes,
+                                    streamsV0Root,
+                                },
+                                async () => {
+                                    const children = await this._tangleCacheService.getTransactionChildren(
+                                        this.props.match.params.network,
+                                        this.props.match.params.txHash,
+                                    );
 
-                                this.setState({
-                                    children,
-                                    childrenBusy: false
-                                });
-                            });
+                                    this.setState({
+                                        children,
+                                        childrenBusy: false,
+                                    });
+                                },
+                            );
                         } else {
                             this.setState({
                                 isBundleValid: "warning",
-                                isBundleValidMessage: "Unknown - transactions from the bundle are unavailable"
+                                isBundleValidMessage: "Unknown - transactions from the bundle are unavailable",
                             });
                         }
                     }
-                });
+                },
+            );
         }
     }
 
@@ -719,9 +624,12 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
         if (thisGroup.length >= 2) {
             const networkService = ServiceFactory.get<NetworkService>("network");
             const networkConfig = networkService.get(this.props.match.params.network);
-            if (networkConfig && thisGroup[0].tx.address === networkConfig.coordinatorAddress &&
+            if (
+                networkConfig &&
+                thisGroup[0].tx.address === networkConfig.coordinatorAddress &&
                 networkConfig.coordinatorSecurityLevel !== undefined &&
-                thisGroup.length === networkConfig.coordinatorSecurityLevel + 1) {
+                thisGroup.length === networkConfig.coordinatorSecurityLevel + 1
+            ) {
                 const mi = value(trytesToTrits(thisGroup[0].tx.tag));
                 if (!Number.isNaN(mi)) {
                     milestoneIndex = mi;
@@ -737,7 +645,10 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
      */
     private async checkConfirmation(): Promise<void> {
         const transactions = await this._tangleCacheService.getTransactions(
-            this.props.match.params.network, [this.props.match.params.txHash], true);
+            this.props.match.params.network,
+            [this.props.match.params.txHash],
+            true,
+        );
 
         if (transactions && transactions.length > 0 && transactions[0].confirmationState === "confirmed") {
             if (this._timerId) {
@@ -747,8 +658,8 @@ class Transaction extends AsyncComponent<RouteComponentProps<TransactionRoutePro
             this.setState({
                 details: {
                     ...transactions[0],
-                    confirmationState: "confirmed"
-                }
+                    confirmationState: "confirmed",
+                },
             });
         }
     }

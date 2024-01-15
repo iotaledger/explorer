@@ -16,4 +16,3 @@ export interface INodeData {
      */
     graphId?: number;
 }
-

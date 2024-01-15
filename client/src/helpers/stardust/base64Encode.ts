@@ -85,7 +85,7 @@ export class Base64 {
         "119": 48,
         "120": 49,
         "121": 50,
-        "122": 51
+        "122": 51,
     };
 
     /**
@@ -129,9 +129,7 @@ export class Base64 {
         }
 
         if (placeHoldersLen === 2) {
-            tmp =
-                (Base64._REVERSE_LOOKUP[base64.charCodeAt(i)] << 2) |
-                (Base64._REVERSE_LOOKUP[base64.charCodeAt(i + 1)] >> 4);
+            tmp = (Base64._REVERSE_LOOKUP[base64.charCodeAt(i)] << 2) | (Base64._REVERSE_LOOKUP[base64.charCodeAt(i + 1)] >> 4);
             arr[curByte++] = tmp & 0xff;
         }
 
@@ -170,9 +168,7 @@ export class Base64 {
             parts.push(`${Base64._LOOKUP[tmp >> 2] + Base64._LOOKUP[(tmp << 4) & 0x3f]}==`);
         } else if (extraBytes === 2) {
             tmp = (bytes[len - 2] << 8) + bytes[len - 1];
-            parts.push(
-                `${Base64._LOOKUP[tmp >> 10] + Base64._LOOKUP[(tmp >> 4) & 0x3f] + Base64._LOOKUP[(tmp << 2) & 0x3f]}=`
-            );
+            parts.push(`${Base64._LOOKUP[tmp >> 10] + Base64._LOOKUP[(tmp >> 4) & 0x3f] + Base64._LOOKUP[(tmp << 2) & 0x3f]}=`);
         }
 
         return parts.join("");
@@ -247,4 +243,3 @@ export class Base64 {
         return output.join("");
     }
 }
-

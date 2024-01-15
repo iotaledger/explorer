@@ -1,11 +1,11 @@
 .identity-tree {
-  min-width: 300px;
-  max-height: 400px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
+    min-width: 300px;
+    max-height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
 }
