@@ -72,10 +72,10 @@ class Header extends Component<HeaderProps, HeaderState> {
                 },
                 {
                     label: "EVM Explorer Testnet",
-                    url: "https://explorer.evm.testnet.shimmer.network/"
-                }
-            ]
-        }
+                    url: "https://explorer.evm.testnet.shimmer.network/",
+                },
+            ],
+        };
 
         return (
             <header className={classNames({ "full-height": this.state.show })}>
@@ -111,52 +111,52 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         {page.label}
                                     </Link>
                                 ))}
-                                {/* EVM DROPDOWN */}
-                                <div className="utilities--wrapper">
-                                    <div
-                                        className={classNames("utilities--dropdown", {
-                                            opened: this.state.isEvmDropdownExpanded,
-                                        })}
-                                        onClick={() =>
-                                            this.setState({
-                                                isEvmDropdownExpanded: !this.state.isEvmDropdownExpanded,
-                                                isNetworkSwitcherExpanded: false,
-                                            })
-                                        }
-                                    >
-                                        <div className="label">{EVM_EXPLORER_DROPDOWN.label}</div>
-                                        <div className="icon">
-                                            <span className="material-icons">expand_more</span>
-                                        </div>
+                            {/* EVM DROPDOWN */}
+                            <div className="utilities--wrapper">
+                                <div
+                                    className={classNames("utilities--dropdown", {
+                                        opened: this.state.isEvmDropdownExpanded,
+                                    })}
+                                    onClick={() =>
+                                        this.setState({
+                                            isEvmDropdownExpanded: !this.state.isEvmDropdownExpanded,
+                                            isNetworkSwitcherExpanded: false,
+                                        })
+                                    }
+                                >
+                                    <div className="label">{EVM_EXPLORER_DROPDOWN.label}</div>
+                                    <div className="icon">
+                                        <span className="material-icons">expand_more</span>
                                     </div>
-
-                                    <div
-                                        className={classNames("header--expanded", {
-                                            opened: this.state.isEvmDropdownExpanded,
-                                        })}
-                                    >
-                                        <div className="utilities">
-                                            <div className="utilities--label">{EVM_EXPLORER_DROPDOWN.label}</div>
-                                            {EVM_EXPLORER_DROPDOWN.routes.map((route) => (
-                                                <div key={route.url} className="utilities--item">
-                                                    <Link
-                                                        to={route.url}
-                                                        onClick={() => this.setState({ isEvmDropdownExpanded: false })}
-                                                        className={classNames({ "active-item": route.url === window.location.pathname })}
-                                                    >
-                                                        {route.label}
-                                                    </Link>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {this.state.isEvmDropdownExpanded && (
-                                        <div
-                                            className="header--expanded--shield"
-                                            onClick={() => this.setState({ isEvmDropdownExpanded: false })}
-                                        />
-                                    )}
                                 </div>
+
+                                <div
+                                    className={classNames("header--expanded", {
+                                        opened: this.state.isEvmDropdownExpanded,
+                                    })}
+                                >
+                                    <div className="utilities">
+                                        <div className="utilities--label">{EVM_EXPLORER_DROPDOWN.label}</div>
+                                        {EVM_EXPLORER_DROPDOWN.routes.map((route) => (
+                                            <div key={route.url} className="utilities--item">
+                                                <Link
+                                                    to={route.url}
+                                                    onClick={() => this.setState({ isEvmDropdownExpanded: false })}
+                                                    className={classNames({ "active-item": route.url === window.location.pathname })}
+                                                >
+                                                    {route.label}
+                                                </Link>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {this.state.isEvmDropdownExpanded && (
+                                    <div
+                                        className="header--expanded--shield"
+                                        onClick={() => this.setState({ isEvmDropdownExpanded: false })}
+                                    />
+                                )}
+                            </div>
                             {/* ----- Only visible in mobile ----- */}
                             {isMarketed && (
                                 <div className="mobile-fiat">
