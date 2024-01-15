@@ -3,7 +3,11 @@
 @import "../../scss/variables";
 
 .json-viewer {
-  font-family: "Courier New", Courier, monospace;
+  @include font-size(12px, 20px);
+
+  color: var(--did-color);
+  font-family: $ibm-plex-mono;
+  letter-spacing: 0.02em;
   white-space: pre-wrap;
 
   .string {
@@ -23,6 +27,6 @@
   }
 
   .key {
-    color: $gray-10;
+    color: var(--did-color);
   }
 }

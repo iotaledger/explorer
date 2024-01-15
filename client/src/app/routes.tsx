@@ -10,8 +10,6 @@ import ChrysalisMessage from "./routes/chrysalis/Message";
 import { MessageProps as ChrysalisMessageProps } from "./routes/chrysalis/MessageProps";
 import ChrysalisSearch from "./routes/chrysalis/Search";
 import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
-import IdentityResolver from "./routes/IdentityResolver";
-import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
 import LegacyAddress from "./routes/legacy/Address";
 import { AddressRouteProps as LegacyAddressRouteProps } from "./routes/legacy/AddressRouteProps";
@@ -66,14 +64,6 @@ const buildAppRoutes = (
                 <StreamsV0 {...props} />
             )}
         />,
-        <Route path="/:network/identity-resolver/:did?"
-            key={keys.next().value}
-            component={(props: RouteComponentProps<IdentityResolverProps>) => (
-                <IdentityResolver {...props}
-                    protocolVersion={protocolVersion}
-                />
-            )}
-        />
     ];
 
     const legacyRoutes = [
