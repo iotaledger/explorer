@@ -38,31 +38,26 @@ const ReferencedBlocksSection: React.FC<ReferencedBlocksSectionProps> = ({ block
                         </thead>
                         <tbody className="refblocks__table-body">
                             {currentPage.map((blockId, idx) => (
-                                <ReferencedBlocksSectionRow
-                                    key={`block-${pageNumber}-${idx}`}
-                                    blockId={blockId}
-                                    isTable={true}
-                                />
+                                <ReferencedBlocksSectionRow key={`block-${pageNumber}-${idx}`} blockId={blockId} isTable={true} />
                             ))}
                         </tbody>
                     </table>
                     <div className="refblocks__cards">
                         {currentPage.map((blockId, idx) => (
-                            <ReferencedBlocksSectionRow
-                                key={`block-${pageNumber}-${idx}`}
-                                blockId={blockId}
-                            />
+                            <ReferencedBlocksSectionRow key={`block-${pageNumber}-${idx}`} blockId={blockId} />
                         ))}
                     </div>
                 </React.Fragment>
-            ) : <Spinner />}
+            ) : (
+                <Spinner />
+            )}
             {showPagination && (
                 <Pagination
                     currentPage={pageNumber}
                     totalCount={blockIds?.length ?? 0}
                     pageSize={PAGE_SIZE}
                     siblingsCount={1}
-                    onPageChange={page => setPageNumber(page)}
+                    onPageChange={(page) => setPageNumber(page)}
                 />
             )}
         </div>
@@ -70,8 +65,7 @@ const ReferencedBlocksSection: React.FC<ReferencedBlocksSectionProps> = ({ block
 };
 
 ReferencedBlocksSection.defaultProps = {
-    blockIds: undefined
+    blockIds: undefined,
 };
 
 export default ReferencedBlocksSection;
-

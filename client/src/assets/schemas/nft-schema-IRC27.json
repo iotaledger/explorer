@@ -42,18 +42,9 @@
             "description": "name of the artist"
         },
         "attributes": {
-            "oneOf": [
-                { "type": "object" },
-                { "type": "array"}
-            ],
+            "oneOf": [{ "type": "object" }, { "type": "array" }],
             "description": "array containing any additional data as objects."
         }
     },
-    "required": [
-        "standard",
-        "type",
-        "version",
-        "uri",
-        "name"
-    ]
+    "required": ["standard", "type", "version", "uri", "name"]
 }

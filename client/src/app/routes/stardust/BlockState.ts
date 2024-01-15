@@ -22,4 +22,3 @@ export interface BlockMetadata {
      */
     blockTangleStatus: TangleStatus;
 }
-

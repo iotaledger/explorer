@@ -18,6 +18,9 @@
         "selector-no-qualifying-type": null,
         "selector-class-pattern": [
             "^([a-z][a-z0-9]*)([-|_]{0,2}[a-z0-9]+)*$"
-        ]
+        ],
+        "indentation": 4,
+        "max-line-length": 140,
+        "string-quotes": "double"
     }
 }

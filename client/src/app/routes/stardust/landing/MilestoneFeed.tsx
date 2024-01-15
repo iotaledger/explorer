@@ -20,14 +20,12 @@ interface MilestoneFeedProps {
 const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones, latestMilestoneIndex }) => {
     const network = networkConfig.network;
     const secondsSinceLast = useMilestoneInterval(latestMilestoneIndex);
-    const secondsSinceLastView = secondsSinceLast ? (
-        <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span>
-    ) : "";
+    const secondsSinceLastView = secondsSinceLast ? <span className="seconds">{secondsSinceLast.toFixed(2)}s ago</span> : "";
 
     let highestIndex = 0;
     const milestonesToRender: IMilestoneFeedItem[] = [];
     for (const milestone of milestones) {
-        if (!milestonesToRender.some(ms => ms.index === milestone.index)) {
+        if (!milestonesToRender.some((ms) => ms.index === milestone.index)) {
             if (milestone.index > highestIndex) {
                 highestIndex = milestone.index;
             }
@@ -53,10 +51,8 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                     <span className="label ms-txs">Txs</span>
                     <span className="label ms-timestamp">Timestamp</span>
                 </div>
-                {milestonesToRender.length === 0 && (
-                    <p>There are no milestones in the feed.</p>
-                )}
-                {milestonesToRender.map(milestone => {
+                {milestonesToRender.length === 0 && <p>There are no milestones in the feed.</p>}
+                {milestonesToRender.map((milestone) => {
                     const blockId = HexHelper.addPrefix(milestone.blockId);
                     const milestoneId = milestone.milestoneId;
                     const timestamp = milestone.timestamp * 1000;
@@ -67,27 +63,17 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Index</span>
                                 <span className="feed-item--value ms-index">
-                                    <Link
-                                        className="feed-item--hash ms-id"
-                                        to={`/${network}/block/${blockId}`}
-                                    >
+                                    <Link className="feed-item--hash ms-id" to={`/${network}/block/${blockId}`}>
                                         {milestone.index}
                                     </Link>
                                 </span>
                             </div>
                             <div className="feed-item__content desktop-only">
                                 <div className="feed-item--hash ms-id">
-                                    <TruncatedId
-                                        id={milestoneId}
-                                        link={`/${network}/block/${blockId}`}
-                                    />
+                                    <TruncatedId id={milestoneId} link={`/${network}/block/${blockId}`} />
                                 </div>
                             </div>
-                            <MilestoneFeedAnalyics
-                                network={network}
-                                milestoneIndex={milestone.index}
-                                blockId={blockId}
-                            />
+                            <MilestoneFeedAnalyics network={network} milestoneIndex={milestone.index} blockId={blockId} />
                             <div className="feed-item__content">
                                 <span className="feed-item--label">Timestamp</span>
                                 <span className="feed-item--value ms-timestamp">
@@ -103,7 +89,7 @@ const MilestoneFeed: React.FC<MilestoneFeedProps> = ({ networkConfig, milestones
 };
 
 MilestoneFeed.defaultProps = {
-    latestMilestoneIndex: undefined
+    latestMilestoneIndex: undefined,
 };
 
 export default MilestoneFeed;

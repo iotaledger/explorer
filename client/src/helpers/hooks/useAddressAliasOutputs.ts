@@ -11,9 +11,7 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @param addressBech32 The address in bech32 format
  * @returns The output responses and loading bool.
  */
-export function useAddressAliasOutputs(
-    network: string, addressBech32: string | null
-): [OutputResponse[] | null, boolean] {
+export function useAddressAliasOutputs(network: string, addressBech32: string | null): [OutputResponse[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
@@ -25,13 +23,16 @@ export function useAddressAliasOutputs(
         if (addressBech32) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.aliasOutputsDetails({ network, address: addressBech32 }).then(response => {
-                    if (!response?.error && response.outputs && isMounted) {
-                        setOutputs(response.outputs);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .aliasOutputsDetails({ network, address: addressBech32 })
+                    .then((response) => {
+                        if (!response?.error && response.outputs && isMounted) {
+                            setOutputs(response.outputs);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);
@@ -40,4 +41,3 @@ export function useAddressAliasOutputs(
 
     return [outputs, isLoading];
 }
-

@@ -1,53 +1,53 @@
-@import '../../scss/fonts';
-@import '../../scss/mixins';
-@import '../../scss/variables';
-@import '../../scss/themes';
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
 .confirmation {
-  @include font-size(12px);
+    @include font-size(12px);
 
-  display: flex;
-  align-items: center;
-  height: 24px;
-  margin-left: 20px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: 6px;
-  outline: none;
-  background-color: $gray-light;
-  color: $gray-midnight;
-  font-family: $metropolis;
-  font-weight: bold;
-  white-space: nowrap;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 24px;
+    margin-left: 20px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 6px;
+    outline: none;
+    background-color: $gray-light;
+    color: $gray-midnight;
+    font-family: $metropolis;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
 
-  &.confirmation__confirmed {
-    background-color: #73b183;
-    color: $white;
-  }
+    &.confirmation__confirmed {
+        background-color: #73b183;
+        color: $white;
+    }
 
-  &.confirmation__referenced {
-    background-color: #73b183;
-    color: $white;
-  }
+    &.confirmation__referenced {
+        background-color: #73b183;
+        color: $white;
+    }
 
-  &.confirmation__pending {
-    background-color: var(--light-bg);
-    color: #8493ad;
-  }
+    &.confirmation__pending {
+        background-color: var(--light-bg);
+        color: #8493ad;
+    }
 
-  &.confirmation__reattachment {
-    background-color: #4140df;
-    color: #978df2;
-  }
+    &.confirmation__reattachment {
+        background-color: #4140df;
+        color: #978df2;
+    }
 
-  &.confirmation__consistency {
-    background-color: $danger;
-    color: $white;
-  }
+    &.confirmation__consistency {
+        background-color: $danger;
+        color: $white;
+    }
 
-  &.confirmation__conflicting {
-    background-color: $danger;
-    color: $white;
-  }
+    &.confirmation__conflicting {
+        background-color: $danger;
+        color: $white;
+    }
 }

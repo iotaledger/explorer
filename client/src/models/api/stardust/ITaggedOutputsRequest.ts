@@ -22,4 +22,3 @@ export interface ITaggedOutputsRequest {
      */
     cursor?: string;
 }
-

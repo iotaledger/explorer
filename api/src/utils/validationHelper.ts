@@ -19,7 +19,7 @@ export class ValidationHelper {
      * @param name The parameter name.
      */
     public static numberFromString(str: string, name: string): void {
-        if (str === undefined || str === null || str.trim().length === 0 || !(/^-?\d+$/.test(str.trim()))) {
+        if (str === undefined || str === null || str.trim().length === 0 || !/^-?\d+$/.test(str.trim())) {
             throw new Error(`The parameter '${name}' has an invalid value.`);
         }
     }

@@ -12,10 +12,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    _: IConfiguration,
-    request: IStatsGetRequest
-): Promise<IStatsGetResponse> {
+export async function get(_: IConfiguration, request: IStatsGetRequest): Promise<IStatsGetResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -44,7 +41,7 @@ export async function get(
             ...stats,
             health,
             healthReason,
-            itemsPerSecondHistory
+            itemsPerSecondHistory,
         };
     }
 
@@ -54,7 +51,6 @@ export async function get(
         confirmationRate: 0,
         latestMilestoneIndex: 0,
         latestMilestoneIndexTime: 0,
-        health: 0
+        health: 0,
     };
 }
-

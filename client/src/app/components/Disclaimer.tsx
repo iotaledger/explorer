@@ -15,7 +15,7 @@ class Disclaimer extends Component<unknown, DisclaimerState> {
         super(props);
 
         this.state = {
-            ackCookies: true
+            ackCookies: true,
         };
     }
 
@@ -41,22 +41,12 @@ class Disclaimer extends Component<unknown, DisclaimerState> {
         return this.state.ackCookies ? null : (
             <div className="disclaimer">
                 <span className="margin-r-s">
-                    <span className="description">
-                        This website uses cookies to ensure you get the best experience.
-                    </span>
-                    <a
-                        href="https://www.iota.org/privacy-policy"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <span className="description">This website uses cookies to ensure you get the best experience.</span>
+                    <a href="https://www.iota.org/privacy-policy" target="_blank" rel="noopener noreferrer">
                         Learn more.
                     </a>
                 </span>
-                <button
-                    onClick={() => this.dismiss()}
-                    className="button"
-                    type="button"
-                >
+                <button onClick={() => this.dismiss()} className="button" type="button">
                     Dismiss
                 </button>
             </div>

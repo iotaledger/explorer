@@ -1,15 +1,15 @@
 import { IResponse } from "../../IResponse";
 
 export interface IMilestoneBlockInfo {
-   /**
-    * The block id.
-    */
-   blockId: string;
+    /**
+     * The block id.
+     */
+    blockId: string;
 
-   /**
-    * The payload type.
-    */
-   payloadType: number;
+    /**
+     * The payload type.
+     */
+    payloadType: number;
 }
 
 export interface IMilestoneBlocksResponse extends IResponse {

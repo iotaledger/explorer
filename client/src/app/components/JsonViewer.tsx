@@ -16,8 +16,7 @@ class JsonViewer extends Component<JsonViewerProps> {
             <div
                 className="json-viewer"
                 dangerouslySetInnerHTML={{
-                    __html:
-                        this.props.json === undefined ? "undefined" : JsonSyntaxHelper.syntaxHighlight(this.props.json)
+                    __html: this.props.json === undefined ? "undefined" : JsonSyntaxHelper.syntaxHighlight(this.props.json),
                 }}
             />
         );

@@ -120,11 +120,9 @@ export class ChrysalisItemsService implements IItemsService {
      */
     private startTimer(): void {
         this.stopTimer();
-        this._timerId = setTimeout(
-            async () => {
-                await this.updateSubscriptions();
-            },
-            500);
+        this._timerId = setTimeout(async () => {
+            await this.updateSubscriptions();
+        }, 500);
     }
 
     /**
@@ -141,18 +139,17 @@ export class ChrysalisItemsService implements IItemsService {
      * Update the subscriptions with newest trytes.
      */
     private async updateSubscriptions(): Promise<void> {
-        if (this._items.length > 0 ||
-            Object.keys(this._itemMetadata).length > 0) {
+        if (this._items.length > 0 || Object.keys(this._itemMetadata).length > 0) {
             for (const subscriptionId in this._subscribers) {
                 const data: IFeedSubscriptionItem = {
                     subscriptionId,
                     items: this._items,
-                    itemsMetadata: this._itemMetadata
+                    itemsMetadata: this._itemMetadata,
                 };
 
                 try {
                     await this._subscribers[subscriptionId](data);
-                } catch { }
+                } catch {}
             }
 
             this._items = [];
@@ -162,38 +159,34 @@ export class ChrysalisItemsService implements IItemsService {
         this.startTimer();
     }
 
-
     /**
      * Start the subscriptions.
      */
     private startSubscription(): void {
         this.stopSubscription();
 
-        this._itemSubscriptionId = this._mqttClient.messagesRaw(
-            (topic: string, message: Uint8Array) => {
-                this._items.push(Converter.bytesToHex(message));
-            });
+        this._itemSubscriptionId = this._mqttClient.messagesRaw((topic: string, message: Uint8Array) => {
+            this._items.push(Converter.bytesToHex(message));
+        });
 
-        this._metadataSubscriptionId = this._mqttClient.messagesMetadata(
-            (topic: string, metadata: IMessageMetadata) => {
-                this._itemMetadata[metadata.messageId] = {
-                    milestone: metadata.milestoneIndex,
-                    referenced: metadata.referencedByMilestoneIndex,
-                    solid: metadata.isSolid,
-                    conflicting: metadata.ledgerInclusionState === "conflicting",
-                    included: metadata.ledgerInclusionState === "included",
-                    ...this._itemMetadata[metadata.messageId]
-                };
-            });
+        this._metadataSubscriptionId = this._mqttClient.messagesMetadata((topic: string, metadata: IMessageMetadata) => {
+            this._itemMetadata[metadata.messageId] = {
+                milestone: metadata.milestoneIndex,
+                referenced: metadata.referencedByMilestoneIndex,
+                solid: metadata.isSolid,
+                conflicting: metadata.ledgerInclusionState === "conflicting",
+                included: metadata.ledgerInclusionState === "included",
+                ...this._itemMetadata[metadata.messageId],
+            };
+        });
 
-        this._milestoneSubscriptionId = this._feedService.subscribeMilestones(
-            (milestone: number, id: string, timestamp: number) => {
-                this._itemMetadata[id] = {
-                    milestone,
-                    timestamp,
-                    ...this._itemMetadata[id]
-                };
-            });
+        this._milestoneSubscriptionId = this._feedService.subscribeMilestones((milestone: number, id: string, timestamp: number) => {
+            this._itemMetadata[id] = {
+                milestone,
+                timestamp,
+                ...this._itemMetadata[id],
+            };
+        });
     }
 
     /**

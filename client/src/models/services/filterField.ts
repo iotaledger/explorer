@@ -17,7 +17,7 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
         case LEGACY: {
             filterFields = [
                 { label: "Zero only", isEnabled: true },
-                { label: "Non-zero only", isEnabled: true }
+                { label: "Non-zero only", isEnabled: true },
             ];
             break;
         }
@@ -26,7 +26,7 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
                 { label: "Transaction", isEnabled: true },
                 { label: "Milestone", isEnabled: true },
                 { label: "Data", isEnabled: true },
-                { label: "No payload", isEnabled: true }
+                { label: "No payload", isEnabled: true },
             ];
             break;
         }
@@ -36,7 +36,7 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
                 { label: "Transaction", isEnabled: true },
                 { label: "Milestone", isEnabled: true },
                 { label: "Indexed", isEnabled: true },
-                { label: "No payload", isEnabled: true }
+                { label: "No payload", isEnabled: true },
             ];
             break;
         }
@@ -44,4 +44,3 @@ export function getFilterFieldDefaults(protocolVersion: ProtocolVersion): Filter
 
     return filterFields;
 }
-

@@ -14,10 +14,7 @@ const MilestoneSignaturesSection: React.FC<MilestoneSignaturesProps> = ({ signat
 
     return (
         <div className="section signatures-section">
-            <div
-                className="section--header signatures--header"
-                onClick={() => setExpanded(!expanded)}
-            >
+            <div className="section--header signatures--header" onClick={() => setExpanded(!expanded)}>
                 <div className={classNames("dropdown-arrow", { expanded })}>
                     <DropdownIcon />
                 </div>
@@ -45,4 +42,3 @@ const MilestoneSignaturesSection: React.FC<MilestoneSignaturesProps> = ({ signat
 };
 
 export default MilestoneSignaturesSection;
-

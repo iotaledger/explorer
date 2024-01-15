@@ -7,7 +7,7 @@ import {
     RegularTransactionEssence,
     TaggedDataPayload,
     TransactionPayload,
-    Utils
+    Utils,
 } from "@iota/sdk-wasm/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "~factories/serviceFactory";
@@ -93,7 +93,7 @@ export class StardustFeedClient {
      */
     public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
-        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
+        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void,
     ) {
         this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 
@@ -108,16 +108,12 @@ export class StardustFeedClient {
             if (!this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
                 const subscribeRequest: IFeedSubscribeRequest = {
                     network: this._networkConfig.network,
-                    feedSelect: "block"
+                    feedSelect: "block",
                 };
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (subscribeResponse.error) {
-                        console.log(
-                            "Failed subscribing to feed",
-                            this._networkConfig?.network,
-                            subscribeResponse.error
-                        );
+                        console.log("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
                     } else {
                         this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
@@ -129,12 +125,10 @@ export class StardustFeedClient {
                             if (existingBlockData) {
                                 existingBlockData.metadata = {
                                     ...existingBlockData.metadata,
-                                    ...update.blockMetadata.metadata
+                                    ...update.blockMetadata.metadata,
                                 };
 
-                                onMetadataUpdatedCallback?.(
-                                    { [existingBlockData.blockId]: existingBlockData.metadata }
-                                );
+                                onMetadataUpdatedCallback?.({ [existingBlockData.blockId]: existingBlockData.metadata });
                             }
                         }
 
@@ -147,10 +141,7 @@ export class StardustFeedClient {
                                 onBlockDataCallback?.(block);
                             }
 
-                            if (
-                                block.payloadType === "Milestone" &&
-                                !this.latestMilestones.has(block.blockId)
-                            ) {
+                            if (block.payloadType === "Milestone" && !this.latestMilestones.has(block.blockId)) {
                                 this.latestMilestones.set(block.blockId, block);
                             }
                         }
@@ -168,9 +159,7 @@ export class StardustFeedClient {
      * Subscribe to the feed of milestones.
      * @param onMilestoneCallback the callback for block data updates.
      */
-    public subscribeMilestones(
-        onMilestoneCallback?: (milestoneData: IFeedMilestoneData) => void
-    ) {
+    public subscribeMilestones(onMilestoneCallback?: (milestoneData: IFeedMilestoneData) => void) {
         this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 
         // If reconnect fails then also try polling mode.
@@ -184,18 +173,14 @@ export class StardustFeedClient {
             if (!this.milestoneSubscriptionId && this._networkConfig?.network && this.socket) {
                 const subscribeRequest: IFeedSubscribeRequest = {
                     network: this._networkConfig.network,
-                    feedSelect: "milestone"
+                    feedSelect: "milestone",
                 };
 
                 this.socket.emit("subscribe", subscribeRequest);
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (subscribeResponse.error) {
-                        console.log(
-                            "Failed subscribing to feed",
-                            this._networkConfig?.network,
-                            subscribeResponse.error
-                        );
+                        console.log("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
                     } else {
                         this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
                     }
@@ -222,10 +207,10 @@ export class StardustFeedClient {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkConfig.network,
                     subscriptionId: this.blockSubscriptionId,
-                    feedSelect: "block"
+                    feedSelect: "block",
                 };
 
-                this.socket.on("unsubscribe", () => { });
+                this.socket.on("unsubscribe", () => {});
                 this.socket.emit("unsubscribe", unsubscribeRequest);
                 success = true;
             }
@@ -251,10 +236,10 @@ export class StardustFeedClient {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkConfig.network,
                     subscriptionId: this.milestoneSubscriptionId,
-                    feedSelect: "milestone"
+                    feedSelect: "milestone",
                 };
 
-                this.socket.on("unsubscribe", () => { });
+                this.socket.on("unsubscribe", () => {});
                 this.socket.emit("unsubscribe", unsubscribeRequest);
                 success = true;
             }
@@ -322,7 +307,7 @@ export class StardustFeedClient {
             value,
             parents: block?.parents ?? [],
             properties,
-            payloadType
+            payloadType,
         };
     }
 
@@ -355,4 +340,3 @@ export class StardustFeedClient {
         }, CACHE_TRIM_INTERVAL_MS);
     }
 }
-

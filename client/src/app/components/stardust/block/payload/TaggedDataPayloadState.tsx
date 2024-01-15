@@ -9,4 +9,3 @@ export interface TaggedDataPayloadState {
      */
     hexData?: string;
 }
-

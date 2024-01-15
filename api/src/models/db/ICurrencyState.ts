@@ -43,4 +43,3 @@ export interface ICurrencyState {
         [coinCode: string]: ICoinStats;
     };
 }
-
