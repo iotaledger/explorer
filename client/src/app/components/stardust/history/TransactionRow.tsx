@@ -11,35 +11,33 @@ import NetworkContext from "../../../context/NetworkContext";
 import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
 
-const TransactionRow: React.FC<ITransactionEntryProps> = (
-    {
-        outputId,
-        transactionId,
-        date,
-        milestoneIndex,
-        value,
-        isSpent,
-        isFormattedAmounts,
-        setIsFormattedAmounts,
-        darkBackgroundRow
-    }
-) => {
+const TransactionRow: React.FC<ITransactionEntryProps> = ({
+    outputId,
+    transactionId,
+    date,
+    milestoneIndex,
+    value,
+    isSpent,
+    isFormattedAmounts,
+    setIsFormattedAmounts,
+    darkBackgroundRow,
+}) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
     const outputIdTransaction = outputId.slice(0, -4);
     const outputIdIndex = outputId.slice(-4);
     const ago = moment(date * 1000).fromNow();
 
     const valueView = (
-        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)} >
+        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
             {`${isSpent ? "-" : "+"} ${formatAmount(value, tokenInfo, !isFormattedAmounts)}`}
         </span>
     );
 
-    const isTransactionFromStardustGenesis = milestoneIndex &&
-        TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
-    const transactionLink = isTransactionFromStardustGenesis ?
-        `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
-        `/${network}/transaction/${transactionId}`;
+    const isTransactionFromStardustGenesis =
+        milestoneIndex && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
+    const transactionLink = isTransactionFromStardustGenesis
+        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
+        : `/${network}/transaction/${transactionId}`;
 
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
@@ -47,10 +45,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                 <Link to={transactionLink} className="row center margin-r-t">
                     <TruncatedId id={transactionId} />
                     {isTransactionFromStardustGenesis && (
-                        <Tooltip
-                            tooltipContent="This link opens the transaction on Chrysalis Mainnet"
-                            childrenClass="row middle"
-                        >
+                        <Tooltip tooltipContent="This link opens the transaction on Chrysalis Mainnet" childrenClass="row middle">
                             <span className="material-icons" style={{ fontSize: "14px" }}>
                                 warning
                             </span>
@@ -64,15 +59,10 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                 </Link>
                 <span className="highlight">{outputIdIndex}</span>
             </td>
-            {date === 0 ? (
-                <td className="date">Genesis</td>
-            ) : (
-                <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>
-            )}
-            <td className={classNames("amount", { "negative": isSpent })}>{valueView}</td>
+            {date === 0 ? <td className="date">Genesis</td> : <td className="date">{`${DateHelper.formatShort(date * 1000)} (${ago})`}</td>}
+            <td className={classNames("amount", { negative: isSpent })}>{valueView}</td>
         </tr>
     );
 };
 
 export default TransactionRow;
-

@@ -36,14 +36,14 @@ export class ChrysalisApiStreamsV0Client {
         const hex = Converter.bytesToHex(indexationKey);
         const result = await this._apiClient.search({
             network: this._network,
-            query: hex
+            query: hex,
         });
 
         return {
             index: hex,
             maxResults: 1000,
             count: result.indexMessageIds ? result.indexMessageIds.length : 0,
-            messageIds: result.indexMessageIds ?? []
+            messageIds: result.indexMessageIds ?? [],
         };
     }
 
@@ -55,7 +55,7 @@ export class ChrysalisApiStreamsV0Client {
     public async message(messageId: string): Promise<IMessage> {
         const result = await this._apiClient.search({
             network: this._network,
-            query: messageId
+            query: messageId,
         });
 
         if (result.message) {

@@ -1,15 +1,14 @@
 @import "../../../../../../scss/mixins.scss";
 
 .controlled-foundry--card {
-  border: none !important;
-  margin-bottom: 48px;
+    border: none !important;
+    margin-bottom: 48px;
 
-  .field {
-    margin-bottom: 8px;
+    .field {
+        margin-bottom: 8px;
 
-    .card--label {
-      @include font-size(14px, 21px);
+        .card--label {
+            @include font-size(14px, 21px);
+        }
     }
-  }
 }
-

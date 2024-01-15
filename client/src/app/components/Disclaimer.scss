@@ -4,32 +4,32 @@
 @import "../../scss/media-queries";
 
 .disclaimer {
-  @include font-size(12px);
+    @include font-size(12px);
 
-  display: flex;
-  position: fixed;
-  z-index: 1000;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  border-top: 1px solid $gray-daylight;
-  background: $gray-midnight;
-  color: $white;
-  font-family: $metropolis;
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-top: 1px solid $gray-daylight;
+    background: $gray-midnight;
+    color: $white;
+    font-family: $metropolis;
 
-  .description {
-    margin-right: 20px;
+    .description {
+        margin-right: 20px;
 
-    @include tablet-down {
-      margin-right: 4px;
+        @include tablet-down {
+            margin-right: 4px;
+        }
     }
-  }
 
-  a {
-    color: var(--link-highlight);
-  }
+    a {
+        color: var(--link-highlight);
+    }
 }

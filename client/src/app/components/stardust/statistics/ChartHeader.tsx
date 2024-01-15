@@ -20,19 +20,12 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({ title, info, disabled, legend
             {title && (
                 <div className="chart-header__title">
                     <h4>{title}</h4>
-                    {info && (
-                        <Modal icon="info" data={info} />
-                    )}
+                    {info && <Modal icon="info" data={info} />}
                 </div>
             )}
         </div>
 
-        {!disabled && legend && (
-            <ChartLegend
-                labels={legend.labels}
-                colors={legend.colors}
-            />
-        )}
+        {!disabled && legend && <ChartLegend labels={legend.labels} colors={legend.colors} />}
     </div>
 );
 
@@ -40,7 +33,7 @@ ChartHeader.defaultProps = {
     disabled: undefined,
     info: undefined,
     legend: undefined,
-    title: undefined
+    title: undefined,
 };
 
 export default ChartHeader;

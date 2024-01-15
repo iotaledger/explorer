@@ -27,7 +27,7 @@ export class CurrencyService {
         id: "default",
         lastFixerUpdate: 0,
         fiatExchangeRatesEur: {},
-        coinStats: {}
+        coinStats: {},
     };
 
     /**
@@ -82,16 +82,14 @@ export class CurrencyService {
                     currentState = await currencyStorageService.get("default");
                 }
 
-                currentState = currentState?.coinStats === undefined ?
-                    CurrencyService.INITIAL_STATE :
-                    currentState;
+                currentState = currentState?.coinStats === undefined ? CurrencyService.INITIAL_STATE : currentState;
 
-                const lastFixerUpdate = currentState?.lastFixerUpdate > 0 ?
-                    new Date(currentState.lastFixerUpdate) :
-                    new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
+                const TWO_DAYS = 2 * CurrencyService.MS_PER_DAY;
+                const lastFixerUpdate =
+                    currentState?.lastFixerUpdate > 0 ? new Date(currentState.lastFixerUpdate) : new Date(Date.now() - TWO_DAYS);
 
                 // Update Fixer rates every 4 hours so we dont hit rate limit
-                if (nowMs - lastFixerUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 240)) {
+                if (nowMs - lastFixerUpdate.getTime() > CurrencyService.MS_PER_MINUTE * 240) {
                     await this.updateFixerDxyRates(currentState, fullDate);
                 }
 
@@ -99,15 +97,15 @@ export class CurrencyService {
                     const currentStats = currentState.coinStats[coin];
 
                     // If now date, default to 2 days ago
-                    const lastCurrencyUpdate = currentStats?.lastUpdate ?
-                        new Date(currentStats.lastUpdate) :
-                        new Date(Date.now() - (2 * CurrencyService.MS_PER_DAY));
+                    const lastCurrencyUpdate = currentStats?.lastUpdate
+                        ? new Date(currentStats.lastUpdate)
+                        : new Date(Date.now() - TWO_DAYS);
 
                     // If we have no state, an update over 5 minutes old, the day has changed, or force update
                     if (
                         !currentStats ||
-                        nowMs - lastCurrencyUpdate.getTime() > (CurrencyService.MS_PER_MINUTE * 5) ||
-                        (lastCurrencyUpdate.getDate() !== now.getDate()) ||
+                        nowMs - lastCurrencyUpdate.getTime() > CurrencyService.MS_PER_MINUTE * 5 ||
+                        lastCurrencyUpdate.getDate() !== now.getDate() ||
                         force
                     ) {
                         await this.updateCoinStats(coin, currentState, fullDate);
@@ -133,10 +131,7 @@ export class CurrencyService {
      * @param currentState Current currency state.
      * @param date The date string for logging.
      */
-    private async updateFixerDxyRates(
-        currentState: ICurrencyState,
-        date: string
-    ): Promise<void> {
+    private async updateFixerDxyRates(currentState: ICurrencyState, date: string): Promise<void> {
         if ((this._config.fixerApiKey || "FIXER-API-KEY") === "FIXER-API-KEY") {
             logger.warn("Fixer Api key NOT FOUND!");
         } else {
@@ -161,11 +156,7 @@ export class CurrencyService {
      * @param currentState Current currency state.
      * @param date The date string for logging.
      */
-    private async updateCoinStats(
-        coin: string,
-        currentState: ICurrencyState,
-        date: string
-    ): Promise<void> {
+    private async updateCoinStats(coin: string, currentState: ICurrencyState, date: string): Promise<void> {
         logger.verbose(`[Coin Gecko] Updating Coin stats (${date})...`);
 
         const coinGeckoClient = new CoinGeckoClient();
@@ -184,7 +175,7 @@ export class CurrencyService {
                 price,
                 marketCap,
                 volume24h,
-                lastUpdate: Date.now()
+                lastUpdate: Date.now(),
             };
 
             currentState.coinStats[coin] = coinStats;

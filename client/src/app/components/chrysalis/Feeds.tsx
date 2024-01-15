@@ -94,20 +94,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     /**
      * Update formatted currencies.
      */
-    protected updateCurrency(): void {
-    }
+    protected updateCurrency(): void {}
 
     /**
      * The items have been updated.
      * @param newItems The updated items.
      */
     protected itemsUpdated(newItems: IFeedItem[]): void {
-        const isLatestMilestoneFeedInfoEnabled = this._networkConfig &&
-            this._networkConfig.network !== LEGACY_MAINNET &&
-            this._networkConfig.network !== CUSTOM;
+        const isLatestMilestoneFeedInfoEnabled =
+            this._networkConfig && this._networkConfig.network !== LEGACY_MAINNET && this._networkConfig.network !== CUSTOM;
 
         if (isLatestMilestoneFeedInfoEnabled && newItems) {
-            const milestones = newItems.filter(i => i.payloadType === "MS");
+            const milestones = newItems.filter((i) => i.payloadType === "MS");
             let newIndex;
             for (const ms of milestones) {
                 const index: number | undefined = ms.properties?.index as number;
@@ -126,20 +124,18 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      * The confirmed items have been updated.
      * @param metaData The updated confirmed items.
      */
-    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void { }
+    protected metadataUpdated(metaData: { [id: string]: IFeedItemMetadata }): void {}
 
     /**
      * Build the feeds for transactions.
      */
     private buildItems(): void {
         if (this._feedClient) {
-            this._itemSubscriptionId = this._feedClient.subscribe(
-                (updatedItems, metadata) => {
-                    if (this._isMounted) {
-                        this.updateItems(updatedItems, metadata);
-                    }
+            this._itemSubscriptionId = this._feedClient.subscribe((updatedItems, metadata) => {
+                if (this._isMounted) {
+                    this.updateItems(updatedItems, metadata);
                 }
-            );
+            });
 
             this.updateItems(this._feedClient.getItems(), {});
         }
@@ -179,26 +175,26 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
     private updateTps(): void {
         if (this._isMounted && this._apiClient && this._networkConfig) {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this._apiClient.stats({
-                network: this._networkConfig.network,
-                includeHistory: true
-            }).then(ips => {
-                const itemsPerSecond = ips.itemsPerSecond ?? 0;
-                const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
-                const confirmedRate = ips.confirmationRate ?
-                    (ips.confirmationRate > 100 ? 100 : ips.confirmationRate) : 0;
+            this._apiClient
+                .stats({
+                    network: this._networkConfig.network,
+                    includeHistory: true,
+                })
+                .then((ips) => {
+                    const itemsPerSecond = ips.itemsPerSecond ?? 0;
+                    const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
+                    const confirmedRate = ips.confirmationRate ? (ips.confirmationRate > 100 ? 100 : ips.confirmationRate) : 0;
 
-                this.setState({
-                    itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
-                    confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
-                    confirmedItemsPerSecondPercent: confirmedRate > 0
-                        ? `${confirmedRate.toFixed(2)}%` : "--",
-                    latestMilestoneIndex: this.state.latestMilestoneIndex ?? ips.latestMilestoneIndex,
-                    // Increase values by +100 to add more area under the graph
-                    itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map(v => v + 100)
-                });
-            })
-                .catch(err => {
+                    this.setState({
+                        itemsPerSecond: itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--",
+                        confirmedItemsPerSecond: confirmedItemsPerSecond >= 0 ? confirmedItemsPerSecond.toFixed(2) : "--",
+                        confirmedItemsPerSecondPercent: confirmedRate > 0 ? `${confirmedRate.toFixed(2)}%` : "--",
+                        latestMilestoneIndex: this.state.latestMilestoneIndex ?? ips.latestMilestoneIndex,
+                        // Increase values by +100 to add more area under the graph
+                        itemsPerSecondHistory: (ips.itemsPerSecondHistory ?? []).map((v) => v + 100),
+                    });
+                })
+                .catch((err) => {
                     console.error(err);
                 })
                 .finally(() => {
@@ -212,13 +208,10 @@ abstract class Feeds<P extends RouteComponentProps<{ network: string }>, S exten
      */
     private initNetworkServices(): void {
         const networkService = ServiceFactory.get<NetworkService>("network");
-        this._networkConfig = this.props.match.params.network
-            ? networkService.get(this.props.match.params.network)
-            : undefined;
+        this._networkConfig = this.props.match.params.network ? networkService.get(this.props.match.params.network) : undefined;
 
         this._apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
-        this._feedClient = ServiceFactory.get<ChrysalisFeedClient>(
-            `feed-${this.props.match.params.network}`);
+        this._feedClient = ServiceFactory.get<ChrysalisFeedClient>(`feed-${this.props.match.params.network}`);
 
         this.updateTps();
         this.buildItems();

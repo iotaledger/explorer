@@ -12,11 +12,7 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @param aliasAddress The alias address
  * @returns The alias foundries and loading bool.
  */
-export function useAliasControlledFoundries(network: string, aliasAddress: IBech32AddressDetails | null):
-    [
-        string[] | null,
-        boolean
-    ] {
+export function useAliasControlledFoundries(network: string, aliasAddress: IBech32AddressDetails | null): [string[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [aliasFoundries, setAliasFoundries] = useState<string[] | null>(null);
@@ -28,27 +24,27 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
             const foundries: string[] = [];
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.aliasFoundries({
-                    network,
-                    aliasAddress: aliasAddress.bech32
-                }).then(async foundryOutputs => {
-                    if (
-                        foundryOutputs?.foundryOutputsResponse &&
-                        foundryOutputs?.foundryOutputsResponse?.items.length > 0
-                    ) {
-                        for (const foundryOutputId of foundryOutputs.foundryOutputsResponse.items) {
-                            const foundryId = await fetchFoundryId(foundryOutputId);
-                            if (foundryId) {
-                                foundries.push(foundryId);
+                apiClient
+                    .aliasFoundries({
+                        network,
+                        aliasAddress: aliasAddress.bech32,
+                    })
+                    .then(async (foundryOutputs) => {
+                        if (foundryOutputs?.foundryOutputsResponse && foundryOutputs?.foundryOutputsResponse?.items.length > 0) {
+                            for (const foundryOutputId of foundryOutputs.foundryOutputsResponse.items) {
+                                const foundryId = await fetchFoundryId(foundryOutputId);
+                                if (foundryId) {
+                                    foundries.push(foundryId);
+                                }
+                            }
+                            if (isMounted) {
+                                setAliasFoundries(foundries);
                             }
                         }
-                        if (isMounted) {
-                            setAliasFoundries(foundries);
-                        }
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);
@@ -56,23 +52,17 @@ export function useAliasControlledFoundries(network: string, aliasAddress: IBech
     }, [network, aliasAddress]);
 
     const fetchFoundryId = async (outputId: HexEncodedString) => {
-        const foundryId = apiClient.outputDetails({ network, outputId }).then(
-            response => {
-                const details = response.output;
-                if (aliasAddress?.hex && !response.error && details?.output?.type === OutputType.Foundry) {
-                    const output = details.output as FoundryOutput;
-                    const serialNumber = output.serialNumber;
-                    const tokenSchemeType = output.tokenScheme.type;
-                    const tokenId = Utils.computeTokenId(
-                        aliasAddress.hex,
-                        serialNumber,
-                        tokenSchemeType
-                    );
+        const foundryId = apiClient.outputDetails({ network, outputId }).then((response) => {
+            const details = response.output;
+            if (aliasAddress?.hex && !response.error && details?.output?.type === OutputType.Foundry) {
+                const output = details.output as FoundryOutput;
+                const serialNumber = output.serialNumber;
+                const tokenSchemeType = output.tokenScheme.type;
+                const tokenId = Utils.computeTokenId(aliasAddress.hex, serialNumber, tokenSchemeType);
 
-                    return tokenId;
-                }
+                return tokenId;
             }
-        );
+        });
         return foundryId;
     };
 

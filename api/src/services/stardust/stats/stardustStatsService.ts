@@ -3,7 +3,6 @@ import { BaseStatsService } from "./baseStatsService";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 
-
 /**
  * Class to handle stats service.
  */
@@ -22,12 +21,10 @@ export class StardustStatsService extends BaseStatsService {
                     confirmedItemsPerSecond: response.nodeInfo.metrics.referencedBlocksPerSecond,
                     confirmationRate: response.nodeInfo.metrics.referencedRate,
                     latestMilestoneIndex: response.nodeInfo.status.latestMilestone.index,
-                    latestMilestoneIndexTime: response.nodeInfo.status.latestMilestone.timestamp * 1000
+                    latestMilestoneIndexTime: response.nodeInfo.status.latestMilestone.timestamp * 1000,
                 });
 
-                logger.debug(
-                    `[StardustStatsService] Updating network statistics for ${this._networkConfiguration.network}`
-                );
+                logger.debug(`[StardustStatsService] Updating network statistics for ${this._networkConfiguration.network}`);
 
                 if (this._statistics.length > 30) {
                     this._statistics = this._statistics.slice(-30);
@@ -38,4 +35,3 @@ export class StardustStatsService extends BaseStatsService {
         }
     }
 }
-

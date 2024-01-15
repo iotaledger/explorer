@@ -13,10 +13,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function info(
-    _: IConfiguration,
-    request: INetworkBoundGetRequest
-): Promise<INodeInfoResponse> {
+export async function info(_: IConfiguration, request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 

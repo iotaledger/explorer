@@ -11,15 +11,10 @@ interface ImagePlaceholderProps {
 }
 
 export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({ message, color, compact, isLoading }) => (
-    <div
-        className={classNames("nft-image-placeholder", { compact })}
-        style={{ backgroundColor: color ?? "#00e0ca" }}
-    >
+    <div className={classNames("nft-image-placeholder", { compact })} style={{ backgroundColor: color ?? "#00e0ca" }}>
         <div className="nft-image-placeholder__content">
             {message}
-            {isLoading && (
-                <Spinner />
-            )}
+            {isLoading && <Spinner />}
         </div>
     </div>
 );
@@ -27,6 +22,5 @@ export const ImagePlaceholder: React.FC<ImagePlaceholderProps> = ({ message, col
 ImagePlaceholder.defaultProps = {
     color: undefined,
     compact: false,
-    isLoading: false
+    isLoading: false,
 };
-

@@ -11,7 +11,7 @@ import "./NetworkSwitcher.scss";
 const PROTOCOL_VERIONS_TO_LABEL = {
     [LEGACY]: "Legacy",
     [CHRYSALIS]: "Chrysalis",
-    [STARDUST]: "Stardust"
+    [STARDUST]: "Stardust",
 };
 
 /**
@@ -42,9 +42,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                     </div>
                     {!isSingleNetwork && (
                         <div className="icon">
-                            <span className="material-icons">
-                                expand_more
-                            </span>
+                            <span className="material-icons">expand_more</span>
                         </div>
                     )}
 
@@ -54,10 +52,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                 <div className="network" key={idx}>
                                     <div className="network--cards">
                                         <div
-                                            className={classNames(
-                                                "network--card row middle",
-                                                { selected: network.label === label }
-                                            )}
+                                            className={classNames("network--card row middle", { selected: network.label === label })}
                                             onClick={() => onChange(network.network)}
                                         >
                                             <div className="network--icon row middle center">
@@ -65,9 +60,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                             </div>
                                             <div className="network--content">
                                                 <div className="label">{network.label}</div>
-                                                <div className="protocol">
-                                                    {PROTOCOL_VERIONS_TO_LABEL[network.protocolVersion]}
-                                                </div>
+                                                <div className="protocol">{PROTOCOL_VERIONS_TO_LABEL[network.protocolVersion]}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -76,15 +69,9 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                         </div>
                     </div>
 
-                    {isExpanded && (
-                        <div
-                            className="header--expanded--shield"
-                            onClick={onClick}
-                        />
-                    )}
-
+                    {isExpanded && <div className="header--expanded--shield" onClick={onClick} />}
                 </div>
-            </div >
+            </div>
         );
     }
 }

@@ -1,6 +1,4 @@
-import {
-    OutputType, OutputResponse, CommonOutput
-} from "@iota/sdk-wasm/web";
+import { OutputType, OutputResponse, CommonOutput } from "@iota/sdk-wasm/web";
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
 import { IToken } from "~models/api/stardust/foundry/IToken";
@@ -29,17 +27,21 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
             const theTokens: IToken[] = [];
             for (const outputResponse of outputs) {
                 const output = outputResponse.output;
-                if (output.type === OutputType.Basic || output.type === OutputType.Alias ||
-                    output.type === OutputType.Foundry || output.type === OutputType.Nft) {
+                if (
+                    output.type === OutputType.Basic ||
+                    output.type === OutputType.Alias ||
+                    output.type === OutputType.Foundry ||
+                    output.type === OutputType.Nft
+                ) {
                     for (const token of (output as CommonOutput).nativeTokens ?? []) {
-                        const existingToken = theTokens.find(t => t.id === token.id);
+                        const existingToken = theTokens.find((t) => t.id === token.id);
                         // Convert to BigInt again in case the amount is hex
                         const amount = BigInt(token.amount);
-                            if (existingToken) {
-                                existingToken.amount += amount;
-                            } else {
-                                theTokens.push({ id: token.id, amount });
-                            }
+                        if (existingToken) {
+                            existingToken.amount += amount;
+                        } else {
+                            theTokens.push({ id: token.id, amount });
+                        }
                     }
                 }
             }
@@ -59,58 +61,47 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
         }
     }, [tokens, pageNumber]);
 
-    return (
-        tokens && tokens?.length > 0 ? (
-            <div className="section">
-                <table className="asset-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Symbol</th>
-                            <th>Token id</th>
-                            <th>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentPage.map((token, k) => (
-                            <React.Fragment key={`${token.id}${k}`}>
-                                <Asset
-                                    key={k}
-                                    token={token}
-                                    network={networkId}
-                                    tableFormat={true}
-                                />
-                            </React.Fragment>
-                        ))}
-                    </tbody>
-                </table>
-
-                {/* Only visible in mobile -- Card assets*/}
-                <div className="asset-cards">
+    return tokens && tokens?.length > 0 ? (
+        <div className="section">
+            <table className="asset-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Symbol</th>
+                        <th>Token id</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
                     {currentPage.map((token, k) => (
                         <React.Fragment key={`${token.id}${k}`}>
-                            <Asset
-                                key={k}
-                                token={token}
-                                network={networkId}
-                            />
+                            <Asset key={k} token={token} network={networkId} tableFormat={true} />
                         </React.Fragment>
                     ))}
-                </div>
-                <Pagination
-                    currentPage={pageNumber}
-                    totalCount={tokens?.length ?? 0}
-                    pageSize={TOKEN_PAGE_SIZE}
-                    siblingsCount={1}
-                    onPageChange={number => setPageNumber(number)}
-                />
+                </tbody>
+            </table>
+
+            {/* Only visible in mobile -- Card assets*/}
+            <div className="asset-cards">
+                {currentPage.map((token, k) => (
+                    <React.Fragment key={`${token.id}${k}`}>
+                        <Asset key={k} token={token} network={networkId} />
+                    </React.Fragment>
+                ))}
             </div>
-        ) : null
-    );
+            <Pagination
+                currentPage={pageNumber}
+                totalCount={tokens?.length ?? 0}
+                pageSize={TOKEN_PAGE_SIZE}
+                siblingsCount={1}
+                onPageChange={(number) => setPageNumber(number)}
+            />
+        </div>
+    ) : null;
 };
 
 AssetsTable.defaultProps = {
-    setTokenCount: undefined
+    setTokenCount: undefined,
 };
 
 export default AssetsTable;

@@ -17,7 +17,7 @@ import {
     TRANSITIONS_DURATION_MS,
     useChartWrapperSize,
     useSingleValueTooltip,
-    useTouchMoveEffect
+    useTouchMoveEffect,
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -51,13 +51,13 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
             select(theSvg.current).select("*").remove();
 
             // chart dimensions
-            const yMax = max(data, d => d.n) ?? 1;
+            const yMax = max(data, (d) => d.n) ?? 1;
             const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
             const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
             const INNER_HEIGHT = height - MARGIN.top - MARGIN.bottom;
 
-            const dates = data.map(d => timestampToDate(d.time));
+            const dates = data.map((d) => timestampToDate(d.time));
 
             // SVG
             const svg = select(theSvg.current)
@@ -70,17 +70,15 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
             const x = scaleTime()
                 .domain([dates[0], dates.at(-1) ?? dates[0]])
                 .range([0, INNER_WIDTH]);
-            const xAxisSelection = svg.append("g")
+            const xAxisSelection = svg
+                .append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(buildXAxis(x));
 
             // Y
-            const y = scaleLinear().domain([0, yMax])
-                .range([INNER_HEIGHT, 0]);
-            const yAxisSelection = svg.append("g")
-                .attr("class", "axis axis--y")
-                .call(buildYAxis(y, yMax));
+            const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
+            const yAxisSelection = svg.append("g").attr("class", "axis axis--y").call(buildYAxis(y, yMax));
 
             // clip path
             svg.append("defs")
@@ -94,15 +92,17 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
 
             // brushing
             const brush = brushX()
-                .extent([[0, 0], [INNER_WIDTH, height]])
-                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
+                .extent([
+                    [0, 0],
+                    [INNER_WIDTH, height],
+                ])
+                .on("end", (e) => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            const brushSelection = svg.append("g")
-                .attr("class", "brush")
-                .call(brush);
+            const brushSelection = svg.append("g").attr("class", "brush").call(brush);
 
             // bars
-            const barsSelection = svg.append("g")
+            const barsSelection = svg
+                .append("g")
                 .attr("class", "the-bars")
                 .attr("clip-path", `url(#clip-${chartId})`)
                 .selectAll("g")
@@ -110,14 +110,14 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 .enter()
                 .append("rect")
                 .attr("class", "bar")
-                .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / data.length) / 2))
-                .attr("y", d => y(d.n))
+                .attr("x", (d) => x(timestampToDate(d.time)) - INNER_WIDTH / data.length / 2)
+                .attr("y", (d) => y(d.n))
                 .attr("fill", color)
                 .attr("rx", 2)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler)
                 .attr("width", INNER_WIDTH / data.length)
-                .attr("height", d => INNER_HEIGHT - y(d.n));
+                .attr("height", (d) => INNER_HEIGHT - y(d.n));
 
             const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
                 if (!event.selection) {
@@ -136,18 +136,20 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
 
                 // to prevent infinite brushing
                 if (selectedData.length > 1) {
-                    const yMaxUpdate = max(selectedData, d => d.n) ?? 1;
+                    const yMaxUpdate = max(selectedData, (d) => d.n) ?? 1;
                     y.domain([0, yMaxUpdate]);
                     // Update axis
                     xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
                     yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
                     // Update bars
-                    barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
-                        .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / selectedData.length) / 2))
-                        .attr("y", d => y(d.n))
+                    barsSelection
+                        .transition()
+                        .duration(TRANSITIONS_DURATION_MS)
+                        .attr("x", (d) => x(timestampToDate(d.time)) - INNER_WIDTH / selectedData.length / 2)
+                        .attr("y", (d) => y(d.n))
                         .attr("width", INNER_WIDTH / selectedData.length)
-                        .attr("height", d => INNER_HEIGHT - y(d.n));
+                        .attr("height", (d) => INNER_HEIGHT - y(d.n));
                 }
             };
 
@@ -157,11 +159,13 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
                 xAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
-                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
-                    .attr("x", d => x(timestampToDate(d.time)) - ((INNER_WIDTH / data.length) / 2))
-                    .attr("y", d => y(d.n))
+                barsSelection
+                    .transition()
+                    .duration(TRANSITIONS_DURATION_MS)
+                    .attr("x", (d) => x(timestampToDate(d.time)) - INNER_WIDTH / data.length / 2)
+                    .attr("y", (d) => y(d.n))
                     .attr("width", INNER_WIDTH / data.length)
-                    .attr("height", d => INNER_HEIGHT - y(d.n));
+                    .attr("height", (d) => INNER_HEIGHT - y(d.n));
             });
         }
     }, [data, wrapperWidth, wrapperHeight]);
@@ -172,16 +176,9 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
      * @param _ The unused event param
      * @param dataPoint The data point rendered by this rect
      */
-    function mouseoverHandler(
-        this: SVGRectElement | BaseType,
-        _: unknown,
-        dataPoint: { [key: string]: number }
-    ) {
+    function mouseoverHandler(this: SVGRectElement | BaseType, _: unknown, dataPoint: { [key: string]: number }) {
         // show tooltip
-        select(theTooltip.current)
-            .style("display", "block")
-            .select("#content")
-            .html(buildTooltip(dataPoint));
+        select(theTooltip.current).style("display", "block").select("#content").html(buildTooltip(dataPoint));
         // add highlight
         select(this).classed("active", true);
     }
@@ -193,18 +190,12 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        select(theSvg.current)
-            .select(".active")
-            .classed("active", false);
+        select(theSvg.current).select(".active").classed("active", false);
     }
 
     return (
         <div className={classNames("chart-wrapper", { "chart-wrapper--no-data": data.length === 0 })}>
-            <ChartHeader
-                title={title}
-                info={info}
-                disabled={data.length === 0}
-            />
+            <ChartHeader title={title} info={info} disabled={data.length === 0} />
             {data.length === 0 ? (
                 noDataView()
             ) : (
@@ -220,8 +211,7 @@ const BarChart: React.FC<BarChartProps> = ({ chartId, title, info, data, label, 
 BarChart.defaultProps = {
     info: undefined,
     label: undefined,
-    title: undefined
+    title: undefined,
 };
 
 export default BarChart;
-

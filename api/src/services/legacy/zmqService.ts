@@ -103,8 +103,7 @@ export class ZmqService {
                 }
 
                 localSocket.close();
-            } catch {
-            }
+            } catch {}
         }
     }
 
@@ -122,10 +121,7 @@ export class ZmqService {
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribe(
-        event: "trytes",
-        callback: (eventName: string, data: ITxTrytes) => Promise<void>
-    ): string;
+    public subscribe(event: "trytes", callback: (eventName: string, data: ITxTrytes) => Promise<void>): string;
 
     /**
      * Subscribe to named event.
@@ -136,7 +132,7 @@ export class ZmqService {
     public subscribe(
         event: ZmqEvent,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        callback: (eventName: string, data: any) => Promise<void>
+        callback: (eventName: string, data: any) => Promise<void>,
     ): string {
         return this.internalAddEventCallback(event, callback);
     }
@@ -147,10 +143,7 @@ export class ZmqService {
      * @param callback The callback to call with data for the event.
      * @returns An id to use for unsubscribe.
      */
-    public subscribeEvent(
-        event: ZmqEvent,
-        callback: (eventName: string, data: unknown) => Promise<void>
-    ): string {
+    public subscribeEvent(event: ZmqEvent, callback: (eventName: string, data: unknown) => Promise<void>): string {
         return this.internalAddEventCallback(event, callback);
     }
 
@@ -160,10 +153,7 @@ export class ZmqService {
      * @param callback Callback to call with address data.
      * @returns An id to use for unsubscribe.
      */
-    public subscribeAddress(
-        address: string,
-        callback: (event: string, data: IAddress) => Promise<void>
-    ): string {
+    public subscribeAddress(address: string, callback: (event: string, data: IAddress) => Promise<void>): string {
         if (!/^[9A-Z]{81}$/.test(address)) {
             throw new Error("The parameter 'address' must be 81 trytes.");
         }
@@ -213,7 +203,7 @@ export class ZmqService {
                         address: messageParams[3],
                         trunk: messageParams[4],
                         branch: messageParams[5],
-                        bundle: messageParams[6]
+                        bundle: messageParams[6],
                     } as ISn;
                     break;
                 }
@@ -221,7 +211,7 @@ export class ZmqService {
                 case "trytes": {
                     data = {
                         trytes: messageParams[1],
-                        txHash: messageParams[2]
+                        txHash: messageParams[2],
                     } as ITxTrytes;
                     break;
                 }
@@ -234,7 +224,7 @@ export class ZmqService {
                             data = {
                                 address: messageParams[0],
                                 transaction: messageParams[1],
-                                milestoneIndex: mi
+                                milestoneIndex: mi,
                             } as IAddress;
                         }
                     }
@@ -259,10 +249,7 @@ export class ZmqService {
      * @param callback The callback to store for the event.
      * @returns The id of the subscription.
      */
-    protected internalAddEventCallback(
-        event: string,
-        callback: (eventName: string, data: unknown) => Promise<void>
-    ): string {
+    protected internalAddEventCallback(event: string, callback: (eventName: string, data: unknown) => Promise<void>): string {
         if (!this._subscriptions[event]) {
             this._subscriptions[event] = [];
         }
