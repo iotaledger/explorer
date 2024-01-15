@@ -28,9 +28,7 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
             return;
         }
 
-        const transactionId = output.isSpent
-            ? detailsMetadata.transactionIdSpent
-            : detailsMetadata.transactionId;
+        const transactionId = output.isSpent ? detailsMetadata.transactionIdSpent : detailsMetadata.transactionId;
 
         if (!transactionId) {
             return;
@@ -48,38 +46,36 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
         addOutputToTransactionId(transactionId, output);
         // addOutputToTransactionId(detailsMetadata.transactionIdSpent as string, output);
         // addOutputToTransactionId(detailsMetadata.transactionId, output);
-
     });
 
     return transactionIdToOutputs;
-}
+};
 
 export const getTransactionHistoryRecords = (
     transactionIdToOutputs: Map<string, OutputWithDetails[]>,
     network: string,
     tokenInfo: INodeInfoBaseToken,
-    isFormattedAmounts: boolean
+    isFormattedAmounts: boolean,
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
 
     transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
 
-        console.log('--- getTransactionHistoryRecords', transactionId, outputs);
+        console.log("--- getTransactionHistoryRecords", transactionId, outputs);
         const balanceChange = calculateBalanceChange(outputs);
         const ago = moment(lastOutputTime * 1000).fromNow();
 
-        const isGenesisByDate = outputs
-            .map((t) => t.milestoneTimestamp)
-            .some((milestoneTimestamp) => milestoneTimestamp === 0);
+        const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).some((milestoneTimestamp) => milestoneTimestamp === 0);
 
         const milestoneIndexes = outputs.map((t) => t.milestoneIndex);
-        const isTransactionFromStardustGenesis = milestoneIndexes
-            .some(milestoneIndex => TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex));
+        const isTransactionFromStardustGenesis = milestoneIndexes.some((milestoneIndex) =>
+            TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex),
+        );
 
-        const transactionLink = isTransactionFromStardustGenesis ?
-            `/${CHRYSALIS_MAINNET}/search/${transactionId}` :
-            `/${network}/transaction/${transactionId}`;
+        const transactionLink = isTransactionFromStardustGenesis
+            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
+            : `/${network}/transaction/${transactionId}`;
 
         const isSpent = balanceChange < 0;
 
@@ -97,11 +93,11 @@ export const getTransactionHistoryRecords = (
             dateFormatted: `${DateHelper.formatShort(lastOutputTime * 1000)} (${ago})`,
             balanceChange: balanceChange,
             balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts),
-            outputs: outputs
+            outputs: outputs,
         });
-    })
+    });
     return calculatedTransactions;
-}
+};
 
 export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     return outputs.reduce((acc, output) => {
@@ -117,7 +113,9 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
             amount = -1 * amount;
             // we need to cover the case where the output is spent not by the current address,
             // but by the return address of an expired expiration unlock condition
-            const expirationUnlockCondition = outputFromDetails.unlockConditions?.find(({ type }) => type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+            const expirationUnlockCondition = outputFromDetails.unlockConditions?.find(
+                ({ type }) => type === UnlockConditionType.Expiration,
+            ) as ExpirationUnlockCondition;
 
             if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
                 amount = 0;

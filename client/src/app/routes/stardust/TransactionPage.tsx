@@ -38,9 +38,6 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const { tokenInfo } = useContext(NetworkContext);
     const [block, isIncludedBlockLoading, blockError] = useTransactionIncludedBlock(network, transactionId);
     const [inputs, unlocks, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
-
-
-
     const [includedBlockId, setIncludedBlockId] = useState<string | null>(null);
     const [tangleNetworkId, setTangleNetworkId] = useState<string | undefined>();
     const [inputsCommitment, setInputsCommitment] = useState<string | undefined>();

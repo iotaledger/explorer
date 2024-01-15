@@ -5,32 +5,26 @@ import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 
-const TransactionRow: React.FC<ITransactionEntryProps> = (
-    {
-        isGenesisByDate,
-        isTransactionFromStardustGenesis,
-        transactionLink,
-        dateFormatted,
-        balanceChangeFormatted,
-        transactionId,
-        isSpent,
-        isFormattedAmounts,
-        setIsFormattedAmounts,
-    }
-) => {
+const TransactionRow: React.FC<ITransactionEntryProps> = ({
+    isGenesisByDate,
+    isTransactionFromStardustGenesis,
+    transactionLink,
+    dateFormatted,
+    balanceChangeFormatted,
+    transactionId,
+    isSpent,
+    isFormattedAmounts,
+    setIsFormattedAmounts,
+}) => {
     const valueView = (
-        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)} >
+        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
             {balanceChangeFormatted}
         </span>
     );
 
     return (
         <tr>
-            { isGenesisByDate ? (
-                <td className="date">Genesis</td>
-            ) : (
-                <td className="date">{dateFormatted}</td>
-            )}
+            {isGenesisByDate ? <td className="date">Genesis</td> : <td className="date">{dateFormatted}</td>}
             <td className="transaction-id">
                 <Link to={transactionLink} className="row center margin-r-t">
                     <TruncatedId id={transactionId} />
@@ -43,7 +37,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                     )}
                 </Link>
             </td>
-            <td className={classNames("amount", { "negative": isSpent })}>{valueView}</td>
+            <td className={classNames("amount", { negative: isSpent })}>{valueView}</td>
         </tr>
     );
 };

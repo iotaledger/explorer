@@ -15,14 +15,8 @@ export interface TransactionHistoryProps {
     readonly setDisabled?: (isDisabled: boolean) => void;
 }
 
-const TransactionHistory: React.FC<TransactionHistoryProps> = (
-    { network, address, setLoading, setDisabled }
-) => {
-    const [transactionIdToOutputs, loadMore, isLoading, hasMore] = useAddressHistory(
-        network,
-        address,
-        setDisabled
-    );
+const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address, setLoading, setDisabled }) => {
+    const [transactionIdToOutputs, loadMore, isLoading, hasMore] = useAddressHistory(network, address, setDisabled);
 
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
     const { tokenInfo } = useContext(NetworkContext);
@@ -33,13 +27,14 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     const transactions = useMemo(() => {
         const transactionsLocal = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
-        if (hasMore) { // remove last transaction, as it's potentially doesn't have all outputs
+        if (hasMore) {
+            // remove last transaction, as it's potentially doesn't have all outputs
             transactionsLocal.pop();
         }
         return transactionsLocal;
     }, [transactionIdToOutputs, tokenInfo, isFormattedAmounts, hasMore]);
 
-    return (transactions.length > 0 && address ? (
+    return transactions.length > 0 && address ? (
         <div className="section transaction-history--section">
             <div className="section--header row end">
                 <DownloadModal network={network} address={address} />
@@ -73,36 +68,35 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
             {/** Only visible in mobile -- Card transactions */}
             <div className="transaction-history--cards">
-                    {transactions.map((c, idx) => {
-                        return (
-                            <React.Fragment key={idx}>
-                                <TransactionCard
-                                    isGenesisByDate={c.isGenesisByDate}
-                                    isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
-                                    transactionLink={c.transactionLink}
-                                    dateFormatted={c.dateFormatted}
-                                    balanceChangeFormatted={c.balanceChangeFormatted}
-                                    transactionId={c.transactionId}
-                                    isSpent={c.isSpent}
-                                    isFormattedAmounts={isFormattedAmounts}
-                                    setIsFormattedAmounts={setIsFormattedAmounts}
-                                />
-                            </React.Fragment>
-                        );
-                    })}
+                {transactions.map((c, idx) => {
+                    return (
+                        <React.Fragment key={idx}>
+                            <TransactionCard
+                                isGenesisByDate={c.isGenesisByDate}
+                                isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
+                                transactionLink={c.transactionLink}
+                                dateFormatted={c.dateFormatted}
+                                balanceChangeFormatted={c.balanceChangeFormatted}
+                                transactionId={c.transactionId}
+                                isSpent={c.isSpent}
+                                isFormattedAmounts={isFormattedAmounts}
+                                setIsFormattedAmounts={setIsFormattedAmounts}
+                            />
+                        </React.Fragment>
+                    );
+                })}
             </div>
             {hasMore && transactions.length > 0 && (
                 <div className="card load-more--button" onClick={loadMore}>
                     <button type="button">Load more...</button>
                 </div>
             )}
-        </div>) :
+        </div>
+    ) : (
         <div className="section transaction-history--section">
             <div className="section">
                 <div className="section--data">
-                    <p>
-                        There are no transactions for this address.
-                    </p>
+                    <p>There are no transactions for this address.</p>
                 </div>
             </div>
         </div>
@@ -111,7 +105,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
 TransactionHistory.defaultProps = {
     address: undefined,
-    setDisabled: undefined
+    setDisabled: undefined,
 };
 
 export default TransactionHistory;
