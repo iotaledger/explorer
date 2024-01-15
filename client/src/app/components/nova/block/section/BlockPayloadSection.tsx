@@ -1,6 +1,7 @@
 import {
     Block, PayloadType, SignedTransactionPayload as ISignedTransactionPayload,
-    TaggedDataPayload as ITaggedDataPayload
+    TaggedDataPayload as ITaggedDataPayload,
+    BasicBlockBody
 } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { IInput } from "~models/api/nova/IInput";
@@ -18,7 +19,7 @@ interface BlockPayloadSectionProps {
 const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
     { block, inputs, outputs, transferTotal }
 ) => {
-    const payload = block.body?.asBasic().payload
+    const payload = (block.body as BasicBlockBody).payload
     if (
         payload?.type === PayloadType.SignedTransaction &&
         inputs && outputs && transferTotal !== undefined

@@ -1,8 +1,9 @@
 import {
-    __ClientMethods__, OutputResponse, Client, Block
+    __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata
 } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
+import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
@@ -42,6 +43,27 @@ export class NovaApi {
         } catch (e) {
             logger.error(`Failed fetching block with block id ${blockId}. Cause: ${e}`);
             return { error: "Block fetch failed." };
+        }
+    }
+
+    /**
+     * Get the block details.
+     * @param network The network to find the items on.
+     * @param blockId The block id to get the details.
+     * @returns The item details.
+     */
+    public static async blockDetails(network: INetwork, blockId: string): Promise<IBlockDetailsResponse> {
+        blockId = HexHelper.addPrefix(blockId);
+        const metadata = await this.tryFetchNodeThenPermanode<string, IBlockMetadata>(
+            blockId,
+            "getBlockMetadata",
+            network
+        );
+
+        if (metadata) {
+            return {
+                metadata
+            };
         }
     }
 

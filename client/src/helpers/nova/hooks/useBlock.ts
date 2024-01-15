@@ -25,7 +25,6 @@ export function useBlock(network: string, blockId: string | null):
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        console.log("useBlock nova")
         setIsLoading(true);
         setBlock(null);
         if (blockId) {

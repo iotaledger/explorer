@@ -1,13 +1,13 @@
-import { Block, PayloadType } from "@iota/sdk-wasm-nova/web";
-import { useContext, useEffect, useState } from "react";
+import { BasicBlockBody, Block, PayloadType } from "@iota/sdk-wasm-nova/web";
+import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
-import NetworkContext from "~app/context/NetworkContext";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IInput } from "~models/api/nova/IInput";
 import { IOutput } from "~models/api/nova/IOutput";
 import { STARDUST } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~services/nova/novaApiClient";
 import { TransactionsHelper } from "../transactionsHelper";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 /**
  * Fetch block inputs and outputs
@@ -24,7 +24,7 @@ export function useInputsAndOutputs(network: string, block: Block | null):
     ] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${STARDUST}`));
-    const { bech32Hrp } = useContext(NetworkContext);
+    const { networkInfo } = useNetworkInfoNova();
     const [tsxInputs, setInputs] = useState<IInput[] | null>(null);
     const [tsxOutputs, setOutputs] = useState<IOutput[] | null>(null);
     const [tsxTransferTotal, setTransferTotal] = useState<number | null>(null);
@@ -33,14 +33,14 @@ export function useInputsAndOutputs(network: string, block: Block | null):
 
     useEffect(() => {
         setIsLoading(true);
-        if (block?.body.asBasic().payload?.type === PayloadType.SignedTransaction) {
+        if (block && (block?.body as BasicBlockBody).payload?.type === PayloadType.SignedTransaction) {
             // eslint-disable-next-line no-void
             void (async () => {
                 const { inputs, outputs, transferTotal } =
                     await TransactionsHelper.getInputsAndOutputs(
                         block,
                         network,
-                        bech32Hrp,
+                        networkInfo.bech32Hrp,
                         apiClient
                     );
                 if (isMounted) {

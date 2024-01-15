@@ -5,6 +5,8 @@ import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
 import { ApiClient } from "../apiClient";
+import { IBlockDetailsRequest } from "~/models/api/nova/block/IBlockDetailsRequest";
+import { IBlockDetailsResponse } from "~/models/api/nova/block/IBlockDetailsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -33,6 +35,17 @@ export class NovaApiClient extends ApiClient {
         );
     }
 
+    /**
+     * Get the block details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async blockDetails(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
+        return this.callApi<unknown, IBlockDetailsResponse>(
+            `nova/block/metadata/${request.network}/${request.blockId}`, "get"
+        );
+    }
+    
     /**
      * Get the output details.
      * @param request The request to send.

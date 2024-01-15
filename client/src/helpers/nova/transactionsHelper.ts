@@ -1,5 +1,6 @@
 import {
     AddressUnlockCondition,
+    BasicBlockBody,
     Block, BlockBodyType, CommonOutput, DelegationOutput, GovernorAddressUnlockCondition,
     ImmutableAccountAddressUnlockCondition,
     InputType,OutputType, PayloadType,
@@ -34,8 +35,8 @@ export class TransactionsHelper {
         let transferTotal = 0;
         let sortedOutputs: IOutput[] = [];
 
-        if (block?.body.type === BlockBodyType.Basic && block?.body.asBasic().payload?.type === PayloadType.SignedTransaction) {
-            const payload: SignedTransactionPayload = block?.body.asBasic().payload as SignedTransactionPayload;
+        if (block?.body.type === BlockBodyType.Basic && (block?.body as BasicBlockBody).payload?.type === PayloadType.SignedTransaction) {
+            const payload: SignedTransactionPayload = (block?.body as BasicBlockBody).payload as SignedTransactionPayload;
             const transactionId = Utils.transactionId(payload);
 
             // Unlocks
@@ -67,7 +68,6 @@ export class TransactionsHelper {
 
                     } while (!signatureUnlock);
                 }
-
                 if (signatureUnlock) {
                     unlockAddresses.push(
                         Bech32AddressHelper.buildAddress(

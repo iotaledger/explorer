@@ -1,7 +1,8 @@
 
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "~assets/modals/stardust/block/main-header.json";
+import metadataInfo from "~assets/modals/stardust/block/metadata.json";
 import { useBlock } from "~helpers/nova/hooks/useBlock";
 import NotFound from "../../components/NotFound";
 import { BasicBlockBody, BlockBodyType, PayloadType, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
@@ -14,10 +15,12 @@ import { Ed25519Signature } from "@iota/sdk-wasm/web";
 import { useInputsAndOutputs } from "~/helpers/nova/hooks/useInputsAndOutputs";
 import BlockPayloadSection from "~/app/components/nova/block/section/BlockPayloadSection";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
-import NetworkContext from "~/app/context/NetworkContext";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import TabbedSection from "~/app/components/hoc/TabbedSection";
 import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-payload.json";
 import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
+import { useBlockMetadata } from "~/helpers/nova/hooks/useBlockMetadata";
+import TransactionMetadataSection from "~/app/components/nova/block/section/TransactionMetadataSection";
 export interface BlockProps {
     /**
      * The network to lookup.
@@ -33,13 +36,18 @@ export interface BlockProps {
 const Block: React.FC<RouteComponentProps<BlockProps>> = (
     { history, match: { params: { network, blockId } } }
 ) => {
-    const { tokenInfo } = useContext(NetworkContext);
+    const { networkInfo } = useNetworkInfoNova();
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
+    const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
 
+    function isBasicBlockBody(body: BasicBlockBody | ValidationBlockBody): body is BasicBlockBody {
+        return body.type === BlockBodyType.Basic;
+    }
     let blockBody: BasicBlockBody | ValidationBlockBody | undefined
     let pageTitle = "Block";
+
     switch (block?.body?.type) {
         case BlockBodyType.Basic: {
             pageTitle = `Basic ${pageTitle}`;
@@ -69,6 +77,18 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
             />
         );
     }
+    
+    if (blockMetadata.metadata?.transactionMetadata) {
+        tabbedSections.push(
+            <TransactionMetadataSection
+                key={++idx}
+                network={network}
+                metadata={blockMetadata.metadata?.transactionMetadata}
+                isLinksDisabled={false}
+            />
+        );
+    }
+    
     
     const blockContent = block ? (
         <React.Fragment>
@@ -151,9 +171,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     </div>
                 )}
             </div>
-            {blockBody?.type === BlockBodyType.Basic && (
+            {blockBody && isBasicBlockBody(blockBody) && (
                 <div>
-                    {blockBody?.asBasic().payload?.type === PayloadType.SignedTransaction &&
+                    {blockBody.payload?.type === PayloadType.SignedTransaction &&
                     transferTotal !== null && (
                         <div className="section--data">
                             <div className="label">
@@ -166,7 +186,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                                 >
                                     {formatAmount(
                                         transferTotal,
-                                        tokenInfo,
+                                        networkInfo.tokenInfo,
                                         !isFormattedBalance
                                     )}
                                 </span>
@@ -177,19 +197,20 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = (
                     <TabbedSection
                         key={blockId}
                         tabsEnum={
-                                (blockBody?.asBasic().payload?.type === PayloadType.SignedTransaction ?
-                                    { Payload: "Transaction Payload" } :
+                                (blockBody.payload?.type === PayloadType.SignedTransaction ?
+                                    { Payload: "Transaction Payload", Metadata: "Transaction metadata" } :
                                     { Payload: "Tagged Data Payload" })
                         }
                         tabOptions={
-                            (blockBody?.asBasic().payload?.type === PayloadType.SignedTransaction ? {
+                            (blockBody.payload?.type === PayloadType.SignedTransaction ? {
                                 "Transaction Payload": {
-                                    disabled: !blockBody?.asBasic().payload,
+                                    disabled: !blockBody.payload,
                                     infoContent: transactionPayloadInfo
-                                }
+                                },
+                                "Metadata": { infoContent: metadataInfo }
                             } : {
                                 "Tagged Data Payload": {
-                                    disabled: !blockBody?.asBasic().payload,
+                                    disabled: !blockBody.payload,
                                     infoContent: taggedDataPayloadInfo
                                 }
                             })
