@@ -40,18 +40,6 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
     return pages;
 };
 
-export const buildUtilities = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
-    const utilities = [];
-    if (networks.length > 0 && currentNetwork !== CHRYSALIS_MAINNET) {
-        utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
-        if (identityResolverEnabled) {
-            utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
-        }
-    }
-
-    return utilities;
-};
-
 /**
  * Creates footer items. Excludes the Identity Resolver if the network is not supported.
  * @param currentNetwork The currently selected network.

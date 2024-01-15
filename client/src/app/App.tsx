@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { AppRouteProps } from "./AppRouteProps";
-import { buildMetaLabel, buildUtilities, getFooterItems, getPages, getFaviconHelmet, networkContextWrapper } from "./AppUtils";
+import { buildMetaLabel, getFooterItems, getPages, getFaviconHelmet, networkContextWrapper } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
@@ -87,7 +87,6 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
                     />
                 }
                 pages={getPages(networkConfig, networks)}
-                utilities={buildUtilities(network ?? "", networks, identityResolverEnabled)}
             />
             <div className="content">
                 {networks.length > 0 ? (

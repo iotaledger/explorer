@@ -37,21 +37,6 @@ export interface HeaderProps {
     search?: ReactNode;
 
     /**
-     * Utilities menu
-     */
-    utilities?: {
-        /**
-         * The label for the utility.
-         */
-        label: string;
-
-        /**
-         * The link for the utility.
-         */
-        url: string;
-    }[];
-
-    /**
      * Pages menu
      */
     pages?: {

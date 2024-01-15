@@ -10,7 +10,7 @@ export interface HeaderState {
     /**
      * Is the utilities menu expanded.
      */
-    isUtilitiesExpanded: boolean;
+    isEvmDropdownExpanded: boolean;
 
     /**
      * Is the hamburger menu expanded.

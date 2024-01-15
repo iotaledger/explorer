@@ -38,7 +38,7 @@ class Header extends Component<HeaderProps, HeaderState> {
 
         this.state = {
             isNetworkSwitcherExpanded: false,
-            isUtilitiesExpanded: false,
+            isEvmDropdownExpanded: false,
             isMenuExpanded: false,
             darkMode: this._settingsService.get().darkMode ?? false,
             show: false,
@@ -59,9 +59,23 @@ class Header extends Component<HeaderProps, HeaderState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
+        const { rootPath, currentNetwork, networks, history, action, search, pages } = this.props;
         const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
         const isMarketed = isMarketedNetwork(currentNetwork?.network);
+
+        const EVM_EXPLORER_DROPDOWN = {
+            label: "EVM Explorer",
+            routes: [
+                {
+                    label: "EVM Explorer",
+                    url: "https://explorer.evm.shimmer.network/",
+                },
+                {
+                    label: "EVM Explorer Testnet",
+                    url: "https://explorer.evm.testnet.shimmer.network/"
+                }
+            ]
+        }
 
         return (
             <header className={classNames({ "full-height": this.state.show })}>
@@ -88,7 +102,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         to={page.url}
                                         onClick={() =>
                                             this.setState({
-                                                isUtilitiesExpanded: false,
+                                                isEvmDropdownExpanded: false,
                                                 isNetworkSwitcherExpanded: false,
                                             })
                                         }
@@ -97,20 +111,20 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         {page.label}
                                     </Link>
                                 ))}
-                            {utilities && utilities?.length > 0 && (
+                                {/* EVM DROPDOWN */}
                                 <div className="utilities--wrapper">
                                     <div
                                         className={classNames("utilities--dropdown", {
-                                            opened: this.state.isUtilitiesExpanded,
+                                            opened: this.state.isEvmDropdownExpanded,
                                         })}
                                         onClick={() =>
                                             this.setState({
-                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
+                                                isEvmDropdownExpanded: !this.state.isEvmDropdownExpanded,
                                                 isNetworkSwitcherExpanded: false,
                                             })
                                         }
                                     >
-                                        <div className="label">Utilities</div>
+                                        <div className="label">{EVM_EXPLORER_DROPDOWN.label}</div>
                                         <div className="icon">
                                             <span className="material-icons">expand_more</span>
                                         </div>
@@ -118,32 +132,31 @@ class Header extends Component<HeaderProps, HeaderState> {
 
                                     <div
                                         className={classNames("header--expanded", {
-                                            opened: this.state.isUtilitiesExpanded,
+                                            opened: this.state.isEvmDropdownExpanded,
                                         })}
                                     >
                                         <div className="utilities">
-                                            <div className="utilities--label">Utilities</div>
-                                            {utilities?.map((utility) => (
-                                                <div key={utility.url} className="utilities--item">
+                                            <div className="utilities--label">{EVM_EXPLORER_DROPDOWN.label}</div>
+                                            {EVM_EXPLORER_DROPDOWN.routes.map((route) => (
+                                                <div key={route.url} className="utilities--item">
                                                     <Link
-                                                        to={utility.url}
-                                                        onClick={() => this.setState({ isUtilitiesExpanded: false })}
-                                                        className={classNames({ "active-item": utility.url === window.location.pathname })}
+                                                        to={route.url}
+                                                        onClick={() => this.setState({ isEvmDropdownExpanded: false })}
+                                                        className={classNames({ "active-item": route.url === window.location.pathname })}
                                                     >
-                                                        {utility.label}
+                                                        {route.label}
                                                     </Link>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
-                                    {this.state.isUtilitiesExpanded && (
+                                    {this.state.isEvmDropdownExpanded && (
                                         <div
                                             className="header--expanded--shield"
-                                            onClick={() => this.setState({ isUtilitiesExpanded: false })}
+                                            onClick={() => this.setState({ isEvmDropdownExpanded: false })}
                                         />
                                     )}
                                 </div>
-                            )}
                             {/* ----- Only visible in mobile ----- */}
                             {isMarketed && (
                                 <div className="mobile-fiat">
@@ -209,29 +222,29 @@ class Header extends Component<HeaderProps, HeaderState> {
                                         ))}
                                     <li
                                         className={classNames("menu--expanded__item", {
-                                            opened: this.state.isUtilitiesExpanded,
+                                            opened: this.state.isEvmDropdownExpanded,
                                         })}
                                         onClick={() =>
                                             this.setState({
-                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
+                                                isEvmDropdownExpanded: !this.state.isEvmDropdownExpanded,
                                             })
                                         }
                                     >
-                                        <div className="label">Utilities</div>
+                                        <div className="label">{EVM_EXPLORER_DROPDOWN.label}</div>
                                         <div className="icon">
                                             <span className="material-icons">expand_more</span>
                                         </div>
                                     </li>
-                                    {/* ----- Only visible in mobile ----- */}
+                                    {/* ----- EVM DROPDOWN MOBILE ----- */}
                                     <div
                                         className={classNames("utilities--mobile", {
-                                            opened: this.state.isUtilitiesExpanded,
+                                            opened: this.state.isEvmDropdownExpanded,
                                         })}
                                     >
-                                        {utilities?.map((utility) => (
+                                        {EVM_EXPLORER_DROPDOWN.routes.map((route) => (
                                             <Link
-                                                key={utility.url}
-                                                to={utility.url}
+                                                key={route.url}
+                                                to={route.url}
                                                 onClick={() =>
                                                     this.setState({
                                                         isMenuExpanded: false,
@@ -240,12 +253,12 @@ class Header extends Component<HeaderProps, HeaderState> {
                                                 }
                                             >
                                                 <li
-                                                    key={utility.url}
+                                                    key={route.url}
                                                     className={classNames("menu--expanded__item margin-l-t", {
-                                                        "active-item": utility.url === window.location.pathname,
+                                                        "active-item": route.url === window.location.pathname,
                                                     })}
                                                 >
-                                                    {utility.label}
+                                                    {route.label}
                                                 </li>
                                             </Link>
                                         ))}
@@ -253,7 +266,6 @@ class Header extends Component<HeaderProps, HeaderState> {
                                     {/* ---------- */}
                                 </ul>
                             </div>
-                            {/* )} */}
                         </div>
                     </div>
                     <div className="inner--networks">
@@ -265,7 +277,7 @@ class Header extends Component<HeaderProps, HeaderState> {
                             onClick={() => {
                                 this.setState({
                                     isNetworkSwitcherExpanded: !this.state.isNetworkSwitcherExpanded,
-                                    isUtilitiesExpanded: false,
+                                    isEvmDropdownExpanded: false,
                                 });
                             }}
                             onChange={(targetNetwork) => {
@@ -289,7 +301,7 @@ class Header extends Component<HeaderProps, HeaderState> {
      */
     private resetExpandedDropdowns(): void {
         this.setState({
-            isUtilitiesExpanded: false,
+            isEvmDropdownExpanded: false,
             isNetworkSwitcherExpanded: false,
             isMenuExpanded: false,
         });
