@@ -19,4 +19,3 @@ export interface IMilestoneFeedItem {
      */
     timestamp: number;
 }
-

@@ -35,7 +35,8 @@ export class LegacyApiStreamsV0Client {
     public async prepareTransfers(
         seed: string | Int8Array,
         transfers: readonly Transfer[],
-        options?: Partial<unknown>): Promise<readonly string[]> {
+        options?: Partial<unknown>,
+    ): Promise<readonly string[]> {
         throw new Error("This method is not supported by the API");
     }
 
@@ -51,7 +52,8 @@ export class LegacyApiStreamsV0Client {
         trytes: readonly string[],
         depth: number,
         minWeightMagnitude: number,
-        reference?: string | undefined): Promise<readonly Transaction[]> {
+        reference?: string | undefined,
+    ): Promise<readonly Transaction[]> {
         throw new Error("This method is not supported by the API");
     }
 
@@ -86,13 +88,11 @@ export class LegacyApiStreamsV0Client {
             throw new Error("This method is not supported by the API");
         }
 
-        const response = await this._apiClient.transactionsGet(
-            {
-                mode: "address",
-                network: this._network,
-                hash: request.address
-            }
-        );
+        const response = await this._apiClient.transactionsGet({
+            mode: "address",
+            network: this._network,
+            hash: request.address,
+        });
         let txs: Transaction[] = [];
 
         if (response?.txHashes && response?.txHashes.length > 0) {
@@ -100,12 +100,11 @@ export class LegacyApiStreamsV0Client {
 
             const trytesResponse = await this._apiClient.trytesRetrieve({
                 network: this._network,
-                txHashes
+                txHashes,
             });
 
             if (trytesResponse?.trytes) {
-                txs = trytesResponse.trytes.map(
-                    (t, idx) => asTransactionObject(t, txHashes[idx]));
+                txs = trytesResponse.trytes.map((t, idx) => asTransactionObject(t, txHashes[idx]));
             }
         }
 

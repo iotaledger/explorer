@@ -20,7 +20,7 @@ export class DownloadHelper {
      * @returns The data url.
      */
     public static createJsonDataUrl(object: unknown): string {
-        const b64 = Converter.bytesToBase64(Converter.utf8ToBytes((JSON.stringify(object, undefined, "\t"))));
+        const b64 = Converter.bytesToBase64(Converter.utf8ToBytes(JSON.stringify(object, undefined, "\t")));
         return `data:application/json;base64,${b64}`;
     }
 

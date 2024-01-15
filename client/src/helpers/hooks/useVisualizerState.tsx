@@ -12,9 +12,9 @@ import { Converter } from "../stardust/convertUtils";
 const MAX_ITEMS: number = 2500;
 const FEED_PROBE_THRESHOLD: number = 3000;
 const EDGE_COLOR_LIGHT: number = 0x00000055;
-const EDGE_COLOR_DARK: number = 0xFFFFFF33;
-const EDGE_COLOR_CONFIRMING: number = 0xFF5AAAFF;
-const EDGE_COLOR_CONFIRMED_BY: number = 0x0000FFFF;
+const EDGE_COLOR_DARK: number = 0xffffff33;
+const EDGE_COLOR_CONFIRMING: number = 0xff5aaaff;
+const EDGE_COLOR_CONFIRMED_BY: number = 0x0000ffff;
 const COLOR_PENDING: string = "0xbbbbbb";
 const COLOR_REFERENCED: string = "0x61e884";
 const COLOR_CONFLICTING: string = "0xff8b5c";
@@ -28,22 +28,23 @@ const COLOR_SEARCH_RESULT: string = "0xC061E8";
  * @param graphElement The div element ref to hook the graph
  * @returns Milestones and latestMilestonIndex
  */
-export function useVisualizerState(network: string, graphElement: React.MutableRefObject<HTMLDivElement | null>): [
-    (() => void),
-    ((node?: Viva.Graph.INode<INodeData, unknown>) => void),
+export function useVisualizerState(
+    network: string,
+    graphElement: React.MutableRefObject<HTMLDivElement | null>,
+): [
+    () => void,
+    (node?: Viva.Graph.INode<INodeData, unknown>) => void,
     string,
     React.Dispatch<React.SetStateAction<string>>,
     boolean,
     number,
-    (IFeedBlockData | null),
-    (boolean | null),
+    IFeedBlockData | null,
+    boolean | null,
     React.Dispatch<React.SetStateAction<boolean | null>>,
-    number | null
+    number | null,
 ] {
     const [settingsService] = useState<SettingsService>(ServiceFactory.get<SettingsService>("settings"));
-    const [darkMode, setDarkMode] = useState<boolean | null>(
-        settingsService.get().darkMode ?? null
-    );
+    const [darkMode, setDarkMode] = useState<boolean | null>(settingsService.get().darkMode ?? null);
     const [filter, setFilter] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(true);
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
@@ -114,7 +115,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                     if (!existingNode) {
                         graph.current.addNode(blockId, {
                             feedItem: newBlock,
-                            added: now
+                            added: now,
                         });
 
                         existingIds.current.push(blockId);
@@ -153,7 +154,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                             if (node.data) {
                                 node.data.feedItem.metadata = {
                                     ...node.data.feedItem.metadata,
-                                    ...updatedMetadata[blockId]
+                                    ...updatedMetadata[blockId],
                                 };
                             }
 
@@ -196,29 +197,27 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 gravity: -2,
                 dragCoeff: 0.02,
                 timeStep: 20,
-                theta: 0.8
+                theta: 0.8,
             });
 
             graphics.current.setNodeProgram(buildNodeShader());
 
-            graphics.current.node(node => calculateNodeStyle(
-                node, testForHighlight(highlightNodesRegEx(), node.id, node.data)));
+            graphics.current.node((node) => calculateNodeStyle(node, testForHighlight(highlightNodesRegEx(), node.id, node.data)));
 
-            graphics.current.link(() => Viva.Graph.View.webglLine(darkMode
-                ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT));
+            graphics.current.link(() => Viva.Graph.View.webglLine(darkMode ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT));
 
             const events = Viva.Graph.webglInputEvents(graphics.current, graph.current);
 
-            events.click(node => selectNode(node));
-            events.dblClick(node => {
+            events.click((node) => selectNode(node));
+            events.dblClick((node) => {
                 window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
             });
-            events.mouseEnter(node => {
+            events.mouseEnter((node) => {
                 if (!selectedFeedItemBlockId.current) {
                     highlightConnections(node.id);
                 }
             });
-            events.mouseLeave(_ => {
+            events.mouseLeave((_) => {
                 if (!selectedFeedItemBlockId.current) {
                     styleConnections();
                 }
@@ -228,15 +227,12 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 container: graphElement.current,
                 graphics: graphics.current,
                 layout,
-                renderLinks: true
+                renderLinks: true,
             });
 
             renderer.current.run();
 
-            graphics.current.scale(
-                1,
-                { x: graphElement.current.clientWidth / 2, y: graphElement.current.clientHeight / 2 }
-            );
+            graphics.current.scale(1, { x: graphElement.current.clientWidth / 2, y: graphElement.current.clientHeight / 2 });
 
             for (let i = 0; i < 12; i++) {
                 renderer.current.zoomOut();
@@ -308,7 +304,10 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
      * @param highlight Highlight the node.
      * @returns The size and color for the node.
      */
-    function calculateNodeStyle(node: Viva.Graph.INode<INodeData, unknown> | undefined, highlight: boolean): {
+    function calculateNodeStyle(
+        node: Viva.Graph.INode<INodeData, unknown> | undefined,
+        highlight: boolean,
+    ): {
         color: string;
         size: number;
     } {
@@ -334,19 +333,15 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
                 color = COLOR_PENDING;
             }
 
-            const reattached = selectedFeedItem?.reattachments?.find(
-                item => item.blockId === node.data?.feedItem.blockId
-            );
-            if (selectedFeedItem?.blockId === node.data?.feedItem.blockId ||
-                reattached
-            ) {
+            const reattached = selectedFeedItem?.reattachments?.find((item) => item.blockId === node.data?.feedItem.blockId);
+            if (selectedFeedItem?.blockId === node.data?.feedItem.blockId || reattached) {
                 size = 50;
             }
         }
 
         return {
             color,
-            size
+            size,
         };
     }
 
@@ -388,16 +383,16 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             feedItem.reattachments = [];
             graph.current?.forEachNode((n: Viva.Graph.INode<INodeData, unknown>) => {
                 const reattached = n.data?.feedItem;
-                if (reattached?.blockId !== feedItem?.blockId &&
+                if (
+                    reattached?.blockId !== feedItem?.blockId &&
                     reattached?.properties?.transactionId &&
-                    reattached?.properties.transactionId === feedItem?.properties?.transactionId) {
+                    reattached?.properties.transactionId === feedItem?.properties?.transactionId
+                ) {
                     feedItem.reattachments?.push(reattached);
                 }
             });
         }
-        setSelectedFeedItem(
-            isDeselect || !node ? null : feedItem ?? null
-        );
+        setSelectedFeedItem(isDeselect || !node ? null : feedItem ?? null);
 
         styleConnections();
 
@@ -439,9 +434,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         graph.current?.forEachLink((link: Viva.Graph.ILink<unknown>) => {
             const linkUI = graphics.current?.getLinkUI(link.id);
             if (linkUI) {
-                linkUI.color = darkMode ?
-                    EDGE_COLOR_DARK :
-                    EDGE_COLOR_LIGHT;
+                linkUI.color = darkMode ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT;
             }
         });
     }
@@ -476,10 +469,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
      * @param data The data node to match.
      * @returns True if we should highlight the node.
      */
-    function testForHighlight(
-        regEx: RegExp | undefined,
-        nodeId: string | undefined,
-        data: INodeData | undefined): boolean {
+    function testForHighlight(regEx: RegExp | undefined, nodeId: string | undefined, data: INodeData | undefined): boolean {
         if (!regEx || !nodeId || !data) {
             return false;
         }
@@ -492,9 +482,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             let key: keyof typeof properties;
             for (key in properties) {
                 const val = String(properties[key]);
-                if (regEx.test(val) ||
-                    (Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val)))
-                ) {
+                if (regEx.test(val) || (Converter.isHex(val, true) && regEx.test(Converter.hexToUtf8(val)))) {
                     return true;
                 }
             }
@@ -511,7 +499,7 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
             graphics.current?.updateSize();
             graphics.current?.scale(1, {
                 x: graphElement.current.clientWidth / 2,
-                y: graphElement.current.clientHeight / 2
+                y: graphElement.current.clientHeight / 2,
             });
         }
     }
@@ -548,7 +536,6 @@ export function useVisualizerState(network: string, graphElement: React.MutableR
         selectedFeedItem,
         isFormatAmountsFull,
         setIsFormatAmountsFull,
-        lastClick.current
+        lastClick.current,
     ];
 }
-

@@ -9,15 +9,11 @@ import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
  * @param tokenId The token id to check
  * @returns The whitelisted boolean.
  */
-export function useTokenRegistryNativeTokenCheck(tokenId: string | null): [
-    boolean
-] {
+export function useTokenRegistryNativeTokenCheck(tokenId: string | null): [boolean] {
     const { name: network } = useContext(NetworkContext);
     const isMounted = useIsMounted();
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
-    const [client] = useState(
-        ServiceFactory.get<TokenRegistryClient | undefined>("token-registry")
-    );
+    const [client] = useState(ServiceFactory.get<TokenRegistryClient | undefined>("token-registry"));
 
     useEffect(() => {
         setIsWhitelisted(false);
@@ -35,4 +31,3 @@ export function useTokenRegistryNativeTokenCheck(tokenId: string | null): [
 
     return [isWhitelisted];
 }
-

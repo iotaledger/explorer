@@ -47,7 +47,7 @@ export class NetworkService {
 
         if (Object.keys(newCache).length > 0) {
             this._cache = newCache;
-            this._cacheNames = Object.values(this._cache).map(n => n.network);
+            this._cacheNames = Object.values(this._cache).map((n) => n.network);
         }
     }
 
@@ -86,10 +86,7 @@ export class NetworkService {
         }
 
         if (!isValidProtocol(network.protocolVersion)) {
-            throw new NetworkConfigurationError(
-                `Network ${network.network} has invalid protocol version "${network.protocolVersion}".`
-            );
+            throw new NetworkConfigurationError(`Network ${network.network} has invalid protocol version "${network.protocolVersion}".`);
         }
     }
 }
-

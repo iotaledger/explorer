@@ -19,7 +19,7 @@ export class CurrencyService {
         GBP: "£",
         CAD: "$",
         SEK: "kr",
-        CHF: "CHF"
+        CHF: "CHF",
     };
 
     /**
@@ -32,7 +32,7 @@ export class CurrencyService {
         GBP: "British Pound Sterling",
         CAD: "Canadian Dollar",
         SEK: "Swedish Krona",
-        CHF: "Swiss Franc"
+        CHF: "Swiss Franc",
     };
 
     /**
@@ -69,36 +69,25 @@ export class CurrencyService {
      * Load the currencies data.
      * @param callback Called when currencies are loaded.
      */
-    public loadCurrencies(
-        callback: (
-            available: boolean,
-            data?: ICurrencySettings,
-            err?: unknown
-        ) => void
-    ): void {
+    public loadCurrencies(callback: (available: boolean, data?: ICurrencySettings, err?: unknown) => void): void {
         const settings = this._settingsService.get();
         let hasData = false;
 
         // If we already have some data use that to begin with
-        if (settings.coinStats &&
-            settings.fiatExchangeRatesEur &&
-            Object.keys(settings.fiatExchangeRatesEur).length > 0) {
-            callback(
-                true,
-                {
-                    fiatCode: settings.fiatCode,
-                    fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
-                    coinStats: settings.coinStats
-                }
-            );
+        if (settings.coinStats && settings.fiatExchangeRatesEur && Object.keys(settings.fiatExchangeRatesEur).length > 0) {
+            callback(true, {
+                fiatCode: settings.fiatCode,
+                fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
+                coinStats: settings.coinStats,
+            });
             hasData = true;
         }
 
         // If the data is missing then load it inline which can return errors
         // if the data is out of date try and get some new info in the background
         // if it fails we don't care about the outcome as we already have data
-        const lastUpdate = settings ? (settings.lastCurrencyUpdate ?? 0) : 0;
-        if (!hasData || Date.now() - lastUpdate > (5 * CurrencyService.MS_PER_MINUTE)) {
+        const lastUpdate = settings ? settings.lastCurrencyUpdate ?? 0 : 0;
+        if (!hasData || Date.now() - lastUpdate > 5 * CurrencyService.MS_PER_MINUTE) {
             setTimeout(async () => this.loadData(callback), 0);
         }
     }
@@ -131,15 +120,11 @@ export class CurrencyService {
      * @param numDigits The number of digits to display.
      * @returns The converted fiat.
      */
-    public convertIota(
-        valueIota: number,
-        currencyData: ICurrencySettings,
-        includeSymbol: boolean,
-        numDigits: number): string {
+    public convertIota(valueIota: number, currencyData: ICurrencySettings, includeSymbol: boolean, numDigits: number): string {
         let converted = "";
         if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode && currencyData.coinStats?.iota?.price) {
             const iotaStats = currencyData.coinStats.iota;
-            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find((c) => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
                 const miota = valueIota / 1000000;
@@ -149,7 +134,9 @@ export class CurrencyService {
                     converted += `${this.getSymbol(currencyData.fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(numDigits).toString()
+                converted += fiat
+                    .toFixed(numDigits)
+                    .toString()
                     .replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
@@ -170,7 +157,8 @@ export class CurrencyService {
         tokenInfo: INodeInfoBaseToken,
         currencyData: ICurrencySettings,
         includeSymbol: boolean,
-        numDigits: number): string {
+        numDigits: number,
+    ): string {
         let converted = "";
         const coinName = tokenInfo.name.toLocaleLowerCase();
 
@@ -178,7 +166,7 @@ export class CurrencyService {
 
         if (fiatExchangeRatesEur && fiatCode && coinStats?.[coinName]?.price) {
             const tokenStats = coinStats[coinName];
-            const selectedFiatToBase = fiatExchangeRatesEur.find(c => c.id === fiatCode);
+            const selectedFiatToBase = fiatExchangeRatesEur.find((c) => c.id === fiatCode);
 
             if (selectedFiatToBase) {
                 const baseTokenValue = tokenInfo.subunit ? value / Math.pow(10, tokenInfo.decimals) : value;
@@ -188,7 +176,9 @@ export class CurrencyService {
                     converted += `${this.getSymbol(fiatCode)} `;
                 }
 
-                converted += fiat.toFixed(numDigits).toString()
+                converted += fiat
+                    .toFixed(numDigits)
+                    .toString()
                     .replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         }
@@ -211,11 +201,11 @@ export class CurrencyService {
         includeSymbol: boolean,
         numDigits: number,
         extendToFindMax?: number,
-        includeSuffix?: boolean
+        includeSuffix?: boolean,
     ): string {
         let converted = "";
         if (currencyData.fiatExchangeRatesEur && currencyData.fiatCode) {
-            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find(c => c.id === currencyData.fiatCode);
+            const selectedFiatToBase = currencyData.fiatExchangeRatesEur.find((c) => c.id === currencyData.fiatCode);
 
             if (selectedFiatToBase) {
                 const fiat = valueInBase * selectedFiatToBase.rate;
@@ -227,9 +217,7 @@ export class CurrencyService {
                 if (extendToFindMax === undefined) {
                     converted += includeSuffix
                         ? this.abbreviate(fiat, numDigits)
-                        : fiat
-                            .toFixed(numDigits)
-                            .replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        : fiat.toFixed(numDigits).replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
                 } else {
                     const regEx = new RegExp(`^-?\\d*\\.?0*\\d{0,${numDigits}}`);
                     const found = regEx.exec(fiat.toFixed(extendToFindMax));
@@ -303,10 +291,12 @@ export class CurrencyService {
             { value: 1e9, symbol: "B" },
             { value: 1e12, symbol: "T" },
             { value: 1e15, symbol: "P" },
-            { value: 1e18, symbol: "E" }
+            { value: 1e18, symbol: "E" },
         ];
-        const item = units.slice().reverse()
-            .find(unit => value >= unit.value);
+        const item = units
+            .slice()
+            .reverse()
+            .find((unit) => value >= unit.value);
 
         return item ? (value / item.value).toFixed(digits) + item.symbol : "0";
     }
@@ -316,45 +306,32 @@ export class CurrencyService {
      * @param callback Called when currencies are loaded.
      * @returns True if the load was succesful.
      */
-    private async loadData(
-        callback: (
-            available: boolean,
-            data?: ICurrencySettings,
-            err?: unknown
-        ) => void
-    ): Promise<void> {
+    private async loadData(callback: (available: boolean, data?: ICurrencySettings, err?: unknown) => void): Promise<void> {
         try {
             const currencyResponse = await this._apiClient.currencies();
             if (currencyResponse.error) {
                 callback(false);
             } else if (!currencyResponse.coinStats || !currencyResponse.fiatExchangeRatesEur) {
-                    callback(false);
-                } else {
-                    const settings = this._settingsService.get();
+                callback(false);
+            } else {
+                const settings = this._settingsService.get();
 
-                    settings.lastCurrencyUpdate = Date.now();
-                    const cur = currencyResponse.fiatExchangeRatesEur || {};
-                    const ids = Object.keys(cur).sort();
-                    settings.fiatExchangeRatesEur = ids.map(i => ({ id: i, rate: cur[i] }));
-                    settings.coinStats = currencyResponse.coinStats;
+                settings.lastCurrencyUpdate = Date.now();
+                const cur = currencyResponse.fiatExchangeRatesEur || {};
+                const ids = Object.keys(cur).sort();
+                settings.fiatExchangeRatesEur = ids.map((i) => ({ id: i, rate: cur[i] }));
+                settings.coinStats = currencyResponse.coinStats;
 
-                    this._settingsService.save();
+                this._settingsService.save();
 
-                    callback(
-                        true,
-                        {
-                            fiatCode: settings.fiatCode,
-                            fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
-                            coinStats: settings.coinStats
-                        });
-                }
+                callback(true, {
+                    fiatCode: settings.fiatCode,
+                    fiatExchangeRatesEur: settings.fiatExchangeRatesEur,
+                    coinStats: settings.coinStats,
+                });
+            }
         } catch (err) {
-            callback(
-                false,
-                undefined,
-                err
-            );
+            callback(false, undefined, err);
         }
     }
 }
-

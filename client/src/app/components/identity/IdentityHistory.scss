@@ -4,35 +4,35 @@
 @import "../../../scss/variables";
 
 .load-history-button {
-  justify-content: center;
-  width: 120px;
-  padding: 9px;
-  border: 1px solid #d8e1f4;
-  border-radius: 6px;
-  background: var(--light-bg);
-  color: var(--expanded-color);
-  font-family: $inter;
-  font-weight: 400;
-  letter-spacing: 0.5px;
+    justify-content: center;
+    width: 120px;
+    padding: 9px;
+    border: 1px solid #d8e1f4;
+    border-radius: 6px;
+    background: var(--light-bg);
+    color: var(--expanded-color);
+    font-family: $inter;
+    font-weight: 400;
+    letter-spacing: 0.5px;
 
-  @include font-size(14px);
+    @include font-size(14px);
 
-  &:hover {
-    text-decoration: none;
-  }
+    &:hover {
+        text-decoration: none;
+    }
 }
 
 .history-content {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .history-tree {
-  height: 100%;
-  margin-right: 20px;
-  margin-left: 0;
+    height: 100%;
+    margin-right: 20px;
+    margin-left: 0;
 
-  @include phone-down {
-    margin-right: 0;
-  }
+    @include phone-down {
+        margin-right: 0;
+    }
 }
