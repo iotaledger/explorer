@@ -49,7 +49,7 @@ export class IdentityService {
         integrationMsgId: string,
         network: string,
         version: string,
-        payload: unknown
+        payload: unknown,
     ): Promise<IIdentityDiffHistoryResponse> {
         const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
         const response = await apiClient.diffHistory({ network, integrationMsgId, version }, payload);

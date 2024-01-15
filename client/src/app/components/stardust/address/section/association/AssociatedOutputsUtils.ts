@@ -9,8 +9,8 @@ export const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[
             AssociationType.BASIC_ADDRESS,
             AssociationType.BASIC_SENDER,
             AssociationType.BASIC_EXPIRATION_RETURN,
-            AssociationType.BASIC_STORAGE_RETURN
-        ]
+            AssociationType.BASIC_STORAGE_RETURN,
+        ],
     ],
     [
         "Alias",
@@ -19,8 +19,8 @@ export const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[
             AssociationType.ALIAS_GOVERNOR,
             AssociationType.ALIAS_ISSUER,
             AssociationType.ALIAS_SENDER,
-            AssociationType.ALIAS_ID
-        ]
+            AssociationType.ALIAS_ID,
+        ],
     ],
     ["Foundry", [AssociationType.FOUNDRY_ALIAS]],
     [
@@ -31,9 +31,9 @@ export const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[
             AssociationType.NFT_EXPIRATION_RETURN,
             AssociationType.NFT_ISSUER,
             AssociationType.NFT_SENDER,
-            AssociationType.NFT_ID
-        ]
-    ]
+            AssociationType.NFT_ID,
+        ],
+    ],
 ]);
 
 export const ASSOCIATION_TYPE_TO_LABEL = {
@@ -52,25 +52,24 @@ export const ASSOCIATION_TYPE_TO_LABEL = {
     [AssociationType.NFT_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
     [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
     [AssociationType.NFT_ISSUER]: "Issuer Feature",
-    [AssociationType.NFT_SENDER]: "Sender Feature"
+    [AssociationType.NFT_SENDER]: "Sender Feature",
 };
 
 export const buildAssociatedOutputsTabs = (associations: IAssociation[]): AssociatedOutputTab[] => {
     const tabs: AssociatedOutputTab[] = [];
     if (associations.length > 0) {
-        if (associations.some(association => AssociationType[association.type].startsWith("BASIC"))) {
+        if (associations.some((association) => AssociationType[association.type].startsWith("BASIC"))) {
             tabs.push("Basic");
         }
-        if (associations.some(association => AssociationType[association.type].startsWith("NFT"))) {
+        if (associations.some((association) => AssociationType[association.type].startsWith("NFT"))) {
             tabs.push("NFT");
         }
-        if (associations.some(association => AssociationType[association.type].startsWith("ALIAS"))) {
+        if (associations.some((association) => AssociationType[association.type].startsWith("ALIAS"))) {
             tabs.push("Alias");
         }
-        if (associations.some(association => AssociationType[association.type].startsWith("FOUNDRY"))) {
+        if (associations.some((association) => AssociationType[association.type].startsWith("FOUNDRY"))) {
             tabs.push("Foundry");
         }
     }
     return tabs;
 };
-

@@ -6,4 +6,3 @@ export interface IRawResponse extends IResponse {
      */
     raw?: Response;
 }
-

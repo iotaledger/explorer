@@ -42,17 +42,12 @@ export class Converter {
                 str += String.fromCharCode(((value & 0x1f) << 6) | (array[i + 1] & 0x3f));
                 i += 1;
             } else if (value > 0xdf && value < 0xf0) {
-                str += String.fromCharCode(
-                    ((value & 0x0f) << 12) | ((array[i + 1] & 0x3f) << 6) | (array[i + 2] & 0x3f)
-                );
+                str += String.fromCharCode(((value & 0x0f) << 12) | ((array[i + 1] & 0x3f) << 6) | (array[i + 2] & 0x3f));
                 i += 2;
             } else {
                 // surrogate pair
                 const charCode =
-                    (((value & 0x07) << 18) |
-                        ((array[i + 1] & 0x3f) << 12) |
-                        ((array[i + 2] & 0x3f) << 6) |
-                        (array[i + 3] & 0x3f)) -
+                    (((value & 0x07) << 18) | ((array[i + 1] & 0x3f) << 12) | ((array[i + 2] & 0x3f) << 6) | (array[i + 3] & 0x3f)) -
                     0x010000;
 
                 str += String.fromCharCode((charCode >> 10) | 0xd800, (charCode & 0x03ff) | 0xdc00);
@@ -90,7 +85,7 @@ export class Converter {
                     0xf0 | (charcode >> 18),
                     0x80 | ((charcode >> 12) & 0x3f),
                     0x80 | ((charcode >> 6) & 0x3f),
-                    0x80 | (charcode & 0x3f)
+                    0x80 | (charcode & 0x3f),
                 );
             }
         }
@@ -112,7 +107,7 @@ export class Converter {
         includePrefix: boolean = false,
         startIndex?: number,
         length?: number | undefined,
-        reverse?: boolean
+        reverse?: boolean,
     ): string {
         let hex = "";
         this.buildHexLookups();
@@ -150,8 +145,7 @@ export class Converter {
             let n = 0;
             while (i < length) {
                 array[n++] =
-                    (Converter.DECODE_LOOKUP[strippedHex.charCodeAt(i++)] << 4) |
-                    Converter.DECODE_LOOKUP[strippedHex.charCodeAt(i++)];
+                    (Converter.DECODE_LOOKUP[strippedHex.charCodeAt(i++)] << 4) | Converter.DECODE_LOOKUP[strippedHex.charCodeAt(i++)];
             }
 
             if (reverse) {
@@ -245,5 +239,3 @@ export class Converter {
         }
     }
 }
-
-

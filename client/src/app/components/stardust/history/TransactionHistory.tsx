@@ -13,14 +13,8 @@ interface TransactionHistoryProps {
     readonly setDisabled?: (isDisabled: boolean) => void;
 }
 
-const TransactionHistory: React.FC<TransactionHistoryProps> = (
-    { network, address, setLoading, setDisabled }
-) => {
-    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(
-        network,
-        address,
-        setDisabled
-    );
+const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address, setLoading, setDisabled }) => {
+    const [historyView, outputDetailsMap, loadMore, isLoading, hasMore] = useAddressHistory(network, address, setDisabled);
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
 
     useEffect(() => {
@@ -29,7 +23,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
     let isDarkBackgroundRow = false;
 
-    return (historyView.length > 0 && address ? (
+    return historyView.length > 0 && address ? (
         <div className="section transaction-history--section">
             <div className="section--header row end">
                 <DownloadModal network={network} address={address} />
@@ -44,15 +38,15 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                     </tr>
                 </thead>
                 <tbody>
-                    {historyView.length > 0 && (
+                    {historyView.length > 0 &&
                         historyView.map((historyItem, idx) => {
                             const outputDetails = outputDetailsMap[historyItem.outputId];
                             if (!outputDetails) {
                                 return null;
                             }
-                            const transactionId = historyItem.isSpent ?
-                                outputDetails.metadata.transactionIdSpent :
-                                outputDetails.metadata.transactionId;
+                            const transactionId = historyItem.isSpent
+                                ? outputDetails.metadata.transactionIdSpent
+                                : outputDetails.metadata.transactionId;
 
                             if (!transactionId) {
                                 return null;
@@ -63,9 +57,9 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                                 const previousItemDetails = outputDetailsMap[historyView[idx - 1].outputId];
                                 const previousSpent = historyView[idx - 1].isSpent;
                                 if (previousItemDetails) {
-                                    const previousTransactionId = previousSpent ?
-                                        previousItemDetails.metadata.transactionIdSpent :
-                                        previousItemDetails.metadata.transactionId;
+                                    const previousTransactionId = previousSpent
+                                        ? previousItemDetails.metadata.transactionIdSpent
+                                        : previousItemDetails.metadata.transactionId;
 
                                     if (transactionId !== previousTransactionId) {
                                         isDarkBackgroundRow = !isDarkBackgroundRow;
@@ -88,22 +82,21 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                                     />
                                 </React.Fragment>
                             );
-                        })
-                    )}
+                        })}
                 </tbody>
             </table>
 
             {/* Only visible in mobile -- Card transactions*/}
             <div className="transaction-history--cards">
-                {historyView.length > 0 && (
+                {historyView.length > 0 &&
                     historyView.map((historyItem, idx) => {
                         const outputDetails = outputDetailsMap[historyItem.outputId];
                         if (!outputDetails) {
                             return null;
                         }
-                        const transactionId = historyItem.isSpent ?
-                            outputDetails.metadata.transactionIdSpent :
-                            outputDetails.metadata.transactionId;
+                        const transactionId = historyItem.isSpent
+                            ? outputDetails.metadata.transactionIdSpent
+                            : outputDetails.metadata.transactionId;
 
                         if (!transactionId) {
                             return null;
@@ -123,21 +116,19 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
                                 />
                             </React.Fragment>
                         );
-                    })
-                )}
+                    })}
             </div>
             {hasMore && historyView.length > 0 && (
                 <div className="card load-more--button" onClick={loadMore}>
                     <button type="button">Load more...</button>
                 </div>
             )}
-        </div>) :
+        </div>
+    ) : (
         <div className="section transaction-history--section">
             <div className="section">
                 <div className="section--data">
-                    <p>
-                        There are no transactions for this address.
-                    </p>
+                    <p>There are no transactions for this address.</p>
                 </div>
             </div>
         </div>
@@ -146,8 +137,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
 
 TransactionHistory.defaultProps = {
     address: undefined,
-    setDisabled: undefined
+    setDisabled: undefined,
 };
 
 export default TransactionHistory;
-

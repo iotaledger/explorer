@@ -1,4 +1,3 @@
-
 export interface MessageTreeProps {
     parentsIds: string[];
     childrenIds: string[];

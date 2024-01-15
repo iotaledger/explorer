@@ -2,10 +2,10 @@
     "title": "Native Tokens and Foundries",
     "description": "<p>This is the list of the token foundries that this alias output controls. They manage the supply of the native tokens on the network.</p>",
     "links": [
-      {
-        "label": "Read more",
-        "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/foundry",
-        "isExternal": true
-      }
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/foundry",
+            "isExternal": true
+        }
     ]
 }

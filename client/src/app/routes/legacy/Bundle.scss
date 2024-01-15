@@ -4,81 +4,81 @@
 @import "../../../scss/variables";
 
 .bundle {
-  display: flex;
-  flex-direction: column;
-
-  .wrapper {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
 
-    .inner {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      max-width: $desktop-width;
-      margin: 40px 20px;
+    .wrapper {
+        display: flex;
+        justify-content: center;
 
-      h1 {
-        margin-bottom: 20px;
-      }
-
-      p {
-        @include font-size(12px);
-
-        color: $gray-10;
-        font-family: $metropolis;
-        font-weight: bold;
-      }
-
-      .arrow {
-        margin-top: 6px;
-        font-size: 30px;
-      }
-
-      .status {
-        @include font-size(14px);
-      }
-
-      .cards {
-        flex: 1;
-        margin-right: 24px;
-
-        .inputs-outputs {
-          margin-top: 5px;
-          margin-bottom: 30px;
-
-          @include tablet-down {
-            flex-direction: column;
-
-            .card + .card {
-              margin-top: 23px;
-              margin-left: 0;
-            }
-          }
-
-          .card--row {
-            margin-bottom: 32px;
-          }
-
-          .card {
+        .inner {
+            display: flex;
             flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 20px;
 
-            @include tablet-down {
-              flex: unset;
-              width: 100%;
+            h1 {
+                margin-bottom: 20px;
             }
-          }
 
-          .card + .card {
-            margin-left: 23px;
+            p {
+                @include font-size(12px);
 
-            @include tablet-down {
-              margin-top: 23px;
-              margin-left: 0;
+                color: $gray-10;
+                font-family: $metropolis;
+                font-weight: bold;
             }
-          }
+
+            .arrow {
+                margin-top: 6px;
+                font-size: 30px;
+            }
+
+            .status {
+                @include font-size(14px);
+            }
+
+            .cards {
+                flex: 1;
+                margin-right: 24px;
+
+                .inputs-outputs {
+                    margin-top: 5px;
+                    margin-bottom: 30px;
+
+                    @include tablet-down {
+                        flex-direction: column;
+
+                        .card + .card {
+                            margin-top: 23px;
+                            margin-left: 0;
+                        }
+                    }
+
+                    .card--row {
+                        margin-bottom: 32px;
+                    }
+
+                    .card {
+                        flex: 1;
+
+                        @include tablet-down {
+                            flex: unset;
+                            width: 100%;
+                        }
+                    }
+
+                    .card + .card {
+                        margin-left: 23px;
+
+                        @include tablet-down {
+                            margin-top: 23px;
+                            margin-left: 0;
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }

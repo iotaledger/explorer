@@ -8,4 +8,3 @@ export interface IAnalyticStats {
     dailyAddresses?: string;
     lockedStorageDeposit?: string;
 }
-

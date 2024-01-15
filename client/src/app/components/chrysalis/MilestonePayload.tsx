@@ -29,12 +29,11 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
 
         this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
 
-
         this.state = {
             nextIndex: -1,
             previousIndex: -1,
             hasPrevious: false,
-            hasNext: false
+            hasNext: false,
         };
     }
 
@@ -56,9 +55,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             <div className="milestone-payload">
                 <div className="section--header row space-between">
                     <div className="row middle">
-                        <h2>
-                            Milestone Payload
-                        </h2>
+                        <h2>Milestone Payload</h2>
                         <Modal icon="info" data={milestoneMessage} />
                     </div>
                     {(this.state.hasPrevious || this.state.hasNext) && (
@@ -66,90 +63,61 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                             <button
                                 disabled={!this.state.hasPrevious}
                                 type="button"
-                                onClick={async () =>
-                                    this.loadIndex(this.state.previousIndex.toString(), true)}
+                                onClick={async () => this.loadIndex(this.state.previousIndex.toString(), true)}
                                 className="milestone-action margin-r-t"
                             >
                                 <span>Previous</span>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M14 18L8 12L14 6" stroke="#293858" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
-
                             </button>
                             <button
                                 disabled={!this.state.hasNext}
                                 type="button"
-                                onClick={async () =>
-                                    this.loadIndex(this.state.nextIndex.toString(), true)}
+                                onClick={async () => this.loadIndex(this.state.nextIndex.toString(), true)}
                                 className="milestone-action margin-r-t"
                             >
                                 <span>Next</span>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M10 18L16 12L10 6" stroke="#293858" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
-
                             </button>
                         </div>
                     )}
                 </div>
                 <div className="section--data">
-                    <div className="label">
-                        Index
-                    </div>
-                    <div className="value">
-                        {this.props.payload.index}
-                    </div>
+                    <div className="label">Index</div>
+                    <div className="value">{this.props.payload.index}</div>
                 </div>
                 <div className="section--data">
-                    <div className="label">
-                        Date
-                    </div>
+                    <div className="label">Date</div>
                     <div className="value">
-                        {this.props.payload.timestamp && DateHelper.format(
-                            DateHelper.milliseconds(
-                                this.props.payload.timestamp
-                            )
-                        )}
+                        {this.props.payload.timestamp && DateHelper.format(DateHelper.milliseconds(this.props.payload.timestamp))}
                     </div>
                 </div>
                 {this.props.advancedMode && (
                     <React.Fragment>
                         <div className="section--data">
-                            <div className="label">
-                                Inclusion Merkle Proof
-                            </div>
-                            <div className="value code">
-                                {this.props.payload.inclusionMerkleProof}
-                            </div>
+                            <div className="label">Inclusion Merkle Proof</div>
+                            <div className="value code">{this.props.payload.inclusionMerkleProof}</div>
                         </div>
                         {this.props.payload.nextPoWScore !== 0 && this.props.payload.nextPoWScoreMilestoneIndex !== 0 && (
                             <React.Fragment>
                                 <div className="section--data">
-                                    <div className="label">
-                                        Next PoW Score
-                                    </div>
-                                    <div className="value code">
-                                        {this.props.payload.nextPoWScore}
-                                    </div>
+                                    <div className="label">Next PoW Score</div>
+                                    <div className="value code">{this.props.payload.nextPoWScore}</div>
                                 </div>
                                 <div className="section--data">
-
-                                    <div className="label">
-                                        Next PoW Score Milestone Index
-                                    </div>
-                                    <div className="value code">
-                                        {this.props.payload.nextPoWScoreMilestoneIndex}
-                                    </div>
+                                    <div className="label">Next PoW Score Milestone Index</div>
+                                    <div className="value code">{this.props.payload.nextPoWScoreMilestoneIndex}</div>
                                 </div>
                             </React.Fragment>
                         )}
                         {this.props.payload.publicKeys && (
                             <div className="section--data">
-                                <div className="label">
-                                    Public Keys
-                                </div>
+                                <div className="label">Public Keys</div>
                                 <div className="value code">
-                                    {this.props.payload.publicKeys?.map(pubKey => (
+                                    {this.props.payload.publicKeys?.map((pubKey) => (
                                         <div key={pubKey} className="margin-b-s">
                                             {pubKey}
                                         </div>
@@ -158,11 +126,9 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                             </div>
                         )}
                         <div className="section--data">
-                            <div className="label">
-                                Signatures
-                            </div>
+                            <div className="label">Signatures</div>
                             <div className="value code">
-                                {this.props.payload.signatures.map(sig => (
+                                {this.props.payload.signatures.map((sig) => (
                                     <div key={sig} className="margin-b-s">
                                         {sig}
                                     </div>
@@ -181,27 +147,28 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
      * @param updateUrl Update the url.
      */
     private async loadIndex(index: string, updateUrl: boolean): Promise<void> {
-        const result = await this._tangleCacheService.milestoneDetails(
-            this.props.network, Number.parseInt(index, 10));
+        const result = await this._tangleCacheService.milestoneDetails(this.props.network, Number.parseInt(index, 10));
 
         if (result) {
             window.scrollTo({
                 left: 0,
                 top: 0,
-                behavior: "smooth"
+                behavior: "smooth",
             });
 
-            this.setState({
-                milestone: result
-            }, async () => {
-                await this.checkForAdjacentMilestones();
-                if (updateUrl) {
-                    window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
-                }
-            });
+            this.setState(
+                {
+                    milestone: result,
+                },
+                async () => {
+                    await this.checkForAdjacentMilestones();
+                    if (updateUrl) {
+                        window.location.href = `/${this.props.network}/message/${this.state.milestone?.messageId}`;
+                    }
+                },
+            );
         } else {
-            this.props.history.replace(`/${this.props.network
-                }/search/${index}`);
+            this.props.history.replace(`/${this.props.network}/search/${index}`);
         }
     }
 
@@ -216,15 +183,13 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
             let hasPrevious = false;
 
             if (previousIndex > 0) {
-                const resultPrevious = await this._tangleCacheService.milestoneDetails(
-                    this.props.network, previousIndex);
+                const resultPrevious = await this._tangleCacheService.milestoneDetails(this.props.network, previousIndex);
                 if (resultPrevious) {
                     hasPrevious = true;
                 }
             }
 
-            const resultNext = await this._tangleCacheService.milestoneDetails(
-                this.props.network, nextIndex);
+            const resultNext = await this._tangleCacheService.milestoneDetails(this.props.network, nextIndex);
             if (resultNext) {
                 hasNext = true;
             }
@@ -233,7 +198,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps, MilestonePa
                 previousIndex,
                 nextIndex,
                 hasPrevious,
-                hasNext
+                hasNext,
             });
 
             if (!hasNext) {

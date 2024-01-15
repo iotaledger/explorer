@@ -1,4 +1,3 @@
-
 export interface IIdentityDidResolveRequest {
     /**
      * The network to search on.

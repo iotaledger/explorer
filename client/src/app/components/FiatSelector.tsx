@@ -26,7 +26,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         super(props);
         this.dropdown = React.createRef();
         this.setState({
-            isExpanded: false
+            isExpanded: false,
         });
     }
 
@@ -69,7 +69,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
         const supportedFiatCurrencies = this._currencyService.getFiatCurrencies();
 
         return (
-            <div className="fiat-selector" >
+            <div className="fiat-selector">
                 <button
                     type="button"
                     className={FiatSelector.BUTTON_CLASSNAME}
@@ -77,24 +77,21 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
                 >
                     {this.state?.currency}
                 </button>
-                <span className={classNames("material-icons chevron", { opened: this.state?.isExpanded })}>
-                    expand_more
-                </span>
-                {
-                    this.state?.isExpanded &&
+                <span className={classNames("material-icons chevron", { opened: this.state?.isExpanded })}>expand_more</span>
+                {this.state?.isExpanded && (
                     <div className="fiat-selector__entries" ref={this.dropdown}>
                         <div className="group-header">Currencies</div>
-                        {supportedFiatCurrencies.map(currency => renderCurrency(currency))}
+                        {supportedFiatCurrencies.map((currency) => renderCurrency(currency))}
                     </div>
-                }
-            </div >
+                )}
+            </div>
         );
     }
 
     /**
      * Update formatted currencies.
      */
-    protected updateCurrency(): void { }
+    protected updateCurrency(): void {}
 
     /**
      * Handler to detect clicks outside the dropdown
@@ -102,9 +99,7 @@ class FiatSelector extends Currency<unknown, FiatSelectorState> {
      */
     private readonly outsideClickHandler = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
-        if (this.dropdown.current &&
-            !this.dropdown.current.contains(target) &&
-            target.className !== FiatSelector.BUTTON_CLASSNAME) {
+        if (this.dropdown.current && !this.dropdown.current.contains(target) && target.className !== FiatSelector.BUTTON_CLASSNAME) {
             this.closeDropdown();
         }
     };

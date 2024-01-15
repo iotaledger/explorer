@@ -1,5 +1,8 @@
 import {
-    MilestoneOptionType, MilestonePayload as IMilestonePayload, ProtocolParamsMilestoneOption, ReceiptMilestoneOption
+    MilestoneOptionType,
+    MilestonePayload as IMilestonePayload,
+    ProtocolParamsMilestoneOption,
+    ReceiptMilestoneOption,
 } from "@iota/sdk-wasm/web";
 import React, { ReactNode } from "react";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
@@ -31,22 +34,26 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
     public render(): ReactNode {
         const { network, milestonePayload, history } = this.props;
         const {
-            index, timestamp, previousMilestoneId, inclusionMerkleRoot,
-            appliedMerkleRoot, metadata, options, signatures
+            index,
+            timestamp,
+            previousMilestoneId,
+            inclusionMerkleRoot,
+            appliedMerkleRoot,
+            metadata,
+            options,
+            signatures,
         }: IMilestonePayload = milestonePayload;
 
         let receiptMilestoneOption: ReceiptMilestoneOption | null = null;
         let protocolParamsMilestoneOption: ProtocolParamsMilestoneOption | null = null;
 
-        if (options?.some((option => option.type === MilestoneOptionType.Receipt))) {
-            receiptMilestoneOption = options.find(
-                option => option.type === MilestoneOptionType.Receipt
-            ) as ReceiptMilestoneOption;
+        if (options?.some((option) => option.type === MilestoneOptionType.Receipt)) {
+            receiptMilestoneOption = options.find((option) => option.type === MilestoneOptionType.Receipt) as ReceiptMilestoneOption;
         }
 
-        if (options?.some((option => option.type === MilestoneOptionType.ProtocolParams))) {
+        if (options?.some((option) => option.type === MilestoneOptionType.ProtocolParams)) {
             protocolParamsMilestoneOption = options.find(
-                option => option.type === MilestoneOptionType.ProtocolParams
+                (option) => option.type === MilestoneOptionType.ProtocolParams,
             ) as ProtocolParamsMilestoneOption;
         }
 
@@ -59,13 +66,7 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
                     </div>
                     <div className="section--data">
                         <div className="label">Date</div>
-                        <div className="value">
-                            {timestamp && DateHelper.format(
-                                DateHelper.milliseconds(
-                                    timestamp
-                                )
-                            )}
-                        </div>
+                        <div className="value">{timestamp && DateHelper.format(DateHelper.milliseconds(timestamp))}</div>
                     </div>
                     <div className="section--data">
                         <div className="label">Previous milestone Id</div>
@@ -97,32 +98,21 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
                         <React.Fragment>
                             <div className="section--data">
                                 <div className="label">Target milestone index</div>
-                                <div className="value code">
-                                    {protocolParamsMilestoneOption?.targetMilestoneIndex}
-                                </div>
+                                <div className="value code">{protocolParamsMilestoneOption?.targetMilestoneIndex}</div>
                             </div>
                             <div className="section--data">
                                 <div className="label">Target protocol version</div>
-                                <div className="value code">
-                                    {protocolParamsMilestoneOption?.protocolVersion}
-                                </div>
+                                <div className="value code">{protocolParamsMilestoneOption?.protocolVersion}</div>
                             </div>
                             <div className="section--data">
                                 <div className="label">Protocol paramaters</div>
-                                <div className="value code">
-                                    {protocolParamsMilestoneOption?.params}
-                                </div>
+                                <div className="value code">{protocolParamsMilestoneOption?.params}</div>
                             </div>
                         </React.Fragment>
                     )}
                     {receiptMilestoneOption && (
                         <div className="section">
-                            <ReceiptPayload
-                                network={network}
-                                history={history}
-                                payload={receiptMilestoneOption}
-                                advancedMode={true}
-                            />
+                            <ReceiptPayload network={network} history={history} payload={receiptMilestoneOption} advancedMode={true} />
                         </div>
                     )}
                 </div>
@@ -133,4 +123,3 @@ class MilestonePayload extends AsyncComponent<MilestonePayloadProps> {
 }
 
 export default MilestonePayload;
-
