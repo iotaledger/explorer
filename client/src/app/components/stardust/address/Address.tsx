@@ -25,17 +25,12 @@ class Address extends Component<AddressProps> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const address = Bech32AddressHelper.buildAddress(
-            this.context.bech32Hrp,
-            this.props.address
-        );
+        const address = Bech32AddressHelper.buildAddress(this.context.bech32Hrp, this.props.address);
         const link = `/${this.context.name}/addr/${address.bech32}`;
 
         return (
             <div className="address-type">
-                <div className="card--label">
-                    {NameHelper.getAddressTypeName(this.props.address.type)}
-                </div>
+                <div className="card--label">{NameHelper.getAddressTypeName(this.props.address.type)}</div>
                 <div className="card--value">
                     <TruncatedId id={address.bech32} link={link} showCopyButton />
                 </div>

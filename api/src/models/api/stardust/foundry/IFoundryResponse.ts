@@ -7,4 +7,3 @@ export interface IFoundryResponse extends IResponse {
      */
     foundryDetails?: OutputResponse;
 }
-

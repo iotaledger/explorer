@@ -16,7 +16,7 @@ export enum AssociationType {
     NFT_EXPIRATION_RETURN,
     NFT_ISSUER,
     NFT_SENDER,
-    NFT_ID
+    NFT_ID,
 }
 
 export interface IAssociation {
@@ -36,4 +36,3 @@ export interface IAssociationsResponse extends IResponse {
      */
     associations?: IAssociation[];
 }
-

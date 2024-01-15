@@ -25,7 +25,7 @@ class QR extends Component<QRProps, QRState> {
     constructor(props: QRProps) {
         super(props);
         this.state = {
-            cells: []
+            cells: [],
         };
     }
 
@@ -51,7 +51,7 @@ class QR extends Component<QRProps, QRState> {
                     height={this.size}
                     viewBox={`0 0 ${this.state.cells.length} ${this.state.cells.length}`}
                 >
-                    {this.state.cells.map((row, rowIndex) => (
+                    {this.state.cells.map((row, rowIndex) =>
                         row.map((cell, cellIndex) => (
                             <rect
                                 height={1}
@@ -60,9 +60,9 @@ class QR extends Component<QRProps, QRState> {
                                 width={1}
                                 x={cellIndex}
                                 y={rowIndex}
-                            />)
-                               )
-                    ))}
+                            />
+                        )),
+                    )}
                 </svg>
                 <div className="qr-container__label">{QR.LABEL}</div>
             </div>

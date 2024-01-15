@@ -12,12 +12,7 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param transactionId The transaction id
  * @returns The block, loading bool and an error string.
  */
-export function useTransactionIncludedBlock(network: string, transactionId: string | null):
-    [
-        Block | null,
-        boolean,
-        string?
-    ] {
+export function useTransactionIncludedBlock(network: string, transactionId: string | null): [Block | null, boolean, string?] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [block, setBlock] = useState<Block | null>(null);
@@ -29,17 +24,20 @@ export function useTransactionIncludedBlock(network: string, transactionId: stri
         if (transactionId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.transactionIncludedBlockDetails({
-                    network,
-                    transactionId: HexHelper.addPrefix(transactionId)
-                }).then(response => {
-                    if (isMounted) {
-                        setBlock(response.block ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .transactionIncludedBlockDetails({
+                        network,
+                        transactionId: HexHelper.addPrefix(transactionId),
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            setBlock(response.block ?? null);
+                            setError(response.error);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);

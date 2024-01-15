@@ -7,4 +7,3 @@ export interface ILatestMilestonesReponse extends IResponse {
      */
     milestones: IMilestoneFeedItem[];
 }
-

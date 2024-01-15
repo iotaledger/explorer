@@ -1,441 +1,441 @@
-@use 'sass:color';
-@import './fonts';
-@import './layout';
-@import './media-queries';
-@import './mixins';
-@import './variables';
-@import './themes';
+@use "sass:color";
+@import "./fonts";
+@import "./layout";
+@import "./media-queries";
+@import "./mixins";
+@import "./variables";
+@import "./themes";
 
 .card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--input-border-color);
-  border-radius: 6px;
-  background-color: transparent;
-
-  h2 {
     display: flex;
-    align-items: center;
-  }
-
-  h3 {
-    display: flex;
-    align-items: center;
-  }
-
-  input[type='checkbox'] {
-    @include font-size(24px);
-
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    font-weight: bold;
-    vertical-align: middle;
-    appearance: none;
-
-    &:checked {
-      &::after {
-        content: '\2713';
-        position: relative;
-        bottom: 4px;
-        left: 0;
-        color: $main-green;
-      }
-    }
-  }
-
-  button {
-    @include font-size(12px);
-
-    padding: 0;
-    border: 0;
-    background: none;
-    color: inherit;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    text-align: left;
-    cursor: pointer;
-
-    &:hover {
-      color: var(--link-highlight);
-      text-decoration: underline;
-    }
-
-    &:focus {
-      box-shadow: none;
-    }
-
-    &:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-  }
-
-  a {
-    @include font-size(12px);
-
-    color: inherit;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover {
-      color: var(--link-highlight);
-      text-decoration: underline;
-    }
-
-    &:focus {
-      box-shadow: none;
-    }
-
-    &:disabled,
-    &.disabled {
-      opacity: 0.3;
-      cursor: default;
-      pointer-events: none;
-    }
-  }
-
-  .card--header-count {
-    @include font-size(12px);
-
-    display: flex;
-    align-items: center;
-    height: 24px;
-    margin-left: 20px;
-    padding: 0 8px;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--input-border-color);
     border-radius: 6px;
-    background-color: var(--light-bg);
-    color: $gray;
-    font-family: $metropolis;
-    font-weight: bold;
-    white-space: nowrap;
+    background-color: transparent;
 
-    &.card--header-count__success {
-      background-color: #73b183;
-      color: $white;
+    h2 {
+        display: flex;
+        align-items: center;
     }
 
-    &.card--header-count__warning {
-      background-color: $warning;
-      color: $white;
+    h3 {
+        display: flex;
+        align-items: center;
     }
 
-    &.card--header-count__error {
-      background-color: $danger;
-      color: $white;
-    }
-  }
+    input[type="checkbox"] {
+        @include font-size(24px);
 
-  .card--header-info {
-    @include font-size(12px, 12px);
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        font-weight: bold;
+        vertical-align: middle;
+        appearance: none;
 
-    margin-left: 20px;
-    font-family: $metropolis;
-  }
-
-  .card--header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    min-height: 50px;
-    margin: 20px 26px 0;
-    padding-bottom: 14px;
-    color: var(--body-color);
-
-    @include phone-down {
-      min-height: unset;
-      margin: 20px 20px 0;
-    }
-
-    @include tablet-down {
-      &.card--header__tablet-responsive {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    .card--header__title {
-      @include font-size(14px, 21px);
-
-      line-height: 100%;
-
-      + .dot-separator + span {
-        @include font-size(14px, 14px);
-
-        color: $gray-6;
-        font-family: $inter;
-      }
-    }
-
-    &.card--header__space-between {
-      justify-content: space-between;
-
-      .select-wrapper {
-        @include tablet-down {
-          display: none;
+        &:checked {
+            &::after {
+                content: "\2713";
+                position: relative;
+                bottom: 4px;
+                left: 0;
+                color: $main-green;
+            }
         }
-
-        &.select-wrapper--card-header {
-          display: inline-block;
-        }
-      }
     }
 
-    &.card--header-secondary {
-      min-height: auto;
-      margin: 0 0 0 26px;
-      padding: 0;
-      border: 0;
-    }
-  }
+    button {
+        @include font-size(12px);
 
-  p {
-    @include font-size(14px);
-
-    color: $gray;
-    font-family: $metropolis;
-  }
-
-  .card--content {
-    padding: 0 30px 20px;
-
-    @include phone-down {
-      padding: 15px 20px;
-    }
-
-    input {
-      padding: 0 20px;
-    }
-
-    .card--content__input {
-      display: flex;
-
-      .color {
-        color: #108cff;
-      }
-
-      .card--content__input--dropdown {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        text-align: left;
         cursor: pointer;
 
-        svg {
-          transition: transform 0.25s ease;
-
-          path {
-            fill: var(--card-color);
-          }
+        &:hover {
+            color: var(--link-highlight);
+            text-decoration: underline;
         }
 
-        &.opened > svg {
-          transform: rotate(90deg);
+        &:focus {
+            box-shadow: none;
         }
-      }
-    }
-  }
 
-  .card--inline-row + .card--inline-row {
-    margin-top: 23px;
-  }
-
-  .card--action {
-    @include font-size(12px);
-
-    padding: 11px;
-    border: 1px solid $gray;
-    border-radius: 6px;
-    background: transparent;
-    color: $gray;
-    font-family: $inter;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover {
-      color: var(--link-highlight);
-    }
-
-    &:disabled {
-      opacity: 0.3;
-      pointer-events: none;
-    }
-
-    &.card--action-icon {
-      @include font-size(20px);
-
-      padding: 8px;
-      border: 0;
-    }
-  }
-
-  .card--action__busy {
-    @include font-size(12px);
-
-    margin-left: 20px;
-    color: $main-green;
-    font-family: $metropolis;
-    font-weight: bold;
-  }
-
-  .card--action + .card--action {
-    margin-left: 10px;
-  }
-
-  .card--value {
-    @include font-size(14px, 20px);
-
-    margin-bottom: 12px;
-    color: var(--body-color);
-    font-family: $ibm-plex-mono;
-    word-break: break-all;
-
-    .section--data {
-      .label {
-        color: var(--card-color);
-      }
-    }
-
-    input {
-      padding: 0 20px;
-      background-color: var(--body-background);
-
-      &[type='checkbox'] {
-        padding: 0;
-      }
-    }
-
-    a,
-    button {
-      color: var(--link-color);
-    }
-
-    &.card--value__highlight {
-      @include font-size(12px);
-
-      color: $main-green;
-      font-weight: bold;
-    }
-
-    &.card--value__no-margin {
-      margin-bottom: 0;
-    }
-
-    .card--value__secondary,
-    &.card--value__secondary {
-      @include font-size(12px);
-
-      color: $main-green;
-    }
-
-    .card--value__tertiary {
-      @include font-size(10px);
-
-      color: $main-green;
-      font-weight: normal;
-    }
-
-    &.card--value__large,
-    .card--value__large {
-      @include font-size(18px);
-    }
-
-    &.card--value-textarea {
-      min-height: 150px;
-      max-height: 150px;
-      padding: 10px;
-      overflow: auto;
-      background: var(--light-bg);
-
-      &.card--value-textarea__ascii,
-      &.card--value-textarea__utf8 {
-        max-height: 350px;
-        white-space: pre-wrap;
-      }
-
-      &.card--value-textarea__hex {
-        max-height: 350px;
-        font-family: 'Courier New', Courier, monospace;
-        word-break: break-word;
-        white-space: pre-wrap;
-      }
-
-      &.card--value-textarea__json {
-        max-height: 350px;
-        font-family: 'Courier New', Courier, monospace;
-        white-space: pre-wrap;
-      }
-
-      &.card--value-textarea__tall {
-        max-height: 280px;
-      }
-
-      &.card--value-textarea__fit {
-        min-height: auto;
-      }
-    }
-
-    &.card--value__light,
-    .card--value__light {
-      color: $gray;
+        &:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
     }
 
     a {
-      &:hover {
+        @include font-size(12px);
+
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--link-highlight);
+            text-decoration: underline;
+        }
+
+        &:focus {
+            box-shadow: none;
+        }
+
+        &:disabled,
+        &.disabled {
+            opacity: 0.3;
+            cursor: default;
+            pointer-events: none;
+        }
+    }
+
+    .card--header-count {
+        @include font-size(12px);
+
+        display: flex;
+        align-items: center;
+        height: 24px;
+        margin-left: 20px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background-color: var(--light-bg);
+        color: $gray;
+        font-family: $metropolis;
+        font-weight: bold;
+        white-space: nowrap;
+
+        &.card--header-count__success {
+            background-color: #73b183;
+            color: $white;
+        }
+
+        &.card--header-count__warning {
+            background-color: $warning;
+            color: $white;
+        }
+
+        &.card--header-count__error {
+            background-color: $danger;
+            color: $white;
+        }
+    }
+
+    .card--header-info {
+        @include font-size(12px, 12px);
+
+        margin-left: 20px;
+        font-family: $metropolis;
+    }
+
+    .card--header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        min-height: 50px;
+        margin: 20px 26px 0;
+        padding-bottom: 14px;
+        color: var(--body-color);
+
+        @include phone-down {
+            min-height: unset;
+            margin: 20px 20px 0;
+        }
+
+        @include tablet-down {
+            &.card--header__tablet-responsive {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .card--header__title {
+            @include font-size(14px, 21px);
+
+            line-height: 100%;
+
+            + .dot-separator + span {
+                @include font-size(14px, 14px);
+
+                color: $gray-6;
+                font-family: $inter;
+            }
+        }
+
+        &.card--header__space-between {
+            justify-content: space-between;
+
+            .select-wrapper {
+                @include tablet-down {
+                    display: none;
+                }
+
+                &.select-wrapper--card-header {
+                    display: inline-block;
+                }
+            }
+        }
+
+        &.card--header-secondary {
+            min-height: auto;
+            margin: 0 0 0 26px;
+            padding: 0;
+            border: 0;
+        }
+    }
+
+    p {
+        @include font-size(14px);
+
+        color: $gray;
+        font-family: $metropolis;
+    }
+
+    .card--content {
+        padding: 0 30px 20px;
+
+        @include phone-down {
+            padding: 15px 20px;
+        }
+
+        input {
+            padding: 0 20px;
+        }
+
+        .card--content__input {
+            display: flex;
+
+            .color {
+                color: #108cff;
+            }
+
+            .card--content__input--dropdown {
+                cursor: pointer;
+
+                svg {
+                    transition: transform 0.25s ease;
+
+                    path {
+                        fill: var(--card-color);
+                    }
+                }
+
+                &.opened > svg {
+                    transform: rotate(90deg);
+                }
+            }
+        }
+    }
+
+    .card--inline-row + .card--inline-row {
+        margin-top: 23px;
+    }
+
+    .card--action {
+        @include font-size(12px);
+
+        padding: 11px;
+        border: 1px solid $gray;
+        border-radius: 6px;
+        background: transparent;
+        color: $gray;
+        font-family: $inter;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover {
+            color: var(--link-highlight);
+        }
+
+        &:disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        &.card--action-icon {
+            @include font-size(20px);
+
+            padding: 8px;
+            border: 0;
+        }
+    }
+
+    .card--action__busy {
+        @include font-size(12px);
+
+        margin-left: 20px;
+        color: $main-green;
+        font-family: $metropolis;
+        font-weight: bold;
+    }
+
+    .card--action + .card--action {
+        margin-left: 10px;
+    }
+
+    .card--value {
+        @include font-size(14px, 20px);
+
+        margin-bottom: 12px;
+        color: var(--body-color);
+        font-family: $ibm-plex-mono;
+        word-break: break-all;
+
+        .section--data {
+            .label {
+                color: var(--card-color);
+            }
+        }
+
+        input {
+            padding: 0 20px;
+            background-color: var(--body-background);
+
+            &[type="checkbox"] {
+                padding: 0;
+            }
+        }
+
+        a,
+        button {
+            color: var(--link-color);
+        }
+
+        &.card--value__highlight {
+            @include font-size(12px);
+
+            color: $main-green;
+            font-weight: bold;
+        }
+
+        &.card--value__no-margin {
+            margin-bottom: 0;
+        }
+
+        .card--value__secondary,
+        &.card--value__secondary {
+            @include font-size(12px);
+
+            color: $main-green;
+        }
+
+        .card--value__tertiary {
+            @include font-size(10px);
+
+            color: $main-green;
+            font-weight: normal;
+        }
+
+        &.card--value__large,
+        .card--value__large {
+            @include font-size(18px);
+        }
+
+        &.card--value-textarea {
+            min-height: 150px;
+            max-height: 150px;
+            padding: 10px;
+            overflow: auto;
+            background: var(--light-bg);
+
+            &.card--value-textarea__ascii,
+            &.card--value-textarea__utf8 {
+                max-height: 350px;
+                white-space: pre-wrap;
+            }
+
+            &.card--value-textarea__hex {
+                max-height: 350px;
+                font-family: "Courier New", Courier, monospace;
+                word-break: break-word;
+                white-space: pre-wrap;
+            }
+
+            &.card--value-textarea__json {
+                max-height: 350px;
+                font-family: "Courier New", Courier, monospace;
+                white-space: pre-wrap;
+            }
+
+            &.card--value-textarea__tall {
+                max-height: 280px;
+            }
+
+            &.card--value-textarea__fit {
+                min-height: auto;
+            }
+        }
+
         &.card--value__light,
         .card--value__light {
-          color: color.adjust($main-green-highlight, $red: 10);
+            color: $gray;
         }
-      }
-    }
-  }
 
-  .card--label {
-    @include font-size(12px);
-
-    display: flex;
-    align-items: center;
-    height: 32px;
-    color: var(--card-color);
-    font-family: $inter;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-
-    button,
-    .button {
-      @include font-size(12px);
-
-      padding: 0;
-      border: 0;
-      background: none;
-      color: inherit;
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      text-align: left;
-      text-transform: inherit;
-      cursor: pointer;
-
-      &:hover {
-        color: var(--link-highlight);
-        text-decoration: underline;
-      }
-
-      &:focus {
-        box-shadow: none;
-      }
+        a {
+            &:hover {
+                &.card--value__light,
+                .card--value__light {
+                    color: color.adjust($main-green-highlight, $red: 10);
+                }
+            }
+        }
     }
 
-    &.card--label__no-case {
-      text-transform: none;
-    }
+    .card--label {
+        @include font-size(12px);
 
-    &.card--label__no-height {
-      height: auto;
+        display: flex;
+        align-items: center;
+        height: 32px;
+        color: var(--card-color);
+        font-family: $inter;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+
+        button,
+        .button {
+            @include font-size(12px);
+
+            padding: 0;
+            border: 0;
+            background: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            text-align: left;
+            text-transform: inherit;
+            cursor: pointer;
+
+            &:hover {
+                color: var(--link-highlight);
+                text-decoration: underline;
+            }
+
+            &:focus {
+                box-shadow: none;
+            }
+        }
+
+        &.card--label__no-case {
+            text-transform: none;
+        }
+
+        &.card--label__no-height {
+            height: auto;
+        }
     }
-  }
 }

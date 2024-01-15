@@ -1,2 +1,1 @@
-export class NodeInfoError extends Error { }
-
+export class NodeInfoError extends Error {}

@@ -5,123 +5,123 @@
 @import "./../../scss/themes";
 
 .fiat-selector {
-  position: relative;
-  margin-left: 16px;
-  font-family: $inter;
+    position: relative;
+    margin-left: 16px;
+    font-family: $inter;
 
-  .fiat-selector__button {
-    @include font-size(14px);
+    .fiat-selector__button {
+        @include font-size(14px);
 
-    display: flex;
-    align-items: center;
-    height: 32px;
-    margin: 0;
-    padding: 0 48px 0 20px;
-    transition: border-color 0.2s ease;
-    border: 1px solid var(--input-border-color);
-    border-radius: 8px;
-    outline: none;
-    background-color: transparent;
-    box-shadow: none;
-    color: var(--body-color);
-    appearance: none;
+        display: flex;
+        align-items: center;
+        height: 32px;
+        margin: 0;
+        padding: 0 48px 0 20px;
+        transition: border-color 0.2s ease;
+        border: 1px solid var(--input-border-color);
+        border-radius: 8px;
+        outline: none;
+        background-color: transparent;
+        box-shadow: none;
+        color: var(--body-color);
+        appearance: none;
 
-    @include phone-down {
-      padding: 0 32px 0 8px;
+        @include phone-down {
+            padding: 0 32px 0 8px;
+        }
+
+        &:focus {
+            border-color: var(--input-focus-border-color);
+        }
+
+        &:-ms-expand {
+            display: none;
+        }
+
+        &:-moz-focusring {
+            color: transparent;
+            text-shadow: 0 0 0 $gray-10;
+
+            * {
+                color: $gray-10;
+                text-shadow: none;
+            }
+        }
     }
 
-    &:focus {
-      border-color: var(--input-focus-border-color);
+    .fiat-selector__entries {
+        position: absolute;
+        z-index: 5;
+        width: 356px;
+        max-height: 500px;
+        padding-bottom: 14px;
+        overflow: auto;
+        border: 1px solid var(--input-border-color);
+        border-radius: 6px;
+        background-color: var(--body-background);
+        color: var(--body-color);
+
+        @include font-size(14px);
+
+        @include desktop-down {
+            right: 0;
+        }
+
+        @include phone-down {
+            position: fixed;
+            top: $navbar-height-mobile;
+            width: 100%;
+            max-height: calc(100vh - $navbar-height-mobile);
+            border-top: 0;
+        }
+
+        .group-header {
+            padding: 24px 20px 14px;
+            color: $gray-5;
+            font-weight: 500;
+            cursor: default;
+        }
+
+        .fiat-selector__currency {
+            display: flex;
+            margin: 0 20px;
+            padding: 10px 0;
+            cursor: pointer;
+
+            .acronym {
+                width: 38px;
+                margin-right: 8px;
+                color: var(--fiat-acronym-color);
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+
+            .full-name {
+                color: $gray-7;
+            }
+
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--input-border-color);
+            }
+        }
     }
 
-    &:-ms-expand {
-      display: none;
+    .chevron {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 10px;
+        transition: transform 0.2s ease;
+        color: $gray;
+        pointer-events: none;
+
+        &.opened {
+            transform: translateY(-50%) rotate(-180deg);
+        }
+
+        @include phone-down {
+            right: 1px;
+        }
     }
-
-    &:-moz-focusring {
-      color: transparent;
-      text-shadow: 0 0 0 $gray-10;
-
-      * {
-        color: $gray-10;
-        text-shadow: none;
-      }
-    }
-  }
-
-  .fiat-selector__entries {
-    position: absolute;
-    z-index: 5;
-    width: 356px;
-    max-height: 500px;
-    padding-bottom: 14px;
-    overflow: auto;
-    border: 1px solid var(--input-border-color);
-    border-radius: 6px;
-    background-color: var(--body-background);
-    color: var(--body-color);
-
-    @include font-size(14px);
-
-    @include desktop-down {
-      right: 0;
-    }
-
-    @include phone-down {
-      position: fixed;
-      top: $navbar-height-mobile;
-      width: 100%;
-      max-height: calc(100vh - $navbar-height-mobile);
-      border-top: 0;
-    }
-
-    .group-header {
-      padding: 24px 20px 14px;
-      color: $gray-5;
-      font-weight: 500;
-      cursor: default;
-    }
-
-    .fiat-selector__currency {
-      display: flex;
-      margin: 0 20px;
-      padding: 10px 0;
-      cursor: pointer;
-
-      .acronym {
-        width: 38px;
-        margin-right: 8px;
-        color: var(--fiat-acronym-color);
-        font-weight: 600;
-        letter-spacing: 0.5px;
-      }
-
-      .full-name {
-        color: $gray-7;
-      }
-
-      &:not(:last-child) {
-          border-bottom: 1px solid var(--input-border-color);
-      }
-    }
-  }
-
-  .chevron {
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 10px;
-    transition: transform 0.2s ease;
-    color: $gray;
-    pointer-events: none;
-
-    &.opened {
-      transform: translateY(-50%) rotate(-180deg);
-    }
-
-    @include phone-down {
-      right: 1px;
-    }
-  }
 }

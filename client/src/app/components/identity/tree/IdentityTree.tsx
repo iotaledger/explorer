@@ -19,8 +19,8 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                 message: firstMsg.document,
                 document: firstMsg.document,
                 messageId: firstMsg.messageId,
-                isDiff: false
-            }
+                isDiff: false,
+            },
         };
     }
 
@@ -35,7 +35,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                             message: value.document,
                             document: value.document,
                             messageId: value.messageId,
-                            isDiff: false
+                            isDiff: false,
                         }}
                         key={index}
                         lastMsg={index === (this.props.history?.integrationChainData?.length ?? 0) - 1}
@@ -45,7 +45,7 @@ export default class IdentityMessageIdOverview extends Component<IdentityTreePro
                         parentFirstMsg={undefined}
                         onItemClick={(selectedItem, compareWith) => {
                             this.setState({
-                                selectedMessage: selectedItem ?? ""
+                                selectedMessage: selectedItem ?? "",
                             });
                             this.props.onItemClick(selectedItem, compareWith);
                         }}

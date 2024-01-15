@@ -31,4 +31,3 @@ export interface BlockTangleStateProps {
      */
     onClick?(blockId?: string): void;
 }
-
