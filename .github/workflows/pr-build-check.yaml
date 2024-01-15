@@ -7,6 +7,7 @@ on:
 jobs:
     build-check:
         strategy:
+          fail-fast: false
           matrix:
             project: [api, client]
         runs-on: ubuntu-latest

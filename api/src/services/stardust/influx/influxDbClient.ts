@@ -115,11 +115,11 @@ export abstract class InfluxDbClient {
      * @returns Boolean representing that the client ping succeeded.
      */
     public async buildClient(): Promise<boolean> {
-        const protocol = this._network.analyticsInfluxDbProtocol || 'https';
+        const protocol = this._network.analyticsInfluxDbProtocol || "https";
         const network = this._network.network;
-        var [host, portString] = this._network.analyticsInfluxDbEndpoint.split(':');
+        const [host, portString] = this._network.analyticsInfluxDbEndpoint.split(":");
         // Parse port string to int, or use default port for protocol
-        const port = parseInt(portString) || (protocol === 'https' ? 443 : 80);
+        const port = Number.parseInt(portString, 10) || (protocol === "https" ? 443 : 80);
         const database = this._network.analyticsInfluxDbDatabase;
         const username = this._network.analyticsInfluxDbUsername;
         const password = this._network.analyticsInfluxDbPassword;
