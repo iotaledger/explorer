@@ -9,4 +9,3 @@ export interface IFoundryRequest {
      */
     foundryId: string;
 }
-

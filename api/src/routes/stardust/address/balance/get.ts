@@ -13,10 +13,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: IAddressBalanceRequest
-): Promise<IAddressDetailsWithBalance> {
+export async function get(config: IConfiguration, request: IAddressBalanceRequest): Promise<IAddressDetailsWithBalance> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -29,4 +26,3 @@ export async function get(
 
     return StardustTangleHelper.addressDetails(networkConfig, request.address);
 }
-

@@ -1,2 +1,1 @@
-export class NetworkConfigurationError extends Error { }
-
+export class NetworkConfigurationError extends Error {}

@@ -6,8 +6,4 @@ export const STARDUST = "stardust";
 /**
  * The protocol versions.
  */
-export type ProtocolVersion =
-    typeof LEGACY        |
-    typeof CHRYSALIS |
-    typeof STARDUST;
-
+export type ProtocolVersion = typeof LEGACY | typeof CHRYSALIS | typeof STARDUST;

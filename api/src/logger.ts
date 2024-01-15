@@ -10,9 +10,9 @@ const { combine, timestamp: timestampFunc, label: labelFunc, printf } = format;
 const theFormat = combine(
     labelFunc({ label: `Explorer${version}` }),
     timestampFunc({
-        format: () => (moment().format("DD-MM-YYYY HH:mm:ss.SSSZ"))
+        format: () => moment().format("DD-MM-YYYY HH:mm:ss.SSSZ"),
     }),
-    printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`)
+    printf(({ level, message, label, timestamp }) => `[${timestamp}] [${label}] ${level}: ${message}`),
 );
 
 const loggerFormat = process.env.NODE_ENV === "development" ? combine(format.colorize(), theFormat) : theFormat;
@@ -27,8 +27,8 @@ if (process.env.GCLOUD_PROJECT) {
     transportList.push(
         new transports.Console({
             level: logLevel,
-            format: loggerFormat
-        })
+            format: loggerFormat,
+        }),
     );
 }
 
@@ -37,9 +37,7 @@ const logger = createLogger({
     format: format.json(),
     defaultMeta: { service: `Explorer${version}` },
     // @ts-expect-error Can't find a common type between Console and gCloud winston transport to make ts happy
-    transports: transportList
+    transports: transportList,
 });
 
-
 export default logger;
-

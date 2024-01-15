@@ -33,10 +33,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
 
     const fallbackInputView = (
         <React.Fragment>
-            <div
-                className="card--content__input"
-                onClick={() => setIsExpanded(!isExpanded)}
-            >
+            <div className="card--content__input" onClick={() => setIsExpanded(!isExpanded)}>
                 <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
@@ -45,7 +42,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                 </div>
                 {input.amount && (
                     <span
-                        onClick={e => {
+                        onClick={(e) => {
                             setIsFormattedBalance(!isFormattedBalance);
                             e.stopPropagation();
                         }}
@@ -72,28 +69,30 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                     </div>
                     <div className="card--label"> Transaction Id</div>
                     <div className="card--value">
-                        <Link to={`/${network}/transaction/${input.transactionId}`} className="margin-r-t" >
+                        <Link to={`/${network}/transaction/${input.transactionId}`} className="margin-r-t">
                             {input.transactionId}
                         </Link>
                     </div>
                     <div className="card--label"> Transaction Output Index</div>
                     <div className="card--value">{input.transactionInputIndex}</div>
-                </React.Fragment>)}
+                </React.Fragment>
+            )}
         </React.Fragment>
     );
 
-    const outputId = Utils.computeOutputId(
-        input.transactionId, input.transactionInputIndex
-    );
+    const outputId = Utils.computeOutputId(input.transactionId, input.transactionInputIndex);
 
-    return input.output ?
+    return input.output ? (
         <Output
             outputId={outputId}
             output={input.output.output}
             amount={Number(input.output.output.amount)}
             network={network}
             showCopyAmount={true}
-        /> : fallbackInputView;
+        />
+    ) : (
+        fallbackInputView
+    );
 };
 
 export default Input;

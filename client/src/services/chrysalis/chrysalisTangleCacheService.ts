@@ -60,20 +60,28 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
      * @param key The key for the fetch if restricted mode.
      * @returns The balance for the address.
      */
-    public async getStreamsV0Packet(network: string, root: string, mode: MamMode, key: string): Promise<{
-        /**
-         * The payload at the given root.
-         */
-        payload: string;
-        /**
-         * The next root.
-         */
-        nextRoot: string;
-        /**
-         * The tag.
-         */
-        tag: string;
-    } | undefined> {
+    public async getStreamsV0Packet(
+        network: string,
+        root: string,
+        mode: MamMode,
+        key: string,
+    ): Promise<
+        | {
+              /**
+               * The payload at the given root.
+               */
+              payload: string;
+              /**
+               * The next root.
+               */
+              nextRoot: string;
+              /**
+               * The tag.
+               */
+              tag: string;
+          }
+        | undefined
+    > {
         const streamsV0Cache = this._streamsV0[network];
 
         if (streamsV0Cache) {
@@ -89,7 +97,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
                             payload: result.message,
                             nextRoot: result.nextRoot,
                             tag: result.tag,
-                            cached: Date.now()
+                            cached: Date.now(),
                         };
                     }
                 } catch (err) {
@@ -116,19 +124,21 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
             const response = await apiClient.search({
                 network: networkId,
                 query,
-                cursor
+                cursor,
             });
 
-            if (response.address ||
+            if (
+                response.address ||
                 response.message ||
                 response.indexMessageIds ||
                 response.milestone ||
                 response.output ||
                 response.did ||
-                response.addressOutputIds) {
+                response.addressOutputIds
+            ) {
                 this._chrysalisSearchCache[networkId][fullQuery] = {
                     data: response,
-                    cached: Date.now()
+                    cached: Date.now(),
                 };
             }
         }
@@ -144,11 +154,12 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
      */
     public async messageDetails(
         networkId: string,
-        messageId: string): Promise<{
-            metadata?: IMessageMetadata;
-            childrenIds?: string[];
-            error?: string;
-        }> {
+        messageId: string,
+    ): Promise<{
+        metadata?: IMessageMetadata;
+        childrenIds?: string[];
+        error?: string;
+    }> {
         const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
         const response = await apiClient.messageDetails({ network: networkId, messageId });
@@ -157,7 +168,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
             return {
                 metadata: response.metadata,
                 childrenIds: response.childrenMessageIds,
-                error: response.error
+                error: response.error,
             };
         }
 
@@ -170,9 +181,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
      * @param outputId The output to get the details for.
      * @returns The details response.
      */
-    public async outputDetails(
-        networkId: string,
-        outputId: string): Promise<IOutputResponse | undefined> {
+    public async outputDetails(networkId: string, outputId: string): Promise<IOutputResponse | undefined> {
         if (!this._chrysalisSearchCache[networkId][outputId]?.data?.output) {
             const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
@@ -181,7 +190,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
             if (response?.output) {
                 this._chrysalisSearchCache[networkId][outputId] = {
                     data: { output: response.output },
-                    cached: Date.now()
+                    cached: Date.now(),
                 };
             }
         }
@@ -195,9 +204,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
      * @param milestoneIndex The output to get the details for.
      * @returns The details response.
      */
-    public async milestoneDetails(
-        networkId: string,
-        milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
+    public async milestoneDetails(networkId: string, milestoneIndex: number): Promise<IMilestoneResponse | undefined> {
         if (!this._chrysalisSearchCache[networkId][milestoneIndex]?.data?.milestone) {
             const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
 
@@ -206,7 +213,7 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
             if (response?.milestone) {
                 this._chrysalisSearchCache[networkId][milestoneIndex] = {
                     data: { milestone: response.milestone },
-                    cached: Date.now()
+                    cached: Date.now(),
                 };
             }
         }
@@ -222,36 +229,33 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
      */
     public async transactionsHistory(
         request: ITransactionHistoryRequest,
-        skipCache: boolean = false
+        skipCache: boolean = false,
     ): Promise<ITransactionHistoryResponse | undefined> {
-        if (!this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
-            ?.data?.transactionHistory || skipCache) {
+        if (
+            !this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]?.data?.transactionHistory ||
+            skipCache
+        ) {
             const apiClient = ServiceFactory.get<ChrysalisApiClient>(`api-client-${CHRYSALIS}`);
             const response = await apiClient.transactionHistory(request);
 
             if (response?.history) {
                 const cachedHistory =
-                    this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
-                        ?.data?.transactionHistory?.history ?? [];
+                    this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]?.data?.transactionHistory
+                        ?.history ?? [];
 
                 this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`] = {
                     data: {
                         transactionHistory: {
                             ...response,
-                            history: [
-                                ...cachedHistory,
-                                ...response.history
-                            ]
-                        }
+                            history: [...cachedHistory, ...response.history],
+                        },
                     },
-                    cached: Date.now()
+                    cached: Date.now(),
                 };
             }
         }
 
-        return this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]
-            ?.data
-            ?.transactionHistory;
+        return this._chrysalisSearchCache[request.network][`${request.address}--transaction-history`]?.data?.transactionHistory;
     }
 
     /**
@@ -272,4 +276,3 @@ export class ChrysalisTangleCacheService extends TangleCacheService {
         }
     }
 }
-

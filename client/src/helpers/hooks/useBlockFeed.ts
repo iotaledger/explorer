@@ -16,10 +16,7 @@ const FEED_PROBE_THRESHOLD: number = 10000;
  * @param network The network in context.
  * @returns Milestones and latestMilestonIndex
  */
-export function useBlockFeed(network: string): [
-    IMilestoneFeedItem[],
-    (number | null)
-] {
+export function useBlockFeed(network: string): [IMilestoneFeedItem[], number | null] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const feedProbe = useRef<NodeJS.Timer | null>(null);
@@ -33,9 +30,7 @@ export function useBlockFeed(network: string): [
         if (apiClient) {
             const latestMilestones: ILatestMilestonesReponse = await apiClient.latestMilestones(network);
             if (isMounted && latestMilestones.milestones && latestMilestones.milestones.length > 0) {
-                setMilestones(
-                    latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS)
-                );
+                setMilestones(latestMilestones.milestones.slice(0, MAX_MILESTONE_ITEMS));
             }
         }
     }, [network]);
@@ -78,13 +73,13 @@ export function useBlockFeed(network: string): [
                         setLatestMilestoneIndex(newMilestone.milestoneIndex);
                     }
                     if (isMounted) {
-                        setMilestones(prevMilestones => {
+                        setMilestones((prevMilestones) => {
                             const milestonesUpdate = [...prevMilestones];
                             milestonesUpdate.unshift({
                                 blockId: newMilestone.blockId,
                                 milestoneId: newMilestone.milestoneId,
                                 index: newMilestone.milestoneIndex,
-                                timestamp: newMilestone.timestamp
+                                timestamp: newMilestone.timestamp,
                             });
                             if (milestonesUpdate.length > MAX_MILESTONE_ITEMS) {
                                 milestonesUpdate.pop();
@@ -108,4 +103,3 @@ export function useBlockFeed(network: string): [
 
     return [milestones, latestMilestonIndex];
 }
-

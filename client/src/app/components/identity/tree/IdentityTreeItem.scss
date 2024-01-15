@@ -6,253 +6,253 @@
 $item-height: 64px;
 
 .tree-item-container {
-  position: relative;
-  min-width: 200px;
-  height: $item-height;
-  margin-right: 10px;
-  border-radius: 6px;
-  overflow: hidden;
-  cursor: pointer;
-
-  &:hover {
-    background: rgba(72, 87, 118, 0.08);
-  }
-
-  .push-right {
-    left: 60px !important;
-  }
-
-  .upper-left-straight-line {
-    position: absolute;
-    left: 25px;
-    width: 2px;
-    height: 33px;
-    background-color: #eeeeee;
-  }
-
-  .msg-icon-left {
-    position: absolute;
-    z-index: 3;
-    top: 20px;
-    left: 20px;
-  }
-
-  .msg-icon-right {
-    position: absolute;
-    z-index: 3;
-    top: 21px;
-    left: 44px;
-  }
-
-  .lower-left-straight-line {
-    position: absolute;
-    top: 31px;
-    left: 25px;
-    width: 2px;
-    height: 33px;
-    background-color: #eeeeee;
-  }
-
-  .upper-right-straight-line {
-    position: absolute;
-    left: 48px;
-    width: 2px;
-    height: 33px;
-    background-color: #eeeeee;
-  }
-
-  .lower-right-straight-line {
-    position: absolute;
-    top: 31px;
-    left: 48px;
-    width: 2px;
-    height: 33px;
-    background-color: #eeeeee;
-  }
-
-  .no-diff-title {
-    position: absolute;
-    top: 18px;
-    left: 60px;
-    color: $gray-5;
-    font-family: $inter;
-    letter-spacing: 0.5px;
-
-    @include font-size(12px, 18px);
-  }
-
-  .content {
-    display: flex;
-    position: absolute;
-    top: -5px;
-    left: 40px;
-    justify-content: space-between;
-    width: calc(100% - 50px);
-    margin-top: 12px !important;
-    margin-bottom: 12px;
-    padding: 8px;
+    position: relative;
+    min-width: 200px;
+    height: $item-height;
+    margin-right: 10px;
     border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
 
-    .title {
-      color: var(--expanded-color);
-      font-family: $ibm-plex-mono;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-
-      @include font-size(12px, 16px);
+    &:hover {
+        background: rgba(72, 87, 118, 0.08);
     }
 
-    .time-stamp {
-      color: $gray-5;
-      font-family: $inter;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-
-      @include font-size(12px, 18px);
+    .push-right {
+        left: 60px !important;
     }
 
-    .diff-icon-active {
-      svg {
-        path {
-          fill: $gray;
+    .upper-left-straight-line {
+        position: absolute;
+        left: 25px;
+        width: 2px;
+        height: 33px;
+        background-color: #eeeeee;
+    }
+
+    .msg-icon-left {
+        position: absolute;
+        z-index: 3;
+        top: 20px;
+        left: 20px;
+    }
+
+    .msg-icon-right {
+        position: absolute;
+        z-index: 3;
+        top: 21px;
+        left: 44px;
+    }
+
+    .lower-left-straight-line {
+        position: absolute;
+        top: 31px;
+        left: 25px;
+        width: 2px;
+        height: 33px;
+        background-color: #eeeeee;
+    }
+
+    .upper-right-straight-line {
+        position: absolute;
+        left: 48px;
+        width: 2px;
+        height: 33px;
+        background-color: #eeeeee;
+    }
+
+    .lower-right-straight-line {
+        position: absolute;
+        top: 31px;
+        left: 48px;
+        width: 2px;
+        height: 33px;
+        background-color: #eeeeee;
+    }
+
+    .no-diff-title {
+        position: absolute;
+        top: 18px;
+        left: 60px;
+        color: $gray-5;
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        @include font-size(12px, 18px);
+    }
+
+    .content {
+        display: flex;
+        position: absolute;
+        top: -5px;
+        left: 40px;
+        justify-content: space-between;
+        width: calc(100% - 50px);
+        margin-top: 12px !important;
+        margin-bottom: 12px;
+        padding: 8px;
+        border-radius: 6px;
+
+        .title {
+            color: var(--expanded-color);
+            font-family: $ibm-plex-mono;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+
+            @include font-size(12px, 16px);
         }
-      }
-    }
 
-    .diff-icon {
-      display: flex;
-      position: relative;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
+        .time-stamp {
+            color: $gray-5;
+            font-family: $inter;
+            font-weight: 500;
+            letter-spacing: 0.5px;
 
-      &:hover {
-        svg {
-          path {
-            fill: var(--did-color);
-          }
+            @include font-size(12px, 18px);
         }
-      }
+
+        .diff-icon-active {
+            svg {
+                path {
+                    fill: $gray;
+                }
+            }
+        }
+
+        .diff-icon {
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+
+            &:hover {
+                svg {
+                    path {
+                        fill: var(--did-color);
+                    }
+                }
+            }
+        }
     }
-  }
 }
 
 .loading-diff-icon {
-  position: absolute;
-  z-index: 3;
-  top: 22px;
-  left: 43px;
-  width: 10px;
-  height: 10px;
-  animation: diff-anim 1s;
-  animation-iteration-count: infinite;
-  border: solid $gray-5 1px;
-  border-radius: 5px;
-  background-color: $gray-light;
+    position: absolute;
+    z-index: 3;
+    top: 22px;
+    left: 43px;
+    width: 10px;
+    height: 10px;
+    animation: diff-anim 1s;
+    animation-iteration-count: infinite;
+    border: solid $gray-5 1px;
+    border-radius: 5px;
+    background-color: $gray-light;
 }
 
 .no-diff-icon {
-  position: absolute;
-  z-index: 3;
-  top: 22px;
-  left: 43px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: $gray-5;
+    position: absolute;
+    z-index: 3;
+    top: 22px;
+    left: 43px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: $gray-5;
 }
 
 @keyframes diff-anim {
-  from {
-    border: solid $gray-5 4px;
-  }
+    from {
+        border: solid $gray-5 4px;
+    }
 
-  to {
-    border: solid $gray-5 0;
-  }
+    to {
+        border: solid $gray-5 0;
+    }
 }
 
 .loading-diff-title {
-  position: absolute;
-  top: 22px;
-  left: 60px;
-  color: $gray-5;
-  font-family: $metropolis;
-  font-size: 0.8em;
+    position: absolute;
+    top: 22px;
+    left: 60px;
+    color: $gray-5;
+    font-family: $metropolis;
+    font-size: 0.8em;
 }
 
 .expand-animation {
-  -webkit-animation-name: expand;
-  animation-name: expand;
-  -webkit-animation-duration: 0.5s;
-  animation-duration: 0.8s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
+    -webkit-animation-name: expand;
+    animation-name: expand;
+    -webkit-animation-duration: 0.5s;
+    animation-duration: 0.8s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
 }
 
 @-webkit-keyframes expand {
-  0% {
-    height: 0;
-  }
+    0% {
+        height: 0;
+    }
 
-  100% {
-    height: $item-height;
-  }
+    100% {
+        height: $item-height;
+    }
 }
 
 @keyframes expand {
-  0% {
-    height: 0;
-  }
+    0% {
+        height: 0;
+    }
 
-  100% {
-    height: $item-height;
-  }
+    100% {
+        height: $item-height;
+    }
 }
 
 .tree-item-selected {
-  background: rgba(20, 202, 191, 0.08);
+    background: rgba(20, 202, 191, 0.08);
 }
 
 .no-select {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .backward-curved-line {
-  position: absolute;
-  z-index: 2;
-  top: -33px;
-  left: 26px;
+    position: absolute;
+    z-index: 2;
+    top: -33px;
+    left: 26px;
 }
 
 .identity-item-wrapper {
-  position: relative;
+    position: relative;
 }
 
 .forward-curved-line {
-  position: absolute;
-  z-index: 2;
-  top: 28px;
-  left: 25px;
+    position: absolute;
+    z-index: 2;
+    top: 28px;
+    left: 25px;
 }
 
 .fade-animation {
-  animation-name: fade-anim;
-  animation-duration: 1s;
+    animation-name: fade-anim;
+    animation-duration: 1s;
 }
 
 @keyframes fade-anim {
-  0% {
-    opacity: 0;
-  }
+    0% {
+        opacity: 0;
+    }
 
-  100% {
-    opacity: 1;
-  }
+    100% {
+        opacity: 1;
+    }
 }

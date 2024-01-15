@@ -16,12 +16,7 @@ const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000
  * @param decimalPlaces The decimal places to show.
  * @returns The formatted string.
  */
-export function formatAmount(
-    value: number,
-    tokenInfo: INodeInfoBaseToken,
-    formatFull: boolean = false,
-    decimalPlaces: number = 2
-): string {
+export function formatAmount(value: number, tokenInfo: INodeInfoBaseToken, formatFull: boolean = false, decimalPlaces: number = 2): string {
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
@@ -39,9 +34,7 @@ export function formatAmount(
  * @param {string|number} value - The number to format. Can be a string or a number.
  * @returns {string} The formatted number as a string, with commas separating thousands.
  */
-export function formatNumberWithCommas(
-    value: bigint
-): string {
+export function formatNumberWithCommas(value: bigint): string {
     return value.toLocaleString("en", { useGrouping: true });
 }
 

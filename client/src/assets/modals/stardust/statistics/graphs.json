@@ -4,9 +4,9 @@
         "description": "<p>Shimmer nodes issue blocks to exchange data, including the information about token transactions. The higher readings could indicate a higher overall activity on the network.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#blocks-and-outputs",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#blocks-and-outputs",
+                "isExternal": true
             }
         ]
     },
@@ -15,9 +15,9 @@
         "description": "<p>How many blocks the network has issued in a day. The values are separated by the block payload type.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://github.com/iotaledger/tips/blob/main/tips/TIP-0024/tip-0024.md#payloads",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://github.com/iotaledger/tips/blob/main/tips/TIP-0024/tip-0024.md#payloads",
+                "isExternal": true
             }
         ]
     },
@@ -26,9 +26,9 @@
         "description": "<p>How many transactions the network has processed in a day. The values are separated between confirmed transactions and conflicting transactions (these were rejected).</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/data-and-value-transfer",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/data-and-value-transfer",
+                "isExternal": true
             }
         ]
     },
@@ -37,9 +37,9 @@
         "description": "<p>Shimmer tracks token ownership through outputs. As transactions create new outputs and exhaust the old ones, the total amount of base tokens stays the same, but their owners change. Outputs of special types are also used for NFTs, foundries, and aliases.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#blocks-and-outputs",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#blocks-and-outputs",
+                "isExternal": true
             }
         ]
     },
@@ -48,9 +48,9 @@
         "description": "<p>How many outputs are there of each output type. The more special outputs there are, the more NFTs, native assets, and smart contract chains is there on the network.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/outputs/#output-types",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/outputs/#output-types",
+                "isExternal": true
             }
         ]
     },
@@ -59,9 +59,9 @@
         "description": "<p>The base token distribution by each output type on a given day. The base tokens that belong to outputs of the special types are mostly locked as security deposits.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "isExternal": true
             }
         ]
     },
@@ -70,9 +70,9 @@
         "description": "<p>Addresses own unspent outputs, and the sum of the tokens in these outputs makes the balance of the address. As each wallet has multiple addresses, and a person can have multiple wallets, this data does not represent the number of the Shimmer users, but it could correlate with it.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "isExternal": true
             }
         ]
     },
@@ -81,9 +81,9 @@
         "description": "<p>The total number of addresses that are referenced by unspent outputs, which is measured daily.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "isExternal": true
             }
         ]
     },
@@ -92,9 +92,9 @@
         "description": "<p>The total number of addresses that are referenced by unspent outputs, which is measured daily.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "isExternal": true
             }
         ]
     },
@@ -103,9 +103,9 @@
         "description": "<p>How many addresses sent or received a transaction in a day.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/data-and-value-transfer",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/data-and-value-transfer",
+                "isExternal": true
             }
         ]
     },
@@ -114,9 +114,9 @@
         "description": "<p>The volume of transactions in base tokens in a day.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/data-and-value-transfer",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/data-and-value-transfer",
+                "isExternal": true
             }
         ]
     },
@@ -125,9 +125,9 @@
         "description": "<p>The activity on the network that is associated with things like minting and sending NFTs, or updating the state of an alias output.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/outputs",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/outputs",
+                "isExternal": true
             }
         ]
     },
@@ -136,9 +136,9 @@
         "description": "<p>The daily activity over all alias outputs. It counts the network changes that involve alias outputs and group them by their nature: how many alias outputs were created and destroyed, how many times governors changed, and how many times alias states were updated.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/outputs/#alias-output",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/outputs/#alias-output",
+                "isExternal": true
             }
         ]
     },
@@ -147,9 +147,9 @@
         "description": "<p>The daily activity over all NFT outputs. It counts the network changes that involve NFT outputs and group them by their nature: how many NFT outputs were created and destroyed, and how many times had they change hands.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/outputs/#nft-output",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/outputs/#nft-output",
+                "isExternal": true
             }
         ]
     },
@@ -158,9 +158,9 @@
         "description": "<p>Outputs can limit access to their associated tokens through unlock conditions. They are commonly used to relieve the old storage deposit with the tokens of the new owner, or to limit the output by the time when it is should be claimed.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "isExternal": true
             }
         ]
     },
@@ -169,9 +169,9 @@
         "description": "<p>The total amount of outputs that have unlock conditions, by the condition type.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/outputs/#unlock-conditions",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/outputs/#unlock-conditions",
+                "isExternal": true
             }
         ]
     },
@@ -180,9 +180,9 @@
         "description": "<p>The total amount of base tokens that are locked by the unlock conditions, by the condition type.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/outputs/#unlock-conditions",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/outputs/#unlock-conditions",
+                "isExternal": true
             }
         ]
     },
@@ -191,9 +191,9 @@
         "description": "<p>Genesis was the initial distribution of the tokens on the Shimmer network. It includes the rewards from the staking on the IOTA network which happened before the Shimmer launch.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://blog.shimmer.network/shimmer-network-and-token-launch",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://blog.shimmer.network/shimmer-network-and-token-launch",
+                "isExternal": true
             }
         ]
     },
@@ -202,9 +202,9 @@
         "description": "<p>The total amount of tokens that are locked behind the unclaimed outputs that were created by the Genesis transaction. Once a token owner issues a transaction that consumes one of these outputs, we count these tokens as claimed.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://blog.shimmer.network/how-to-claim-smr-firefly",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://blog.shimmer.network/how-to-claim-smr-firefly",
+                "isExternal": true
             }
         ]
     },
@@ -213,9 +213,9 @@
         "description": "<p>The total amount of unclaimed outputs that were created by the Genesis transaction. Once a token owner issues a transaction that consumes one of these outputs, we count that output as claimed.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://blog.shimmer.network/how-to-claim-smr-firefly",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://blog.shimmer.network/how-to-claim-smr-firefly",
+                "isExternal": true
             }
         ]
     },
@@ -224,9 +224,9 @@
         "description": "<p>The statistics about the data storage on the network. The total storage is limited, but the more base tokens an output has, the more information it can store. This is called the storage deposit.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "isExternal": true
             }
         ]
     },
@@ -239,9 +239,9 @@
         "description": "<p>The total amount of base tokens that are locked as the storage deposit.</p>",
         "links": [
             {
-              "label": "Read more",
-              "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
-              "isExternal": true
+                "label": "Read more",
+                "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "isExternal": true
             }
         ]
     }

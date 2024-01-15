@@ -11,12 +11,7 @@ import { HexHelper } from "../stardust/hexHelper";
  * @param milestoneId The milestone id
  * @returns The blocks, loading bool and an error message.
  */
-export function useMilestoneReferencedBlocks(network: string, milestoneId: string | null):
-    [
-        string[] | null,
-        boolean,
-        string?
-    ] {
+export function useMilestoneReferencedBlocks(network: string, milestoneId: string | null): [string[] | null, boolean, string?] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneReferencedBlocks, setMilestoneReferencedBlocks] = useState<string[] | null>(null);
@@ -28,17 +23,20 @@ export function useMilestoneReferencedBlocks(network: string, milestoneId: strin
         if (milestoneId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.milestoneReferencedBlocks({
-                    network,
-                    milestoneId: HexHelper.addPrefix(milestoneId)
-                }).then(response => {
-                    if (isMounted) {
-                        setMilestoneReferencedBlocks(response.blocks ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .milestoneReferencedBlocks({
+                        network,
+                        milestoneId: HexHelper.addPrefix(milestoneId),
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            setMilestoneReferencedBlocks(response.blocks ?? null);
+                            setError(response.error);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);
