@@ -19,7 +19,7 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
 ) => {
 
     const valueView = (
-        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)} >
+        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
             {balanceChangeFormatted}
         </span>
     );
@@ -27,8 +27,7 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
     return (
         <div className="card">
             <div className="field">
-                <div className="card--label">
-                    Date
+                <div className="card--label">Date
                 </div>
                 { isGenesisByDate ? (
                     <div className="card--value">
@@ -39,12 +38,9 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
                         {dateFormatted}
                     </div>
                 )}
-
             </div>
             <div className="field">
-                <div className="card--label">
-                    Transaction Id
-                </div>
+                <div className="card--label">Transaction Id</div>
                 <div className="row card--value">
                     <TruncatedId
                         id={transactionId}
@@ -63,16 +59,11 @@ const TransactionCard: React.FC<ITransactionEntryProps> = (
                 </div>
             </div>
             <div className="field">
-                <div className="card--label">
-                    Value
-                </div>
-                <div className={classNames("amount", "card--value", { "negative": isSpent })}>
-                    {valueView}
-                </div>
+                <div className="card--label">Value</div>
+                <div className={classNames("amount", "card--value", { negative: isSpent })}>{valueView}</div>
             </div>
         </div>
     );
 };
 
 export default TransactionCard;
-

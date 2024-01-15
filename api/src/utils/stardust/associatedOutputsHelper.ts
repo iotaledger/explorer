@@ -1,5 +1,11 @@
 import {
-    Client, IOutputsResponse, QueryParameter, AliasQueryParameter, FoundryQueryParameter, NftQueryParameter, AddressType
+    Client,
+    IOutputsResponse,
+    QueryParameter,
+    AliasQueryParameter,
+    FoundryQueryParameter,
+    NftQueryParameter,
+    AddressType,
 } from "@iota/sdk";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { AssociationType } from "../../models/api/stardust/IAssociationsResponse";
@@ -31,37 +37,37 @@ export class AssociatedOutputsHelper {
         promises.push(
             // Basic output -> owner address
             this.fetchAssociatedOutputIds<QueryParameter>(
-                async query => client.basicOutputIds([query]),
+                async (query) => client.basicOutputIds([query]),
                 { address },
-                AssociationType.BASIC_ADDRESS
-            )
+                AssociationType.BASIC_ADDRESS,
+            ),
         );
 
         promises.push(
             // Basic output -> storage return address
             this.fetchAssociatedOutputIds<QueryParameter>(
-                async query => client.basicOutputIds([query]),
+                async (query) => client.basicOutputIds([query]),
                 { storageDepositReturnAddress: address },
-                AssociationType.BASIC_STORAGE_RETURN
-            )
+                AssociationType.BASIC_STORAGE_RETURN,
+            ),
         );
 
         promises.push(
             // Basic output -> expiration return address
             this.fetchAssociatedOutputIds<QueryParameter>(
-                async query => client.basicOutputIds([query]),
+                async (query) => client.basicOutputIds([query]),
                 { expirationReturnAddress: address },
-                AssociationType.BASIC_EXPIRATION_RETURN
-            )
+                AssociationType.BASIC_EXPIRATION_RETURN,
+            ),
         );
 
         promises.push(
             // Basic output -> sender address
             this.fetchAssociatedOutputIds<QueryParameter>(
-                async query => client.basicOutputIds([query]),
+                async (query) => client.basicOutputIds([query]),
                 { sender: address },
-                AssociationType.BASIC_SENDER
-            )
+                AssociationType.BASIC_SENDER,
+            ),
         );
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -69,57 +75,53 @@ export class AssociatedOutputsHelper {
             const aliasId = this.addressDetails.hex;
             promises.push(
                 // Alias id
-                this.fetchAssociatedOutputIds<string>(
-                    async query => client.aliasOutputId(query),
-                    aliasId,
-                    AssociationType.ALIAS_ID
-                )
+                this.fetchAssociatedOutputIds<string>(async (query) => client.aliasOutputId(query), aliasId, AssociationType.ALIAS_ID),
             );
         }
 
         promises.push(
             // Alias output -> state controller address
             this.fetchAssociatedOutputIds<AliasQueryParameter>(
-                async query => client.aliasOutputIds([query]),
+                async (query) => client.aliasOutputIds([query]),
                 { stateController: address },
-                AssociationType.ALIAS_STATE_CONTROLLER
-            )
+                AssociationType.ALIAS_STATE_CONTROLLER,
+            ),
         );
 
         promises.push(
             // Alias output -> governor address
             this.fetchAssociatedOutputIds<AliasQueryParameter>(
-                async query => client.aliasOutputIds([query]),
+                async (query) => client.aliasOutputIds([query]),
                 { governor: address },
-                AssociationType.ALIAS_GOVERNOR
-            )
+                AssociationType.ALIAS_GOVERNOR,
+            ),
         );
 
         promises.push(
             // Alias output -> issuer address
             this.fetchAssociatedOutputIds<AliasQueryParameter>(
-                async query => client.aliasOutputIds([query]),
+                async (query) => client.aliasOutputIds([query]),
                 { issuer: address },
-                AssociationType.ALIAS_ISSUER
-            )
+                AssociationType.ALIAS_ISSUER,
+            ),
         );
 
         promises.push(
             // Alias output -> sender address
             this.fetchAssociatedOutputIds<AliasQueryParameter>(
-                async query => client.aliasOutputIds([query]),
+                async (query) => client.aliasOutputIds([query]),
                 { sender: address },
-                AssociationType.ALIAS_SENDER
-            )
+                AssociationType.ALIAS_SENDER,
+            ),
         );
 
         promises.push(
             // Foundry output ->  alias address
             this.fetchAssociatedOutputIds<FoundryQueryParameter>(
-                async query => client.foundryOutputIds([query]),
+                async (query) => client.foundryOutputIds([query]),
                 { aliasAddress: address },
-                AssociationType.FOUNDRY_ALIAS
-            )
+                AssociationType.FOUNDRY_ALIAS,
+            ),
         );
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
@@ -127,57 +129,53 @@ export class AssociatedOutputsHelper {
             const nftId = this.addressDetails.hex;
             promises.push(
                 // Nft id
-                this.fetchAssociatedOutputIds<string>(
-                    async query => client.nftOutputId(query),
-                    nftId,
-                    AssociationType.NFT_ID
-                )
+                this.fetchAssociatedOutputIds<string>(async (query) => client.nftOutputId(query), nftId, AssociationType.NFT_ID),
             );
         }
 
         promises.push(
             // Nft output -> owner address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
-                async query => client.nftOutputIds([query]),
+                async (query) => client.nftOutputIds([query]),
                 { address },
-                AssociationType.NFT_ADDRESS
-            )
+                AssociationType.NFT_ADDRESS,
+            ),
         );
 
         promises.push(
             // Nft output -> storage return address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
-                async query => client.nftOutputIds([query]),
+                async (query) => client.nftOutputIds([query]),
                 { storageDepositReturnAddress: address },
-                AssociationType.NFT_STORAGE_RETURN
-            )
+                AssociationType.NFT_STORAGE_RETURN,
+            ),
         );
 
         promises.push(
             // Nft output -> expiration return address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
-                async query => client.nftOutputIds([query]),
+                async (query) => client.nftOutputIds([query]),
                 { expirationReturnAddress: address },
-                AssociationType.NFT_EXPIRATION_RETURN
-            )
+                AssociationType.NFT_EXPIRATION_RETURN,
+            ),
         );
 
         promises.push(
             // Nft output -> issuer address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
-                async query => client.nftOutputIds([query]),
+                async (query) => client.nftOutputIds([query]),
                 { issuer: address },
-                AssociationType.NFT_ISSUER
-            )
+                AssociationType.NFT_ISSUER,
+            ),
         );
 
         promises.push(
             // Nft output -> sender address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
-                async query => client.nftOutputIds([query]),
+                async (query) => client.nftOutputIds([query]),
                 { sender: address },
-                AssociationType.NFT_SENDER
-            )
+                AssociationType.NFT_SENDER,
+            ),
         );
 
         await Promise.all(promises);
@@ -192,16 +190,14 @@ export class AssociatedOutputsHelper {
     private async fetchAssociatedOutputIds<T>(
         fetch: (req: T) => Promise<IOutputsResponse | string>,
         args: T,
-        association: AssociationType
+        association: AssociationType,
     ): Promise<void> {
         const associationToOutputIds = this.associationToOutputIds;
         let cursor: string;
 
         do {
             try {
-                const response = typeof args === "string" ?
-                    await fetch(args) :
-                    await fetch({ ...args, cursor });
+                const response = typeof args === "string" ? await fetch(args) : await fetch({ ...args, cursor });
 
                 if (typeof response === "string") {
                     const outputIds = associationToOutputIds.get(association);
@@ -220,7 +216,7 @@ export class AssociatedOutputsHelper {
 
                     cursor = response.cursor;
                 }
-            } catch { }
+            } catch {}
         } while (cursor);
     }
 }

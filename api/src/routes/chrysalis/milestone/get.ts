@@ -13,10 +13,7 @@ import { ValidationHelper } from "../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: IMilestoneDetailsRequest
-): Promise<IMilestoneDetailsResponse> {
+export async function get(config: IConfiguration, request: IMilestoneDetailsRequest): Promise<IMilestoneDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -29,6 +26,6 @@ export async function get(
     }
 
     return {
-        milestone: await ChrysalisTangleHelper.milestoneDetails(networkConfig, Number(request.milestoneIndex))
+        milestone: await ChrysalisTangleHelper.milestoneDetails(networkConfig, Number(request.milestoneIndex)),
     };
 }

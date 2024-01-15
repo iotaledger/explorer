@@ -9,4 +9,3 @@ export interface IRichestAddressesResponse extends IResponse {
     top?: IRichAddress[];
     ledgerIndex?: number;
 }
-

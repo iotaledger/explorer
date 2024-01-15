@@ -4,4 +4,3 @@ export interface IShimmerClaimedResponse {
      */
     unclaimedShimmer?: string;
 }
-

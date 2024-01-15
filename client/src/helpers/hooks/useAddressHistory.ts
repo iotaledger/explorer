@@ -8,7 +8,7 @@ import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
 
-export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string; };
+export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string };
 
 /**
  * Fetch Address history
@@ -20,7 +20,7 @@ export type OutputWithDetails = ITransactionHistoryItem & { details: OutputRespo
 export function useAddressHistory(
     network: string,
     address?: string,
-    setDisabled?: (isDisabled: boolean) => void
+    setDisabled?: (isDisabled: boolean) => void,
 ): [Map<string, OutputWithDetails[]>, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
@@ -28,16 +28,15 @@ export function useAddressHistory(
     const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>(new Map());
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
-    const PAGE_SIZE: number = 50;
+    const PAGE_SIZE: number = 10;
     const SORT: string = "newest";
 
     useEffect(() => {
         if (!address || !isMounted) return;
         (async () => {
             await loadHistory();
-        })()
+        })();
     }, [address, isMounted]);
-
 
     const requestOutputsList = async () => {
         if (!address) return;
@@ -47,15 +46,15 @@ export function useAddressHistory(
             address,
             pageSize: PAGE_SIZE,
             sort: SORT,
-            cursor
+            cursor,
         };
 
-        const response = await apiClient.transactionHistory(request) as ITransactionHistoryResponse | undefined;
+        const response = (await apiClient.transactionHistory(request)) as ITransactionHistoryResponse | undefined;
         const items = response?.items ?? [];
         return {
             outputs: items,
-            cursor: response?.cursor
-        }
+            cursor: response?.cursor,
+        };
     };
 
     const requestOutputDetails = async (outputId: string) => {
@@ -73,9 +72,7 @@ export function useAddressHistory(
             console.log("Failed loading transaction history details!");
             return null;
         }
-
-    }
-
+    };
 
     const loadHistory = async () => {
         if (address && isMounted) {
@@ -114,8 +111,10 @@ export function useAddressHistory(
 
                 const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
 
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 window.outputs = updatedOutputsWithDetails;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
                 window.groupedOutputsByTransactionId = groupedOutputsByTransactionId;
 
@@ -130,4 +129,3 @@ export function useAddressHistory(
 
     return [transactionIdToOutputs, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
 }
-

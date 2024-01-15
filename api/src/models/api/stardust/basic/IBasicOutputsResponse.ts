@@ -7,4 +7,3 @@ export interface IBasicOutputsResponse extends IResponse {
      */
     outputs?: IOutputsResponse;
 }
-

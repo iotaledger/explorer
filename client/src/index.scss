@@ -9,81 +9,81 @@
 @import "./scss/themes";
 
 html {
-  height: 100%;
+    height: 100%;
 }
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
-  @include font-size(32px, 40px);
+    @include font-size(32px, 40px);
 
-  color: var(--body-color);
-  font-family: $metropolis-semi-bold;
+    color: var(--body-color);
+    font-family: $metropolis-semi-bold;
 }
 
 h2 {
-  @include font-size(20px, 24px);
+    @include font-size(20px, 24px);
 
-  color: var(--body-color);
-  font-family: $metropolis-semi-bold;
-  letter-spacing: 0.02em;
+    color: var(--body-color);
+    font-family: $metropolis-semi-bold;
+    letter-spacing: 0.02em;
 }
 
 h3 {
-  @include font-size(16px, 20px);
+    @include font-size(16px, 20px);
 
-  color: $gray-10;
-  font-family: $metropolis-semi-bold;
+    color: $gray-10;
+    font-family: $metropolis-semi-bold;
 }
 
 body {
-  height: 100%;
-  transition: background 0.3s;
-  background: var(--body-background);
+    height: 100%;
+    transition: background 0.3s;
+    background: var(--body-background);
 
-  #root {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-height: 100vh;
+    #root {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
 
-    .success {
-      color: $success;
+        .success {
+            color: $success;
+        }
+
+        .warning {
+            color: $warning;
+        }
+
+        .danger {
+            color: $danger;
+        }
+
+        .info {
+            color: $info;
+        }
+
+        .active-item {
+            color: var(--active-item-color);
+        }
     }
-
-    .warning {
-      color: $warning;
-    }
-
-    .danger {
-      color: $danger;
-    }
-
-    .info {
-      color: $info;
-    }
-
-    .active-item {
-      color: var(--active-item-color);
-    }
-  }
 }
 
 ::-webkit-scrollbar-track {
-  border-radius: 0;
-  background-color: $gray-daylight;
+    border-radius: 0;
+    background-color: $gray-daylight;
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
-  background-color: $gray-daylight;
+    width: 12px;
+    background-color: $gray-daylight;
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 0;
-  background-color: var(--header-color);
+    border-radius: 0;
+    background-color: var(--header-color);
 }

@@ -4,105 +4,105 @@
 @import "../../../scss/variables";
 
 .indexed {
-  display: flex;
-  flex-direction: column;
-
-  .wrapper {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
 
-    .inner {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      max-width: $desktop-width;
-      margin: 40px 20px;
-
-      @include desktop-down {
-        max-width: 100%;
-        padding-right: 20px;
-        padding-left: 20px;
-      }
-
-      .indexed-number {
-        @include font-size(12px);
-
+    .wrapper {
         display: flex;
-        align-items: center;
-        height: 24px;
-        margin-left: 20px;
-        padding: 0 8px;
-        border-radius: 6px;
-        background-color: var(--light-bg);
-        color: $gray;
-        font-family: $metropolis;
-        font-weight: bold;
-        white-space: nowrap;
-      }
+        justify-content: center;
 
-      .indexed-messages {
-        &.scroll-limit {
-          max-height: 550px;
-          overflow-y: auto;
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 20px;
 
-          &.scroll-limit__disabled {
-            opacity: 0.5;
-          }
-        }
-
-        .indexed-message {
-          width: 100%;
-
-          &:hover {
-            background-color: var(--light-bg);
-          }
-
-          button {
-            @include font-size(14px);
-
-            width: 100%;
-            border: none;
-            background: none;
-            color: var(--body-color);
-            font-family: $ibm-plex-mono;
-            font-weight: normal;
-            letter-spacing: 0.02em;
-            line-height: 20px;
-
-            span {
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-
-              &:hover {
-                text-decoration: underline;
-              }
+            @include desktop-down {
+                max-width: 100%;
+                padding-right: 20px;
+                padding-left: 20px;
             }
-          }
-        }
-      }
 
-      .indexed-actions {
-        button {
-          @include font-size(14px, 21px);
+            .indexed-number {
+                @include font-size(12px);
 
-          display: flex;
-          position: relative;
-          justify-content: center;
-          width: 120px;
-          padding: 9px;
-          border: 1px solid $gray-3;
-          border-radius: 6px;
-          background: var(--light-bg);
-          color: var(--expanded-color);
-          font-family: $inter;
-          font-weight: 400;
-          letter-spacing: 0.5px;
-          text-align: center;
-          text-decoration: none;
-          cursor: pointer;
+                display: flex;
+                align-items: center;
+                height: 24px;
+                margin-left: 20px;
+                padding: 0 8px;
+                border-radius: 6px;
+                background-color: var(--light-bg);
+                color: $gray;
+                font-family: $metropolis;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+
+            .indexed-messages {
+                &.scroll-limit {
+                    max-height: 550px;
+                    overflow-y: auto;
+
+                    &.scroll-limit__disabled {
+                        opacity: 0.5;
+                    }
+                }
+
+                .indexed-message {
+                    width: 100%;
+
+                    &:hover {
+                        background-color: var(--light-bg);
+                    }
+
+                    button {
+                        @include font-size(14px);
+
+                        width: 100%;
+                        border: none;
+                        background: none;
+                        color: var(--body-color);
+                        font-family: $ibm-plex-mono;
+                        font-weight: normal;
+                        letter-spacing: 0.02em;
+                        line-height: 20px;
+
+                        span {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .indexed-actions {
+                button {
+                    @include font-size(14px, 21px);
+
+                    display: flex;
+                    position: relative;
+                    justify-content: center;
+                    width: 120px;
+                    padding: 9px;
+                    border: 1px solid $gray-3;
+                    border-radius: 6px;
+                    background: var(--light-bg);
+                    color: var(--expanded-color);
+                    font-family: $inter;
+                    font-weight: 400;
+                    letter-spacing: 0.5px;
+                    text-align: center;
+                    text-decoration: none;
+                    cursor: pointer;
+                }
+            }
         }
-      }
     }
-  }
 }

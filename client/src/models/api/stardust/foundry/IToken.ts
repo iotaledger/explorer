@@ -8,4 +8,3 @@ export interface IToken {
      */
     amount: bigint;
 }
-

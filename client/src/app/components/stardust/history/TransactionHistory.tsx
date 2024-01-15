@@ -39,7 +39,6 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = (
         return transactionsLocal;
     }, [transactionIdToOutputs, tokenInfo, isFormattedAmounts, hasMore]);
 
-
     return (transactions.length > 0 && address ? (
         <div className="section transaction-history--section">
             <div className="section--header row end">

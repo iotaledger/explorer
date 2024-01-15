@@ -12,7 +12,7 @@ export interface IParticipationEventStatus {
     /**
      * The answer status of the different questions of the event.
      */
-    questions?: { answers: {value: number; current: number; accumulated: number}[] }[];
+    questions?: { answers: { value: number; current: number; accumulated: number }[] }[];
 
     /**
      * The staking status of the event.
@@ -25,4 +25,3 @@ export interface IParticipationEventStatus {
      */
     checksum: string;
 }
-

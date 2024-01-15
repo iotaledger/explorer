@@ -79,4 +79,3 @@ export class FeedClient {
         this._subscribers = {};
     }
 }
-

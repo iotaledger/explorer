@@ -2,10 +2,10 @@
     "title": "Message Tree",
     "description": "<p>A message directly references up to 8 previous messages that we call its parents. As a message has parent messages, it also has children (the messages the parent references).</p>",
     "links": [
-      {
-        "label": "Read more",
-        "href": "https://wiki.iota.org/learn/glossary#p",
-        "isExternal": true
-      }
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/glossary#p",
+            "isExternal": true
+        }
     ]
 }

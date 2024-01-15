@@ -35,10 +35,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
                 <Link to={transactionLink} className="row center margin-r-t">
                     <TruncatedId id={transactionId} />
                     {isTransactionFromStardustGenesis && (
-                        <Tooltip
-                            tooltipContent="This link opens the transaction on Chrysalis Mainnet"
-                            childrenClass="row middle"
-                        >
+                        <Tooltip tooltipContent="This link opens the transaction on Chrysalis Mainnet" childrenClass="row middle">
                             <span className="material-icons" style={{ fontSize: "14px" }}>
                                 warning
                             </span>
@@ -52,4 +49,3 @@ const TransactionRow: React.FC<ITransactionEntryProps> = (
 };
 
 export default TransactionRow;
-
