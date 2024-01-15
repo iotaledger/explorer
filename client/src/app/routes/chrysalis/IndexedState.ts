@@ -27,10 +27,10 @@ export interface IndexedState {
     /**
      * Display advanced mode.
      */
-     advancedMode: boolean;
+    advancedMode: boolean;
 
-     /**
-      * Cursor for next chunk of data.
-      */
-     cursor?: string;
+    /**
+     * Cursor for next chunk of data.
+     */
+    cursor?: string;
 }

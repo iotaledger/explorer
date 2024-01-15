@@ -18,11 +18,7 @@ interface IMilestoneDetails {
  * @param milestoneIndex The milestone index
  * @returns The milestone details and loading bool.
  */
-export function useMilestoneDetails(network: string, milestoneIndex: number | null):
-    [
-        IMilestoneDetails | null,
-        boolean
-    ] {
+export function useMilestoneDetails(network: string, milestoneIndex: number | null): [IMilestoneDetails | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneDetails, setMilestoneDetails] = useState<IMilestoneDetails | null>(null);
@@ -36,7 +32,7 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
                 try {
                     const details = await apiClient.milestoneDetails({
                         network,
-                        milestoneIndex
+                        milestoneIndex,
                     });
                     if (isMounted) {
                         setMilestoneDetails(details);
@@ -50,7 +46,7 @@ export function useMilestoneDetails(network: string, milestoneIndex: number | nu
                 } catch (error) {
                     if (error instanceof Error && isMounted) {
                         setMilestoneDetails({
-                            error: error.message
+                            error: error.message,
                         });
                     }
                 } finally {

@@ -23,8 +23,7 @@ export class Bech32AddressHelper {
                     type = result.addressType;
                     hex = Converter.bytesToHex(result.addressBytes);
                 }
-            } catch {
-            }
+            } catch {}
         }
 
         if (!bech32) {
@@ -38,7 +37,7 @@ export class Bech32AddressHelper {
             bech32,
             hex,
             type,
-            typeLabel: Bech32AddressHelper.typeLabel(type)
+            typeLabel: Bech32AddressHelper.typeLabel(type),
         };
     }
 

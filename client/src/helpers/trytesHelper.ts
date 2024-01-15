@@ -34,7 +34,7 @@ export class TrytesHelper {
         const ascii = trytesToAscii(trimmed);
         const json = TextHelper.decodeNonASCII(ascii);
 
-        return json ? JSON.parse(json) as T : undefined;
+        return json ? (JSON.parse(json) as T) : undefined;
     }
 
     /**
@@ -86,12 +86,11 @@ export class TrytesHelper {
                     }
                 }
             }
-        } catch {
-        }
+        } catch {}
 
         return {
             message,
-            messageType
+            messageType,
         };
     }
 

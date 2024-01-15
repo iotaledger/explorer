@@ -7,8 +7,8 @@ const IPFS_ENDPOINT = "https://ipfs.io";
 const IPFS_PATH = "/ipfs/";
 
 interface IpfsLink {
-  path?: string;
-  hash: string;
+    path?: string;
+    hash: string;
 }
 /**
  * Get hash from ipfs link.
@@ -19,7 +19,7 @@ export function getIPFSHash(url?: string): string | undefined {
     const ipfsPrefix = "ipfs://";
 
     if (url?.startsWith(ipfsPrefix)) {
-      return url.slice(ipfsPrefix.length);
+        return url.slice(ipfsPrefix.length);
     }
 }
 
@@ -41,8 +41,7 @@ export async function getIpfsUri(link: IpfsLink): Promise<string> {
             }
             ipfsLink = `${ipfsLink}/${encodeURIComponent(ipfsEntry.name)}`;
         }
-    } catch { }
+    } catch {}
 
     return `${IPFS_ENDPOINT}${ipfsLink}`;
 }
-

@@ -41,14 +41,13 @@ export class ChrysalisFeedService implements IFeedService {
         this._user = user;
         this._password = password;
 
-        this._mqttClient.statusChanged(data => logger.debug(`[Mqtt] Chrysalis status changed (${data.state})`));
+        this._mqttClient.statusChanged((data) => logger.debug(`[Mqtt] Chrysalis status changed (${data.state})`));
     }
 
     /**
      * Connect the service.
      */
-    public connect(): void {
-    }
+    public connect(): void {}
 
     /**
      * Get milestones from the feed.
@@ -60,7 +59,7 @@ export class ChrysalisFeedService implements IFeedService {
             try {
                 const apiClient = new SingleNodeClient(this._endpoint, {
                     userName: this._user,
-                    password: this._password
+                    password: this._password,
                 });
                 const ms = await apiClient.milestone(message.index);
                 callback(message.index, ms.messageId, message.timestamp * 1000);

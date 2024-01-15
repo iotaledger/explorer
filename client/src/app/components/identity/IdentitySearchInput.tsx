@@ -18,7 +18,7 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
 
         this.state = {
             did: "",
-            isValid: false
+            isValid: false,
         };
     }
 
@@ -30,24 +30,23 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
         return (
             <div
                 className={classNames("identity-search-input", {
-                    "identity-search-input--compact": this.props.compact
+                    "identity-search-input--compact": this.props.compact,
                 })}
             >
-                <span className="material-icons">
-                    search
-                </span>
+                <span className="material-icons">search</span>
                 <input
                     autoFocus={!this.props.compact}
                     className="identity-search--text-input"
                     type="text"
                     value={this.state.did}
                     placeholder={this.props.compact ? "Search DID" : ""}
-                    onChange={e =>
+                    onChange={(e) =>
                         this.setState({
-                        did: e.target.value,
-                        isValid: this.isValid(e.target.value)
-                    })}
-                    onKeyPress={e => {
+                            did: e.target.value,
+                            isValid: this.isValid(e.target.value),
+                        })
+                    }
+                    onKeyPress={(e) => {
                         if (e.key === "Enter") {
                             this.doSearch();
                         }

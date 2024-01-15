@@ -1,36 +1,36 @@
-@import '../scss/fonts';
-@import '../scss/media-queries';
-@import '../scss/mixins';
-@import '../scss/variables';
+@import "../scss/fonts";
+@import "../scss/media-queries";
+@import "../scss/mixins";
+@import "../scss/variables";
 
 .app {
-  -webkit-tap-highlight-color: rgb(255 255 255 / 0%);
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-
-  .content {
-    margin-top: $navbar-height-desktop;
-    min-height: 300px;
-    position: relative;
-    flex: 1;
-
-    @include desktop-down {
-      margin-top: calc(2 * #{$navbar-height-mobile});
-    }
-  }
-
-  .maintenance {
+    -webkit-tap-highlight-color: rgb(255 255 255 / 0%);
     display: flex;
-    justify-content: center;
-    margin: 100px 0;
+    flex: 1;
+    flex-direction: column;
 
-    .maintenance-inner {
-      @include font-size(18px);
+    .content {
+        margin-top: $navbar-height-desktop;
+        min-height: 300px;
+        position: relative;
+        flex: 1;
 
-      max-width: $desktop-width;
-      color: var(--body-color);
-      font-family: $metropolis;
+        @include desktop-down {
+            margin-top: calc(2 * #{$navbar-height-mobile});
+        }
     }
-  }
+
+    .maintenance {
+        display: flex;
+        justify-content: center;
+        margin: 100px 0;
+
+        .maintenance-inner {
+            @include font-size(18px);
+
+            max-width: $desktop-width;
+            color: var(--body-color);
+            font-family: $metropolis;
+        }
+    }
 }

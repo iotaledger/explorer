@@ -58,7 +58,7 @@ export class NodeInfoService {
                 baseToken: response.nodeInfo.baseToken,
                 protocolVersion: response.nodeInfo.protocol.version,
                 bech32Hrp: response.nodeInfo.protocol.bech32Hrp,
-                rentStructure: response.nodeInfo.protocol.rentStructure
+                rentStructure: response.nodeInfo.protocol.rentStructure,
             };
 
             return new NodeInfoService(network, nodeInfo);
