@@ -6,7 +6,7 @@
 .tabbed-section {
     .tabbed-section--tabs-wrapper {
         display: flex;
-        margin-top:16px;
+        margin-top: 16px;
         border-bottom: 1px solid var(--border-color);
         overflow: auto;
 
@@ -103,7 +103,6 @@
     .tab-content {
         &:not(.active) {
             display: none;
-        };
+        }
     }
 }
-

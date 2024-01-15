@@ -22,11 +22,9 @@ const config: IConfiguration = require(`./data/config.${configId}.json`);
 
 const configAllowedDomains: (string | RegExp)[] | undefined = [];
 const configAllowedMethods: string | undefined =
-    !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS"
-        ? undefined : config.allowedMethods;
+    !config.allowedMethods || config.allowedMethods === "ALLOWED-METHODS" ? undefined : config.allowedMethods;
 const configAllowedHeaders: string | undefined =
-    !config.allowedHeaders || config.allowedHeaders === "ALLOWED-HEADERS"
-        ? undefined : config.allowedHeaders;
+    !config.allowedHeaders || config.allowedHeaders === "ALLOWED-HEADERS" ? undefined : config.allowedHeaders;
 
 if (Array.isArray(config.allowedDomains)) {
     for (const dom of config.allowedDomains) {
@@ -54,7 +52,10 @@ app.use((req, res, next) => {
     let allowedHeaders = configAllowedHeaders;
 
     if (config.routeCors) {
-        const foundRoute = matchRouteUrl(config.routeCors.map(c => c.path), req.url);
+        const foundRoute = matchRouteUrl(
+            config.routeCors.map((c) => c.path),
+            req.url,
+        );
 
         if (foundRoute) {
             const routeCors = config.routeCors[foundRoute.index];
@@ -64,24 +65,13 @@ app.use((req, res, next) => {
         }
     }
 
-    cors(
-        req,
-        res,
-        allowedDomains,
-        allowedMethods,
-        allowedHeaders);
+    cors(req, res, allowedDomains, allowedMethods, allowedHeaders);
     next();
 });
 
 for (const route of routes) {
     app[route.method](route.path, async (req, res) => {
-        await executeRoute(
-            req,
-            res,
-            config,
-            route,
-            req.params,
-            config.verboseLogging);
+        await executeRoute(req, res, config, route, req.params, config.verboseLogging);
     });
 }
 
@@ -92,7 +82,7 @@ const sockets: {
     [socketId: string]: string;
 } = {};
 
-socketServer.on("connection", socket => {
+socketServer.on("connection", (socket) => {
     logger.debug(`Socket::Connection [${socket.id}]`);
     socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
         const response = await subscribe(config, socket, data);
@@ -117,7 +107,7 @@ socketServer.on("connection", socket => {
         if (sockets[socket.id]) {
             await unsubscribe(config, socket, {
                 subscriptionId: socket.id,
-                network: sockets[socket.id]
+                network: sockets[socket.id],
             });
             delete sockets[socket.id];
         }
@@ -140,4 +130,3 @@ server.listen(port, async () => {
         }
     }
 });
-

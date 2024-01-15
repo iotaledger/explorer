@@ -4,29 +4,35 @@ import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef, useState
 import * as THREE from "three";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { getTangleDistances, getSinusoidalPosition } from './utils';
-import { CanvasElement } from './enums';
-import { EMITTER_SPEED_MULTIPLIER, EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH, MAX_SINUSOIDAL_AMPLITUDE, SINUSOIDAL_AMPLITUDE_ACCUMULATOR, HALF_WAVE_PERIOD_SECONDS, INITIAL_SINUSOIDAL_AMPLITUDE } from './constants';
+import { getTangleDistances, getSinusoidalPosition } from "./utils";
+import { CanvasElement } from "./enums";
+import {
+    EMITTER_SPEED_MULTIPLIER,
+    EMITTER_DEPTH,
+    EMITTER_HEIGHT,
+    EMITTER_WIDTH,
+    MAX_SINUSOIDAL_AMPLITUDE,
+    SINUSOIDAL_AMPLITUDE_ACCUMULATOR,
+    HALF_WAVE_PERIOD_SECONDS,
+    INITIAL_SINUSOIDAL_AMPLITUDE,
+} from "./constants";
 
 interface EmitterProps {
     readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
     readonly emitterRef: RefObject<THREE.Mesh>;
 }
 
-const Emitter: React.FC<EmitterProps> = ({
-    setRunListeners,
-    emitterRef
-}: EmitterProps) => {
-    const setZoom = useTangleStore(s => s.setZoom);
-    const get = useThree(state => state.get);
-    const currentZoom = useThree(state => state.camera.zoom);
+const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: EmitterProps) => {
+    const setZoom = useTangleStore((s) => s.setZoom);
+    const get = useThree((state) => state.get);
+    const currentZoom = useThree((state) => state.camera.zoom);
     const groupRef = useRef<THREE.Group>(null);
     const camera = get().camera;
 
-    const { xTangleDistance, yTangleDistance } = getTangleDistances()
-    const isPlaying = useConfigStore(state => state.isPlaying);
+    const { xTangleDistance, yTangleDistance } = getTangleDistances();
+    const isPlaying = useConfigStore((state) => state.isPlaying);
 
-    const [animationTime, setAnimationTime] = useState<number>(0)
+    const [animationTime, setAnimationTime] = useState<number>(0);
     const [currentAmplitude, setCurrentAmplitude] = useState<number>(INITIAL_SINUSOIDAL_AMPLITUDE);
 
     const previousRealTime = useRef<number>(0);
@@ -49,7 +55,7 @@ const Emitter: React.FC<EmitterProps> = ({
     });
 
     function updateAnimationTime(realTimeDelta: number): void {
-        setAnimationTime(prev => prev + realTimeDelta);
+        setAnimationTime((prev) => prev + realTimeDelta);
     }
 
     function checkAndHandleNewPeak(): void {
@@ -57,7 +63,7 @@ const Emitter: React.FC<EmitterProps> = ({
         const lastPeakHalfWaveCount = Math.floor(previousPeakTime.current / HALF_WAVE_PERIOD_SECONDS);
 
         if (currentHalfWaveCount > lastPeakHalfWaveCount) {
-            setCurrentAmplitude(prev => Math.min(prev + SINUSOIDAL_AMPLITUDE_ACCUMULATOR, MAX_SINUSOIDAL_AMPLITUDE));
+            setCurrentAmplitude((prev) => Math.min(prev + SINUSOIDAL_AMPLITUDE_ACCUMULATOR, MAX_SINUSOIDAL_AMPLITUDE));
             previousPeakTime.current = animationTime;
         }
     }
@@ -76,7 +82,7 @@ const Emitter: React.FC<EmitterProps> = ({
 
             if (groupRef.current) {
                 const { x } = groupRef.current.position;
-                const newXPos = x + (delta * EMITTER_SPEED_MULTIPLIER);
+                const newXPos = x + delta * EMITTER_SPEED_MULTIPLIER;
                 groupRef.current.position.x = newXPos;
             }
 
@@ -91,23 +97,19 @@ const Emitter: React.FC<EmitterProps> = ({
     useRenderTangle();
 
     return (
-      <group ref={groupRef}>
-        {/* TangleWrapper Mesh */}
-        <mesh  name={CanvasElement.TangleWrapperMesh} position={[-(xTangleDistance / 2), 0, 0]}>
-          <boxGeometry args={[xTangleDistance, yTangleDistance, 0]} attach="geometry"  />
-          <meshPhongMaterial opacity={1} wireframe={true} transparent attach="material" />
-        </mesh>
+        <group ref={groupRef}>
+            {/* TangleWrapper Mesh */}
+            <mesh name={CanvasElement.TangleWrapperMesh} position={[-(xTangleDistance / 2), 0, 0]}>
+                <boxGeometry args={[xTangleDistance, yTangleDistance, 0]} attach="geometry" />
+                <meshPhongMaterial opacity={1} wireframe={true} transparent attach="material" />
+            </mesh>
 
-        {/* Emitter Mesh */}
-        <mesh
-            ref={emitterRef}
-            name={CanvasElement.EmitterMesh}
-            position={[0, 0, 0]}
-        >
-            <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
-            <meshPhongMaterial transparent={true} opacity={0.6} />
-        </mesh>
-      </group>
+            {/* Emitter Mesh */}
+            <mesh ref={emitterRef} name={CanvasElement.EmitterMesh} position={[0, 0, 0]}>
+                <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
+                <meshPhongMaterial transparent={true} opacity={0.6} />
+            </mesh>
+        </group>
     );
 };
 export default Emitter;

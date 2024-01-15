@@ -8,12 +8,8 @@ interface AddressViewProps {
 const AddressView: React.FC<AddressViewProps> = ({ address }) => {
     return (
         <div className="address-type">
-            <div className="card--label">
-                {getAddressTypeName(address.type)}
-            </div>
-            <div className="card--value">
-                {JSON.stringify(address)}
-            </div>
+            <div className="card--label">{getAddressTypeName(address.type)}</div>
+            <div className="card--value">{JSON.stringify(address)}</div>
         </div>
     );
 };

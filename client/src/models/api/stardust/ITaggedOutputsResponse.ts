@@ -11,4 +11,3 @@ export interface ITaggedOutputsResponse {
      */
     nftOutputs?: INftOutputsResponse;
 }
-

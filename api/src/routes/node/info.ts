@@ -16,7 +16,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
  */
 export async function info(
     _: IConfiguration,
-    request: INetworkBoundGetRequest
+    request: INetworkBoundGetRequest,
 ): Promise<IStardustNodeInfoResponse | INovaNodeInfoResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
@@ -24,10 +24,7 @@ export async function info(
     ValidationHelper.oneOf(request.network, networks, "network");
     const networkConfig = networkService.get(request.network);
 
-    if (
-        networkConfig.protocolVersion !== STARDUST &&
-        networkConfig.protocolVersion !== NOVA
-    ) {
+    if (networkConfig.protocolVersion !== STARDUST && networkConfig.protocolVersion !== NOVA) {
         return {};
     }
 
@@ -35,4 +32,3 @@ export async function info(
 
     return nodeService.getNodeInfo();
 }
-

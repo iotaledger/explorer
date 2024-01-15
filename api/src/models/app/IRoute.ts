@@ -37,9 +37,5 @@ export interface IRoute {
      * @param body The request body.
      * @param header The headers in the http request.
      */
-    inline?(
-        config: IConfiguration,
-        params: unknown,
-        body?: unknown,
-        headers?: { [id: string]: unknown }): Promise<IResponse>;
+    inline?(config: IConfiguration, params: unknown, body?: unknown, headers?: { [id: string]: unknown }): Promise<IResponse>;
 }

@@ -5,71 +5,71 @@
 @import "../../../scss/themes";
 
 .key-panel-container {
-  display: flex;
-  position: absolute;
-  z-index: 1;
-  right: 30px;
-  bottom: 10px;
-  left: 30px;
-  justify-content: center;
-  pointer-events: none;
-
-  .key-panel {
-    background: var(--body-background);
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 16px;
+    position: absolute;
+    z-index: 1;
+    right: 30px;
+    bottom: 10px;
+    left: 30px;
+    justify-content: center;
+    pointer-events: none;
 
-    .key-panel-item {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      margin: 0 16px;
+    .key-panel {
+        background: var(--body-background);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 16px;
 
-      @include desktop-down {
-        width: 110px;
-        margin: 0;
-      }
+        .key-panel-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin: 0 16px;
 
-      .key-marker {
-        width: 12px;
-        height: 12px;
-        margin-right: 10px;
-        border-radius: 3px;
+            @include desktop-down {
+                width: 110px;
+                margin: 0;
+            }
 
-        &.vertex-state--pending {
-          background-color: #bbbbbb;
+            .key-marker {
+                width: 12px;
+                height: 12px;
+                margin-right: 10px;
+                border-radius: 3px;
+
+                &.vertex-state--pending {
+                    background-color: #bbbbbb;
+                }
+
+                &.vertex-state--included {
+                    background-color: #4caaff;
+                }
+
+                &.vertex-state--referenced {
+                    background-color: #61e884;
+                }
+
+                &.vertex-state--conflicting {
+                    background-color: #ff8b5c;
+                }
+
+                &.vertex-state--milestone {
+                    background-color: #666af6;
+                }
+
+                &.vertex-state--search-result {
+                    background-color: #c061e8;
+                }
+            }
+
+            .key-label {
+                @include font-size(14px);
+
+                color: var(--body-color);
+                font-family: $metropolis;
+                font-weight: 500;
+            }
         }
-
-        &.vertex-state--included {
-          background-color: #4caaff;
-        }
-
-        &.vertex-state--referenced {
-          background-color: #61e884;
-        }
-
-        &.vertex-state--conflicting {
-          background-color: #ff8b5c;
-        }
-
-        &.vertex-state--milestone {
-          background-color: #666af6;
-        }
-
-        &.vertex-state--search-result {
-          background-color: #C061E8;
-        }
-      }
-
-      .key-label {
-        @include font-size(14px);
-
-        color: var(--body-color);
-        font-family: $metropolis;
-        font-weight: 500;
-      }
     }
-  }
 }

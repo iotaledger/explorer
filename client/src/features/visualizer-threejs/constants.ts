@@ -1,5 +1,5 @@
 import { Color } from "three";
-import { ThemeMode } from './enums';
+import { ThemeMode } from "./enums";
 
 // steps
 export const BLOCK_STEP_PX = 10;
@@ -21,57 +21,52 @@ export const DATA_SENDER_TIME_INTERVAL = 500;
 export const ANIMATION_TIME_SECONDS = 3;
 
 // colors
-export const PENDING_BLOCK_COLOR = new Color('#A6C3FC')
+export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
 
-export const ACCEPTED_BLOCK_COLORS = [
-  new Color('#0101FF'),
-  new Color('#0000DB'),
-  new Color('#0101AB'),
-]
+export const ACCEPTED_BLOCK_COLORS = [new Color("#0101FF"), new Color("#0000DB"), new Color("#0101AB")];
 
 export const COLORS = [
-  new Color('#F0F4FF'),
-  new Color('#E0EAFF'),
-  new Color('#C8DAFE'),
-  PENDING_BLOCK_COLOR,
-  new Color('#82A5F8'),
-  new Color('#5C84FA'),
-  new Color('#2559F5'),
-  ...ACCEPTED_BLOCK_COLORS,
-]
+    new Color("#F0F4FF"),
+    new Color("#E0EAFF"),
+    new Color("#C8DAFE"),
+    PENDING_BLOCK_COLOR,
+    new Color("#82A5F8"),
+    new Color("#5C84FA"),
+    new Color("#2559F5"),
+    ...ACCEPTED_BLOCK_COLORS,
+];
 
 // emitter
-export const EMITTER_SPEED_MULTIPLIER = 80
-export const EMITTER_PADDING_RIGHT = 150
-export const VISUALIZER_SAFE_ZONE = 150
+export const EMITTER_SPEED_MULTIPLIER = 80;
+export const EMITTER_PADDING_RIGHT = 150;
+export const VISUALIZER_SAFE_ZONE = 150;
 
 // camera
-export const CAMERA_X_AXIS_MOVEMENT = 0.005
-export const CAMERA_Y_AXIS_MOVEMENT = 0.065
-export const CAMERA_X_OFFSET = 0
-export const CAMERA_Y_OFFSET = 0.5
+export const CAMERA_X_AXIS_MOVEMENT = 0.005;
+export const CAMERA_Y_AXIS_MOVEMENT = 0.065;
+export const CAMERA_X_OFFSET = 0;
+export const CAMERA_Y_OFFSET = 0.5;
 
-export const FAR_PLANE = 15000
-export const NEAR_PLANE = 1
+export const FAR_PLANE = 15000;
+export const NEAR_PLANE = 1;
 
 export const VISUALIZER_PADDINGS = {
-  paddingLeft: VISUALIZER_SAFE_ZONE,
-  paddingRight: VISUALIZER_SAFE_ZONE,
-  paddingBottom: VISUALIZER_SAFE_ZONE,
-  paddingTop: VISUALIZER_SAFE_ZONE,
-}
-
+    paddingLeft: VISUALIZER_SAFE_ZONE,
+    paddingRight: VISUALIZER_SAFE_ZONE,
+    paddingBottom: VISUALIZER_SAFE_ZONE,
+    paddingTop: VISUALIZER_SAFE_ZONE,
+};
 
 // time
-export const MILLISECONDS_PER_SECOND = 1000
+export const MILLISECONDS_PER_SECOND = 1000;
 
 // visualizer
 export const DIRECTIONAL_LIGHT_INTENSITY = 0.45;
 
 export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
-  [ThemeMode.Dark]: "#000000",
-  [ThemeMode.Light]: "#f2f2f2",
-}
+    [ThemeMode.Dark]: "#000000",
+    [ThemeMode.Light]: "#f2f2f2",
+};
 
 // emitter
 export const EMITTER_WIDTH = 30;

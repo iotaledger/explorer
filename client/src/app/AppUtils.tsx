@@ -9,33 +9,32 @@ import { ServiceFactory } from "~/factories/serviceFactory";
 import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
-export const networkContextWrapper = (
-    currentNetwork: string | undefined,
-    nodeInfo: IStardustNodeInfo | null,
-    uiTheme: Theme | undefined
-) => function withNetworkContext(wrappedComponent: ReactNode) {
-    return currentNetwork && nodeInfo ? (
-        <NetworkContext.Provider value={{
-            name: currentNetwork,
-            tokenInfo: nodeInfo.baseToken,
-            bech32Hrp: nodeInfo.bech32Hrp,
-            protocolVersion: nodeInfo.protocolVersion,
-            rentStructure: nodeInfo.rentStructure,
-            uiTheme: uiTheme ?? IOTA_UI
-        }}
-        >
-            {wrappedComponent}
-        </NetworkContext.Provider>
-    ) : null;
-};
+export const networkContextWrapper = (currentNetwork: string | undefined, nodeInfo: IStardustNodeInfo | null, uiTheme: Theme | undefined) =>
+    function withNetworkContext(wrappedComponent: ReactNode) {
+        return currentNetwork && nodeInfo ? (
+            <NetworkContext.Provider
+                value={{
+                    name: currentNetwork,
+                    tokenInfo: nodeInfo.baseToken,
+                    bech32Hrp: nodeInfo.bech32Hrp,
+                    protocolVersion: nodeInfo.protocolVersion,
+                    rentStructure: nodeInfo.rentStructure,
+                    uiTheme: uiTheme ?? IOTA_UI,
+                }}
+            >
+                {wrappedComponent}
+            </NetworkContext.Provider>
+        ) : null;
+    };
 
 export const populateNetworkInfoNova = (networkName: string) => {
     const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
     if (nodeService) {
         const nodeInfo = nodeService.get(networkName);
-        const protocolInfo = nodeInfo?.protocolParameters.reduce((params, cur) => {
-            return params.startEpoch > cur.startEpoch ? params : cur;
-        }) ?? null;
+        const protocolInfo =
+            nodeInfo?.protocolParameters.reduce((params, cur) => {
+                return params.startEpoch > cur.startEpoch ? params : cur;
+            }) ?? null;
         const setNetworkInfoNova = useNetworkInfoNova.getState().setNetworkInfo;
         setNetworkInfoNova({
             name: nodeInfo?.name ?? "",
@@ -44,7 +43,7 @@ export const populateNetworkInfoNova = (networkName: string) => {
             bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
         });
     }
-}
+};
 
 export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]) => {
     const pages = [];
@@ -62,11 +61,7 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
     return pages;
 };
 
-export const buildUtilities = (
-    currentNetwork: string,
-    networks: INetwork[],
-    identityResolverEnabled: boolean
-) => {
+export const buildUtilities = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
     const utilities = [];
     if (networks.length > 0 && currentNetwork !== CHRYSALIS_MAINNET) {
         utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
@@ -87,11 +82,11 @@ export const buildUtilities = (
  */
 export const getFooterItems = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
     if (networks.length > 0) {
-        let footerArray = networks.filter(network => network.isEnabled)
-            .map(n => ({ label: n.label, url: n.network.toString() }));
+        let footerArray = networks.filter((network) => network.isEnabled).map((n) => ({ label: n.label, url: n.network.toString() }));
 
         if (currentNetwork !== CHRYSALIS_MAINNET) {
-            footerArray = footerArray.concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
+            footerArray = footerArray
+                .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
                 .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
         }
 
@@ -139,30 +134,11 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
 
     return (
         <Helmet>
-            <link
-                rel="shortcut icon" href={`/favicon/${folder}/favicon.ico`} data-react-helmet="true"
-            />
-            <link
-                rel="manifest" href={`/favicon/${folder}/site.webmanifest`} data-react-helmet="true"
-            />
-            <link
-                rel="apple-touch-icon"
-                sizes="180x180"
-                href={`/favicon/${folder}/favicon-180x180.png`} data-react-helmet="true"
-            />
-            <link
-                rel="icon"
-                type="image/png"
-                sizes="32x32"
-                href={`/favicon/${folder}/favicon-32x32.png`} data-react-helmet="true"
-            />
-            <link
-                rel="icon"
-                type="image/png"
-                sizes="16x16"
-                href={`/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true"
-            />
+            <link rel="shortcut icon" href={`/favicon/${folder}/favicon.ico`} data-react-helmet="true" />
+            <link rel="manifest" href={`/favicon/${folder}/site.webmanifest`} data-react-helmet="true" />
+            <link rel="apple-touch-icon" sizes="180x180" href={`/favicon/${folder}/favicon-180x180.png`} data-react-helmet="true" />
+            <link rel="icon" type="image/png" sizes="32x32" href={`/favicon/${folder}/favicon-32x32.png`} data-react-helmet="true" />
+            <link rel="icon" type="image/png" sizes="16x16" href={`/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true" />
         </Helmet>
     );
 };
-

@@ -7,9 +7,4 @@ export const NOVA = "nova";
 /**
  * The protocol versions.
  */
-export type ProtocolVersion =
-    typeof LEGACY |
-    typeof CHRYSALIS |
-    typeof STARDUST |
-    typeof NOVA;
-
+export type ProtocolVersion = typeof LEGACY | typeof CHRYSALIS | typeof STARDUST | typeof NOVA;

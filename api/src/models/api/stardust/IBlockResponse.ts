@@ -7,4 +7,3 @@ export interface IBlockResponse extends IResponse {
      */
     block?: Block;
 }
-

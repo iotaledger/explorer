@@ -23,4 +23,3 @@ export interface IOutput {
      */
     isRemainder?: boolean;
 }
-

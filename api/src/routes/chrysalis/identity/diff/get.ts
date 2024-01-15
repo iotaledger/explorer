@@ -16,11 +16,7 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
  * @param body The request body.
  * @returns The response.
  */
-export async function get(
-    config: IConfiguration,
-    request: IIdentityDiffHistoryRequest,
-    body: IIdentityDiffHistoryBody
-): Promise<unknown> {
+export async function get(config: IConfiguration, request: IIdentityDiffHistoryRequest, body: IIdentityDiffHistoryBody): Promise<unknown> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
 
@@ -30,7 +26,7 @@ export async function get(
     if (networkConfig.protocolVersion !== CHRYSALIS) {
         return {
             error: `Network is not supported. IOTA Identity only supports
-            chrysalis phase 2 networks, such as the IOTA main network.`
+            chrysalis phase 2 networks, such as the IOTA main network.`,
         };
     }
 
@@ -56,12 +52,12 @@ export async function get(
 async function resolveDiff(
     document: IIdentityDiffHistoryBody,
     nodeUrl: string,
-    permaNodeUrl?: string
+    permaNodeUrl?: string,
 ): Promise<IIdentityDiffHistoryResponse> {
     try {
         const config: identity.IClientConfig = {
             nodes: [nodeUrl],
-            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined
+            permanodes: permaNodeUrl ? [{ url: permaNodeUrl }] : undefined,
         };
 
         const client = await identity.Client.fromConfig(config);
@@ -81,7 +77,7 @@ async function resolveDiff(
             const integrationMessage = {
                 message: receiptObj.chainData[i],
                 document: resolvedDocument.document(),
-                messageId: chainData[i].messageId()
+                messageId: chainData[i].messageId(),
             };
             diffChainData.push(integrationMessage);
         }
@@ -101,7 +97,7 @@ async function resolveDiff(
 async function resolveLegacyDiff(
     document: identityLegacy.Document,
     nodeUrl: string,
-    permaNodeUrl?: string
+    permaNodeUrl?: string,
 ): Promise<IIdentityDiffHistoryResponse> {
     try {
         const config = new identityLegacy.Config();
@@ -126,7 +122,7 @@ async function resolveLegacyDiff(
             const integrationMessage = {
                 message: receiptObj.chainData[i],
                 document: IdentityHelper.convertLegacyDocument(document.toJSON() as Record<string, unknown>),
-                messageId: chainData[i].messageId
+                messageId: chainData[i].messageId,
             };
             diffChainData.push(integrationMessage);
         }

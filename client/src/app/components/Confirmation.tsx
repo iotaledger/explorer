@@ -14,29 +14,33 @@ class Confirmation extends Component<ConfirmationProps> {
     public render(): ReactNode {
         return (
             <div
-                className={
-                    classNames(
-                        "confirmation",
-                        { "confirmation__confirmed": this.props.state === "confirmed" },
-                        { "confirmation__pending": this.props.state === "pending" },
-                        { "confirmation__unknown": this.props.state === "unknown" },
-                        { "confirmation__reattachment": this.props.state === "reattachment" },
-                        { "confirmation__consistency": this.props.state === "consistency" },
-                        { "confirmation__conflicting": this.props.state === "conflicting" }
-                    )
-                }
+                className={classNames(
+                    "confirmation",
+                    { confirmation__confirmed: this.props.state === "confirmed" },
+                    { confirmation__pending: this.props.state === "pending" },
+                    { confirmation__unknown: this.props.state === "unknown" },
+                    { confirmation__reattachment: this.props.state === "reattachment" },
+                    { confirmation__consistency: this.props.state === "consistency" },
+                    { confirmation__conflicting: this.props.state === "conflicting" },
+                )}
             >
-                {this.props.state === "unknown" && ("Unknown")}
+                {this.props.state === "unknown" && "Unknown"}
                 {this.props.state === "confirmed" &&
-                    (`Confirmed${this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
-                        ? ` by MS ${this.props.milestoneIndex}` : ""}`)}
-                {this.props.state === "pending" && ("Pending")}
-                {this.props.state === "subtangle" && ("Subtangle not updated")}
-                {this.props.state === "reattachment" && ("Reattachment Confirmed")}
-                {this.props.state === "consistency" && ("Invalid Consistency")}
+                    `Confirmed${
+                        this.props.milestoneIndex !== undefined && this.props.milestoneIndex > 1
+                            ? ` by MS ${this.props.milestoneIndex}`
+                            : ""
+                    }`}
+                {this.props.state === "pending" && "Pending"}
+                {this.props.state === "subtangle" && "Subtangle not updated"}
+                {this.props.state === "reattachment" && "Reattachment Confirmed"}
+                {this.props.state === "consistency" && "Invalid Consistency"}
                 {this.props.state === "conflicting" &&
-                    (`Conflicting${this.props.milestoneIndex !== undefined && this.props.milestoneIndex < 0
-                        ? ` at MS ${this.props.milestoneIndex}` : ""}`)}
+                    `Conflicting${
+                        this.props.milestoneIndex !== undefined && this.props.milestoneIndex < 0
+                            ? ` at MS ${this.props.milestoneIndex}`
+                            : ""
+                    }`}
             </div>
         );
     }

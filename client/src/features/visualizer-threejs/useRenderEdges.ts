@@ -12,15 +12,15 @@ const EDGE_MATERIAL = new THREE.LineBasicMaterial({ color: new Color("#d8dbdf"),
 
 export const useRenderEdges = () => {
     const edgesMeshRef = useRef(new THREE.BufferGeometry());
-    const scene = useThree(state => state.scene);
+    const scene = useThree((state) => state.scene);
 
-    const isEdgeRenderingEnabled = useConfigStore(s => s.isEdgeRenderingEnabled);
+    const isEdgeRenderingEnabled = useConfigStore((s) => s.isEdgeRenderingEnabled);
 
-    const edgeQueue = useTangleStore(s => s.edgeQueue);
-    const removeFromEdgeQueue = useTangleStore(s => s.removeFromEdgeQueue);
+    const edgeQueue = useTangleStore((s) => s.edgeQueue);
+    const removeFromEdgeQueue = useTangleStore((s) => s.removeFromEdgeQueue);
 
-    const blockIdToEdges = useTangleStore(s => s.blockIdToEdges);
-    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
+    const blockIdToEdges = useTangleStore((s) => s.blockIdToEdges);
+    const blockIdToPosition = useTangleStore((s) => s.blockIdToPosition);
 
     const [linePoints, setLinePoints] = useState<number[]>([]);
     const indices = useRef<number[]>([]);

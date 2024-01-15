@@ -26,10 +26,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         params: { network, outputId },
     },
 }) => {
-    const { output, outputMetadataResponse, error } = useOutputDetails(
-        network,
-        outputId,
-    );
+    const { output, outputMetadataResponse, error } = useOutputDetails(network, outputId);
 
     if (error) {
         return (
@@ -48,8 +45,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         );
     }
 
-    const { blockId, transactionId, outputIndex, isSpent, transactionIdSpent } =
-        outputMetadataResponse ?? {};
+    const { blockId, transactionId, outputIndex, isSpent, transactionIdSpent } = outputMetadataResponse ?? {};
 
     return (
         (output && (
@@ -64,11 +60,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                         </div>
                         <div className="section">
                             <div className="card">
-                                <OutputView
-                                    outputId={outputId}
-                                    output={output}
-                                    showCopyAmount={true}
-                                />
+                                <OutputView outputId={outputId} output={output} showCopyAmount={true} />
                             </div>
 
                             <div className="section--header row row--tablet-responsive middle space-between">
@@ -81,10 +73,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Block ID</div>
                                     <div className="value code row middle highlight">
-                                        <Link
-                                            to={`/${network}/block/${blockId}`}
-                                            className="margin-r-t text--no-decoration truncate"
-                                        >
+                                        <Link to={`/${network}/block/${blockId}`} className="margin-r-t text--no-decoration truncate">
                                             {blockId}
                                         </Link>
                                         <CopyButton copy={blockId} />
@@ -96,10 +85,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Transaction ID</div>
                                     <div className="value code highlight row middle">
-                                        <TruncatedId
-                                            id={transactionId}
-                                            showCopyButton
-                                        />
+                                        <TruncatedId id={transactionId} showCopyButton />
                                     </div>
                                 </div>
                             )}
@@ -108,9 +94,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Output index</div>
                                     <div className="value code row middle">
-                                        <span className="margin-r-t">
-                                            {outputIndex}
-                                        </span>
+                                        <span className="margin-r-t">{outputIndex}</span>
                                     </div>
                                 </div>
                             )}
@@ -119,23 +103,16 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Is spent ?</div>
                                     <div className="value code row middle">
-                                        <span className="margin-r-t">
-                                            {isSpent.toString()}
-                                        </span>
+                                        <span className="margin-r-t">{isSpent.toString()}</span>
                                     </div>
                                 </div>
                             )}
 
                             {transactionIdSpent && (
                                 <div className="section--data">
-                                    <div className="label">
-                                        Spent in transaction with ID
-                                    </div>
+                                    <div className="label">Spent in transaction with ID</div>
                                     <div className="value code row middle highlight">
-                                        <Link
-                                            to={`/${network}/transaction/${transactionIdSpent}`}
-                                            className="margin-r-t"
-                                        >
+                                        <Link to={`/${network}/transaction/${transactionIdSpent}`} className="margin-r-t">
                                             {transactionIdSpent}
                                         </Link>
                                         <CopyButton copy={transactionIdSpent} />

@@ -26,7 +26,7 @@ export function useChartsState(): [
     DataPoint[],
     DataPoint[],
     DataPoint[],
-    (IAnalyticStats | null),
+    IAnalyticStats | null,
 ] {
     const { name: network } = useContext(NetworkContext);
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
@@ -49,37 +49,43 @@ export function useChartsState(): [
     const [analyticStats, setAnalyticStats] = useState<IAnalyticStats | null>(null);
 
     useEffect(() => {
-        apiClient.influxAnalytics({ network }).then(influxStats => {
-            if (!influxStats.error && influxStats) {
-                const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(influxStats);
+        apiClient
+            .influxAnalytics({ network })
+            .then((influxStats) => {
+                if (!influxStats.error && influxStats) {
+                    const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(influxStats);
 
-                setDailyBlocks(graphsData.blocksDaily);
-                setTransactions(graphsData.transactionsDaily);
-                setOutputs(graphsData.outputsDaily);
-                setTokensHeld(graphsData.tokensHeldDaily);
-                setAddressesWithBalance(graphsData.addressesWithBalanceDaily);
-                setActiveAddresses(graphsData.activeAddresses);
-                setTokensTransferred(graphsData.tokensTransferredDaily);
-                setAliasActivity(graphsData.aliasActivityDaily);
-                setUnlockConditionsPerType(graphsData.unlockConditionsPerTypeDaily);
-                setNftActivity(graphsData.nftActivityDaily);
-                setTokensHeldWithUnlockCondition(graphsData.tokensHeldWithUnlockConditionDaily);
-                setUnclaimedTokens(graphsData.unclaimedTokensDaily);
-                setUnclaimedGenesisOutputs(graphsData.unclaimedGenesisOutputsDaily);
-                setLedgerSize(graphsData.ledgerSizeDaily);
-                setStorageDeposit(graphsData.storageDepositDaily);
-            } else {
-                console.log("Fetching influx stats failed", influxStats.error);
-            }
-        }).catch(e => console.log("Influx analytics fetch failed", e));
+                    setDailyBlocks(graphsData.blocksDaily);
+                    setTransactions(graphsData.transactionsDaily);
+                    setOutputs(graphsData.outputsDaily);
+                    setTokensHeld(graphsData.tokensHeldDaily);
+                    setAddressesWithBalance(graphsData.addressesWithBalanceDaily);
+                    setActiveAddresses(graphsData.activeAddresses);
+                    setTokensTransferred(graphsData.tokensTransferredDaily);
+                    setAliasActivity(graphsData.aliasActivityDaily);
+                    setUnlockConditionsPerType(graphsData.unlockConditionsPerTypeDaily);
+                    setNftActivity(graphsData.nftActivityDaily);
+                    setTokensHeldWithUnlockCondition(graphsData.tokensHeldWithUnlockConditionDaily);
+                    setUnclaimedTokens(graphsData.unclaimedTokensDaily);
+                    setUnclaimedGenesisOutputs(graphsData.unclaimedGenesisOutputsDaily);
+                    setLedgerSize(graphsData.ledgerSizeDaily);
+                    setStorageDeposit(graphsData.storageDepositDaily);
+                } else {
+                    console.log("Fetching influx stats failed", influxStats.error);
+                }
+            })
+            .catch((e) => console.log("Influx analytics fetch failed", e));
 
-        apiClient.chronicleAnalytics({ network }).then(analytics => {
-            if (!analytics.error && analytics) {
-                setAnalyticStats(analytics);
-            } else {
-                console.log("Fetching chronicle stats failed", analytics.error);
-            }
-        }).catch(e => console.log("Chronicle analytics fetch failed", e));
+        apiClient
+            .chronicleAnalytics({ network })
+            .then((analytics) => {
+                if (!analytics.error && analytics) {
+                    setAnalyticStats(analytics);
+                } else {
+                    console.log("Fetching chronicle stats failed", analytics.error);
+                }
+            })
+            .catch((e) => console.log("Chronicle analytics fetch failed", e));
     }, [network]);
 
     return [
@@ -98,6 +104,6 @@ export function useChartsState(): [
         unclaimedGenesisOutputs,
         ledgerSize,
         storageDeposit,
-        analyticStats
+        analyticStats,
     ];
 }

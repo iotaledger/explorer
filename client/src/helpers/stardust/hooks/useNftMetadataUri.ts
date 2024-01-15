@@ -7,11 +7,7 @@ import { getIPFSHash, getIpfsUri } from "../ipfsHelper";
  * @param link The image link
  * @returns The uri and loading bool.
  */
-export function useNftMetadataUri(link?: string):
-    [
-        string | null,
-        boolean
-    ] {
+export function useNftMetadataUri(link?: string): [string | null, boolean] {
     const isMounted = useIsMounted();
     const [uri, setUri] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);

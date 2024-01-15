@@ -17,7 +17,7 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
         super(props);
 
         this.state = {
-            active: false
+            active: false,
         };
     }
 
@@ -36,11 +36,9 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
                     <button
                         type="button"
                         className={classNames("copy-button-btn", { "copy-button-btn--active": this.state.active })}
-                        onClick={e => this.activate(e)}
+                        onClick={(e) => this.activate(e)}
                     >
-                        <span className="material-icons">
-                            content_copy
-                        </span>
+                        <span className="material-icons">content_copy</span>
                     </button>
                 )}
             </div>
@@ -58,11 +56,9 @@ class CopyButton extends Component<CopyButtonProps, CopyButtonState> {
         }
 
         this.setState({ active: true });
-        setTimeout(
-            () => {
-                this.setState({ active: false });
-            },
-            2000);
+        setTimeout(() => {
+            this.setState({ active: false });
+        }, 2000);
     }
 }
 

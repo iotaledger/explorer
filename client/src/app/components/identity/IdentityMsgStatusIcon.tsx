@@ -30,10 +30,7 @@ export default class IdentityMsgStatusIcon extends Component<IdentityMsgStatusIc
                 {this.props.status === "unavailable" && (
                     <svg width="39" height="13" viewBox="0 0 39 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="11.6667" y="5.44446" width="16.3333" height="1.55556" fill="#C7C7C7" />
-                        <path
-                            d="M12.4444 6.22222L6.22222 0L0 6.22222L6.22222 12.4444L12.4444 6.22222Z"
-                            fill="#14CABF"
-                        />
+                        <path d="M12.4444 6.22222L6.22222 0L0 6.22222L6.22222 12.4444L12.4444 6.22222Z" fill="#14CABF" />
                         <circle cx="20.0556" cy="6.05556" r="5.05556" fill="#6464FF" />
                         <circle cx="33.0556" cy="6.05556" r="5.05556" fill="#6464FF" />
                     </svg>

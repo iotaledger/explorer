@@ -11,11 +11,7 @@ import { StardustApiClient } from "~services/stardust/stardustApiClient";
  * @param milestoneIndex The milestone index
  * @returns The milestone stats and a loading bool.
  */
-export function useMilestoneStats(network: string, milestoneIndex: string | null):
-    [
-        IMilestoneAnalyticStats | null,
-        boolean
-    ] {
+export function useMilestoneStats(network: string, milestoneIndex: string | null): [IMilestoneAnalyticStats | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [milestoneStats, setMilestoneStats] = useState<IMilestoneAnalyticStats | null>(null);
@@ -26,16 +22,19 @@ export function useMilestoneStats(network: string, milestoneIndex: string | null
         if (milestoneIndex) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.milestoneStats({
-                    network,
-                    milestoneIndex
-                }).then(response => {
-                    if (isMounted) {
-                        setMilestoneStats(response ?? null);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .milestoneStats({
+                        network,
+                        milestoneIndex,
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            setMilestoneStats(response ?? null);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);

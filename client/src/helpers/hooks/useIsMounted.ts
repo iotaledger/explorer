@@ -10,4 +10,3 @@ export const useIsMounted = () => {
 
     return isMounted.current;
 };
-

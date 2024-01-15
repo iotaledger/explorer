@@ -60,6 +60,6 @@ function deserializeParticipation(readStream: ReadStream): Participation {
     return {
         eventId,
         answersCount,
-        answers
+        answers,
     };
 }

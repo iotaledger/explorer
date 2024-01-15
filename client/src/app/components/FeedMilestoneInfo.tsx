@@ -30,7 +30,7 @@ const FeedMilestoneInfo: React.FC<FeedMilestoneInfoProps> = ({ milestoneIndex, f
 
 FeedMilestoneInfo.defaultProps = {
     frequencyTarget: undefined,
-    milestoneIndex: undefined
+    milestoneIndex: undefined,
 };
 
 export default FeedMilestoneInfo;

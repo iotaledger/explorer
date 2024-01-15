@@ -22,13 +22,9 @@ export function useOutputDetails(
     error: string | null;
 } {
     const isMounted = useIsMounted();
-    const [apiClient] = useState(
-        ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`),
-    );
+    const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [output, setOutput] = useState<Output | null>(null);
-    const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(
-        null,
-    );
+    const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
