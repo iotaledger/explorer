@@ -1,13 +1,23 @@
 import {
     AddressUnlockCondition,
     BasicBlockBody,
-    Block, BlockBodyType, CommonOutput, DelegationOutput, GovernorAddressUnlockCondition,
+    Block,
+    BlockBodyType,
+    CommonOutput,
+    DelegationOutput,
+    GovernorAddressUnlockCondition,
     ImmutableAccountAddressUnlockCondition,
-    InputType,OutputType, PayloadType,
+    InputType,
+    OutputType,
+    PayloadType,
     SignatureUnlock,
     SignedTransactionPayload,
     StateControllerAddressUnlockCondition,
-    UnlockCondition, UnlockConditionType, UnlockType, Utils, UTXOInput
+    UnlockCondition,
+    UnlockConditionType,
+    UnlockType,
+    Utils,
+    UTXOInput,
 } from "@iota/sdk-wasm-nova/web";
 import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
 import { IInput } from "~/models/api/nova/IInput";
@@ -24,8 +34,11 @@ interface TransactionInputsAndOutputsResponse {
 }
 
 export class TransactionsHelper {
-    public static async getInputsAndOutputs(block: Block | undefined, network: string,
-        _bechHrp: string, apiClient: NovaApiClient
+    public static async getInputsAndOutputs(
+        block: Block | undefined,
+        network: string,
+        _bechHrp: string,
+        apiClient: NovaApiClient,
     ): Promise<TransactionInputsAndOutputsResponse> {
         const GENESIS_HASH = "0".repeat(64);
         const inputs: IInput[] = [];
@@ -49,31 +62,29 @@ export class TransactionsHelper {
 
                 if (unlock.type === UnlockType.Signature) {
                     signatureUnlock = unlock as SignatureUnlock;
-                } 
-                else {
+                } else {
                     let refUnlockIdx = i;
                     // unlock references can be transitive,
                     // so we need to follow the path until we find the signature
                     do {
-                        const referencedUnlock = unlocks[refUnlockIdx]
+                        const referencedUnlock = unlocks[refUnlockIdx];
 
                         if (referencedUnlock.type === UnlockType.Signature) {
-                            signatureUnlock = referencedUnlock as SignatureUnlock
+                            signatureUnlock = referencedUnlock as SignatureUnlock;
                         } else if (referencedUnlock.type === UnlockType.Multi || referencedUnlock.type === UnlockType.Empty) {
                             break;
                         } else {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             refUnlockIdx = (referencedUnlock as any).reference;
                         }
-
                     } while (!signatureUnlock);
                 }
                 if (signatureUnlock) {
                     unlockAddresses.push(
                         Bech32AddressHelper.buildAddress(
                             _bechHrp,
-                            Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp)
-                        )
+                            Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp),
+                        ),
                     );
                 }
             }
@@ -92,10 +103,7 @@ export class TransactionsHelper {
                     const utxoInput = input as UTXOInput;
                     isGenesis = utxoInput.transactionId === GENESIS_HASH;
 
-                    const outputId = Utils.computeOutputId(
-                        utxoInput.transactionId,
-                        utxoInput.transactionOutputIndex
-                    );
+                    const outputId = Utils.computeOutputId(utxoInput.transactionId, utxoInput.transactionOutputIndex);
 
                     const response = await apiClient.outputDetails({ network, outputId });
                     const details = response.output;
@@ -103,7 +111,7 @@ export class TransactionsHelper {
                     if (!response.error && details?.output && details?.metadata) {
                         outputDetails = {
                             output: details.output,
-                            metadata: details.metadata
+                            metadata: details.metadata,
                         };
                         amount = Number(details.output.amount);
                     }
@@ -116,7 +124,7 @@ export class TransactionsHelper {
                         isGenesis,
                         outputId,
                         output: outputDetails,
-                        address
+                        address,
                     });
                 }
             }
@@ -131,16 +139,18 @@ export class TransactionsHelper {
                     outputs.push({
                         id: outputId,
                         output,
-                        amount: Number(transaction.outputs[i].amount)
+                        amount: Number(transaction.outputs[i].amount),
                     });
                 } else {
                     const output = transaction.outputs[i] as CommonOutput;
 
                     const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
-                        output.unlockConditions, _bechHrp, output.type
+                        output.unlockConditions,
+                        _bechHrp,
+                        output.type,
                     );
 
-                    const isRemainder = inputs.some(input => input.address.bech32 === address.bech32);
+                    const isRemainder = inputs.some((input) => input.address.bech32 === address.bech32);
 
                     if (isRemainder) {
                         remainderOutputs.push({
@@ -148,7 +158,7 @@ export class TransactionsHelper {
                             address,
                             amount: Number(transaction.outputs[i].amount),
                             isRemainder,
-                            output
+                            output,
                         });
                     } else {
                         outputs.push({
@@ -156,7 +166,7 @@ export class TransactionsHelper {
                             address,
                             amount: Number(transaction.outputs[i].amount),
                             isRemainder,
-                            output
+                            output,
                         });
                     }
 
@@ -173,7 +183,6 @@ export class TransactionsHelper {
 
         return { inputs, outputs: sortedOutputs, unlockAddresses, transferTotal };
     }
-
 
     /**
      * Sort inputs and outputs in assending order by index.
@@ -194,34 +203,34 @@ export class TransactionsHelper {
     private static bechAddressFromAddressUnlockCondition(
         unlockConditions: UnlockCondition[],
         _bechHrp: string,
-        outputType: number
+        outputType: number,
     ): IBech32AddressDetails {
         let address: IBech32AddressDetails = { bech32: "" };
         let unlockCondition;
 
         if (outputType === OutputType.Basic || outputType === OutputType.Nft) {
-            unlockCondition = unlockConditions?.filter(
-                ot => ot.type === UnlockConditionType.Address
-            ).map(ot => ot as AddressUnlockCondition)[0];
+            unlockCondition = unlockConditions
+                ?.filter((ot) => ot.type === UnlockConditionType.Address)
+                .map((ot) => ot as AddressUnlockCondition)[0];
         } else if (outputType === OutputType.Account) {
-            if (unlockConditions.some(ot => ot.type === UnlockConditionType.StateControllerAddress)) {
-                unlockCondition = unlockConditions?.filter(
-                    ot => ot.type === UnlockConditionType.StateControllerAddress
-                ).map(ot => ot as StateControllerAddressUnlockCondition)[0];
+            if (unlockConditions.some((ot) => ot.type === UnlockConditionType.StateControllerAddress)) {
+                unlockCondition = unlockConditions
+                    ?.filter((ot) => ot.type === UnlockConditionType.StateControllerAddress)
+                    .map((ot) => ot as StateControllerAddressUnlockCondition)[0];
             }
-            if (unlockConditions.some(ot => ot.type === UnlockConditionType.GovernorAddress)) {
-                unlockCondition = unlockConditions?.filter(
-                    ot => ot.type === UnlockConditionType.GovernorAddress
-                ).map(ot => ot as GovernorAddressUnlockCondition)[0];
+            if (unlockConditions.some((ot) => ot.type === UnlockConditionType.GovernorAddress)) {
+                unlockCondition = unlockConditions
+                    ?.filter((ot) => ot.type === UnlockConditionType.GovernorAddress)
+                    .map((ot) => ot as GovernorAddressUnlockCondition)[0];
             }
         } else if (outputType === OutputType.Foundry) {
-            unlockCondition = unlockConditions?.filter(
-                ot => ot.type === UnlockConditionType.ImmutableAccountAddress
-            ).map(ot => ot as ImmutableAccountAddressUnlockCondition)[0];
+            unlockCondition = unlockConditions
+                ?.filter((ot) => ot.type === UnlockConditionType.ImmutableAccountAddress)
+                .map((ot) => ot as ImmutableAccountAddressUnlockCondition)[0];
         }
 
         if (unlockCondition?.address) {
-            address = { bech32: unlockCondition?.address.toString()};
+            address = { bech32: unlockCondition?.address.toString() };
         }
 
         return address;

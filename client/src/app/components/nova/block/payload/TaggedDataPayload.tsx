@@ -1,4 +1,4 @@
-import { TaggedDataPayload as ITaggedDataPayload} from "@iota/sdk-wasm-nova/web";
+import { TaggedDataPayload as ITaggedDataPayload } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import DataToggle from "~/app/components/DataToggle";
 
@@ -6,9 +6,7 @@ interface TaggedDataPayloadProps {
     readonly payload: ITaggedDataPayload;
 }
 
-const TaggedDataPayload: React.FC<TaggedDataPayloadProps> = (
-    { payload }
-) => {
+const TaggedDataPayload: React.FC<TaggedDataPayloadProps> = ({ payload }) => {
     const { tag, data } = payload;
 
     return (
@@ -19,10 +17,7 @@ const TaggedDataPayload: React.FC<TaggedDataPayloadProps> = (
                         <div className="label row middle">
                             <span className="margin-r-t">Tag</span>
                         </div>
-                        <DataToggle
-                            sourceData={tag}
-                            withSpacedHex={true}
-                        />
+                        <DataToggle sourceData={tag} withSpacedHex={true} />
                     </React.Fragment>
                 )}
                 {data && (
@@ -30,10 +25,7 @@ const TaggedDataPayload: React.FC<TaggedDataPayloadProps> = (
                         <div className="label row middle">
                             <span className="margin-r-t">Data</span>
                         </div>
-                        <DataToggle
-                            sourceData={data}
-                            withSpacedHex={true}
-                        />
+                        <DataToggle sourceData={data} withSpacedHex={true} />
                     </React.Fragment>
                 )}
             </div>
@@ -46,4 +38,3 @@ TaggedDataPayload.defaultProps = {
 };
 
 export default TaggedDataPayload;
-

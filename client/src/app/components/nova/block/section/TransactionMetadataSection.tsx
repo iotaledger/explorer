@@ -10,36 +10,26 @@ interface TransactionMetadataSectionProps {
     readonly isLinksDisabled: boolean;
 }
 
-const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = (
-    { network, metadata, metadataError, isLinksDisabled }
-) => (
+const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({ network, metadata, metadataError, isLinksDisabled }) => (
     <div className="section metadata-section">
         <div className="section--data">
-            {!metadata && !metadataError && (<Spinner />)}
-            {metadataError && (
-                <p className="danger">Failed to retrieve metadata. {metadataError}</p>
-            )}
+            {!metadata && !metadataError && <Spinner />}
+            {metadataError && <p className="danger">Failed to retrieve metadata. {metadataError}</p>}
             {metadata && !metadataError && (
                 <React.Fragment>
                     <div className="section--data">
-                        <div className="label">
-                            Transaction Id
-                        </div>
+                        <div className="label">Transaction Id</div>
                         <div className="value code">
-                            <TruncatedId 
-                                id={metadata.transactionId} 
+                            <TruncatedId
+                                id={metadata.transactionId}
                                 showCopyButton
                                 link={isLinksDisabled ? undefined : `/${network}/transaction/${metadata.transactionId}`}
                             />
                         </div>
                     </div>
                     <div className="section--data">
-                        <div className="label">
-                            Transaction Status
-                        </div>
-                        <div className="value row middle">
-                            {metadata.transactionState}
-                        </div>
+                        <div className="label">Transaction Status</div>
+                        <div className="value row middle">{metadata.transactionState}</div>
                     </div>
                     {metadata.transactionFailureReason && (
                         <div className="section--data">
@@ -55,8 +45,7 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = (
 
 TransactionMetadataSection.defaultProps = {
     metadata: undefined,
-    metadataError: undefined
+    metadataError: undefined,
 };
 
 export default TransactionMetadataSection;
-

@@ -1,7 +1,9 @@
 import {
-    Block, PayloadType, SignedTransactionPayload as ISignedTransactionPayload,
+    Block,
+    PayloadType,
+    SignedTransactionPayload as ISignedTransactionPayload,
     TaggedDataPayload as ITaggedDataPayload,
-    BasicBlockBody
+    BasicBlockBody,
 } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { IInput } from "~models/api/nova/IInput";
@@ -16,52 +18,35 @@ interface BlockPayloadSectionProps {
     readonly transferTotal?: number;
 }
 
-const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = (
-    { block, inputs, outputs, transferTotal }
-) => {
-    const payload = (block.body as BasicBlockBody).payload
-    if (
-        payload?.type === PayloadType.SignedTransaction &&
-        inputs && outputs && transferTotal !== undefined
-    ) {
-        const transactionPayload =  payload as ISignedTransactionPayload;
+const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs, outputs, transferTotal }) => {
+    const payload = (block.body as BasicBlockBody).payload;
+    if (payload?.type === PayloadType.SignedTransaction && inputs && outputs && transferTotal !== undefined) {
+        const transactionPayload = payload as ISignedTransactionPayload;
         const transaction = transactionPayload.transaction;
 
         return (
             <React.Fragment>
                 <div className="section">
-                    <SignedTransactionPayload
-                        inputs={inputs}
-                        payload={transactionPayload}
-                    />
+                    <SignedTransactionPayload inputs={inputs} payload={transactionPayload} />
                 </div>
-                {
-                    transaction.payload?.type === PayloadType.TaggedData &&
+                {transaction.payload?.type === PayloadType.TaggedData && (
                     <div className="section">
-                        <TaggedDataPayload
-                            payload={transaction.payload as ITaggedDataPayload}
-                        />
+                        <TaggedDataPayload payload={transaction.payload as ITaggedDataPayload} />
                     </div>
-                }
+                )}
             </React.Fragment>
         );
-    } else if (
-        payload?.type === PayloadType.CandidacyAnnouncement
-    ) {
+    } else if (payload?.type === PayloadType.CandidacyAnnouncement) {
         return (
             <div>
                 {/* todo */}
                 CandidacyAnnouncement
             </div>
         );
-    } else if (
-        payload?.type === PayloadType.TaggedData
-    ) {
+    } else if (payload?.type === PayloadType.TaggedData) {
         return (
             <div className="section">
-                <TaggedDataPayload
-                    payload={payload as ITaggedDataPayload}
-                />
+                <TaggedDataPayload payload={payload as ITaggedDataPayload} />
             </div>
         );
     }
@@ -76,4 +61,3 @@ BlockPayloadSection.defaultProps = {
 };
 
 export default BlockPayloadSection;
-

@@ -15,13 +15,7 @@ import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
  * @param block The block
  * @returns The inputs, unlocks, outputs, transfer total an a loading bool.
  */
-export function useInputsAndOutputs(network: string, block: Block | null):
-    [
-        IInput[] | null,
-        IOutput[] | null,
-        number | null,
-        boolean
-    ] {
+export function useInputsAndOutputs(network: string, block: Block | null): [IInput[] | null, IOutput[] | null, number | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${STARDUST}`));
     const { networkInfo } = useNetworkInfoNova();
@@ -36,13 +30,12 @@ export function useInputsAndOutputs(network: string, block: Block | null):
         if (block && (block?.body as BasicBlockBody).payload?.type === PayloadType.SignedTransaction) {
             // eslint-disable-next-line no-void
             void (async () => {
-                const { inputs, outputs, transferTotal } =
-                    await TransactionsHelper.getInputsAndOutputs(
-                        block,
-                        network,
-                        networkInfo.bech32Hrp,
-                        apiClient
-                    );
+                const { inputs, outputs, transferTotal } = await TransactionsHelper.getInputsAndOutputs(
+                    block,
+                    network,
+                    networkInfo.bech32Hrp,
+                    apiClient,
+                );
                 if (isMounted) {
                     setInputs(inputs);
                     setOutputs(outputs);

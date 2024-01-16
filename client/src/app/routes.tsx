@@ -167,18 +167,9 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
     ];
 
     const novaRoutes = [
-        <Route path="/:network/visualizer/"
-            key={keys.next().value}
-            component={NovaVisualizer}
-        />,
-        <Route path="/:network/block/:blockId"
-            key={keys.next().value}
-            component={NovaBlockPage}
-        />,
-        <Route path="/:network/output/:outputId"
-            key={keys.next().value}
-            component={NovaOutputPage}
-        />,
+        <Route path="/:network/visualizer/" key={keys.next().value} component={NovaVisualizer} />,
+        <Route path="/:network/block/:blockId" key={keys.next().value} component={NovaBlockPage} />,
+        <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
     ];
 
     return (

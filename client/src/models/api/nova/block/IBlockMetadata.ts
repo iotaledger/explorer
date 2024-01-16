@@ -11,4 +11,3 @@ export interface IBlockMetadata {
      */
     metadataError?: string;
 }
-

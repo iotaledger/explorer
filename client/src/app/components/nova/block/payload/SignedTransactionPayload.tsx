@@ -13,11 +13,9 @@ interface SignedTransactionPayloadProps {
     readonly header?: string;
 }
 
-const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = (
-    { payload, inputs, header }
-) => {
+const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ payload, inputs, header }) => {
     const { networkId, outputs } = payload.transaction;
-    const transactionId = Utils.transactionId(payload)
+    const transactionId = Utils.transactionId(payload);
 
     return (
         <div className="transaction-payload">
@@ -37,7 +35,9 @@ const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = (
                         <span>{inputs.length}</span>
                     </div>
                     <div className="transaction-payload_outputs card--content">
-                        {inputs.map((input, idx) => <Input key={idx} network={networkId} input={input} />)}
+                        {inputs.map((input, idx) => (
+                            <Input key={idx} network={networkId} input={input} />
+                        ))}
                         <Unlocks unlocks={payload.unlocks} />
                     </div>
                 </div>
@@ -71,4 +71,3 @@ SignedTransactionPayload.defaultProps = {
 };
 
 export default SignedTransactionPayload;
-

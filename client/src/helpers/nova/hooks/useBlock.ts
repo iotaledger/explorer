@@ -12,12 +12,7 @@ import { HexHelper } from "~/helpers/stardust/hexHelper";
  * @param blockId The block id
  * @returns The block, loading bool and an error message.
  */
-export function useBlock(network: string, blockId: string | null):
-    [
-        Block | null,
-        boolean,
-        string?
-    ] {
+export function useBlock(network: string, blockId: string | null): [Block | null, boolean, string?] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [block, setBlock] = useState<Block | null>(null);
@@ -30,17 +25,20 @@ export function useBlock(network: string, blockId: string | null):
         if (blockId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.block({
-                    network,
-                    blockId: HexHelper.addPrefix(blockId)
-                }).then(response => {
-                    if (isMounted) {
-                        setBlock(response.block ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .block({
+                        network,
+                        blockId: HexHelper.addPrefix(blockId),
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            setBlock(response.block ?? null);
+                            setError(response.error);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);
