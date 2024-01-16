@@ -8,4 +8,3 @@ export interface INetworkBoundGetRequest {
      */
     network: string;
 }
-

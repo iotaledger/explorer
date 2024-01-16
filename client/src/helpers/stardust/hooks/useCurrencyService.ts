@@ -9,10 +9,7 @@ import { CurrencyService } from "~services/currencyService";
  * @param isIota Is the base currency Iota.
  * @returns The current currency and currecny data.
  */
-export function useCurrencyService(isIota: boolean): [
-    string,
-    string
-] {
+export function useCurrencyService(isIota: boolean): [string, string] {
     const isMounted = useIsMounted();
     const [currencyService] = useState(ServiceFactory.get<CurrencyService>("currency"));
     const [currencyData, setCurrencyData] = useState<ICurrencySettings | null>(null);
@@ -20,7 +17,6 @@ export function useCurrencyService(isIota: boolean): [
     const [currency, setCurrency] = useState<string>("EUR");
     const [marketCap, setMarketCap] = useState<string>("--");
     const [price, setPrice] = useState<string>("--");
-
 
     useEffect(() => {
         const data = buildCurrency();
@@ -61,34 +57,12 @@ export function useCurrencyService(isIota: boolean): [
     useEffect(() => {
         if (currencyData) {
             const coinPrice = isIota ? currencyData?.coinStats?.iota.price : currencyData?.coinStats?.shimmer.price;
-            const coinMarketCap = isIota ?
-                currencyData?.coinStats?.iota.marketCap :
-                currencyData?.coinStats?.shimmer.marketCap;
+            const coinMarketCap = isIota ? currencyData?.coinStats?.iota.marketCap : currencyData?.coinStats?.shimmer.marketCap;
 
-            setMarketCap(
-                coinMarketCap ?
-                    currencyService.convertFiatBase(
-                        coinMarketCap,
-                        currencyData,
-                        true,
-                        2,
-                        undefined,
-                        true
-                    ) : "--"
-            );
-            setPrice(
-                coinPrice ?
-                    currencyService.convertFiatBase(
-                        coinPrice,
-                        currencyData,
-                        true,
-                        3,
-                        8
-                    ) : "--"
-            );
+            setMarketCap(coinMarketCap ? currencyService.convertFiatBase(coinMarketCap, currencyData, true, 2, undefined, true) : "--");
+            setPrice(coinPrice ? currencyService.convertFiatBase(coinPrice, currencyData, true, 3, 8) : "--");
         }
     }, [isIota, currency, currencyData]);
 
     return [price, marketCap];
 }
-

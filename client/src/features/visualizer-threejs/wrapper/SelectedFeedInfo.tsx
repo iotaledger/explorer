@@ -17,24 +17,23 @@ import "./KeyPanel.scss";
 export const SelectedFeedInfo = ({
     network,
     selectNode,
-    networkConfig
+    networkConfig,
 }: {
     readonly networkConfig: INetwork;
     readonly network: string;
     readonly selectNode: TSelectNode;
 }) => {
-    const clickedInstanceId = useTangleStore(state => state.clickedInstanceId);
-    const setClickedInstanceId = useTangleStore(state => state.setClickedInstanceId);
-    const blockMetadata = useTangleStore(state => state.blockMetadata);
+    const clickedInstanceId = useTangleStore((state) => state.clickedInstanceId);
+    const setClickedInstanceId = useTangleStore((state) => state.setClickedInstanceId);
+    const blockMetadata = useTangleStore((state) => state.blockMetadata);
 
     const { tokenInfo } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormatAmountsFull, setIsFormatAmountsFull] = useState<boolean | null>(null);
     const getStatus = (referenced?: number) => (referenced ? "referenced" : undefined);
 
-    const getConflictReasonMessage = (conflictReason?: ConflictReason) => (
-        conflictReason ? CONFLICT_REASON_STRINGS[conflictReason] : undefined
-    );
+    const getConflictReasonMessage = (conflictReason?: ConflictReason) =>
+        conflictReason ? CONFLICT_REASON_STRINGS[conflictReason] : undefined;
 
     // eslint-disable-next-line no-extra-boolean-cast
     const selectedFeedItem = !!clickedInstanceId ? blockMetadata?.get(clickedInstanceId) : undefined;
@@ -53,24 +52,21 @@ export const SelectedFeedInfo = ({
             </div>
             <div className="col">
                 <div className="card--content">
-                    <div className="card--label">Block
+                    <div className="card--label">
+                        Block
                         {selectedFeedItem.payloadType !== "Milestone" && selectedFeedItem.metadata && (
                             <span className="margin-l-t">
                                 <BlockTangleState
                                     network={network}
                                     status={getStatus(selectedFeedItem?.metadata?.referenced)}
                                     hasConflicts={selectedFeedItem.metadata?.conflicting}
-                                    conflictReason={
-                                        getConflictReasonMessage(selectedFeedItem?.metadata?.conflictReason)
-                                    }
+                                    conflictReason={getConflictReasonMessage(selectedFeedItem?.metadata?.conflictReason)}
                                 />
-                            </span>)}
+                            </span>
+                        )}
                     </div>
                     <div className="card--value overflow-ellipsis">
-                        <Link
-                            to={`/${networkConfig.network}/block/${selectedFeedItem?.blockId}`}
-                            target="_blank"
-                        >
+                        <Link to={`/${networkConfig.network}/block/${selectedFeedItem?.blockId}`} target="_blank">
                             <TruncatedId id={selectedFeedItem.blockId} />
                         </Link>
                     </div>
@@ -78,10 +74,7 @@ export const SelectedFeedInfo = ({
                         <React.Fragment>
                             <div className="card--label">Transaction id</div>
                             <div className="card--value">
-                                <Link
-                                    to={`/${networkConfig.network}/transaction/${properties?.transactionId}`}
-                                    target="_blank"
-                                >
+                                <Link to={`/${networkConfig.network}/transaction/${properties?.transactionId}`} target="_blank">
                                     <TruncatedId id={properties?.transactionId} />
                                 </Link>
                             </div>
@@ -90,48 +83,32 @@ export const SelectedFeedInfo = ({
                     {properties?.tag && (
                         <React.Fragment>
                             <div className="card--label">Tag</div>
-                            <div className="card--value truncate">
-                                {hexToUtf8(properties.tag)}
-                            </div>
+                            <div className="card--value truncate">{hexToUtf8(properties.tag)}</div>
                             <div className="card--label">Hex</div>
-                            <div className="card--value truncate">
-                                {properties.tag}
-                            </div>
+                            <div className="card--value truncate">{properties.tag}</div>
                         </React.Fragment>
                     )}
                     {selectedFeedItem.metadata?.milestone !== undefined && (
                         <React.Fragment>
                             {properties?.milestoneId && (
                                 <React.Fragment>
-                                    <div className="card--label">
-                                        Milestone id
-                                    </div>
+                                    <div className="card--label">Milestone id</div>
                                     <div className="card--value">
-                                        <Link
-                                            to={`/${networkConfig.network}/block/${selectedFeedItem?.blockId}`}
-                                            target="_blank"
-                                        >
+                                        <Link to={`/${networkConfig.network}/block/${selectedFeedItem?.blockId}`} target="_blank">
                                             <TruncatedId id={properties.milestoneId} />
                                         </Link>
                                     </div>
                                 </React.Fragment>
                             )}
-                            <div className="card--label">
-                                Milestone index
-                            </div>
+                            <div className="card--label">Milestone index</div>
                             <div className="card--value">
-                                <Link
-                                    to={`/${networkConfig.network}/block/${selectedFeedItem?.blockId}`}
-                                    target="_blank"
-                                >
+                                <Link to={`/${networkConfig.network}/block/${selectedFeedItem?.blockId}`} target="_blank">
                                     {selectedFeedItem.metadata.milestone}
                                 </Link>
                             </div>
                             {properties?.timestamp && (
                                 <React.Fragment>
-                                    <div className="card--label">
-                                        Timestamp
-                                    </div>
+                                    <div className="card--label">Timestamp</div>
                                     <div className="card--value">
                                         {DateHelper.formatShort(DateHelper.milliseconds(properties.timestamp))}
                                     </div>
@@ -143,46 +120,27 @@ export const SelectedFeedInfo = ({
                         <React.Fragment>
                             <div className="card--label">Value</div>
                             <div className="card--value">
-                                <span
-                                    onClick={() => setIsFormatAmountsFull(!isFormatAmountsFull)}
-                                    className="pointer margin-r-5"
-                                >
+                                <span onClick={() => setIsFormatAmountsFull(!isFormatAmountsFull)} className="pointer margin-r-5">
                                     {formatAmount(selectedFeedItem?.value, tokenInfo, isFormatAmountsFull ?? undefined)}
                                 </span>
                             </div>
-                        </React.Fragment>)}
+                        </React.Fragment>
+                    )}
                     {selectedFeedItem?.reattachments && selectedFeedItem.reattachments.length > 0 && (
                         <React.Fragment>
                             <div
                                 className="info-panel__dropdown card--content__input card--value"
                                 onClick={() => setIsExpanded(!isExpanded)}
                             >
-                                <div
-                                    className={classNames(
-                                        "margin-r-t",
-                                        "card--content__input--dropdown",
-                                        { opened: isExpanded }
-                                    )}
-                                >
+                                <div className={classNames("margin-r-t", "card--content__input--dropdown", { opened: isExpanded })}>
                                     <DropdownIcon />
                                 </div>
-                                <div className="card--label">
-                                    Reattachments
-                                </div>
+                                <div className="card--label">Reattachments</div>
                             </div>
-                            <div
-                                className={classNames(
-                                    "info-panel__reattachments",
-                                    { "info-panel__reattachments--opened": isExpanded }
-                                )}
-                            >
+                            <div className={classNames("info-panel__reattachments", { "info-panel__reattachments--opened": isExpanded })}>
                                 {selectedFeedItem.reattachments.map((item, index) => (
                                     <div key={index} className="card--value row">
-                                        <Link
-                                            to={`/${networkConfig.network}/block/${item.blockId}`}
-                                            className="truncate"
-                                            target="_blank"
-                                        >
+                                        <Link to={`/${networkConfig.network}/block/${item.blockId}`} className="truncate" target="_blank">
                                             <TruncatedId id={item.blockId} />
                                         </Link>
                                         {item?.metadata && (
@@ -191,13 +149,12 @@ export const SelectedFeedInfo = ({
                                                     network={network}
                                                     status={getStatus(item.metadata?.referenced)}
                                                     hasConflicts={item.metadata?.conflicting}
-                                                    conflictReason={
-                                                        getConflictReasonMessage(item.metadata?.conflictReason)
-                                                    }
+                                                    conflictReason={getConflictReasonMessage(item.metadata?.conflictReason)}
                                                 />
                                             </span>
                                         )}
-                                    </div>))}
+                                    </div>
+                                ))}
                             </div>
                         </React.Fragment>
                     )}

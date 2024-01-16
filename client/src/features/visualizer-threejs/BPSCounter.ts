@@ -54,6 +54,6 @@ export class BPSCounter {
             return 0;
         }
 
-        return sum / this.blockTimes.length * BPS_SPLIT_TO;
+        return (sum / this.blockTimes.length) * BPS_SPLIT_TO;
     }
 }

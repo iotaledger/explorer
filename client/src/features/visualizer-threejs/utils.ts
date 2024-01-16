@@ -1,6 +1,23 @@
-import { BLOCK_STEP_PX, MIN_BLOCKS_PER_SECOND, MAX_BLOCKS_PER_SECOND, MIN_TANGLE_RADIUS, MAX_TANGLE_RADIUS, MIN_BLOCK_NEAR_RADIUS, MAX_PREV_POINTS, MAX_POINT_RETRIES, HALF_WAVE_PERIOD_SECONDS, MAX_BLOCK_INSTANCES, EMITTER_SPEED_MULTIPLIER, MAX_SINUSOIDAL_AMPLITUDE, CAMERA_X_AXIS_MOVEMENT, CAMERA_Y_AXIS_MOVEMENT, CAMERA_X_OFFSET, CAMERA_Y_OFFSET } from "./constants";
-import { Vector3 } from 'three';
-import { ICameraAngles } from './interfaces'
+import {
+    BLOCK_STEP_PX,
+    MIN_BLOCKS_PER_SECOND,
+    MAX_BLOCKS_PER_SECOND,
+    MIN_TANGLE_RADIUS,
+    MAX_TANGLE_RADIUS,
+    MIN_BLOCK_NEAR_RADIUS,
+    MAX_PREV_POINTS,
+    MAX_POINT_RETRIES,
+    HALF_WAVE_PERIOD_SECONDS,
+    MAX_BLOCK_INSTANCES,
+    EMITTER_SPEED_MULTIPLIER,
+    MAX_SINUSOIDAL_AMPLITUDE,
+    CAMERA_X_AXIS_MOVEMENT,
+    CAMERA_Y_AXIS_MOVEMENT,
+    CAMERA_X_OFFSET,
+    CAMERA_Y_OFFSET,
+} from "./constants";
+import { Vector3 } from "three";
+import { ICameraAngles } from "./interfaces";
 
 /**
  * Generates a random number within a specified range.
@@ -17,7 +34,7 @@ function randomNumberFromInterval(min: number, max: number): number {
     // Generate a random number between 0 (inclusive) and 1 (exclusive)
     const randomFraction = Math.random();
     // Scale the random fraction to fit within the desired range
-    return min + (randomFraction * (max - min));
+    return min + randomFraction * (max - min);
 }
 
 export const randomIntFromInterval = (min: number, max: number) => {
@@ -52,9 +69,9 @@ interface IBlockTanglePosition {
  * Calculates the distance between two points.
  * @returns the distance between two points.
  */
-function distanceBetweenPoints(point1: IBlockTanglePosition , point2: IBlockTanglePosition): number {
+function distanceBetweenPoints(point1: IBlockTanglePosition, point2: IBlockTanglePosition): number {
     const { z: z1, y: y1 } = point1;
-    const { z: z2, y: y2 }  = point2;
+    const { z: z2, y: y2 } = point2;
     return Math.sqrt((y2 - y1) ** 2 + (z2 - z1) ** 2);
 }
 
@@ -67,7 +84,9 @@ function getLinearRadius(bps: number): number {
     if (bps > MAX_BLOCKS_PER_SECOND) bps = MAX_BLOCKS_PER_SECOND;
 
     // Linear interpolation formula to find the radius
-    const radius = MIN_TANGLE_RADIUS + ((MAX_TANGLE_RADIUS - MIN_TANGLE_RADIUS) * (bps - MIN_BLOCKS_PER_SECOND) / (MAX_BLOCKS_PER_SECOND - MIN_BLOCKS_PER_SECOND));
+    const radius =
+        MIN_TANGLE_RADIUS +
+        ((MAX_TANGLE_RADIUS - MIN_TANGLE_RADIUS) * (bps - MIN_BLOCKS_PER_SECOND)) / (MAX_BLOCKS_PER_SECOND - MIN_BLOCKS_PER_SECOND);
     return radius;
 }
 
@@ -81,7 +100,6 @@ function getDynamicRandomYZPoints(bps: number, initialPosition: Vector3 = new Ve
     const maxRadius = getLinearRadius(bps);
     const randomFactor = Math.random();
     const radius = randomFactor * maxRadius;
-
 
     const y = radius * Math.cos(theta) + initialPosition.y;
     const z = radius * Math.sin(theta) + initialPosition.z;
@@ -98,7 +116,7 @@ function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTan
         return true;
     }
 
-    return prevPoints.some(prevPoint => distanceBetweenPoints(point, prevPoint) > MIN_BLOCK_NEAR_RADIUS);
+    return prevPoints.some((prevPoint) => distanceBetweenPoints(point, prevPoint) > MIN_BLOCK_NEAR_RADIUS);
 }
 
 /**
@@ -124,17 +142,16 @@ function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPo
     return trialPoint;
 }
 
-
 /**
  * Gets a function to generate a random point on a circle.
  * @returns the function to generate the random point on a circle.
  */
 export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
     const prevPoints: IBlockTanglePosition[] = [];
-    
+
     return (bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition => {
         const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
-        
+
         const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
         const randomZNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
 
@@ -158,17 +175,17 @@ export function getTangleDistances(): {
 
     const MAX_BLOCK_DISTANCE = EMITTER_SPEED_MULTIPLIER * MAX_TANGLE_DISTANCE_SECONDS;
 
-    const maxXDistance = MAX_BLOCK_DISTANCE
+    const maxXDistance = MAX_BLOCK_DISTANCE;
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = (MAX_TANGLE_RADIUS * 2) + (MAX_SINUSOIDAL_AMPLITUDE * 2)
+    const maxYDistance = MAX_TANGLE_RADIUS * 2 + MAX_SINUSOIDAL_AMPLITUDE * 2;
 
     /* TODO: add sinusoidal distances */
-  
+
     return {
         xTangleDistance: maxXDistance,
-        yTangleDistance: maxYDistance
-    }
+        yTangleDistance: maxYDistance,
+    };
 }
 
 /**
@@ -176,28 +193,28 @@ export function getTangleDistances(): {
  * @returns an object with minimum and maximum angles
  */
 export function getCameraAngles(): ICameraAngles {
-    const xAngle = Math.PI * CAMERA_X_AXIS_MOVEMENT
-    const yAngle = Math.PI * CAMERA_Y_AXIS_MOVEMENT
+    const xAngle = Math.PI * CAMERA_X_AXIS_MOVEMENT;
+    const yAngle = Math.PI * CAMERA_Y_AXIS_MOVEMENT;
 
-    const startingXAngle = Math.PI * CAMERA_X_OFFSET
-    const startingYAngle = Math.PI * CAMERA_Y_OFFSET
+    const startingXAngle = Math.PI * CAMERA_X_OFFSET;
+    const startingYAngle = Math.PI * CAMERA_Y_OFFSET;
 
     // Divided by the two directions, positive and negative
-    const X_MOVEMENT = xAngle / 2
-    const Y_MOVEMENT = yAngle / 2
+    const X_MOVEMENT = xAngle / 2;
+    const Y_MOVEMENT = yAngle / 2;
 
-    const MIN_HORIZONTAL_ANGLE = startingXAngle - X_MOVEMENT
-    const MIN_VERTICAL_ANGLE = startingYAngle - Y_MOVEMENT
+    const MIN_HORIZONTAL_ANGLE = startingXAngle - X_MOVEMENT;
+    const MIN_VERTICAL_ANGLE = startingYAngle - Y_MOVEMENT;
 
-    const MAX_HORIZONTAL_ANGLE = startingXAngle + X_MOVEMENT
-    const MAX_VENTICAL_ANGLE = startingYAngle + Y_MOVEMENT
+    const MAX_HORIZONTAL_ANGLE = startingXAngle + X_MOVEMENT;
+    const MAX_VENTICAL_ANGLE = startingYAngle + Y_MOVEMENT;
 
     return {
         minAzimuthAngle: MIN_HORIZONTAL_ANGLE,
         minPolarAngle: MIN_VERTICAL_ANGLE,
         maxPolarAngle: MAX_VENTICAL_ANGLE,
-        maxAzimuthAngle: MAX_HORIZONTAL_ANGLE
-    }
+        maxAzimuthAngle: MAX_HORIZONTAL_ANGLE,
+    };
 }
 
 /**
@@ -207,7 +224,7 @@ export function getCameraAngles(): ICameraAngles {
 export function getSinusoidalPosition(time: number, amplitude: number): number {
     const period = HALF_WAVE_PERIOD_SECONDS * 2;
     const frequency = 1 / period;
-    const phase = (time % period) * frequency
+    const phase = (time % period) * frequency;
 
     const newY = amplitude * Math.sin(phase * 2 * Math.PI);
 

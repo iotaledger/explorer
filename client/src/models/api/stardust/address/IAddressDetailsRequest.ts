@@ -9,4 +9,3 @@ export interface IAddressDetailsRequest {
      */
     address: string;
 }
-

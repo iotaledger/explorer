@@ -76,8 +76,8 @@ export class NovaFeed {
                 const update: Partial<IFeedUpdate> = {
                     blockUpdate: {
                         blockId,
-                        block
-                    }
+                        block,
+                    },
                 };
 
                 // eslint-disable-next-line no-void
@@ -91,10 +91,7 @@ export class NovaFeed {
     private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
         try {
             const message: { topic: string; payload: string } = JSON.parse(serializedMessage);
-            const payload: T = plainToInstance<T, Record<string, unknown>>(
-                cls,
-                JSON.parse(message.payload) as Record<string, unknown>
-            );
+            const payload: T = plainToInstance<T, Record<string, unknown>>(cls, JSON.parse(message.payload) as Record<string, unknown>);
 
             return payload;
         } catch (error) {
@@ -113,7 +110,7 @@ export class NovaFeed {
                 // push data through callback
                 await this.blockSubscribers[subscriptionId]({
                     ...payload,
-                    subscriptionId
+                    subscriptionId,
                 });
             } catch (error) {
                 logger.warn(`[NovaFeed] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
@@ -121,4 +118,3 @@ export class NovaFeed {
         }
     }
 }
-

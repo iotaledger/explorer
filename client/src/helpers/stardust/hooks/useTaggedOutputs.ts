@@ -27,26 +27,26 @@ const OUTPUTS_LIMIT = 100;
  * @returns The taggedOutputs state.
  */
 export function useTaggedOutputs(
-    network: string
+    network: string,
 ): [
-        string,
-        OutputListItem[],
-        OutputListItem[],
-        number,
-        number,
-        number,
-        number,
-        React.Dispatch<React.SetStateAction<number>>,
-        React.Dispatch<React.SetStateAction<number>>,
-        number,
-        boolean,
-        boolean,
-        boolean,
-        boolean,
-        boolean,
-        boolean,
-        (outputType: "basic" | "nft") => Promise<void>
-    ] {
+    string,
+    OutputListItem[],
+    OutputListItem[],
+    number,
+    number,
+    number,
+    number,
+    React.Dispatch<React.SetStateAction<number>>,
+    React.Dispatch<React.SetStateAction<number>>,
+    number,
+    boolean,
+    boolean,
+    boolean,
+    boolean,
+    boolean,
+    boolean,
+    (outputType: "basic" | "nft") => Promise<void>,
+] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const location = useLocation<OutputListLocationProps>();
@@ -54,7 +54,7 @@ export function useTaggedOutputs(
     const history = useHistory();
     const { outputIds, tag } = location.state ?? {
         outputIds: [],
-        tag: ""
+        tag: "",
     };
 
     const [basicOutputItems, setBasicOutputItems] = useState<OutputListItem[] | null>(null);
@@ -75,7 +75,7 @@ export function useTaggedOutputs(
     const loadOutputDetails = async (
         outputs: string[],
         setState: React.Dispatch<React.SetStateAction<OutputListItem[] | null>>,
-        setLoading: React.Dispatch<React.SetStateAction<boolean>>
+        setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     ) => {
         setLoading(true);
         const itemsUpdate: OutputListItem[] = [];
@@ -83,24 +83,19 @@ export function useTaggedOutputs(
 
         for (const outputId of outputs) {
             promises.push(
-                apiClient.outputDetails({ network, outputId })
-                    .then(response => {
-                        const details = response.output;
-                        if (
-                            !response.error &&
-                            details?.output &&
-                            details?.metadata
-                        ) {
-                            const item: OutputListItem = {
-                                outputDetails: {
-                                    output: details.output,
-                                    metadata: details.metadata
-                                },
-                                outputId
-                            };
-                            itemsUpdate.push(item);
-                        }
-                    })
+                apiClient.outputDetails({ network, outputId }).then((response) => {
+                    const details = response.output;
+                    if (!response.error && details?.output && details?.metadata) {
+                        const item: OutputListItem = {
+                            outputDetails: {
+                                output: details.output,
+                                metadata: details.metadata,
+                            },
+                            outputId,
+                        };
+                        itemsUpdate.push(item);
+                    }
+                }),
             );
         }
 
@@ -108,7 +103,7 @@ export function useTaggedOutputs(
             await Promise.all(promises);
 
             if (isMounted) {
-                setState(prevState => ([...(prevState ?? []), ...itemsUpdate]));
+                setState((prevState) => [...(prevState ?? []), ...itemsUpdate]);
             }
         } finally {
             setLoading(false);
@@ -116,27 +111,33 @@ export function useTaggedOutputs(
     };
 
     const loadMore = async (outputType: "basic" | "nft") => {
-        apiClient.outputsByTag({
-            network, tag, outputType, cursor: outputType === "basic" ? basicOutputsCursor : nftOutputsCursor
-        }).then(response => {
-            if (!response.error && response.outputs) {
-                if (outputType === "basic") {
-                    // eslint-disable-next-line no-void
-                    void loadOutputDetails(response.outputs.items, setBasicOutputItems, setIsBasicLoading);
-                    if (isMounted) {
-                        setBasicOutputsCursor(response.outputs.cursor);
+        apiClient
+            .outputsByTag({
+                network,
+                tag,
+                outputType,
+                cursor: outputType === "basic" ? basicOutputsCursor : nftOutputsCursor,
+            })
+            .then((response) => {
+                if (!response.error && response.outputs) {
+                    if (outputType === "basic") {
+                        // eslint-disable-next-line no-void
+                        void loadOutputDetails(response.outputs.items, setBasicOutputItems, setIsBasicLoading);
+                        if (isMounted) {
+                            setBasicOutputsCursor(response.outputs.cursor);
+                        }
                     }
-                }
 
-                if (outputType === "nft") {
-                    // eslint-disable-next-line no-void
-                    void loadOutputDetails(response.outputs.items, setNftOutputItems, setIsNftLoading);
-                    if (isMounted) {
-                        setNftOutputsCursor(response.outputs.cursor);
+                    if (outputType === "nft") {
+                        // eslint-disable-next-line no-void
+                        void loadOutputDetails(response.outputs.items, setNftOutputItems, setIsNftLoading);
+                        if (isMounted) {
+                            setNftOutputsCursor(response.outputs.cursor);
+                        }
                     }
                 }
-            }
-        }).catch(_ => { });
+            })
+            .catch((_) => {});
     };
 
     useEffect(() => {
@@ -210,6 +211,6 @@ export function useTaggedOutputs(
         nftOutputLimitReached,
         hasMoreBasicOutputs,
         hasMoreNftOutputs,
-        loadMore
+        loadMore,
     ];
 }

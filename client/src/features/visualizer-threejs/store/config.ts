@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-
 interface ConfigState {
     dimensions: { width: number; height: number };
     setDimensions: (width: number, height: number) => void;
@@ -12,27 +11,26 @@ interface ConfigState {
     setEdgeRenderingEnabled: (isEdgeRenderingEnabled: boolean) => void;
 }
 
-export const useConfigStore = create<ConfigState>(set => ({
+export const useConfigStore = create<ConfigState>((set) => ({
     /**
      * Canvas dimensions
      */
     dimensions: { width: 0, height: 0 },
     setDimensions: (width, height) => {
-        set(state => ({
-                ...state,
-                dimensions: { width, height }
-            })
-        );
+        set((state) => ({
+            ...state,
+            dimensions: { width, height },
+        }));
     },
 
     /**
      * Is animation playing
      */
     isPlaying: false,
-    setIsPlaying: isPlaying => {
-        set(state => ({
+    setIsPlaying: (isPlaying) => {
+        set((state) => ({
             ...state,
-            isPlaying
+            isPlaying,
         }));
     },
 
@@ -40,10 +38,10 @@ export const useConfigStore = create<ConfigState>(set => ({
      * Is edge rendering enabled
      */
     isEdgeRenderingEnabled: false,
-    setEdgeRenderingEnabled: isEdgeRenderingEnabled => {
-        set(state => ({
+    setEdgeRenderingEnabled: (isEdgeRenderingEnabled) => {
+        set((state) => ({
             ...state,
-            isEdgeRenderingEnabled
+            isEdgeRenderingEnabled,
         }));
-    }
+    },
 }));

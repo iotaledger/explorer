@@ -4,8 +4,13 @@ import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { AppRouteProps } from "./AppRouteProps";
 import {
-    buildMetaLabel, buildUtilities, getFooterItems,
-    getPages, getFaviconHelmet, networkContextWrapper, populateNetworkInfoNova
+    buildMetaLabel,
+    buildUtilities,
+    getFooterItems,
+    getPages,
+    getFaviconHelmet,
+    networkContextWrapper,
+    populateNetworkInfoNova,
 } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
@@ -23,9 +28,12 @@ import { NetworkService } from "~services/networkService";
 import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
 import "./App.scss";
 
-const App: React.FC<RouteComponentProps<AppRouteProps>> = (
-    { history, match: { params: { network, action } } }
-) => {
+const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
+    history,
+    match: {
+        params: { network, action },
+    },
+}) => {
     const [networks, setNetworks] = useState<INetwork[]>([]);
     const [networksLoaded, setNetworksLoaded] = useState(false);
 
@@ -44,7 +52,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
         }
     }, [networksLoaded]);
 
-    const networkConfig = networks.find(n => n.network === network);
+    const networkConfig = networks.find((n) => n.network === network);
     const identityResolverEnabled = networkConfig?.identityResolverEnabled ?? true;
     const currentNetworkName = networkConfig?.network;
     const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
@@ -64,16 +72,13 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
         body?.classList.remove("shimmer");
     }
 
-    const routes = buildAppRoutes(
-        networkConfig?.protocolVersion ?? "",
-        withNetworkContext
-    );
+    const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", withNetworkContext);
 
     const metaLabel = buildMetaLabel(currentNetworkName);
     const faviconHelmet = getFaviconHelmet(isShimmer);
 
     return (
-        <div className={classNames("app", { "shimmer": isShimmer })}>
+        <div className={classNames("app", { shimmer: isShimmer })}>
             <Helmet>
                 <meta name="apple-mobile-web-app-title" content={metaLabel} />
                 <meta name="application-name" content={metaLabel} />
@@ -89,7 +94,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                 history={history}
                 search={
                     <SearchInput
-                        onSearch={query => history.push(`/${currentNetworkName}/search/${query}`)}
+                        onSearch={(query) => history.push(`/${currentNetworkName}/search/${query}`)}
                         protocolVersion={networkConfig?.protocolVersion ?? STARDUST}
                     />
                 }
@@ -97,23 +102,20 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
                 utilities={buildUtilities(network ?? "", networks, identityResolverEnabled)}
             />
             <div className="content">
-                {networks.length > 0 ?
+                {networks.length > 0 ? (
                     <React.Fragment>
                         {!networkConfig && (
                             <div className="maintenance">
-                                <div className="maintenance-inner">
-                                    The network provided does not exist, please check the url.
-                                </div>
+                                <div className="maintenance-inner">The network provided does not exist, please check the url.</div>
                             </div>
                         )}
                         {networkConfig && routes}
-                    </React.Fragment> : (
-                        <div className="maintenance">
-                            <div className="maintenance-inner">
-                                Explorer is currently undergoing maintenance, please check back later.
-                            </div>
-                        </div>
-                    )}
+                    </React.Fragment>
+                ) : (
+                    <div className="maintenance">
+                        <div className="maintenance-inner">Explorer is currently undergoing maintenance, please check back later.</div>
+                    </div>
+                )}
             </div>
             {isShimmer ? (
                 <ShimmerFooter dynamic={getFooterItems(currentNetworkName ?? "", networks, identityResolverEnabled)} />
@@ -126,4 +128,3 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = (
 };
 
 export default App;
-

@@ -10,17 +10,12 @@ import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
  * @param nftId The nft id to check
  * @returns The whitelisted boolean.
  */
-export function useTokenRegistryNftCheck(issuerId: string | null, nftId?: string): [
-    boolean,
-    boolean
-] {
+export function useTokenRegistryNftCheck(issuerId: string | null, nftId?: string): [boolean, boolean] {
     const { name: network } = useContext(NetworkContext);
     const isMounted = useIsMounted();
     const [isWhitelisted, setIsWhitelisted] = useState<boolean>(false);
     const [isChecking, setIsChecking] = useState<boolean>(true);
-    const [client] = useState(
-        ServiceFactory.get<TokenRegistryClient | undefined>("token-registry")
-    );
+    const [client] = useState(ServiceFactory.get<TokenRegistryClient | undefined>("token-registry"));
 
     useEffect(() => {
         setIsWhitelisted(false);
@@ -40,4 +35,3 @@ export function useTokenRegistryNftCheck(issuerId: string | null, nftId?: string
 
     return [isWhitelisted, isChecking];
 }
-

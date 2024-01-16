@@ -5,128 +5,128 @@
 @import "../../../scss/themes";
 
 .transaction--table {
-  width: 100%;
-  border-spacing: 12px 28px;
-  border-collapse: separate;
+    width: 100%;
+    border-spacing: 12px 28px;
+    border-collapse: separate;
 
-  @include tablet-down {
-    display: none;
-  }
-
-  tr {
-    @include font-size(14px);
-
-    color: $gray-7;
-    font-family: $inter;
-    letter-spacing: 0.5px;
-
-    th {
-      @include font-size(12px);
-
-      color: $gray-6;
-      font-weight: 600;
-      text-align: left;
-      text-transform: uppercase;
+    @include tablet-down {
+        display: none;
     }
 
-    td {
-      color: var(--body-color);
-
-      .message-tangle-state {
-        margin-left: 0;
-      }
-
-      &.code {
+    tr {
         @include font-size(14px);
 
-        font-family: $ibm-plex-mono;
-        font-weight: normal;
-        letter-spacing: 0.02em;
-        line-height: 20px;
-      }
+        color: $gray-7;
+        font-family: $inter;
+        letter-spacing: 0.5px;
 
-      &.highlight {
-        color: $blue-5;
-      }
+        th {
+            @include font-size(12px);
 
-      &.amount {
-        @include font-size(14px, 21px);
-
-        font-weight: 700;
-
-        &.positive {
-          color: $mint-green-7;
+            color: $gray-6;
+            font-weight: 600;
+            text-align: left;
+            text-transform: uppercase;
         }
 
-        &.negative {
-          color: var(--expanded-color);
+        td {
+            color: var(--body-color);
+
+            .message-tangle-state {
+                margin-left: 0;
+            }
+
+            &.code {
+                @include font-size(14px);
+
+                font-family: $ibm-plex-mono;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                line-height: 20px;
+            }
+
+            &.highlight {
+                color: $blue-5;
+            }
+
+            &.amount {
+                @include font-size(14px, 21px);
+
+                font-weight: 700;
+
+                &.positive {
+                    color: $mint-green-7;
+                }
+
+                &.negative {
+                    color: var(--expanded-color);
+                }
+            }
         }
-      }
     }
-  }
 }
 
 .transaction-cards {
-  display: none;
+    display: none;
 
-  @include tablet-down {
-    display: block;
+    @include tablet-down {
+        display: block;
 
-    .transaction-card {
-      margin-bottom: 48px;
+        .transaction-card {
+            margin-bottom: 48px;
 
-      .field {
-        margin-bottom: 8px;
+            .field {
+                margin-bottom: 8px;
 
-        .label {
-          color: $gray-6;
-          font-family: $inter;
-          letter-spacing: 0.5px;
+                .label {
+                    color: $gray-6;
+                    font-family: $inter;
+                    letter-spacing: 0.5px;
 
-          @include font-size(14px, 21px);
-        }
+                    @include font-size(14px, 21px);
+                }
 
-        .value {
-          @include font-size(14px, 21px);
+                .value {
+                    @include font-size(14px, 21px);
 
-          color: var(--body-color);
-          font-family: $metropolis;
-          font-weight: 700;
+                    color: var(--body-color);
+                    font-family: $metropolis;
+                    font-weight: 700;
 
-          &.message-id {
-            overflow: hidden;
-            color: $blue-5;
-            font-family: $ibm-plex-mono;
-            font-weight: 500;
-            text-decoration: none;
-            text-overflow: ellipsis;
-            word-break: break-word;
-          }
+                    &.message-id {
+                        overflow: hidden;
+                        color: $blue-5;
+                        font-family: $ibm-plex-mono;
+                        font-weight: 500;
+                        text-decoration: none;
+                        text-overflow: ellipsis;
+                        word-break: break-word;
+                    }
 
-          .messages-tangle-state {
-            display: inline-block;
+                    .messages-tangle-state {
+                        display: inline-block;
 
-            .message-tangle-state {
-              margin-left: 0;
+                        .message-tangle-state {
+                            margin-left: 0;
+                        }
+                    }
+                }
+
+                .amount {
+                    font-family: $inter;
+                    font-size: 0.875rem;
+                    font-weight: 700;
+                    letter-spacing: 0.5px;
+
+                    &.positive {
+                        color: $mint-green-7;
+                    }
+
+                    &.negative {
+                        color: var(--expanded-color);
+                    }
+                }
             }
-          }
         }
-
-        .amount {
-          font-family: $inter;
-          font-size: 0.875rem;
-          font-weight: 700;
-          letter-spacing: 0.5px;
-
-          &.positive {
-            color: $mint-green-7;
-          }
-
-          &.negative {
-            color: var(--expanded-color);
-          }
-        }
-      }
     }
-  }
 }

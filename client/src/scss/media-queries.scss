@@ -3,19 +3,19 @@ $tablet-width: 768px;
 $phone-width: 480px;
 
 @mixin desktop-down {
-  @media (max-width: #{$desktop-width}) {
-    @content;
-  }
+    @media (max-width: #{$desktop-width}) {
+        @content;
+    }
 }
 
 @mixin tablet-down {
-  @media (max-width: #{$tablet-width}) {
-    @content;
-  }
+    @media (max-width: #{$tablet-width}) {
+        @content;
+    }
 }
 
 @mixin phone-down {
-  @media (max-width: #{$phone-width}) {
-    @content;
-  }
+    @media (max-width: #{$phone-width}) {
+        @content;
+    }
 }

@@ -18,10 +18,7 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
-        return this.callApi<unknown, INodeInfoResponse>(
-            `node-info/${request.network}`,
-            "get"
-        );
+        return this.callApi<unknown, INodeInfoResponse>(`node-info/${request.network}`, "get");
     }
 
     /**
@@ -30,9 +27,7 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async block(request: IBlockRequest): Promise<IBlockResponse> {
-        return this.callApi<unknown, IBlockResponse>(
-            `nova/block/${request.network}/${request.blockId}`, "get"
-        );
+        return this.callApi<unknown, IBlockResponse>(`nova/block/${request.network}/${request.blockId}`, "get");
     }
 
     /**
@@ -41,19 +36,15 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async blockDetails(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
-        return this.callApi<unknown, IBlockDetailsResponse>(
-            `nova/block/metadata/${request.network}/${request.blockId}`, "get"
-        );
+        return this.callApi<unknown, IBlockDetailsResponse>(`nova/block/metadata/${request.network}/${request.blockId}`, "get");
     }
-    
+
     /**
      * Get the output details.
      * @param request The request to send.
      * @returns The response from the request.
      */
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
-        return this.callApi<unknown, IOutputDetailsResponse>(
-            `nova/output/${request.network}/${request.outputId}`, "get"
-        );
+        return this.callApi<unknown, IOutputDetailsResponse>(`nova/output/${request.network}/${request.outputId}`, "get");
     }
 }

@@ -72,6 +72,11 @@ export interface INetwork {
     permaNodeJwt?: string;
 
     /**
+     * The potocol used by the influxDB endpoint.
+     */
+    analyticsInfluxDbProtocol?: "http" | "https";
+
+    /**
      * The analytics influxDB endpoint.
      */
     analyticsInfluxDbEndpoint?: string;

@@ -27,5 +27,3 @@ export interface IFilterSettings {
      */
     valueMaximumUnits?: Units;
 }
-
-

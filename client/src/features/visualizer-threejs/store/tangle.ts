@@ -32,7 +32,7 @@ interface EdgeEntry {
 interface TangleState {
     // Queue for "add block" operation to the canvas
     blockQueue: BlockState[];
-    addToBlockQueue: (newBlock: BlockState & { initPosition: IPosition; targetPosition: IPosition; }) => void;
+    addToBlockQueue: (newBlock: BlockState & { initPosition: IPosition; targetPosition: IPosition }) => void;
     removeFromBlockQueue: (blockIds: string[]) => void;
 
     edgeQueue: Edge[];
@@ -65,136 +65,136 @@ interface TangleState {
     updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
 }
 
-export const useTangleStore = create<TangleState>()(devtools(set => ({
-    blockQueue: [],
-    edgeQueue: [],
-    colorQueue: [],
-    blockIdToEdges: new Map(),
-    blockIdToIndex: new Map(),
-    blockIdToPosition: new Map(),
-    blockMetadata: new Map(),
-    blockIdToAnimationPosition: new Map(),
-    indexToBlockId: [],
-    zoom: ZOOM_DEFAULT,
-    bps: 0,
-    clickedInstanceId: null,
-    updateBlockIdToAnimationPosition: (updatedPositions) => {
-        set(state => {
-            updatedPositions.forEach((value, key) => {
-                state.blockIdToAnimationPosition.set(key, value);
-            });
+export const useTangleStore = create<TangleState>()(
+    devtools((set) => ({
+        blockQueue: [],
+        edgeQueue: [],
+        colorQueue: [],
+        blockIdToEdges: new Map(),
+        blockIdToIndex: new Map(),
+        blockIdToPosition: new Map(),
+        blockMetadata: new Map(),
+        blockIdToAnimationPosition: new Map(),
+        indexToBlockId: [],
+        zoom: ZOOM_DEFAULT,
+        bps: 0,
+        clickedInstanceId: null,
+        updateBlockIdToAnimationPosition: (updatedPositions) => {
+            set((state) => {
+                updatedPositions.forEach((value, key) => {
+                    state.blockIdToAnimationPosition.set(key, value);
+                });
 
-            for (const [key, value] of state.blockIdToAnimationPosition) {
-                if (value.duration > ANIMATION_TIME_SECONDS) {
-                    state.blockIdToAnimationPosition.delete(key);
+                for (const [key, value] of state.blockIdToAnimationPosition) {
+                    if (value.duration > ANIMATION_TIME_SECONDS) {
+                        state.blockIdToAnimationPosition.delete(key);
+                    }
                 }
+                return {
+                    blockIdToAnimationPosition: state.blockIdToAnimationPosition,
+                };
+            });
+        },
+        addToBlockQueue: (block) => {
+            set((state) => {
+                const { initPosition, targetPosition, ...blockRest } = block;
+
+                state.blockIdToPosition.set(block.id, [targetPosition.x, targetPosition.y, targetPosition.z]);
+                state.blockIdToAnimationPosition.set(block.id, {
+                    ...initPosition,
+                    duration: 0,
+                });
+                return {
+                    ...state,
+                    blockQueue: [...state.blockQueue, blockRest],
+                };
+            });
+        },
+        removeFromBlockQueue: (blockIds: string[]) => {
+            if (!blockIds.length) return;
+            set((state) => ({
+                blockQueue: state.blockQueue.filter((b) => !blockIds.includes(b.id)),
+            }));
+        },
+        addToEdgeQueue: (blockId: string, parents: string[]) => {
+            if (parents.length > 0) {
+                set((state) => {
+                    const nextEdgesQueue = [...state.edgeQueue];
+
+                    for (const parentBlockId of parents) {
+                        nextEdgesQueue.push({ fromBlockId: parentBlockId, toBlockId: blockId });
+                    }
+
+                    return {
+                        ...state,
+                        edgeQueue: nextEdgesQueue,
+                    };
+                });
             }
-            return {
-                blockIdToAnimationPosition: state.blockIdToAnimationPosition
-            };
-        });
-    },
-    addToBlockQueue: block => {
-        set(state => {
-            const { initPosition, targetPosition, ...blockRest } = block;
-
-            state.blockIdToPosition.set(block.id, [targetPosition.x, targetPosition.y, targetPosition.z]);
-            state.blockIdToAnimationPosition.set(block.id, {
-                ...initPosition,
-                duration: 0,
-            });
-            return {
+        },
+        removeFromEdgeQueue: (edgesToRemove: Edge[]) => {
+            set((state) => ({
                 ...state,
-                blockQueue: [...state.blockQueue, blockRest]
-            };
-        });
-    },
-    removeFromBlockQueue: (blockIds: string[]) => {
-        if (!blockIds.length) return;
-        set((state) => ({
-            blockQueue: state.blockQueue.filter(b => !blockIds.includes(b.id))
-        }));
-    },
-    addToEdgeQueue: (blockId: string, parents: string[]) => {
-        if (parents.length > 0) {
-            set(state => {
-                const nextEdgesQueue = [...state.edgeQueue];
-
-                for (const parentBlockId of parents) {
-                    nextEdgesQueue.push({ fromBlockId: parentBlockId, toBlockId: blockId });
+                edgeQueue: state.edgeQueue.filter(
+                    (edge) =>
+                        !edgesToRemove.some(
+                            (edgeToRemove) => edgeToRemove.toBlockId === edge.toBlockId && edgeToRemove.fromBlockId === edge.fromBlockId,
+                        ),
+                ),
+            }));
+        },
+        addToColorQueue: (id: string, color: Color) => {
+            set((state) => ({
+                ...state,
+                colorQueue: [...state.colorQueue, { id, color }],
+            }));
+        },
+        removeFromColorQueue: (blockId: string) => {
+            set((state) => ({
+                ...state,
+                colorQueue: state.colorQueue.filter((block) => block.id !== blockId),
+            }));
+        },
+        updateBlockIdToIndex: (blockId: string, index: number) => {
+            set((state) => {
+                state.blockIdToIndex.set(blockId, index);
+                if (state.indexToBlockId[index]) {
+                    // Clean up map from old blockIds
+                    state.blockIdToIndex.delete(state.indexToBlockId[index]);
+                    // Clean up old block edges
+                    state.blockIdToEdges.delete(state.indexToBlockId[index]);
+                    // Clean up old block position
+                    state.blockIdToPosition.delete(state.indexToBlockId[index]);
+                    // Clean up old block metadata
+                    state.blockMetadata.delete(state.indexToBlockId[index]);
                 }
+
+                const nextIndexToBlockId = [...state.indexToBlockId];
+                nextIndexToBlockId[index] = blockId;
 
                 return {
                     ...state,
-                    edgeQueue: nextEdgesQueue
+                    indexToBlockId: nextIndexToBlockId,
                 };
             });
-        }
-    },
-    removeFromEdgeQueue: (edgesToRemove: Edge[]) => {
-        set(state => ({
-            ...state,
-            edgeQueue: state.edgeQueue.filter(
-                edge => !edgesToRemove.some(
-                    edgeToRemove =>
-                        edgeToRemove.toBlockId === edge.toBlockId &&
-                        edgeToRemove.fromBlockId === edge.fromBlockId
-                )
-            )
-        }));
-    },
-    addToColorQueue: (id: string, color: Color) => {
-        set(state => ({
-            ...state,
-            colorQueue: [...state.colorQueue, { id, color }]
-        }));
-    },
-    removeFromColorQueue: (blockId: string) => {
-        set(state => ({
-            ...state,
-            colorQueue: state.colorQueue.filter(block => block.id !== blockId)
-        }));
-    },
-    updateBlockIdToIndex: (blockId: string, index: number) => {
-        set(state => {
-            state.blockIdToIndex.set(blockId, index);
-            if (state.indexToBlockId[index]) {
-                // Clean up map from old blockIds
-                state.blockIdToIndex.delete(state.indexToBlockId[index]);
-                // Clean up old block edges
-                state.blockIdToEdges.delete(state.indexToBlockId[index]);
-                // Clean up old block position
-                state.blockIdToPosition.delete(state.indexToBlockId[index]);
-                // Clean up old block metadata
-                state.blockMetadata.delete(state.indexToBlockId[index]);
-            }
-
-            const nextIndexToBlockId = [...state.indexToBlockId];
-            nextIndexToBlockId[index] = blockId;
-
-            return {
+        },
+        setZoom: (zoom) => {
+            set((state) => ({
                 ...state,
-                indexToBlockId: nextIndexToBlockId
-            };
-        });
-    },
-    setZoom: zoom => {
-        set(state => ({
-            ...state,
-            zoom
-        }));
-    },
-    setBps: bps => {
-        set(state => ({
-            ...state,
-            bps
-        }));
-    },
-    setClickedInstanceId: clickedInstanceId => {
-        set(state => ({
-            ...state,
-            clickedInstanceId
-        }));
-    }
-})));
-
+                zoom,
+            }));
+        },
+        setBps: (bps) => {
+            set((state) => ({
+                ...state,
+                bps,
+            }));
+        },
+        setClickedInstanceId: (clickedInstanceId) => {
+            set((state) => ({
+                ...state,
+                clickedInstanceId,
+            }));
+        },
+    })),
+);

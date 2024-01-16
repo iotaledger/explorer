@@ -19,7 +19,7 @@ export function buildNodeShader(): WebGLProgram {
         "   } else {",
         "     gl_FragColor = vec4(0);",
         "   }",
-        "}"
+        "}",
     ].join("\n");
     const nodesVS = [
         "attribute vec2 a_vertexPos;",
@@ -38,7 +38,7 @@ export function buildNodeShader(): WebGLProgram {
         "   color.g = mod(c, 256.0); c = floor(c/256.0);",
         "   color.r = mod(c, 256.0); c = floor(c/256.0); color /= 255.0;",
         "   color.a = 1.0;",
-        "}"
+        "}",
     ].join("\n");
     let program: WebGLProgram;
     let gl: WebGLRenderingContext;
@@ -79,9 +79,9 @@ export function buildNodeShader(): WebGLProgram {
         position: (nodeUI: { color: number; size: number; id: number }, pos: { x: number; y: number }) => {
             const idx = nodeUI.id;
             nodes[idx * ATTRIBUTES_PER_PRIMITIVE] = pos.x;
-            nodes[(idx * ATTRIBUTES_PER_PRIMITIVE) + 1] = -pos.y;
-            nodes[(idx * ATTRIBUTES_PER_PRIMITIVE) + 2] = nodeUI.color;
-            nodes[(idx * ATTRIBUTES_PER_PRIMITIVE) + 3] = nodeUI.size;
+            nodes[idx * ATTRIBUTES_PER_PRIMITIVE + 1] = -pos.y;
+            nodes[idx * ATTRIBUTES_PER_PRIMITIVE + 2] = nodeUI.color;
+            nodes[idx * ATTRIBUTES_PER_PRIMITIVE + 3] = nodeUI.size;
         },
         /**
          * Request from webgl renderer to actually draw our stuff into the
@@ -97,7 +97,14 @@ export function buildNodeShader(): WebGLProgram {
                 gl.uniform2f(locations.screenSize, canvasWidth, canvasHeight);
             }
             gl.vertexAttribPointer(locations.vertexPos, 2, gl.FLOAT, false, ATTRIBUTES_PER_PRIMITIVE * Float32Array.BYTES_PER_ELEMENT, 0);
-            gl.vertexAttribPointer(locations.customAttributes, 2, gl.FLOAT, false, ATTRIBUTES_PER_PRIMITIVE * Float32Array.BYTES_PER_ELEMENT, 2 * 4);
+            gl.vertexAttribPointer(
+                locations.customAttributes,
+                2,
+                gl.FLOAT,
+                false,
+                ATTRIBUTES_PER_PRIMITIVE * Float32Array.BYTES_PER_ELEMENT,
+                2 * 4,
+            );
             gl.drawArrays(gl.POINTS, 0, nodesCount);
         },
 
@@ -140,7 +147,12 @@ export function buildNodeShader(): WebGLProgram {
                 // Instead we swap deleted node with the "last" node in the
                 // buffer and decrease marker of the "last" node. Gives nice O(1)
                 // performance, but make code slightly harder than it could be:
-                webglUtils.copyArrayPart(nodes, node.id * ATTRIBUTES_PER_PRIMITIVE, nodesCount * ATTRIBUTES_PER_PRIMITIVE, ATTRIBUTES_PER_PRIMITIVE);
+                webglUtils.copyArrayPart(
+                    nodes,
+                    node.id * ATTRIBUTES_PER_PRIMITIVE,
+                    nodesCount * ATTRIBUTES_PER_PRIMITIVE,
+                    ATTRIBUTES_PER_PRIMITIVE,
+                );
             }
         },
         /**
@@ -148,7 +160,6 @@ export function buildNodeShader(): WebGLProgram {
          * buffers. We don't use it here, but it's needed by API (see the comment
          * in the removeNode() method)
          */
-        replaceProperties() {
-        }
+        replaceProperties() {},
     };
 }

@@ -19,10 +19,11 @@ export const Wrapper = ({
     selectedFeedItem,
     setIsPlaying,
     isEdgeRenderingEnabled,
-    setEdgeRenderingEnabled
+    setEdgeRenderingEnabled,
 }: {
     readonly blocksCount: number;
-    readonly children: React.ReactNode; readonly filter: string;
+    readonly children: React.ReactNode;
+    readonly filter: string;
     readonly isPlaying: boolean;
     readonly network: string;
     readonly networkConfig: INetwork;
@@ -31,7 +32,7 @@ export const Wrapper = ({
     readonly selectedFeedItem: TSelectFeedItem;
     readonly setIsPlaying: (isPlaying: boolean) => void;
     readonly isEdgeRenderingEnabled?: boolean;
-    readonly setEdgeRenderingEnabled?: ((isEnabled: boolean) => void);
+    readonly setEdgeRenderingEnabled?: (isEnabled: boolean) => void;
 }) => (
     <div className="visualizer-nova">
         <div className="row middle">
@@ -42,13 +43,7 @@ export const Wrapper = ({
             <div className="card search-filter fill">
                 <div className="card--content row middle">
                     <div className="card--label margin-r-s">Search</div>
-                    <input
-                        className="input form-input-long"
-                        type="text"
-                        value={filter}
-                        onChange={onChangeFilter}
-                        maxLength={2000}
-                    />
+                    <input className="input form-input-long" type="text" value={filter} onChange={onChangeFilter} maxLength={2000} />
                 </div>
             </div>
         </div>
@@ -57,9 +52,7 @@ export const Wrapper = ({
             <div className="action-panel-container">
                 <div className="card">
                     <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
-                        {isPlaying
-                            ? <span className="material-icons">pause</span>
-                            : <span className="material-icons">play_arrow</span>}
+                        {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play_arrow</span>}
                     </button>
                 </div>
                 {isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
@@ -76,17 +69,12 @@ export const Wrapper = ({
             </div>
         </div>
         <StatsPanel blocksCount={blocksCount} network={network} />
-        <SelectedFeedInfo
-            networkConfig={networkConfig}
-            network={network}
-            selectNode={selectNode}
-        />
+        <SelectedFeedInfo networkConfig={networkConfig} network={network} selectNode={selectNode} />
         <KeyPanel />
     </div>
 );
 
 Wrapper.defaultProps = {
     isEdgeRenderingEnabled: undefined,
-    setEdgeRenderingEnabled: undefined
+    setEdgeRenderingEnabled: undefined,
 };
-

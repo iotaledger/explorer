@@ -1,6 +1,6 @@
 export interface ICameraAngles {
-  minAzimuthAngle: number
-  minPolarAngle: number
-  maxPolarAngle: number
-  maxAzimuthAngle: number
+    minAzimuthAngle: number;
+    minPolarAngle: number;
+    maxPolarAngle: number;
+    maxAzimuthAngle: number;
 }

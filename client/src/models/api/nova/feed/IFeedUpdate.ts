@@ -9,4 +9,3 @@ export interface IFeedUpdate {
     subscriptionId: string;
     blockUpdate?: IFeedBlockUpdate;
 }
-

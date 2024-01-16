@@ -27,61 +27,47 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
 
     return (
         <div className="card--content__output unlocks">
-            <div
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="card--value card-header--wrapper"
-            >
+            <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
                 <div className={classNames("card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
                 <div className="output-header">
-                    <button type="button">
-                        Unlocks
-                    </button>
+                    <button type="button">Unlocks</button>
                 </div>
             </div>
-            {
-                isExpanded && (
-                    <div>
-                        {
-                            unlocks.map((unlock, idx) => (
-                                unlock.type === UnlockType.Signature ?
-                                    <div key={idx} className="unlocks-card margin-l-t">
-                                        {displayUnlocksTypeAndIndex(unlock.type, idx)}
-                                        <div className="unlocks-card--row">
-                                            <span className="label">Public Key:</span>
-                                            <div className="value public-key">
-                                                <TruncatedId
-                                                    id={(unlock as SignatureUnlock).signature.publicKey}
-                                                    showCopyButton
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="unlocks-card--row">
-                                            <span className="label">Signature:</span>
-                                            <div className="value signature">
-                                                <TruncatedId
-                                                    id={(unlock as SignatureUnlock).signature.signature}
-                                                    showCopyButton
-                                                />
-                                            </div>
-                                        </div>
-                                    </div> :
-                                    <div key={idx} className="unlocks-card margin-l-t">
-                                        {displayUnlocksTypeAndIndex((unlock as ReferenceUnlock).type, idx)}
-                                        <div className="unlocks-card--row">
-                                            <span className="label">References unlock at index:</span>
-                                            <span className="value">{(unlock as ReferenceUnlock).reference}</span>
-                                        </div>
+            {isExpanded && (
+                <div>
+                    {unlocks.map((unlock, idx) =>
+                        unlock.type === UnlockType.Signature ? (
+                            <div key={idx} className="unlocks-card margin-l-t">
+                                {displayUnlocksTypeAndIndex(unlock.type, idx)}
+                                <div className="unlocks-card--row">
+                                    <span className="label">Public Key:</span>
+                                    <div className="value public-key">
+                                        <TruncatedId id={(unlock as SignatureUnlock).signature.publicKey} showCopyButton />
                                     </div>
-                            ))
-                        }
-                    </div>
-                )
-            }
+                                </div>
+                                <div className="unlocks-card--row">
+                                    <span className="label">Signature:</span>
+                                    <div className="value signature">
+                                        <TruncatedId id={(unlock as SignatureUnlock).signature.signature} showCopyButton />
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div key={idx} className="unlocks-card margin-l-t">
+                                {displayUnlocksTypeAndIndex((unlock as ReferenceUnlock).type, idx)}
+                                <div className="unlocks-card--row">
+                                    <span className="label">References unlock at index:</span>
+                                    <span className="value">{(unlock as ReferenceUnlock).reference}</span>
+                                </div>
+                            </div>
+                        ),
+                    )}
+                </div>
+            )}
         </div>
     );
 };
 
 export default Unlocks;
-

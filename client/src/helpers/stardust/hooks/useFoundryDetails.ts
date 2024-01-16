@@ -12,12 +12,7 @@ import { HexHelper } from "~/helpers/stardust/hexHelper";
  * @param foundryId The foundry id
  * @returns The output response, loading bool and an error message.
  */
-export function useFoundryDetails(network: string, foundryId: string | null):
-    [
-        OutputResponse | null,
-        boolean,
-        string?
-    ] {
+export function useFoundryDetails(network: string, foundryId: string | null): [OutputResponse | null, boolean, string?] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [foundryDetails, setFoundryDetails] = useState<OutputResponse | null>(null);
@@ -29,17 +24,20 @@ export function useFoundryDetails(network: string, foundryId: string | null):
         if (foundryId) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient.foundryDetails({
-                    network,
-                    foundryId: HexHelper.addPrefix(foundryId)
-                }).then(response => {
-                    if (isMounted) {
-                        setFoundryDetails(response.foundryDetails ?? null);
-                        setError(response.error);
-                    }
-                }).finally(() => {
-                    setIsLoading(false);
-                });
+                apiClient
+                    .foundryDetails({
+                        network,
+                        foundryId: HexHelper.addPrefix(foundryId),
+                    })
+                    .then((response) => {
+                        if (isMounted) {
+                            setFoundryDetails(response.foundryDetails ?? null);
+                            setError(response.error);
+                        }
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             })();
         } else {
             setIsLoading(false);

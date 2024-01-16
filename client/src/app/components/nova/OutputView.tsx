@@ -14,24 +14,17 @@ interface OutputViewProps {
     showCopyAmount: boolean;
 }
 
-const OutputView: React.FC<OutputViewProps> = ({
-    outputId,
-    output,
-    showCopyAmount,
-}) => {
+const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
-    const networkInfo = useNetworkInfoNova(s => s.networkInfo);
+    const networkInfo = useNetworkInfoNova((s) => s.networkInfo);
 
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
 
     return (
         <div className="card--content__output">
-            <div
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="card--value card-header--wrapper"
-            >
+            <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
                 <div
                     className={classNames("card--content--dropdown", {
                         opened: isExpanded,
@@ -45,14 +38,9 @@ const OutputView: React.FC<OutputViewProps> = ({
                     </button>
                     <div className="output-id--link">
                         (
-                        <Link
-                            to={`/${networkInfo.name}/output/${outputId}`}
-                            className="margin-r-t"
-                        >
+                        <Link to={`/${networkInfo.name}/output/${outputId}`} className="margin-r-t">
                             <span>{outputIdTransactionPart}</span>
-                            <span className="highlight">
-                                {outputIdIndexPart}
-                            </span>
+                            <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
                         )
                         <CopyButton copy={String(outputId)} />
@@ -75,15 +63,9 @@ const OutputView: React.FC<OutputViewProps> = ({
             </div>
             {isExpanded && (
                 <div className="output padding-l-t left-border">
-                    {(output as CommonOutput).unlockConditions?.map(
-                        (unlockCondition, idx) => (
-                            <UnlockConditionView
-                                key={idx}
-                                unlockCondition={unlockCondition}
-                                isPreExpanded={true}
-                            />
-                        ),
-                    )}
+                    {(output as CommonOutput).unlockConditions?.map((unlockCondition, idx) => (
+                        <UnlockConditionView key={idx} unlockCondition={unlockCondition} isPreExpanded={true} />
+                    ))}
                 </div>
             )}
         </div>

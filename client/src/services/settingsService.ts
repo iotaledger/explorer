@@ -30,7 +30,7 @@ export class SettingsService {
         this._settings = this._localStorageService.load("settings");
         if (!this._settings) {
             this._settings = {
-                fiatCode: "USD"
+                fiatCode: "USD",
             };
         }
     }

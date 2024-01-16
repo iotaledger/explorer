@@ -4,148 +4,148 @@
 @import "../../../scss/variables";
 
 .transaction {
-  display: flex;
-  flex-direction: column;
-
-  .wrapper {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
 
-    .inner {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      max-width: $desktop-width;
-      margin: 40px 20px;
+    .wrapper {
+        display: flex;
+        justify-content: center;
 
-      @include desktop-down {
-        max-width: 100%;
-        padding-right: 20px;
-        padding-left: 20px;
-
-        > .row {
-          flex-direction: column;
-        }
-      }
-
-      h1 {
-        margin-bottom: 20px;
-      }
-
-      .h1-sub {
-        @include font-size(14px);
-
-        margin-left: 23px;
-        color: $main-green;
-        font-family: $metropolis;
-
-        @include tablet-down {
-          margin-top: 23px;
-          margin-left: 0;
-        }
-      }
-
-      p {
-        @include font-size(12px);
-
-        color: $gray-10;
-        font-family: $metropolis;
-        font-weight: bold;
-      }
-
-      .btn-navigation {
-        height: 16px;
-      }
-
-      .svg-navigation {
-        width: 16px;
-        height: 16px;
-      }
-
-      .status {
-        @include font-size(14px);
-      }
-
-      .cards {
-        flex: 1;
-        margin-right: 24px;
-
-        @include desktop-down {
-          flex: unset;
-          width: 100%;
-          margin-right: 0;
-        }
-
-        @include tablet-down {
-          .card--header__space-between {
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: flex-start;
-          }
-        }
-
-        .card--content {
-          .arrow {
-            color: $main-green;
-            font-size: 30px;
-            line-height: 60%;
-          }
-        }
-
-        .children-container {
-          max-height: 200px;
-          margin: 20px 30px 30px 10px;
-          padding: 0 0 0 20px;
-          overflow: auto;
-        }
-
-        .value-buttons {
-          .col {
+        .inner {
+            display: flex;
             flex: 1;
-            width: auto;
-          }
-
-          .col + .col {
-            margin-left: 24px;
-          }
-        }
-
-        @include desktop-down {
-          .value-buttons {
             flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 20px;
 
-            .col {
-              flex: unset;
-              width: 100%;
+            @include desktop-down {
+                max-width: 100%;
+                padding-right: 20px;
+                padding-left: 20px;
+
+                > .row {
+                    flex-direction: column;
+                }
             }
 
-            .col + .col {
-              margin-top: 23px;
-              margin-left: 0;
+            h1 {
+                margin-bottom: 20px;
             }
-          }
-        }
 
-        .card + .card {
-          margin-top: 23px;
-        }
+            .h1-sub {
+                @include font-size(14px);
 
-        .row {
-          .col {
-            .card {
-              flex: 1;
+                margin-left: 23px;
+                color: $main-green;
+                font-family: $metropolis;
+
+                @include tablet-down {
+                    margin-top: 23px;
+                    margin-left: 0;
+                }
             }
-          }
-        }
 
-        @include tablet-down {
-          .row--split {
-            .col + .col {
-              margin-top: 23px;
+            p {
+                @include font-size(12px);
+
+                color: $gray-10;
+                font-family: $metropolis;
+                font-weight: bold;
             }
-          }
+
+            .btn-navigation {
+                height: 16px;
+            }
+
+            .svg-navigation {
+                width: 16px;
+                height: 16px;
+            }
+
+            .status {
+                @include font-size(14px);
+            }
+
+            .cards {
+                flex: 1;
+                margin-right: 24px;
+
+                @include desktop-down {
+                    flex: unset;
+                    width: 100%;
+                    margin-right: 0;
+                }
+
+                @include tablet-down {
+                    .card--header__space-between {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        justify-content: flex-start;
+                    }
+                }
+
+                .card--content {
+                    .arrow {
+                        color: $main-green;
+                        font-size: 30px;
+                        line-height: 60%;
+                    }
+                }
+
+                .children-container {
+                    max-height: 200px;
+                    margin: 20px 30px 30px 10px;
+                    padding: 0 0 0 20px;
+                    overflow: auto;
+                }
+
+                .value-buttons {
+                    .col {
+                        flex: 1;
+                        width: auto;
+                    }
+
+                    .col + .col {
+                        margin-left: 24px;
+                    }
+                }
+
+                @include desktop-down {
+                    .value-buttons {
+                        flex-direction: column;
+
+                        .col {
+                            flex: unset;
+                            width: 100%;
+                        }
+
+                        .col + .col {
+                            margin-top: 23px;
+                            margin-left: 0;
+                        }
+                    }
+                }
+
+                .card + .card {
+                    margin-top: 23px;
+                }
+
+                .row {
+                    .col {
+                        .card {
+                            flex: 1;
+                        }
+                    }
+                }
+
+                @include tablet-down {
+                    .row--split {
+                        .col + .col {
+                            margin-top: 23px;
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
