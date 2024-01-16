@@ -1,5 +1,6 @@
 import { __ClientMethods__, OutputResponse, Client } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IAccountResponse } from "../../models/api/nova/IAccountResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 
@@ -20,6 +21,23 @@ export class NovaApi {
         const outputResponse = await this.tryFetchNodeThenPermanode<string, OutputResponse>(outputId, "getOutput", network);
 
         return outputResponse ? { output: outputResponse } : { message: "Output not found" };
+    }
+
+    /**
+     * Get the account details.
+     * @param network The network to find the items on.
+     * @param accountId The accountId to get the details for.
+     * @returns The account details.
+     */
+    public static async accountDetails(network: INetwork, accountId: string): Promise<IAccountResponse | undefined> {
+        const aliasOutputId = await this.tryFetchNodeThenPermanode<string, string>(accountId, "accountOutputId", network);
+
+        if (aliasOutputId) {
+            const outputResponse = await this.outputDetails(network, aliasOutputId);
+            return outputResponse.error ? { error: outputResponse.error } : { accountDetails: outputResponse.output };
+        }
+
+        return { message: "Alias output not found" };
     }
 
     /**

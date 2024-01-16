@@ -26,6 +26,7 @@ import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
 import "./OutputView.scss";
 
 interface OutputViewProps {
+    network: string;
     outputId: string;
     output: Output;
     showCopyAmount: boolean;
@@ -33,10 +34,10 @@ interface OutputViewProps {
     isLinksDisabled?: boolean;
 }
 
-const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
+const OutputView: React.FC<OutputViewProps> = ({ network, outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
     const [isExpanded, setIsExpanded] = React.useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
-    const { name: networkName, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
 
     const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
@@ -63,7 +64,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                             <span className="highlight">{outputIdIndexPart}</span>
                         </div>
                     ) : (
-                        <Link to={`/${networkName}/output/${outputId}`} className="margin-r-t">
+                        <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
                             <span>{outputIdTransactionPart}</span>
                             <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
@@ -97,7 +98,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--value">
                         <TruncatedId
                             id={aliasOrNftBech32}
-                            link={isLinksDisabled ? undefined : `/${networkName}/addr/${aliasOrNftBech32}`}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
@@ -111,7 +112,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--value">
                         <TruncatedId
                             id={(output as AnchorOutput).anchorId}
-                            link={isLinksDisabled ? undefined : `/${networkName}/addr/${(output as AnchorOutput).anchorId}`}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${(output as AnchorOutput).anchorId}`}
                             showCopyButton
                         />
                     </div>
@@ -125,7 +126,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--value">
                         <TruncatedId
                             id={aliasOrNftBech32}
-                            link={isLinksDisabled ? undefined : `/${networkName}/addr/${aliasOrNftBech32}`}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
                             showCopyButton
                         />
                     </div>

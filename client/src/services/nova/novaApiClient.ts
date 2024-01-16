@@ -1,5 +1,7 @@
 import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
+import { IAccountRequest } from "~/models/api/nova/IAccountRequest";
+import { IAccountResponse } from "~/models/api/nova/IAccountResponse";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
 import { ApiClient } from "../apiClient";
@@ -24,5 +26,14 @@ export class NovaApiClient extends ApiClient {
      */
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
         return this.callApi<unknown, IOutputDetailsResponse>(`nova/output/${request.network}/${request.outputId}`, "get");
+    }
+
+    /**
+     * Get the account output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async accountDetails(request: IAccountRequest): Promise<IAccountResponse> {
+        return this.callApi<unknown, IAccountResponse>(`nova/account/${request.network}/${request.accountId}`, "get");
     }
 }

@@ -26,6 +26,7 @@ import { TransactionRouteProps as LegacyTransactionRouteProps } from "./routes/l
 import LegacyVisualizer from "./routes/legacy/Visualizer";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
+import NovaAddressPage from "./routes/nova/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
 import StardustFoundry from "./routes/stardust/Foundry";
 import { Landing as StardustLanding } from "./routes/stardust/landing/Landing";
@@ -166,6 +167,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
     ];
 
     const novaRoutes = [
+        <Route path="/:network/addr/:address" key={keys.next().value} component={NovaAddressPage} />,
         <Route path="/:network/visualizer/" key={keys.next().value} component={NovaVisualizer} />,
         <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
     ];
