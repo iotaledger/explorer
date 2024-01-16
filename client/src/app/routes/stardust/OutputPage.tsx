@@ -6,13 +6,11 @@ import { DateHelper } from "~helpers/dateHelper";
 import { useOutputDetails } from "~helpers/hooks/useOutputDetails";
 import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatSpecialBlockId } from "~helpers/stardust/valueFormatHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
 import TruncatedId from "../../components/stardust/TruncatedId";
-import Tooltip from "../../components/Tooltip";
 import "./OutputPage.scss";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
@@ -53,9 +51,6 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
 
     const isTransactionFromStardustGenesis =
         milestoneIndexBooked && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked);
-    const transctionLink = isTransactionFromStardustGenesis
-        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-        : `/${network}/transaction/${transactionId}`;
 
     return (
         (output && (
@@ -102,15 +97,11 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Transaction ID</div>
                                     <div className="value code highlight row middle">
-                                        {isTransactionFromStardustGenesis && (
-                                            <Tooltip
-                                                tooltipContent="This link opens the transaction on Chrysalis Mainnet"
-                                                childrenClass="row middle"
-                                            >
-                                                <span className="material-icons">warning</span>
-                                            </Tooltip>
-                                        )}
-                                        <TruncatedId id={transactionId} link={transctionLink} showCopyButton />
+                                         {isTransactionFromStardustGenesis ? (
+                                            <span>Stardust Genesis</span>
+                                        ) :
+                                            <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} showCopyButton />
+                                        }
                                     </div>
                                 </div>
                             )}
