@@ -39,11 +39,11 @@ const TransactionRow: React.FC<ITransactionEntryProps> = ({
             <td className="transaction-id">
                 {isTransactionFromStardustGenesis ? (
                     <span>Stardust Genesis</span>
-                ) :
+                ) : (
                     <Link to={`/${network}/transaction/${transactionId}`} className="row center margin-r-t">
                         <TruncatedId id={transactionId} />
                     </Link>
-                }
+                )}
             </td>
             <td className="row center output-id">
                 <Link to={`/${network}/output/${outputId}`}>

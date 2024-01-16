@@ -37,9 +37,9 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
                 <div className="row card--value">
                     {isTransactionFromStardustGenesis ? (
                         <span className="highlight">Stardust Genesis</span>
-                    ) :
+                    ) : (
                         <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} />
-                    }
+                    )}
                 </div>
             </div>
             <div className="field">
