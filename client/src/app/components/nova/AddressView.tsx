@@ -9,23 +9,15 @@ interface AddressViewProps {
 }
 
 const AddressView: React.FC<AddressViewProps> = ({ address }) => {
-    const { name: networkName, bech32Hrp } = useNetworkInfoNova(
-        (s) => s.networkInfo,
-    );
+    const { name: networkName, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const addressDetails = Bech32AddressHelper.buildAddress(bech32Hrp, address);
     const link = `/${networkName}/addr/${addressDetails.bech32}`;
 
     return (
         <div className="address-type">
-            <div className="card--label">
-                {getAddressTypeName(address.type)}
-            </div>
+            <div className="card--label">{getAddressTypeName(address.type)}</div>
             <div className="card--value">
-                <TruncatedId
-                    id={addressDetails.bech32}
-                    link={link}
-                    showCopyButton
-                />
+                <TruncatedId id={addressDetails.bech32} link={link} showCopyButton />
             </div>
         </div>
     );

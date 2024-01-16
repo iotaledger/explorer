@@ -1,7 +1,7 @@
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { NetworkService } from "../networkService";
 import { NovaApiClient } from "./novaApiClient";
-import { INodeInfoResponse } from "~models/api/nova/INodeInfoResponse"
+import { INodeInfoResponse } from "~models/api/nova/INodeInfoResponse";
 import { NOVA } from "~/models/config/protocolVersion";
 
 /**
@@ -27,7 +27,7 @@ export class NodeInfoService {
      */
     public async buildCache(): Promise<void> {
         const networksService = ServiceFactory.get<NetworkService>("network");
-        const novaNetworks = networksService.networks().filter(n => n.protocolVersion === NOVA);
+        const novaNetworks = networksService.networks().filter((n) => n.protocolVersion === NOVA);
 
         for (const networkDetails of novaNetworks) {
             const apiClient = ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`);
@@ -41,4 +41,3 @@ export class NodeInfoService {
         }
     }
 }
-

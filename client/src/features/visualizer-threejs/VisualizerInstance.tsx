@@ -6,10 +6,18 @@ import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { Box3 } from "three";
-import { FAR_PLANE, NEAR_PLANE, ACCEPTED_BLOCK_COLORS, DIRECTIONAL_LIGHT_INTENSITY, PENDING_BLOCK_COLOR, VISUALIZER_BACKGROUND, EMITTER_X_POSITION_MULTIPLIER } from "./constants";
+import {
+    FAR_PLANE,
+    NEAR_PLANE,
+    ACCEPTED_BLOCK_COLORS,
+    DIRECTIONAL_LIGHT_INTENSITY,
+    PENDING_BLOCK_COLOR,
+    VISUALIZER_BACKGROUND,
+    EMITTER_X_POSITION_MULTIPLIER,
+} from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { getGenerateDynamicYZPosition, randomIntFromInterval,  } from "./utils";
+import { getGenerateDynamicYZPosition, randomIntFromInterval } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -19,43 +27,45 @@ import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
 import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
-import { CanvasElement } from './enums';
-import { useGetThemeMode } from '~/helpers/hooks/useGetThemeMode';
+import { CanvasElement } from "./enums";
+import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { StardustFeedClient } from "~/services/stardust/stardustFeedClient";
-import CameraControls from './CameraControls';
+import CameraControls from "./CameraControls";
 
 const features = {
     statsEnabled: true,
-    cameraControls: true
+    cameraControls: true,
 };
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
-        params: { network }
-    }
+        params: { network },
+    },
 }) => {
     const [networkConfig] = useNetworkConfig(network);
     const generateYZPositions = getGenerateDynamicYZPosition();
-    const themeMode = useGetThemeMode()
+    const themeMode = useGetThemeMode();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
-    const setBps = useTangleStore(s => s.setBps);
-    const [bpsCounter] = React.useState(new BPSCounter(bps => {
-        setBps(bps);
-    }));
+    const setBps = useTangleStore((s) => s.setBps);
+    const [bpsCounter] = React.useState(
+        new BPSCounter((bps) => {
+            setBps(bps);
+        }),
+    );
 
     // Note: to prevent rerender each store update - call methods separate.
-    const isEdgeRenderingEnabled = useConfigStore(s => s.isEdgeRenderingEnabled);
-    const setEdgeRenderingEnabled = useConfigStore(s => s.setEdgeRenderingEnabled);
-    const setDimensions = useConfigStore(s => s.setDimensions);
-    const isPlaying = useConfigStore(s => s.isPlaying);
-    const setIsPlaying = useConfigStore(s => s.setIsPlaying);
-    const addBlock = useTangleStore(s => s.addToBlockQueue);
-    const addToEdgeQueue = useTangleStore(s => s.addToEdgeQueue);
-    const addToColorQueue = useTangleStore(s => s.addToColorQueue);
-    const blockMetadata = useTangleStore(s => s.blockMetadata);
-    const indexToBlockId = useTangleStore(s => s.indexToBlockId);
+    const isEdgeRenderingEnabled = useConfigStore((s) => s.isEdgeRenderingEnabled);
+    const setEdgeRenderingEnabled = useConfigStore((s) => s.setEdgeRenderingEnabled);
+    const setDimensions = useConfigStore((s) => s.setDimensions);
+    const isPlaying = useConfigStore((s) => s.isPlaying);
+    const setIsPlaying = useConfigStore((s) => s.setIsPlaying);
+    const addBlock = useTangleStore((s) => s.addToBlockQueue);
+    const addToEdgeQueue = useTangleStore((s) => s.addToEdgeQueue);
+    const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
+    const blockMetadata = useTangleStore((s) => s.blockMetadata);
+    const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | NovaFeedClient | null>(null);
@@ -108,7 +118,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             return;
         }
 
-        const resizeObserver = new ResizeObserver(entries => {
+        const resizeObserver = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
                 setDimensions(width, height);
@@ -136,10 +146,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             emitterBox.getCenter(emitterCenter);
 
             const { y, z } = generateYZPositions(bpsCounter.getBPS(), emitterCenter);
-            const minX = emitterBox.min.x - ((emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER);
-            const maxX = emitterBox.max.x + ((emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER);
+            const minX = emitterBox.min.x - (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
+            const maxX = emitterBox.max.x + (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
 
-            const x = randomIntFromInterval(minX, maxX)
+            const x = randomIntFromInterval(minX, maxX);
             const targetPosition = { x, y, z };
 
             bpsCounter.addBlock();
@@ -158,8 +168,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 initPosition: {
                     x: emitterCenter.x,
                     y: emitterCenter.y,
-                    z: emitterCenter.z
-                }
+                    z: emitterCenter.z,
+                },
             });
         }
     };
@@ -176,9 +186,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
-        feedServiceRef.current = ServiceFactory.get<NovaFeedClient | StardustFeedClient>(
-            `feed-${network}`
-        );
+        feedServiceRef.current = ServiceFactory.get<NovaFeedClient | StardustFeedClient>(`feed-${network}`);
         setIsPlaying(true);
 
         return () => {
@@ -211,27 +219,28 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={() => { }}
-            selectNode={() => { }}
+            onChangeFilter={() => {}}
+            selectNode={() => {}}
             selectedFeedItem={null}
             setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
-            setEdgeRenderingEnabled={checked => setEdgeRenderingEnabled(checked)}
+            setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
         >
-            <Canvas ref={canvasRef} orthographic camera={{
-                name: CanvasElement.MainCamera,
-                near: NEAR_PLANE,
-                far: FAR_PLANE,
-                position: [0, 0, 9000],
-            }}>
+            <Canvas
+                ref={canvasRef}
+                orthographic
+                camera={{
+                    name: CanvasElement.MainCamera,
+                    near: NEAR_PLANE,
+                    far: FAR_PLANE,
+                    position: [0, 0, 9000],
+                }}
+            >
                 <color attach="background" args={[VISUALIZER_BACKGROUND[themeMode]]} />
                 <ambientLight />
                 <directionalLight position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
                 <Center>
-                    <Emitter
-                        emitterRef={emitterRef}
-                        setRunListeners={setRunListeners}
-                        />
+                    <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
                 </Center>
                 {features.cameraControls && <CameraControls />}
                 {features.statsEnabled && <Perf />}
@@ -241,4 +250,3 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 };
 
 export default VisualizerInstance;
-

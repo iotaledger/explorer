@@ -54,7 +54,7 @@ export class NovaFeedClient {
     public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
         // TODO Support metadata update when 'blocks-metadata' topic becomes supported
-        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void
+        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void,
     ) {
         this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 
@@ -69,16 +69,12 @@ export class NovaFeedClient {
             if (!this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
                 const subscribeRequest: IFeedSubscribeRequest = {
                     network: this._networkConfig.network,
-                    feedSelect: "block"
+                    feedSelect: "block",
                 };
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (subscribeResponse.error) {
-                        console.log(
-                            "Failed subscribing to feed",
-                            this._networkConfig?.network,
-                            subscribeResponse.error
-                        );
+                        console.log("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
                     } else {
                         this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
@@ -109,10 +105,10 @@ export class NovaFeedClient {
                 const unsubscribeRequest: IFeedUnsubscribeRequest = {
                     network: this._networkConfig.network,
                     subscriptionId: this.blockSubscriptionId,
-                    feedSelect: "block"
+                    feedSelect: "block",
                 };
 
-                this.socket.on("unsubscribe", () => { });
+                this.socket.on("unsubscribe", () => {});
                 this.socket.emit("unsubscribe", unsubscribeRequest);
                 success = true;
             }

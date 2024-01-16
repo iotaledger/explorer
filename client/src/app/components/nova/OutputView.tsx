@@ -33,29 +33,17 @@ interface OutputViewProps {
     isLinksDisabled?: boolean;
 }
 
-const OutputView: React.FC<OutputViewProps> = ({
-    outputId,
-    output,
-    showCopyAmount,
-    isPreExpanded,
-    isLinksDisabled,
-}) => {
+const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
     const [isExpanded, setIsExpanded] = React.useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
     const { name: networkName, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
 
     const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
-    const outputIdTransactionPart = `${outputId.slice(
-        0,
-        8,
-    )}....${outputId.slice(-8, -4)}`;
+    const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
 
     const header = (
-        <div
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="card--value card-header--wrapper"
-        >
+        <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
             <div
                 className={classNames("card--content--dropdown", {
                     opened: isExpanded,
@@ -71,22 +59,13 @@ const OutputView: React.FC<OutputViewProps> = ({
                     (
                     {isLinksDisabled ? (
                         <div className="margin-r-t">
-                            <span className="highlight">
-                                {outputIdTransactionPart}
-                            </span>
-                            <span className="highlight">
-                                {outputIdIndexPart}
-                            </span>
+                            <span className="highlight">{outputIdTransactionPart}</span>
+                            <span className="highlight">{outputIdIndexPart}</span>
                         </div>
                     ) : (
-                        <Link
-                            to={`/${networkName}/output/${outputId}`}
-                            className="margin-r-t"
-                        >
+                        <Link to={`/${networkName}/output/${outputId}`} className="margin-r-t">
                             <span>{outputIdTransactionPart}</span>
-                            <span className="highlight">
-                                {outputIdIndexPart}
-                            </span>
+                            <span className="highlight">{outputIdIndexPart}</span>
                         </Link>
                     )}
                     )
@@ -118,18 +97,12 @@ const OutputView: React.FC<OutputViewProps> = ({
                     <div className="card--value">
                         <TruncatedId
                             id={aliasOrNftBech32}
-                            link={
-                                isLinksDisabled
-                                    ? undefined
-                                    : `/${networkName}/addr/${aliasOrNftBech32}`
-                            }
+                            link={isLinksDisabled ? undefined : `/${networkName}/addr/${aliasOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
                     <div className="card--label">Foundry counter:</div>
-                    <div className="card--value row">
-                        {(output as AccountOutput).foundryCounter}
-                    </div>
+                    <div className="card--value row">{(output as AccountOutput).foundryCounter}</div>
                 </React.Fragment>
             )}
             {output.type === OutputType.Anchor && (
@@ -138,20 +111,12 @@ const OutputView: React.FC<OutputViewProps> = ({
                     <div className="card--value">
                         <TruncatedId
                             id={(output as AnchorOutput).anchorId}
-                            link={
-                                isLinksDisabled
-                                    ? undefined
-                                    : `/${networkName}/addr/${
-                                          (output as AnchorOutput).anchorId
-                                      }`
-                            }
+                            link={isLinksDisabled ? undefined : `/${networkName}/addr/${(output as AnchorOutput).anchorId}`}
                             showCopyButton
                         />
                     </div>
                     <div className="card--label">Staten index:</div>
-                    <div className="card--value row">
-                        {(output as AnchorOutput).stateIndex}
-                    </div>
+                    <div className="card--value row">{(output as AnchorOutput).stateIndex}</div>
                 </React.Fragment>
             )}
             {output.type === OutputType.Nft && (
@@ -160,11 +125,7 @@ const OutputView: React.FC<OutputViewProps> = ({
                     <div className="card--value">
                         <TruncatedId
                             id={aliasOrNftBech32}
-                            link={
-                                isLinksDisabled
-                                    ? undefined
-                                    : `/${networkName}/addr/${aliasOrNftBech32}`
-                            }
+                            link={isLinksDisabled ? undefined : `/${networkName}/addr/${aliasOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
@@ -173,42 +134,22 @@ const OutputView: React.FC<OutputViewProps> = ({
             {output.type === OutputType.Foundry && (
                 <React.Fragment>
                     <div className="card--label">Serial number:</div>
-                    <div className="card--value">
-                        {(output as FoundryOutput).serialNumber}
-                    </div>
+                    <div className="card--value">{(output as FoundryOutput).serialNumber}</div>
                     <div className="card--label">Token scheme type:</div>
-                    <div className="card--value row">
-                        {(output as FoundryOutput).tokenScheme.type}
-                    </div>
-                    {(output as FoundryOutput).tokenScheme.type ===
-                        TokenSchemeType.Simple && (
+                    <div className="card--value row">{(output as FoundryOutput).tokenScheme.type}</div>
+                    {(output as FoundryOutput).tokenScheme.type === TokenSchemeType.Simple && (
                         <React.Fragment>
                             <div className="card--label">Minted tokens:</div>
                             <div className="card--value row">
-                                {Number(
-                                    (
-                                        (output as FoundryOutput)
-                                            .tokenScheme as SimpleTokenScheme
-                                    ).mintedTokens,
-                                )}
+                                {Number(((output as FoundryOutput).tokenScheme as SimpleTokenScheme).mintedTokens)}
                             </div>
                             <div className="card--label">Melted tokens:</div>
                             <div className="card--value row">
-                                {Number(
-                                    (
-                                        (output as FoundryOutput)
-                                            .tokenScheme as SimpleTokenScheme
-                                    ).meltedTokens,
-                                )}
+                                {Number(((output as FoundryOutput).tokenScheme as SimpleTokenScheme).meltedTokens)}
                             </div>
                             <div className="card--label">Maximum supply:</div>
                             <div className="card--value row">
-                                {Number(
-                                    (
-                                        (output as FoundryOutput)
-                                            .tokenScheme as SimpleTokenScheme
-                                    ).maximumSupply,
-                                )}
+                                {Number(((output as FoundryOutput).tokenScheme as SimpleTokenScheme).maximumSupply)}
                             </div>
                         </React.Fragment>
                     )}
@@ -220,33 +161,21 @@ const OutputView: React.FC<OutputViewProps> = ({
                 (output.type === OutputType.Nft && (
                     <React.Fragment>
                         <div className="card--label">Stored mana:</div>
-                        <div className="card--value row">
-                            {(output as BasicOutput).mana?.toString()}
-                        </div>
+                        <div className="card--value row">{(output as BasicOutput).mana?.toString()}</div>
                     </React.Fragment>
                 ))}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
-                    <div className="card--value row">
-                        {Number((output as DelegationOutput).delegatedAmount)}
-                    </div>
+                    <div className="card--value row">{Number((output as DelegationOutput).delegatedAmount)}</div>
                     <div className="card--label">Delegation Id:</div>
-                    <div className="card--value row">
-                        {(output as DelegationOutput).delegationId}
-                    </div>
+                    <div className="card--value row">{(output as DelegationOutput).delegationId}</div>
                     <div className="card--label">Validator Id:</div>
-                    <div className="card--value row">
-                        {(output as DelegationOutput).validatorId}
-                    </div>
+                    <div className="card--value row">{(output as DelegationOutput).validatorId}</div>
                     <div className="card--label">Start epoch:</div>
-                    <div className="card--value row">
-                        {(output as DelegationOutput).startEpoch}
-                    </div>
+                    <div className="card--value row">{(output as DelegationOutput).startEpoch}</div>
                     <div className="card--label">End epoch:</div>
-                    <div className="card--value row">
-                        {(output as DelegationOutput).endEpoch}
-                    </div>
+                    <div className="card--value row">{(output as DelegationOutput).endEpoch}</div>
                 </React.Fragment>
             )}
         </React.Fragment>
@@ -258,70 +187,29 @@ const OutputView: React.FC<OutputViewProps> = ({
             {isExpanded && (
                 <div className="output padding-l-t left-border">
                     {topLevelFields}
-                    {(output as CommonOutput).unlockConditions?.map(
-                        (unlockCondition, idx) => (
-                            <UnlockConditionView
-                                key={idx}
-                                unlockCondition={unlockCondition}
-                                isPreExpanded={true}
-                            />
-                        ),
-                    )}
+                    {(output as CommonOutput).unlockConditions?.map((unlockCondition, idx) => (
+                        <UnlockConditionView key={idx} unlockCondition={unlockCondition} isPreExpanded={true} />
+                    ))}
                     {output.type !== OutputType.Delegation &&
-                        (output as CommonOutput).features?.map(
-                            (feature, idx) => (
-                                <FeatureView
-                                    key={idx}
-                                    feature={feature}
-                                    isPreExpanded={isPreExpanded}
-                                    isImmutable={false}
-                                />
-                            ),
-                        )}
+                        (output as CommonOutput).features?.map((feature, idx) => (
+                            <FeatureView key={idx} feature={feature} isPreExpanded={isPreExpanded} isImmutable={false} />
+                        ))}
                     {output.type === OutputType.Account &&
-                        (output as AccountOutput).immutableFeatures?.map(
-                            (immutableFeature, idx) => (
-                                <FeatureView
-                                    key={idx}
-                                    feature={immutableFeature}
-                                    isPreExpanded={isPreExpanded}
-                                    isImmutable={true}
-                                />
-                            ),
-                        )}
+                        (output as AccountOutput).immutableFeatures?.map((immutableFeature, idx) => (
+                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
+                        ))}
                     {output.type === OutputType.Anchor &&
-                        (output as AnchorOutput).immutableFeatures?.map(
-                            (immutableFeature, idx) => (
-                                <FeatureView
-                                    key={idx}
-                                    feature={immutableFeature}
-                                    isPreExpanded={isPreExpanded}
-                                    isImmutable={true}
-                                />
-                            ),
-                        )}
+                        (output as AnchorOutput).immutableFeatures?.map((immutableFeature, idx) => (
+                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
+                        ))}
                     {output.type === OutputType.Nft &&
-                        (output as NftOutput).immutableFeatures?.map(
-                            (immutableFeature, idx) => (
-                                <FeatureView
-                                    key={idx}
-                                    feature={immutableFeature}
-                                    isPreExpanded={isPreExpanded}
-                                    isImmutable={true}
-                                />
-                            ),
-                        )}
+                        (output as NftOutput).immutableFeatures?.map((immutableFeature, idx) => (
+                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
+                        ))}
                     {output.type === OutputType.Foundry &&
-                        (output as FoundryOutput).immutableFeatures?.map(
-                            (immutableFeature, idx) => (
-                                <FeatureView
-                                    key={idx}
-                                    feature={immutableFeature}
-                                    isPreExpanded={isPreExpanded}
-                                    isImmutable={true}
-                                />
-                            ),
-                        )}
+                        (output as FoundryOutput).immutableFeatures?.map((immutableFeature, idx) => (
+                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
+                        ))}
                 </div>
             )}
         </div>
@@ -333,23 +221,16 @@ function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: 
     let addressType: number = 0;
 
     if (output.type === OutputType.Account) {
-        const aliasId = TransactionsHelper.buildIdHashForNft(
-            (output as AccountOutput).accountId,
-            outputId,
-        );
+        const aliasId = TransactionsHelper.buildIdHashForNft((output as AccountOutput).accountId, outputId);
         address = aliasId;
         addressType = AddressType.Account;
     } else if (output.type === OutputType.Nft) {
-        const nftId = TransactionsHelper.buildIdHashForAlias(
-            (output as NftOutput).nftId,
-            outputId,
-        );
+        const nftId = TransactionsHelper.buildIdHashForAlias((output as NftOutput).nftId, outputId);
         address = nftId;
         addressType = AddressType.Nft;
     }
 
-    return Bech32AddressHelper.buildAddress(bech32Hrp, address, addressType)
-        .bech32;
+    return Bech32AddressHelper.buildAddress(bech32Hrp, address, addressType).bech32;
 }
 
 function getOutputTypeName(type: OutputType): string {

@@ -17,7 +17,7 @@ import {
     buildXAxis,
     buildYAxis,
     computeDataIncludedInSelection,
-    TRANSITIONS_DURATION_MS
+    TRANSITIONS_DURATION_MS,
 } from "../ChartUtils";
 import "./Chart.scss";
 
@@ -31,15 +31,7 @@ interface StackedBarChartProps {
     readonly data: { [name: string]: number; time: number }[];
 }
 
-const StackedBarChart: React.FC<StackedBarChartProps> = ({
-    chartId,
-    title,
-    info,
-    subgroups,
-    groupLabels,
-    colors,
-    data
-}) => {
+const StackedBarChart: React.FC<StackedBarChartProps> = ({ chartId, title, info, subgroups, groupLabels, colors, data }) => {
     const [{ wrapperWidth, wrapperHeight }, setTheRef] = useChartWrapperSize();
     const chartWrapperRef = useCallback((chartWrapper: HTMLDivElement) => {
         if (chartWrapper !== null) {
@@ -61,13 +53,13 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             // chart dimensions
             const yMax = Math.max(
-                ...data.map(d => {
+                ...data.map((d) => {
                     let sum = 0;
                     for (const key of subgroups) {
                         sum += d[key];
                     }
                     return sum;
-                })
+                }),
             );
             const leftMargin = determineGraphLeftPadding(yMax);
             const MARGIN = { top: 30, right: 20, bottom: 50, left: leftMargin };
@@ -76,9 +68,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             const color = scaleOrdinal<string>().domain(subgroups).range(colors);
 
-            const groups = data.map(
-                d => timestampToDate(d.time)
-            );
+            const groups = data.map((d) => timestampToDate(d.time));
             const stackedData = stack().keys(subgroups)(data);
 
             // SVG
@@ -92,16 +82,15 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             const x = scaleTime()
                 .domain([groups[0], groups.at(-1) ?? groups[0]])
                 .range([0, INNER_WIDTH]);
-            const xAxisSelection = svg.append("g")
+            const xAxisSelection = svg
+                .append("g")
                 .attr("class", "axis axis--x")
                 .attr("transform", `translate(0, ${INNER_HEIGHT})`)
                 .call(buildXAxis(x));
 
             // Y
             const y = scaleLinear().domain([0, yMax]).range([INNER_HEIGHT, 0]);
-            const yAxisSelection = svg.append("g")
-                .attr("class", "axis axis--y")
-                .call(buildYAxis(y, yMax));
+            const yAxisSelection = svg.append("g").attr("class", "axis axis--y").call(buildYAxis(y, yMax));
 
             // clip path
             svg.append("defs")
@@ -115,31 +104,33 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 
             // brushing
             const brush = brushX()
-                .extent([[0, 0], [INNER_WIDTH, height]])
-                .on("end", e => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
+                .extent([
+                    [0, 0],
+                    [INNER_WIDTH, height],
+                ])
+                .on("end", (e) => onBrushHandler(e as D3BrushEvent<{ [key: string]: number }>));
 
-            const brushSelection = svg.append("g")
-                .attr("class", "brush")
-                .call(brush);
+            const brushSelection = svg.append("g").attr("class", "brush").call(brush);
 
             // bars
-            const barsSelection = svg.append("g")
+            const barsSelection = svg
+                .append("g")
                 .attr("class", "stacked-bars")
                 .attr("clip-path", `url(#clip-${chartId})`)
                 .selectAll("g")
                 .data(stackedData)
                 .join("g")
-                .attr("fill", d => color(d.key))
+                .attr("fill", (d) => color(d.key))
                 .selectAll("rect")
-                .data(d => d)
+                .data((d) => d)
                 .join("rect")
-                .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
-                .attr("y", d => y(d[1]))
+                .attr("x", (d) => x(timestampToDate(d.data.time)) - INNER_WIDTH / data.length / 2)
+                .attr("y", (d) => y(d[1]))
                 .attr("rx", 2)
                 .attr("class", (_, i) => `stacked-bar rect-${i}`)
                 .on("mouseover", mouseoverHandler)
                 .on("mouseout", mouseoutHandler)
-                .attr("height", d => y(d[0]) - y(d[1]))
+                .attr("height", (d) => y(d[0]) - y(d[1]))
                 .attr("width", INNER_WIDTH / data.length);
 
             const onBrushHandler = (event: D3BrushEvent<{ [key: string]: number }>) => {
@@ -160,13 +151,13 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 // to prevent infinite brushing
                 if (selectedData.length > 1) {
                     const yMaxUpdate = Math.max(
-                        ...selectedData.map(d => {
+                        ...selectedData.map((d) => {
                             let sum = 0;
                             for (const key of subgroups) {
                                 sum += d[key];
                             }
                             return sum;
-                        })
+                        }),
                     );
                     y.domain([0, yMaxUpdate]);
                     // Update axis
@@ -174,10 +165,12 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMaxUpdate));
 
                     // Update bars
-                    barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
-                        .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / selectedData.length) / 2))
-                        .attr("y", d => y(d[1]))
-                        .attr("height", d => y(d[0]) - y(d[1]))
+                    barsSelection
+                        .transition()
+                        .duration(TRANSITIONS_DURATION_MS)
+                        .attr("x", (d) => x(timestampToDate(d.data.time)) - INNER_WIDTH / selectedData.length / 2)
+                        .attr("y", (d) => y(d[1]))
+                        .attr("height", (d) => y(d[0]) - y(d[1]))
                         .attr("width", INNER_WIDTH / selectedData.length);
                 }
             };
@@ -188,10 +181,12 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 xAxisSelection.transition().call(buildXAxis(x));
                 y.domain([0, yMax]);
                 yAxisSelection.transition().duration(TRANSITIONS_DURATION_MS).call(buildYAxis(y, yMax));
-                barsSelection.transition().duration(TRANSITIONS_DURATION_MS)
-                    .attr("x", d => x(timestampToDate(d.data.time)) - ((INNER_WIDTH / data.length) / 2))
-                    .attr("y", d => y(d[1]))
-                    .attr("height", d => y(d[0]) - y(d[1]))
+                barsSelection
+                    .transition()
+                    .duration(TRANSITIONS_DURATION_MS)
+                    .attr("x", (d) => x(timestampToDate(d.data.time)) - INNER_WIDTH / data.length / 2)
+                    .attr("y", (d) => y(d[1]))
+                    .attr("height", (d) => y(d[0]) - y(d[1]))
                     .attr("width", INNER_WIDTH / data.length);
             });
         }
@@ -203,16 +198,9 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
      * @param _ The unused event param
      * @param dataPoint The data point rendered by this rect
      */
-    function mouseoverHandler(
-        this: SVGRectElement | BaseType,
-        _: unknown,
-        dataPoint: SeriesPoint<{ [key: string]: number }>
-    ) {
+    function mouseoverHandler(this: SVGRectElement | BaseType, _: unknown, dataPoint: SeriesPoint<{ [key: string]: number }>) {
         // show tooltip
-        select(theTooltip.current)
-            .style("display", "block")
-            .select("#content")
-            .html(buildTooltip(dataPoint.data));
+        select(theTooltip.current).style("display", "block").select("#content").html(buildTooltip(dataPoint.data));
         // add highlight
         select(this).classed("active", true);
     }
@@ -224,9 +212,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
         // remove tooltip
         select(theTooltip.current).style("display", "none");
         // remove highlight
-        select(theSvg.current)
-            .select(".active")
-            .classed("active", false);
+        select(theSvg.current).select(".active").classed("active", false);
     }
 
     return (
@@ -236,7 +222,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 info={info}
                 legend={{
                     labels: groupLabels ?? subgroups,
-                    colors
+                    colors,
                 }}
                 disabled={data.length === 0}
             />
@@ -255,8 +241,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
 StackedBarChart.defaultProps = {
     groupLabels: undefined,
     info: undefined,
-    title: undefined
+    title: undefined,
 };
 
 export default StackedBarChart;
-

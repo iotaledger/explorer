@@ -1,16 +1,12 @@
 import { CONFLICT_REASON_STRINGS, IBlockMetadata } from "@iota/sdk-wasm/web";
 
-export type TangleStatus =
-    "unknown" |
-    "pending" |
-    "referenced" |
-    "milestone";
+export type TangleStatus = "unknown" | "pending" | "referenced" | "milestone";
 
-    /**
-     * Calculate the status for the block.
-     * @param metadata The metadata to calculate the status from.
-     * @returns The block status.
-     */
+/**
+ * Calculate the status for the block.
+ * @param metadata The metadata to calculate the status from.
+ * @returns The block status.
+ */
 export function calculateStatus(metadata?: IBlockMetadata): TangleStatus {
     let blockTangleStatus: TangleStatus = "unknown";
 
@@ -36,11 +32,11 @@ export function calculateConflictReason(metadata?: IBlockMetadata): string {
     let conflictReason: string = "";
 
     if (metadata?.ledgerInclusionState === "conflicting") {
-        conflictReason = metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
-            ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
-            : "The reason for the conflict is unknown";
+        conflictReason =
+            metadata.conflictReason && CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                ? CONFLICT_REASON_STRINGS[metadata.conflictReason]
+                : "The reason for the conflict is unknown";
     }
 
     return conflictReason;
 }
-

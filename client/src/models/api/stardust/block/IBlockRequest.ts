@@ -9,4 +9,3 @@ export interface IBlockRequest {
      */
     blockId: string;
 }
-

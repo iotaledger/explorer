@@ -22,7 +22,7 @@ import { ValidationHelper } from "../../utils/validationHelper";
 export async function subscribe(
     _: IConfiguration,
     socket: SocketIO.Socket,
-    request: IFeedSubscribeRequest
+    request: IFeedSubscribeRequest,
 ): Promise<IFeedSubscribeResponse> {
     let response: IFeedSubscribeResponse;
     logger.verbose(`[subscribe] req = ${JSON.stringify(request)}`);
@@ -36,12 +36,10 @@ export async function subscribe(
         const networkConfig = networkService.get(request.network);
 
         if (networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS) {
-            const service = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(
-                `items-${request.network}`
-            );
+            const service = ServiceFactory.get<IItemsServiceLegacy | IItemsServiceChrysalis>(`items-${request.network}`);
 
             if (service) {
-                service.subscribe(socket.id, async data => {
+                service.subscribe(socket.id, async (data) => {
                     socket.emit("transactions", data);
                 });
             }
@@ -52,45 +50,34 @@ export async function subscribe(
             const service = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
 
             if (service) {
-                await (
-                    request.feedSelect === "block" ?
-                        service.subscribeBlocks(
-                            socket.id,
-                            async data => {
-                                socket.emit("block", data);
-                            }
-                        ) :
-                        service.subscribeMilestones(
-                            socket.id,
-                            async data => {
-                                socket.emit("milestone", data);
-                            }
-                        )
-                );
+                await (request.feedSelect === "block"
+                    ? service.subscribeBlocks(socket.id, async (data) => {
+                          socket.emit("block", data);
+                      })
+                    : service.subscribeMilestones(socket.id, async (data) => {
+                          socket.emit("milestone", data);
+                      }));
             }
         } else if (networkConfig.protocolVersion === NOVA) {
             const service = ServiceFactory.get<NovaFeed>(`feed-${request.network}`);
             if (service) {
-                await service.subscribeBlocks(
-                    socket.id,
-                    async data => {
-                        socket.emit("block", data);
-                    }
-                );
+                await service.subscribeBlocks(socket.id, async (data) => {
+                    socket.emit("block", data);
+                });
             }
         } else {
             return {
-                error: "Network protocol not supported for feed."
+                error: "Network protocol not supported for feed.",
             };
         }
 
         response = {
             subscriptionId: socket.id,
-            network: request.network
+            network: request.network,
         };
     } catch (err) {
         response = {
-            error: err.toString()
+            error: err.toString(),
         };
     }
 

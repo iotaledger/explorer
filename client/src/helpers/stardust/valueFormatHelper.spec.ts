@@ -1,12 +1,12 @@
 import { formatAmount } from "./valueFormatHelper";
 
 const tokenInfo = {
-    "name": "IOTA",
-    "tickerSymbol": "IOTA",
-    "unit": "IOTA",
-    "subunit": "micro",
-    "decimals": 6,
-    "useMetricPrefix": false
+    name: "IOTA",
+    tickerSymbol: "IOTA",
+    unit: "IOTA",
+    subunit: "micro",
+    decimals: 6,
+    useMetricPrefix: false,
 };
 
 test("formatAmount should format 1 subunit properly", () => {
@@ -60,4 +60,3 @@ test("formatAmount should honour precision 0", () => {
 test("formatAmount should format big values properly", () => {
     expect(formatAmount(1450896407249092, tokenInfo)).toBe("1450896407.24 IOTA");
 });
-

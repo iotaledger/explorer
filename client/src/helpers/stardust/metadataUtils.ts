@@ -15,7 +15,7 @@ export function tryParseMetadata<S>(metadataHex: HexEncodedString, schema: jsons
         if (result.valid) {
             return json as S;
         }
-    } catch { }
+    } catch {}
 
     return null;
 }

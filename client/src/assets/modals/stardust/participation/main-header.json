@@ -2,10 +2,10 @@
     "title": "Voting",
     "description": "<p> IOTA and Shimmer provides a system for community members to create and vote on ballots. On-Tangle voting enables token-holders to participate in voting or staking events.</p>",
     "links": [
-      {
-        "label": "Read more",
-        "href": "https://github.com/iota-community/treasury/blob/main/specifications/hornet-participation-plugin.md#structure-of-the-participation",
-        "isExternal": true
-      }
+        {
+            "label": "Read more",
+            "href": "https://github.com/iota-community/treasury/blob/main/specifications/hornet-participation-plugin.md#structure-of-the-participation",
+            "isExternal": true
+        }
     ]
 }

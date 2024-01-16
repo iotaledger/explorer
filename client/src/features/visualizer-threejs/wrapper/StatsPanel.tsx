@@ -1,9 +1,7 @@
 import React from "react";
 import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
 
-export const StatsPanel: React.FC<{readonly blocksCount: number; readonly network: string}> = (
-    { blocksCount, network }
-) => {
+export const StatsPanel: React.FC<{ readonly blocksCount: number; readonly network: string }> = ({ blocksCount, network }) => {
     const [blocksPerSecond, confirmedBlocksPerSecond, confirmedBlocksPerSecondPercent] = useNetworkStats(network);
 
     return (
@@ -12,9 +10,7 @@ export const StatsPanel: React.FC<{readonly blocksCount: number; readonly networ
                 <div className="card--content">
                     <div className="stats-panel__info">
                         <div className="card--label">Blocks</div>
-                        <div className="card--value">
-                            {blocksCount}
-                        </div>
+                        <div className="card--value">{blocksCount}</div>
                     </div>
                     <div className="stats-panel__info">
                         <div className="card--label">BPS / CBPS</div>
@@ -24,9 +20,7 @@ export const StatsPanel: React.FC<{readonly blocksCount: number; readonly networ
                     </div>
                     <div className="stats-panel__info">
                         <div className="card--label">Referenced Rate</div>
-                        <div className="card--value">
-                            {confirmedBlocksPerSecondPercent}
-                        </div>
+                        <div className="card--value">{confirmedBlocksPerSecondPercent}</div>
                     </div>
                 </div>
             </div>

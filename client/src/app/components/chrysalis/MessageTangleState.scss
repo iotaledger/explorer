@@ -5,67 +5,67 @@
 @import "../../../scss/themes";
 
 .messages-tangle-state {
-  display: flex;
-  align-items: center;
-
-  @include tablet-down {
-    margin-top: 4px;
-  }
-
-  .message-tangle-reference {
-    @include font-size(12px);
-
-    color: $gray-5;
-    font-family: $inter;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-
-    .message-tangle-reference__link {
-      color: $blue-5;
-      cursor: pointer;
-    }
-  }
-
-  .message-tangle-state {
-    @include font-size(12px);
-
     display: flex;
     align-items: center;
-    height: 24px;
-    margin-left: 16px;
-    padding: 0 8px;
-    border: 0;
-    border-radius: 6px;
-    outline: none;
-    background-color: $gray-light;
-    color: $gray-midnight;
-    font-family: $inter;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
 
-    &.message-tangle-state__confirmed {
-      background-color: var(--message-confirmed-bg);
-      color: $mint-green-7;
+    @include tablet-down {
+        margin-top: 4px;
     }
 
-    &.message-tangle-state__conflicting {
-      background-color: var(--message-conflicting-bg);
-      color: $error;
+    .message-tangle-reference {
+        @include font-size(12px);
+
+        color: $gray-5;
+        font-family: $inter;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+
+        .message-tangle-reference__link {
+            color: $blue-5;
+            cursor: pointer;
+        }
     }
 
-    &.message-tangle-state__milestone {
-      background-color: $mint-green-1;
-      color: $mint-green-7;
-    }
+    .message-tangle-state {
+        @include font-size(12px);
 
-    &.message-tangle-state__pending {
-      background-color: var(--light-bg);
-      color: #8493ad;
-    }
+        display: flex;
+        align-items: center;
+        height: 24px;
+        margin-left: 16px;
+        padding: 0 8px;
+        border: 0;
+        border-radius: 6px;
+        outline: none;
+        background-color: $gray-light;
+        color: $gray-midnight;
+        font-family: $inter;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
 
-    &.confirmation__no-click {
-      pointer-events: none;
+        &.message-tangle-state__confirmed {
+            background-color: var(--message-confirmed-bg);
+            color: $mint-green-7;
+        }
+
+        &.message-tangle-state__conflicting {
+            background-color: var(--message-conflicting-bg);
+            color: $error;
+        }
+
+        &.message-tangle-state__milestone {
+            background-color: $mint-green-1;
+            color: $mint-green-7;
+        }
+
+        &.message-tangle-state__pending {
+            background-color: var(--light-bg);
+            color: #8493ad;
+        }
+
+        &.confirmation__no-click {
+            pointer-events: none;
+        }
     }
-  }
 }

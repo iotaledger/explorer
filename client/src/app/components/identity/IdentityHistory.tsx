@@ -14,10 +14,10 @@ import { IdentityResolverProps } from "../../routes/IdentityResolverProps";
 import Spinner from "../Spinner";
 
 export default class IdentityHistory extends Component<
-    RouteComponentProps<IdentityResolverProps> & {version: string},
+    RouteComponentProps<IdentityResolverProps> & { version: string },
     IdentityHistoryState
 > {
-    constructor(props: RouteComponentProps<IdentityHistoryProps> & {version: string}) {
+    constructor(props: RouteComponentProps<IdentityHistoryProps> & { version: string }) {
         super(props);
 
         this.state = {
@@ -26,7 +26,7 @@ export default class IdentityHistory extends Component<
             resolvedHistory: {},
             selectedMessage: undefined,
             error: undefined,
-            compareWith: []
+            compareWith: [],
         };
     }
 
@@ -87,18 +87,14 @@ export default class IdentityHistory extends Component<
                                         this.setState({
                                             selectedMessage: selectedItem,
                                             compareWith: compareWith
-                                                ? compareWith.concat(
-                                                    this.getPreviousMessages(selectedItem.parentMessageId ?? "", true)
-                                                )
+                                                ? compareWith.concat(this.getPreviousMessages(selectedItem.parentMessageId ?? "", true))
                                                 : this.getPreviousMessages(selectedItem.messageId),
-                                            selectedComparisonMessage: undefined
+                                            selectedComparisonMessage: undefined,
                                         });
                                     }}
                                     onDiffMessagesUpdate={() => {
                                         this.setState({
-                                            compareWith: this.getPreviousMessages(
-                                                this.state.selectedMessage?.messageId ?? ""
-                                            )
+                                            compareWith: this.getPreviousMessages(this.state.selectedMessage?.messageId ?? ""),
                                         });
                                     }}
                                 />
@@ -108,9 +104,9 @@ export default class IdentityHistory extends Component<
                                 network={this.props.match.params.network}
                                 selectedMessage={this.state.selectedMessage}
                                 compareWith={this.state.compareWith}
-                                onCompareSelectionChange={message => {
+                                onCompareSelectionChange={(message) => {
                                     this.setState({
-                                        selectedComparisonMessage: message
+                                        selectedComparisonMessage: message,
                                     });
                                 }}
                                 selectedComparisonMessage={this.state.selectedComparisonMessage}
@@ -133,9 +129,7 @@ export default class IdentityHistory extends Component<
             return [];
         }
 
-        const index = integrationChainData.findIndex(
-            (element: { messageId: string }) => element.messageId === messageId
-        );
+        const index = integrationChainData.findIndex((element: { messageId: string }) => element.messageId === messageId);
 
         let previousMessages: IIdentityMessageWrapper[] = [];
 
@@ -154,7 +148,7 @@ export default class IdentityHistory extends Component<
                 document: integrationChainData[i].document,
                 isDiff: false,
                 message: integrationChainData[i].document,
-                messageId: integrationChainData[i].messageId
+                messageId: integrationChainData[i].messageId,
             };
 
             previousMessages.push(msg);
@@ -167,7 +161,7 @@ export default class IdentityHistory extends Component<
         window.history.replaceState(
             null,
             "",
-            `/${this.props.match.params.network}/identity-resolver/${this.props.match.params.did}?debugview=true`
+            `/${this.props.match.params.network}/identity-resolver/${this.props.match.params.did}?debugview=true`,
         );
 
         if (!this.props.match.params.did) {
@@ -179,7 +173,7 @@ export default class IdentityHistory extends Component<
         const res = await ServiceFactory.get<IdentityService>("identity").resolveHistory(
             this.props.match.params.did,
             this.props.match.params.network,
-            this.props.version
+            this.props.version,
         );
 
         // handle if response contains Error.
@@ -189,7 +183,7 @@ export default class IdentityHistory extends Component<
             }
             this.setState({
                 error: res.error,
-                loadingHistory: false
+                loadingHistory: false,
             });
             return;
         }
@@ -206,12 +200,12 @@ export default class IdentityHistory extends Component<
                     messageId: res.integrationChainData?.[0].messageId,
                     message: res.integrationChainData?.[0].document,
                     document: res.integrationChainData?.[0].document,
-                    isDiff: false
-                }
+                    isDiff: false,
+                },
             });
 
             this.setState({
-                compareWith: this.getPreviousMessages(res.integrationChainData?.[0].messageId ?? "")
+                compareWith: this.getPreviousMessages(res.integrationChainData?.[0].messageId ?? ""),
             });
         }
     }

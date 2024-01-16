@@ -34,15 +34,13 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     constructor(props: RouteComponentProps<IndexedRouteProps>) {
         super(props);
 
-        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(
-            `tangle-cache-${CHRYSALIS}`
-        );
+        this._tangleCacheService = ServiceFactory.get<ChrysalisTangleCacheService>(`tangle-cache-${CHRYSALIS}`);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         this.state = {
             statusBusy: true,
             status: "Loading indexed data...",
-            advancedMode: this._settingsService.get().advancedMode ?? false
+            advancedMode: this._settingsService.get().advancedMode ?? false,
         };
     }
 
@@ -52,20 +50,17 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
 
-        const result = await this._tangleCacheService.search(
-            this.props.match.params.network, this.props.match.params.index
-        );
+        const result = await this._tangleCacheService.search(this.props.match.params.network, this.props.match.params.index);
 
         if (result?.indexMessageIds && result?.indexMessageType) {
             window.scrollTo({
                 left: 0,
                 top: 0,
-                behavior: "smooth"
+                behavior: "smooth",
             });
 
-            const hexIndex = result.indexMessageType === "hex" ?
-                this.props.match.params.index :
-                Converter.utf8ToHex(this.props.match.params.index);
+            const hexIndex =
+                result.indexMessageType === "hex" ? this.props.match.params.index : Converter.utf8ToHex(this.props.match.params.index);
 
             this.setState({
                 messageIds: result.indexMessageIds,
@@ -73,7 +68,7 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                 indexLengthBytes: hexIndex.length / 2,
                 cursor: result.cursor,
                 status: "",
-                statusBusy: false
+                statusBusy: false,
             });
         } else {
             this.props.history.replace(`/${this.props.match.params.network}/search/${this.props.match.params.index}`);
@@ -96,63 +91,48 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
                         </div>
                         <div className="section">
                             <div className="section--header row space-between">
-
                                 <div className="row middle">
                                     <h2>General</h2>
                                 </div>
-                                {this.state.statusBusy && (<Spinner compact />)}
-
+                                {this.state.statusBusy && <Spinner compact />}
                             </div>
                             {this.state.hexIndex && (
                                 <div className="section--data">
                                     <div className="label row middle">
-                                        <span className="margin-r-t">
-                                            Index
-                                        </span>
+                                        <span className="margin-r-t">Index</span>
                                     </div>
-                                    <DataToggle
-                                        sourceData={this.state.hexIndex}
-                                        withSpacedHex={true}
-                                    />
-                                </div>)}
+                                    <DataToggle sourceData={this.state.hexIndex} withSpacedHex={true} />
+                                </div>
+                            )}
                         </div>
                         <div className="section margin-t-s">
                             <div className="section--header row space-between">
                                 <div className="row middle">
                                     <h2>Indexed Messages</h2>
                                     {this.state.messageIds !== undefined && (
-                                        <span className="indexed-number">
-                                            {this.state.messageIds.length}
-                                        </span>
+                                        <span className="indexed-number">{this.state.messageIds.length}</span>
                                     )}
                                 </div>
                             </div>
 
                             <div
                                 className={classNames("indexed-messages scroll-limit", {
-                                    "scroll-limit__disabled": this.state.statusBusy
+                                    "scroll-limit__disabled": this.state.statusBusy,
                                 })}
                             >
-                                {this.state.status && (
-                                    <p>{this.state.status}</p>
-                                )}
+                                {this.state.status && <p>{this.state.status}</p>}
                                 {this.state.messageIds && this.state.messageIds.length === 0 && (
-                                    <div className="value">
-                                        There are no messages for this index.
-                                    </div>
+                                    <div className="value">There are no messages for this index.</div>
                                 )}
                                 {this.state.messageIds &&
                                     this.state.messageIds.length > 0 &&
-                                    this.state.messageIds.map(messageId => (
-                                        <div
-                                            key={messageId}
-                                            className="indexed-message"
-                                        >
+                                    this.state.messageIds.map((messageId) => (
+                                        <div key={messageId} className="indexed-message">
                                             <button
                                                 type="button"
-                                                onClick={() => this.props.history.push(
-                                                    `/${this.props.match.params.network
-                                                    }/message/${messageId}`)}
+                                                onClick={() =>
+                                                    this.props.history.push(`/${this.props.match.params.network}/message/${messageId}`)
+                                                }
                                             >
                                                 <span>{messageId}</span>
                                             </button>
@@ -192,22 +172,25 @@ class Indexed extends AsyncComponent<RouteComponentProps<IndexedRouteProps>, Ind
      * @param useCursor Use the cursor to load chunk.
      */
     private loadNextChunk(useCursor: boolean): void {
-        this.setState({
-            statusBusy: true
-        }, async () => {
-            const result = await this._tangleCacheService.search(
-                this.props.match.params.network,
-                this.props.match.params.index,
-                useCursor ? this.state.cursor : undefined
-            );
+        this.setState(
+            {
+                statusBusy: true,
+            },
+            async () => {
+                const result = await this._tangleCacheService.search(
+                    this.props.match.params.network,
+                    this.props.match.params.index,
+                    useCursor ? this.state.cursor : undefined,
+                );
 
-            this.setState({
-                statusBusy: false,
-                status: "",
-                messageIds: result?.indexMessageIds,
-                cursor: result?.cursor
-            });
-        });
+                this.setState({
+                    statusBusy: false,
+                    status: "",
+                    messageIds: result?.indexMessageIds,
+                    cursor: result?.cursor,
+                });
+            },
+        );
     }
 }
 

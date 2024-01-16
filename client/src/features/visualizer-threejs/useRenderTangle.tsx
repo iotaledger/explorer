@@ -17,16 +17,16 @@ export const useRenderTangle = () => {
     const clearBlocksRef = useRef<() => void>();
     const { scene } = useThree();
 
-    const blockQueue = useTangleStore(s => s.blockQueue);
-    const removeFromBlockQueue = useTangleStore(s => s.removeFromBlockQueue);
+    const blockQueue = useTangleStore((s) => s.blockQueue);
+    const removeFromBlockQueue = useTangleStore((s) => s.removeFromBlockQueue);
 
-    const colorQueue = useTangleStore(s => s.colorQueue);
-    const removeFromColorQueue = useTangleStore(s => s.removeFromColorQueue);
+    const colorQueue = useTangleStore((s) => s.colorQueue);
+    const removeFromColorQueue = useTangleStore((s) => s.removeFromColorQueue);
 
-    const blockIdToIndex = useTangleStore(s => s.blockIdToIndex);
-    const updateBlockIdToIndex = useTangleStore(s => s.updateBlockIdToIndex);
-    const blockIdToPosition = useTangleStore(s => s.blockIdToPosition);
-    const blockIdToAnimationPosition = useTangleStore(s => s.blockIdToAnimationPosition);
+    const blockIdToIndex = useTangleStore((s) => s.blockIdToIndex);
+    const updateBlockIdToIndex = useTangleStore((s) => s.updateBlockIdToIndex);
+    const blockIdToPosition = useTangleStore((s) => s.blockIdToPosition);
+    const blockIdToAnimationPosition = useTangleStore((s) => s.blockIdToAnimationPosition);
 
     const updateBlockColor = (blockId: string, color: THREE.Color): void => {
         const indexToUpdate = blockIdToIndex.get(blockId);
@@ -40,7 +40,11 @@ export const useRenderTangle = () => {
         }
     };
 
-    function updateInstancedMeshPosition(instancedMesh: THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>, index: number, nextPosition: THREE.Vector3) {
+    function updateInstancedMeshPosition(
+        instancedMesh: THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>,
+        index: number,
+        nextPosition: THREE.Vector3,
+    ) {
         const matrix = new THREE.Matrix4();
         const position = new THREE.Vector3();
         const quaternion = new THREE.Quaternion();
@@ -57,11 +61,7 @@ export const useRenderTangle = () => {
 
         if (!initPosition) return;
 
-        SPHERE_TEMP_OBJECT.position.set(
-            initPosition.x,
-            initPosition.y,
-            initPosition.z,
-        );
+        SPHERE_TEMP_OBJECT.position.set(initPosition.x, initPosition.y, initPosition.z);
         SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
         SPHERE_TEMP_OBJECT.updateMatrix();
 
@@ -79,7 +79,7 @@ export const useRenderTangle = () => {
         }
 
         return block.id;
-    }
+    };
 
     useRenderEdges();
     useMouseMove({ tangleMeshRef });
@@ -101,11 +101,11 @@ export const useRenderTangle = () => {
             blockIdToAnimationPosition.forEach(({ x, y, z, duration: currentTime }, blockId) => {
                 const nextTime = currentTime + delta;
                 const startPositionVector = new THREE.Vector3(x, y, z);
-                const endPositionVector = new THREE.Vector3(...blockIdToPosition.get(blockId) as [number, number, number]);
+                const endPositionVector = new THREE.Vector3(...(blockIdToPosition.get(blockId) as [number, number, number]));
                 const interpolationFactor = Math.min(nextTime / ANIMATION_TIME_SECONDS, 1); // set 1 as max value
 
                 const targetPositionVector = new THREE.Vector3();
-                targetPositionVector.lerpVectors(startPositionVector, endPositionVector, interpolationFactor)
+                targetPositionVector.lerpVectors(startPositionVector, endPositionVector, interpolationFactor);
                 updatedAnimationPositions.set(blockId, { x, y, z, duration: nextTime });
                 const index = blockIdToIndex.get(blockId);
                 if (index) {
@@ -144,8 +144,6 @@ export const useRenderTangle = () => {
             scene.add(tangleMeshRef.current);
         }
     }, [tangleMeshRef]);
-
-
 
     useEffect(() => {
         if (blockQueue.length === 0) {

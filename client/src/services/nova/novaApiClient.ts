@@ -14,10 +14,7 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
-        return this.callApi<unknown, INodeInfoResponse>(
-            `node-info/${request.network}`,
-            "get"
-        );
+        return this.callApi<unknown, INodeInfoResponse>(`node-info/${request.network}`, "get");
     }
 
     /**
@@ -26,8 +23,6 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async outputDetails(request: IOutputDetailsRequest): Promise<IOutputDetailsResponse> {
-        return this.callApi<unknown, IOutputDetailsResponse>(
-            `nova/output/${request.network}/${request.outputId}`, "get"
-        );
+        return this.callApi<unknown, IOutputDetailsResponse>(`nova/output/${request.network}/${request.outputId}`, "get");
     }
 }

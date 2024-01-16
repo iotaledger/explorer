@@ -7,4 +7,3 @@ export interface IAliasResponse extends IResponse {
      */
     aliasDetails?: OutputResponse;
 }
-

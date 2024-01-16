@@ -9,6 +9,5 @@ export interface IFeedBlockData {
     /**
      * The block.
      */
-    block: Block
+    block: Block;
 }
-

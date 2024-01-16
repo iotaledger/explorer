@@ -13,7 +13,7 @@ class NativeToken extends AsyncComponent<NativeTokenProps, NativeTokenState> {
         super(props);
 
         this.state = {
-            isExpanded: this.props.isPreExpanded ?? false
+            isExpanded: this.props.isPreExpanded ?? false,
         };
     }
 
@@ -34,33 +34,18 @@ class NativeToken extends AsyncComponent<NativeTokenProps, NativeTokenState> {
 
         return (
             <div className="native-token">
-                <div
-                    className="card--content__input card--value row middle"
-                    onClick={() => this.setState({ isExpanded: !isExpanded })}
-                >
-                    <div className={classNames("margin-r-t", "card--content--dropdown",
-                        { opened: isExpanded })}
-                    >
+                <div className="card--content__input card--value row middle" onClick={() => this.setState({ isExpanded: !isExpanded })}>
+                    <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                         <DropdownIcon />
                     </div>
-                    <div className="card--label">
-                        Native token
-                    </div>
+                    <div className="card--label">Native token</div>
                 </div>
                 {isExpanded && (
                     <div className="padding-l-t left-border">
-                        <div className="card--label">
-                            Token id:
-                        </div>
-                        <div className="card--value row">
-                            {tokenId}
-                        </div>
-                        <div className="card--label">
-                            Amount:
-                        </div>
-                        <div className="card--value row">
-                            {Number(amount)}
-                        </div>
+                        <div className="card--label">Token id:</div>
+                        <div className="card--value row">{tokenId}</div>
+                        <div className="card--label">Amount:</div>
+                        <div className="card--value row">{Number(amount)}</div>
                     </div>
                 )}
             </div>
