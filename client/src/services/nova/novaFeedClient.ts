@@ -47,6 +47,29 @@ export class NovaFeedClient {
         }
     }
 
+    public replayAttack(cb: (block: IFeedBlockData) => void) {
+        this.socket = io(this.endpoint, {
+            upgrade: true,
+            transports: ["websocket"],
+        });
+        try {
+            if (this.socket) {
+                this.socket.on("replayAttackBlock", (block: IFeedBlockData) => {
+                    console.log("replayAttack from websocket");
+                    cb(block);
+                });
+
+                this.socket.on("replayAttackEnd", () => {
+                    console.log("replayAttackEnd from websocket");
+                });
+
+                this.socket.emit("replayAttackReq");
+            }
+        } catch {
+            console.error("[FeedClient] Could not replay attack");
+        }
+    }
+
     /**
      * Subscribe to the feed of blocks.
      * @param onBlockDataCallback the callback for block data updates.

@@ -4,6 +4,7 @@ import compression from "compression";
 import * as dotenv from "dotenv";
 dotenv.config();
 import express, { Application } from "express";
+import { readFileSync } from "fs";
 import { Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { NetworkConfigurationError } from "./errors/networkConfigurationError";
@@ -17,6 +18,8 @@ import { subscribe } from "./routes/feed/subscribe";
 import { unsubscribe } from "./routes/feed/unsubscribe";
 import { cors, executeRoute, matchRouteUrl } from "./utils/apiHelper";
 
+const recordedFeed = JSON.parse(readFileSync("src/dataReplayAttack/recordedFeed.json", "utf8"));
+recordedFeed.blocks.sort((a, b) => a.timestampRec - b.timestampRec);
 const configId = process.env.CONFIG_ID || "local";
 const config: IConfiguration = require(`./data/config.${configId}.json`);
 
@@ -82,6 +85,14 @@ const sockets: {
     [socketId: string]: string;
 } = {};
 
+/**
+ * Delay function
+ * @param ms milliseconds
+ */
+async function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 socketServer.on("connection", (socket) => {
     logger.debug(`Socket::Connection [${socket.id}]`);
     socket.on("subscribe", async (data: INetworkBoundGetRequest) => {
@@ -91,6 +102,22 @@ socketServer.on("connection", (socket) => {
         }
         logger.debug(`Socket::Subscribe [${socket.id}]`);
         socket.emit("subscribe", response);
+    });
+
+    socket.on("replayAttackReq", async () => {
+        logger.debug(`Socket::ReplayAttack [${socket.id}]`);
+
+        let previousTimestamp = recordedFeed.start;
+
+        for (const block of recordedFeed.blocks) {
+            const delayTime = block.timestampRec - previousTimestamp;
+            await delay(delayTime);
+
+            socket.emit("replayAttackBlock", block);
+            previousTimestamp = block.timestampRec;
+        }
+
+        socket.emit("replayAttackEnd");
     });
 
     socket.on("unsubscribe", (data: IFeedUnsubscribeRequest) => {

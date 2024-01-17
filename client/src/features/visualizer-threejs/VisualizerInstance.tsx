@@ -212,6 +212,16 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         setIsPlaying(false);
     };
 
+    const onReplay = () => {
+        if (!feedServiceRef.current) {
+            return;
+        }
+
+        void feedServiceRef.current.replayAttack((b) => {
+            console.log('--- replayed block', b);
+        });
+    };
+
     return (
         <Wrapper
             blocksCount={indexToBlockId.length}
@@ -226,6 +236,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
         >
+            <div>
+                <button onClick={onReplay}>Replay attack</button>
+            </div>
             <Canvas
                 ref={canvasRef}
                 orthographic
