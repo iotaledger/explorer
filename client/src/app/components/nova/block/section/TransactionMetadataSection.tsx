@@ -1,5 +1,7 @@
-import { TransactionMetadata } from "@iota/sdk-wasm-nova/web";
+import classNames from "classnames";
+import { TRANSACTION_FAILURE_REASON_STRINGS, TransactionMetadata } from "@iota/sdk-wasm-nova/web";
 import React from "react";
+import "./TransactionMetadataSection.scss";
 import Spinner from "../../../Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 
@@ -29,12 +31,28 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                     </div>
                     <div className="section--data">
                         <div className="label">Transaction Status</div>
-                        <div className="value row middle">{metadata.transactionState}</div>
+                        <div className="value row middle capitalize-text">
+                            <div
+                                className={classNames(
+                                    "transaction-tangle-state",
+                                    {
+                                        "transaction-tangle-state__confirmed":
+                                            metadata.transactionState === "accepted" || "confirmed" || "finalized",
+                                    },
+                                    {
+                                        "transaction-tangle-state__conflicting": metadata.transactionState === "failed",
+                                    },
+                                    { "transaction-tangle-state__pending": metadata.transactionState === "pending" },
+                                )}
+                            >
+                                {metadata.transactionState}
+                            </div>
+                        </div>
                     </div>
                     {metadata.transactionFailureReason && (
                         <div className="section--data">
                             <div className="label">Failure Reason</div>
-                            <div className="value">{metadata.transactionFailureReason}</div>
+                            <div className="value">{TRANSACTION_FAILURE_REASON_STRINGS[metadata.transactionFailureReason]}</div>
                         </div>
                     )}
                 </React.Fragment>

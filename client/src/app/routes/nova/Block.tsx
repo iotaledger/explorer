@@ -20,6 +20,8 @@ import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-pay
 import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
 import { useBlockMetadata } from "~/helpers/nova/hooks/useBlockMetadata";
 import TransactionMetadataSection from "~/app/components/nova/block/section/TransactionMetadataSection";
+import BlockTangleState from "~/app/components/nova/block/BlockTangleState";
+
 export interface BlockProps {
     /**
      * The network to lookup.
@@ -106,10 +108,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             </div>
             <div className="section--data">
                 <div className="label">Issuing Time</div>
-                <div className="value code">
-                    {/* Convert nanoseconds to milliseconds */}
-                    {DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}
-                </div>
+                <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
             <div className="section--data">
                 <div className="label">Slot commitment</div>
@@ -226,6 +225,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                                 <Modal icon="info" data={mainHeaderMessage} />
                                 {isLoading && <Spinner />}
                             </div>
+                            {blockMetadata.metadata && block?.header && (
+                                <BlockTangleState
+                                    status={blockMetadata.metadata?.blockState}
+                                    issuingTime={block?.header.issuingTime}
+                                    failureReason={blockMetadata.metadata?.blockFailureReason}
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="section">{blockContent}</div>
