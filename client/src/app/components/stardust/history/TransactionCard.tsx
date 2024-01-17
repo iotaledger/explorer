@@ -3,10 +3,12 @@ import moment from "moment";
 import React, { useContext } from "react";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 import { DateHelper } from "~helpers/dateHelper";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import TruncatedId from "../TruncatedId";
+import { CHRYSALIS_MAINNET } from "~/models/config/networkType";
+import Tooltip from "../../Tooltip";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = ({
     outputId,
@@ -29,16 +31,29 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
 
     const isTransactionFromStardustGenesis =
         milestoneIndex && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
+    const transactionLink =
+        isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
+            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
+            : `/${network}/transaction/${transactionId}`;
 
     return (
         <div className="card">
             <div className="field">
                 <div className="card--label">Transaction Id</div>
                 <div className="row card--value">
-                    {isTransactionFromStardustGenesis ? (
+                    {isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID) ? (
                         <span className="highlight">Stardust Genesis</span>
                     ) : (
-                        <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} />
+                        <>
+                            <TruncatedId id={transactionId} link={transactionLink} />
+                            {isTransactionFromStardustGenesis && (
+                                <Tooltip tooltipContent="This link opens the transaction on Chrysalis Mainnet" childrenClass="row middle">
+                                    <span className="material-icons" style={{ fontSize: "14px" }}>
+                                        warning
+                                    </span>
+                                </Tooltip>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

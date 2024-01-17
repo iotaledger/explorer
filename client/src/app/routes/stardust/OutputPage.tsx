@@ -4,13 +4,15 @@ import OutputPageProps from "./OutputPageProps";
 import mainMessage from "~assets/modals/stardust/output/main-header.json";
 import { DateHelper } from "~helpers/dateHelper";
 import { useOutputDetails } from "~helpers/hooks/useOutputDetails";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatSpecialBlockId } from "~helpers/stardust/valueFormatHelper";
+import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
 import TruncatedId from "../../components/stardust/TruncatedId";
+import Tooltip from "../../components/Tooltip";
 import "./OutputPage.scss";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
@@ -51,6 +53,10 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
 
     const isTransactionFromStardustGenesis =
         milestoneIndexBooked && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked);
+    const transactionLink =
+        isTransactionFromStardustGenesis && !transactionId?.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
+            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
+            : `/${network}/transaction/${transactionId}`;
 
     return (
         (output && (
@@ -97,14 +103,19 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Transaction ID</div>
                                     <div className="value code highlight row middle">
-                                        {isTransactionFromStardustGenesis ? (
+                                        {isTransactionFromStardustGenesis &&
+                                        transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID) ? (
                                             <span>Stardust Genesis</span>
                                         ) : (
-                                            <TruncatedId
-                                                id={transactionId}
-                                                link={`/${network}/transaction/${transactionId}`}
-                                                showCopyButton
-                                            />
+                                            <>
+                                                <Tooltip
+                                                    tooltipContent="This link opens the transaction on Chrysalis Mainnet"
+                                                    childrenClass="row middle"
+                                                >
+                                                    <span className="material-icons">warning</span>
+                                                </Tooltip>
+                                                <TruncatedId id={transactionId} link={transactionLink} showCopyButton />
+                                            </>
                                         )}
                                     </div>
                                 </div>

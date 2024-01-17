@@ -55,6 +55,8 @@ const HEX_PARTICIPATE = "0x5041525449434950415445";
  */
 export const STARDUST_GENESIS_MILESTONE = 7669900;
 
+export const STARDUST_SUPPLY_INCREASE_TRANSACTION_ID = "0xb191c4bc825ac6983789e50545d5ef07a1d293a98ad974fc9498cb18";
+
 export class TransactionsHelper {
     public static async getInputsAndOutputs(
         block: Block | undefined,
