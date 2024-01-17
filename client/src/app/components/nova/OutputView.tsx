@@ -155,15 +155,15 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     )}
                 </React.Fragment>
             )}
-            {output.type === OutputType.Basic ||
+            {(output.type === OutputType.Basic ||
                 output.type === OutputType.Account ||
                 output.type === OutputType.Anchor ||
-                (output.type === OutputType.Nft && (
-                    <React.Fragment>
-                        <div className="card--label">Stored mana:</div>
-                        <div className="card--value row">{(output as BasicOutput).mana?.toString()}</div>
-                    </React.Fragment>
-                ))}
+                output.type === OutputType.Nft) && (
+                <React.Fragment>
+                    <div className="card--label">Stored mana:</div>
+                    <div className="card--value row">{(output as BasicOutput).mana?.toString()}</div>
+                </React.Fragment>
+            )}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
