@@ -40,10 +40,17 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
     return pages;
 };
 
-export const buildUtilities = (currentNetwork: string, networks: INetwork[]) => {
+export const buildUtilities = (
+    currentNetwork: string,
+    networks: INetwork[],
+    identityResolverEnabled: boolean
+) => {
     const utilities = [];
     if (networks.length > 0 && currentNetwork !== CHRYSALIS_MAINNET) {
         utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
+        if (identityResolverEnabled) {
+            utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
+        }
     }
 
     return utilities;
@@ -56,7 +63,7 @@ export const buildUtilities = (currentNetwork: string, networks: INetwork[]) => 
  * @param identityResolverEnabled Is identity resolver enabled for current network.
  * @returns Array of footer items
  */
-export const getFooterItems = (currentNetwork: string, networks: INetwork[]) => {
+export const getFooterItems = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
     if (networks.length > 0) {
         let footerArray = networks.filter((network) => network.isEnabled).map((n) => ({ label: n.label, url: n.network.toString() }));
 
@@ -64,6 +71,10 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[]) => 
             footerArray = footerArray
                 .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
                 .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
+        }
+
+        if (identityResolverEnabled && currentNetwork !== CHRYSALIS_MAINNET) {
+            footerArray.push({ label: "Identity Resolver", url: `${currentNetwork}/identity-resolver/` });
         }
 
         return footerArray;
