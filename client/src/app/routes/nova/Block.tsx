@@ -150,7 +150,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                     <TruncatedId id={block.header.issuerId} link={`/${network}/account/${block.header.issuerId}`} showCopyButton={true} />
                 </div>
             </div>
-
             <div className="section--data row row--tablet-responsive">
                 {blockBody?.strongParents && (
                     <div className="truncate margin-b-s margin-r-m">
@@ -165,14 +164,30 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 {blockBody?.weakParents && (
                     <div className="truncate">
                         <div className="label">Weak Parents</div>
-                        {blockBody.weakParents.map((child, idx) => (
+                        {blockBody.weakParents.map((weak, idx) => (
                             <div key={idx} style={{ marginTop: "8px" }} className="value code link">
-                                <TruncatedId id={child} link={`/${network}/block/${child}`} />
+                                <TruncatedId id={weak} link={`/${network}/block/${weak}`} />
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {blockBody?.shallowLikeParents && (
+                    <div className="truncate">
+                        <div className="label">Shallow Parents</div>
+                        {blockBody.shallowLikeParents.map((shallow, idx) => (
+                            <div key={idx} style={{ marginTop: "8px" }} className="value code link">
+                                <TruncatedId id={shallow} link={`/${network}/block/${shallow}`} />
                             </div>
                         ))}
                     </div>
                 )}
             </div>
+            {blockBody && !isBasicBlockBody(blockBody) && (
+                <div className="section--data">
+                    <div className="label">Highest supported protocol version</div>
+                    <div className="value code highlight">{blockBody.highestSupportedVersion}</div>
+                </div>
+            )}
             {blockBody && isBasicBlockBody(blockBody) && (
                 <div>
                     <div className="section--data">
