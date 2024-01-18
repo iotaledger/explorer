@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "~assets/modals/stardust/block/main-header.json";
 import metadataInfo from "~assets/modals/stardust/block/metadata.json";
 import { useBlock } from "~helpers/nova/hooks/useBlock";
 import NotFound from "../../components/NotFound";
-import { BasicBlockBody, BlockBodyType, PayloadType, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
+import {
+    BasicBlockBody,
+    BlockBody,
+    BlockBodyType,
+    PayloadType,
+    SignedTransactionPayload,
+    Utils,
+    ValidationBlockBody,
+} from "@iota/sdk-wasm-nova/web";
 import Modal from "~/app/components/Modal";
 import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
@@ -43,28 +51,35 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
+    const [blockBody, setBlockBody] = useState<BasicBlockBody | ValidationBlockBody | undefined>();
+    const [transactionId, setTransactionId] = useState<string>();
+    const [pageTitle, setPageTitle] = useState<string>("Block");
 
-    function isBasicBlockBody(body: BasicBlockBody | ValidationBlockBody): body is BasicBlockBody {
+    function isBasicBlockBody(body: BlockBody): body is BasicBlockBody {
         return body.type === BlockBodyType.Basic;
     }
-    let blockBody: BasicBlockBody | ValidationBlockBody | undefined;
-    let pageTitle = "Block";
 
-    switch (block?.body?.type) {
-        case BlockBodyType.Basic: {
-            pageTitle = `Basic ${pageTitle}`;
-            blockBody = block?.body as BasicBlockBody;
-            break;
+    useEffect(() => {
+        switch (block?.body?.type) {
+            case BlockBodyType.Basic: {
+                setPageTitle(`Basic ${pageTitle}`);
+                const body = block?.body as BasicBlockBody;
+                setBlockBody(body);
+                const tsxId = Utils.transactionId(body.payload as SignedTransactionPayload);
+                setTransactionId(tsxId);
+                break;
+            }
+            case BlockBodyType.Validation: {
+                setPageTitle(`Validation ${pageTitle}`);
+                const body = block?.body as BasicBlockBody;
+                setBlockBody(body);
+                break;
+            }
+            default: {
+                break;
+            }
         }
-        case BlockBodyType.Validation: {
-            pageTitle = `Validation ${pageTitle}`;
-            blockBody = block?.body as ValidationBlockBody;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
+    }, [block]);
 
     const tabbedSections = [];
     let idx = 0;
@@ -85,8 +100,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             <TransactionMetadataSection
                 key={++idx}
                 network={network}
-                metadata={blockMetadata.metadata?.transactionMetadata}
-                isLinksDisabled={false}
+                transaction={((block?.body as BasicBlockBody)?.payload as SignedTransactionPayload)?.transaction}
+                transactionMetadata={blockMetadata.metadata?.transactionMetadata}
             />,
         );
     }
@@ -104,6 +119,14 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                     <TruncatedId id={blockId} showCopyButton />
                 </div>
             </div>
+            {transactionId && (
+                <div className="section--data">
+                    <div className="label">Transaction Id</div>
+                    <div className="value value__secondary row middle highlight">
+                        <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} showCopyButton />
+                    </div>
+                </div>
+            )}
             <div className="section--data">
                 <div className="label">Issuing Time</div>
                 <div className="value code">
@@ -118,9 +141,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 </div>
             </div>
             <div className="section--data">
+                <div className="label">Latest finalized slot</div>
+                <div className="value code">{block.header.latestFinalizedSlot}</div>
+            </div>
+            <div className="section--data">
                 <div className="label">Issuer</div>
-                <div className="value code">
-                    <TruncatedId id={block.header.issuerId} showCopyButton={true} />
+                <div className="value code highlight">
+                    <TruncatedId id={block.header.issuerId} link={`/${network}/account/${block.header.issuerId}`} showCopyButton={true} />
                 </div>
             </div>
 
@@ -130,10 +157,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                         <div className="label">Strong Parents</div>
                         {blockBody.strongParents.map((parent, idx) => (
                             <div key={idx} style={{ marginTop: "8px" }} className="value code link">
-                                <TruncatedId
-                                    id={parent}
-                                    // link={isLinksDisabled ? undefined : `/${network}/block/${parent}`}
-                                />
+                                <TruncatedId id={parent} link={`/${network}/block/${parent}`} />
                             </div>
                         ))}
                     </div>
@@ -143,10 +167,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                         <div className="label">Weak Parents</div>
                         {blockBody.weakParents.map((child, idx) => (
                             <div key={idx} style={{ marginTop: "8px" }} className="value code link">
-                                <TruncatedId
-                                    id={child}
-                                    // link={isLinksDisabled ? undefined : `/${network}/block/${child}`}
-                                />
+                                <TruncatedId id={child} link={`/${network}/block/${child}`} />
                             </div>
                         ))}
                     </div>
@@ -156,9 +177,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div>
                     <div className="section--data">
                         <div className="label">Max burned mana</div>
-                        <div className="value code">
-                            {Number(blockBody.maxBurnedMana)}
-                        </div>
+                        <div className="value code">{Number(blockBody.maxBurnedMana)}</div>
                     </div>
                     {blockBody.payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
@@ -175,7 +194,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                         key={blockId}
                         tabsEnum={
                             blockBody.payload?.type === PayloadType.SignedTransaction
-                                ? { Payload: "Transaction Payload", Metadata: "Transaction metadata" }
+                                ? { Payload: "Transaction Payload", Metadata: "Metadata" }
                                 : { Payload: "Tagged Data Payload" }
                         }
                         tabOptions={
