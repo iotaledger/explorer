@@ -4,7 +4,7 @@ export enum Status {
     Error = "ERROR",
 }
 
-export interface IdentityDomainResolverState {
+export interface DIDDomainResolverState {
     verifiedDomainsPresentation: Map<
         string,
         {

@@ -7,17 +7,17 @@ import {
     LinkedDomainService,
 } from "@iota/identity-wasm/web";
 import React, { Fragment, useEffect, useState } from "react";
-import IdentityDomainResolver from "./domains/IdentityDomainResolver";
-import { IdentityStardustResolverProps } from "./IdentityStardustResolverProps";
+import DIDDomainResolver from "./domains/IdentityDomainResolver";
+import { DIDResolverProps } from "./IDIDResolverProps";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~services/identityService";
 import "./IdentityStardustResolver.scss";
 import CopyButton from "../CopyButton";
 import JsonViewer from "../JsonViewer";
 import Spinner from "../Spinner";
-import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~/models/api/IDIDResolverResponse";
 
-const IdentityStardustResolver: React.FC<IdentityStardustResolverProps> = ({ resolvedDID, network }) => {
+const IdentityStardustResolver: React.FC<DIDResolverProps> = ({ resolvedDID, network }) => {
     const [DID, setDID] = useState<string>("");
     const [governorAddress, setGovernorAddress] = useState<string>("");
     const [stateControllerAddress, setStateControllerAddress] = useState<string>("");
@@ -86,7 +86,7 @@ const IdentityStardustResolver: React.FC<IdentityStardustResolverProps> = ({ res
 
                     <div className="margin-b-s">
                         <div className="label">Linked Domains</div>
-                        <IdentityDomainResolver verifiedDomains={verifiedDomains} />
+                        <DIDDomainResolver verifiedDomains={verifiedDomains} />
                     </div>
                 </Fragment>
             )}
@@ -146,7 +146,7 @@ const IdentityStardustResolver: React.FC<IdentityStardustResolverProps> = ({ res
 // }
 export default IdentityStardustResolver;
 
-async function constructVerifiedDomains(resolvedDID: IIdentityStardustResolveResponse): Promise<Map<string, Promise<void>>> {
+async function constructVerifiedDomains(resolvedDID: IDIDResolverResponse): Promise<Map<string, Promise<void>>> {
     const newVerifiedDomains = new Map<string, Promise<void>>();
 
     await ServiceFactory.get<IdentityService>("identity").initLibrary();

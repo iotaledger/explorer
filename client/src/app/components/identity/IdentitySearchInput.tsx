@@ -80,21 +80,6 @@ class SearchInput extends AsyncComponent<IdentitySearchInputProps, IdentitySearc
     private doSearch(): void {
         this.props.onSearch(this.state.did);
     }
-
-    private didContainsWrongNetwork(did: string, network: string): boolean {
-        const colonCountInDid = did.split(":").length - 1;
-
-        if (colonCountInDid !== 3) {
-            return false;
-        }
-
-        const networkNameInDid = did.split(":")[2];
-
-        if (networkNameInDid !== network) {
-            return true;
-        }
-        return false;
-    }
 }
 
 export default SearchInput;

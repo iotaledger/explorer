@@ -1,4 +1,4 @@
-export interface IIdentityStardustResolveRequest {
+export interface IDIDResolverRequest {
     /**
      * The network to search on.
      */

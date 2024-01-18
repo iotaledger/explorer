@@ -1,14 +1,14 @@
 import React, { ReactNode } from "react";
 import { IoAlertCircle, IoCheckmarkCircle } from "react-icons/io5";
-import { IdentityDomainResolverProps } from "./IdentityDomainResolverProps";
-import { IdentityDomainResolverState, Status } from "./IdentityDomainResolverState";
+import { DIDDomainResolverProps } from "./DIDDomainResolverProps";
+import { DIDDomainResolverState, Status } from "./DIDDomainResolverState";
 import AsyncComponent from "../../AsyncComponent";
 import "./IdentityDomainResolver.scss";
 import Spinner from "../../Spinner";
 import Tooltip from "../../Tooltip";
 
-class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps, IdentityDomainResolverState> {
-    constructor(props: IdentityDomainResolverProps) {
+class DIDDomainResolver extends AsyncComponent<DIDDomainResolverProps, DIDDomainResolverState> {
+    constructor(props: DIDDomainResolverProps) {
         super(props);
         this.state = {
             verifiedDomainsPresentation: new Map(),
@@ -20,7 +20,7 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
         this.computeVerifiedDomainsPresentation(this.props.verifiedDomains);
     }
 
-    public componentDidUpdate(prevProps: IdentityDomainResolverProps) {
+    public componentDidUpdate(prevProps: DIDDomainResolverProps) {
         if (prevProps !== this.props) {
             this.computeVerifiedDomainsPresentation(this.props.verifiedDomains);
         }
@@ -59,8 +59,8 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
         );
     }
 
-    private computeVerifiedDomainsPresentation(verifiedDomains: IdentityDomainResolverProps["verifiedDomains"]) {
-        const newVerifiedDomainsPresentation: IdentityDomainResolverState["verifiedDomainsPresentation"] = new Map();
+    private computeVerifiedDomainsPresentation(verifiedDomains: DIDDomainResolverProps["verifiedDomains"]) {
+        const newVerifiedDomainsPresentation: DIDDomainResolverState["verifiedDomainsPresentation"] = new Map();
         if (verifiedDomains) {
             for (const [key, value] of verifiedDomains.entries()) {
                 newVerifiedDomainsPresentation.set(key, { status: Status.InFlight });
@@ -87,4 +87,4 @@ class IdentityDomainResolver extends AsyncComponent<IdentityDomainResolverProps,
         });
     }
 }
-export default IdentityDomainResolver;
+export default DIDDomainResolver;

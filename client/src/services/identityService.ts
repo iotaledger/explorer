@@ -4,7 +4,7 @@ import { StardustApiClient } from "./stardust/stardustApiClient";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "~models/api/IIdentityResolveResponse";
-import { IIdentityStardustResolveResponse } from "~models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~models/api/IIdentityStardustResolveResponse";
 import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
 import * as identity from "@iota/identity-wasm/web";
 
@@ -59,7 +59,7 @@ export class IdentityService {
      * @param  {string} network network name
      * @returns Promise
      */
-    public async resolveIdentityStardust(did: string, network: string): Promise<IIdentityStardustResolveResponse> {
+    public async resolveIdentityStardust(did: string, network: string): Promise<IDIDResolverResponse> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
         const response = await apiClient.didDocument({ did, network });
         return response;

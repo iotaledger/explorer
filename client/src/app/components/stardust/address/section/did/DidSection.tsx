@@ -1,9 +1,9 @@
 import React from "react";
-import IdentityStardustResolver from "../../../../identity/IdentityStardustResolver";
-import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
+import IdentityStardustResolver from "../../../../identity/DIDResolver";
+import { IDIDResolverResponse } from "~/models/api/IIdentityStardustResolveResponse";
 
 interface DIDSectionProps {
-    resolvedDID: IIdentityStardustResolveResponse | null;
+    resolvedDID: IDIDResolverResponse | null;
     network: string;
 }
 
