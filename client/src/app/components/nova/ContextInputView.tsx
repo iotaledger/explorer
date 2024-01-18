@@ -45,6 +45,8 @@ const ContextInputView: React.FC<IContextInputViewProps> = ({ contextInput }) =>
             </div>
         );
     }
+
+    return null;
 };
 
 export default ContextInputView;
