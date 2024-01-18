@@ -55,13 +55,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs
                 )}
             </React.Fragment>
         );
-    } else if (payload?.type === PayloadType.CandidacyAnnouncement) {
-        return (
-            <div>
-                {/* todo */}
-                CandidacyAnnouncement
-            </div>
-        );
     } else if (payload?.type === PayloadType.TaggedData) {
         return (
             <div className="section">

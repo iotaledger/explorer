@@ -59,14 +59,34 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         return body.type === BlockBodyType.Basic;
     }
 
+    function updatePageTitle(type: PayloadType | undefined): void {
+        let title = null;
+        switch (type) {
+            case PayloadType.TaggedData:
+                title = "Data";
+                break;
+            case PayloadType.SignedTransaction:
+                title = "Transaction";
+                break;
+            case PayloadType.CandidacyAnnouncement:
+                title = "Candidacy Announcement";
+                break;
+        }
+
+        if (title) {
+            setPageTitle(`${title} ${pageTitle}`);
+        }
+    }
     useEffect(() => {
         switch (block?.body?.type) {
             case BlockBodyType.Basic: {
-                setPageTitle(`Basic ${pageTitle}`);
                 const body = block?.body as BasicBlockBody;
                 setBlockBody(body);
-                const tsxId = Utils.transactionId(body.payload as SignedTransactionPayload);
-                setTransactionId(tsxId);
+                updatePageTitle(body.payload?.type);
+                if (body.payload?.type === PayloadType.SignedTransaction) {
+                    const tsxId = Utils.transactionId(body.payload as SignedTransactionPayload);
+                    setTransactionId(tsxId);
+                }
                 break;
             }
             case BlockBodyType.Validation: {
