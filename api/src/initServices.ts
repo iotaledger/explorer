@@ -1,5 +1,5 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
-import { Client as StardustClient } from "@iota/sdk";
+import { IClientOptions, Client as StardustClient } from "@iota/sdk";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -141,10 +141,19 @@ function initChrysalisServices(networkConfig: INetwork): void {
  */
 function initStardustServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
-    const stardustClient = new StardustClient({
+    const stardustClientParams: IClientOptions = {
         nodes: [networkConfig.provider],
         brokerOptions: { useWs: true },
-    });
+    };
+
+    if (networkConfig.permaNodeEndpoint) {
+        // Use both the node and permaNode to fetch data correctly
+        // Reference: https://github.com/iotaledger/iota-sdk/issues/1808#issuecomment-1893331116
+        stardustClientParams.permanodes = [networkConfig.permaNodeEndpoint];
+        stardustClientParams.ignoreNodeHealth = true;
+    }
+
+    const stardustClient = new StardustClient(stardustClientParams);
     ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
 
     if (networkConfig.permaNodeEndpoint) {
