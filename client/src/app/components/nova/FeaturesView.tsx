@@ -13,7 +13,7 @@ import {
 import { Ed25519BlockIssuerKey } from "@iota/sdk-wasm-nova/web/lib/types/block/output/block-issuer-key";
 import classNames from "classnames";
 import React, { useState } from "react";
-import AddressView from "./AddressView";
+import AddressView from "./address/AddressView";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import DataToggle from "../DataToggle";
 

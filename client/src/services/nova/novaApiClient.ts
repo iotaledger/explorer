@@ -2,8 +2,10 @@ import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
 import { IAccountRequest } from "~/models/api/nova/IAccountRequest";
 import { IAccountResponse } from "~/models/api/nova/IAccountResponse";
+import { IAssociationsResponse } from "~/models/api/nova/IAssociationsResponse";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
+import { IAssociationsRequest } from "~/models/api/stardust/IAssociationsRequest";
 import { ApiClient } from "../apiClient";
 
 /**
@@ -35,5 +37,18 @@ export class NovaApiClient extends ApiClient {
      */
     public async accountDetails(request: IAccountRequest): Promise<IAccountResponse> {
         return this.callApi<unknown, IAccountResponse>(`nova/account/${request.network}/${request.accountId}`, "get");
+    }
+
+    /**
+     * Get the associated outputs.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async associatedOutputs(request: IAssociationsRequest) {
+        return this.callApi<unknown, IAssociationsResponse>(
+            `nova/output/associated/${request.network}/${request.addressDetails.bech32}`,
+            "post",
+            { addressDetails: request.addressDetails },
+        );
     }
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import Modal from "~/app/components/Modal";
 import NotFound from "~/app/components/NotFound";
+import AssociatedOutputs from "~/app/components/nova/address/section/association/AssociatedOutputs";
 import Spinner from "~/app/components/Spinner";
 import Bech32Address from "~/app/components/stardust/address/Bech32Address";
 import { useAddressPageState } from "~/helpers/nova/hooks/useAddressPageState";
@@ -45,6 +46,12 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
                                     <Bech32Address addressDetails={bech32AddressDetails} advancedMode={true} />
                                 </div>
                             </div>
+                        </div>
+                        <div className="section no-border-bottom padding-b-0">
+                            <div className="row middle">
+                                <h2>Associated Outputs</h2>
+                            </div>
+                            <AssociatedOutputs network={network} addressDetails={bech32AddressDetails} />
                         </div>
                     </div>
                 )}

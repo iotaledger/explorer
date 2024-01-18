@@ -12,7 +12,7 @@ import {
 import classNames from "classnames";
 import React from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
-import AddressView from "./AddressView";
+import AddressView from "./address/AddressView";
 
 interface UnlockConditionViewProps {
     unlockCondition: UnlockCondition;
