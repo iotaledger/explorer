@@ -4,12 +4,10 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 import { DateHelper } from "~helpers/dateHelper";
-import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import NetworkContext from "../../../context/NetworkContext";
-import Tooltip from "../../Tooltip";
 import TruncatedId from "../TruncatedId";
+import TransactionId from "./TransactionId";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = ({
     outputId,
@@ -33,30 +31,12 @@ const TransactionRow: React.FC<ITransactionEntryProps> = ({
         </span>
     );
 
-    const isTransactionFromStardustGenesis =
-        milestoneIndex && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
-    const transactionLink =
-        isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
-            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-            : `/${network}/transaction/${transactionId}`;
-
     return (
         <tr className={darkBackgroundRow ? "dark" : ""}>
             <td className="transaction-id">
-                {isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID) ? (
-                    <span>Stardust Genesis</span>
-                ) : (
-                    <Link to={transactionLink} className="row center margin-r-t">
-                        <TruncatedId id={transactionId} />
-                        {isTransactionFromStardustGenesis && (
-                            <Tooltip tooltipContent="This link opens the transaction on Chrysalis Mainnet" childrenClass="row middle">
-                                <span className="material-icons" style={{ fontSize: "14px" }}>
-                                    warning
-                                </span>
-                            </Tooltip>
-                        )}
-                    </Link>
-                )}
+                <div className="row center">
+                    <TransactionId milestoneIndex={milestoneIndex} transactionId={transactionId} />
+                </div>
             </td>
             <td className="row center output-id">
                 <Link to={`/${network}/output/${outputId}`}>

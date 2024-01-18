@@ -3,12 +3,10 @@ import moment from "moment";
 import React, { useContext } from "react";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
 import { DateHelper } from "~helpers/dateHelper";
-import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import TruncatedId from "../TruncatedId";
-import { CHRYSALIS_MAINNET } from "~/models/config/networkType";
-import Tooltip from "../../Tooltip";
+import TransactionId from "./TransactionId";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = ({
     outputId,
@@ -29,32 +27,12 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
         </span>
     );
 
-    const isTransactionFromStardustGenesis =
-        milestoneIndex && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
-    const transactionLink =
-        isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
-            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-            : `/${network}/transaction/${transactionId}`;
-
     return (
         <div className="card">
             <div className="field">
                 <div className="card--label">Transaction Id</div>
                 <div className="row card--value">
-                    {isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID) ? (
-                        <span className="highlight">Stardust Genesis</span>
-                    ) : (
-                        <>
-                            <TruncatedId id={transactionId} link={transactionLink} />
-                            {isTransactionFromStardustGenesis && (
-                                <Tooltip tooltipContent="This link opens the transaction on Chrysalis Mainnet" childrenClass="row middle">
-                                    <span className="material-icons" style={{ fontSize: "14px" }}>
-                                        warning
-                                    </span>
-                                </Tooltip>
-                            )}
-                        </>
-                    )}
+                    <TransactionId milestoneIndex={milestoneIndex} transactionId={transactionId} />
                 </div>
             </div>
             <div className="field">
