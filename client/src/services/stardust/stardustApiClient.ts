@@ -1,7 +1,7 @@
 import { IOutputsResponse } from "@iota/sdk-wasm/web";
 import { FetchHelper } from "~helpers/fetchHelper";
-import { IIdentityStardustResolveRequest } from "~models/api/IIdentityStardustResolveRequest";
-import { IDIDResolverResponse } from "~models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverRequest } from "~models/api/IDIDResolverRequest";
+import { IDIDResolverResponse } from "~models/api/IDIDResolverResponse";
 import { IMilestoneDetailsRequest } from "~models/api/IMilestoneDetailsRequest";
 import { INetworkBoundGetRequest } from "~models/api/INetworkBoundGetRequest";
 import { IOutputDetailsRequest } from "~models/api/IOutputDetailsRequest";
@@ -340,7 +340,7 @@ export class StardustApiClient extends ApiClient {
         );
     }
 
-    public async didDocument(request: IIdentityStardustResolveRequest): Promise<IDIDResolverResponse> {
+    public async didDocument(request: IDIDResolverRequest): Promise<IDIDResolverResponse> {
         return this.callApi<unknown, IDIDResolverResponse>(`stardust/did/${request.network}/${request.did}/document`, "get");
     }
 

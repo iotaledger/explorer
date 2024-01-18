@@ -4,7 +4,7 @@ import { StardustApiClient } from "./stardust/stardustApiClient";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "~models/api/IIdentityResolveResponse";
-import { IDIDResolverResponse } from "~models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~models/api/IDIDResolverResponse";
 import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
 import * as identity from "@iota/identity-wasm/web";
 

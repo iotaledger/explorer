@@ -3,7 +3,7 @@ import { IoAlertCircle, IoCheckmarkCircle } from "react-icons/io5";
 import { DIDDomainResolverProps } from "./DIDDomainResolverProps";
 import { DIDDomainResolverState, Status } from "./DIDDomainResolverState";
 import AsyncComponent from "../../AsyncComponent";
-import "./IdentityDomainResolver.scss";
+import "./DIDDomainResolver.scss";
 import Spinner from "../../Spinner";
 import Tooltip from "../../Tooltip";
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~/services/identityService";
-import { IDIDResolverResponse } from "~/models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~/models/api/IDIDResolverResponse";
 
 /**
  * Fetch resolved DID
