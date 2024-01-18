@@ -9,7 +9,6 @@ import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
 import * as identity from "@iota/identity-wasm/web";
 
 export class IdentityService {
-
     private initLibraryPromise: Promise<void> | undefined;
 
     /**
@@ -69,8 +68,8 @@ export class IdentityService {
     }
 
     public async initLibrary(path = "/wasm/identity_wasm_bg.wasm") {
-        if(!this.initLibraryPromise){
-            this.initLibraryPromise = identity.init(path)
+        if (!this.initLibraryPromise) {
+            this.initLibraryPromise = identity.init(path);
         }
 
         return this.initLibraryPromise;
