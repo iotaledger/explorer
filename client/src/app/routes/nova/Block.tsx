@@ -154,6 +154,12 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             </div>
             {blockBody && isBasicBlockBody(blockBody) && (
                 <div>
+                    <div className="section--data">
+                        <div className="label">Max burned mana</div>
+                        <div className="value code">
+                            {Number(blockBody.maxBurnedMana)}
+                        </div>
+                    </div>
                     {blockBody.payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
                             <div className="label">Amount transacted</div>
