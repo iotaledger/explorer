@@ -7,14 +7,14 @@ import "./BlockTangleState.scss";
 import { DateHelper } from "~/helpers/dateHelper";
 
 const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, milestoneIndex, hasConflicts, conflictReason, onClick }) => {
-    const [ago, setAgo] = useState<string | undefined>();
+    const [milestoneTimestamp, setMilestoneTimestamp] = useState<string | undefined>();
     const [blockId, setBlockId] = useState<string | undefined>();
     const [milestoneDetails] = useMilestoneDetails(network, milestoneIndex ?? null);
 
     useEffect(() => {
         if (milestoneDetails?.milestone?.timestamp) {
             const readableTimestamp = DateHelper.format(DateHelper.milliseconds(milestoneDetails.milestone.timestamp));
-            setAgo(readableTimestamp);
+            setMilestoneTimestamp(readableTimestamp);
         }
         setBlockId(milestoneDetails?.blockId);
     }, [milestoneDetails]);
@@ -35,7 +35,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                             {milestoneIndex && "Confirmed"}
                             {!milestoneIndex && "Pending"}
                         </div>
-                        {milestoneIndex && <span className="row middle">Created {ago}</span>}
+                        {milestoneIndex && <span className="row middle">Created {milestoneTimestamp}</span>}
                     </div>
                 </div>
             )}
@@ -78,7 +78,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                             >
                                 Milestone {milestoneIndex}
                             </span>
-                            <span> {ago}</span>
+                            <span> {milestoneTimestamp}</span>
                         </div>
                     ) : (
                         ""
