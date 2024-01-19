@@ -44,8 +44,6 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
             }
         };
         addOutputToTransactionId(transactionId, output);
-        // addOutputToTransactionId(detailsMetadata.transactionIdSpent as string, output);
-        // addOutputToTransactionId(detailsMetadata.transactionId, output);
     });
 
     return transactionIdToOutputs;
