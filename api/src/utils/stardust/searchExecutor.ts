@@ -13,11 +13,11 @@ export class SearchExecutor {
      */
     private readonly query: SearchQuery;
 
-    private readonly tangleHelper: StardustApiService;
+    private readonly apiService: StardustApiService;
 
     constructor(network: INetwork, query: SearchQuery) {
         this.query = query;
-        this.tangleHelper = ServiceFactory.get<StardustApiService>(`api-service-${network.network}`);
+        this.apiService = ServiceFactory.get<StardustApiService>(`api-service-${network.network}`);
     }
 
     public async run(): Promise<ISearchResponse> {
@@ -28,7 +28,7 @@ export class SearchExecutor {
         if (searchQuery.did) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .aliasDetails(searchQuery.aliasId)
                         .then((aliasOutputs) => {
                             if (aliasOutputs) {
@@ -51,7 +51,7 @@ export class SearchExecutor {
         if (searchQuery.milestoneIndex) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .milestoneDetailsByIndex(searchQuery.milestoneIndex)
                         .then((milestoneDetails) => {
                             if (milestoneDetails) {
@@ -73,7 +73,7 @@ export class SearchExecutor {
         if (searchQuery.milestoneId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .milestoneDetailsById(searchQuery.milestoneId)
                         .then((milestoneDetails) => {
                             if (milestoneDetails) {
@@ -95,7 +95,7 @@ export class SearchExecutor {
         if (searchQuery.blockId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .block(searchQuery.blockId)
                         .then((blockResponse) => {
                             if (blockResponse && !blockResponse.error) {
@@ -117,7 +117,7 @@ export class SearchExecutor {
         if (searchQuery.transactionId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .transactionIncludedBlock(searchQuery.transactionId)
                         .then((txDetailsResponse) => {
                             if (txDetailsResponse.block && Object.keys(txDetailsResponse.block).length > 0) {
@@ -139,7 +139,7 @@ export class SearchExecutor {
         if (searchQuery.output) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .outputDetails(searchQuery.output)
                         .then((output) => {
                             if (output) {
@@ -159,7 +159,7 @@ export class SearchExecutor {
         if (searchQuery.aliasId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .aliasDetails(searchQuery.aliasId)
                         .then((aliasOutputs) => {
                             if (aliasOutputs) {
@@ -181,7 +181,7 @@ export class SearchExecutor {
         if (searchQuery.nftId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .nftDetails(searchQuery.nftId)
                         .then((nftOutputs) => {
                             if (nftOutputs) {
@@ -203,7 +203,7 @@ export class SearchExecutor {
         if (searchQuery.foundryId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .foundryDetails(searchQuery.foundryId)
                         .then((foundryOutput) => {
                             if (foundryOutput) {
@@ -225,7 +225,7 @@ export class SearchExecutor {
         if (searchQuery.tag) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    this.tangleHelper
+                    this.apiService
                         .taggedOutputs(searchQuery.tag)
                         .then((response) => {
                             if (!response.basicOutputs.error || !response.nftOutputs.error) {
