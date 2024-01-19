@@ -35,10 +35,12 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ networkId, outputs, setTokenC
                 ) {
                     for (const token of (output as CommonOutput).nativeTokens ?? []) {
                         const existingToken = theTokens.find((t) => t.id === token.id);
+                        // Convert to BigInt again in case the amount is hex
+                        const amount = BigInt(token.amount);
                         if (existingToken) {
-                            existingToken.amount += token.amount;
+                            existingToken.amount += amount;
                         } else {
-                            theTokens.push({ id: token.id, amount: token.amount });
+                            theTokens.push({ id: token.id, amount });
                         }
                     }
                 }

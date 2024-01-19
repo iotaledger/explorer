@@ -9,6 +9,8 @@ import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
 import * as identity from "@iota/identity-wasm/web";
 
 export class IdentityService {
+    private initLibraryPromise: Promise<void> | undefined;
+
     /**
      * Resolves DID into it's DID document (Chrysalis).
      * @param  {string} did DID to be resolved
@@ -66,6 +68,10 @@ export class IdentityService {
     }
 
     public async initLibrary(path = "/wasm/identity_wasm_bg.wasm") {
-        return await identity.init(path);
+        if (!this.initLibraryPromise) {
+            this.initLibraryPromise = identity.init(path);
+        }
+
+        return this.initLibraryPromise;
     }
 }
