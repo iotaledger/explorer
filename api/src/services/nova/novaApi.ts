@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { __ClientMethods__, OutputResponse, Client } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
