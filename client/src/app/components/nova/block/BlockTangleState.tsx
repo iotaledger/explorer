@@ -2,9 +2,9 @@ import classNames from "classnames";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Tooltip from "../../Tooltip";
-import "../../stardust/block/BlockTangleState.scss";
 import { BlockState, u64 } from "@iota/sdk-wasm-nova/web";
 import { BlockFailureReason } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
+import "./BlockTangleState.scss";
 
 export interface BlockTangleStateProps {
     /**
@@ -13,7 +13,7 @@ export interface BlockTangleStateProps {
     status: BlockState;
 
     /**
-     * The tangle status.
+     * The issuing time.
      */
     issuingTime: u64;
 
