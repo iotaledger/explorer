@@ -40,14 +40,6 @@ export function useInputsAndOutputs(
                     bech32Hrp,
                     apiClient,
                 );
-
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                window.inputs = inputs;
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                window.outputs = outputs;
-
                 if (isMounted) {
                     setInputs(inputs);
                     setUnlocks(unlocks);

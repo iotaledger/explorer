@@ -111,13 +111,6 @@ export function useAddressHistory(
 
                 const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
 
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                window.outputs = updatedOutputsWithDetails;
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                window.groupedOutputsByTransactionId = groupedOutputsByTransactionId;
-
                 setTransactionIdToOutputs(groupedOutputsByTransactionId);
                 setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
                 setCursor(cursor);

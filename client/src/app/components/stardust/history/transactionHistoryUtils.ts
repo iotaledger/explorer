@@ -1,4 +1,4 @@
-import { CommonOutput, ExpirationUnlockCondition, INodeInfoBaseToken, UnlockConditionType } from "@iota/sdk-wasm/web";
+import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
@@ -61,8 +61,6 @@ export const getTransactionHistoryRecords = (
 
     transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
-
-        console.log("--- getTransactionHistoryRecords", transactionId, outputs);
         const balanceChange = calculateBalanceChange(outputs);
         const ago = moment(lastOutputTime * 1000).fromNow();
 
@@ -111,15 +109,6 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
         let amount = Number(outputFromDetails.amount);
         if (output.isSpent) {
             amount = -1 * amount;
-            // we need to cover the case where the output is spent not by the current address,
-            // but by the return address of an expired expiration unlock condition
-            const expirationUnlockCondition = outputFromDetails.unlockConditions?.find(
-                ({ type }) => type === UnlockConditionType.Expiration,
-            ) as ExpirationUnlockCondition;
-
-            if (expirationUnlockCondition && output.milestoneTimestamp > expirationUnlockCondition.unixTime) {
-                amount = 0;
-            }
         }
         return acc + amount;
     }, 0);
