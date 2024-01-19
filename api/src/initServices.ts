@@ -141,39 +141,27 @@ function initChrysalisServices(networkConfig: INetwork): void {
  */
 function initStardustServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
+
     const stardustClientParams: IClientOptions = {
-        nodes: [networkConfig.provider],
-        brokerOptions: { useWs: true },
+        primaryNode: networkConfig.provider,
     };
 
     if (networkConfig.permaNodeEndpoint) {
-        // Use both the node and permaNode to fetch data correctly
-        // Reference: https://github.com/iotaledger/iota-sdk/issues/1808#issuecomment-1893331116
-        stardustClientParams.permanodes = [networkConfig.permaNodeEndpoint];
+        stardustClientParams.nodes = [networkConfig.permaNodeEndpoint];
         stardustClientParams.ignoreNodeHealth = true;
-    }
-
-    const stardustClient = new StardustClient(stardustClientParams);
-    ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
-
-    if (networkConfig.permaNodeEndpoint) {
-        // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
-        // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
-        const stardustPermanodeClient = new StardustClient({
-            nodes: [networkConfig.permaNodeEndpoint],
-            ignoreNodeHealth: true,
-        });
-        ServiceFactory.register(`permanode-client-${networkConfig.network}`, () => stardustPermanodeClient);
 
         const chronicleService = new ChronicleService(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
 
+    const stardustClient = new StardustClient(stardustClientParams);
+    ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
+
     // eslint-disable-next-line no-void
     void NodeInfoService.build(networkConfig).then((nodeInfoService) => {
         ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
 
-        const stardustFeed = new StardustFeed(networkConfig.network);
+        const stardustFeed = new StardustFeed(networkConfig);
         ServiceFactory.register(`feed-${networkConfig.network}`, () => stardustFeed);
     });
 
