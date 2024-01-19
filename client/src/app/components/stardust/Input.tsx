@@ -20,15 +20,20 @@ interface InputProps {
      * The network in context.
      */
     readonly network: string;
+    /**
+     * Default expanded state.
+     */
+    readonly isPreExpanded?: boolean;
 }
 
 /**
  * Component which will display an Input on stardust.
  */
-const Input: React.FC<InputProps> = ({ input, network }) => {
+const Input: React.FC<InputProps> = ({ input, network, isPreExpanded }) => {
+
     const history = useHistory();
     const { tokenInfo } = useContext(NetworkContext);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     const fallbackInputView = (
@@ -84,6 +89,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
 
     return input.output ? (
         <Output
+            isPreExpanded={isPreExpanded}
             outputId={outputId}
             output={input.output.output}
             amount={Number(input.output.output.amount)}

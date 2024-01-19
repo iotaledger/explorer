@@ -7,10 +7,14 @@ import { NameHelper } from "~helpers/stardust/nameHelper";
 
 interface IUnlocksProps {
     readonly unlocks: Unlock[];
+    /**
+     * Default expanded state.
+     */
+    readonly isPreExpanded?: boolean;
 }
 
-const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+const Unlocks: React.FC<IUnlocksProps> = ({ unlocks, isPreExpanded }) => {
+    const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
 
     const displayUnlocksTypeAndIndex = (type: number, index: number) => (
         <div>
