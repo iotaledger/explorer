@@ -4,7 +4,7 @@ import { IMilestoneDetailsResponse } from "../../../models/api/stardust/mileston
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,8 +25,8 @@ export async function get(config: IConfiguration, request: IMilestoneDetailsRequ
         return {};
     }
 
-    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
-    const milestoneDetails = await tangleHelper.milestoneDetailsByIndex(Number(request.milestoneIndex));
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    const milestoneDetails = await stardustApiService.milestoneDetailsByIndex(Number(request.milestoneIndex));
 
     return milestoneDetails;
 }

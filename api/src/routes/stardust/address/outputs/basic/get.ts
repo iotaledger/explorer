@@ -4,7 +4,7 @@ import { IAddressDetailsResponse } from "../../../../../models/api/stardust/IAdd
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
-import { StardustTangleHelper } from "../../../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../../../utils/validationHelper";
 
 /**
@@ -24,6 +24,6 @@ export async function get(config: IConfiguration, request: IAddressDetailsReques
         return {};
     }
 
-    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
-    return tangleHelper.basicOutputDetailsByAddress(request.address);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.basicOutputDetailsByAddress(request.address);
 }

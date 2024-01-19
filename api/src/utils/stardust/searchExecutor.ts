@@ -1,8 +1,8 @@
 import { SearchQuery } from "./searchQueryBuilder";
-import { StardustTangleHelper } from "./stardustTangleHelper";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
+import { StardustApiService } from "../../services/stardust/stardustApiService";
 
 /**
  * Performs the search from a SearchQuery object on a Stardust network.
@@ -13,11 +13,11 @@ export class SearchExecutor {
      */
     private readonly query: SearchQuery;
 
-    private readonly tangleHelper: StardustTangleHelper;
+    private readonly tangleHelper: StardustApiService;
 
     constructor(network: INetwork, query: SearchQuery) {
         this.query = query;
-        this.tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${network.network}`);
+        this.tangleHelper = ServiceFactory.get<StardustApiService>(`api-service-${network.network}`);
     }
 
     public async run(): Promise<ISearchResponse> {

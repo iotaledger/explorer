@@ -4,7 +4,7 @@ import { INftDetailsResponse } from "../../../models/api/stardust/nft/INftDetail
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,6 +25,6 @@ export async function get(config: IConfiguration, request: INftDetailsRequest): 
         return {};
     }
 
-    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
-    return tangleHelper.nftDetails(request.nftId);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.nftDetails(request.nftId);
 }

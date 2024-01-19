@@ -4,7 +4,7 @@ import { IBlockResponse } from "../../../models/api/stardust/IBlockResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,6 +25,6 @@ export async function get(_: IConfiguration, request: IBlockRequest): Promise<IB
         return {};
     }
 
-    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
-    return tangleHelper.block(request.blockId);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.block(request.blockId);
 }

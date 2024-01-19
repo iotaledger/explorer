@@ -24,8 +24,8 @@ import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
+import { StardustApiService } from "./services/stardust/stardustApiService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
-import { StardustTangleHelper } from "./utils/stardust/stardustTangleHelper";
 
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
@@ -158,8 +158,8 @@ function initStardustServices(networkConfig: INetwork): void {
     const stardustClient = new StardustClient(stardustClientParams);
     ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
 
-    const tangleHelper = new StardustTangleHelper(networkConfig);
-    ServiceFactory.register(`tangle-helper-${networkConfig.network}`, () => tangleHelper);
+    const stardustApiService = new StardustApiService(networkConfig);
+    ServiceFactory.register(`api-service-${networkConfig.network}`, () => stardustApiService);
 
     // eslint-disable-next-line no-void
     void NodeInfoService.build(networkConfig).then((nodeInfoService) => {

@@ -1,8 +1,6 @@
 /* eslint-disable no-warning-comments */
 import { OutputResponse, Client, IOutputsResponse, HexEncodedString, Utils, NftQueryParameter } from "@iota/sdk";
-import { SearchExecutor } from "./searchExecutor";
-import { SearchQueryBuilder, SearchQuery } from "./searchQueryBuilder";
-import { addressBalance, blockIdFromMilestonePayload } from "./utils";
+import { NodeInfoService } from "./nodeInfoService";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IBasicOutputsResponse } from "../../models/api/stardust/basic/IBasicOutputsResponse";
@@ -24,13 +22,15 @@ import { IParticipationEventInfo } from "../../models/api/stardust/participation
 import { IParticipationEventResponse } from "../../models/api/stardust/participation/IParticipationEventResponse";
 import { IParticipationEventStatus } from "../../models/api/stardust/participation/IParticipationEventStatus";
 import { INetwork } from "../../models/db/INetwork";
-import { NodeInfoService } from "../../services/stardust/nodeInfoService";
-import { HexHelper } from "../hexHelper";
+import { HexHelper } from "../../utils/hexHelper";
+import { SearchExecutor } from "../../utils/stardust/searchExecutor";
+import { SearchQuery, SearchQueryBuilder } from "../../utils/stardust/searchQueryBuilder";
+import { addressBalance, blockIdFromMilestonePayload } from "../../utils/stardust/utils";
 
 /**
  * Helper functions for use with tangle.
  */
-export class StardustTangleHelper {
+export class StardustApiService {
     /**
      * The network in context.
      */
