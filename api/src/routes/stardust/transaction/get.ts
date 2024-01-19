@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: ITransactionDetailsRe
         return {};
     }
 
-    return StardustTangleHelper.transactionIncludedBlock(networkConfig, request.transactionId);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    return tangleHelper.transactionIncludedBlock(request.transactionId);
 }

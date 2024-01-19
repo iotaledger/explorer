@@ -25,5 +25,6 @@ export async function search(_: IConfiguration, request: ISearchRequest): Promis
         return {};
     }
 
-    return StardustTangleHelper.search(networkConfig, request.query);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    return tangleHelper.search(request.query);
 }

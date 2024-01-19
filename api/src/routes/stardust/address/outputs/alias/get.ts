@@ -24,5 +24,6 @@ export async function get(config: IConfiguration, request: IAddressDetailsReques
         return {};
     }
 
-    return StardustTangleHelper.aliasOutputDetailsByAddress(networkConfig, request.address);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    return tangleHelper.aliasOutputDetailsByAddress(request.address);
 }

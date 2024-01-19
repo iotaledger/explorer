@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: IFoundriesRequest): P
         return {};
     }
 
-    return StardustTangleHelper.aliasFoundries(networkConfig, request.aliasAddress);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    return tangleHelper.aliasFoundries(request.aliasAddress);
 }

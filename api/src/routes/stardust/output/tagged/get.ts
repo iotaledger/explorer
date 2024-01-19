@@ -29,11 +29,12 @@ export async function get(_: IConfiguration, request: ITaggedOutputsRequest): Pr
     }
 
     const tagHex = Converter.utf8ToHex(request.tag, true);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
 
     if (request.outputType === "basic") {
-        return StardustTangleHelper.taggedBasicOutputs(networkConfig, tagHex, 10, request.cursor);
+        return tangleHelper.taggedBasicOutputs(tagHex, 10, request.cursor);
     } else if (request.outputType === "nft") {
-        return StardustTangleHelper.taggedNftOutputs(networkConfig, tagHex, 10, request.cursor);
+        return tangleHelper.taggedNftOutputs(tagHex, 10, request.cursor);
     }
 
     return { error: "Unsupported output type" };

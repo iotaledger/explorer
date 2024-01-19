@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: IAliasRequest): Promi
         return {};
     }
 
-    return StardustTangleHelper.aliasDetails(networkConfig, request.aliasId);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    return tangleHelper.aliasDetails(request.aliasId);
 }

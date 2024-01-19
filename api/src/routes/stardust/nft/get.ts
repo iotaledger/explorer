@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: INftDetailsRequest): 
         return {};
     }
 
-    return StardustTangleHelper.nftDetails(networkConfig, request.nftId);
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    return tangleHelper.nftDetails(request.nftId);
 }

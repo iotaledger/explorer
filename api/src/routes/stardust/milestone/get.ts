@@ -25,7 +25,8 @@ export async function get(config: IConfiguration, request: IMilestoneDetailsRequ
         return {};
     }
 
-    const milestoneDetails = await StardustTangleHelper.milestoneDetailsByIndex(networkConfig, Number(request.milestoneIndex));
+    const tangleHelper = ServiceFactory.get<StardustTangleHelper>(`tangle-helper-${networkConfig.network}`);
+    const milestoneDetails = await tangleHelper.milestoneDetailsByIndex(Number(request.milestoneIndex));
 
     return milestoneDetails;
 }
