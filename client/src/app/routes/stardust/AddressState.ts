@@ -32,7 +32,7 @@ import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
 import { useAliasContainsDID } from "~/helpers/hooks/useAliasContainsDID";
 import { useResolvedDID } from "~/helpers/hooks/useResolvedDID";
-import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~/models/api/IDIDResolverResponse";
 
 export interface IAddressState {
     bech32AddressDetails: IBech32AddressDetails | null;
@@ -63,7 +63,7 @@ export interface IAddressState {
     associatedOutputCount: number;
     aliasContainsDID: boolean;
     isDIDLoading: boolean;
-    resolvedDID: IIdentityStardustResolveResponse | null;
+    resolvedDID: IDIDResolverResponse | null;
 }
 
 const initialState = {

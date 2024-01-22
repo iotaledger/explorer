@@ -15,7 +15,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = ({
     setIsFormattedAmounts,
 }) => {
     const valueView = (
-        <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
+        <span className="pointer" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
             {balanceChangeFormatted}
         </span>
     );
