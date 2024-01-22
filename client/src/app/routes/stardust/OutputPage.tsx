@@ -4,16 +4,15 @@ import OutputPageProps from "./OutputPageProps";
 import mainMessage from "~assets/modals/stardust/output/main-header.json";
 import { DateHelper } from "~helpers/dateHelper";
 import { useOutputDetails } from "~helpers/hooks/useOutputDetails";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatSpecialBlockId } from "~helpers/stardust/valueFormatHelper";
-import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
-import TruncatedId from "../../components/stardust/TruncatedId";
-import Tooltip from "../../components/Tooltip";
 import "./OutputPage.scss";
+import TransactionIdView from "~/app/components/stardust/history/TransactionIdView";
+import { TransactionsHelper } from "~/helpers/stardust/transactionsHelper";
+import { getTransactionLink } from "~/app/components/stardust/history/transactionHistoryUtils";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     match: {
@@ -51,11 +50,8 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         milestoneTimestampBooked,
     } = outputMetadata ?? {};
 
-    const isTransactionFromStardustGenesis =
-        milestoneIndexBooked && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked);
-    const transctionLink = isTransactionFromStardustGenesis
-        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-        : `/${network}/transaction/${transactionId}`;
+    const isTransactionFromStardustGenesis = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked ?? 0);
+    const transactionLink = getTransactionLink(network, transactionId ?? "", isTransactionFromStardustGenesis);
 
     return (
         (output && (
@@ -101,16 +97,14 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                             {transactionId && (
                                 <div className="section--data">
                                     <div className="label">Transaction ID</div>
-                                    <div className="value code highlight row middle">
-                                        {isTransactionFromStardustGenesis && (
-                                            <Tooltip
-                                                tooltipContent="This link opens the transaction on Chrysalis Mainnet"
-                                                childrenClass="row middle"
-                                            >
-                                                <span className="material-icons">warning</span>
-                                            </Tooltip>
+                                    <div className="value code highlight row middle output-page__transaction-id">
+                                        {milestoneIndexBooked && (
+                                            <TransactionIdView
+                                                transactionId={transactionId}
+                                                isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
+                                                transactionLink={transactionLink}
+                                            />
                                         )}
-                                        <TruncatedId id={transactionId} link={transctionLink} showCopyButton />
                                     </div>
                                 </div>
                             )}
