@@ -1,26 +1,15 @@
-import React, { useContext } from "react";
-import NetworkContext from "~/app/context/NetworkContext";
-import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~/helpers/stardust/transactionsHelper";
-import { CHRYSALIS_MAINNET } from "~/models/config/networkType";
+import React from "react";
+import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID } from "~/helpers/stardust/transactionsHelper";
 import TruncatedId from "../TruncatedId";
 import Tooltip from "../../Tooltip";
 
 export interface ITransactionIdProps {
     transactionId: string;
-    milestoneIndex: number;
+    isTransactionFromStardustGenesis: boolean;
+    transactionLink: string;
 }
 
-const TransactionId: React.FC<ITransactionIdProps> = ({ milestoneIndex, transactionId }) => {
-    const { name: network } = useContext(NetworkContext);
-
-    const isTransactionFromStardustGenesis =
-        milestoneIndex && TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
-
-    const transactionLink =
-        isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
-            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-            : `/${network}/transaction/${transactionId}`;
-
+const TransactionId: React.FC<ITransactionIdProps> = ({  transactionId, isTransactionFromStardustGenesis, transactionLink }) => {
     return (
         <>
             {isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID) ? (

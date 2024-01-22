@@ -6,10 +6,9 @@ import { ITransactionHistoryRequest } from "~models/api/stardust/ITransactionHis
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/api/stardust/ITransactionHistoryResponse";
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
+import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
 
-interface IOutputDetailsMap {
-    [outputId: string]: OutputResponse;
-}
+export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string };
 
 /**
  * Fetch Address history
@@ -22,99 +21,104 @@ export function useAddressHistory(
     network: string,
     address?: string,
     setDisabled?: (isDisabled: boolean) => void,
-): [ITransactionHistoryItem[], IOutputDetailsMap, () => void, boolean, boolean] {
+): [Map<string, OutputWithDetails[]>, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [history, setHistory] = useState<ITransactionHistoryItem[]>([]);
-    const [outputDetailsMap, setOutputDetailsMap] = useState<IOutputDetailsMap>({});
-    const [historyView, setHistoryView] = useState<ITransactionHistoryItem[]>([]);
+    const [outputsWithDetails, setOutputsWithDetails] = useState<OutputWithDetails[]>([]);
+    const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>(new Map());
     const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
     const [cursor, setCursor] = useState<string | undefined>();
     const PAGE_SIZE: number = 10;
     const SORT: string = "newest";
 
     useEffect(() => {
-        loadHistory();
-    }, [address]);
+        if (!address || !isMounted) return;
+        (async () => {
+            await loadHistory();
+        })();
+    }, [address, isMounted]);
 
-    const loadHistory = () => {
-        if (address) {
-            setIsAddressHistoryLoading(true);
-            const request: ITransactionHistoryRequest = {
-                network,
-                address,
-                pageSize: PAGE_SIZE,
-                sort: SORT,
-                cursor,
-            };
+    const requestOutputsList = async () => {
+        if (!address) return;
 
-            apiClient
-                .transactionHistory(request)
-                .then((response: ITransactionHistoryResponse | undefined) => {
-                    const items = response?.items ?? [];
-                    if (items.length > 0 && isMounted) {
-                        setHistory([...history, ...items]);
-                        setCursor(response?.cursor);
-                    } else if (setDisabled && isMounted) {
-                        setDisabled(true);
-                    }
-                })
-                .finally(() => {
-                    setIsAddressHistoryLoading(false);
-                });
+        const request: ITransactionHistoryRequest = {
+            network,
+            address,
+            pageSize: PAGE_SIZE,
+            sort: SORT,
+            cursor,
+        };
+
+        const response = (await apiClient.transactionHistory(request)) as ITransactionHistoryResponse | undefined;
+        const items = response?.items ?? [];
+        return {
+            outputs: items,
+            cursor: response?.cursor,
+        };
+    };
+
+    const requestOutputDetails = async (outputId: string) => {
+        if (!outputId) return null;
+
+        try {
+            const response = await apiClient.outputDetails({ network, outputId });
+            const details = response.output;
+
+            if (!response.error && details?.output && details?.metadata) {
+                return details;
+            }
+            return null;
+        } catch {
+            console.log("Failed loading transaction history details!");
+            return null;
         }
     };
 
-    useEffect(() => {
-        if (history.length > 0) {
+    const loadHistory = async () => {
+        if (address && isMounted) {
             setIsAddressHistoryLoading(true);
-            const promises: Promise<void>[] = [];
-            const detailsPage: IOutputDetailsMap = {};
 
-            for (const item of history) {
-                const promise = apiClient
-                    .outputDetails({ network, outputId: item.outputId })
-                    .then((response) => {
-                        const details = response.output;
-                        if (!response.error && details?.output && details?.metadata) {
-                            const outputDetails = {
-                                output: details.output,
-                                metadata: details.metadata,
-                            };
+            try {
+                const outputList = await requestOutputsList();
 
-                            detailsPage[item.outputId] = outputDetails;
-                        }
-                    })
-                    .catch((e) => console.log(e));
+                if (!outputList) {
+                    return;
+                }
 
-                promises.push(promise);
-            }
+                const { outputs, cursor } = outputList;
 
-            Promise.allSettled(promises)
-                .then((_) => {
-                    if (isMounted) {
-                        setOutputDetailsMap(detailsPage);
-                        setIsAddressHistoryLoading(false);
-                        const updatedHistoryView = [...history].sort((a, b) => {
-                            // Ensure that entries with equal timestamp, but different isSpent,
-                            // have the spending before the depositing
-                            if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                                return a.isSpent ? 1 : -1;
-                            }
-                            return 1;
-                        });
+                if (!cursor) {
+                    setDisabled?.(true);
+                }
 
-                        setHistoryView(updatedHistoryView);
+                const fulfilledOutputs: OutputWithDetails[] = [];
+
+                for (const output of outputs) {
+                    const outputDetails = await requestOutputDetails(output.outputId);
+                    fulfilledOutputs.push({ ...output, details: outputDetails, amount: outputDetails?.output?.amount });
+                }
+
+                const updatedOutputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs];
+
+                updatedOutputsWithDetails.sort((a, b) => {
+                    // Ensure that entries with equal timestamp, but different isSpent,
+                    // have the spending before the depositing
+                    if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
+                        return a.isSpent ? 1 : -1;
                     }
-                })
-                .catch((_) => {
-                    console.log("Failed loading transaction history details!");
-                })
-                .finally(() => {
-                    setIsAddressHistoryLoading(false);
+                    return 1;
                 });
-        }
-    }, [history]);
 
-    return [historyView, outputDetailsMap, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
+                const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
+
+                setTransactionIdToOutputs(groupedOutputsByTransactionId);
+                setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
+                setCursor(cursor);
+            } finally {
+                setIsAddressHistoryLoading(false);
+            }
+        }
+    };
+
+    return [transactionIdToOutputs, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
 }
