@@ -5,6 +5,7 @@ import logger from "../../../logger";
 import { IFeedItemMetadata } from "../../../models/api/stardust/feed/IFeedItemMetadata";
 import { IFeedUpdate } from "../../../models/api/stardust/feed/IFeedUpdate";
 import { ILatestMilestone } from "../../../models/api/stardust/milestone/ILatestMilestonesResponse";
+import { INetwork } from "../../../models/db/INetwork";
 import { blockIdFromMilestonePayload } from "../../../utils/stardust/utils";
 import { NodeInfoService } from "../nodeInfoService";
 
@@ -60,20 +61,22 @@ export class StardustFeed {
     /**
      * The network in context (from Init).
      */
-    private readonly network: string;
+    private readonly networkId: string;
 
     /**
      * Creates a new instance of StardustFeed.
-     * @param networkId The network id.
+     * @param network The network config.
      */
-    constructor(networkId: string) {
+    constructor(network: INetwork) {
         this.blockSubscribers = {};
         this.milestoneSubscribers = {};
         this.blockMetadataCache = new Map();
-        this.network = networkId;
-        this._mqttClient = ServiceFactory.get<Client>(`client-${networkId}`);
-        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
-
+        this.networkId = network.network;
+        this._mqttClient = new Client({
+            nodes: [network.provider],
+            brokerOptions: { useWs: true },
+        });
+        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${this.networkId}`);
         if (this._mqttClient && nodeInfoService) {
             const nodeInfo = nodeInfoService.getNodeInfo();
             this.networkProtocolVersion = nodeInfo.protocolVersion;
@@ -81,7 +84,7 @@ export class StardustFeed {
             this.setupCacheTrimJob();
             this.connect();
         } else {
-            throw new Error(`Failed to build stardustFeed instance for ${networkId}`);
+            throw new Error(`Failed to build stardustFeed instance for ${this.networkId}`);
         }
     }
 
@@ -116,7 +119,7 @@ export class StardustFeed {
      * @param subscriptionId The id to unsubscribe.
      */
     public unsubscribeBlocks(subscriptionId: string): void {
-        logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from blocks (${this.network})`);
+        logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from blocks (${this.networkId})`);
         delete this.blockSubscribers[subscriptionId];
     }
 
@@ -125,7 +128,7 @@ export class StardustFeed {
      * @param subscriptionId The id to unsubscribe.
      */
     public unsubscribeMilestones(subscriptionId: string): void {
-        logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from milestones (${this.network})`);
+        logger.debug(`[StardustFeed] Removing subscriber ${subscriptionId} from milestones (${this.networkId})`);
         delete this.milestoneSubscribers[subscriptionId];
     }
 

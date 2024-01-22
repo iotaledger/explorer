@@ -1,5 +1,5 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
-import { Client as StardustClient } from "@iota/sdk";
+import { IClientOptions, Client as StardustClient } from "@iota/sdk";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -24,6 +24,7 @@ import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService } from "./services/stardust/nodeInfoService";
+import { StardustApiService } from "./services/stardust/stardustApiService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
 
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
@@ -141,30 +142,30 @@ function initChrysalisServices(networkConfig: INetwork): void {
  */
 function initStardustServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
-    const stardustClient = new StardustClient({
-        nodes: [networkConfig.provider],
-        brokerOptions: { useWs: true },
-    });
-    ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
+
+    const stardustClientParams: IClientOptions = {
+        primaryNode: networkConfig.provider,
+    };
 
     if (networkConfig.permaNodeEndpoint) {
-        // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
-        // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
-        const stardustPermanodeClient = new StardustClient({
-            nodes: [networkConfig.permaNodeEndpoint],
-            ignoreNodeHealth: true,
-        });
-        ServiceFactory.register(`permanode-client-${networkConfig.network}`, () => stardustPermanodeClient);
+        stardustClientParams.nodes = [networkConfig.permaNodeEndpoint];
+        stardustClientParams.ignoreNodeHealth = true;
 
         const chronicleService = new ChronicleService(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
 
+    const stardustClient = new StardustClient(stardustClientParams);
+    ServiceFactory.register(`client-${networkConfig.network}`, () => stardustClient);
+
+    const stardustApiService = new StardustApiService(networkConfig);
+    ServiceFactory.register(`api-service-${networkConfig.network}`, () => stardustApiService);
+
     // eslint-disable-next-line no-void
     void NodeInfoService.build(networkConfig).then((nodeInfoService) => {
         ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
 
-        const stardustFeed = new StardustFeed(networkConfig.network);
+        const stardustFeed = new StardustFeed(networkConfig);
         ServiceFactory.register(`feed-${networkConfig.network}`, () => stardustFeed);
     });
 
