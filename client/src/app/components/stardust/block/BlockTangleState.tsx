@@ -78,7 +78,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                             >
                                 Milestone {milestoneIndex}
                             </span>
-                            <span> {milestoneTimestamp}</span>
+                            <span> - {milestoneTimestamp}</span>
                         </div>
                     ) : (
                         ""
