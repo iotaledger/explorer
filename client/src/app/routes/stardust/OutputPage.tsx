@@ -10,7 +10,9 @@ import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
 import "./OutputPage.scss";
-import TransactionId from "~/app/components/stardust/history/TransactionId";
+import TransactionIdView from "~/app/components/stardust/history/TransactionIdView";
+import { TransactionsHelper } from "~/helpers/stardust/transactionsHelper";
+import { getTransactionLink } from "~/app/components/stardust/history/transactionHistoryUtils";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     match: {
@@ -47,6 +49,9 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         milestoneIndexBooked,
         milestoneTimestampBooked,
     } = outputMetadata ?? {};
+
+    const isTransactionFromStardustGenesis = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked ?? 0);
+    const transactionLink = getTransactionLink(network, transactionId ?? "", isTransactionFromStardustGenesis);
 
     return (
         (output && (
@@ -94,7 +99,11 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                     <div className="label">Transaction ID</div>
                                     <div className="value code highlight row middle output-page__transaction-id">
                                         {milestoneIndexBooked && (
-                                            <TransactionId milestoneIndex={milestoneIndexBooked} transactionId={transactionId} />
+                                            <TransactionIdView
+                                                transactionId={transactionId}
+                                                isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
+                                                transactionLink={transactionLink}
+                                            />
                                         )}
                                     </div>
                                 </div>

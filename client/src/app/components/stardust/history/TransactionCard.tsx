@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
-import TransactionId from "./TransactionId";
+import TransactionIdView from "./TransactionIdView";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = ({
     isGenesisByDate,
@@ -29,7 +29,11 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
             <div className="field">
                 <div className="card--label">Transaction Id</div>
                 <div className="row card--value">
-                    <TransactionId transactionId={transactionId} isTransactionFromStardustGenesis={isTransactionFromStardustGenesis} transactionLink={transactionLink} />
+                    <TransactionIdView
+                        transactionId={transactionId}
+                        isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
+                        transactionLink={transactionLink}
+                    />
                 </div>
             </div>
             <div className="field">

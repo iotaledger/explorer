@@ -9,7 +9,7 @@ export interface ITransactionIdProps {
     transactionLink: string;
 }
 
-const TransactionId: React.FC<ITransactionIdProps> = ({  transactionId, isTransactionFromStardustGenesis, transactionLink }) => {
+const TransactionIdView: React.FC<ITransactionIdProps> = ({ transactionId, isTransactionFromStardustGenesis, transactionLink }) => {
     return (
         <>
             {isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID) ? (
@@ -30,4 +30,4 @@ const TransactionId: React.FC<ITransactionIdProps> = ({  transactionId, isTransa
     );
 };
 
-export default TransactionId;
+export default TransactionIdView;

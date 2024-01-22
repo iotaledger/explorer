@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
-import TransactionId from "./TransactionId";
+import TransactionIdView from "./TransactionIdView";
 
 const TransactionRow: React.FC<ITransactionEntryProps> = ({
     isGenesisByDate,
@@ -25,7 +25,11 @@ const TransactionRow: React.FC<ITransactionEntryProps> = ({
             {isGenesisByDate ? <td className="date">Genesis</td> : <td className="date">{dateFormatted}</td>}
             <td className="transaction-id">
                 <div className="row center">
-                    <TransactionId transactionId={transactionId} isTransactionFromStardustGenesis={isTransactionFromStardustGenesis} transactionLink={transactionLink} />
+                    <TransactionIdView
+                        transactionId={transactionId}
+                        isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
+                        transactionLink={transactionLink}
+                    />
                 </div>
             </td>
             <td className={classNames("amount", { negative: isSpent })}>{valueView}</td>
