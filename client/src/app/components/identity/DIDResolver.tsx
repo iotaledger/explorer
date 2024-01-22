@@ -11,7 +11,7 @@ import DIDDomainResolver from "./domains/DIDDomainResolver";
 import { DIDResolverProps } from "./DIDResolverProps";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~services/identityService";
-import "./IdentityStardustResolver.scss";
+import "./DIDResolver.scss";
 import CopyButton from "../CopyButton";
 import JsonViewer from "../JsonViewer";
 import Spinner from "../Spinner";
