@@ -8,7 +8,7 @@ import {
 } from "@iota/identity-wasm/web";
 import React, { Fragment, useEffect, useState } from "react";
 import DIDDomainResolver from "./domains/DIDDomainResolver";
-import { DIDResolverProps } from "./IDIDResolverProps";
+import { DIDResolverProps } from "./DIDResolverProps";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~services/identityService";
 import "./IdentityStardustResolver.scss";
