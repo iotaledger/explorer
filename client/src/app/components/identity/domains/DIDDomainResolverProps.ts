@@ -1,3 +1,3 @@
-export interface IdentityDomainResolverProps {
+export interface DIDDomainResolverProps {
     verifiedDomains?: Map<string, Promise<void>>;
 }

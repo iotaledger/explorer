@@ -4,9 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 import welcomeMessage from "~assets/modals/identity-resolver/welcome.json";
 import { IdentityResolverProps } from "./IdentityResolverProps";
 import { IdentityResolverState } from "./IdentityResolverState";
-import { ServiceFactory } from "~factories/serviceFactory";
-import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
-import { NetworkService } from "~services/networkService";
+import { CHRYSALIS } from "~models/config/protocolVersion";
 import AsyncComponent from "../components/AsyncComponent";
 import IdentityChrysalisResolver from "../components/identity/IdentityChrysalisResolver";
 import IdentitySearchInput from "../components/identity/IdentitySearchInput";
@@ -19,16 +17,10 @@ class IdentityResolver extends AsyncComponent<
 > {
     constructor(props: RouteComponentProps<IdentityResolverProps> & { protocolVersion: string }) {
         super(props);
-
-        this.state = {
-            didExample: undefined,
-        };
     }
 
     public async componentDidMount(): Promise<void> {
         super.componentDidMount();
-
-        this.setDidExample();
     }
 
     /**
@@ -44,10 +36,6 @@ class IdentityResolver extends AsyncComponent<
                             <div className="cards">
                                 {!this.props.match.params.did && (
                                     <Fragment>
-                                        {this.props.protocolVersion === LEGACY && (
-                                            <div className="unsupported-network">This network is not supported!</div>
-                                        )}
-
                                         <div>
                                             <div className="row middle">
                                                 <h1>Decentralized Identifier</h1>
@@ -61,45 +49,22 @@ class IdentityResolver extends AsyncComponent<
                                                     network.
                                                 </p>
                                             </div>
-                                            {this.props.protocolVersion !== LEGACY && (
-                                                <div className="row middle margin-b-s row--tablet-responsive">
-                                                    <IdentitySearchInput
-                                                        compact={false}
-                                                        onSearch={(e) => {
-                                                            this.props.history.push(
-                                                                `/${this.props.match.params.network}/identity-resolver/${e}`,
-                                                            );
-                                                        }}
-                                                        network={this.props.match.params.network}
-                                                    />
-                                                </div>
-                                            )}
-
-                                            {this.state.didExample && this.props.protocolVersion === STARDUST && (
-                                                <button
-                                                    className="load-history-button"
-                                                    onClick={() => {
+                                            <div className="row middle margin-b-s row--tablet-responsive">
+                                                <IdentitySearchInput
+                                                    compact={false}
+                                                    onSearch={(e) => {
                                                         this.props.history.push(
-                                                            `/${this.props.match.params.network}/identity-resolver/${this.state.didExample}`,
+                                                            `/${this.props.match.params.network}/identity-resolver/${e}`,
                                                         );
                                                     }}
-                                                    type="button"
-                                                >
-                                                    DID Example
-                                                </button>
-                                            )}
+                                                    network={this.props.match.params.network}
+                                                />
+                                            </div>
                                         </div>
                                     </Fragment>
                                 )}
                                 {this.props.match.params.did && (
-                                    <div>
-                                        {this.props.protocolVersion === LEGACY && (
-                                            <div>
-                                                <div className="unsupported-network">This network is not supported!</div>
-                                            </div>
-                                        )}
-                                        {this.props.protocolVersion === CHRYSALIS && <IdentityChrysalisResolver {...this.props} />}
-                                    </div>
+                                    <div>{this.props.protocolVersion === CHRYSALIS && <IdentityChrysalisResolver {...this.props} />}</div>
                                 )}
                             </div>
                         </div>
@@ -107,16 +72,6 @@ class IdentityResolver extends AsyncComponent<
                 </div>
             </div>
         );
-    }
-
-    private setDidExample() {
-        const networkService = ServiceFactory.get<NetworkService>("network");
-        const networks = networkService.networks();
-
-        const network = networks.find((n) => n.network === this.props.match.params.network);
-        this.setState({
-            didExample: network?.didExample,
-        });
     }
 }
 

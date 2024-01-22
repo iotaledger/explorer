@@ -33,19 +33,24 @@
                 background: var(--transaction-history-dark-row);
             }
 
+            th,
+            td {
+                padding: 16px;
+            }
+
             th {
                 @include font-size(12px);
 
-                text-align: center !important;
                 color: $gray-6;
                 font-weight: 600;
-                text-align: left;
+                text-align: center;
                 text-transform: uppercase;
             }
 
             td {
-                padding: 16px 0;
                 text-align: center;
+                width: 33%;
+                text-wrap: nowrap;
 
                 &.transaction-id,
                 &.output-id {
@@ -82,10 +87,21 @@
                     color: var(--amount-color);
                     @include font-size(16px, 21px);
                     font-weight: 700;
+                    text-align: right;
 
                     &.negative {
                         color: var(--expanded-color);
                     }
+                }
+            }
+
+            td,
+            th {
+                &:first-child {
+                    text-align: left;
+                }
+                &:last-child {
+                    text-align: right;
                 }
             }
         }

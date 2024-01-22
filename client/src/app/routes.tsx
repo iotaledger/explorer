@@ -64,14 +64,21 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
             key={keys.next().value}
             component={(props: RouteComponentProps<StreamsV0RouteProps>) => <StreamsV0 {...props} />}
         />,
+    ];
+
+    const IdentiyResolverRoute = (
         <Route
             path="/:network/identity-resolver/:did?"
             key={keys.next().value}
             component={(props: RouteComponentProps<IdentityResolverProps>) => (
                 <IdentityResolver {...props} protocolVersion={protocolVersion} />
             )}
-        />,
-    ];
+        />
+    );
+
+    if (protocolVersion !== STARDUST) {
+        commonRoutes.push(IdentiyResolverRoute);
+    }
 
     const legacyRoutes = [
         <Route
