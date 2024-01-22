@@ -1,8 +1,7 @@
 import classNames from "classnames";
 import React from "react";
-import TruncatedId from "../TruncatedId";
-import Tooltip from "~app/components/Tooltip";
 import { ITransactionEntryProps } from "./TransactionEntryProps";
+import TransactionIdView from "./TransactionIdView";
 
 const TransactionCard: React.FC<ITransactionEntryProps> = ({
     isGenesisByDate,
@@ -30,14 +29,11 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
             <div className="field">
                 <div className="card--label">Transaction Id</div>
                 <div className="row card--value">
-                    <TruncatedId id={transactionId} link={transactionLink} />
-                    {isTransactionFromStardustGenesis && (
-                        <Tooltip tooltipContent="This link opens the transaction on Chrysalis Mainnet" childrenClass="row middle">
-                            <span className="material-icons" style={{ fontSize: "14px" }}>
-                                warning
-                            </span>
-                        </Tooltip>
-                    )}
+                    <TransactionIdView
+                        transactionId={transactionId}
+                        isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
+                        transactionLink={transactionLink}
+                    />
                 </div>
             </div>
             <div className="field">
