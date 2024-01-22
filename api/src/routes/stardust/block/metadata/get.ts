@@ -4,7 +4,7 @@ import { IBlockRequest } from "../../../../models/api/stardust/IBlockRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
-import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -25,5 +25,6 @@ export async function get(_: IConfiguration, request: IBlockRequest): Promise<IB
         return {};
     }
 
-    return StardustTangleHelper.blockDetails(networkConfig, request.blockId);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.blockDetails(request.blockId);
 }
