@@ -4,7 +4,7 @@ import { IFoundryResponse } from "../../../models/api/stardust/foundry/IFoundryR
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: IFoundryRequest): Pro
         return {};
     }
 
-    return StardustTangleHelper.foundryDetails(networkConfig, request.foundryId);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.foundryDetails(request.foundryId);
 }
