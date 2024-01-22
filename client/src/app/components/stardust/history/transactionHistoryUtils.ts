@@ -86,7 +86,7 @@ export const getTransactionHistoryRecords = (
             timestamp: lastOutputTime,
             dateFormatted: `${DateHelper.formatShort(lastOutputTime * 1000)} (${ago})`,
             balanceChange: balanceChange,
-            balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts),
+            balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts, 2, true),
             outputs: outputs,
         });
     });
