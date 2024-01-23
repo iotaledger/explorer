@@ -25,7 +25,7 @@ interface IOutputTableItem {
 const PAGE_SIZE = 10;
 
 const AssociationSection: React.FC<IAssociatedSectionProps> = ({ network, association, outputIds }) => {
-    const { tokenInfo } = useNetworkInfoNova(s => s.networkInfo);
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormatBalance, setIsFormatBalance] = useState(false);
     const [loadMoreCounter, setLoadMoreCounter] = useState<number | undefined>();
