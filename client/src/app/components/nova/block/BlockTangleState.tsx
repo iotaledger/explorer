@@ -1,10 +1,10 @@
 import classNames from "classnames";
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Tooltip from "../../Tooltip";
 import { BlockState, u64 } from "@iota/sdk-wasm-nova/web";
 import { BlockFailureReason } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
 import "./BlockTangleState.scss";
+import { DateHelper } from "~/helpers/dateHelper";
 
 export interface BlockTangleStateProps {
     /**
@@ -24,10 +24,11 @@ export interface BlockTangleStateProps {
 }
 
 const BlockTangleState: React.FC<BlockTangleStateProps> = ({ status, issuingTime, failureReason }) => {
-    const [ago, setAgo] = useState<string | undefined>();
+    const [readableTimestamp, setReadableTimestamp] = useState<string | undefined>();
 
     useEffect(() => {
-        setAgo(moment(Number(issuingTime) / 1000000).fromNow());
+        const timestamp = DateHelper.format(DateHelper.milliseconds(Number(issuingTime) / 1000000));
+        setReadableTimestamp(timestamp);
     }, [issuingTime]);
 
     return (
@@ -58,7 +59,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ status, issuingTime
                         )}
                     </div>
                     <div className="block-tangle-reference">
-                        <span> {ago}</span>
+                        <span> {readableTimestamp}</span>
                     </div>
                 </React.Fragment>
             )}
