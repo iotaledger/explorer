@@ -9,7 +9,7 @@ export interface IAddressBalanceResponse extends IResponse {
     /**
      * The balance of trivialy unlockable outputs with address unlock condition.
      */
-    sigLockedBalance?: number;
+    availableBalance?: number;
 
     /**
      * The ledger index at which this balance data was valid.
