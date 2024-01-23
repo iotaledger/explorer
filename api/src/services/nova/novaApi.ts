@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
@@ -33,7 +34,7 @@ export class NovaApi {
             if (block && Object.keys(block).length > 0) {
                 return {
                     block,
-                } as { block: Block };
+                };
             }
         } catch (e) {
             logger.error(`Failed fetching block with block id ${blockId}. Cause: ${e}`);
