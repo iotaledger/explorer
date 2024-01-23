@@ -61,7 +61,7 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            isExpanded: this.props.isPreExpanded ?? false,
+            isExpanded: this.props.isPreExpanded ?? true,
             isFormattedBalance: true,
         };
     }
@@ -72,6 +72,10 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId, isLinksDisabled } = this.props;
+
+        // console.log('--- output', output);
+        // (output as CommonOutput)
+
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
@@ -84,6 +88,12 @@ class Output extends Component<OutputProps, OutputState> {
         const outputIdIndexPart = outputId.slice(-4);
         const isSpecialCondition = this.hasSpecialCondition();
         const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
+
+        const hasStorageDepositReturnUnlockCondition = (output as CommonOutput).unlockConditions.find(
+            (condition) => condition.type === UnlockConditionType.StorageDepositReturn
+        );
+
+        console.log('--- hasStorageDepositReturnUnlockCondition', hasStorageDepositReturnUnlockCondition);
 
         const specialUnlockCondition =
             output.type !== OutputType.Treasury &&
@@ -223,9 +233,25 @@ class Output extends Component<OutputProps, OutputState> {
                         {/* all output types except Treasury have common output conditions */}
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
-                                {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => (
-                                    <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isPreExpanded} />
-                                ))}
+                                {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
+                                    let isExpandedByCondition = false;
+
+                                    if (!hasStorageDepositReturnUnlockCondition && unlockCondition.type === UnlockConditionType.Address) {
+                                        isExpandedByCondition = true;
+                                    }
+
+                                    if (unlockCondition.type === UnlockConditionType.Address && hasStorageDepositReturnUnlockCondition &&
+                                    // @ts-ignore
+                                        hasStorageDepositReturnUnlockCondition?.returnAddress?.pubKeyHash === unlockCondition.address?.pubKeyHash
+                                    ) {
+                                        isExpandedByCondition = true;
+                                    }
+                                    // console.log('--- isExpandedByCondition', isExpandedByCondition);
+
+                                    return (
+                                        <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isExpandedByCondition || isPreExpanded} />
+                                    )
+                                })}
                                 {(output as CommonOutput).features?.map((feature, idx) => (
                                     <Feature
                                         key={idx}

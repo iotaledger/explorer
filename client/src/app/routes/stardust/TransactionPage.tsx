@@ -45,6 +45,26 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
+    console.log('--- inputs', inputs);
+    // @ts-ignore
+    inputs && inputs[0]?.output?.output?.unlockConditions.push({
+        "type": 1,
+        "amount": 85000000,
+        "returnAddress": {
+            "type": 0,
+            "pubKeyHash": "0xfd13a83be173b38bbb9a02415a7a8b91acf691b762edd0945e9bb865e5816c9d",
+
+        }
+    })
+    // @ts-ignore
+    inputs && inputs[0]?.output?.output?.unlockConditions.push({
+        "type": 0,
+        "address": {
+            "type": 0,
+            "pubKeyHash": "0xfd13a83be173b38bbb9a02415a7a8b91acf691b762edd0945e9bb865e5816c9d"
+        }
+    })
+
     useEffect(() => {
         if (block?.payload?.type === PayloadType.Transaction) {
             const transactionPayload = block.payload as ITransactionPayload;

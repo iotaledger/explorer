@@ -69,9 +69,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         </div>
                         <div className="transaction-payload_outputs card--content">
                             {inputs.map((input, idx) => (
-                                <Input key={idx} network={network} input={input} isPreExpanded={true} />
+                                <Input key={idx} network={network} input={input} />
                             ))}
-                            <Unlocks unlocks={unlocks} isPreExpanded={true} />
+                            <Unlocks unlocks={unlocks} />
                         </div>
                     </div>
 
@@ -84,7 +84,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         <div className="transaction-payload_outputs card--content">
                             {outputs.map((output, idx) => (
                                 <Output
-                                    isPreExpanded={true}
                                     key={idx}
                                     outputId={output.id}
                                     output={output.output}

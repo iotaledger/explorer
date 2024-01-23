@@ -33,7 +33,7 @@ const Input: React.FC<InputProps> = ({ input, network, isPreExpanded }) => {
 
     const history = useHistory();
     const { tokenInfo } = useContext(NetworkContext);
-    const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
+    const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? true);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     const fallbackInputView = (
