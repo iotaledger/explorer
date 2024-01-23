@@ -61,7 +61,7 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            isExpanded: this.props.isPreExpanded ?? true,
+            isExpanded: this.props.isPreExpanded ?? false,
             isFormattedBalance: true,
         };
     }
@@ -72,10 +72,6 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId, isLinksDisabled } = this.props;
-
-        // console.log('--- output', output);
-        // (output as CommonOutput)
-
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 
@@ -88,7 +84,6 @@ class Output extends Component<OutputProps, OutputState> {
         const outputIdIndexPart = outputId.slice(-4);
         const isSpecialCondition = this.hasSpecialCondition();
         const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
-
 
         const specialUnlockCondition =
             output.type !== OutputType.Treasury &&
