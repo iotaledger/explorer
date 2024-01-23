@@ -3,7 +3,7 @@ import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
 import { OutputWithDetails } from "~helpers/hooks/useAddressHistory";
-import { TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 
@@ -69,9 +69,7 @@ export const getTransactionHistoryRecords = (
             TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex),
         );
 
-        const transactionLink = isTransactionFromStardustGenesis
-            ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-            : `/${network}/transaction/${transactionId}`;
+        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis);
 
         const isSpent = balanceChange < 0;
 
@@ -88,7 +86,7 @@ export const getTransactionHistoryRecords = (
             timestamp: lastOutputTime,
             dateFormatted: `${DateHelper.formatShort(lastOutputTime * 1000)} (${ago})`,
             balanceChange: balanceChange,
-            balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts),
+            balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts, 2, true),
             outputs: outputs,
         });
     });
@@ -110,4 +108,10 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
         }
         return acc + amount;
     }, 0);
+};
+
+export const getTransactionLink = (network: string, transactionId: string, isTransactionFromStardustGenesis: boolean) => {
+    return isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
+        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
+        : `/${network}/transaction/${transactionId}`;
 };
