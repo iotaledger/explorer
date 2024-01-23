@@ -1,28 +1,13 @@
 export interface ITransactionEntryProps {
     /**
-     * The output id.
-     */
-    outputId: string;
-
-    /**
      * The transaction id.
      */
     transactionId: string;
 
     /**
-     * The date of the transaction.
+     * The formatted date of the transaction.
      */
-    date: number;
-
-    /**
-     * The milestone index of the transaction.
-     */
-    milestoneIndex: number;
-
-    /**
-     * The transaction amount.
-     */
-    value: number;
+    dateFormatted: string;
 
     /**
      * Is the transaction spent.
@@ -40,8 +25,22 @@ export interface ITransactionEntryProps {
     setIsFormattedAmounts: React.Dispatch<React.SetStateAction<boolean>>;
 
     /**
-     * To colour the transaction row ligter/darker, alternating on
-     * unrelated transactions.
+     * The formatted transaction amount.
      */
-    darkBackgroundRow?: boolean;
+    balanceChangeFormatted: string;
+
+    /**
+     * Check if transaction from stardust by TransactionHelper.
+     */
+    isTransactionFromStardustGenesis: boolean;
+
+    /**
+     * check some of outputs timestamps zero
+     */
+    isGenesisByDate: boolean;
+
+    /**
+     * The transaction link.
+     */
+    transactionLink: string;
 }

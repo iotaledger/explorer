@@ -81,22 +81,33 @@ const UnlockConditionView: React.FC<UnlockConditionViewProps> = ({ unlockConditi
 };
 
 function getUnlockConditionTypeName(type: UnlockConditionType): string {
+    let name = null;
+
     switch (type) {
         case UnlockConditionType.Address:
-            return "Address";
+            name = "Address";
+            break;
         case UnlockConditionType.StorageDepositReturn:
-            return "Storage deposit return";
+            name = "Storage Deposit Return";
+            break;
         case UnlockConditionType.Timelock:
-            return "Timelock";
+            name = "Timelock";
+            break;
         case UnlockConditionType.Expiration:
-            return "Expiration";
+            name = "Expiration";
+            break;
         case UnlockConditionType.GovernorAddress:
-            return "Governor address";
+            name = "Governor Address";
+            break;
         case UnlockConditionType.StateControllerAddress:
-            return "State controller address";
+            name = "State Controller Address";
+            break;
         case UnlockConditionType.ImmutableAccountAddress:
-            return "Immutable account address";
+            name = "Immutable Account Address";
+            break;
     }
+
+    return name !== null ? `${name} Unlock Condition` : "Unknown Unlock condition";
 }
 
 export default UnlockConditionView;

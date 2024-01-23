@@ -4,7 +4,7 @@ import { IParticipationEventResponse } from "../../../../models/api/stardust/par
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
-import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -24,5 +24,6 @@ export async function get(config: IConfiguration, request: IParticipationEventRe
         return {};
     }
 
-    return StardustTangleHelper.participationEventDetails(networkConfig, request.eventId);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.participationEventDetails(request.eventId);
 }

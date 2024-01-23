@@ -1,6 +1,6 @@
 import { IResponse } from "./IResponse";
 
-export interface IIdentityStardustResolveResponse extends IResponse {
+export interface IDIDResolverResponse extends IResponse {
     /**
      * The resolved DID Document.
      */
