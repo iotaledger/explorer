@@ -1,4 +1,3 @@
-import { OutputResponse } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
@@ -7,6 +6,19 @@ import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/ap
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
+import { OutputResponse } from "@iota/sdk-wasm/web";
+
+const OUTPUT_PAGE_SIZE = 10;
+const TX_PAGE_SIZE = 10;
+
+const SORT = "newest";
+
+interface IHistoryState {
+    transactionIdToOutputs: Map<string, OutputWithDetails[]>;
+    outputsWithDetails: OutputWithDetails[];
+    isAddressHistoryLoading: boolean;
+    cursor: string | undefined;
+}
 
 export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string };
 
@@ -23,13 +35,13 @@ export function useAddressHistory(
     setDisabled?: (isDisabled: boolean) => void,
 ): [Map<string, OutputWithDetails[]>, () => void, boolean, boolean] {
     const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
-    const [outputsWithDetails, setOutputsWithDetails] = useState<OutputWithDetails[]>([]);
-    const [transactionIdToOutputs, setTransactionIdToOutputs] = useState<Map<string, OutputWithDetails[]>>(new Map());
-    const [isAddressHistoryLoading, setIsAddressHistoryLoading] = useState(true);
-    const [cursor, setCursor] = useState<string | undefined>();
-    const PAGE_SIZE: number = 10;
-    const SORT: string = "newest";
+    const [apiClient] = useState(() => ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
+    const [historyState, setHistoryState] = useState<IHistoryState>({
+        transactionIdToOutputs: new Map<string, OutputWithDetails[]>(),
+        outputsWithDetails: [],
+        isAddressHistoryLoading: true,
+        cursor: undefined,
+    });
 
     useEffect(() => {
         if (!address || !isMounted) return;
@@ -38,13 +50,15 @@ export function useAddressHistory(
         })();
     }, [address, isMounted]);
 
-    const requestOutputsList = async () => {
-        if (!address) return;
+    const requestOutputsList = async (
+        cursor: string | undefined,
+    ): Promise<{ outputs: ITransactionHistoryItem[]; cursor: string | undefined }> => {
+        if (!address) return { outputs: [], cursor: undefined };
 
         const request: ITransactionHistoryRequest = {
             network,
             address,
-            pageSize: PAGE_SIZE,
+            pageSize: OUTPUT_PAGE_SIZE,
             sort: SORT,
             cursor,
         };
@@ -57,7 +71,7 @@ export function useAddressHistory(
         };
     };
 
-    const requestOutputDetails = async (outputId: string) => {
+    const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
         if (!outputId) return null;
 
         try {
@@ -75,32 +89,29 @@ export function useAddressHistory(
     };
 
     const loadHistory = async () => {
-        if (address && isMounted) {
-            setIsAddressHistoryLoading(true);
+        let { transactionIdToOutputs, outputsWithDetails, cursor } = historyState;
+        const targetSize = transactionIdToOutputs.size + TX_PAGE_SIZE;
+        let searchMore = true;
 
+        setHistoryState((prevState) => ({ ...prevState, isAddressHistoryLoading: true }));
+
+        while (transactionIdToOutputs.size < targetSize && searchMore) {
             try {
-                const outputList = await requestOutputsList();
+                const { outputs, cursor: newCursor } = await requestOutputsList(cursor);
 
-                if (!outputList) {
-                    return;
-                }
-
-                const { outputs, cursor } = outputList;
-
-                if (!cursor) {
+                if (!newCursor) {
                     setDisabled?.(true);
+                    searchMore = false;
                 }
 
-                const fulfilledOutputs: OutputWithDetails[] = [];
+                const fulfilledOutputs: OutputWithDetails[] = await Promise.all(
+                    outputs.map(async (output) => ({
+                        ...output,
+                        details: await requestOutputDetails(output.outputId),
+                    })),
+                );
 
-                for (const output of outputs) {
-                    const outputDetails = await requestOutputDetails(output.outputId);
-                    fulfilledOutputs.push({ ...output, details: outputDetails, amount: outputDetails?.output?.amount });
-                }
-
-                const updatedOutputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs];
-
-                updatedOutputsWithDetails.sort((a, b) => {
+                outputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs].sort((a, b) => {
                     // Ensure that entries with equal timestamp, but different isSpent,
                     // have the spending before the depositing
                     if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
@@ -109,16 +120,16 @@ export function useAddressHistory(
                     return 1;
                 });
 
-                const groupedOutputsByTransactionId = groupOutputsByTransactionId(updatedOutputsWithDetails);
-
-                setTransactionIdToOutputs(groupedOutputsByTransactionId);
-                setOutputsWithDetails([...outputsWithDetails, ...fulfilledOutputs]);
-                setCursor(cursor);
-            } finally {
-                setIsAddressHistoryLoading(false);
+                transactionIdToOutputs = groupOutputsByTransactionId(outputsWithDetails);
+                cursor = newCursor;
+            } catch (error) {
+                console.error("Failed loading transaction history", error);
+                searchMore = false;
             }
         }
+
+        setHistoryState({ transactionIdToOutputs, outputsWithDetails, isAddressHistoryLoading: false, cursor });
     };
 
-    return [transactionIdToOutputs, loadHistory, isAddressHistoryLoading, Boolean(cursor)];
+    return [historyState.transactionIdToOutputs, loadHistory, historyState.isAddressHistoryLoading, Boolean(historyState.cursor)];
 }
