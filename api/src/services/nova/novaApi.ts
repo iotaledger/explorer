@@ -1,8 +1,13 @@
 /* eslint-disable import/no-unresolved */
-import { __ClientMethods__, OutputResponse, Client } from "@iota/sdk-nova";
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import logger from "../../logger";
+import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
+import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
+import { HexHelper } from "../../utils/hexHelper";
 
 type NameType<T> = T extends { name: infer U } ? U : never;
 type ExtractedMethodNames = NameType<__ClientMethods__>;
@@ -11,6 +16,49 @@ type ExtractedMethodNames = NameType<__ClientMethods__>;
  * Class to interact with the nova API.
  */
 export class NovaApi {
+    /**
+     * Get a block.
+     * @param network The network to find the items on.
+     * @param blockId The block id to get the details.
+     * @returns The block response.
+     */
+    public static async block(network: INetwork, blockId: string): Promise<IBlockResponse> {
+        blockId = HexHelper.addPrefix(blockId);
+        const block = await this.tryFetchNodeThenPermanode<string, Block>(blockId, "getBlock", network);
+
+        if (!block) {
+            return { error: `Couldn't find block with id ${blockId}` };
+        }
+
+        try {
+            if (block && Object.keys(block).length > 0) {
+                return {
+                    block,
+                };
+            }
+        } catch (e) {
+            logger.error(`Failed fetching block with block id ${blockId}. Cause: ${e}`);
+            return { error: "Block fetch failed." };
+        }
+    }
+
+    /**
+     * Get the block details.
+     * @param network The network to find the items on.
+     * @param blockId The block id to get the details.
+     * @returns The item details.
+     */
+    public static async blockDetails(network: INetwork, blockId: string): Promise<IBlockDetailsResponse> {
+        blockId = HexHelper.addPrefix(blockId);
+        const metadata = await this.tryFetchNodeThenPermanode<string, IBlockMetadata>(blockId, "getBlockMetadata", network);
+
+        if (metadata) {
+            return {
+                metadata,
+            };
+        }
+    }
+
     /**
      * Get the output details.
      * @param network The network to find the items on.
