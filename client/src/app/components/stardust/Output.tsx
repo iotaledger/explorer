@@ -61,7 +61,7 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            isExpanded: this.props.isPreExpanded ?? false,
+            isExpanded: this.props.isPreExpanded ?? true,
             isFormattedBalance: true,
         };
     }
