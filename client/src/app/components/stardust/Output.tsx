@@ -224,12 +224,14 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
-                                    const isExpandedByCondition = this.getExpandedStateInUnlockCondition(
-                                        unlockCondition,
-                                    );
+                                    const isExpandedByCondition = this.getExpandedStateInUnlockCondition(unlockCondition);
                                     return (
-                                        <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isExpandedByCondition || isPreExpanded} />
-                                    )
+                                        <UnlockCondition
+                                            key={idx}
+                                            unlockCondition={unlockCondition}
+                                            isPreExpanded={isExpandedByCondition || isPreExpanded}
+                                        />
+                                    );
                                 })}
                                 {(output as CommonOutput).features?.map((feature, idx) => (
                                     <Feature
@@ -266,9 +268,12 @@ class Output extends Component<OutputProps, OutputState> {
     private getExpandedStateInUnlockCondition(unlockCondition?: IUnlockCondition, unlockConditions?: IUnlockCondition[]): boolean {
         if (!unlockCondition) return false;
 
-        const expirationUnlockCondition = unlockConditions?.find(cond => cond.type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+        const expirationUnlockCondition = unlockConditions?.find(
+            (cond) => cond.type === UnlockConditionType.Expiration,
+        ) as ExpirationUnlockCondition;
         const isExpirationConditionPresent = !!expirationUnlockCondition;
-        const isExpirationConditionExpired = isExpirationConditionPresent && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
+        const isExpirationConditionExpired =
+            isExpirationConditionPresent && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
 
         switch (unlockCondition.type) {
             case UnlockConditionType.Address:
