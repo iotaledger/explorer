@@ -90,7 +90,8 @@ export function useAddressHistory(
 
     const loadHistory = async () => {
         let { transactionIdToOutputs, outputsWithDetails, cursor } = historyState;
-        const targetSize = transactionIdToOutputs.size + TX_PAGE_SIZE;
+        // Search one more than the desired so the incomplete transaction can be removed with .pop()
+        const targetSize = transactionIdToOutputs.size + TX_PAGE_SIZE + 1;
         let searchMore = true;
 
         setHistoryState((prevState) => ({ ...prevState, isAddressHistoryLoading: true }));
@@ -131,7 +132,6 @@ export function useAddressHistory(
                 searchMore = false;
             }
         }
-
         setHistoryState({ transactionIdToOutputs, outputsWithDetails, isAddressHistoryLoading: false, cursor });
     };
 
