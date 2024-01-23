@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";

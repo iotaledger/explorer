@@ -5,8 +5,8 @@ import { INftOutputsResponse } from "../../../../models/api/stardust/nft/INftOut
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
+import { StardustApiService } from "../../../../services/stardust/stardustApiService";
 import { Converter } from "../../../../utils/convertUtils";
-import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -29,11 +29,12 @@ export async function get(_: IConfiguration, request: ITaggedOutputsRequest): Pr
     }
 
     const tagHex = Converter.utf8ToHex(request.tag, true);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
 
     if (request.outputType === "basic") {
-        return StardustTangleHelper.taggedBasicOutputs(networkConfig, tagHex, 10, request.cursor);
+        return stardustApiService.taggedBasicOutputs(tagHex, 10, request.cursor);
     } else if (request.outputType === "nft") {
-        return StardustTangleHelper.taggedNftOutputs(networkConfig, tagHex, 10, request.cursor);
+        return stardustApiService.taggedNftOutputs(tagHex, 10, request.cursor);
     }
 
     return { error: "Unsupported output type" };

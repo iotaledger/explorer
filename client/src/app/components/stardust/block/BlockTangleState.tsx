@@ -1,19 +1,20 @@
 import classNames from "classnames";
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { BlockTangleStateProps } from "./BlockTangleStateProps";
 import { useMilestoneDetails } from "~helpers/stardust/hooks/useMilestoneDetails";
 import Tooltip from "../../Tooltip";
 import "./BlockTangleState.scss";
+import { DateHelper } from "~/helpers/dateHelper";
 
 const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, milestoneIndex, hasConflicts, conflictReason, onClick }) => {
-    const [ago, setAgo] = useState<string | undefined>();
+    const [milestoneTimestamp, setMilestoneTimestamp] = useState<string | undefined>();
     const [blockId, setBlockId] = useState<string | undefined>();
     const [milestoneDetails] = useMilestoneDetails(network, milestoneIndex ?? null);
 
     useEffect(() => {
         if (milestoneDetails?.milestone?.timestamp) {
-            setAgo(moment(milestoneDetails.milestone?.timestamp * 1000).fromNow());
+            const readableTimestamp = DateHelper.format(DateHelper.milliseconds(milestoneDetails.milestone.timestamp));
+            setMilestoneTimestamp(readableTimestamp);
         }
         setBlockId(milestoneDetails?.blockId);
     }, [milestoneDetails]);
@@ -34,7 +35,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                             {milestoneIndex && "Confirmed"}
                             {!milestoneIndex && "Pending"}
                         </div>
-                        {milestoneIndex && <span className="row middle">Created {ago}</span>}
+                        {milestoneIndex && <span className="row middle">Created {milestoneTimestamp}</span>}
                     </div>
                 </div>
             )}
@@ -77,7 +78,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ network, status, mi
                             >
                                 Milestone {milestoneIndex}
                             </span>
-                            <span> {ago}</span>
+                            <span> - {milestoneTimestamp}</span>
                         </div>
                     ) : (
                         ""

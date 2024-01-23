@@ -16,13 +16,19 @@ const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000
  * @param decimalPlaces The decimal places to show.
  * @returns The formatted string.
  */
-export function formatAmount(value: number, tokenInfo: INodeInfoBaseToken, formatFull: boolean = false, decimalPlaces: number = 2): string {
+export function formatAmount(
+    value: number,
+    tokenInfo: INodeInfoBaseToken,
+    formatFull: boolean = false,
+    decimalPlaces: number = 2,
+    trailingDecimals?: boolean,
+): string {
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
 
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces);
+    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces, trailingDecimals);
 
     // useMetricPrefix is broken cause it passes a float value to formatBest
     const amount = tokenInfo.useMetricPrefix ? UnitsHelper.formatBest(baseTokenValue) : `${formattedAmount} `;
@@ -44,10 +50,12 @@ export function formatNumberWithCommas(value: bigint): string {
  * @param precision The decimal places to show.
  * @returns The formatted amount.
  */
-function toFixedNoRound(value: number, precision: number = 2): string {
+function toFixedNoRound(value: number, precision: number = 2, trailingDecimals?: boolean): string {
+    const defaultDecimals = "0".repeat(precision);
     const valueString = `${value}`;
-    const [integer, fraction] = valueString.split(".");
-    if (!fraction) {
+    const [integer, fraction = defaultDecimals] = valueString.split(".");
+
+    if (fraction === defaultDecimals && !trailingDecimals) {
         return valueString;
     }
 
