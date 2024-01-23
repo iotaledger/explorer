@@ -29,7 +29,7 @@ export function useResolvedDID(network: string, bech32Hrp: string, addressHex: s
                             setidentityResponse(response);
                         }
                     })
-                    .then(() => identityService.initLibrary())
+                    .then(() => identityService.initLibrary(window?.location?.origin ?? "" + "/wasm/identity_wasm_bg.wasm"))
                     .finally(() => {
                         setIsLoading(false);
                     });
