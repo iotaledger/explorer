@@ -105,10 +105,14 @@ export function useAddressHistory(
                 }
 
                 const fulfilledOutputs: OutputWithDetails[] = await Promise.all(
-                    outputs.map(async (output) => ({
-                        ...output,
-                        details: await requestOutputDetails(output.outputId),
-                    })),
+                    outputs.map(async (output) => {
+                        const details = await requestOutputDetails(output.outputId);
+                        return {
+                            ...output,
+                            details,
+                            amount: details?.output?.amount,
+                        };
+                    }),
                 );
 
                 outputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs].sort((a, b) => {
