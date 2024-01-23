@@ -90,8 +90,6 @@ class Output extends Component<OutputProps, OutputState> {
         const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
 
 
-        const unlockConditionExpiredType = this.getUnlockConditionExpiredType((output as CommonOutput)?.unlockConditions);
-
         const specialUnlockCondition =
             output.type !== OutputType.Treasury &&
             isSpecialCondition &&
@@ -233,7 +231,6 @@ class Output extends Component<OutputProps, OutputState> {
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
                                     const isExpandedByCondition = this.getExpandedStateInUnlockCondition(
                                         unlockCondition,
-                                        unlockConditionExpiredType as ExpirationUnlockCondition
                                     );
                                     return (
                                         <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isExpandedByCondition || isPreExpanded} />
@@ -271,29 +268,21 @@ class Output extends Component<OutputProps, OutputState> {
         );
     }
 
-    private getUnlockConditionExpiredType(unlockConditions?: IUnlockCondition[]): IUnlockCondition | undefined {
-        if (!unlockConditions) return;
-        return unlockConditions.find((condition) => condition.type === UnlockConditionType.Expiration);
-    }
+    private getExpandedStateInUnlockCondition(unlockCondition?: IUnlockCondition, unlockConditions?: IUnlockCondition[]): boolean {
+        if (!unlockCondition) return false;
 
-    private getExpandedStateInUnlockCondition(
-        unlockCondition?: IUnlockCondition,
-        expirationUnlockCondition?: ExpirationUnlockCondition
-    ): boolean {
+        const expirationUnlockCondition = unlockConditions?.find(cond => cond.type === UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+        const isExpirationConditionPresent = !!expirationUnlockCondition;
+        const isExpirationConditionExpired = isExpirationConditionPresent && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
 
-        if (unlockCondition?.type === UnlockConditionType.Address && !expirationUnlockCondition) return true;
-
-        const isExpirationUnlockConditionExpired = DateHelper.isExpired((expirationUnlockCondition as ExpirationUnlockCondition).unixTime * 1000);
-
-        if (unlockCondition?.type === UnlockConditionType.Expiration && isExpirationUnlockConditionExpired) {
-            return true;
+        switch (unlockCondition.type) {
+            case UnlockConditionType.Address:
+                return !isExpirationConditionPresent || (isExpirationConditionPresent && !isExpirationConditionExpired);
+            case UnlockConditionType.Expiration:
+                return isExpirationConditionExpired;
+            default:
+                return false;
         }
-
-        if (unlockCondition?.type === UnlockConditionType.Address && !isExpirationUnlockConditionExpired) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
