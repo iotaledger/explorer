@@ -40,6 +40,15 @@ export class DateHelper {
     }
 
     /**
+     * Check if the date is expired.
+     * @param valueInMs The value to format in milliseconds.
+     * @returns Boolean if the date is expired.
+     */
+    public static isExpired(valueInMs: number): boolean {
+        return moment(valueInMs).isBefore(moment());
+    }
+
+    /**
      * Check the value is in ms if not scale accordingly.
      * @param valueInMs The value to format in milliseconds.
      * @returns The updated value.

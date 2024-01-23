@@ -89,11 +89,8 @@ class Output extends Component<OutputProps, OutputState> {
         const isSpecialCondition = this.hasSpecialCondition();
         const isParticipationOutput = TransactionsHelper.isParticipationEventOutput(output);
 
-        const hasStorageDepositReturnUnlockCondition = (output as CommonOutput).unlockConditions.find(
-            (condition) => condition.type === UnlockConditionType.StorageDepositReturn
-        );
 
-        console.log('--- hasStorageDepositReturnUnlockCondition', hasStorageDepositReturnUnlockCondition);
+        const unlockConditionExpiredType = this.getUnlockConditionExpiredType((output as CommonOutput)?.unlockConditions);
 
         const specialUnlockCondition =
             output.type !== OutputType.Treasury &&
@@ -234,20 +231,10 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
-                                    let isExpandedByCondition = false;
-
-                                    if (!hasStorageDepositReturnUnlockCondition && unlockCondition.type === UnlockConditionType.Address) {
-                                        isExpandedByCondition = true;
-                                    }
-
-                                    if (unlockCondition.type === UnlockConditionType.Address && hasStorageDepositReturnUnlockCondition &&
-                                    // @ts-ignore
-                                        hasStorageDepositReturnUnlockCondition?.returnAddress?.pubKeyHash === unlockCondition.address?.pubKeyHash
-                                    ) {
-                                        isExpandedByCondition = true;
-                                    }
-                                    // console.log('--- isExpandedByCondition', isExpandedByCondition);
-
+                                    const isExpandedByCondition = this.getExpandedStateInUnlockCondition(
+                                        unlockCondition,
+                                        unlockConditionExpiredType as ExpirationUnlockCondition
+                                    );
                                     return (
                                         <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isExpandedByCondition || isPreExpanded} />
                                     )
@@ -282,6 +269,31 @@ class Output extends Component<OutputProps, OutputState> {
                 )}
             </div>
         );
+    }
+
+    private getUnlockConditionExpiredType(unlockConditions?: IUnlockCondition[]): IUnlockCondition | undefined {
+        if (!unlockConditions) return;
+        return unlockConditions.find((condition) => condition.type === UnlockConditionType.Expiration);
+    }
+
+    private getExpandedStateInUnlockCondition(
+        unlockCondition?: IUnlockCondition,
+        expirationUnlockCondition?: ExpirationUnlockCondition
+    ): boolean {
+
+        if (unlockCondition?.type === UnlockConditionType.Address && !expirationUnlockCondition) return true;
+
+        const isExpirationUnlockConditionExpired = DateHelper.isExpired((expirationUnlockCondition as ExpirationUnlockCondition).unixTime * 1000);
+
+        if (unlockCondition?.type === UnlockConditionType.Expiration && isExpirationUnlockConditionExpired) {
+            return true;
+        }
+
+        if (unlockCondition?.type === UnlockConditionType.Address && !isExpirationUnlockConditionExpired) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
