@@ -23,6 +23,10 @@ import InclusionState from "../../components/stardust/InclusionState";
 import TruncatedId from "../../components/stardust/TruncatedId";
 import NetworkContext from "../../context/NetworkContext";
 import "./TransactionPage.scss";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { StardustApiClient } from "~services/stardust/stardustApiClient";
+import { STARDUST } from "~models/config/protocolVersion";
+import { OutputResponse, UnlockConditionType } from "@iota/sdk-wasm/web";
 
 enum TRANSACTION_PAGE_TABS {
     Payload = "Payload",
@@ -36,6 +40,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     },
 }) => {
     const { tokenInfo } = useContext(NetworkContext);
+    const [apiClient] = useState(() => ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [block, isIncludedBlockLoading, blockError] = useTransactionIncludedBlock(network, transactionId);
     const [inputs, unlocks, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
     const [includedBlockId, setIncludedBlockId] = useState<string | null>(null);
@@ -44,6 +49,8 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+
+    // console.log('--- inputs', inputs, outputs);
 
     useEffect(() => {
         if (block?.payload?.type === PayloadType.Transaction) {
@@ -54,6 +61,59 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             setInputsCommitment(transactionEssence.inputsCommitment);
         }
     }, [block]);
+
+    const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
+        if (!outputId) return null;
+
+        try {
+            const response = await apiClient.outputDetails({ network, outputId });
+            const details = response.output;
+
+            if (!response.error && details?.output && details?.metadata) {
+                return details;
+            }
+            return null;
+        } catch {
+            console.log("Failed loading transaction history details!");
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        // request output details for unlocks with expiration
+        if (!inputs || !outputs) return;
+
+        (async () => {
+            const outputIdsWithUnlockConditions = [];
+
+            for (const input of inputs) {
+                // @ts-ignore
+                const hasUnlockExpiration = input?.output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
+                // @ts-ignore
+                if (hasUnlockExpiration) {
+                    outputIdsWithUnlockConditions.push(input?.outputId);
+                }
+            }
+
+            for (const output of outputs) {
+
+                // @ts-ignore
+                const hasUnlockExpiration = output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
+
+                if (hasUnlockExpiration) {
+                    outputIdsWithUnlockConditions.push(output?.id);
+                }
+            }
+
+            if (outputIdsWithUnlockConditions.length > 0) {
+                const outputDetails = await Promise.all(outputIdsWithUnlockConditions.map((outputId) => {
+                    return apiClient.outputDetails({ network, outputId });
+                }));
+                console.log('--- outputDetails', outputDetails);
+            }
+
+        })();
+    }, [inputs, outputs]);
 
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
