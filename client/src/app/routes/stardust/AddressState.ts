@@ -37,7 +37,7 @@ import { IDIDResolverResponse } from "~/models/api/IDIDResolverResponse";
 export interface IAddressState {
     bech32AddressDetails: IBech32AddressDetails | null;
     balance: number | null;
-    sigLockedBalance: number | null;
+    availableBalance: number | null;
     storageRentBalance: number | null;
     addressOutputs: OutputResponse[] | null;
     addressBasicOutputs: OutputResponse[] | null;
@@ -69,7 +69,7 @@ export interface IAddressState {
 const initialState = {
     bech32AddressDetails: null,
     balance: null,
-    sigLockedBalance: null,
+    availableBalance: null,
     storageRentBalance: null,
     addressOutputs: null,
     addressBasicOutputs: null,
@@ -127,7 +127,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         network,
         addressType === AddressType.Alias ? state.bech32AddressDetails : null,
     );
-    const [balance, sigLockedBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null);
+    const [balance, availableBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null);
     const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
 
     const [aliasContainsDID] = useAliasContainsDID(aliasOutput);
@@ -168,7 +168,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             aliasFoundries,
             isAliasFoundriesLoading,
             balance,
-            sigLockedBalance,
+            availableBalance,
             eventDetails,
             aliasContainsDID,
             resolvedDID,
@@ -189,7 +189,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         aliasFoundries,
         isAliasFoundriesLoading,
         balance,
-        sigLockedBalance,
+        availableBalance,
         eventDetails,
         aliasContainsDID,
         resolvedDID,
