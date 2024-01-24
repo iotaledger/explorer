@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unknown-property */
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
@@ -32,8 +32,8 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     const { xTangleDistance, yTangleDistance } = getTangleDistances();
     const isPlaying = useConfigStore((state) => state.isPlaying);
 
-    const [animationTime, setAnimationTime] = useState<number>(0);
-    const [currentAmplitude, setCurrentAmplitude] = useState<number>(INITIAL_SINUSOIDAL_AMPLITUDE);
+    const animationTime = useRef<number>(0);
+    const currentAmplitude = useRef<number>(INITIAL_SINUSOIDAL_AMPLITUDE);
 
     const previousRealTime = useRef<number>(0);
     const previousPeakTime = useRef<number>(0);
@@ -55,16 +55,16 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     });
 
     function updateAnimationTime(realTimeDelta: number): void {
-        setAnimationTime((prev) => prev + realTimeDelta);
+        animationTime.current += realTimeDelta;
     }
 
     function checkAndHandleNewPeak(): void {
-        const currentHalfWaveCount = Math.floor(animationTime / HALF_WAVE_PERIOD_SECONDS);
+        const currentHalfWaveCount = Math.floor(animationTime.current / HALF_WAVE_PERIOD_SECONDS);
         const lastPeakHalfWaveCount = Math.floor(previousPeakTime.current / HALF_WAVE_PERIOD_SECONDS);
 
         if (currentHalfWaveCount > lastPeakHalfWaveCount) {
-            setCurrentAmplitude((prev) => Math.min(prev + SINUSOIDAL_AMPLITUDE_ACCUMULATOR, MAX_SINUSOIDAL_AMPLITUDE));
-            previousPeakTime.current = animationTime;
+            currentAmplitude.current = Math.min(currentAmplitude.current + SINUSOIDAL_AMPLITUDE_ACCUMULATOR, MAX_SINUSOIDAL_AMPLITUDE);
+            previousPeakTime.current = animationTime.current;
         }
     }
 
@@ -87,7 +87,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
             }
 
             if (emitterRef.current) {
-                const newYPos = getSinusoidalPosition(animationTime, currentAmplitude);
+                const newYPos = getSinusoidalPosition(animationTime.current, currentAmplitude.current);
                 emitterRef.current.position.y = newYPos;
             }
         }
