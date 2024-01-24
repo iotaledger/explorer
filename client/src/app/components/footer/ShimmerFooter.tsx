@@ -6,8 +6,9 @@ import GithubIcon from "~assets/github.svg?react";
 import Logo from "~assets/shimmer-footer-bg.svg?react";
 import TwitterIcon from "~assets/twitter.svg?react";
 import { FoundationDataHelper } from "~helpers/foundationDataHelper";
-import "./ShimmerFooter.scss";
 import AsyncComponent from "../AsyncComponent";
+import ExplorerVersion from "./ExplorerVersion";
+import "./ShimmerFooter.scss";
 
 /**
  * Component which will show the footer.
@@ -114,6 +115,7 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
                             </section>
                         </div>
                     </div>
+                    <ExplorerVersion shimmerTheme />
                 </section>
             </footer>
         );
