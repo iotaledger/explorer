@@ -115,8 +115,8 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
                             </section>
                         </div>
                         {explorerVersion && (
-                            <section className="shimmer-version__wrapper">
-                                <div className="version">v{explorerVersion}</div>
+                            <section className="shimmer-version">
+                                v{explorerVersion}
                             </section>
                         )}
                     </div>

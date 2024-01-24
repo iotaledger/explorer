@@ -137,8 +137,8 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                     </div>
                 </section>
                 {explorerVersion && (
-                    <section className="version__wrapper">
-                        <div className="version">v{explorerVersion}</div>
+                    <section className="version">
+                        v{explorerVersion}
                     </section>
                 )}
                 <section className="social--media__wrapper">

@@ -149,19 +149,13 @@ footer {
         }
     }
 
-    .version__wrapper {
+    .version {
         background-color: $gray-11;
         display: flex;
         justify-content: center;
         padding: 4px 0px;
-
-        .version {
-            font-family: $inter;
-            color: $white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background-color: #445696;
-        }
+        font-family: $inter;
+        color: $gray-6;
     }
 
     .social--media__wrapper {
