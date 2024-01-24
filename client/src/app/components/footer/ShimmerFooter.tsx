@@ -144,8 +144,9 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
             url: string;
         }[];
     } {
+        const explorerVersion = EXPLORER_VERSION ?? "";
         return {
-            label: "Explorer",
+            label: `Explorer${explorerVersion ? ` v${explorerVersion}` : ""}`,
             items: this.props.dynamic.map((n) => ({
                 label: n.label,
                 url: `local://${n.url}`,

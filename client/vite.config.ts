@@ -23,6 +23,9 @@ export default defineConfig(() => {
             }),
             nodePolyfills()
         ],
+        define: {
+            EXPLORER_VERSION: JSON.stringify(process.env.npm_package_version)
+        },
         test: {
             globals: true,
             teardownTimeout: 100
