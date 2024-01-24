@@ -4,6 +4,7 @@
 @import "../../../scss/variables";
 
 footer {
+    position: relative;
     .footer--content {
         display: flex;
         justify-content: center;
@@ -147,15 +148,6 @@ footer {
                 }
             }
         }
-    }
-
-    .version {
-        background-color: $gray-11;
-        display: flex;
-        justify-content: center;
-        padding: 4px 0px;
-        font-family: $inter;
-        color: $gray-6;
     }
 
     .social--media__wrapper {

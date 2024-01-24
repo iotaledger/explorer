@@ -11,6 +11,7 @@ import TwitterIcon from "~assets/twitter.svg?react";
 import YoutubeIcon from "~assets/youtube.svg?react";
 import { FoundationDataHelper } from "~helpers/foundationDataHelper";
 import AsyncComponent from "../AsyncComponent";
+import ExplorerVersion from "./ExplorerVersion";
 import "./Footer.scss";
 
 /**
@@ -101,7 +102,6 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const explorerVersion = EXPLORER_VERSION ?? "";
         return (
             <footer>
                 <section className="footer--content">
@@ -136,11 +136,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                         </div>
                     </div>
                 </section>
-                {explorerVersion && (
-                    <section className="version">
-                        v{explorerVersion}
-                    </section>
-                )}
+                <ExplorerVersion />
                 <section className="social--media__wrapper">
                     {this.SOCIAL_LINKS.map((social, socialID) => (
                         <a

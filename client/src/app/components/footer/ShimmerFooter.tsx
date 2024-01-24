@@ -7,6 +7,7 @@ import Logo from "~assets/shimmer-footer-bg.svg?react";
 import TwitterIcon from "~assets/twitter.svg?react";
 import { FoundationDataHelper } from "~helpers/foundationDataHelper";
 import AsyncComponent from "../AsyncComponent";
+import ExplorerVersion from "./ExplorerVersion";
 import "./ShimmerFooter.scss";
 
 /**
@@ -68,7 +69,6 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const explorerVersion = EXPLORER_VERSION ?? "";
         return (
             <footer>
                 <section className="shimmer-footer--content">
@@ -114,12 +114,8 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
                                 </ul>
                             </section>
                         </div>
-                        {explorerVersion && (
-                            <section className="shimmer-version">
-                                v{explorerVersion}
-                            </section>
-                        )}
                     </div>
+                    <ExplorerVersion shimmerTheme />
                 </section>
             </footer>
         );
