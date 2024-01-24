@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import Tooltip from "../../Tooltip";
 import { BlockState, u64 } from "@iota/sdk-wasm-nova/web";
-import { BlockFailureReason } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
+import { BlockFailureReason, BLOCK_FAILURE_REASON_STRINGS } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
 import "./BlockTangleState.scss";
 import { DateHelper } from "~/helpers/dateHelper";
 
@@ -48,8 +48,7 @@ const BlockTangleState: React.FC<BlockTangleStateProps> = ({ status, issuingTime
                         )}
                     >
                         {failureReason ? (
-                            // todo: add BLOCK_FAILURE_REASON_STRINGS[failureReason] as tooltip content instead of failureReason?.toString()(track: https://github.com/iotaledger/iota-sdk/issues/1846)
-                            <Tooltip tooltipContent={failureReason?.toString()}>
+                            <Tooltip tooltipContent={BLOCK_FAILURE_REASON_STRINGS[failureReason]}>
                                 <span className="capitalize-text" style={{ color: "#ca493d" }}>
                                     {status}
                                 </span>
