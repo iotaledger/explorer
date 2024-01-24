@@ -180,6 +180,21 @@ footer {
         }
     }
 
+    .shimmer-version__wrapper {
+        background-color: #061a28;
+        display: flex;
+        justify-content: center;
+        padding: 4px 0px;
+
+        .version {
+            font-family: $inter;
+            color: $white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: #445696;
+        }
+    }
+
     .social--media__wrapper {
         display: flex;
         align-items: center;

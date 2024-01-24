@@ -7,7 +7,7 @@ footer {
     .footer--content {
         display: flex;
         justify-content: center;
-        padding: 40px 20px 64px 20px;
+        padding: 40px 20px 0px 20px;
         background-color: $gray-11;
         color: $white;
 
@@ -146,6 +146,21 @@ footer {
                     }
                 }
             }
+        }
+    }
+
+    .version__wrapper {
+        background-color: $gray-11;
+        display: flex;
+        justify-content: center;
+        padding: 4px 0px;
+
+        .version {
+            font-family: $inter;
+            color: $white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: #445696;
         }
     }
 

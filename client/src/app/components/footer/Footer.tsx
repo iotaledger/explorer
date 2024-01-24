@@ -101,6 +101,7 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const explorerVersion = EXPLORER_VERSION ?? "";
         return (
             <footer>
                 <section className="footer--content">
@@ -135,6 +136,11 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
                         </div>
                     </div>
                 </section>
+                {explorerVersion && (
+                    <section className="version__wrapper">
+                        <div className="version">v{explorerVersion}</div>
+                    </section>
+                )}
                 <section className="social--media__wrapper">
                     {this.SOCIAL_LINKS.map((social, socialID) => (
                         <a
@@ -179,9 +185,8 @@ class Footer extends AsyncComponent<FooterProps, FooterState> {
             url: string;
         }[];
     } {
-        const explorerVersion = EXPLORER_VERSION ?? "";
         return {
-            label: `Explorer${explorerVersion ? ` v${explorerVersion}` : ""}`,
+            label: "Explorer",
             items: this.props.dynamic.map((n) => ({
                 label: n.label,
                 url: `local://${n.url}`,

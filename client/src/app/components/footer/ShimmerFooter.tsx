@@ -6,8 +6,8 @@ import GithubIcon from "~assets/github.svg?react";
 import Logo from "~assets/shimmer-footer-bg.svg?react";
 import TwitterIcon from "~assets/twitter.svg?react";
 import { FoundationDataHelper } from "~helpers/foundationDataHelper";
-import "./ShimmerFooter.scss";
 import AsyncComponent from "../AsyncComponent";
+import "./ShimmerFooter.scss";
 
 /**
  * Component which will show the footer.
@@ -68,6 +68,7 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
      * @returns The node to render.
      */
     public render(): ReactNode {
+        const explorerVersion = EXPLORER_VERSION ?? "";
         return (
             <footer>
                 <section className="shimmer-footer--content">
@@ -113,6 +114,11 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
                                 </ul>
                             </section>
                         </div>
+                        {explorerVersion && (
+                            <section className="shimmer-version__wrapper">
+                                <div className="version">v{explorerVersion}</div>
+                            </section>
+                        )}
                     </div>
                 </section>
             </footer>
@@ -144,9 +150,8 @@ class ShimmerFooter extends AsyncComponent<FooterProps, FooterState> {
             url: string;
         }[];
     } {
-        const explorerVersion = EXPLORER_VERSION ?? "";
         return {
-            label: `Explorer${explorerVersion ? ` v${explorerVersion}` : ""}`,
+            label: "Explorer",
             items: this.props.dynamic.map((n) => ({
                 label: n.label,
                 url: `local://${n.url}`,
