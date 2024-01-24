@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { Client, INodeInfo } from "@iota/sdk-nova";
 import { NodeInfoError } from "../../errors/nodeInfoError";
 import { ServiceFactory } from "../../factories/serviceFactory";

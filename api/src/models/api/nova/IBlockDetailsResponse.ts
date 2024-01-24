@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { IBlockMetadata } from "@iota/sdk-nova";
 import { IResponse } from "../IResponse";
 

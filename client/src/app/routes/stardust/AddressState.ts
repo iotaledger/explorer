@@ -30,9 +30,9 @@ import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
 import { IParticipation } from "~models/api/stardust/participation/IParticipation";
 import NetworkContext from "../../context/NetworkContext";
 import { AddressRouteProps } from "../AddressRouteProps";
-import { useAliasContainsDID } from "~helpers/stardust/hooks/useAliasContainsDID";
-import { useResolvedDID } from "~helpers/stardust/hooks/useResolvedDID";
-import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
+import { useAliasContainsDID } from "~/helpers/stardust/hooks/useAliasContainsDID";
+import { useResolvedDID } from "~/helpers/stardust/hooks/useResolvedDID";
+import { IDIDResolverResponse } from "~/models/api/IDIDResolverResponse";
 
 export interface IAddressState {
     bech32AddressDetails: IBech32AddressDetails | null;
@@ -63,7 +63,7 @@ export interface IAddressState {
     associatedOutputCount: number;
     aliasContainsDID: boolean;
     isDIDLoading: boolean;
-    resolvedDID: IIdentityStardustResolveResponse | null;
+    resolvedDID: IDIDResolverResponse | null;
 }
 
 const initialState = {
