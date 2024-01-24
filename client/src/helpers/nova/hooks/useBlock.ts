@@ -5,6 +5,7 @@ import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { HexHelper } from "~/helpers/stardust/hexHelper";
+import { plainToInstance } from "class-transformer";
 
 /**
  * Fetch the block
@@ -32,7 +33,8 @@ export function useBlock(network: string, blockId: string | null): [Block | null
                     })
                     .then((response) => {
                         if (isMounted) {
-                            setBlock(response.block ?? null);
+                            const block = plainToInstance(Block, response.block) as unknown as Block;
+                            setBlock(block ?? null);
                             setError(response.error);
                         }
                     })

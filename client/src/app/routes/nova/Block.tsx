@@ -4,15 +4,7 @@ import mainHeaderMessage from "~assets/modals/stardust/block/main-header.json";
 import metadataInfo from "~assets/modals/stardust/block/metadata.json";
 import { useBlock } from "~helpers/nova/hooks/useBlock";
 import NotFound from "../../components/NotFound";
-import {
-    BasicBlockBody,
-    BlockBody,
-    BlockBodyType,
-    PayloadType,
-    SignedTransactionPayload,
-    Utils,
-    ValidationBlockBody,
-} from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, PayloadType, SignedTransactionPayload, Utils, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
 import Modal from "~/app/components/Modal";
 import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
@@ -28,6 +20,7 @@ import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-pay
 import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
 import { useBlockMetadata } from "~/helpers/nova/hooks/useBlockMetadata";
 import TransactionMetadataSection from "~/app/components/nova/block/section/TransactionMetadataSection";
+
 export interface BlockProps {
     /**
      * The network to lookup.
@@ -51,13 +44,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
-    const [blockBody, setBlockBody] = useState<BasicBlockBody | ValidationBlockBody | undefined>();
+    const [blockBody, setBlockBody] = useState<BasicBlockBody | ValidationBlockBody>();
     const [transactionId, setTransactionId] = useState<string>();
     const [pageTitle, setPageTitle] = useState<string>("Block");
-
-    function isBasicBlockBody(body: BlockBody): body is BasicBlockBody {
-        return body.type === BlockBodyType.Basic;
-    }
 
     function updatePageTitle(type: PayloadType | undefined): void {
         let title = null;
@@ -78,26 +67,18 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         }
     }
     useEffect(() => {
-        switch (block?.body?.type) {
-            case BlockBodyType.Basic: {
-                const body = block?.body as BasicBlockBody;
-                setBlockBody(body);
-                updatePageTitle(body.payload?.type);
-                if (body.payload?.type === PayloadType.SignedTransaction) {
-                    const tsxId = Utils.transactionId(body.payload as SignedTransactionPayload);
-                    setTransactionId(tsxId);
-                }
-                break;
+        if (block?.isBasic()) {
+            const body = block.body.asBasic();
+            setBlockBody(body);
+            updatePageTitle(body.payload?.type);
+
+            if (body.payload?.type === PayloadType.SignedTransaction) {
+                const tsxId = Utils.transactionId(body.payload as SignedTransactionPayload);
+                setTransactionId(tsxId);
             }
-            case BlockBodyType.Validation: {
-                setPageTitle(`Validation ${pageTitle}`);
-                const body = block?.body as BasicBlockBody;
-                setBlockBody(body);
-                break;
-            }
-            default: {
-                break;
-            }
+        } else {
+            setBlockBody(block?.body.asValidation());
+            setPageTitle(`Validation ${pageTitle}`);
         }
     }, [block]);
 
@@ -202,19 +183,19 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                     </div>
                 )}
             </div>
-            {blockBody && !isBasicBlockBody(blockBody) && (
+            {blockBody?.isValidation() && (
                 <div className="section--data">
                     <div className="label">Highest supported protocol version</div>
-                    <div className="value code highlight">{blockBody.highestSupportedVersion}</div>
+                    <div className="value code highlight">{blockBody.asValidation().highestSupportedVersion}</div>
                 </div>
             )}
-            {blockBody && isBasicBlockBody(blockBody) && (
+            {blockBody?.isBasic() && (
                 <div>
                     <div className="section--data">
                         <div className="label">Max burned mana</div>
-                        <div className="value code">{Number(blockBody.maxBurnedMana)}</div>
+                        <div className="value code">{Number(blockBody.asBasic().maxBurnedMana)}</div>
                     </div>
-                    {blockBody.payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
+                    {blockBody.asBasic().payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
                             <div className="label">Amount transacted</div>
                             <div className="amount-transacted value row middle">
@@ -228,22 +209,22 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                     <TabbedSection
                         key={blockId}
                         tabsEnum={
-                            blockBody.payload?.type === PayloadType.SignedTransaction
+                            blockBody.asBasic().payload?.type === PayloadType.SignedTransaction
                                 ? { Payload: "Transaction Payload", Metadata: "Metadata" }
                                 : { Payload: "Tagged Data Payload" }
                         }
                         tabOptions={
-                            blockBody.payload?.type === PayloadType.SignedTransaction
+                            blockBody.asBasic().payload?.type === PayloadType.SignedTransaction
                                 ? {
                                       "Transaction Payload": {
-                                          disabled: !blockBody.payload,
+                                          disabled: !blockBody.asBasic().payload,
                                           infoContent: transactionPayloadInfo,
                                       },
                                       Metadata: { infoContent: metadataInfo },
                                   }
                                 : {
                                       "Tagged Data Payload": {
-                                          disabled: !blockBody.payload,
+                                          disabled: !blockBody.asBasic().payload,
                                           infoContent: taggedDataPayloadInfo,
                                       },
                                   }
