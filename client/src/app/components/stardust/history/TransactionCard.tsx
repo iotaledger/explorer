@@ -13,6 +13,7 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
     isSpent,
     isFormattedAmounts,
     setIsFormattedAmounts,
+    isExpired,
 }) => {
     const valueView = (
         <span className="pointer margin-r-5" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
@@ -33,6 +34,7 @@ const TransactionCard: React.FC<ITransactionEntryProps> = ({
                         transactionId={transactionId}
                         isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
                         transactionLink={transactionLink}
+                        isTxExpired={isExpired}
                     />
                 </div>
             </div>
