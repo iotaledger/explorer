@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useIsMounted } from "./useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IdentityService } from "~/services/identityService";
-import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~/models/api/IDIDResolverResponse";
 
 /**
  * Fetch resolved DID
@@ -11,14 +11,10 @@ import { IIdentityStardustResolveResponse } from "~/models/api/IIdentityStardust
  * @param addressHex Hex representation of the alias address
  * @returns The DID response and loading bool.
  */
-export function useResolvedDID(
-    network: string,
-    bech32Hrp: string,
-    addressHex: string | null,
-): [IIdentityStardustResolveResponse | null, boolean] {
+export function useResolvedDID(network: string, bech32Hrp: string, addressHex: string | null): [IDIDResolverResponse | null, boolean] {
     const isMounted = useIsMounted();
     const [identityService] = useState(ServiceFactory.get<IdentityService>("identity"));
-    const [identityResponse, setidentityResponse] = useState<IIdentityStardustResolveResponse | null>(null);
+    const [identityResponse, setidentityResponse] = useState<IDIDResolverResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -33,7 +29,7 @@ export function useResolvedDID(
                             setidentityResponse(response);
                         }
                     })
-                    .then(() => identityService.initLibrary())
+                    .then(() => identityService.initLibrary(window?.location?.origin ?? "" + "/wasm/identity_wasm_bg.wasm"))
                     .finally(() => {
                         setIsLoading(false);
                     });

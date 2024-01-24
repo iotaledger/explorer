@@ -1,37 +1,35 @@
-import { OutputResponse } from "@iota/sdk";
 import { SearchQuery } from "./searchQueryBuilder";
-import { StardustTangleHelper } from "./stardustTangleHelper";
+import { ServiceFactory } from "../../factories/serviceFactory";
 import { ISearchResponse } from "../../models/api/stardust/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
+import { StardustApiService } from "../../services/stardust/stardustApiService";
 
 /**
  * Performs the search from a SearchQuery object on a Stardust network.
  */
 export class SearchExecutor {
     /**
-     * The network to search on.
-     */
-    private readonly network: INetwork;
-
-    /**
      * The search query.
      */
     private readonly query: SearchQuery;
 
+    private readonly apiService: StardustApiService;
+
     constructor(network: INetwork, query: SearchQuery) {
-        this.network = network;
         this.query = query;
+        this.apiService = ServiceFactory.get<StardustApiService>(`api-service-${network.network}`);
     }
 
     public async run(): Promise<ISearchResponse> {
-        const network = this.network;
         const searchQuery = this.query;
         const promises: Promise<void>[] = [];
         let promisesResult: ISearchResponse | null = null;
+
         if (searchQuery.did) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.aliasId, "aliasOutputId", network)
+                    this.apiService
+                        .aliasDetails(searchQuery.aliasId)
                         .then((aliasOutputs) => {
                             if (aliasOutputs) {
                                 promisesResult = {
@@ -53,7 +51,8 @@ export class SearchExecutor {
         if (searchQuery.milestoneIndex) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.milestoneDetailsByIndex(network, searchQuery.milestoneIndex)
+                    this.apiService
+                        .milestoneDetailsByIndex(searchQuery.milestoneIndex)
                         .then((milestoneDetails) => {
                             if (milestoneDetails) {
                                 promisesResult = {
@@ -74,7 +73,8 @@ export class SearchExecutor {
         if (searchQuery.milestoneId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.milestoneDetailsById(network, searchQuery.milestoneId)
+                    this.apiService
+                        .milestoneDetailsById(searchQuery.milestoneId)
                         .then((milestoneDetails) => {
                             if (milestoneDetails) {
                                 promisesResult = {
@@ -95,7 +95,8 @@ export class SearchExecutor {
         if (searchQuery.blockId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.block(network, searchQuery.blockId)
+                    this.apiService
+                        .block(searchQuery.blockId)
                         .then((blockResponse) => {
                             if (blockResponse && !blockResponse.error) {
                                 promisesResult = {
@@ -116,7 +117,8 @@ export class SearchExecutor {
         if (searchQuery.transactionId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.transactionIncludedBlock(network, searchQuery.transactionId)
+                    this.apiService
+                        .transactionIncludedBlock(searchQuery.transactionId)
                         .then((txDetailsResponse) => {
                             if (txDetailsResponse.block && Object.keys(txDetailsResponse.block).length > 0) {
                                 promisesResult = {
@@ -137,10 +139,11 @@ export class SearchExecutor {
         if (searchQuery.output) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, OutputResponse>(searchQuery.output, "getOutput", network)
+                    this.apiService
+                        .outputDetails(searchQuery.output)
                         .then((output) => {
                             if (output) {
-                                promisesResult = { output };
+                                promisesResult = { output: output.output };
                                 resolve();
                             } else {
                                 reject(new Error("Output response not present"));
@@ -156,7 +159,8 @@ export class SearchExecutor {
         if (searchQuery.aliasId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.aliasId, "aliasOutputId", network)
+                    this.apiService
+                        .aliasDetails(searchQuery.aliasId)
                         .then((aliasOutputs) => {
                             if (aliasOutputs) {
                                 promisesResult = {
@@ -177,7 +181,8 @@ export class SearchExecutor {
         if (searchQuery.nftId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.nftId, "nftOutputId", network)
+                    this.apiService
+                        .nftDetails(searchQuery.nftId)
                         .then((nftOutputs) => {
                             if (nftOutputs) {
                                 promisesResult = {
@@ -198,7 +203,8 @@ export class SearchExecutor {
         if (searchQuery.foundryId) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.tryFetchNodeThenPermanode<string, string>(searchQuery.foundryId, "foundryOutputId", network)
+                    this.apiService
+                        .foundryDetails(searchQuery.foundryId)
                         .then((foundryOutput) => {
                             if (foundryOutput) {
                                 promisesResult = {
@@ -219,7 +225,8 @@ export class SearchExecutor {
         if (searchQuery.tag) {
             promises.push(
                 new Promise((resolve, reject) => {
-                    StardustTangleHelper.taggedOutputs(network, searchQuery.tag)
+                    this.apiService
+                        .taggedOutputs(searchQuery.tag)
                         .then((response) => {
                             if (!response.basicOutputs.error || !response.nftOutputs.error) {
                                 promisesResult = {

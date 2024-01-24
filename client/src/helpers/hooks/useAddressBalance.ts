@@ -14,7 +14,7 @@ export function useAddressBalance(network: string, address: string | null): [num
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [balance, setBalance] = useState<number | null>(null);
-    const [sigLockedBalance, setSigLockedBalance] = useState<number | null>(null);
+    const [availableBalance, setAvailableBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -26,14 +26,14 @@ export function useAddressBalance(network: string, address: string | null): [num
 
                 if (response?.totalBalance !== undefined && isMounted) {
                     setBalance(response.totalBalance);
-                    setSigLockedBalance(response.sigLockedBalance ?? null);
+                    setAvailableBalance(response.availableBalance ?? null);
                 } else if (isMounted) {
                     // Fallback balance from iotajs (node)
                     const addressDetailsWithBalance = await apiClient.addressBalance({ network, address });
 
                     if (addressDetailsWithBalance && isMounted) {
                         setBalance(Number(addressDetailsWithBalance.balance));
-                        setSigLockedBalance(null);
+                        setAvailableBalance(null);
                     }
                 }
             })();
@@ -42,5 +42,5 @@ export function useAddressBalance(network: string, address: string | null): [num
         }
     }, [network, address]);
 
-    return [balance, sigLockedBalance, isLoading];
+    return [balance, availableBalance, isLoading];
 }
