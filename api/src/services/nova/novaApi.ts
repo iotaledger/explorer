@@ -3,6 +3,7 @@
 import { __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
+import { IAccountResponse } from "../../models/api/nova/IAccountResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
@@ -69,6 +70,23 @@ export class NovaApi {
         const outputResponse = await this.tryFetchNodeThenPermanode<string, OutputResponse>(outputId, "getOutput", network);
 
         return outputResponse ? { output: outputResponse } : { message: "Output not found" };
+    }
+
+    /**
+     * Get the account details.
+     * @param network The network to find the items on.
+     * @param accountId The accountId to get the details for.
+     * @returns The account details.
+     */
+    public static async accountDetails(network: INetwork, accountId: string): Promise<IAccountResponse | undefined> {
+        const accountOutputId = await this.tryFetchNodeThenPermanode<string, string>(accountId, "accountOutputId", network);
+
+        if (accountOutputId) {
+            const outputResponse = await this.outputDetails(network, accountOutputId);
+            return outputResponse.error ? { error: outputResponse.error } : { accountDetails: outputResponse.output };
+        }
+
+        return { message: "Account output not found" };
     }
 
     /**

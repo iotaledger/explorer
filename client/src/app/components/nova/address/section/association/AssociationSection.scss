@@ -1,0 +1,173 @@
+@import "../../../../../../scss/fonts";
+@import "../../../../../../scss/mixins";
+@import "../../../../../../scss/media-queries";
+@import "../../../../../../scss/variables";
+@import "../../../../../../scss/themes";
+
+.section.association-section {
+    padding: 20px 8px;
+
+    .association-section--header {
+        height: 40px;
+
+        .association-label {
+            color: var(--body-color);
+        }
+    }
+
+    .association-section--table {
+        width: 100%;
+        margin-top: 16px;
+
+        tbody {
+            margin-top: 12px;
+        }
+
+        @include tablet-down {
+            display: none;
+        }
+
+        tr {
+            @include font-size(14px);
+
+            color: $gray-7;
+            font-family: $inter;
+            letter-spacing: 0.5px;
+
+            th {
+                @include font-size(12px);
+
+                color: $gray-6;
+                font-weight: 600;
+                text-align: left;
+                text-transform: uppercase;
+            }
+
+            td {
+                border: none;
+                color: var(--body-color);
+                padding: 12px 4px;
+                &:first-child {
+                    padding-left: 0px;
+                }
+
+                &.association__output {
+                    display: flex;
+                    color: var(--link-color);
+                    font-family: $ibm-plex-mono;
+                    text-align: left;
+                    max-width: 200px;
+                }
+
+                &.date-created {
+                    @include font-size(14px);
+                    font-family: $ibm-plex-mono;
+                    color: #485776;
+                    text-align: left;
+                    padding-left: 0px;
+                }
+
+                &.amount {
+                    color: var(--amount-color);
+                    @include font-size(16px, 21px);
+                    font-weight: 700;
+                    text-align: left;
+                    padding-left: 0px;
+                }
+            }
+        }
+    }
+
+    .association-section--cards {
+        display: none;
+        margin-top: 16px;
+
+        @include tablet-down {
+            display: block;
+
+            .card {
+                .field {
+                    margin: 8px 0 0 8px;
+                    margin-bottom: 8px;
+
+                    .label {
+                        color: $gray-6;
+                        font-family: $inter;
+                        letter-spacing: 0.5px;
+                        @include font-size(14px, 21px);
+                    }
+
+                    .value {
+                        @include font-size(14px, 21px);
+                        font-weight: 700;
+                    }
+
+                    .highlight {
+                        color: var(--link-color);
+                        font-family: $ibm-plex-mono;
+                        max-width: 200px;
+                    }
+
+                    .date-created {
+                        @include font-size(14px);
+                        font-family: $ibm-plex-mono;
+                        color: #485776;
+                    }
+
+                    .amount {
+                        color: var(--body-color);
+                        font-family: $inter;
+                        font-size: 0.875rem;
+                        letter-spacing: 0.5px;
+                    }
+                }
+            }
+        }
+    }
+
+    .dropdown {
+        cursor: pointer;
+
+        svg {
+            transition: transform 0.25s ease;
+
+            path {
+                fill: var(--card-color);
+            }
+        }
+
+        &.opened > svg {
+            transform: rotate(90deg);
+        }
+    }
+
+    .row {
+        h3 {
+            color: #000;
+        }
+    }
+
+    .association-section--pagination {
+        margin-top: 12px;
+    }
+
+    .load-more--button {
+        margin: 24px 0 8px 0;
+        align-self: center;
+        font-family: $metropolis;
+        width: fit-content;
+        padding: 4px 8px;
+        cursor: pointer;
+
+        &:hover {
+            button {
+                color: var(--link-highlight);
+            }
+        }
+
+        button {
+            padding: 6px;
+            color: var(--header-icon-color);
+        }
+    }
+}

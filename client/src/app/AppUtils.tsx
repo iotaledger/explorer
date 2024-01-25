@@ -37,7 +37,7 @@ export const populateNetworkInfoNova = (networkName: string) => {
             }) ?? null;
         const setNetworkInfoNova = useNetworkInfoNova.getState().setNetworkInfo;
         setNetworkInfoNova({
-            name: nodeInfo?.name ?? "",
+            name: networkName,
             tokenInfo: nodeInfo?.baseToken ?? {},
             protocolVersion: protocolInfo?.parameters.version ?? -1,
             bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",

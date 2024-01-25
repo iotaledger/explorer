@@ -1,0 +1,283 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.address-page {
+    display: flex;
+    flex-direction: column;
+
+    .addr--header {
+        display: flex;
+        align-items: center;
+
+        .addr--header__switch {
+            display: flex;
+            align-items: center;
+
+            & > span {
+                @include font-size(12px, 18px);
+
+                margin-right: 16px;
+                color: $gray-6;
+                font-family: $inter;
+                font-weight: 500;
+            }
+
+            .switch {
+                display: inline-block;
+                position: relative;
+                width: 32px;
+                height: 20px;
+            }
+
+            .switch input {
+                width: 0;
+                height: 0;
+                opacity: 0;
+            }
+
+            .slider {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                transition: 0.4s;
+                background-color: $gray-4;
+                cursor: pointer;
+            }
+
+            .slider::before {
+                content: "";
+                position: absolute;
+                bottom: 2.5px;
+                left: 2.5px;
+                width: 15px;
+                height: 15px;
+                transition: 0.4s;
+                background-color: white;
+            }
+
+            input:checked + .slider {
+                background-color: $green-6;
+            }
+
+            input:focus + .slider {
+                box-shadow: 0 0 1px $green-6;
+            }
+
+            input:checked + .slider::before {
+                transform: translateX(12px);
+            }
+
+            .slider.round {
+                border-radius: 16px;
+            }
+
+            .slider.round::before {
+                border-radius: 50%;
+            }
+        }
+    }
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 20px;
+
+            @include desktop-down {
+                max-width: 100%;
+                padding-right: 20px;
+                padding-left: 20px;
+
+                > .row {
+                    flex-direction: column;
+                }
+            }
+
+            .cards {
+                flex: 1;
+                margin-right: 24px;
+
+                @include desktop-down {
+                    flex: unset;
+                    width: 100%;
+                    margin-right: 0;
+                }
+
+                .value-buttons {
+                    .col {
+                        flex: 1;
+                        width: auto;
+                    }
+                }
+
+                @include desktop-down {
+                    .value-buttons {
+                        flex-direction: column;
+
+                        .col {
+                            flex: unset;
+                            width: 100%;
+                        }
+
+                        .col + .col {
+                            margin-top: 23px;
+                            margin-left: 0;
+                        }
+                    }
+                }
+
+                .col + .col {
+                    margin-left: 23px;
+
+                    @include tablet-down {
+                        margin-left: 0;
+                    }
+                }
+            }
+
+            .card + .card {
+                margin-top: 23px;
+            }
+        }
+    }
+
+    .asset-summary {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-top: 24px;
+
+        .section--assets {
+            background: var(--card-body);
+            border-radius: 6px;
+            width: 469px;
+            height: 85px;
+
+            .inner--asset {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin: 30px;
+
+                .assets {
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
+
+            .svg-navigation {
+                width: 16px;
+                height: 16px;
+                margin-top: 6px;
+            }
+
+            @include tablet-down {
+                width: 100%;
+            }
+        }
+
+        .section--NFT {
+            background: var(--card-body);
+            border-radius: 6px;
+            width: 469px;
+            height: 85px;
+            margin-left: 20px;
+
+            .inner--asset {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin: 30px;
+
+                .assets {
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
+
+            .svg-navigation {
+                width: 16px;
+                height: 16px;
+                margin-top: 6px;
+            }
+
+            @include tablet-down {
+                margin-top: 20px;
+                width: 100%;
+                margin-left: 0px;
+            }
+        }
+
+        @include tablet-down {
+            flex-direction: column;
+        }
+    }
+
+    .no-border {
+        border-bottom: none;
+    }
+
+    .transaction--section {
+        @include tablet-down {
+            .section--header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    }
+
+    .general-content {
+        padding-bottom: 26px;
+
+        @include phone-down {
+            flex-direction: column;
+        }
+    }
+
+    .qr-content {
+        @include tablet-down {
+            align-self: flex-end;
+        }
+
+        @include phone-down {
+            align-self: center;
+        }
+    }
+
+    .feature-block {
+        .card--label {
+            @include font-size(12px);
+
+            display: flex;
+            align-items: center;
+            height: 32px;
+            color: var(--card-color);
+            font-family: $inter;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .card--value {
+            @include font-size(14px, 20px);
+            margin-bottom: 12px;
+            color: var(--body-color);
+            font-family: $ibm-plex-mono;
+            word-break: break-all;
+
+            a,
+            button {
+                color: var(--link-color);
+            }
+        }
+    }
+}
