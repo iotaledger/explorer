@@ -16,7 +16,7 @@ interface SignedTransactionPayloadProps {
 
 const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ payload, inputs, header }) => {
     const { outputs } = payload.transaction;
-    const { name: network } = useNetworkInfoNova(s => s.networkInfo);
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const transactionId = Utils.transactionId(payload);
 
     return (
