@@ -20,6 +20,7 @@ interface BlockPayloadSectionProps {
 
 const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs, outputs, transferTotal }) => {
     const payload = (block.body as BasicBlockBody).payload;
+
     if (payload?.type === PayloadType.SignedTransaction && inputs && outputs && transferTotal !== undefined) {
         const transactionPayload = payload as ISignedTransactionPayload;
         const transaction = transactionPayload.transaction;
@@ -35,13 +36,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs
                     </div>
                 )}
             </React.Fragment>
-        );
-    } else if (payload?.type === PayloadType.CandidacyAnnouncement) {
-        return (
-            <div>
-                {/* todo */}
-                CandidacyAnnouncement
-            </div>
         );
     } else if (payload?.type === PayloadType.TaggedData) {
         return (
