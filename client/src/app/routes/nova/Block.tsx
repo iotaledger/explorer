@@ -34,7 +34,6 @@ export interface BlockProps {
 }
 
 const Block: React.FC<RouteComponentProps<BlockProps>> = ({
-    history,
     match: {
         params: { network, blockId },
     },

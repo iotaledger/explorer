@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "~/app/components/Modal";
 import Unlocks from "~/app/components/nova/Unlocks";
 import OutputView from "~/app/components/nova/OutputView";
+import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
 import transactionPayloadMessage from "~assets/modals/stardust/block/transaction-payload.json";
 import { IInput } from "~/models/api/nova/IInput";
 import Input from "~/app/components/nova/Input";
@@ -14,7 +15,8 @@ interface SignedTransactionPayloadProps {
 }
 
 const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ payload, inputs, header }) => {
-    const { networkId, outputs } = payload.transaction;
+    const { outputs } = payload.transaction;
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const transactionId = Utils.transactionId(payload);
 
     return (
@@ -36,7 +38,7 @@ const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ pay
                     </div>
                     <div className="transaction-payload_outputs card--content">
                         {inputs.map((input, idx) => (
-                            <Input key={idx} network={networkId} input={input} />
+                            <Input key={idx} network={network} input={input} />
                         ))}
                         <Unlocks unlocks={payload.unlocks} />
                     </div>
