@@ -5,6 +5,7 @@ import { INetwork } from "~models/config/INetwork";
 import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "~models/config/networkType";
 import { IOTA_UI, Theme } from "~models/config/uiTheme";
 import { IReducedNodeInfo } from "~services/nodeInfoService";
+import { IDropdownRoute, NavigationRoute } from "./lib/interfaces";
 
 export const networkContextWrapper = (currentNetwork: string | undefined, nodeInfo: IReducedNodeInfo | null, uiTheme: Theme | undefined) =>
     function withNetworkContext(wrappedComponent: ReactNode) {
@@ -24,30 +25,62 @@ export const networkContextWrapper = (currentNetwork: string | undefined, nodeIn
         ) : null;
     };
 
-export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]) => {
-    const pages = [];
-    if (networks.length > 0 && currentNetwork !== undefined) {
-        pages.push({ label: "Explorer", url: `/${currentNetwork.network}/` });
-        pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]): NavigationRoute[] => {
+    const pages: NavigationRoute[] = [];
 
-        if (currentNetwork.hasStatisticsSupport) {
-            pages.push({ label: "Statistics", url: `/${currentNetwork.network}/statistics/` });
-        }
+    if (networks.length > 0 && currentNetwork !== undefined) {
+        const { network, hasStatisticsSupport } = currentNetwork;
+
+        const networkRoutes: NavigationRoute[] = [
+            {
+                label: "Explorer",
+                url: `/${network}/`,
+            },
+            {
+                label: "Visualizer",
+                url: `/${network}/visualizer/`,
+            },
+            {
+                label: "Statistics",
+                url: `/${network}/statistics/`,
+                disabled: !hasStatisticsSupport,
+            },
+            {
+                label: "Utilities",
+                disabled: network !== CHRYSALIS_MAINNET,
+                routes: [
+                    { label: "Streams v0", url: `/${network}/streams/0/` },
+                    {
+                        label: "Decentralized Identifier",
+                        url: `/${network}/identity-resolver/`,
+                        disabled: network !== CHRYSALIS_MAINNET,
+                    },
+                ],
+            },
+        ];
+
+        pages.push(...networkRoutes);
     }
+
+    const EVM_EXPLORER_DROPDOWN: IDropdownRoute = {
+        label: "EVM Explorer",
+        routes: [
+            {
+                label: "EVM Explorer",
+                url: "https://explorer.evm.shimmer.network/",
+                isExternal: true,
+            },
+            {
+                label: "EVM Explorer Testnet",
+                url: "https://explorer.evm.testnet.shimmer.network/",
+                isExternal: true,
+            },
+        ],
+    };
+
+    pages.push(EVM_EXPLORER_DROPDOWN);
 
     return pages;
-};
-
-export const buildUtilities = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
-    const utilities = [];
-    if (networks.length > 0) {
-        utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
-        if (identityResolverEnabled) {
-            utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
-        }
-    }
-
-    return utilities;
 };
 
 /**

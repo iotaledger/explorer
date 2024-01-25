@@ -3,6 +3,7 @@ import * as H from "history";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import Logo from "~assets/logo-header.svg?react";
+import { IDropdownRoute, IRoute } from "~/app/lib/interfaces";
 import mainChrysalisMessage from "~assets/modals/chrysalis/search/main-header.json";
 import mainLegacyMessage from "~assets/modals/legacy/search/main-header.json";
 import mainStardustMessage from "~assets/modals/stardust/search/main-header.json";
@@ -16,23 +17,15 @@ import Modal from "../Modal";
 import NetworkSwitcher from "../NetworkSwitcher";
 import { INetwork } from "~/models/config/INetwork";
 import SearchInput from "../SearchInput";
+import HeaderDropdown from "./HeaderDropdown";
 import "./Header.scss";
-import GroupDropdown from "./HeaderDropdown";
 
 const NETWORK_DROPDOWN_LABEL = "Network Switcher";
 
-const EVM_EXPLORER_DROPDOWN = {
-    label: "EVM Explorer",
-    routes: [
-        {
-            label: "EVM Explorer",
-            url: "https://explorer.evm.shimmer.network/",
-        },
-        {
-            label: "EVM Explorer Testnet",
-            url: "https://explorer.evm.testnet.shimmer.network/",
-        },
-    ],
+const MODAL_MESSAGE: Record<ProtocolVersion, { title: string; description: string }> = {
+    [LEGACY]: mainLegacyMessage,
+    [CHRYSALIS]: mainChrysalisMessage,
+    [STARDUST]: mainStardustMessage,
 };
 
 interface IHeader {
@@ -42,24 +35,10 @@ interface IHeader {
     history?: H.History;
     action?: string;
     protocolVersion: ProtocolVersion;
-    pages?: Route[];
+    pages?: (IRoute | IDropdownRoute)[];
 }
 
-export type Route = IRoute | IGroupRoute;
-
-export interface IRoute {
-    label: string;
-    url: string;
-}
-
-export interface IGroupRoute {
-    label: string;
-    isExpanded: boolean;
-    setExpandedDropdownId: (state?: string) => void;
-    routes: IRoute[];
-}
-
-export default function Header({ rootPath, currentNetwork, networks, history, action, protocolVersion, pages }: IHeader) {
+export default function Header({ rootPath, currentNetwork, networks, history, action, protocolVersion, pages: routes }: IHeader) {
     const settingsService = ServiceFactory.get<SettingsService>("settings");
 
     const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
@@ -67,7 +46,6 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
     const [show, setShow] = useState<boolean>(false);
     const [expandedDropdownLabel, setExpandedDropdownLabel] = useState<string | undefined>();
 
-    const isEvmDropdownExpanded = expandedDropdownLabel === EVM_EXPLORER_DROPDOWN.label;
     const isNetworkSwitcherExpanded = expandedDropdownLabel === NETWORK_DROPDOWN_LABEL;
     const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
     const isMarketed = isMarketedNetwork(currentNetwork?.network);
@@ -103,11 +81,7 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
         setExpandedDropdownLabel(undefined);
     }
 
-    function toggleNetworkSwitcher(): void {
-        setExpandedDropdownLabel(isNetworkSwitcherExpanded ? undefined : NETWORK_DROPDOWN_LABEL);
-    }
-
-    function routeIsDropdown(route: Route): route is IGroupRoute {
+    function routeIsDropdown(route: IRoute | IDropdownRoute): route is IDropdownRoute {
         return Object.prototype.hasOwnProperty.call(route, "routes");
     }
 
@@ -128,48 +102,45 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                                 <Logo />
                             )}
                         </Link>
-                        {pages &&
-                            pages.length > 0 &&
-                            pages.map(
-                                (page) =>
-                                    !routeIsDropdown(page) && (
-                                        <Link
-                                            key={page.url}
-                                            to={page.url}
-                                            onClick={closeDropdowns}
-                                            className={classNames("navigation--item", {
-                                                "active-item": page.url === window.location.pathname,
-                                            })}
-                                        >
-                                            {page.label}
-                                        </Link>
-                                    ),
+                        {routes &&
+                            routes.length > 0 &&
+                            routes.map((route) =>
+                                !routeIsDropdown(route) ? (
+                                    <Link
+                                        key={route.url}
+                                        to={route.url}
+                                        target={route.isExternal ? "_blank" : undefined}
+                                        rel={route.isExternal ? "noopener noreferrer" : undefined}
+                                        onClick={closeDropdowns}
+                                        className={classNames("navigation--item", {
+                                            "active-item": route.url === window.location.pathname,
+                                        })}
+                                    >
+                                        {route.label}
+                                    </Link>
+                                ) : (
+                                    <HeaderDropdown
+                                        key={route.label}
+                                        {...route}
+                                        isExpanded={expandedDropdownLabel === route.label}
+                                        setExpandedDropdownId={setExpandedDropdownLabel}
+                                    />
+                                ),
                             )}
-                        {/* EVM DROPDOWN */}
 
-                        <GroupDropdown
-                            {...EVM_EXPLORER_DROPDOWN}
-                            isExpanded={expandedDropdownLabel === EVM_EXPLORER_DROPDOWN.label}
-                            setExpandedDropdownId={setExpandedDropdownLabel}
-                        />
-                        {/* ----- Only visible in mobile ----- */}
                         {isMarketed && (
                             <div className="mobile-fiat">
                                 <FiatSelector />
                             </div>
                         )}
-                        {/* ---------- */}
 
                         <SearchInput
                             onSearch={(query) => history?.push(`/${currentNetwork?.network}/search/${query}`)}
                             protocolVersion={protocolVersion}
                         />
-                        {currentNetwork?.protocolVersion === LEGACY && <Modal icon="info" data={mainLegacyMessage} showModal={setShow} />}
-                        {currentNetwork?.protocolVersion === CHRYSALIS && (
-                            <Modal icon="info" data={mainChrysalisMessage} showModal={setShow} />
-                        )}
-                        {currentNetwork?.protocolVersion === STARDUST && (
-                            <Modal icon="info" data={mainStardustMessage} showModal={setShow} />
+
+                        {currentNetwork?.protocolVersion && (
+                            <Modal icon="info" data={MODAL_MESSAGE[currentNetwork.protocolVersion]} showModal={setShow} />
                         )}
 
                         {/* ----- Only visible in desktop ----- */}
@@ -179,10 +150,13 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                             </div>
                         )}
                     </div>
-                    {/* ---------- */}
+
+                    {/* Theme Button */}
                     <button type="button" className="button--unstyled theme-toggle" onClick={() => toggleMode()}>
                         {darkMode ? <span className="material-icons">light_mode</span> : <span className="material-icons">dark_mode</span>}
                     </button>
+
+                    {/* Hamburger Menu */}
                     <div className="hamburger--menu">
                         <button
                             type="button"
@@ -191,70 +165,49 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                         >
                             {isMenuExpanded ? <span className="material-icons">close</span> : <span className="material-icons"> menu</span>}
                         </button>
+
+                        {/* ----- Menu: Only visible in mobile ----- */}
                         <div
                             className={classNames("menu--expanded", {
                                 opened: isMenuExpanded,
                             })}
                         >
                             <ul>
-                                {pages &&
-                                    pages.length > 0 &&
-                                    pages.map(
-                                        (page) =>
-                                            !routeIsDropdown(page) && (
-                                                <Link key={page.url} to={page.url} onClick={resetExpandedDropdowns}>
-                                                    <li className="menu--expanded__item" key={page.url}>
-                                                        <span
-                                                            className={classNames({ "active-item": page.url === window.location.pathname })}
-                                                        >
-                                                            {page.label}
-                                                        </span>
-                                                    </li>
-                                                </Link>
-                                            ),
+                                {routes &&
+                                    routes.length > 0 &&
+                                    routes.map((route) =>
+                                        !routeIsDropdown(route) ? (
+                                            <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
+                                                <li className="menu--expanded__item" key={route.url}>
+                                                    <span className={classNames({ "active-item": route.url === window.location.pathname })}>
+                                                        {route.label}
+                                                    </span>
+                                                </li>
+                                            </Link>
+                                        ) : (
+                                            <HeaderDropdown
+                                                key={route.label}
+                                                {...route}
+                                                isExpanded={route.label === expandedDropdownLabel}
+                                                setExpandedDropdownId={setExpandedDropdownLabel}
+                                                setIsMenuExpanded={setIsMenuExpanded}
+                                                mobileOnly
+                                            />
+                                        ),
                                     )}
-                                <li
-                                    className={classNames("menu--expanded__item", {
-                                        opened: isEvmDropdownExpanded,
-                                    })}
-                                    onClick={closeDropdowns}
-                                >
-                                    <div className="label">{EVM_EXPLORER_DROPDOWN.label}</div>
-                                    <div className="icon">
-                                        <span className="material-icons">expand_more</span>
-                                    </div>
-                                </li>
-                                {/* ----- EVM DROPDOWN MOBILE ----- */}
-                                <div
-                                    className={classNames("utilities--mobile", {
-                                        opened: isEvmDropdownExpanded,
-                                    })}
-                                >
-                                    {EVM_EXPLORER_DROPDOWN.routes.map((route) => (
-                                        <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
-                                            <li
-                                                key={route.url}
-                                                className={classNames("menu--expanded__item margin-l-t", {
-                                                    "active-item": route.url === window.location.pathname,
-                                                })}
-                                            >
-                                                {route.label}
-                                            </li>
-                                        </Link>
-                                    ))}
-                                </div>
-                                {/* ---------- */}
                             </ul>
                         </div>
                     </div>
                 </div>
+
+                {/* ----- Network Switcher ----- */}
                 <div className="inner--networks">
                     <NetworkSwitcher
                         eyebrow="Network"
                         label={currentNetwork?.label}
                         networks={networks}
                         isExpanded={isNetworkSwitcherExpanded}
-                        onClick={toggleNetworkSwitcher}
+                        onClick={() => setExpandedDropdownLabel(isNetworkSwitcherExpanded ? undefined : NETWORK_DROPDOWN_LABEL)}
                         onChange={(targetNetwork) => {
                             history?.push(
                                 action === "streams"

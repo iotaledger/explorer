@@ -150,21 +150,25 @@ header {
         }
 
         .navigation--item,
-        .utilities--wrapper {
+        .header-dropdown--wrapper {
             @include font-size(14px, 21px);
 
             display: flex;
             align-items: center;
             height: 100%;
-            margin-left: 40px;
             color: var(--navbar-color);
             font-family: $metropolis;
             font-weight: 600;
             letter-spacing: 0.01em;
+            margin-left: 32px;
+
+            &:first-child {
+                margin-left: 40px;
+            }
         }
 
-        .utilities--wrapper {
-            .utilities--dropdown {
+        .header-dropdown--wrapper {
+            .header-dropdown--dropdown {
                 display: flex;
                 align-items: center;
                 font-family: $metropolis;
@@ -181,7 +185,7 @@ header {
                 .icon {
                     display: flex;
                     align-items: center;
-                    margin-left: 8px;
+                    margin-left: 4px;
 
                     span {
                         margin-bottom: 3px;
@@ -204,14 +208,14 @@ header {
                 }
             }
 
-            .utilities {
+            .header-dropdown {
                 padding: 64px 120px 120px 120px;
 
                 & * {
                     margin-bottom: 8px;
                 }
 
-                .utilities--label {
+                .header-dropdown--label {
                     color: var(--navbar-color);
                     font-family: $metropolis;
                     font-weight: 700;
@@ -221,7 +225,7 @@ header {
                     @include font-size(14px, 21px);
                 }
 
-                .utilities--item a {
+                .header-dropdown--item a {
                     color: $gray-7;
                     font-family: $inter;
                     letter-spacing: 0.5px;
@@ -231,11 +235,14 @@ header {
             }
         }
 
-        .utilities--mobile {
+        .header-dropdown--mobile {
             transition: opacity 0.3s ease-in-out;
             opacity: 0;
+            height: 0;
+            overflow: hidden;
 
             &.opened {
+                height: auto;
                 opacity: 1;
             }
         }
@@ -296,7 +303,7 @@ header {
 
         @include desktop-down {
             .navigation--item,
-            .utilities--wrapper,
+            .header-dropdown--wrapper,
             .search-input {
                 display: none;
             }
