@@ -7,6 +7,8 @@ import OutputView from "~/app/components/nova/OutputView";
 import { useOutputDetails } from "~/helpers/nova/hooks/useOutputDetails";
 import CopyButton from "~/app/components/CopyButton";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { buildManaDetailsForOutput, OutputManaDetails } from "~/helpers/nova/manaUtils";
 import "./OutputPage.scss";
 
 interface OutputPageProps {
@@ -27,6 +29,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     },
 }) => {
     const { output, outputMetadataResponse, error } = useOutputDetails(network, outputId);
+    const { protocolInfo, latestConfirmedSlot } = useNetworkInfoNova((s) => s.networkInfo);
 
     if (error) {
         return (
@@ -47,6 +50,20 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
 
     const { blockId, transactionId, outputIndex, isSpent, transactionIdSpent } = outputMetadataResponse ?? {};
 
+    // @ts-expect-error TODO: Remove this ignore once included/spent are honoured in the type https://github.com/iotaledger/iota-sdk/issues/1884
+    const createdSlotIndex = (outputMetadataResponse?.included?.slot as number) ?? null;
+    // @ts-expect-error TODO: Remove this ignore once included/spent are honoured in the type https://github.com/iotaledger/iota-sdk/issues/1884
+    const spentSlotIndex = (outputMetadataResponse?.spent?.slot as number) ?? null;
+
+    let outputManaDetails: OutputManaDetails | null = null;
+    if (output !== null && createdSlotIndex !== null && protocolInfo !== null) {
+        if (isSpent && spentSlotIndex !== null) {
+            outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, spentSlotIndex, protocolInfo.parameters);
+        } else if (latestConfirmedSlot > 0) {
+            outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, latestConfirmedSlot, protocolInfo.parameters);
+        }
+    }
+
     return (
         (output && (
             <div className="output-page">
@@ -60,13 +77,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                         </div>
                         <div className="section">
                             <div className="card">
-                                <OutputView
-                                    network={network}
-                                    outputId={outputId}
-                                    output={output}
-                                    showCopyAmount={true}
-                                    isPreExpanded={true}
-                                />
+                                <OutputView outputId={outputId} output={output} showCopyAmount={true} isPreExpanded={true} />
                             </div>
 
                             <div className="section--header row row--tablet-responsive middle space-between">
@@ -124,6 +135,35 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                         <CopyButton copy={transactionIdSpent} />
                                     </div>
                                 </div>
+                            )}
+
+                            {outputManaDetails && (
+                                <>
+                                    <div className="section--data">
+                                        <div className="label">Stored mana</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.storedMana}</span>
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Stored mana (decayed)</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.storedManaDecayed}</span>
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Potential mana</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.potentialMana}</span>
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Total mana</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.totalMana}</span>
+                                        </div>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>
