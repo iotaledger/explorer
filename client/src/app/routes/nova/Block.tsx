@@ -20,6 +20,7 @@ import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-pay
 import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
 import { useBlockMetadata } from "~/helpers/nova/hooks/useBlockMetadata";
 import TransactionMetadataSection from "~/app/components/nova/block/section/TransactionMetadataSection";
+import BlockTangleState from "~/app/components/nova/block/BlockTangleState";
 
 export interface BlockProps {
     /**
@@ -38,7 +39,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         params: { network, blockId },
     },
 }) => {
-    const { networkInfo } = useNetworkInfoNova();
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
@@ -99,7 +100,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         tabbedSections.push(
             <TransactionMetadataSection
                 key={++idx}
-                network={network}
                 transaction={((block?.body as BasicBlockBody)?.payload as SignedTransactionPayload)?.transaction}
                 transactionMetadata={blockMetadata.metadata?.transactionMetadata}
             />,
@@ -129,10 +129,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             )}
             <div className="section--data">
                 <div className="label">Issuing Time</div>
-                <div className="value code">
-                    {/* Convert nanoseconds to milliseconds */}
-                    {DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}
-                </div>
+                <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
             <div className="section--data">
                 <div className="label">Slot commitment</div>
@@ -199,7 +196,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                             <div className="label">Amount transacted</div>
                             <div className="amount-transacted value row middle">
                                 <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
-                                    {formatAmount(transferTotal, networkInfo.tokenInfo, !isFormattedBalance)}
+                                    {formatAmount(transferTotal, tokenInfo, !isFormattedBalance)}
                                 </span>
                             </div>
                         </div>
@@ -266,6 +263,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                                 <Modal icon="info" data={mainHeaderMessage} />
                                 {isLoading && <Spinner />}
                             </div>
+                            {blockMetadata.metadata && block?.header && (
+                                <BlockTangleState
+                                    status={blockMetadata.metadata?.blockState}
+                                    issuingTime={block?.header.issuingTime}
+                                    failureReason={blockMetadata.metadata?.blockFailureReason}
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="section">{blockContent}</div>

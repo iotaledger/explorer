@@ -14,7 +14,7 @@ interface IContextInputViewProps {
 }
 
 const ContextInputView: React.FC<IContextInputViewProps> = ({ contextInput }) => {
-    const { networkInfo } = useNetworkInfoNova();
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     if (contextInput.type === ContextInputType.COMMITMENT) {
         const input = contextInput as CommitmentContextInput;
 
@@ -31,7 +31,7 @@ const ContextInputView: React.FC<IContextInputViewProps> = ({ contextInput }) =>
             <div className="section--data">
                 <div className="label">Account</div>
                 <div className="value code">
-                    <TruncatedId id={input.accountId} link={`/${networkInfo.name}/account/${input.accountId}`} showCopyButton />
+                    <TruncatedId id={input.accountId} link={`/${network}/account/${input.accountId}`} showCopyButton />
                 </div>
             </div>
         );
