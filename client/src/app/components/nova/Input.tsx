@@ -2,14 +2,14 @@
 /* eslint-disable jsdoc/require-returns */
 import { Utils } from "@iota/sdk-wasm-nova/web";
 import classNames from "classnames";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import Bech32Address from "../stardust/address/Bech32Address";
+import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
 import OutputView from "./OutputView";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { IInput } from "~models/api/nova/IInput";
-import NetworkContext from "../../context/NetworkContext";
 
 interface InputProps {
     /**
@@ -27,7 +27,7 @@ interface InputProps {
  */
 const Input: React.FC<InputProps> = ({ input, network }) => {
     const history = useHistory();
-    const { tokenInfo } = useContext(NetworkContext);
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 

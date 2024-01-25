@@ -20,6 +20,7 @@ import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-pay
 import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
 import { useBlockMetadata } from "~/helpers/nova/hooks/useBlockMetadata";
 import TransactionMetadataSection from "~/app/components/nova/block/section/TransactionMetadataSection";
+
 export interface BlockProps {
     /**
      * The network to lookup.
@@ -33,7 +34,6 @@ export interface BlockProps {
 }
 
 const Block: React.FC<RouteComponentProps<BlockProps>> = ({
-    history,
     match: {
         params: { network, blockId },
     },

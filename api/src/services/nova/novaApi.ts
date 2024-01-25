@@ -79,14 +79,14 @@ export class NovaApi {
      * @returns The account details.
      */
     public static async accountDetails(network: INetwork, accountId: string): Promise<IAccountResponse | undefined> {
-        const aliasOutputId = await this.tryFetchNodeThenPermanode<string, string>(accountId, "accountOutputId", network);
+        const accountOutputId = await this.tryFetchNodeThenPermanode<string, string>(accountId, "accountOutputId", network);
 
-        if (aliasOutputId) {
-            const outputResponse = await this.outputDetails(network, aliasOutputId);
+        if (accountOutputId) {
+            const outputResponse = await this.outputDetails(network, accountOutputId);
             return outputResponse.error ? { error: outputResponse.error } : { accountDetails: outputResponse.output };
         }
 
-        return { message: "Alias output not found" };
+        return { message: "Account output not found" };
     }
 
     /**

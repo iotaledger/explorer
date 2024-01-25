@@ -79,7 +79,7 @@ export const buildAssociatedOutputsTabs = (associations: IAssociation[]): Associ
             tabs.push("Anchor");
         }
         if (associations.some((association) => AssociationType[association.type].startsWith("DELEGATION"))) {
-            tabs.push("Account");
+            tabs.push("Delegation");
         }
         if (associations.some((association) => AssociationType[association.type].startsWith("FOUNDRY"))) {
             tabs.push("Foundry");

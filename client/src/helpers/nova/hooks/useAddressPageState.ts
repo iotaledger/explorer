@@ -37,7 +37,6 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         initialState,
     );
 
-    // const addressBech32: string | null = state.bech32AddressDetails?.bech32 ?? null;
     const addressHex: string | null = state.bech32AddressDetails?.hex ?? null;
     const addressType: number | null = state.bech32AddressDetails?.type ?? null;
 

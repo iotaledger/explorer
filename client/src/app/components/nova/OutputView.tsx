@@ -26,7 +26,6 @@ import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
 import "./OutputView.scss";
 
 interface OutputViewProps {
-    network: string;
     outputId: string;
     output: Output;
     showCopyAmount: boolean;
@@ -34,10 +33,10 @@ interface OutputViewProps {
     isLinksDisabled?: boolean;
 }
 
-const OutputView: React.FC<OutputViewProps> = ({ network, outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
+const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
     const [isExpanded, setIsExpanded] = React.useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
     const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;

@@ -12,7 +12,7 @@ import "./AddressPage.scss";
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
     match: {
-        params: { network, address },
+        params: { address },
     },
 }) => {
     const [state] = useAddressPageState();
@@ -51,7 +51,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
                             <div className="row middle">
                                 <h2>Associated Outputs</h2>
                             </div>
-                            <AssociatedOutputs network={network} addressDetails={bech32AddressDetails} />
+                            <AssociatedOutputs addressDetails={bech32AddressDetails} />
                         </div>
                     </div>
                 )}

@@ -3,15 +3,12 @@ import React, { useEffect, useState } from "react";
 import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociations } from "./AssociatedOutputsUtils";
 import AssociationSection from "./AssociationSection";
 import { useAssociatedOutputs } from "~helpers/nova/hooks/useAssociatedOutputs";
+import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
 import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
 import { AssociationType, IAssociation } from "~models/api/nova/IAssociationsResponse";
 import "./AssociatedOutputs.scss";
 
 interface AssociatedOutputsProps {
-    /**
-     * The network in context.
-     */
-    readonly network: string;
     /**
      * Address details
      */
@@ -26,7 +23,8 @@ interface AssociatedOutputsProps {
     readonly setIsLoading?: (isLoading: boolean) => void;
 }
 
-const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, addressDetails, setOutputCount, setIsLoading }) => {
+const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ addressDetails, setOutputCount, setIsLoading }) => {
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [currentTab, setCurrentTab] = useState<AssociatedOutputTab>("Basic");
     const [associations, isLoading] = useAssociatedOutputs(network, addressDetails, setOutputCount);
     const [tabsToRender, setTabsToRender] = useState<AssociatedOutputTab[]>([]);
@@ -69,7 +67,6 @@ const AssociatedOutputs: React.FC<AssociatedOutputsProps> = ({ network, addressD
                 );
                 return (
                     <AssociationSection
-                        network={network}
                         key={`${currentTab}-${idx}`}
                         association={associationType}
                         outputIds={targetAssociation?.outputIds}
