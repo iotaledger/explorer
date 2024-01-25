@@ -4,11 +4,13 @@ import { StardustApiClient } from "./stardust/stardustApiClient";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IIdentityDidHistoryResponse } from "~models/api/IIdentityDidHistoryResponse";
 import { IIdentityDidResolveResponse } from "~models/api/IIdentityResolveResponse";
-import { IIdentityStardustResolveResponse } from "~models/api/IIdentityStardustResolveResponse";
+import { IDIDResolverResponse } from "~models/api/IDIDResolverResponse";
 import { CHRYSALIS, STARDUST } from "~models/config/protocolVersion";
 import * as identity from "@iota/identity-wasm/web";
 
 export class IdentityService {
+    private initLibraryPromise: Promise<void> | undefined;
+
     /**
      * Resolves DID into it's DID document (Chrysalis).
      * @param  {string} did DID to be resolved
@@ -59,13 +61,17 @@ export class IdentityService {
      * @param  {string} network network name
      * @returns Promise
      */
-    public async resolveIdentityStardust(did: string, network: string): Promise<IIdentityStardustResolveResponse> {
+    public async resolveIdentityStardust(did: string, network: string): Promise<IDIDResolverResponse> {
         const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
         const response = await apiClient.didDocument({ did, network });
         return response;
     }
 
     public async initLibrary(path = "/wasm/identity_wasm_bg.wasm") {
-        return await identity.init(path);
+        if (!this.initLibraryPromise) {
+            this.initLibraryPromise = identity.init(path);
+        }
+
+        return this.initLibraryPromise;
     }
 }

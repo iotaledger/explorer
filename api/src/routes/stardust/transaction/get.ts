@@ -4,7 +4,7 @@ import { ITransactionDetailsResponse } from "../../../models/api/stardust/ITrans
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { StardustTangleHelper } from "../../../utils/stardust/stardustTangleHelper";
+import { StardustApiService } from "../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: ITransactionDetailsRe
         return {};
     }
 
-    return StardustTangleHelper.transactionIncludedBlock(networkConfig, request.transactionId);
+    const stardustApiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
+    return stardustApiService.transactionIncludedBlock(request.transactionId);
 }

@@ -6,6 +6,13 @@
     font-family: "Courier New", Courier, monospace;
     white-space: pre-wrap;
 
+    @include font-size(12px, 20px);
+
+    color: var(--did-color);
+    font-family: $ibm-plex-mono;
+    letter-spacing: 0.02em;
+    white-space: pre-wrap;
+
     .string {
         color: green;
     }

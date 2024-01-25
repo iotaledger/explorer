@@ -41,6 +41,10 @@ test("formatAmount should format 1 unit with fraction properly", () => {
     expect(formatAmount(1234567, tokenInfo)).toBe("1.23 IOTA");
 });
 
+test("formatAmount should format 1 unit with trailing decimals properly", () => {
+    expect(formatAmount(1000000, tokenInfo, false, 2, true)).toBe("1.00 IOTA");
+});
+
 test("formatAmount should handle edge case from issue 'explorer/issues/822'", () => {
     expect(formatAmount(1140000, tokenInfo)).toBe("1.14 IOTA");
 });

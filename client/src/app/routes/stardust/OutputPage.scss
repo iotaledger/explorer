@@ -83,4 +83,14 @@
             }
         }
     }
+
+    .output-page__transaction-id {
+        .tooltip {
+            margin-left: 10px;
+
+            @include phone-down {
+                margin-left: 0;
+            }
+        }
+    }
 }
