@@ -2,7 +2,7 @@ import React from "react";
 import { Address, AddressType } from "@iota/sdk-wasm-nova/web";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
-import TruncatedId from "../stardust/TruncatedId";
+import TruncatedId from "../../stardust/TruncatedId";
 
 interface AddressViewProps {
     address: Address;
