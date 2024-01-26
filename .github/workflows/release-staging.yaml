@@ -1,0 +1,89 @@
+name: Release Staging
+
+on:
+  push:
+    tags:
+      # Only run workflow on tags that match the semantic versioning pattern 'v1.0.0-rc.0'
+      - ^v(\d+\.\d+\.\d+)-rc\.\d+$
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag"
+        required: true
+        default: "v1.0.0-rc.0"
+
+env:
+  DEPLOY_ENVIRONMENT: staging, shimmer-staging
+
+jobs:
+  build-and-push-images:
+    name: Release Staging
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.IOTALEDGER_DOCKER_USERNAME }}
+          password: ${{ secrets.IOTALEDGER_DOCKER_PASSWORD }}
+
+          # If the workflow was triggered by a tag, use the tag as the version.
+          # Otherwise, use the tag from the workflow_dispatch event.
+      - name: Set up the tag for docker images
+        id: set_version_tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: true
+          tags: |
+            iotaledger/explorer-api:${{ steps.set_version_tag.outputs.VERSION_TAG }}
+            iotaledger/explorer-api:latest
+          no-cache: true
+
+      - name: Build and push Client Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./client
+          file: ./client/Dockerfile
+          push: true
+          tags: |
+            iotaledger/explorer-client:latest
+            iotaledger/explorer-client:${{ steps.set_version_tag.outputs.VERSION_TAG }}
+          no-cache: true
+
+  deploy:
+    needs: build-and-push-images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [staging, shimmer-staging]
+    steps:
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.UPDATER_SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.build-and-push-images.outputs.version_tag }}"
