@@ -40,4 +40,9 @@ export interface OutputProps {
      * Disable links if block is conflicting.
      */
     isLinksDisabled?: boolean;
+
+    /**
+     * Indexes for unlock conditions that need to be opened.
+     */
+    unlockConditionOpenedIndexes?: number[];
 }

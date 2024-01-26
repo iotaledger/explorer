@@ -15,7 +15,7 @@ interface InputProps {
     /**
      * The inputs.
      */
-    readonly input: IInput;
+    readonly input: IInput & { unlockConditionOpenedIndexes?: number[]; };
     /**
      * The network in context.
      */
@@ -94,6 +94,7 @@ const Input: React.FC<InputProps> = ({ input, network, isPreExpanded }) => {
             amount={Number(input.output.output.amount)}
             network={network}
             showCopyAmount={true}
+            unlockConditionOpenedIndexes={input.unlockConditionOpenedIndexes}
         />
     ) : (
         fallbackInputView

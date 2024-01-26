@@ -11,7 +11,7 @@ export interface TransactionPayloadProps {
     /**
      * The inputs.
      */
-    inputs: IInput[];
+    inputs: (IInput & { unlockConditionOpenedIndexes?: number[]; })[];
 
     /**
      * The unlocks of the transaction.

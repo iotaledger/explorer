@@ -9,6 +9,26 @@ import Input from "../../Input";
 import Output from "../../Output";
 import Unlocks from "../../Unlocks";
 import "./TransactionPayload.scss";
+import { DateHelper } from "~helpers/dateHelper";
+import {
+    AddressType,
+    AliasAddress,
+    AliasOutput,
+    CommonOutput,
+    ExpirationUnlockCondition,
+    FoundryOutput,
+    ImmutableAliasAddressUnlockCondition,
+    INodeInfoBaseToken,
+    NftOutput,
+    OutputType,
+    SimpleTokenScheme,
+    StorageDepositReturnUnlockCondition,
+    TimelockUnlockCondition,
+    TokenSchemeType,
+    UnlockCondition as IUnlockCondition,
+    UnlockConditionType,
+    Utils,
+} from "@iota/sdk-wasm/web";
 
 /**
  * Component which will display a transaction payload.
@@ -49,7 +69,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         const { network, inputs, unlocks, outputs, header, isLinksDisabled } = this.props;
-
+        console.log('--- inputs', inputs);
         return (
             <div className="transaction-payload">
                 {header && (
@@ -69,7 +89,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                         </div>
                         <div className="transaction-payload_outputs card--content">
                             {inputs.map((input, idx) => (
-                                <Input key={idx} network={network} input={input} />
+                                <Input key={idx} network={network} input={input} isPreExpanded={true} />
                             ))}
                             <Unlocks unlocks={unlocks} />
                         </div>
@@ -90,7 +110,9 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                     amount={output.amount}
                                     network={network}
                                     showCopyAmount={true}
+                                    isPreExpanded={true}
                                     isLinksDisabled={isLinksDisabled}
+                                    unlockConditionOpenedIndexes={[]}
                                 />
                             ))}
                         </div>
@@ -98,6 +120,26 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                 </div>
             </div>
         );
+    }
+}
+
+function getExpandedStateInUnlockCondition(unlockCondition?: IUnlockCondition, unlockConditions?: IUnlockCondition[]): boolean {
+    if (!unlockCondition) return false;
+
+    const expirationUnlockCondition = unlockConditions?.find(
+        (cond) => cond.type === UnlockConditionType.Expiration,
+    ) as ExpirationUnlockCondition;
+    const isExpirationConditionPresent = !!expirationUnlockCondition;
+    const isExpirationConditionExpired =
+        isExpirationConditionPresent && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
+
+    switch (unlockCondition.type) {
+        case UnlockConditionType.Address:
+            return !isExpirationConditionPresent || (isExpirationConditionPresent && !isExpirationConditionExpired);
+        case UnlockConditionType.Expiration:
+            return isExpirationConditionExpired;
+        default:
+            return false;
     }
 }
 

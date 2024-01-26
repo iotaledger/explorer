@@ -49,8 +49,19 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ unlockConditionOpenedIndexes?: number[]; }[]>();
 
-    // console.log('--- inputs', inputs, outputs);
+
+    const inputsWithExtraInfo = React.useMemo(() => {
+        if (!inputs) return null;
+
+        return inputs.map((input, idx) => {
+            return {
+                ...input,
+                unlockConditionOpenedIndexes: [],
+            };
+        });
+    }, [inputs, inputsExtraInfo]);
 
     useEffect(() => {
         if (block?.payload?.type === PayloadType.Transaction) {
@@ -79,41 +90,40 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         }
     };
 
-    useEffect(() => {
-        // request output details for unlocks with expiration
-        if (!inputs || !outputs) return;
-
-        (async () => {
-            const outputIdsWithUnlockConditions = [];
-
-            for (const input of inputs) {
-                // @ts-ignore
-                const hasUnlockExpiration = input?.output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
-                // @ts-ignore
-                if (hasUnlockExpiration) {
-                    outputIdsWithUnlockConditions.push(input?.outputId);
-                }
-            }
-
-            for (const output of outputs) {
-
-                // @ts-ignore
-                const hasUnlockExpiration = output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
-
-                if (hasUnlockExpiration) {
-                    outputIdsWithUnlockConditions.push(output?.id);
-                }
-            }
-
-            if (outputIdsWithUnlockConditions.length > 0) {
-                const outputDetails = await Promise.all(outputIdsWithUnlockConditions.map((outputId) => {
-                    return apiClient.outputDetails({ network, outputId });
-                }));
-                console.log('--- outputDetails', outputDetails);
-            }
-
-        })();
-    }, [inputs, outputs]);
+    // useEffect(() => {
+    //     // request output details for unlocks with expiration
+    //     if (!inputs || !outputs) return;
+    //
+    //     (async () => {
+    //         const outputIdsWithUnlockConditions = [];
+    //
+    //         for (const input of inputs) {
+    //             // @ts-ignore
+    //             const hasUnlockExpiration = input?.output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
+    //             // @ts-ignore
+    //             if (hasUnlockExpiration) {
+    //                 outputIdsWithUnlockConditions.push(input?.outputId);
+    //             }
+    //         }
+    //
+    //         for (const output of outputs) {
+    //
+    //             // @ts-ignore
+    //             const hasUnlockExpiration = output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
+    //
+    //             if (hasUnlockExpiration) {
+    //                 outputIdsWithUnlockConditions.push(output?.id);
+    //             }
+    //         }
+    //
+    //         if (outputIdsWithUnlockConditions.length > 0) {
+    //             const outputDetails = await Promise.all(outputIdsWithUnlockConditions.map((outputId) => {
+    //                 return apiClient.outputDetails({ network, outputId });
+    //             }));
+    //         }
+    //
+    //     })();
+    // }, [inputs, outputs]);
 
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
@@ -214,9 +224,9 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                     },
                 }}
             >
-                {inputs && unlocks && outputs ? (
+                {inputsWithExtraInfo && unlocks && outputs ? (
                     <div className="section">
-                        <TransactionPayload network={network} inputs={inputs} unlocks={unlocks} outputs={outputs} />
+                        <TransactionPayload network={network} inputs={inputsWithExtraInfo} unlocks={unlocks} outputs={outputs} />
                     </div>
                 ) : (
                     <></>

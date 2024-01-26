@@ -61,7 +61,7 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            isExpanded: this.props.isPreExpanded ?? true,
+            isExpanded: this.props.isPreExpanded ?? false,
             isFormattedBalance: true,
         };
     }
@@ -225,12 +225,12 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
-                                    const isExpandedByCondition = this.getExpandedStateInUnlockCondition(unlockCondition);
+                                    const isExpandedByCondition = this.props.unlockConditionOpenedIndexes && this.props.unlockConditionOpenedIndexes.includes(idx);
                                     return (
                                         <UnlockCondition
                                             key={idx}
                                             unlockCondition={unlockCondition}
-                                            isPreExpanded={isExpandedByCondition || isPreExpanded}
+                                            isPreExpanded={isExpandedByCondition ?? isPreExpanded}
                                         />
                                     );
                                 })}
@@ -266,25 +266,7 @@ class Output extends Component<OutputProps, OutputState> {
         );
     }
 
-    private getExpandedStateInUnlockCondition(unlockCondition?: IUnlockCondition, unlockConditions?: IUnlockCondition[]): boolean {
-        if (!unlockCondition) return false;
 
-        const expirationUnlockCondition = unlockConditions?.find(
-            (cond) => cond.type === UnlockConditionType.Expiration,
-        ) as ExpirationUnlockCondition;
-        const isExpirationConditionPresent = !!expirationUnlockCondition;
-        const isExpirationConditionExpired =
-            isExpirationConditionPresent && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
-
-        switch (unlockCondition.type) {
-            case UnlockConditionType.Address:
-                return !isExpirationConditionPresent || (isExpirationConditionPresent && !isExpirationConditionExpired);
-            case UnlockConditionType.Expiration:
-                return isExpirationConditionExpired;
-            default:
-                return false;
-        }
-    }
 
     /**
      * Build bech32 address.
