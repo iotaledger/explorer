@@ -29,7 +29,7 @@ export function buildManaDetailsForOutput(
         storedMana: (output as BasicOutput).mana?.toString(),
         storedManaDecayed,
         potentialMana,
-        totalMana: totalMana.toString(),
         delegationRewards: delegationRewards !== null ? delegationRewards?.toString() : undefined,
+        totalMana: totalMana.toString(),
     };
 }
