@@ -13,31 +13,14 @@ on:
         default: "v1.0.0-rc.0"
 
 jobs:
-  build-and-push-images:
-    name: Release Staging
+  deploy-staging-images:
+    name: Deploy Docker Images for Staging
     runs-on: ubuntu-latest
     outputs:
       version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.IOTALEDGER_DOCKER_USERNAME }}
-          password: ${{ secrets.IOTALEDGER_DOCKER_PASSWORD }}
-
-          # If the workflow was triggered by a tag, use the tag as the version.
-          # Otherwise, use the tag from the workflow_dispatch event.
+      # If the workflow was triggered by a tag, use the tag as the version.
+      # Otherwise, use the tag from the workflow_dispatch event.
       - name: Set up the tag for docker images
         id: set_version_tag
         run: |
@@ -48,29 +31,18 @@ jobs:
           fi
 
       - name: Build and push API Docker image
-        uses: docker/build-push-action@v2
+        uses: ./.github/workflows/build-and-push-docker-images.yaml
         with:
-          context: ./api
-          file: ./api/Dockerfile
-          push: true
-          tags: |
-            iotaledger/explorer-api:latest
+          version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
+          api_image_tags: |
             iotaledger/explorer-api:${{ steps.set_version_tag.outputs.VERSION_TAG }}
-          no-cache: true
-
-      - name: Build and push Client Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./client
-          file: ./client/Dockerfile
-          push: true
-          tags: |
-            iotaledger/explorer-client:latest
+            iotaledger/explorer-api:latest
+          client_image_tags: |
             iotaledger/explorer-client:${{ steps.set_version_tag.outputs.VERSION_TAG }}
-          no-cache: true
+            iotaledger/explorer-client:latest
 
   deploy:
-    needs: build-and-push-images
+    needs: deploy-staging-images
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -83,4 +55,4 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.build-and-push-images.outputs.version_tag }}"
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.deploy-staging-images.outputs.version_tag }}"
