@@ -3,20 +3,20 @@ name: Release Explorer to Production
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - '!v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "!v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"
 
 jobs:
   set_tags:
-      name: Set Tags
-      runs-on: ubuntu-latest
-      outputs:
-        version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
-      steps:
-        - name: Set up the version tag for docker images
-          id: set_version_tag
-          run: |
-            echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+    name: Set Tags
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
+    steps:
+      - name: Set up the version tag for docker images
+        id: set_version_tag
+        run: |
+          echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
   use-reusable-workflow:
     name: Build Images
