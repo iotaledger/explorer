@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/sdk-wasm/web";
+import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils, UnlockConditionType, CommonOutput } from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { TransactionPageProps } from "./TransactionPageProps";
@@ -26,8 +26,7 @@ import "./TransactionPage.scss";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { STARDUST } from "~models/config/protocolVersion";
-import { OutputResponse, UnlockConditionType } from "@iota/sdk-wasm/web";
-
+import { IInput } from "~models/api/stardust/IInput";
 enum TRANSACTION_PAGE_TABS {
     Payload = "Payload",
     BlockMetadata = "Block Metadata",
@@ -49,16 +48,17 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ unlockConditionOpenedIndexes?: number[]; }[]>();
+    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ [outputId: string]: {unlockConditionOpenedIndexes?: number[];} }>({});
 
 
     const inputsWithExtraInfo = React.useMemo(() => {
         if (!inputs) return null;
-
+        console.log('--- inputsExtraInfo', inputsExtraInfo);
         return inputs.map((input, idx) => {
+            const extraInfo = inputsExtraInfo[input.outputId];
             return {
                 ...input,
-                unlockConditionOpenedIndexes: [],
+                unlockConditionOpenedIndexes: extraInfo?.unlockConditionOpenedIndexes ?? [],
             };
         });
     }, [inputs, inputsExtraInfo]);
@@ -73,22 +73,48 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         }
     }, [block]);
 
-    const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
-        if (!outputId) return null;
+    useEffect(() => {
+        if (!inputs) return;
 
-        try {
-            const response = await apiClient.outputDetails({ network, outputId });
-            const details = response.output;
+        inputs.forEach(input => {
 
-            if (!response.error && details?.output && details?.metadata) {
-                return details;
+            if (isExpirationExists(input)) {
+
+            } else {
+                const indexes = getIndexesAddressUnlockCondition(input);
+                setInputsExtraInfo({
+                    ...inputsExtraInfo,
+                    [input.outputId]: {
+                        unlockConditionOpenedIndexes: indexes,
+                    },
+                });
             }
-            return null;
-        } catch {
-            console.log("Failed loading transaction history details!");
-            return null;
-        }
-    };
+
+        });
+        // const spentInputIds =
+
+        // If input with expiration condition - check if spent.
+        // If spent - check when.
+
+
+    }, [inputs]);
+
+    // const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
+    //     if (!outputId) return null;
+    //
+    //     try {
+    //         const response = await apiClient.outputDetails({ network, outputId });
+    //         const details = response.output;
+    //
+    //         if (!response.error && details?.output && details?.metadata) {
+    //             return details;
+    //         }
+    //         return null;
+    //     } catch {
+    //         console.log("Failed loading transaction history details!");
+    //         return null;
+    //     }
+    // };
 
     // useEffect(() => {
     //     // request output details for unlocks with expiration
@@ -310,5 +336,24 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         </div>
     );
 };
+
+function getIndexesAddressUnlockCondition(input: IInput) {
+    const output = input.output?.output as CommonOutput;
+    if (!output?.unlockConditions) return [];
+
+    return output.unlockConditions.map((i, idx) => {
+        if (i.type === UnlockConditionType.Address) {
+            return idx;
+        }
+    }).filter(i => i !== undefined) as number[];
+}
+
+function isExpirationExists(input: IInput) {
+    const output = input.output?.output as CommonOutput;
+    if (!output?.unlockConditions) return false;
+
+    return output.unlockConditions.some(i => i.type === UnlockConditionType.Expiration);
+}
+
 
 export default TransactionPage;

@@ -10,7 +10,7 @@ import {
     UnlockConditionType,
 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
-import React, { ReactNode } from "react";
+import React, { ReactNode, Component } from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import Address from "./address/Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
@@ -24,7 +24,7 @@ import AsyncComponent from "../AsyncComponent";
 /**
  * Component which will display an unlock condition.
  */
-class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditionState> {
+class UnlockCondition extends Component<UnlockConditionProps, UnlockConditionState> {
     /**
      * The component context type.
      */
@@ -47,9 +47,9 @@ class UnlockCondition extends AsyncComponent<UnlockConditionProps, UnlockConditi
     /**
      * The component mounted.
      */
-    public async componentDidMount(): Promise<void> {
-        super.componentDidMount();
-    }
+    // public async componentDidMount(): Promise<void> {
+    //     super.componentDidMount();
+    // }
 
     /**
      * Render the component.

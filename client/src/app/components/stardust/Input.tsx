@@ -30,6 +30,7 @@ interface InputProps {
  * Component which will display an Input on stardust.
  */
 const Input: React.FC<InputProps> = ({ input, network, isPreExpanded }) => {
+    console.log('--- input', input);
     const history = useHistory();
     const { tokenInfo } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? true);

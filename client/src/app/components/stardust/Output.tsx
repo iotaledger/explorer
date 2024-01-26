@@ -225,13 +225,18 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
+
                                     const isExpandedByCondition = this.props.unlockConditionOpenedIndexes && this.props.unlockConditionOpenedIndexes.includes(idx);
+                                    console.log('--- isExpandedByCondition', isExpandedByCondition);
                                     return (
-                                        <UnlockCondition
-                                            key={idx}
-                                            unlockCondition={unlockCondition}
-                                            isPreExpanded={isExpandedByCondition ?? isPreExpanded}
-                                        />
+                                        <>
+                                            {isExpandedByCondition ? 'true' : 'false'}
+                                            <UnlockCondition
+                                                key={idx}
+                                                unlockCondition={unlockCondition}
+                                                isPreExpanded={isExpandedByCondition ?? isPreExpanded}
+                                            />
+                                        </>
                                     );
                                 })}
                                 {(output as CommonOutput).features?.map((feature, idx) => (

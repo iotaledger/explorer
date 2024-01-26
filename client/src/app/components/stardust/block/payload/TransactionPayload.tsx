@@ -11,23 +11,23 @@ import Unlocks from "../../Unlocks";
 import "./TransactionPayload.scss";
 import { DateHelper } from "~helpers/dateHelper";
 import {
-    AddressType,
-    AliasAddress,
-    AliasOutput,
-    CommonOutput,
+    // AddressType,
+    // AliasAddress,
+    // AliasOutput,
+    // CommonOutput,
     ExpirationUnlockCondition,
-    FoundryOutput,
-    ImmutableAliasAddressUnlockCondition,
-    INodeInfoBaseToken,
-    NftOutput,
-    OutputType,
-    SimpleTokenScheme,
-    StorageDepositReturnUnlockCondition,
-    TimelockUnlockCondition,
-    TokenSchemeType,
+    // FoundryOutput,
+    // ImmutableAliasAddressUnlockCondition,
+    // INodeInfoBaseToken,
+    // NftOutput,
+    // OutputType,
+    // SimpleTokenScheme,
+    // StorageDepositReturnUnlockCondition,
+    // TimelockUnlockCondition,
+    // TokenSchemeType,
     UnlockCondition as IUnlockCondition,
     UnlockConditionType,
-    Utils,
+    // Utils,
 } from "@iota/sdk-wasm/web";
 
 /**
@@ -69,7 +69,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         const { network, inputs, unlocks, outputs, header, isLinksDisabled } = this.props;
-        console.log('--- inputs', inputs);
+        // console.log('--- !!!!!!inputs', inputs[1].unlockConditionOpenedIndexes);
         return (
             <div className="transaction-payload">
                 {header && (
