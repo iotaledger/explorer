@@ -1,12 +1,13 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata } from "@iota/sdk-nova";
+import { __ClientMethods__, OutputResponse, Client, Block, IBlockMetadata, ManaRewardsResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IAccountResponse } from "../../models/api/nova/IAccountResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
+import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 
@@ -87,6 +88,18 @@ export class NovaApi {
         }
 
         return { message: "Account output not found" };
+    }
+
+    /**
+     * Get the output mana rewards.
+     * @param network The network to find the items on.
+     * @param outputId The outputId to get the rewards for.
+     * @returns The account details.
+     */
+    public static async getRewards(network: INetwork, outputId: string): Promise<IRewardsResponse> {
+        const manaRewardsResponse = await this.tryFetchNodeThenPermanode<string, ManaRewardsResponse>(outputId, "getRewards", network);
+
+        return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
     }
 
     /**

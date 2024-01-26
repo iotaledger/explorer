@@ -10,6 +10,7 @@ import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { buildManaDetailsForOutput, OutputManaDetails } from "~/helpers/nova/manaUtils";
 import "./OutputPage.scss";
+import { useOutputManaRewards } from "~/helpers/nova/hooks/useOutputManaRewards";
 
 interface OutputPageProps {
     /**
@@ -29,6 +30,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     },
 }) => {
     const { output, outputMetadataResponse, error } = useOutputDetails(network, outputId);
+    const { manaRewards } = useOutputManaRewards(network, outputId);
     const { protocolInfo, latestConfirmedSlot } = useNetworkInfoNova((s) => s.networkInfo);
 
     if (error) {
@@ -58,9 +60,15 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     let outputManaDetails: OutputManaDetails | null = null;
     if (output !== null && createdSlotIndex !== null && protocolInfo !== null) {
         if (isSpent && spentSlotIndex !== null) {
-            outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, spentSlotIndex, protocolInfo.parameters);
+            outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, spentSlotIndex, protocolInfo.parameters, manaRewards);
         } else if (latestConfirmedSlot > 0) {
-            outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, latestConfirmedSlot, protocolInfo.parameters);
+            outputManaDetails = buildManaDetailsForOutput(
+                output,
+                createdSlotIndex,
+                latestConfirmedSlot,
+                protocolInfo.parameters,
+                manaRewards,
+            );
         }
     }
 
@@ -157,6 +165,14 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                             <span className="margin-r-t">{outputManaDetails.potentialMana}</span>
                                         </div>
                                     </div>
+                                    {outputManaDetails.delegationRewards && (
+                                        <div className="section--data">
+                                            <div className="label">Mana rewards</div>
+                                            <div className="value code row middle">
+                                                <span className="margin-r-t">{outputManaDetails.delegationRewards}</span>
+                                            </div>
+                                        </div>
+                                    )}
                                     <div className="section--data">
                                         <div className="label">Total mana</div>
                                         <div className="value code row middle">
