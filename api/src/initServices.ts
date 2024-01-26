@@ -234,8 +234,8 @@ function initNovaServices(networkConfig: INetwork): void {
         void NodeInfoServiceNova.build(networkConfig).then((nodeInfoService) => {
             ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
 
-            const feedInstance = new NovaFeed(networkConfig.network);
-            ServiceFactory.register(`feed-${networkConfig.network}`, () => feedInstance);
+            const novaFeed = new NovaFeed(networkConfig);
+            ServiceFactory.register(`feed-${networkConfig.network}`, () => novaFeed);
         });
     });
 }
