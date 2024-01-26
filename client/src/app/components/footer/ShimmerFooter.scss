@@ -4,6 +4,7 @@
 @import "../../../scss/variables";
 
 footer {
+    position: relative;
     .shimmer-footer--content {
         display: flex;
         justify-content: center;
