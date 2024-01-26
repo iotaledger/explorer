@@ -3,12 +3,12 @@ name: Release Explorer to Production
 on:
   push:
     tags:
-      # Only run workflow on tags that match the semantic versioning pattern 'v1.0.0'
-      - ^v(\d+\.\d+\.\d+)$
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - '!v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
 
 jobs:
-  deploy-production-images:
-      name: Deploy Docker Images for Production
+  set_tags:
+      name: Set Tags
       runs-on: ubuntu-latest
       outputs:
         version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
@@ -18,22 +18,23 @@ jobs:
           run: |
             echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-        - name: Build and push API Docker image
-          uses: ./.github/workflows/build-and-push-docker-images.yaml
-          with:
-            version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
-            api_image_tags: |
-              iotaledger/explorer-api:${{ steps.set_version_tag.outputs.VERSION_TAG }}
-              iotaledger/explorer-api:latest
-              iotaledger/explorer-api:latest-stable
+  use-reusable-workflow:
+    name: Build Images
+    needs: set_tags
+    uses: ./.github/workflows/build-images.reusable.yaml
+    with:
+      api_image_tags: |
+        iotaledger/explorer-api:${{ needs.set_tags.outputs.version_tag }}
+        iotaledger/explorer-api:latest
 
-            client_image_tags: |
-              iotaledger/explorer-client:${{ steps.set_version_tag.outputs.VERSION_TAG }}
-              iotaledger/explorer-client:latest
-              iotaledger/explorer-client:latest-stable
+      client_image_tags: |
+        iotaledger/explorer-client:${{ needs.set_tags.outputs.version_tag }}
+        iotaledger/explorer-client:latest
+    secrets: inherit
 
   deploy_to_server:
-    needs: deploy-production-images
+    name: Deploy Production to Server
+    needs: [set_tags, use-reusable-workflow]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -46,4 +47,4 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.deploy-production-images.outputs.version_tag }}"
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.set_tags.outputs.version_tag }}"

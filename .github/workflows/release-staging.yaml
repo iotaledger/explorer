@@ -3,8 +3,7 @@ name: Release Explorer to Staging
 on:
   push:
     tags:
-      # Only run workflow on tags that match the semantic versioning pattern 'v1.0.0-rc.0'
-      - ^v(\d+\.\d+\.\d+)-rc\.\d+$
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'  # Versioning pattern 'v1.0.0-rc.0'
   workflow_dispatch:
     inputs:
       tag:
@@ -13,15 +12,18 @@ on:
         default: "v1.0.0-rc.0"
 
 jobs:
-  deploy-staging-images:
-    name: Deploy Docker Images for Staging
+  set_tags:
+    name: Set Tags
     runs-on: ubuntu-latest
     outputs:
       version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       # If the workflow was triggered by a tag, use the tag as the version.
       # Otherwise, use the tag from the workflow_dispatch event.
-      - name: Set up the tag for docker images
+      - name: Set up the version tag for docker images
         id: set_version_tag
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
@@ -30,19 +32,20 @@ jobs:
             echo "VERSION_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build and push API Docker image
-        uses: ./.github/workflows/build-and-push-docker-images.yaml
-        with:
-          version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
-          api_image_tags: |
-            iotaledger/explorer-api:${{ steps.set_version_tag.outputs.VERSION_TAG }}
-            iotaledger/explorer-api:latest
-          client_image_tags: |
-            iotaledger/explorer-client:${{ steps.set_version_tag.outputs.VERSION_TAG }}
-            iotaledger/explorer-client:latest
+  use-reusable-workflow:
+    name: Build Images
+    needs: set_tags
+    uses: ./.github/workflows/build-images.reusable.yaml
+    with:
+      api_image_tags: |
+        iotaledger/explorer-api:${{ needs.set_tags.outputs.version_tag }}
+      client_image_tags: |
+        iotaledger/explorer-client:${{ needs.set_tags.outputs.version_tag }}
+    secrets: inherit
 
-  deploy:
-    needs: deploy-staging-images
+  deploy_to_server:
+    name: Deploy Staging to Server
+    needs: [set_tags, use-reusable-workflow]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -55,4 +58,4 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.deploy-staging-images.outputs.version_tag }}"
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.set_tags.outputs.version_tag }}"
