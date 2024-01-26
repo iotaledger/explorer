@@ -1,20 +1,14 @@
-name: Release Explorer to Staging
+name: Release Explorer to Production
 
 on:
   push:
     tags:
-      # Only run workflow on tags that match the semantic versioning pattern 'v1.0.0-rc.0'
-      - ^v(\d+\.\d+\.\d+)-rc\.\d+$
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Tag"
-        required: true
-        default: "v1.0.0-rc.0"
+      # Only run workflow on tags that match the semantic versioning pattern 'v1.0.0'
+      - ^v(\d+\.\d+\.\d+)$
 
 jobs:
   build-and-push-images:
-    name: Release Staging
+    name: Release Production
     runs-on: ubuntu-latest
     outputs:
       version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
@@ -41,11 +35,7 @@ jobs:
       - name: Set up the tag for docker images
         id: set_version_tag
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
             echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "VERSION_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
-          fi
 
       - name: Build and push API Docker image
         uses: docker/build-push-action@v2
@@ -54,8 +44,9 @@ jobs:
           file: ./api/Dockerfile
           push: true
           tags: |
-            iotaledger/explorer-api:latest
             iotaledger/explorer-api:${{ steps.set_version_tag.outputs.VERSION_TAG }}
+            iotaledger/explorer-api:latest
+            iotaledger/explorer-api:latest-stable
           no-cache: true
 
       - name: Build and push Client Docker image
@@ -65,8 +56,9 @@ jobs:
           file: ./client/Dockerfile
           push: true
           tags: |
-            iotaledger/explorer-client:latest
             iotaledger/explorer-client:${{ steps.set_version_tag.outputs.VERSION_TAG }}
+            iotaledger/explorer-client:latest
+            iotaledger/explorer-client:latest-stable
           no-cache: true
 
   deploy:
@@ -74,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [staging, shimmer-staging]
+        environment: [prod, shimmer-prod]
     steps:
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.5.2
