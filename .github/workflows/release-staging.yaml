@@ -12,9 +12,6 @@ on:
         required: true
         default: "v1.0.0-rc.0"
 
-env:
-  DEPLOY_ENVIRONMENT: staging, shimmer-staging
-
 jobs:
   build-and-push-images:
     name: Release Staging
