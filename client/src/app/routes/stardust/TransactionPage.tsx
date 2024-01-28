@@ -51,12 +51,13 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ [outputId: string]: {unlockConditionOpenedIndexes?: number[];} }>({});
+    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ [outputId: string]: {unlockConditionOpenedIndexes?: number[];} }>({
+
+    });
 
 
     const inputsWithExtraInfo = React.useMemo(() => {
         if (!inputs) return null;
-        console.log('--- inputsExtraInfo', inputsExtraInfo);
         return inputs.map((input, idx) => {
             const extraInfo = inputsExtraInfo[input.outputId];
             return {
@@ -77,22 +78,36 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     }, [block]);
 
     useEffect(() => {
+        setTimeout(() => {
+            setInputsExtraInfo({
+                '0x2c8eb84d31b6e419a2bf0da89d4a70484590a7228e6c1a3d4c130f0d9b02bb140000': {
+                    unlockConditionOpenedIndexes: [0]
+                }
+            });
+            console.log('--- update');
+        }, 5000)
+    }, []);
+
+    useEffect(() => {
+        return;
         (async () => {
             if (!inputs) return;
 
             inputs.forEach(input => {
 
                 if (isExpirationExists(input)) {
-                    if (isOutputSpent(input)) {
+                    console.log('--- input.outputId', input.outputId);
+                    if (!isOutputSpent(input)) {
 
                     } else {
-                        const expirationUnlockCondition = getUnlockConditionByType(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+                        const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
                         const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
+                        // debugger;
                         let indexes: number[] = [];
                         if (isExpired) {
-                            indexes = getUnlockConditionIndexesByType(input, UnlockConditionType.Expiration);
+                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
                         } else {
-                            indexes = getUnlockConditionIndexesByType(input, UnlockConditionType.Address);
+                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
                         }
 
                         setInputsExtraInfo({
@@ -103,7 +118,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                         });
                     }
                 } else {
-                    const indexes = getUnlockConditionIndexesByType(input, UnlockConditionType.Address);
+                    const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
                     setInputsExtraInfo({
                         ...inputsExtraInfo,
                         [input.outputId]: {
@@ -367,14 +382,14 @@ function isOutputSpent(input: IInput) {
     return output.metadata.isSpent;
 }
 
-function getUnlockConditionByType(input: IInput, type: UnlockConditionType) {
+function getUnlockCondition(input: IInput, type: UnlockConditionType) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return null;
 
     return output.unlockConditions.find(i => i.type === type);
 }
 
-function getUnlockConditionIndexesByType(input: IInput, type: UnlockConditionType) {
+function getUnlockConditionIndexes(input: IInput, type: UnlockConditionType) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return [];
 
