@@ -1,5 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils, UnlockConditionType, CommonOutput } from "@iota/sdk-wasm/web";
+import {
+    PayloadType,
+    RegularTransactionEssence,
+    TransactionPayload as ITransactionPayload,
+    Utils,
+    UnlockConditionType,
+    CommonOutput,
+} from "@iota/sdk-wasm/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { TransactionPageProps } from "./TransactionPageProps";
@@ -52,10 +59,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockChildren] = useBlockChildren(network, includedBlockId);
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ [outputId: string]: {unlockConditionOpenedIndexes?: number[];} }>({
-
-    });
-
+    const [inputsExtraInfo, setInputsExtraInfo] = useState<{ [outputId: string]: { unlockConditionOpenedIndexes?: number[] } }>({});
 
     const inputsWithExtraInfo = React.useMemo(() => {
         if (!inputs) return null;
@@ -102,7 +106,6 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                         unlockConditionOpenedIndexes: indexes,
                     },
                 }));
-
             } else {
                 const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
                 const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
@@ -129,17 +132,18 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                 },
             }));
         }
-    }
+    };
 
     useEffect(() => {
         (async () => {
             if (!inputs) return;
 
-            await Promise.all(inputs.map(input => {
-                updateInputExtraInfo(input);
-            }));
+            await Promise.all(
+                inputs.map((input) => {
+                    updateInputExtraInfo(input);
+                }),
+            );
         })();
-
     }, [inputs, setInputsExtraInfo]);
 
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
@@ -328,8 +332,6 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     );
 };
 
-
-
 function isOutputSpent(input: IInput) {
     const output = input.output as OutputResponse;
     return output.metadata.isSpent;
@@ -339,26 +341,27 @@ function getUnlockCondition(input: IInput, type: UnlockConditionType) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return null;
 
-    return output.unlockConditions.find(i => i.type === type);
+    return output.unlockConditions.find((i) => i.type === type);
 }
 
 function getUnlockConditionIndexes(input: IInput, type: UnlockConditionType) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return [];
 
-    return output.unlockConditions.map((i, idx) => {
-        if (i.type === type) {
-            return idx;
-        }
-    }).filter(i => i !== undefined) as number[];
+    return output.unlockConditions
+        .map((i, idx) => {
+            if (i.type === type) {
+                return idx;
+            }
+        })
+        .filter((i) => i !== undefined) as number[];
 }
 
-// If expiration unlock condition exists - return true.
 function isExpirationExists(input: IInput) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return false;
 
-    return output.unlockConditions.some(i => i.type === UnlockConditionType.Expiration);
+    return output.unlockConditions.some((i) => i.type === UnlockConditionType.Expiration);
 }
 
 async function getTransactionTimestamp(transactionId: string, apiClient: StardustApiClient, network: string) {
@@ -382,6 +385,5 @@ async function getTransactionTimestamp(transactionId: string, apiClient: Stardus
 
     return DateHelper.milliseconds(milestoneResp.milestone.timestamp);
 }
-
 
 export default TransactionPage;

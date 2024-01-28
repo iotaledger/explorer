@@ -10,7 +10,7 @@ import {
     UnlockConditionType,
 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
-import React, { ReactNode, Component, useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import Address from "./address/Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
@@ -58,8 +58,8 @@ function UnlockCondition(props: UnlockConditionProps) {
      */
     // public render(): ReactNode {
     const [state, setState] = useState<UnlockConditionState>({
-            isFormattedBalance: true,
-            isExpanded: props.isPreExpanded ?? false,
+        isFormattedBalance: true,
+        isExpanded: props.isPreExpanded ?? false,
     });
     const context = useContext(NetworkContext);
     const { isFormattedBalance, isExpanded } = state;
@@ -72,16 +72,19 @@ function UnlockCondition(props: UnlockConditionProps) {
     // while maintaining its own internal state.
     useEffect(() => {
         if (props.isPreExpanded !== undefined && props.isPreExpanded !== null) {
-            setState(prevState => ({
+            setState((prevState) => ({
                 ...prevState,
-                isExpanded: props.isPreExpanded ?? false
+                isExpanded: props.isPreExpanded ?? false,
             }));
         }
     }, [props.isPreExpanded]);
 
     return (
         <div className="unlock-condition">
-            <div className="card--content__input card--value row middle" onClick={() => setState((p) => ({ ...p, isExpanded: !isExpanded }))}>
+            <div
+                className="card--content__input card--value row middle"
+                onClick={() => setState((p) => ({ ...p, isExpanded: !isExpanded }))}
+            >
                 <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>

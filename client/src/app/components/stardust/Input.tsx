@@ -15,7 +15,7 @@ interface InputProps {
     /**
      * The inputs.
      */
-    readonly input: IInput & { unlockConditionOpenedIndexes?: number[]; };
+    readonly input: IInput & { unlockConditionOpenedIndexes?: number[] };
     /**
      * The network in context.
      */

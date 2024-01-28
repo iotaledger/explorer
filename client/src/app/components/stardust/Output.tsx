@@ -225,8 +225,8 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
-
-                                    const isExpandedByCondition = this.props.unlockConditionOpenedIndexes && this.props.unlockConditionOpenedIndexes.includes(idx);
+                                    const isExpandedByCondition =
+                                        this.props.unlockConditionOpenedIndexes && this.props.unlockConditionOpenedIndexes.includes(idx);
 
                                     return (
                                         <UnlockCondition
@@ -267,8 +267,6 @@ class Output extends Component<OutputProps, OutputState> {
             </div>
         );
     }
-
-
 
     /**
      * Build bech32 address.
