@@ -10,7 +10,7 @@ import {
     UnlockConditionType,
 } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
-import React, { ReactNode, Component } from "react";
+import React, { ReactNode, Component, useContext, useState, useEffect } from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import Address from "./address/Address";
 import { UnlockConditionProps } from "./UnlockConditionProps";
@@ -19,30 +19,31 @@ import { DateHelper } from "~helpers/dateHelper";
 import { NameHelper } from "~helpers/stardust/nameHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
-import AsyncComponent from "../AsyncComponent";
+// import AsyncComponent from "../AsyncComponent";
 
 /**
  * Component which will display an unlock condition.
  */
-class UnlockCondition extends Component<UnlockConditionProps, UnlockConditionState> {
+// function UnlockCondition extends Component<UnlockConditionProps, UnlockConditionState> {
+function UnlockCondition(props: UnlockConditionProps) {
     /**
      * The component context type.
      */
-    public static contextType = NetworkContext;
+    // public static contextType = NetworkContext;
 
     /**
      * The component context.
      */
-    public declare context: React.ContextType<typeof NetworkContext>;
+    // public declare context: React.ContextType<typeof NetworkContext>;
 
-    constructor(props: UnlockConditionProps) {
-        super(props);
-
-        this.state = {
-            isFormattedBalance: true,
-            isExpanded: this.props.isPreExpanded ?? false,
-        };
-    }
+    // constructor(props: UnlockConditionProps) {
+    //     super(props);
+    //
+    //     this.state = {
+    //
+    //
+    //     };
+    // }
 
     /**
      * The component mounted.
@@ -55,78 +56,95 @@ class UnlockCondition extends Component<UnlockConditionProps, UnlockConditionSta
      * Render the component.
      * @returns The node to render.
      */
-    public render(): ReactNode {
-        const { isFormattedBalance, isExpanded } = this.state;
-        const { unlockCondition } = this.props;
-        const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
+    // public render(): ReactNode {
+    const [state, setState] = useState<UnlockConditionState>({
+            isFormattedBalance: true,
+            isExpanded: props.isPreExpanded ?? false,
+    });
+    const context = useContext(NetworkContext);
+    const { isFormattedBalance, isExpanded } = state;
+    const { unlockCondition } = props;
+    const tokenInfo: INodeInfoBaseToken = context.tokenInfo;
 
-        return (
-            <div className="unlock-condition">
-                <div className="card--content__input card--value row middle" onClick={() => this.setState({ isExpanded: !isExpanded })}>
-                    <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
-                        <DropdownIcon />
-                    </div>
-                    <div className="card--label">{NameHelper.getUnlockConditionTypeName(unlockCondition.type)}</div>
+    // This useEffect hook synchronizes the `isExpanded` state with the `isPreExpanded` prop.
+    // It updates `isExpanded` only when `isPreExpanded` changes and is not null/undefined.
+    // This ensures that the component reacts to relevant changes from the parent component
+    // while maintaining its own internal state.
+    useEffect(() => {
+        if (props.isPreExpanded !== undefined && props.isPreExpanded !== null) {
+            setState(prevState => ({
+                ...prevState,
+                isExpanded: props.isPreExpanded ?? false
+            }));
+        }
+    }, [props.isPreExpanded]);
+
+    return (
+        <div className="unlock-condition">
+            <div className="card--content__input card--value row middle" onClick={() => setState((p) => ({ ...p, isExpanded: !isExpanded }))}>
+                <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
+                    <DropdownIcon />
                 </div>
-                {isExpanded && (
-                    <div className="padding-l-t left-border">
-                        {unlockCondition.type === UnlockConditionType.Address && (
-                            <Address address={(unlockCondition as AddressUnlockCondition).address} />
-                        )}
-                        {unlockCondition.type === UnlockConditionType.StorageDepositReturn && (
-                            <React.Fragment>
-                                <div className="card--label">Return address</div>
-                                <Address address={(unlockCondition as StorageDepositReturnUnlockCondition).returnAddress} />
-                                <div className="card--label">Amount:</div>
-                                <div className="card--value row">
-                                    <span
-                                        className="pointer margin-r-t"
-                                        onClick={() => this.setState({ isFormattedBalance: !isFormattedBalance })}
-                                    >
-                                        {formatAmount(
-                                            Number((unlockCondition as StorageDepositReturnUnlockCondition).amount),
-                                            tokenInfo,
-                                            !isFormattedBalance,
-                                        )}
-                                    </span>
-                                </div>
-                            </React.Fragment>
-                        )}
-                        {unlockCondition.type === UnlockConditionType.Timelock && (unlockCondition as TimelockUnlockCondition).unixTime && (
-                            <React.Fragment>
-                                <div className="card--label">Unix time</div>
-                                <div className="card--value row">
-                                    {DateHelper.formatShort((unlockCondition as TimelockUnlockCondition).unixTime * 1000)}
-                                </div>
-                            </React.Fragment>
-                        )}
-                        {unlockCondition.type === UnlockConditionType.Expiration && (
-                            <React.Fragment>
-                                <Address address={(unlockCondition as ExpirationUnlockCondition).returnAddress} />
-                                {(unlockCondition as ExpirationUnlockCondition).unixTime && (
-                                    <React.Fragment>
-                                        <div className="card--label">Unix time</div>
-                                        <div className="card--value row">
-                                            {DateHelper.formatShort((unlockCondition as ExpirationUnlockCondition).unixTime * 1000)}
-                                        </div>
-                                    </React.Fragment>
-                                )}
-                            </React.Fragment>
-                        )}
-                        {unlockCondition.type === UnlockConditionType.GovernorAddress && (
-                            <Address address={(unlockCondition as GovernorAddressUnlockCondition).address} />
-                        )}
-                        {unlockCondition.type === UnlockConditionType.ImmutableAliasAddress && (
-                            <Address address={(unlockCondition as ImmutableAliasAddressUnlockCondition).address} />
-                        )}
-                        {unlockCondition.type === UnlockConditionType.StateControllerAddress && (
-                            <Address address={(unlockCondition as StateControllerAddressUnlockCondition).address} />
-                        )}
-                    </div>
-                )}
+                <div className="card--label">{NameHelper.getUnlockConditionTypeName(unlockCondition.type)}</div>
             </div>
-        );
-    }
+            {isExpanded && (
+                <div className="padding-l-t left-border">
+                    {unlockCondition.type === UnlockConditionType.Address && (
+                        <Address address={(unlockCondition as AddressUnlockCondition).address} />
+                    )}
+                    {unlockCondition.type === UnlockConditionType.StorageDepositReturn && (
+                        <React.Fragment>
+                            <div className="card--label">Return address</div>
+                            <Address address={(unlockCondition as StorageDepositReturnUnlockCondition).returnAddress} />
+                            <div className="card--label">Amount:</div>
+                            <div className="card--value row">
+                                <span
+                                    className="pointer margin-r-t"
+                                    onClick={() => setState((p) => ({ ...p, isFormattedBalance: !isFormattedBalance }))}
+                                >
+                                    {formatAmount(
+                                        Number((unlockCondition as StorageDepositReturnUnlockCondition).amount),
+                                        tokenInfo,
+                                        !isFormattedBalance,
+                                    )}
+                                </span>
+                            </div>
+                        </React.Fragment>
+                    )}
+                    {unlockCondition.type === UnlockConditionType.Timelock && (unlockCondition as TimelockUnlockCondition).unixTime && (
+                        <React.Fragment>
+                            <div className="card--label">Unix time</div>
+                            <div className="card--value row">
+                                {DateHelper.formatShort((unlockCondition as TimelockUnlockCondition).unixTime * 1000)}
+                            </div>
+                        </React.Fragment>
+                    )}
+                    {unlockCondition.type === UnlockConditionType.Expiration && (
+                        <React.Fragment>
+                            <Address address={(unlockCondition as ExpirationUnlockCondition).returnAddress} />
+                            {(unlockCondition as ExpirationUnlockCondition).unixTime && (
+                                <React.Fragment>
+                                    <div className="card--label">Unix time</div>
+                                    <div className="card--value row">
+                                        {DateHelper.formatShort((unlockCondition as ExpirationUnlockCondition).unixTime * 1000)}
+                                    </div>
+                                </React.Fragment>
+                            )}
+                        </React.Fragment>
+                    )}
+                    {unlockCondition.type === UnlockConditionType.GovernorAddress && (
+                        <Address address={(unlockCondition as GovernorAddressUnlockCondition).address} />
+                    )}
+                    {unlockCondition.type === UnlockConditionType.ImmutableAliasAddress && (
+                        <Address address={(unlockCondition as ImmutableAliasAddressUnlockCondition).address} />
+                    )}
+                    {unlockCondition.type === UnlockConditionType.StateControllerAddress && (
+                        <Address address={(unlockCondition as StateControllerAddressUnlockCondition).address} />
+                    )}
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default UnlockCondition;

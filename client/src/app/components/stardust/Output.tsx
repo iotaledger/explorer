@@ -227,16 +227,13 @@ class Output extends Component<OutputProps, OutputState> {
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
 
                                     const isExpandedByCondition = this.props.unlockConditionOpenedIndexes && this.props.unlockConditionOpenedIndexes.includes(idx);
-                                    console.log('--- isExpandedByCondition', isExpandedByCondition);
+
                                     return (
-                                        <>
-                                            {isExpandedByCondition ? 'true' : 'false'}
-                                            <UnlockCondition
-                                                key={idx}
-                                                unlockCondition={unlockCondition}
-                                                isPreExpanded={isExpandedByCondition ?? isPreExpanded}
-                                            />
-                                        </>
+                                        <UnlockCondition
+                                            key={outputId + idx}
+                                            unlockCondition={unlockCondition}
+                                            isPreExpanded={isExpandedByCondition ?? isPreExpanded}
+                                        />
                                     );
                                 })}
                                 {(output as CommonOutput).features?.map((feature, idx) => (
