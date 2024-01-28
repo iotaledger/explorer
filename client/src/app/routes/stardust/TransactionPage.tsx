@@ -77,32 +77,47 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         }
     }, [block]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setInputsExtraInfo({
-                '0x2c8eb84d31b6e419a2bf0da89d4a70484590a7228e6c1a3d4c130f0d9b02bb140000': {
-                    unlockConditionOpenedIndexes: [0]
-                }
-            });
-            console.log('--- update');
-        }, 5000)
-    }, []);
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         setInputsExtraInfo({
+    //             '0x2c8eb84d31b6e419a2bf0da89d4a70484590a7228e6c1a3d4c130f0d9b02bb140000': {
+    //                 unlockConditionOpenedIndexes: [0]
+    //             }
+    //         });
+    //         console.log('--- update');
+    //     }, 5000)
+    // }, []);
 
     useEffect(() => {
-        return;
         (async () => {
             if (!inputs) return;
 
             inputs.forEach(input => {
 
                 if (isExpirationExists(input)) {
-                    console.log('--- input.outputId', input.outputId);
-                    if (!isOutputSpent(input)) {
+                    if (isOutputSpent(input)) {
+                        // pass
+                        const milestoneTimestamp = input?.output?.metadata?.milestoneTimestampSpent as number;
+
+
+                        const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+                        const isSpentAfterUnlock = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000, milestoneTimestamp * 1000);
+                        let indexes: number[] = [];
+                        if (isSpentAfterUnlock) {
+                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
+                        } else {
+                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
+                        }
+                        setInputsExtraInfo((prev) => ({
+                            ...prev,
+                            [input.outputId]: {
+                                unlockConditionOpenedIndexes: indexes,
+                            },
+                        }));
 
                     } else {
                         const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
                         const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
-                        // debugger;
                         let indexes: number[] = [];
                         if (isExpired) {
                             indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
@@ -110,21 +125,21 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                             indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
                         }
 
-                        setInputsExtraInfo({
-                            ...inputsExtraInfo,
+                        setInputsExtraInfo((prev) => ({
+                            ...prev,
                             [input.outputId]: {
                                 unlockConditionOpenedIndexes: indexes,
                             },
-                        });
+                        }));
                     }
                 } else {
                     const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-                    setInputsExtraInfo({
-                        ...inputsExtraInfo,
+                    setInputsExtraInfo((prev) => ({
+                        ...prev,
                         [input.outputId]: {
                             unlockConditionOpenedIndexes: indexes,
                         },
-                    });
+                    }));
                 }
 
             });
@@ -135,7 +150,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         // If spent - check when.
 
 
-    }, [inputs]);
+    }, [inputs, setInputsExtraInfo]);
 
     // const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
     //     if (!outputId) return null;
