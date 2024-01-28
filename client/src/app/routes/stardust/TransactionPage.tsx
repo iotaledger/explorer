@@ -29,6 +29,7 @@ import { STARDUST } from "~models/config/protocolVersion";
 import { IInput } from "~models/api/stardust/IInput";
 import { OutputResponse, ExpirationUnlockCondition } from "@iota/sdk-wasm/web";
 import { DateHelper } from "~helpers/dateHelper";
+import { HexHelper } from "~helpers/stardust/hexHelper";
 
 enum TRANSACTION_PAGE_TABS {
     Payload = "Payload",
@@ -77,132 +78,69 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         }
     }, [block]);
 
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         setInputsExtraInfo({
-    //             '0x2c8eb84d31b6e419a2bf0da89d4a70484590a7228e6c1a3d4c130f0d9b02bb140000': {
-    //                 unlockConditionOpenedIndexes: [0]
-    //             }
-    //         });
-    //         console.log('--- update');
-    //     }, 5000)
-    // }, []);
+    const updateInputExtraInfo = async (input: IInput) => {
+        if (isExpirationExists(input)) {
+            if (isOutputSpent(input)) {
+                const transactionSpentId = input?.output?.metadata.transactionIdSpent as string;
+                const transactionTimestamp = await getTransactionTimestamp(transactionSpentId, apiClient, network);
+
+                const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+                const isSpentAfterUnlock =
+                    expirationUnlockCondition &&
+                    transactionTimestamp &&
+                    DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000, transactionTimestamp);
+
+                let indexes: number[] = [];
+                if (isSpentAfterUnlock) {
+                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
+                } else {
+                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
+                }
+                setInputsExtraInfo((prev) => ({
+                    ...prev,
+                    [input.outputId]: {
+                        unlockConditionOpenedIndexes: indexes,
+                    },
+                }));
+
+            } else {
+                const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+                const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
+                let indexes: number[] = [];
+                if (isExpired) {
+                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
+                } else {
+                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
+                }
+
+                setInputsExtraInfo((prev) => ({
+                    ...prev,
+                    [input.outputId]: {
+                        unlockConditionOpenedIndexes: indexes,
+                    },
+                }));
+            }
+        } else {
+            const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
+            setInputsExtraInfo((prev) => ({
+                ...prev,
+                [input.outputId]: {
+                    unlockConditionOpenedIndexes: indexes,
+                },
+            }));
+        }
+    }
 
     useEffect(() => {
         (async () => {
             if (!inputs) return;
 
-            inputs.forEach(input => {
-
-                if (isExpirationExists(input)) {
-                    if (isOutputSpent(input)) {
-                        // pass
-                        const milestoneTimestamp = input?.output?.metadata?.milestoneTimestampSpent as number;
-
-
-                        const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
-                        const isSpentAfterUnlock = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000, milestoneTimestamp * 1000);
-                        let indexes: number[] = [];
-                        if (isSpentAfterUnlock) {
-                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
-                        } else {
-                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-                        }
-                        setInputsExtraInfo((prev) => ({
-                            ...prev,
-                            [input.outputId]: {
-                                unlockConditionOpenedIndexes: indexes,
-                            },
-                        }));
-
-                    } else {
-                        const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
-                        const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
-                        let indexes: number[] = [];
-                        if (isExpired) {
-                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
-                        } else {
-                            indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-                        }
-
-                        setInputsExtraInfo((prev) => ({
-                            ...prev,
-                            [input.outputId]: {
-                                unlockConditionOpenedIndexes: indexes,
-                            },
-                        }));
-                    }
-                } else {
-                    const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-                    setInputsExtraInfo((prev) => ({
-                        ...prev,
-                        [input.outputId]: {
-                            unlockConditionOpenedIndexes: indexes,
-                        },
-                    }));
-                }
-
-            });
+            await Promise.all(inputs.map(input => {
+                updateInputExtraInfo(input);
+            }));
         })();
-        // const spentInputIds =
-
-        // If input with expiration condition - check if spent.
-        // If spent - check when.
-
 
     }, [inputs, setInputsExtraInfo]);
-
-    // const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
-    //     if (!outputId) return null;
-    //
-    //     try {
-    //         const response = await apiClient.outputDetails({ network, outputId });
-    //         const details = response.output;
-    //
-    //         if (!response.error && details?.output && details?.metadata) {
-    //             return details;
-    //         }
-    //         return null;
-    //     } catch {
-    //         console.log("Failed loading transaction history details!");
-    //         return null;
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     // request output details for unlocks with expiration
-    //     if (!inputs || !outputs) return;
-    //
-    //     (async () => {
-    //         const outputIdsWithUnlockConditions = [];
-    //
-    //         for (const input of inputs) {
-    //             // @ts-ignore
-    //             const hasUnlockExpiration = input?.output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
-    //             // @ts-ignore
-    //             if (hasUnlockExpiration) {
-    //                 outputIdsWithUnlockConditions.push(input?.outputId);
-    //             }
-    //         }
-    //
-    //         for (const output of outputs) {
-    //
-    //             // @ts-ignore
-    //             const hasUnlockExpiration = output?.output?.unlockConditions?.some(i => i.type === UnlockConditionType.Expiration);
-    //
-    //             if (hasUnlockExpiration) {
-    //                 outputIdsWithUnlockConditions.push(output?.id);
-    //             }
-    //         }
-    //
-    //         if (outputIdsWithUnlockConditions.length > 0) {
-    //             const outputDetails = await Promise.all(outputIdsWithUnlockConditions.map((outputId) => {
-    //                 return apiClient.outputDetails({ network, outputId });
-    //             }));
-    //         }
-    //
-    //     })();
-    // }, [inputs, outputs]);
 
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
@@ -421,6 +359,28 @@ function isExpirationExists(input: IInput) {
     if (!output?.unlockConditions) return false;
 
     return output.unlockConditions.some(i => i.type === UnlockConditionType.Expiration);
+}
+
+async function getTransactionTimestamp(transactionId: string, apiClient: StardustApiClient, network: string) {
+    const blockResp = await apiClient.transactionIncludedBlockDetails({ network, transactionId });
+
+    if (blockResp?.block?.payload?.type !== PayloadType.Transaction) return null;
+
+    const includedBlockId = Utils.blockId(blockResp.block);
+
+    const blockMetadataResp = await apiClient.blockDetails({
+        network,
+        blockId: HexHelper.addPrefix(includedBlockId),
+    });
+
+    const blockMetadata = blockMetadataResp?.metadata;
+    const referencedByMilestoneIndex = blockMetadata?.referencedByMilestoneIndex;
+    if (referencedByMilestoneIndex === undefined) return null;
+
+    const milestoneResp = await apiClient.milestoneDetails({ network, milestoneIndex: referencedByMilestoneIndex });
+    if (!milestoneResp?.milestone?.timestamp) return null;
+
+    return DateHelper.milliseconds(milestoneResp.milestone.timestamp);
 }
 
 
