@@ -27,6 +27,9 @@ import { ServiceFactory } from "~factories/serviceFactory";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { STARDUST } from "~models/config/protocolVersion";
 import { IInput } from "~models/api/stardust/IInput";
+import { OutputResponse, ExpirationUnlockCondition } from "@iota/sdk-wasm/web";
+import { DateHelper } from "~helpers/dateHelper";
+
 enum TRANSACTION_PAGE_TABS {
     Payload = "Payload",
     BlockMetadata = "Block Metadata",
@@ -74,23 +77,43 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     }, [block]);
 
     useEffect(() => {
-        if (!inputs) return;
+        (async () => {
+            if (!inputs) return;
 
-        inputs.forEach(input => {
+            inputs.forEach(input => {
 
-            if (isExpirationExists(input)) {
+                if (isExpirationExists(input)) {
+                    if (isOutputSpent(input)) {
 
-            } else {
-                const indexes = getIndexesAddressUnlockCondition(input);
-                setInputsExtraInfo({
-                    ...inputsExtraInfo,
-                    [input.outputId]: {
-                        unlockConditionOpenedIndexes: indexes,
-                    },
-                });
-            }
+                    } else {
+                        const expirationUnlockCondition = getUnlockConditionByType(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+                        const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
+                        let indexes: number[] = [];
+                        if (isExpired) {
+                            indexes = getUnlockConditionIndexesByType(input, UnlockConditionType.Expiration);
+                        } else {
+                            indexes = getUnlockConditionIndexesByType(input, UnlockConditionType.Address);
+                        }
 
-        });
+                        setInputsExtraInfo({
+                            ...inputsExtraInfo,
+                            [input.outputId]: {
+                                unlockConditionOpenedIndexes: indexes,
+                            },
+                        });
+                    }
+                } else {
+                    const indexes = getUnlockConditionIndexesByType(input, UnlockConditionType.Address);
+                    setInputsExtraInfo({
+                        ...inputsExtraInfo,
+                        [input.outputId]: {
+                            unlockConditionOpenedIndexes: indexes,
+                        },
+                    });
+                }
+
+            });
+        })();
         // const spentInputIds =
 
         // If input with expiration condition - check if spent.
@@ -337,17 +360,32 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     );
 };
 
-function getIndexesAddressUnlockCondition(input: IInput) {
+
+
+function isOutputSpent(input: IInput) {
+    const output = input.output as OutputResponse;
+    return output.metadata.isSpent;
+}
+
+function getUnlockConditionByType(input: IInput, type: UnlockConditionType) {
+    const output = input.output?.output as CommonOutput;
+    if (!output?.unlockConditions) return null;
+
+    return output.unlockConditions.find(i => i.type === type);
+}
+
+function getUnlockConditionIndexesByType(input: IInput, type: UnlockConditionType) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return [];
 
     return output.unlockConditions.map((i, idx) => {
-        if (i.type === UnlockConditionType.Address) {
+        if (i.type === type) {
             return idx;
         }
     }).filter(i => i !== undefined) as number[];
 }
 
+// If expiration unlock condition exists - return true.
 function isExpirationExists(input: IInput) {
     const output = input.output?.output as CommonOutput;
     if (!output?.unlockConditions) return false;
