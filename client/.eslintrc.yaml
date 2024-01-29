@@ -23,6 +23,7 @@ rules: {
   no-empty: off,
   "@typescript-eslint/no-inferrable-types": off,
   "@typescript-eslint/no-unused-vars": [2, { args: "none" }],
-  "@typescript-eslint/no-empty-function": off
+  "@typescript-eslint/no-empty-function": off,
+  "no-console": ["error", { allow: ["warn", "error"] }],
 }
 
