@@ -49,7 +49,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         const { network, inputs, unlocks, outputs, header, isLinksDisabled } = this.props;
-        // console.log('--- !!!!!!inputs', inputs[1].unlockConditionOpenedIndexes);
+        console.log('--- outputs', outputs);
         return (
             <div className="transaction-payload">
                 {header && (
@@ -92,7 +92,7 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                                     showCopyAmount={true}
                                     isPreExpanded={true}
                                     isLinksDisabled={isLinksDisabled}
-                                    unlockConditionOpenedIndexes={[]}
+                                    unlockConditionOpenedIndexes={output.unlockConditionOpenedIndexes}
                                 />
                             ))}
                         </div>

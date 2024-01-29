@@ -21,7 +21,7 @@ export interface TransactionPayloadProps {
     /**
      * The outputs.
      */
-    outputs: IOutput[];
+    outputs: (IOutput & { unlockConditionOpenedIndexes?: number[] })[];
 
     /**
      * The header title of this section.

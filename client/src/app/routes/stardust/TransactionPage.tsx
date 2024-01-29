@@ -37,6 +37,7 @@ import { IInput } from "~models/api/stardust/IInput";
 import { OutputResponse, ExpirationUnlockCondition } from "@iota/sdk-wasm/web";
 import { DateHelper } from "~helpers/dateHelper";
 import { HexHelper } from "~helpers/stardust/hexHelper";
+import { IOutput } from "~models/api/stardust/IOutput";
 
 enum TRANSACTION_PAGE_TABS {
     Payload = "Payload",
@@ -60,6 +61,19 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [blockMetadata, isBlockMetadataLoading] = useBlockMetadata(network, includedBlockId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [inputsExtraInfo, setInputsExtraInfo] = useState<{ [outputId: string]: { unlockConditionOpenedIndexes?: number[] } }>({});
+
+    const outputsWithExtraInfo = React.useMemo(() => {
+        if (!outputs) return null;
+        return outputs.map((output, idx) => {
+            const extraInfo = inputsExtraInfo[output.id];
+            console.log('--- extraInfo', extraInfo);
+            return {
+                ...output,
+                unlockConditionOpenedIndexes: extraInfo?.unlockConditionOpenedIndexes ?? [],
+            };
+        });
+    }, [outputs, inputsExtraInfo]);
+
 
     const inputsWithExtraInfo = React.useMemo(() => {
         if (!inputs) return null;
@@ -86,12 +100,13 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
 
         const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
         const expirationConditionTimestamp = expirationUnlockCondition.unixTime * 1000;
+        const commonOutput = input.output?.output as CommonOutput;
 
         if (!isOutputSpent(input)) {
             const isExpired = DateHelper.isExpired(expirationConditionTimestamp);
             const indexes: number[] = isExpired ?
-                getUnlockConditionIndexes(input, UnlockConditionType.Expiration) :
-                getUnlockConditionIndexes(input, UnlockConditionType.Address);
+                getUnlockConditionIndexes(commonOutput, UnlockConditionType.Expiration) :
+                getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
 
             setInputsExtraInfo((prev) => ({
                 ...prev,
@@ -111,12 +126,23 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         const isSpentAfterUnlock = DateHelper.isExpired(expirationConditionTimestamp, transactionTimestamp);
 
         const indexes = isSpentAfterUnlock ?
-            getUnlockConditionIndexes(input, UnlockConditionType.Expiration) :
-            getUnlockConditionIndexes(input, UnlockConditionType.Address);
+            getUnlockConditionIndexes(commonOutput, UnlockConditionType.Expiration) :
+            getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
 
         setInputsExtraInfo((prev) => ({
             ...prev,
             [input.outputId]: {
+                unlockConditionOpenedIndexes: indexes,
+            },
+        }));
+    };
+
+    const updateOutputExtraInfo = async (output: IOutput) => {
+        const indexes = getUnlockConditionIndexes(output?.output as CommonOutput, UnlockConditionType.Address);
+        console.log('--- indexes', indexes);
+        setInputsExtraInfo((prev) => ({
+            ...prev,
+            [output.id]: {
                 unlockConditionOpenedIndexes: indexes,
             },
         }));
@@ -143,6 +169,15 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             );
         })();
     }, [inputs, setInputsExtraInfo]);
+    useEffect(() => {
+        (async () => {
+            if (!outputs) return;
+
+            outputs.map((output) => {
+                updateOutputExtraInfo(output);
+            });
+        })();
+    }, [outputs, setInputsExtraInfo]);
 
     const { metadata, metadataError, conflictReason, blockTangleStatus } = blockMetadata;
     const isLinksDisabled = metadata?.ledgerInclusionState === "conflicting";
@@ -243,9 +278,9 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                     },
                 }}
             >
-                {inputsWithExtraInfo && unlocks && outputs ? (
+                {inputsWithExtraInfo && unlocks && outputsWithExtraInfo ? (
                     <div className="section">
-                        <TransactionPayload network={network} inputs={inputsWithExtraInfo} unlocks={unlocks} outputs={outputs} />
+                        <TransactionPayload network={network} inputs={inputsWithExtraInfo} unlocks={unlocks} outputs={outputsWithExtraInfo} />
                     </div>
                 ) : (
                     <></>
@@ -342,8 +377,7 @@ function getUnlockCondition(input: IInput, type: UnlockConditionType) {
     return output.unlockConditions.find((i) => i.type === type);
 }
 
-function getUnlockConditionIndexes(input: IInput, type: UnlockConditionType) {
-    const output = input.output?.output as CommonOutput;
+function getUnlockConditionIndexes(output: CommonOutput, type: UnlockConditionType) {
     if (!output?.unlockConditions) return [];
 
     return output.unlockConditions
