@@ -72,6 +72,56 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         });
     }, [inputs, inputsExtraInfo]);
 
+    const updateInputExtraInfo = async (input: IInput) => {
+        if (!isExpirationExists(input)) {
+            const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
+            setInputsExtraInfo((prev) => ({
+                ...prev,
+                [input.outputId]: {
+                    unlockConditionOpenedIndexes: indexes,
+                },
+            }));
+            return;
+        }
+
+        const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
+        const expirationConditionTimestamp = expirationUnlockCondition.unixTime * 1000;
+
+        if (!isOutputSpent(input)) {
+            const isExpired = DateHelper.isExpired(expirationConditionTimestamp);
+            const indexes: number[] = isExpired ?
+                getUnlockConditionIndexes(input, UnlockConditionType.Expiration) :
+                getUnlockConditionIndexes(input, UnlockConditionType.Address);
+
+            setInputsExtraInfo((prev) => ({
+                ...prev,
+                [input.outputId]: {
+                    unlockConditionOpenedIndexes: indexes,
+                },
+            }));
+            return;
+        }
+
+        const transactionSpentId = input?.output?.metadata.transactionIdSpent as string;
+        const transactionTimestamp = await getTransactionTimestamp(transactionSpentId, apiClient, network);
+
+        if (!transactionTimestamp) {
+            console.error(`Failed to get transaction timestamp for ${transactionSpentId}`);
+        }
+        const isSpentAfterUnlock = DateHelper.isExpired(expirationConditionTimestamp, transactionTimestamp);
+
+        const indexes = isSpentAfterUnlock ?
+            getUnlockConditionIndexes(input, UnlockConditionType.Expiration) :
+            getUnlockConditionIndexes(input, UnlockConditionType.Address);
+
+        setInputsExtraInfo((prev) => ({
+            ...prev,
+            [input.outputId]: {
+                unlockConditionOpenedIndexes: indexes,
+            },
+        }));
+    };
+
     useEffect(() => {
         if (block?.payload?.type === PayloadType.Transaction) {
             const transactionPayload = block.payload as ITransactionPayload;
@@ -81,58 +131,6 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             setInputsCommitment(transactionEssence.inputsCommitment);
         }
     }, [block]);
-
-    const updateInputExtraInfo = async (input: IInput) => {
-        if (isExpirationExists(input)) {
-            if (isOutputSpent(input)) {
-                const transactionSpentId = input?.output?.metadata.transactionIdSpent as string;
-                const transactionTimestamp = await getTransactionTimestamp(transactionSpentId, apiClient, network);
-
-                const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
-                const isSpentAfterUnlock =
-                    expirationUnlockCondition &&
-                    transactionTimestamp &&
-                    DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000, transactionTimestamp);
-
-                let indexes: number[] = [];
-                if (isSpentAfterUnlock) {
-                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
-                } else {
-                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-                }
-                setInputsExtraInfo((prev) => ({
-                    ...prev,
-                    [input.outputId]: {
-                        unlockConditionOpenedIndexes: indexes,
-                    },
-                }));
-            } else {
-                const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
-                const isExpired = expirationUnlockCondition && DateHelper.isExpired(expirationUnlockCondition.unixTime * 1000);
-                let indexes: number[] = [];
-                if (isExpired) {
-                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Expiration);
-                } else {
-                    indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-                }
-
-                setInputsExtraInfo((prev) => ({
-                    ...prev,
-                    [input.outputId]: {
-                        unlockConditionOpenedIndexes: indexes,
-                    },
-                }));
-            }
-        } else {
-            const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
-            setInputsExtraInfo((prev) => ({
-                ...prev,
-                [input.outputId]: {
-                    unlockConditionOpenedIndexes: indexes,
-                },
-            }));
-        }
-    };
 
     useEffect(() => {
         (async () => {
@@ -367,7 +365,7 @@ function isExpirationExists(input: IInput) {
 async function getTransactionTimestamp(transactionId: string, apiClient: StardustApiClient, network: string) {
     const blockResp = await apiClient.transactionIncludedBlockDetails({ network, transactionId });
 
-    if (blockResp?.block?.payload?.type !== PayloadType.Transaction) return null;
+    if (blockResp?.block?.payload?.type !== PayloadType.Transaction) return;
 
     const includedBlockId = Utils.blockId(blockResp.block);
 
@@ -378,10 +376,10 @@ async function getTransactionTimestamp(transactionId: string, apiClient: Stardus
 
     const blockMetadata = blockMetadataResp?.metadata;
     const referencedByMilestoneIndex = blockMetadata?.referencedByMilestoneIndex;
-    if (referencedByMilestoneIndex === undefined) return null;
+    if (referencedByMilestoneIndex === undefined) return;
 
     const milestoneResp = await apiClient.milestoneDetails({ network, milestoneIndex: referencedByMilestoneIndex });
-    if (!milestoneResp?.milestone?.timestamp) return null;
+    if (!milestoneResp?.milestone?.timestamp) return;
 
     return DateHelper.milliseconds(milestoneResp.milestone.timestamp);
 }

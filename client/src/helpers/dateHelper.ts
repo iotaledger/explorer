@@ -41,12 +41,12 @@ export class DateHelper {
 
     /**
      * Check if the date is expired.
-     * @param valueInMs The value to format in milliseconds.
-     * @param compareTime
+     * @param value The value to check in milliseconds.
+     * @param compareWith
      * @returns Boolean if the date is expired.
      */
-    public static isExpired(valueInMs: number, compareTime?: number): boolean {
-        return moment(valueInMs).isBefore(compareTime ? moment(compareTime) : moment());
+    public static isExpired(value: number, compareWith: number = Date.now()): boolean {
+        return moment(moment(compareWith)).isAfter(value);
     }
 
     /**
