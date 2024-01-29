@@ -18,9 +18,58 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Prepare repository tags
+        run: |
+          if git rev-parse --is-shallow-repository | grep -q 'true'; then
+            git fetch --prune --unshallow --tags -f
+          else
+            git fetch --prune --tags -f
+          fi
+
+      - name: Build changelog
+        id: build_changelog
+        run: |
+          echo "Building changelog..."
+
+          # Create a changelog file with a header:
+          echo "# Changelog" > CHANGELOG.md
+
+          # Check repository tags and the last tagged commit
+          n_tags=`git tag -l 'v*' --sort=-v:refname | wc -l`
+          prev_tag=`git tag -l 'v*' --sort=-v:refname | sed '2q;d'`
+          if [ $n_tags -eq 1 ]; then
+            last_commit=`git rev-list --max-parents=0 HEAD`
+          else
+            last_commit=`git rev-list -n 1 $prev_tag`
+          fi
+
+          # Fill the changelog file with the commits since the last tag
+          # Set max tries to equal the maximum number of commits as protection
+          max_tries=`git rev-list --count HEAD`
+          i=0
+          while [ `git rev-parse HEAD~$i` != $last_commit ] && [ $i -lt $((max_tries-1)) ]
+          do
+            echo '- ' `git show -s --format=%s HEAD~$i` >> CHANGELOG.md
+            i=$((i+1))
+          done
+
+          # Set the complete changelog url
+          echo >> CHANGELOG.md
+          compare=""
+          if [ $n_tags -eq 1 ]; then
+            compare=$last_commit
+          else
+            compare=$prev_tag
+          fi
+          compare="${compare}...`git tag -l 'v*' --sort=-v:refname | sed '1q;d'`"
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${compare}" >> CHANGELOG.md
+
+          echo "Changelog built successfully."
+
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         with:
             name: ${{ inputs.name }}
             tag_name: ${{ inputs.version_tag }}
             draft: true
+            body_path: CHANGELOG.md

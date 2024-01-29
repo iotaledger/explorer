@@ -19,17 +19,17 @@ jobs:
           echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
   use-reusable-workflow:
+    strategy:
+      matrix:
+        directory: [api, client]
     name: Build Images
     needs: set_tags
     uses: ./.github/workflows/build-images.reusable.yaml
     with:
-      api_image_tags: |
-        iotaledger/explorer-api:${{ needs.set_tags.outputs.version_tag }}
-        iotaledger/explorer-api:latest
-
-      client_image_tags: |
-        iotaledger/explorer-client:${{ needs.set_tags.outputs.version_tag }}
-        iotaledger/explorer-client:latest
+      directory: ${{ matrix.directory }}
+      image_tags: |
+        iotaledger/explorer-${{ matrix.directory }}:${{ needs.set_tags.outputs.version_tag }}
+        iotaledger/explorer-${{ matrix.directory }}:latest
     secrets: inherit
 
   deploy_to_server:
