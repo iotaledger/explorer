@@ -49,7 +49,6 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      */
     public render(): ReactNode {
         const { network, inputs, unlocks, outputs, header, isLinksDisabled } = this.props;
-        console.log('--- outputs', outputs);
         return (
             <div className="transaction-payload">
                 {header && (

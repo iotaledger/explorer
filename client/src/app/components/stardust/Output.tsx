@@ -72,7 +72,6 @@ class Output extends Component<OutputProps, OutputState> {
      */
     public render(): ReactNode {
         const { outputId, output, amount, showCopyAmount, network, isPreExpanded, displayFullOutputId, isLinksDisabled } = this.props;
-        // console.log(output);
         const { isExpanded, isFormattedBalance } = this.state;
         const tokenInfo: INodeInfoBaseToken = this.context.tokenInfo;
 

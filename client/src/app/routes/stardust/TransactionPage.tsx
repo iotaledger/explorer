@@ -66,14 +66,12 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         if (!outputs) return null;
         return outputs.map((output, idx) => {
             const extraInfo = inputsExtraInfo[output.id];
-            console.log('--- extraInfo', extraInfo);
             return {
                 ...output,
                 unlockConditionOpenedIndexes: extraInfo?.unlockConditionOpenedIndexes ?? [],
             };
         });
     }, [outputs, inputsExtraInfo]);
-
 
     const inputsWithExtraInfo = React.useMemo(() => {
         if (!inputs) return null;
@@ -104,9 +102,9 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
 
         if (!isOutputSpent(input)) {
             const isExpired = DateHelper.isExpired(expirationConditionTimestamp);
-            const indexes: number[] = isExpired ?
-                getUnlockConditionIndexes(commonOutput, UnlockConditionType.Expiration) :
-                getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
+            const indexes: number[] = isExpired
+                ? getUnlockConditionIndexes(commonOutput, UnlockConditionType.Expiration)
+                : getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
 
             setInputsExtraInfo((prev) => ({
                 ...prev,
@@ -125,9 +123,9 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         }
         const isSpentAfterUnlock = DateHelper.isExpired(expirationConditionTimestamp, transactionTimestamp);
 
-        const indexes = isSpentAfterUnlock ?
-            getUnlockConditionIndexes(commonOutput, UnlockConditionType.Expiration) :
-            getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
+        const indexes = isSpentAfterUnlock
+            ? getUnlockConditionIndexes(commonOutput, UnlockConditionType.Expiration)
+            : getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
 
         setInputsExtraInfo((prev) => ({
             ...prev,
@@ -139,7 +137,6 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
 
     const updateOutputExtraInfo = async (output: IOutput) => {
         const indexes = getUnlockConditionIndexes(output?.output as CommonOutput, UnlockConditionType.Address);
-        console.log('--- indexes', indexes);
         setInputsExtraInfo((prev) => ({
             ...prev,
             [output.id]: {
@@ -280,7 +277,12 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             >
                 {inputsWithExtraInfo && unlocks && outputsWithExtraInfo ? (
                     <div className="section">
-                        <TransactionPayload network={network} inputs={inputsWithExtraInfo} unlocks={unlocks} outputs={outputsWithExtraInfo} />
+                        <TransactionPayload
+                            network={network}
+                            inputs={inputsWithExtraInfo}
+                            unlocks={unlocks}
+                            outputs={outputsWithExtraInfo}
+                        />
                     </div>
                 ) : (
                     <></>
