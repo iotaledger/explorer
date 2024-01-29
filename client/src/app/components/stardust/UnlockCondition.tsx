@@ -19,44 +19,11 @@ import { DateHelper } from "~helpers/dateHelper";
 import { NameHelper } from "~helpers/stardust/nameHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../context/NetworkContext";
-// import AsyncComponent from "../AsyncComponent";
 
 /**
  * Component which will display an unlock condition.
  */
-// function UnlockCondition extends Component<UnlockConditionProps, UnlockConditionState> {
 function UnlockCondition(props: UnlockConditionProps) {
-    /**
-     * The component context type.
-     */
-    // public static contextType = NetworkContext;
-
-    /**
-     * The component context.
-     */
-    // public declare context: React.ContextType<typeof NetworkContext>;
-
-    // constructor(props: UnlockConditionProps) {
-    //     super(props);
-    //
-    //     this.state = {
-    //
-    //
-    //     };
-    // }
-
-    /**
-     * The component mounted.
-     */
-    // public async componentDidMount(): Promise<void> {
-    //     super.componentDidMount();
-    // }
-
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
-    // public render(): ReactNode {
     const [state, setState] = useState<UnlockConditionState>({
         isFormattedBalance: true,
         isExpanded: props.isPreExpanded ?? false,
@@ -66,10 +33,7 @@ function UnlockCondition(props: UnlockConditionProps) {
     const { unlockCondition } = props;
     const tokenInfo: INodeInfoBaseToken = context.tokenInfo;
 
-    // This useEffect hook synchronizes the `isExpanded` state with the `isPreExpanded` prop.
-    // It updates `isExpanded` only when `isPreExpanded` changes and is not null/undefined.
-    // This ensures that the component reacts to relevant changes from the parent component
-    // while maintaining its own internal state.
+
     useEffect(() => {
         if (props.isPreExpanded !== undefined && props.isPreExpanded !== null) {
             setState((prevState) => ({
