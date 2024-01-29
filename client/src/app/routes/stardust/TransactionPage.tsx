@@ -64,7 +64,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
 
     const outputsWithExtraInfo = React.useMemo(() => {
         if (!outputs) return null;
-        return outputs.map((output, idx) => {
+        return outputs.map((output) => {
             const extraInfo = inputsExtraInfo[output.id];
             return {
                 ...output,
@@ -75,7 +75,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
 
     const inputsWithExtraInfo = React.useMemo(() => {
         if (!inputs) return null;
-        return inputs.map((input, idx) => {
+        return inputs.map((input) => {
             const extraInfo = inputsExtraInfo[input.outputId];
             return {
                 ...input,
@@ -85,8 +85,10 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     }, [inputs, inputsExtraInfo]);
 
     const updateInputExtraInfo = async (input: IInput) => {
+        const commonOutput = input.output?.output as CommonOutput;
+
         if (!isExpirationExists(input)) {
-            const indexes = getUnlockConditionIndexes(input, UnlockConditionType.Address);
+            const indexes = getUnlockConditionIndexes(commonOutput, UnlockConditionType.Address);
             setInputsExtraInfo((prev) => ({
                 ...prev,
                 [input.outputId]: {
@@ -98,7 +100,6 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
 
         const expirationUnlockCondition = getUnlockCondition(input, UnlockConditionType.Expiration) as ExpirationUnlockCondition;
         const expirationConditionTimestamp = expirationUnlockCondition.unixTime * 1000;
-        const commonOutput = input.output?.output as CommonOutput;
 
         if (!isOutputSpent(input)) {
             const isExpired = DateHelper.isExpired(expirationConditionTimestamp);
