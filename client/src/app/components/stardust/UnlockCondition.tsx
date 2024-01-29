@@ -33,7 +33,6 @@ function UnlockCondition(props: UnlockConditionProps) {
     const { unlockCondition } = props;
     const tokenInfo: INodeInfoBaseToken = context.tokenInfo;
 
-
     useEffect(() => {
         if (props.isPreExpanded !== undefined && props.isPreExpanded !== null) {
             setState((prevState) => ({
