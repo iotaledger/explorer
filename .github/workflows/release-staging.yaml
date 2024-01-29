@@ -59,3 +59,11 @@ jobs:
       - name: Deploy to Server
         run: |
           ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.set_tags.outputs.version_tag }}"
+
+  create_draft_release:
+    name: Create Draft Release
+    needs: [set_tags, use-reusable-workflow, deploy_to_server]
+    uses: ./.github/workflows/create-draft-release.reusable.yaml
+    with:
+      name: Explorer ${{ needs.set_tags.outputs.version_tag }}
+      version_tag: ${{ needs.set_tags.outputs.version_tag }}
