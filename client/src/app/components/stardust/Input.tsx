@@ -10,6 +10,7 @@ import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { IInput } from "~models/api/stardust/IInput";
 import NetworkContext from "../../context/NetworkContext";
+import { IPreExpandedConfig } from "./interfaces";
 
 interface InputProps {
     /**
@@ -20,15 +21,19 @@ interface InputProps {
      * The network in context.
      */
     readonly network: string;
+    /**
+     * Should the input be pre-expanded.
+     */
+    readonly preExpandedConfig?: IPreExpandedConfig;
 }
 
 /**
  * Component which will display an Input on stardust.
  */
-const Input: React.FC<InputProps> = ({ input, network }) => {
+const Input: React.FC<InputProps> = ({ input, network, preExpandedConfig }) => {
     const history = useHistory();
     const { tokenInfo } = useContext(NetworkContext);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     const fallbackInputView = (
@@ -89,6 +94,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
             amount={Number(input.output.output.amount)}
             network={network}
             showCopyAmount={true}
+            preExpandedConfig={preExpandedConfig}
         />
     ) : (
         fallbackInputView

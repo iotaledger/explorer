@@ -9,6 +9,8 @@ import Input from "../../Input";
 import Output from "../../Output";
 import Unlocks from "../../Unlocks";
 import "./TransactionPayload.scss";
+import { AddressUnlockCondition, CommonOutput, ExpirationUnlockCondition, OutputType, UnlockConditionType } from "@iota/sdk-wasm/web";
+import { IPreExpandedConfig } from "../../interfaces";
 
 /**
  * Component which will display a transaction payload.
@@ -48,7 +50,8 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
      * @returns The node to render.
      */
     public render(): ReactNode {
-        const { network, inputs, unlocks, outputs, header, isLinksDisabled } = this.props;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { network, inputs, unlocks, outputs, header, isLinksDisabled, milestoneIndex } = this.props;
 
         return (
             <div className="transaction-payload">
@@ -68,9 +71,21 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span>{inputs.length}</span>
                         </div>
                         <div className="transaction-payload_outputs card--content">
-                            {inputs.map((input, idx) => (
-                                <Input key={idx} network={network} input={input} />
-                            ))}
+                            {inputs.map((input, idx) => {
+                                let preExpandedConfig: IPreExpandedConfig = {
+                                    isPreExpanded: input?.output?.output?.type === OutputType.Basic,
+                                };
+                                if (input?.output?.output && 'unlockConditions' in input.output.output) {
+                                    const commmonOutput = input.output.output as unknown as CommonOutput;
+                                    preExpandedConfig = {
+                                        ...preExpandedConfig,
+                                        unlockConditions: commmonOutput.unlockConditions?.map(
+                                            (unlockCondition) => unlockCondition.type === UnlockConditionType.Address)
+                                    };
+
+                                }
+                                return (<Input key={idx} network={network} input={input} preExpandedConfig={preExpandedConfig} />)
+                            })}
                             <Unlocks unlocks={unlocks} />
                         </div>
                     </div>
@@ -82,17 +97,40 @@ class TransactionPayload extends AsyncComponent<TransactionPayloadProps, Transac
                             <span>{outputs.length}</span>
                         </div>
                         <div className="transaction-payload_outputs card--content">
-                            {outputs.map((output, idx) => (
-                                <Output
-                                    key={idx}
-                                    outputId={output.id}
-                                    output={output.output}
-                                    amount={output.amount}
-                                    network={network}
-                                    showCopyAmount={true}
-                                    isLinksDisabled={isLinksDisabled}
-                                />
-                            ))}
+                            {outputs.map((output, idx) => {
+                                let preExpandedConfig: IPreExpandedConfig = {
+                                    isPreExpanded: output?.output?.type === OutputType.Basic,
+                                };
+                                if ('unlockConditions' in output.output) {
+                                    const commmonOutput = output.output as CommonOutput;
+                                    const expirationUnlockCondition: ExpirationUnlockCondition | undefined = (commmonOutput.unlockConditions?.find(unlockCondition => unlockCondition.type === UnlockConditionType.Expiration) as ExpirationUnlockCondition);
+                                    const addressUnlockCondition: AddressUnlockCondition | undefined = (commmonOutput.unlockConditions?.find(unlockCondition => unlockCondition.type === UnlockConditionType.Address) as AddressUnlockCondition);
+
+                                    const spentByAddress = addressUnlockCondition?.address
+                                    if (expirationUnlockCondition) {
+                                        // todo: check if the output was spent within the expiration time or not
+                                    }
+
+                                    preExpandedConfig = {
+                                        ...preExpandedConfig,
+                                        unlockConditions: commmonOutput.unlockConditions?.map(
+                                            (unlockCondition) => 'address' in unlockCondition && unlockCondition.address === spentByAddress)
+                                    };
+
+                                }
+                                return (
+                                    <Output
+                                        key={idx}
+                                        outputId={output.id}
+                                        output={output.output}
+                                        amount={output.amount}
+                                        network={network}
+                                        showCopyAmount={true}
+                                        isLinksDisabled={isLinksDisabled}
+                                        preExpandedConfig={preExpandedConfig}
+                                    />
+                                )
+                            })}
                         </div>
                     </div>
                 </div>
