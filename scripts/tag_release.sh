@@ -69,6 +69,6 @@ fi
 
 echo "Pushing branch and tags..."
 git push
-git push --tags
+git push origin refs/tags/v$TARGET_VERSION
 echo "Done!"
 
