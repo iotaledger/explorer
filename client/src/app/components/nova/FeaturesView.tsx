@@ -1,5 +1,6 @@
 import {
     BlockIssuerFeature,
+    Ed25519PublicKeyHashBlockIssuerKey,
     Feature,
     FeatureType,
     IssuerFeature,
@@ -9,8 +10,6 @@ import {
     StakingFeature,
     TagFeature,
 } from "@iota/sdk-wasm-nova/web";
-// TODO Fix this import when it's exported from the main lib entrypoint
-import { Ed25519PublicKeyHashBlockIssuerKey } from "@iota/sdk-wasm-nova/web/lib/types/block/output/block-issuer-key";
 import classNames from "classnames";
 import React, { useState } from "react";
 import AddressView from "./address/AddressView";
