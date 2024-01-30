@@ -68,7 +68,7 @@ if [[ $CONFIRM_PUSH != "" ]]; then
 fi
 
 echo "Pushing branch and tags..."
-# git push
-# git push --tags
+git push
+git push --tags
 echo "Done!"
 
