@@ -4,7 +4,7 @@ import { IBlockRequest } from "../../../models/api/stardust/IBlockRequest";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { NovaApi } from "../../../services/nova/novaApi";
+import { NovaApiService } from "../../../services/nova/novaApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,5 +25,6 @@ export async function get(_: IConfiguration, request: IBlockRequest): Promise<IB
         return {};
     }
 
-    return NovaApi.block(networkConfig, request.blockId);
+    const novaApiService = ServiceFactory.get<NovaApiService>(`api-service-${networkConfig.network}`);
+    return novaApiService.block(request.blockId);
 }

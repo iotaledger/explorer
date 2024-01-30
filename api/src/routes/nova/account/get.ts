@@ -4,7 +4,7 @@ import { IAccountResponse } from "../../../models/api/nova/IAccountResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { NovaApi } from "../../../services/nova/novaApi";
+import { NovaApiService } from "../../../services/nova/novaApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -24,6 +24,6 @@ export async function get(config: IConfiguration, request: IAccountRequest): Pro
     if (networkConfig.protocolVersion !== NOVA) {
         return {};
     }
-
-    return NovaApi.accountDetails(networkConfig, request.accountId);
+    const novaApiService = ServiceFactory.get<NovaApiService>(`api-service-${networkConfig.network}`);
+    return novaApiService.accountDetails(request.accountId);
 }
