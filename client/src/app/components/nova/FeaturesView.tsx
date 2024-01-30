@@ -9,8 +9,8 @@ import {
     StakingFeature,
     TagFeature,
 } from "@iota/sdk-wasm-nova/web";
-// will this import work ? why isnt it exported from web ?
-import { Ed25519BlockIssuerKey } from "@iota/sdk-wasm-nova/web/lib/types/block/output/block-issuer-key";
+// TODO Fix this import when it's exported from the main lib entrypoint
+import { Ed25519PublicKeyHashBlockIssuerKey } from "@iota/sdk-wasm-nova/web/lib/types/block/output/block-issuer-key";
 import classNames from "classnames";
 import React, { useState } from "react";
 import AddressView from "./address/AddressView";
@@ -75,7 +75,7 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                             <div className="card--label">Block issuer keys:</div>
                             {Array.from((feature as BlockIssuerFeature).blockIssuerKeys).map((blockIssuerKey, idx) => (
                                 <div key={idx} className="card--value row">
-                                    {(blockIssuerKey as Ed25519BlockIssuerKey).publicKey}
+                                    {(blockIssuerKey as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash}
                                 </div>
                             ))}
                         </div>
