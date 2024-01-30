@@ -1,27 +1,17 @@
-// import JSZip from "jszip";
-import {
-    OutputResponse,
-    // INodeInfoBaseToken,
-    CommonOutput,
-} from "@iota/sdk";
-// import { Utils } from "@iota/sdk-wasm/web";
-// Utils.
+import { OutputResponse, INodeInfoBaseToken, CommonOutput } from "@iota/sdk";
+import JSZip from "jszip";
 import moment from "moment";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
-// import logger from "../../../../logger";
+import logger from "../../../../logger";
 import { IDataResponse } from "../../../../models/api/IDataResponse";
 import { ITransactionHistoryDownloadBody } from "../../../../models/api/stardust/chronicle/ITransactionHistoryDownloadBody";
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/chronicle/ITransactionHistoryRequest";
-import {
-    // ITransactionHistoryResponse,
-    ITransactionHistoryItem,
-} from "../../../../models/api/stardust/chronicle/ITransactionHistoryResponse";
-// import { IOutputDetailsResponse } from "../../../../models/api/stardust/IOutputDetailsResponse";
+import { ITransactionHistoryItem } from "../../../../models/api/stardust/chronicle/ITransactionHistoryResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { ChronicleService } from "../../../../services/stardust/chronicleService";
-// import { StardustTangleHelper } from "../../../../utils/stardust/stardustTangleHelper";
+import { NodeInfoService } from "../../../../services/stardust/nodeInfoService";
 import { StardustApiService } from "../../../../services/stardust/stardustApiService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string };
@@ -55,6 +45,9 @@ export async function post(
 
     const networkConfig = networkService.get(request.network);
 
+    const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
+    const tokenInfo = nodeInfoService.getNodeInfo().baseToken;
+
     if (networkConfig.protocolVersion !== STARDUST) {
         return null;
     }
@@ -64,32 +57,12 @@ export async function post(
     }
 
     const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
-    const apiService = ServiceFactory.get<StardustApiService>(`api-service-${networkConfig.network}`);
 
     const outputs = await chronicleService.transactionHistoryDownload(request.address, body.targetDate);
 
-    const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
-        if (!outputId) {
-            return null;
-        }
-
-        try {
-            const response = await apiService.outputDetails(outputId);
-            const details = response.output;
-
-            if (!response.error && details?.output && details?.metadata) {
-                return details;
-            }
-            return null;
-        } catch {
-            console.log("Failed loading transaction history details!");
-            return null;
-        }
-    };
-
     const fulfilledOutputs: OutputWithDetails[] = await Promise.all(
         outputs.items.map(async (output) => {
-            const details = await requestOutputDetails(output.outputId);
+            const details = await requestOutputDetails(output.outputId, networkConfig.network);
             return {
                 ...output,
                 details,
@@ -108,65 +81,55 @@ export async function post(
     });
 
     const transactionIdToOutputs = groupOutputsByTransactionId(fulfilledOutputs);
-    const transactions = getTransactionHistoryRecords(transactionIdToOutputs);
+    const transactions = getTransactionHistoryRecords(transactionIdToOutputs, tokenInfo);
 
-    console.log("--- transactions", transactions);
+    const headers = ["Timestamp", "TransactionId", "Balance changes"];
 
-    // let transactionIdToOutputs = new Map<string, IOutputDetailsResponse[]>();
-    // const outputDetails: IOutputDetailsResponse[] = await Promise.all(
-    //     outputs.items.map(async (item) => apiService.outputDetails(item.outputId)),
-    // );
-    // console.log("--- outputDetails", outputDetails);
-    //
-    // const changeBalanceByTransactionId = new Map<string, { balance: number; timestamp: number }>();
-    //
-    // for (const details of outputDetails) {
-    //     const metadata = details.output.metadata;
-    //     const amount = Number(details.output.output.amount);
-    //     const timestamp = metadata.isSpent ? metadata.milestoneTimestampSpent : metadata.milestoneTimestampBooked;
-    //     const transactionId = metadata.isSpent ? metadata.transactionIdSpent : metadata.transactionId;
-    //
-    //     const initTransactionInfo = {
-    //         balance: 0,
-    //         timestamp: 0,
-    //     };
-    //     if (!changeBalanceByTransactionId.has(transactionId)) {
-    //         changeBalanceByTransactionId.set(transactionId, initTransactionInfo);
-    //     }
-    //     const prev = changeBalanceByTransactionId.get(transactionId);
-    //     prev.balance = metadata?.isSpent ? prev.balance - amount : prev.balance + amount;
-    //     prev.timestamp = Math.max(timestamp * 1000, prev.timestamp);
-    //     changeBalanceByTransactionId.set(transactionId, prev);
-    // }
-    //
-    // const headers = ["Timestamp", "TransactionId", "Balance changes"];
-    //
-    // let csvContent = `${headers.join(",")}\n`;
-    //
-    // for (const key of changeBalanceByTransactionId.keys()) {
-    //     const value = changeBalanceByTransactionId.get(key);
-    //     const row = [moment(value.timestamp).format("YYYY-MM-DD HH:mm:ss"), key, value.balance].join(",");
-    //     csvContent += `${row}\n`;
-    // }
-    //
-    // const jsZip = new JSZip();
-    // let response: IDataResponse = null;
-    //
-    // try {
-    //     jsZip.file("history.csv", csvContent);
-    //     const content = await jsZip.generateAsync({ type: "nodebuffer" });
-    //
-    //     response = {
-    //         data: content,
-    //         contentType: "application/octet-stream",
-    //     };
-    // } catch (e) {
-    //     logger.error(`Failed to zip transaction history for download. Cause: ${e}`);
-    // }
+    let csvContent = `${headers.join(",")}\n`;
 
-    // return response;
-    return null;
+    for (const transaction of transactions) {
+        const row = [transaction.dateFormatted, transaction.transactionId, transaction.balanceChangeFormatted].join(",");
+        csvContent += `${row}\n`;
+    }
+
+    const jsZip = new JSZip();
+    let response: IDataResponse = null;
+
+    try {
+        jsZip.file("history.csv", csvContent);
+        const content = await jsZip.generateAsync({ type: "nodebuffer" });
+
+        response = {
+            data: content,
+            contentType: "application/octet-stream",
+        };
+    } catch (e) {
+        logger.error(`Failed to zip transaction history for download. Cause: ${e}`);
+    }
+
+    return response;
 }
+
+const requestOutputDetails = async (outputId: string, network: string): Promise<OutputResponse | null> => {
+    if (!outputId) {
+        return null;
+    }
+
+    const apiService = ServiceFactory.get<StardustApiService>(`api-service-${network}`);
+
+    try {
+        const response = await apiService.outputDetails(outputId);
+        const details = response.output;
+
+        if (!response.error && details?.output && details?.metadata) {
+            return details;
+        }
+        return null;
+    } catch {
+        console.log("Failed loading transaction history details!");
+        return null;
+    }
+};
 
 export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetails[]) => {
     const transactionIdToOutputs = new Map<string, OutputWithDetails[]>();
@@ -196,13 +159,15 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
     return transactionIdToOutputs;
 };
 
-export const getTransactionHistoryRecords = (transactionIdToOutputs: Map<string, OutputWithDetails[]>): ITransactionHistoryRecord[] => {
+export const getTransactionHistoryRecords = (
+    transactionIdToOutputs: Map<string, OutputWithDetails[]>,
+    tokenInfo: INodeInfoBaseToken,
+): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
 
     for (const [transactionId, outputs] of transactionIdToOutputs.entries()) {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
         const balanceChange = calculateBalanceChange(outputs);
-        const ago = moment(lastOutputTime * 1000).fromNow();
 
         const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).includes(0);
 
@@ -213,9 +178,9 @@ export const getTransactionHistoryRecords = (transactionIdToOutputs: Map<string,
             isSpent,
             transactionId,
             timestamp: lastOutputTime,
-            dateFormatted: `${moment(lastOutputTime * 1000).format("YYYY-MM-DD HH:mm:ss")} (${ago})`,
+            dateFormatted: moment(lastOutputTime * 1000).format("YYYY-MM-DD HH:mm:ss"),
             balanceChange,
-            balanceChangeFormatted: (isSpent ? "-" : "+") + Math.abs(balanceChange),
+            balanceChangeFormatted: (isSpent ? "-" : "+") + formatAmount(Math.abs(balanceChange), tokenInfo, false, 2, true),
             outputs,
         });
     }
@@ -234,9 +199,65 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
 
         let amount = Number(outputFromDetails.amount);
         if (output.isSpent) {
-            // eslint-disable-next-line operator-assignment
-            amount = -1 * amount;
+            amount *= -1;
         }
         return acc + amount;
     }, 0);
 };
+
+/**
+ * Formats a numeric value into a string using token information and specified formatting rules.
+ *
+ * @param {number} value - The value to format.
+ * @param {INodeInfoBaseToken} tokenInfo - Information about the token, including units and decimals.
+ * @param {boolean} [formatFull=false] - If true, formats the entire number. Otherwise, uses decimalPlaces.
+ * @param {number} [decimalPlaces=2] - Number of decimal places in the formatted output.
+ * @param {boolean} [trailingDecimals] - Determines inclusion of trailing zeros in decimals.
+ * @returns {string} The formatted amount with the token unit.
+ */
+export function formatAmount(
+    value: number,
+    tokenInfo: INodeInfoBaseToken,
+    formatFull: boolean = false,
+    decimalPlaces: number = 2,
+    trailingDecimals?: boolean,
+): string {
+    if (formatFull) {
+        return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
+    }
+
+    const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
+    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces, trailingDecimals);
+
+    return `${formattedAmount} ${tokenInfo.unit}`;
+}
+
+/**
+ * Format amount to two decimal places without rounding off.
+ * @param value The raw amount to format.
+ * @param precision The decimal places to show.
+ * @param trailingDecimals Whether to show trailing decimals.
+ * @returns The formatted amount.
+ */
+function toFixedNoRound(value: number, precision: number = 2, trailingDecimals?: boolean): string {
+    const defaultDecimals = "0".repeat(precision);
+    const valueString = `${value}`;
+    const [integer, fraction = defaultDecimals] = valueString.split(".");
+
+    if (fraction === defaultDecimals && !trailingDecimals) {
+        return valueString;
+    }
+
+    if (!precision) {
+        return integer;
+    }
+
+    const truncatedFraction = fraction.slice(0, precision);
+
+    // avoid 0.00 case
+    if (!Number(truncatedFraction)) {
+        return `${integer}.${fraction}`;
+    }
+
+    return `${integer}.${truncatedFraction}`;
+}
