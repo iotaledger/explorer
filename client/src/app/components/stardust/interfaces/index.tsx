@@ -4,4 +4,7 @@ export interface IPreExpandedConfig {
     features?: boolean[];
     immutableFeatures?: boolean[];
     nativeTokens?: boolean[];
+
+    // generic to expand all
+    isAllPreExpanded?: boolean;
 }

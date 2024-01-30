@@ -61,7 +61,7 @@ class Output extends Component<OutputProps, OutputState> {
         super(props);
 
         this.state = {
-            isExpanded: this.props.preExpandedConfig?.isPreExpanded ?? false,
+            isExpanded: this.props.preExpandedConfig?.isAllPreExpanded ?? this.props.preExpandedConfig?.isPreExpanded ?? false,
             isFormattedBalance: true,
         };
     }
@@ -69,7 +69,7 @@ class Output extends Component<OutputProps, OutputState> {
     componentDidUpdate(prevProps: Readonly<OutputProps>): void {
         if (prevProps.preExpandedConfig !== this.props.preExpandedConfig) {
             this.setState({
-                isExpanded: this.props.preExpandedConfig?.isPreExpanded ?? false,
+                isExpanded: this.props.preExpandedConfig?.isAllPreExpanded ?? this.props.preExpandedConfig?.isPreExpanded ?? false,
             });
         }
     }
@@ -232,13 +232,13 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
-                                    const isPreExpanded = preExpandedConfig?.unlockConditions?.[idx] ?? false;
+                                    const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.unlockConditions?.[idx] ?? false;
                                     return (
                                         <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isPreExpanded} />
                                     )
                                 })}
                                 {(output as CommonOutput).features?.map((feature, idx) => {
-                                    const isPreExpanded = preExpandedConfig?.features?.[idx] ?? false;
+                                    const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.features?.[idx] ?? false;
                                     return (
                                         <Feature
                                             key={idx}
@@ -251,21 +251,21 @@ class Output extends Component<OutputProps, OutputState> {
                                 })}
                                 {(output.type === OutputType.Alias) &&
                                     (output as AliasOutput).immutableFeatures?.map((immutableFeature, idx) => {
-                                        const isPreExpanded = preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
                                         return (<Feature key={idx} feature={immutableFeature} isImmutable={true} isPreExpanded={isPreExpanded} />)
                                     })}
                                 {output.type === OutputType.Nft &&
                                     (output as NftOutput).immutableFeatures?.map((immutableFeature, idx) => {
-                                        const isPreExpanded = preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
                                         return (<Feature key={idx} feature={immutableFeature} isImmutable={true} isPreExpanded={isPreExpanded} />)
                                     })}
                                 {output.type === OutputType.Foundry &&
                                     (output as FoundryOutput).immutableFeatures?.map((immutableFeature, idx) => {
-                                        const isPreExpanded = preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
                                         return (<Feature key={idx} feature={immutableFeature} isImmutable={true} isPreExpanded={isPreExpanded} />)
                                     })}
                                 {(output as CommonOutput).nativeTokens?.map((token, idx) => {
-                                    const isPreExpanded = preExpandedConfig?.nativeTokens?.[idx] ?? false;
+                                    const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.nativeTokens?.[idx] ?? false;
                                     return (<NativeToken key={idx} tokenId={token.id} amount={Number(token.amount)} isPreExpanded={isPreExpanded} />)
                                 })}
                             </React.Fragment>

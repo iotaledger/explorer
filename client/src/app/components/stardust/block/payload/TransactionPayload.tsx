@@ -1,8 +1,8 @@
-import { CommonOutput, ExpirationUnlockCondition, OutputType, UnlockConditionType } from "@iota/sdk-wasm/web";
-import React, { useEffect, useState } from "react";
-import { DateHelper } from "~/helpers/dateHelper";
+import { AddressUnlockCondition, CommonOutput, ExpirationUnlockCondition, GovernorAddressUnlockCondition, ReferenceUnlock, SignatureUnlock, StateControllerAddressUnlockCondition, UnlockConditionType, UnlockType, Utils } from "@iota/sdk-wasm/web";
+import React, { useContext, useEffect, useState } from "react";
+import NetworkContext from "~/app/context/NetworkContext";
+import { Bech32AddressHelper } from "~/helpers/stardust/bech32AddressHelper";
 import transactionPayloadMessage from "~assets/modals/stardust/block/transaction-payload.json";
-import { useMilestoneDetails } from "~helpers/hooks/useMilestoneDetails";
 import Modal from "../../../Modal";
 import Input from "../../Input";
 import Output from "../../Output";
@@ -16,59 +16,86 @@ import { TransactionPayloadProps } from "./TransactionPayloadProps";
  */
 const TransactionPayload: React.FC<TransactionPayloadProps> = ({ network, inputs, unlocks, outputs, header, isLinksDisabled, milestoneIndex }) => {
 
-    const [milestoneDetails] = useMilestoneDetails(network, milestoneIndex ?? null);
-    const [milestoneUnixTimestamp, setMilestoneUnixTimestamp] = useState<number | undefined>();
     const [inputsPreExpandedConfig, setInputsPreExpandedConfig] = useState<IPreExpandedConfig[]>([]);
+    const { bech32Hrp } = useContext(NetworkContext);
+
+    const OUTPUT_EXPAND_CONDITIONS: UnlockConditionType[] = [
+        UnlockConditionType.Address,
+        UnlockConditionType.StateControllerAddress,
+        UnlockConditionType.GovernorAddress,
+    ]
+
+    const INPUT_EXPAND_CONDITIONS: UnlockConditionType[] = [
+        ...OUTPUT_EXPAND_CONDITIONS,
+        UnlockConditionType.Expiration,
+    ]
 
     useEffect(() => {
-        if (milestoneDetails?.milestone?.timestamp) {
-            setMilestoneUnixTimestamp(DateHelper.milliseconds(milestoneDetails.milestone.timestamp));
-        }
-    }, [milestoneDetails]);
-
-    useEffect(() => {
-        if (milestoneUnixTimestamp) {
-            // calculate, for input basic outputs, who spent it, 
-            // the expiration unlock condition or the address unlock condition
-            const inputsPreExpandedConfig: IPreExpandedConfig[] = inputs.map((input) => {
-                let preExpandedConfig: IPreExpandedConfig = {
-                    isPreExpanded: input?.output?.output?.type === OutputType.Basic,
-                };
-                if (input?.output?.output && 'unlockConditions' in input.output.output) {
-                    const commmonOutput = input.output.output as unknown as CommonOutput;
-                    const expirationUnlockCondition: ExpirationUnlockCondition | undefined = (commmonOutput.unlockConditions?.find(unlockCondition => unlockCondition.type === UnlockConditionType.Expiration) as ExpirationUnlockCondition);
-                    if (expirationUnlockCondition && milestoneUnixTimestamp > expirationUnlockCondition.unixTime) {
+        if (bech32Hrp) {
+            // given the unlocks, expand the correct address unlock condition
+            const inputsPreExpandedConfig: IPreExpandedConfig[] = inputs.map((input, idx) => {
+                const commonOutput = input?.output?.output as unknown as CommonOutput;
+                let preExpandedConfig: IPreExpandedConfig = {};
+                if (commonOutput) {
+                    const matchExpandCondition = commonOutput.unlockConditions?.find(unlockCondition => INPUT_EXPAND_CONDITIONS.includes(unlockCondition.type));
+                    preExpandedConfig = {
+                        isPreExpanded: !!matchExpandCondition,
+                    };
+                    if (input?.output?.output && 'unlockConditions' in input.output.output) {
+                        const commmonOutput = input.output.output as unknown as CommonOutput;
+                        let unlock = unlocks[idx];
+                        if (unlock.type === UnlockType.Reference) {
+                            const referenceUnlock = unlock as ReferenceUnlock
+                            unlock = unlocks[referenceUnlock.reference];
+                        }
+                        const unlockSignatureAddress = Utils.hexPublicKeyToBech32Address((unlock as SignatureUnlock).signature.publicKey, bech32Hrp)
                         preExpandedConfig = {
                             ...preExpandedConfig,
                             unlockConditions: commmonOutput.unlockConditions?.map(
-                                (unlockCondition) => unlockCondition.type === UnlockConditionType.Expiration)
-                        };
-                    } else {
-                        preExpandedConfig = {
-                            ...preExpandedConfig,
-                            unlockConditions: commmonOutput.unlockConditions?.map(
-                                (unlockCondition) => unlockCondition.type === UnlockConditionType.Address)
+                                (unlockCondition) => {
+                                    switch (unlockCondition.type) {
+                                        case UnlockConditionType.Address: {
+                                            const unlockAddress = Bech32AddressHelper.buildAddress(bech32Hrp, (unlockCondition as AddressUnlockCondition).address)?.bech32;
+                                            return unlockAddress === unlockSignatureAddress;
+                                        }
+                                        case UnlockConditionType.Expiration: {
+                                            const unlockAddress = Bech32AddressHelper.buildAddress(bech32Hrp, (unlockCondition as ExpirationUnlockCondition).returnAddress)?.bech32;
+                                            return unlockAddress === unlockSignatureAddress;
+                                        }
+                                        case UnlockConditionType.StateControllerAddress: {
+                                            const unlockAddress = Bech32AddressHelper.buildAddress(bech32Hrp, (unlockCondition as StateControllerAddressUnlockCondition).address)?.bech32;
+                                            return unlockAddress === unlockSignatureAddress;
+                                        }
+                                        case UnlockConditionType.GovernorAddress: {
+                                            const unlockAddress = Bech32AddressHelper.buildAddress(bech32Hrp, (unlockCondition as GovernorAddressUnlockCondition).address)?.bech32;
+                                            return unlockAddress === unlockSignatureAddress;
+                                        }
+                                        default:
+                                            return false;
+                                    }
+                                })
                         };
                     }
-
                 }
                 return preExpandedConfig
             })
             setInputsPreExpandedConfig(inputsPreExpandedConfig);
         }
-    }, [milestoneUnixTimestamp]);
+    });
 
-    // for basic outputs, expand the address unlock condition
+    // for basic outputs, always expand all the OUTPUT_EXPAND_CONDITIONS
     const outputsPreExpandedConfig: IPreExpandedConfig[] = outputs.map((output) => {
-        let preExpandedConfig: IPreExpandedConfig = {
-            isPreExpanded: output?.output?.type === OutputType.Basic,
-        };
-        if ('unlockConditions' in output.output) {
-            const commmonOutput = output.output as CommonOutput;
+        const commonOutput = output.output as CommonOutput;
+        let preExpandedConfig: IPreExpandedConfig = {};
+        if (commonOutput) {
+            const matchExpandCondition = commonOutput.unlockConditions?.find(unlockCondition => OUTPUT_EXPAND_CONDITIONS.includes(unlockCondition.type));
+            preExpandedConfig = {
+                isPreExpanded: !!matchExpandCondition,
+            };
             preExpandedConfig = {
                 ...preExpandedConfig,
-                unlockConditions: commmonOutput.unlockConditions?.map(
-                    (unlockCondition) => unlockCondition.type === UnlockConditionType.Address)
+                unlockConditions: commonOutput.unlockConditions?.map(
+                    (unlockCondition) => OUTPUT_EXPAND_CONDITIONS.includes(unlockCondition.type))
             };
         }
         return preExpandedConfig

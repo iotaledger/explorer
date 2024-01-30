@@ -33,11 +33,11 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({ input, network, preExpandedConfig }) => {
     const history = useHistory();
     const { tokenInfo } = useContext(NetworkContext);
-    const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isPreExpanded ?? false);
+    const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     useEffect(() => {
-        setIsExpanded(preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
+        setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
     }, [preExpandedConfig])
 
     const fallbackInputView = (
