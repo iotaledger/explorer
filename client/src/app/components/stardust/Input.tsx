@@ -38,7 +38,7 @@ const Input: React.FC<InputProps> = ({ input, network, preExpandedConfig }) => {
 
     useEffect(() => {
         setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
-    }, [preExpandedConfig])
+    }, [preExpandedConfig]);
 
     const fallbackInputView = (
         <React.Fragment>

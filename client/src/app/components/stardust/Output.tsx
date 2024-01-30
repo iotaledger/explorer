@@ -232,13 +232,13 @@ class Output extends Component<OutputProps, OutputState> {
                         {output.type !== OutputType.Treasury && (
                             <React.Fragment>
                                 {(output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
-                                    const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.unlockConditions?.[idx] ?? false;
-                                    return (
-                                        <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isPreExpanded} />
-                                    )
+                                    const isPreExpanded =
+                                        preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.unlockConditions?.[idx] ?? false;
+                                    return <UnlockCondition key={idx} unlockCondition={unlockCondition} isPreExpanded={isPreExpanded} />;
                                 })}
                                 {(output as CommonOutput).features?.map((feature, idx) => {
-                                    const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.features?.[idx] ?? false;
+                                    const isPreExpanded =
+                                        preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.features?.[idx] ?? false;
                                     return (
                                         <Feature
                                             key={idx}
@@ -247,26 +247,58 @@ class Output extends Component<OutputProps, OutputState> {
                                             isParticipationEventMetadata={isParticipationOutput}
                                             isPreExpanded={isPreExpanded}
                                         />
-                                    )
+                                    );
                                 })}
-                                {(output.type === OutputType.Alias) &&
+                                {output.type === OutputType.Alias &&
                                     (output as AliasOutput).immutableFeatures?.map((immutableFeature, idx) => {
-                                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
-                                        return (<Feature key={idx} feature={immutableFeature} isImmutable={true} isPreExpanded={isPreExpanded} />)
+                                        const isPreExpanded =
+                                            preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                                        return (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isImmutable={true}
+                                                isPreExpanded={isPreExpanded}
+                                            />
+                                        );
                                     })}
                                 {output.type === OutputType.Nft &&
                                     (output as NftOutput).immutableFeatures?.map((immutableFeature, idx) => {
-                                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
-                                        return (<Feature key={idx} feature={immutableFeature} isImmutable={true} isPreExpanded={isPreExpanded} />)
+                                        const isPreExpanded =
+                                            preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                                        return (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isImmutable={true}
+                                                isPreExpanded={isPreExpanded}
+                                            />
+                                        );
                                     })}
                                 {output.type === OutputType.Foundry &&
                                     (output as FoundryOutput).immutableFeatures?.map((immutableFeature, idx) => {
-                                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
-                                        return (<Feature key={idx} feature={immutableFeature} isImmutable={true} isPreExpanded={isPreExpanded} />)
+                                        const isPreExpanded =
+                                            preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                                        return (
+                                            <Feature
+                                                key={idx}
+                                                feature={immutableFeature}
+                                                isImmutable={true}
+                                                isPreExpanded={isPreExpanded}
+                                            />
+                                        );
                                     })}
                                 {(output as CommonOutput).nativeTokens?.map((token, idx) => {
-                                    const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.nativeTokens?.[idx] ?? false;
-                                    return (<NativeToken key={idx} tokenId={token.id} amount={Number(token.amount)} isPreExpanded={isPreExpanded} />)
+                                    const isPreExpanded =
+                                        preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.nativeTokens?.[idx] ?? false;
+                                    return (
+                                        <NativeToken
+                                            key={idx}
+                                            tokenId={token.id}
+                                            amount={Number(token.amount)}
+                                            isPreExpanded={isPreExpanded}
+                                        />
+                                    );
                                 })}
                             </React.Fragment>
                         )}
