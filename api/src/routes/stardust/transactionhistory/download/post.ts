@@ -40,24 +40,16 @@ export async function post(
     body: ITransactionHistoryDownloadBody,
 ): Promise<IDataResponse | null> {
     const networkService = ServiceFactory.get<NetworkService>("network");
-    const networks = networkService.networkNames();
-    ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.oneOf(request.network, networkService.networkNames(), "network");
 
     const networkConfig = networkService.get(request.network);
 
     const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
-    const tokenInfo = nodeInfoService.getNodeInfo().baseToken;
-
-    if (networkConfig.protocolVersion !== STARDUST) {
-        return null;
-    }
-
-    if (!networkConfig.permaNodeEndpoint) {
+    if (networkConfig.protocolVersion !== STARDUST || !networkConfig.permaNodeEndpoint) {
         return null;
     }
 
     const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
-
     const outputs = await chronicleService.transactionHistoryDownload(request.address, body.targetDate);
 
     const fulfilledOutputs: OutputWithDetails[] = await Promise.all(
@@ -79,9 +71,9 @@ export async function post(
         }
         return 1;
     });
+    const tokenInfo = nodeInfoService.getNodeInfo().baseToken;
 
-    const transactionIdToOutputs = groupOutputsByTransactionId(fulfilledOutputs);
-    const transactions = getTransactionHistoryRecords(transactionIdToOutputs, tokenInfo);
+    const transactions = getTransactionHistoryRecords(groupOutputsByTransactionId(fulfilledOutputs), tokenInfo);
 
     const headers = ["Timestamp", "TransactionId", "Balance changes"];
 
@@ -135,24 +127,10 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
     const transactionIdToOutputs = new Map<string, OutputWithDetails[]>();
     for (const output of outputsWithDetails) {
         const detailsMetadata = output?.details?.metadata;
-        if (!detailsMetadata) {
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-
         const transactionId = output.isSpent ? detailsMetadata.transactionIdSpent : detailsMetadata.transactionId;
-
-        if (!transactionId) {
-            // eslint-disable-next-line no-continue
-            continue;
-        }
-
-        // if we don't have the transaction
-        const previousOutputs = transactionIdToOutputs.get(transactionId);
-        if (previousOutputs) {
+        if (detailsMetadata && transactionId) {
+            const previousOutputs = transactionIdToOutputs.get(transactionId) || [];
             transactionIdToOutputs.set(transactionId, [...previousOutputs, output]);
-        } else {
-            transactionIdToOutputs.set(transactionId, [output]);
         }
     }
 
