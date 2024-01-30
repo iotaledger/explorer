@@ -1,18 +1,18 @@
-name: Build and Push Images
+name: Build and Push Docker Image
 
 on:
   workflow_call:
     inputs:
-      api_image_tags:
+      directory:
         required: true
         type: string
-      client_image_tags:
+      image_tags:
         required: true
         type: string
 
 jobs:
-  build-and-push-images:
-    name: Build and Push Docker Images
+  build-and-push-image:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,20 +32,11 @@ jobs:
           username: ${{ secrets.IOTALEDGER_DOCKER_USERNAME }}
           password: ${{ secrets.IOTALEDGER_DOCKER_PASSWORD }}
 
-      - name: Build and push API Docker image
+      - name: Build and push Docker image for ${{ inputs.directory }}
         uses: docker/build-push-action@v2
         with:
-          context: ./api
-          file: ./api/Dockerfile
+          context: ./${{ inputs.directory }}
+          file: ./${{ inputs.directory }}/Dockerfile
           push: true
-          tags: ${{ inputs.api_image_tags }}
-          no-cache: true
-
-      - name: Build and push Client Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./client
-          file: ./client/Dockerfile
-          push: true
-          tags: ${{ inputs.client_image_tags }}
+          tags: ${{ inputs.image_tags }}
           no-cache: true
