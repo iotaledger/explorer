@@ -2,14 +2,14 @@
 /* eslint-disable jsdoc/require-returns */
 import { Utils } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
-import React, { useContext, useState } from "react";
-import { useHistory, Link } from "react-router-dom";
-import Bech32Address from "./address/Bech32Address";
-import Output from "./Output";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { IInput } from "~models/api/stardust/IInput";
 import NetworkContext from "../../context/NetworkContext";
+import Output from "./Output";
+import Bech32Address from "./address/Bech32Address";
 import { IPreExpandedConfig } from "./interfaces";
 
 interface InputProps {
@@ -35,6 +35,10 @@ const Input: React.FC<InputProps> = ({ input, network, preExpandedConfig }) => {
     const { tokenInfo } = useContext(NetworkContext);
     const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+
+    useEffect(() => {
+        setIsExpanded(preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
+    }, [preExpandedConfig])
 
     const fallbackInputView = (
         <React.Fragment>

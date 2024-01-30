@@ -66,6 +66,14 @@ class Output extends Component<OutputProps, OutputState> {
         };
     }
 
+    componentDidUpdate(prevProps: Readonly<OutputProps>): void {
+        if (prevProps.preExpandedConfig !== this.props.preExpandedConfig) {
+            this.setState({
+                isExpanded: this.props.preExpandedConfig?.isPreExpanded ?? false,
+            });
+        }
+    }
+
     /**
      * Render the component.
      * @returns The node to render.
