@@ -5,6 +5,7 @@ import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IFeedUpdate } from "../../../models/api/nova/feed/IFeedUpdate";
+import { INetwork } from "../../../models/db/INetwork";
 import { NodeInfoService } from "../nodeInfoService";
 
 /**
@@ -22,29 +23,35 @@ export class NovaFeed {
     /**
      * Mqtt service for data (upstream).
      */
-    private readonly _mqttClient: Client;
+    private _mqttClient: Client;
 
     /**
      * The network in context.
      */
-    private readonly network: string;
+    private readonly networkId: string;
 
     /**
      * Creates a new instance of NovaFeed.
-     * @param networkId The network id.
+     * @param network The network config.
      */
-    constructor(networkId: string) {
+    constructor(network: INetwork) {
         logger.debug("[NovaFeed] Constructing a Nova Feed");
         this.blockSubscribers = {};
-        this.network = networkId;
-        this._mqttClient = ServiceFactory.get<Client>(`client-${networkId}`);
-        const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${networkId}`);
+        this.networkId = network.network;
 
-        if (this._mqttClient && nodeInfoService) {
-            this.connect();
-        } else {
-            throw new Error(`Failed to build novaFeed instance for ${networkId}`);
-        }
+        // eslint-disable-next-line no-void
+        void Client.create({
+            nodes: [network.provider],
+            brokerOptions: { useWs: true },
+        }).then((_mqttClient) => {
+            this._mqttClient = _mqttClient;
+            const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${this.networkId}`);
+            if (this._mqttClient && nodeInfoService) {
+                this.connect();
+            } else {
+                throw new Error(`Failed to build novaFeed instance for ${this.networkId}`);
+            }
+        });
     }
 
     /**
@@ -61,7 +68,7 @@ export class NovaFeed {
      * @param subscriptionId The id to unsubscribe.
      */
     public unsubscribeBlocks(subscriptionId: string): void {
-        logger.debug(`[NovaFeed] Removing subscriber ${subscriptionId} from blocks (${this.network})`);
+        logger.debug(`[NovaFeed] Removing subscriber ${subscriptionId} from blocks (${this.networkId})`);
         delete this.blockSubscribers[subscriptionId];
     }
 

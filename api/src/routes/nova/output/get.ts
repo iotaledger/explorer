@@ -4,7 +4,7 @@ import { IOutputDetailsResponse } from "../../../models/api/nova/IOutputDetailsR
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
-import { NovaApi } from "../../../services/nova/novaApi";
+import { NovaApiService } from "../../../services/nova/novaApiService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
@@ -25,5 +25,6 @@ export async function get(config: IConfiguration, request: IOutputDetailsRequest
         return {};
     }
 
-    return NovaApi.outputDetails(networkConfig, request.outputId);
+    const novaApiService = ServiceFactory.get<NovaApiService>(`api-service-${networkConfig.network}`);
+    return novaApiService.outputDetails(request.outputId);
 }

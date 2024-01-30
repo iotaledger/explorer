@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
-import { IClientOptions, Client as StardustClient } from "@iota/sdk";
-import { Client as NovaClient } from "@iota/sdk-nova";
+import { IClientOptions as IStardustClientOptions, Client as StardustClient } from "@iota/sdk";
+import { IClientOptions as INovaClientOptions, Client as NovaClient } from "@iota/sdk-nova";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
@@ -24,6 +24,7 @@ import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
 import { NovaFeed } from "./services/nova/feed/novaFeed";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
+import { NovaApiService } from "./services/nova/novaApiService";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
@@ -158,12 +159,14 @@ function initChrysalisServices(networkConfig: INetwork): void {
 function initStardustServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
 
-    const stardustClientParams: IClientOptions = {
+    const stardustClientParams: IStardustClientOptions = {
         primaryNode: networkConfig.provider,
     };
 
     if (networkConfig.permaNodeEndpoint) {
         stardustClientParams.nodes = [networkConfig.permaNodeEndpoint];
+        // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
+        // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
         stardustClientParams.ignoreNodeHealth = true;
 
         const chronicleService = new ChronicleService(networkConfig);
@@ -206,21 +209,33 @@ function initStardustServices(networkConfig: INetwork): void {
 function initNovaServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
 
+    const novaClientParams: INovaClientOptions = {
+        primaryNode: networkConfig.provider,
+    };
+
+    if (networkConfig.permaNodeEndpoint) {
+        novaClientParams.nodes = [networkConfig.permaNodeEndpoint];
+        // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
+        // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
+        novaClientParams.ignoreNodeHealth = true;
+
+        const chronicleService = new ChronicleService(networkConfig);
+        ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
+    }
+
     // eslint-disable-next-line no-void
-    void NovaClient.create({
-        nodes: [networkConfig.provider],
-        brokerOptions: { useWs: true },
-        // Needed only for now in local development (NOT FOR PROD)
-        ignoreNodeHealth: true,
-    }).then((novaClient) => {
+    void NovaClient.create(novaClientParams).then((novaClient) => {
         ServiceFactory.register(`client-${networkConfig.network}`, () => novaClient);
+
+        const novaApiService = new NovaApiService(networkConfig);
+        ServiceFactory.register(`api-service-${networkConfig.network}`, () => novaApiService);
 
         // eslint-disable-next-line no-void
         void NodeInfoServiceNova.build(networkConfig).then((nodeInfoService) => {
             ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
 
-            const feedInstance = new NovaFeed(networkConfig.network);
-            ServiceFactory.register(`feed-${networkConfig.network}`, () => feedInstance);
+            const novaFeed = new NovaFeed(networkConfig);
+            ServiceFactory.register(`feed-${networkConfig.network}`, () => novaFeed);
         });
     });
 }
