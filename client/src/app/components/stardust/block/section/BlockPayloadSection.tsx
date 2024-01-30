@@ -25,7 +25,6 @@ interface BlockPayloadSectionProps {
     readonly transferTotal?: number;
     readonly history: H.History;
     readonly isLinksDisabled: boolean;
-    readonly milestoneIndex?: number;
 }
 
 const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({
@@ -38,7 +37,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({
     transferTotal,
     history,
     isLinksDisabled,
-    milestoneIndex,
 }) => {
     if (block.payload?.type === PayloadType.Transaction && inputs && unlocks && outputs && transferTotal !== undefined) {
         const transactionPayload = block.payload as ITransactionPayload;
@@ -53,7 +51,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({
                         unlocks={unlocks}
                         outputs={outputs}
                         isLinksDisabled={isLinksDisabled}
-                        milestoneIndex={milestoneIndex}
                     />
                 </div>
                 {transactionEssence.payload?.type === PayloadType.TaggedData && (

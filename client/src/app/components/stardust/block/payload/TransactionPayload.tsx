@@ -14,7 +14,7 @@ import { TransactionPayloadProps } from "./TransactionPayloadProps";
 /**
  * Component which will display a transaction payload.
  */
-const TransactionPayload: React.FC<TransactionPayloadProps> = ({ network, inputs, unlocks, outputs, header, isLinksDisabled, milestoneIndex }) => {
+const TransactionPayload: React.FC<TransactionPayloadProps> = ({ network, inputs, unlocks, outputs, header, isLinksDisabled }) => {
 
     const [inputsPreExpandedConfig, setInputsPreExpandedConfig] = useState<IPreExpandedConfig[]>([]);
     const { bech32Hrp } = useContext(NetworkContext);

@@ -32,9 +32,4 @@ export interface TransactionPayloadProps {
      * Disable links if block is conflicting.
      */
     isLinksDisabled?: boolean;
-
-    /**
-     * Milestone index.
-     */
-    milestoneIndex?: number;
 }

@@ -156,7 +156,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             >
                 {inputs && unlocks && outputs ? (
                     <div className="section">
-                        <TransactionPayload network={network} inputs={inputs} unlocks={unlocks} outputs={outputs} milestoneIndex={metadata?.referencedByMilestoneIndex} />
+                        <TransactionPayload network={network} inputs={inputs} unlocks={unlocks} outputs={outputs} />
                     </div>
                 ) : (
                     <></>
