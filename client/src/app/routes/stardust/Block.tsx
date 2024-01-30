@@ -117,6 +117,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 transferTotal={transferTotal ?? undefined}
                 history={history}
                 isLinksDisabled={isLinksDisabled}
+                milestoneIndex={metadata?.referencedByMilestoneIndex}
             />,
         );
         tabbedSections.push(
