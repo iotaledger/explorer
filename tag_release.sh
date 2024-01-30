@@ -2,7 +2,7 @@
 
 # Read target version from command line
 TARGET_VERSION=$1
-CURRENT_VERSION=$(sed -n 's/.*\version\": \"\([^"]*\).*$/\1/p' package.json)
+CURRENT_VERSION=$(sed -n 's/.*"version": "\([^"]*\)".*/\1/p' package.json)
 
 if [[ -z $TARGET_VERSION ]]; then
     echo "Current version (root) is v$CURRENT_VERSION"
@@ -46,13 +46,22 @@ npm i
 cd "../"
 
 echo "Making a bump commit..."
-git add .
+files_to_add=("package.json" "package-lock.json")
+folders_to_add=("." "api" "client")
+for folder in "${folders_to_add[@]}"
+do
+    for file in "${files_to_add[@]}"
+    do
+        git add "$folder/$file"
+    done
+done
+
 git commit -S -m "chore: bump version to v$TARGET_VERSION"
 
 echo "Tagging commit with 'v$TARGET_VERSION'..."
 git tag v$TARGET_VERSION
 
-read -n 1 -p "Do you want to push brench and tags ? (Enter): " CONFIRM_PUSH
+read -n 1 -p "Do you want to push branch and tags ? (Enter): " CONFIRM_PUSH
 if [[ $CONFIRM_PUSH != "" ]]; then
     echo "Exiting without pushing..."
     exit 1
