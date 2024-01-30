@@ -166,21 +166,24 @@ export const getTransactionHistoryRecords = (
 };
 
 export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
-    // eslint-disable-next-line unicorn/no-array-reduce
-    return outputs.reduce((acc, output) => {
+    let totalAmount = 0;
+
+    for (const output of outputs) {
         const outputFromDetails = output?.details?.output as CommonOutput;
 
-        if (!outputFromDetails?.amount) {
+        // Perform the calculation only if outputFromDetails and amount are defined
+        if (outputFromDetails?.amount) {
+            let amount = Number(outputFromDetails.amount);
+            if (output.isSpent) {
+                amount *= -1;
+            }
+            totalAmount += amount;
+        } else {
             console.warn("Output details not found for:", output);
-            return acc;
         }
+    }
 
-        let amount = Number(outputFromDetails.amount);
-        if (output.isSpent) {
-            amount *= -1;
-        }
-        return acc + amount;
-    }, 0);
+    return totalAmount;
 };
 
 /**
