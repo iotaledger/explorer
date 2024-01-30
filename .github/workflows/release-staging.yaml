@@ -33,14 +33,16 @@ jobs:
           fi
 
   use-reusable-workflow:
-    name: Build Images
+    strategy:
+      matrix:
+        directory: [api, client]
+    name: Build Image
     needs: set_tags
     uses: ./.github/workflows/build-images.reusable.yaml
     with:
-      api_image_tags: |
-        iotaledger/explorer-api:${{ needs.set_tags.outputs.version_tag }}
-      client_image_tags: |
-        iotaledger/explorer-client:${{ needs.set_tags.outputs.version_tag }}
+      directory: ${{ matrix.directory }}
+      image_tags: |
+        iotaledger/explorer-${{ matrix.directory }}:${{ needs.set_tags.outputs.version_tag }}
     secrets: inherit
 
   deploy_to_server:
@@ -59,3 +61,11 @@ jobs:
       - name: Deploy to Server
         run: |
           ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.set_tags.outputs.version_tag }}"
+
+  create_draft_release:
+    name: Create Draft Release
+    needs: [set_tags, use-reusable-workflow, deploy_to_server]
+    uses: ./.github/workflows/create-draft-release.reusable.yaml
+    with:
+      name: Explorer ${{ needs.set_tags.outputs.version_tag }}
+      version_tag: ${{ needs.set_tags.outputs.version_tag }}
