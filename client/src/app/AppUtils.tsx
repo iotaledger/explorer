@@ -37,21 +37,6 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
             disabled: !hasNetworks,
         },
         {
-            label: "EVM Explorer",
-            routes: [
-                {
-                    label: "EVM Explorer",
-                    url: "https://explorer.evm.shimmer.network/",
-                    isExternal: true,
-                },
-                {
-                    label: "EVM Explorer Testnet",
-                    url: "https://explorer.evm.testnet.shimmer.network/",
-                    isExternal: true,
-                },
-            ],
-        },
-        {
             label: "Visualizer",
             url: `/${network}/visualizer/`,
             disabled: !hasNetworks,
@@ -70,6 +55,21 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
                     label: "Decentralized Identifier",
                     url: `/${network}/identity-resolver/`,
                     disabled: network !== CHRYSALIS_MAINNET,
+                },
+            ],
+        },
+        {
+            label: "EVM",
+            routes: [
+                {
+                    label: "ShimmerEVM Explorer",
+                    url: "https://explorer.evm.shimmer.network/",
+                    isExternal: true,
+                },
+                {
+                    label: "ShimmerEVM Testnet Testnet",
+                    url: "https://explorer.evm.testnet.shimmer.network/",
+                    isExternal: true,
                 },
             ],
         },
