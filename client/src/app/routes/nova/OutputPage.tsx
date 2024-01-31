@@ -9,6 +9,7 @@ import CopyButton from "~/app/components/CopyButton";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { buildManaDetailsForOutput, OutputManaDetails } from "~/helpers/nova/manaUtils";
+import { Converter } from "~/helpers/stardust/convertUtils";
 import "./OutputPage.scss";
 
 interface OutputPageProps {
@@ -48,16 +49,18 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         );
     }
 
-    const { blockId, transactionId, outputIndex, isSpent, transactionIdSpent } = outputMetadataResponse ?? {};
+    const { blockId, included, spent } = outputMetadataResponse ?? {};
 
-    // @ts-expect-error TODO: Remove this ignore once included/spent are honoured in the type https://github.com/iotaledger/iota-sdk/issues/1884
-    const createdSlotIndex = (outputMetadataResponse?.included?.slot as number) ?? null;
-    // @ts-expect-error TODO: Remove this ignore once included/spent are honoured in the type https://github.com/iotaledger/iota-sdk/issues/1884
-    const spentSlotIndex = (outputMetadataResponse?.spent?.slot as number) ?? null;
+    const transactionId = included?.transactionId ?? null;
+    const createdSlotIndex = (included?.slot as number) ?? null;
+    const spentSlotIndex = (spent?.slot as number) ?? null;
+    const isSpent = spentSlotIndex !== null;
+    const transactionIdSpent = spent?.transactionId ?? null;
+    const outputIndex = computeOutputIndexFromOutputId(outputId);
 
     let outputManaDetails: OutputManaDetails | null = null;
     if (output !== null && createdSlotIndex !== null && protocolInfo !== null) {
-        if (isSpent && spentSlotIndex !== null) {
+        if (spentSlotIndex !== null) {
             outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, spentSlotIndex, protocolInfo.parameters);
         } else if (latestConfirmedSlot > 0) {
             outputManaDetails = buildManaDetailsForOutput(output, createdSlotIndex, latestConfirmedSlot, protocolInfo.parameters);
@@ -173,5 +176,16 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         null
     );
 };
+
+function computeOutputIndexFromOutputId(outputId: string | null) {
+    if (!outputId) {
+        return null;
+    }
+
+    const outputIndexPart = outputId.slice(-4);
+    const outputIndexBigEndian = Converter.convertToBigEndian(outputIndexPart);
+
+    return Number(outputIndexBigEndian);
+}
 
 export default OutputPage;
