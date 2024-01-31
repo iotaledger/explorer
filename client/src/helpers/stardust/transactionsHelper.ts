@@ -237,7 +237,7 @@ export class TransactionsHelper {
         return HexHelper.toBigInt256(nftId).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftId;
     }
 
-    public static computeStorageRentBalance(outputs: Output[], rentStructure: IRent): number {
+    public static computeStorageDeposit(outputs: Output[], rentStructure: IRent): number {
         const outputsWithoutSdruc = outputs.filter((output) => {
             if (output.type === OutputType.Treasury) {
                 return false;

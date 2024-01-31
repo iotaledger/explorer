@@ -21,13 +21,13 @@ interface AddressBalanceProps {
     /**
      * The storage rent balance.
      */
-    readonly storageRentBalance: number | null;
+    readonly storageDeposit: number | null;
 }
 
 const CONDITIONAL_BALANCE_INFO =
     "These funds reside within outputs with additional unlock conditions which might be potentially un-lockable";
 
-const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalance, storageRentBalance }) => {
+const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalance, storageDeposit }) => {
     const { name: network, tokenInfo } = useContext(NetworkContext);
     const [formatBalanceFull, setFormatBalanceFull] = useState(false);
     const [formatConditionalBalanceFull, setFormatConditionalBalanceFull] = useState(false);
@@ -101,14 +101,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ balance, spendableBalan
                         false,
                         conditionalBalance,
                     )}
-                {buildBalanceView(
-                    "Storage Deposit",
-                    formatStorageBalanceFull,
-                    setFormatStorageBalanceFull,
-                    false,
-                    false,
-                    storageRentBalance,
-                )}
+                {buildBalanceView("Storage Deposit", formatStorageBalanceFull, setFormatStorageBalanceFull, false, false, storageDeposit)}
             </div>
         </div>
     );
