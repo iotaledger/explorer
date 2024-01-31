@@ -158,7 +158,7 @@ export const getTransactionHistoryRecords = (
             timestamp: lastOutputTime,
             dateFormatted: moment(lastOutputTime * 1000).format("YYYY-MM-DD HH:mm:ss"),
             balanceChange,
-            balanceChangeFormatted: formatAmount(Math.abs(balanceChange), tokenInfo, false),
+            balanceChangeFormatted: formatAmount(Math.abs(balanceChange), tokenInfo, false, isSpent),
             outputs,
         });
     }
@@ -192,11 +192,16 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
  * @param value - The value to format.
  * @param tokenInfo - Information about the token, including units and decimals.
  * @param formatFull - If true, formats the entire number. Otherwise, uses decimalPlaces.
- * @param isSpent
+ * @param isSpent - boolean indicating if the amount is spent or not. Need to provide right symbol.
  * @returns The formatted amount with the token unit.
  */
 export function formatAmount(value: number, tokenInfo: INodeInfoBaseToken, formatFull: boolean = false, isSpent: boolean = false): string {
-    const isSpentSymbol = isSpent ? "-" : "+";
+    let isSpentSymbol = isSpent ? "-" : "+";
+
+    if (!value) {
+        // 0 is not spent
+        isSpentSymbol = "";
+    }
 
     if (formatFull) {
         return `${isSpentSymbol}${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
