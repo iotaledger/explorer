@@ -192,17 +192,17 @@ async function constructVerifiedDomains(resolvedDID: IDIDResolverResponse): Prom
                                             reject(err);
                                         }
                                     } catch (err) {
-                                        console.log(err);
+                                        console.error(err);
                                         reject(new Error(`Domain Linkage credential invalid domain ${domain}`));
                                     }
                                 })
                                 .catch((err) => {
-                                    console.log(err);
+                                    console.error(err);
                                     reject(new Error(`could not parse configuration from domain ${domain}`));
                                 });
                         })
                         .catch((err) => {
-                            console.log(err);
+                            console.error(err);
                             reject(new Error(`could not fetch configuration from ${domain}, this could be a CORS error`));
                         });
                 }),

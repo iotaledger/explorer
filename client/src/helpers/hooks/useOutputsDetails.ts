@@ -52,7 +52,7 @@ export function useOutputsDetails(network: string, outputIds: string[] | null): 
                             setError(response.error);
                         }
                     })
-                    .catch((e) => console.log(e));
+                    .catch((e) => console.error(e));
 
                 promises.push(promise);
             }

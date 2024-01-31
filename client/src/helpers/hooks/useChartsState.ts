@@ -71,10 +71,10 @@ export function useChartsState(): [
                     setLedgerSize(graphsData.ledgerSizeDaily);
                     setStorageDeposit(graphsData.storageDepositDaily);
                 } else {
-                    console.log("Fetching influx stats failed", influxStats.error);
+                    console.error("Fetching influx stats failed", influxStats.error);
                 }
             })
-            .catch((e) => console.log("Influx analytics fetch failed", e));
+            .catch((e) => console.error("Influx analytics fetch failed", e));
 
         apiClient
             .chronicleAnalytics({ network })
@@ -82,10 +82,10 @@ export function useChartsState(): [
                 if (!analytics.error && analytics) {
                     setAnalyticStats(analytics);
                 } else {
-                    console.log("Fetching chronicle stats failed", analytics.error);
+                    console.error("Fetching chronicle stats failed", analytics.error);
                 }
             })
-            .catch((e) => console.log("Chronicle analytics fetch failed", e));
+            .catch((e) => console.error("Chronicle analytics fetch failed", e));
     }, [network]);
 
     return [
