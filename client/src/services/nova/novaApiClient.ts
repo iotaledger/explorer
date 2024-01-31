@@ -11,6 +11,8 @@ import { IAssociationsRequest } from "~/models/api/stardust/IAssociationsRequest
 import { ApiClient } from "../apiClient";
 import { IBlockDetailsRequest } from "~/models/api/nova/block/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "~/models/api/nova/block/IBlockDetailsResponse";
+import { IRewardsRequest } from "~/models/api/nova/IRewardsRequest";
+import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -72,5 +74,14 @@ export class NovaApiClient extends ApiClient {
             "post",
             { addressDetails: request.addressDetails },
         );
+    }
+
+    /**
+     * Get the output mana rewards.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getRewards(request: IRewardsRequest): Promise<IRewardsResponse> {
+        return this.callApi<unknown, IRewardsResponse>(`nova/output/rewards/${request.network}/${request.outputId}`, "get");
     }
 }

@@ -10,6 +10,7 @@ import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { buildManaDetailsForOutput, OutputManaDetails } from "~/helpers/nova/manaUtils";
 import { Converter } from "~/helpers/stardust/convertUtils";
+import { useOutputManaRewards } from "~/helpers/nova/hooks/useOutputManaRewards";
 import "./OutputPage.scss";
 
 interface OutputPageProps {
@@ -30,6 +31,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     },
 }) => {
     const { output, outputMetadataResponse, error } = useOutputDetails(network, outputId);
+    const { manaRewards } = useOutputManaRewards(network, outputId);
     const { protocolInfo, latestConfirmedSlot } = useNetworkInfoNova((s) => s.networkInfo);
 
     if (error) {
@@ -62,7 +64,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     if (output && createdSlotIndex && protocolInfo) {
         const untilSlotIndex = spentSlotIndex ? spentSlotIndex : latestConfirmedSlot > 0 ? latestConfirmedSlot : null;
         outputManaDetails = untilSlotIndex
-            ? buildManaDetailsForOutput(output, createdSlotIndex, untilSlotIndex, protocolInfo.parameters)
+            ? buildManaDetailsForOutput(output, createdSlotIndex, untilSlotIndex, protocolInfo.parameters, manaRewards)
             : null;
     }
 
@@ -159,6 +161,14 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                             <span className="margin-r-t">{outputManaDetails.potentialMana}</span>
                                         </div>
                                     </div>
+                                    {outputManaDetails.delegationRewards && (
+                                        <div className="section--data">
+                                            <div className="label">Mana rewards</div>
+                                            <div className="value code row middle">
+                                                <span className="margin-r-t">{outputManaDetails.delegationRewards}</span>
+                                            </div>
+                                        </div>
+                                    )}
                                     <div className="section--data">
                                         <div className="label">Total mana</div>
                                         <div className="value code row middle">

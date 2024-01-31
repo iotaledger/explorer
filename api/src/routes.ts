@@ -203,6 +203,7 @@ export const routes: IRoute[] = [
     },
     // Nova
     { path: "/nova/output/:network/:outputId", method: "get", folder: "nova/output", func: "get" },
+    { path: "/nova/output/rewards/:network/:outputId", method: "get", folder: "nova/output/rewards", func: "get" },
     { path: "/nova/account/:network/:accountId", method: "get", folder: "nova/account", func: "get" },
     {
         path: "/nova/output/associated/:network/:address",

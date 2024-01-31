@@ -7,6 +7,7 @@ import { IAccountResponse } from "../../models/api/nova/IAccountResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
+import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 
@@ -101,5 +102,16 @@ export class NovaApiService {
         } catch {
             return { message: "Account output not found" };
         }
+    }
+
+    /**
+     * Get the output mana rewards.
+     * @param outputId The outputId to get the rewards for.
+     * @returns The mana rewards.
+     */
+    public async getRewards(outputId: string): Promise<IRewardsResponse> {
+        const manaRewardsResponse = await this.client.getRewards(outputId);
+
+        return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
     }
 }
