@@ -41,30 +41,30 @@ jobs:
           # Check if version_tag is a release candidate format (e.g., vX.Y.Z-rc.W)
           if [[ "$version_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             # Filter for tags that match vX.Y.Z-rc.W or vX.Y.Z
-            for tag in "${tags[@]}"; do
-              if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
+            for tag in $tags; do
+              if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ && "$tag" != "$version_tag" ]]; then
                 compare_tag="$tag"
                 break
               fi
             done
           else
             # For production releases (vX.Y.Z), filter only vX.Y.Z tags
-            for tag in "${tags[@]}"; do
-              if [[ "$tag" == v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            for tag in $tags; do
+              if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ && "$tag" != "$version_tag" ]]; then
                 compare_tag="$tag"
                 break
               fi
             done
           fi
 
-          # Check if compare tag is found
+          # If no previous tag is found, use the initial commit
           if [ -z "$compare_tag" ]; then
             echo "No previous tag found. Using the initial commit for comparison."
             compare_tag=$(git rev-list --max-parents=0 HEAD)
           fi
 
           # Set the compare_tag as output
-          echo "Compare tag: $compare_tag"
+          echo "Compare tag (or initial commit): $compare_tag"
           echo "compare_tag=$compare_tag" >> $GITHUB_OUTPUT
 
       - name: Build changelog
@@ -80,6 +80,7 @@ jobs:
 
           # Current tag
           current_tag="${{ inputs.version_tag }}"
+          echo "Current tag: $current_tag"
 
           # Check if we're comparing against an initial commit or a tag
           if git rev-parse "$compare_tag" >/dev/null 2>&1; then
@@ -90,8 +91,10 @@ jobs:
             compare_point=$(git rev-list --max-parents=0 HEAD)
           fi
 
+          echo "Comparing against: $compare_point"
+
           # Fill the changelog file with the commits since the compare point
-          git log --pretty=format:"- %s (%h)" "$compare_point".."$current_tag" >> CHANGELOG.md
+          git log --pretty=format:"- %s" "$compare_point".."$current_tag" >> CHANGELOG.md
 
           # Set the complete changelog URL
           echo >> CHANGELOG.md
