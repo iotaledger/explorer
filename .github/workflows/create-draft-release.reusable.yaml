@@ -29,8 +29,8 @@ jobs:
       - name: Select compare tag
         id: select_compare_tag
         run: |
-          # Retrieve all tags, sorted in reverse order
-          tags=$(git tag -l 'v*' --sort=-v:refname)
+          # Retrieve all tags by date, sorted in reverse order
+          tags=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$')
 
           # Extract the input version tag
           version_tag="${{ inputs.version_tag }}"
@@ -96,8 +96,10 @@ jobs:
           # Fill the changelog file with the commits since the compare point
           git log --pretty=format:"- %s" "$compare_point".."$current_tag" >> CHANGELOG.md
 
-          # Set the complete changelog URL
+          # Add blank lines for formatting
           echo >> CHANGELOG.md
+          echo >> CHANGELOG.md
+
           echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${compare_point}...${current_tag}" >> CHANGELOG.md
 
           echo "Changelog built successfully."
