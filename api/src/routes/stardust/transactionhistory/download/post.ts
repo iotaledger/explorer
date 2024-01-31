@@ -158,7 +158,7 @@ export const getTransactionHistoryRecords = (
             timestamp: lastOutputTime,
             dateFormatted: moment(lastOutputTime * 1000).format("YYYY-MM-DD HH:mm:ss"),
             balanceChange,
-            balanceChangeFormatted: (isSpent ? "-" : "+") + formatAmount(Math.abs(balanceChange), tokenInfo, false, 2, true),
+            balanceChangeFormatted: formatAmount(Math.abs(balanceChange), tokenInfo, false),
             outputs,
         });
     }
@@ -189,56 +189,45 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
 /**
  * Formats a numeric value into a string using token information and specified formatting rules.
  *
- * @param {number} value - The value to format.
- * @param {INodeInfoBaseToken} tokenInfo - Information about the token, including units and decimals.
- * @param {boolean} [formatFull=false] - If true, formats the entire number. Otherwise, uses decimalPlaces.
- * @param {number} [decimalPlaces=2] - Number of decimal places in the formatted output.
- * @param {boolean} [trailingDecimals] - Determines inclusion of trailing zeros in decimals.
- * @returns {string} The formatted amount with the token unit.
+ * @param value - The value to format.
+ * @param tokenInfo - Information about the token, including units and decimals.
+ * @param formatFull - If true, formats the entire number. Otherwise, uses decimalPlaces.
+ * @param isSpent
+ * @returns The formatted amount with the token unit.
  */
-export function formatAmount(
-    value: number,
-    tokenInfo: INodeInfoBaseToken,
-    formatFull: boolean = false,
-    decimalPlaces: number = 2,
-    trailingDecimals?: boolean,
-): string {
+export function formatAmount(value: number, tokenInfo: INodeInfoBaseToken, formatFull: boolean = false, isSpent: boolean = false): string {
+    const isSpentSymbol = isSpent ? "-" : "+";
+
     if (formatFull) {
-        return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
+        return `${isSpentSymbol}${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
 
     const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces, trailingDecimals);
+    const formattedAmount = cropNumber(baseTokenValue);
 
-    return `${formattedAmount} ${tokenInfo.unit}`;
+    return `${isSpentSymbol}${formattedAmount} ${tokenInfo.unit}`;
 }
 
 /**
- * Format amount to two decimal places without rounding off.
- * @param value The raw amount to format.
- * @param precision The decimal places to show.
- * @param trailingDecimals Whether to show trailing decimals.
- * @returns The formatted amount.
+ * Crops the fractional part of a number to 6 digits.
+ * @param value The value to crop.
+ * @param decimalPlaces - The number of decimal places to include in the formatted output.
+ * @returns The cropped value.
  */
-function toFixedNoRound(value: number, precision: number = 2, trailingDecimals?: boolean): string {
-    const defaultDecimals = "0".repeat(precision);
-    const valueString = `${value}`;
-    const [integer, fraction = defaultDecimals] = valueString.split(".");
+function cropNumber(value: number, decimalPlaces: number = 6): string {
+    const valueAsString = value.toString();
 
-    if (fraction === defaultDecimals && !trailingDecimals) {
-        return valueString;
+    if (!valueAsString.includes(".")) {
+        return valueAsString;
     }
 
-    if (!precision) {
-        return integer;
+    const [integerPart, rawFractionalPart] = valueAsString.split(".");
+    let fractionalPart = rawFractionalPart;
+
+    if (fractionalPart.length > decimalPlaces) {
+        fractionalPart = fractionalPart.slice(0, 6);
     }
+    fractionalPart = fractionalPart.replace(/0+$/, "");
 
-    const truncatedFraction = fraction.slice(0, precision);
-
-    // avoid 0.00 case
-    if (!Number(truncatedFraction)) {
-        return `${integer}.${fraction}`;
-    }
-
-    return `${integer}.${truncatedFraction}`;
+    return fractionalPart ? `${integerPart}.${fractionalPart}` : integerPart;
 }
