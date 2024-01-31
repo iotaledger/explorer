@@ -1,1 +1,1 @@
-export * from "./IPreExpandedConfig";
+export * from './IPreExpandedConfig';
