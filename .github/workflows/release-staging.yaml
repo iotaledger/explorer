@@ -1,0 +1,71 @@
+name: Release Explorer to Staging
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+" # Versioning pattern 'v1.0.0-rc.0'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag"
+        required: true
+        default: "v1.0.0-rc.0"
+
+jobs:
+  set_tags:
+    name: Set Tags
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # If the workflow was triggered by a tag, use the tag as the version.
+      # Otherwise, use the tag from the workflow_dispatch event.
+      - name: Set up the version tag for docker images
+        id: set_version_tag
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
+
+  use-reusable-workflow:
+    strategy:
+      matrix:
+        directory: [api, client]
+    name: Build Image
+    needs: set_tags
+    uses: ./.github/workflows/build-images.reusable.yaml
+    with:
+      directory: ${{ matrix.directory }}
+      image_tags: |
+        iotaledger/explorer-${{ matrix.directory }}:${{ needs.set_tags.outputs.version_tag }}
+    secrets: inherit
+
+  deploy_to_server:
+    name: Deploy Staging to Server
+    needs: [set_tags, use-reusable-workflow]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [staging, shimmer-staging]
+    steps:
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.UPDATER_SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.set_tags.outputs.version_tag }}"
+
+  create_draft_release:
+    name: Create Draft Release
+    needs: [set_tags, use-reusable-workflow, deploy_to_server]
+    uses: ./.github/workflows/create-draft-release.reusable.yaml
+    with:
+      name: Explorer ${{ needs.set_tags.outputs.version_tag }}
+      version_tag: ${{ needs.set_tags.outputs.version_tag }}
