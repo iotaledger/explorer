@@ -118,7 +118,7 @@ const requestOutputDetails = async (outputId: string, network: string): Promise<
         }
         return null;
     } catch {
-        console.log("Failed loading transaction history details!");
+        console.warn("Failed loading transaction history details!");
         return null;
     }
 };
