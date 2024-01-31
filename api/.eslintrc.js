@@ -250,7 +250,7 @@ module.exports = {
         "no-compare-neg-zero": ["error"],
         "no-cond-assign": ["error"],
         "no-confusing-arrow": ["error"],
-        "no-console": ["off"],
+        "no-console": ["error", { allow: ["warn", "error"] }],
         "no-const-assign": ["off"],
         "no-constant-condition": ["error"],
         "no-constructor-return": ["error"],
