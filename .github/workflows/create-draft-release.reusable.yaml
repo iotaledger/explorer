@@ -26,6 +26,47 @@ jobs:
             git fetch --prune --tags -f
           fi
 
+      - name: Select compare tag
+        id: select_compare_tag
+        run: |
+          # Retrieve all tags, sorted in reverse order
+          tags=$(git tag -l 'v*' --sort=-v:refname)
+
+          # Extract the input version tag
+          version_tag="${{ inputs.version_tag }}"
+
+          # Initialize compare_tag variable
+          compare_tag=""
+
+          # Check if version_tag is a release candidate format (e.g., vX.Y.Z-rc.W)
+          if [[ "$version_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+            # Filter for tags that match vX.Y.Z-rc.W or vX.Y.Z
+            for tag in "${tags[@]}"; do
+              if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
+                compare_tag="$tag"
+                break
+              fi
+            done
+          else
+            # For production releases (vX.Y.Z), filter only vX.Y.Z tags
+            for tag in "${tags[@]}"; do
+              if [[ "$tag" == v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                compare_tag="$tag"
+                break
+              fi
+            done
+          fi
+
+          # Check if compare tag is found
+          if [ -z "$compare_tag" ]; then
+            echo "No previous tag found. Using the initial commit for comparison."
+            compare_tag=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          # Set the compare_tag as output
+          echo "Compare tag: $compare_tag"
+          echo "compare_tag=$compare_tag" >> $GITHUB_OUTPUT
+
       - name: Build changelog
         id: build_changelog
         run: |
@@ -34,42 +75,34 @@ jobs:
           # Create a changelog file with a header:
           echo "# Changelog" > CHANGELOG.md
 
-          # Check repository tags and the last tagged commit
-          n_tags=`git tag -l 'v*' --sort=-v:refname | wc -l`
-          prev_tag=`git tag -l 'v*' --sort=-v:refname | sed '2q;d'`
-          if [ $n_tags -eq 1 ]; then
-            last_commit=`git rev-list --max-parents=0 HEAD`
+          # Retrieve the compare tag from the previous step
+          compare_tag="${{ steps.select_compare_tag.outputs.compare_tag }}"
+
+          # Current tag
+          current_tag="${{ inputs.version_tag }}"
+
+          # Check if we're comparing against an initial commit or a tag
+          if git rev-parse "$compare_tag" >/dev/null 2>&1; then
+            # It's a valid commit or tag
+            compare_point="$compare_tag"
           else
-            last_commit=`git rev-list -n 1 $prev_tag`
+            # Default to the initial commit if the compare tag is not valid
+            compare_point=$(git rev-list --max-parents=0 HEAD)
           fi
 
-          # Fill the changelog file with the commits since the last tag
-          # Set max tries to equal the maximum number of commits as protection
-          max_tries=`git rev-list --count HEAD`
-          i=0
-          while [ `git rev-parse HEAD~$i` != $last_commit ] && [ $i -lt $((max_tries-1)) ]
-          do
-            echo '- ' `git show -s --format=%s HEAD~$i` >> CHANGELOG.md
-            i=$((i+1))
-          done
+          # Fill the changelog file with the commits since the compare point
+          git log --pretty=format:"- %s (%h)" "$compare_point".."$current_tag" >> CHANGELOG.md
 
-          # Set the complete changelog url
+          # Set the complete changelog URL
           echo >> CHANGELOG.md
-          compare=""
-          if [ $n_tags -eq 1 ]; then
-            compare=$last_commit
-          else
-            compare=$prev_tag
-          fi
-          compare="${compare}...`git tag -l 'v*' --sort=-v:refname | sed '1q;d'`"
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${compare}" >> CHANGELOG.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${compare_point}...${current_tag}" >> CHANGELOG.md
 
           echo "Changelog built successfully."
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         with:
-            name: ${{ inputs.name }}
-            tag_name: ${{ inputs.version_tag }}
-            draft: true
-            body_path: CHANGELOG.md
+          name: ${{ inputs.name }}
+          tag_name: ${{ inputs.version_tag }}
+          draft: true
+          body_path: CHANGELOG.md
