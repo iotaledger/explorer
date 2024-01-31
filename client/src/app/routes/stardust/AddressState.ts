@@ -241,7 +241,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
                 });
             }
         }
-    }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
+    }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs, aliasOutput, nftOutput]);
 
     return [state, setState];
 };
