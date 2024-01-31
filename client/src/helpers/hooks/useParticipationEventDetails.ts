@@ -51,7 +51,7 @@ export function useParticipationEventDetails(participations?: IParticipation[]):
                             setError(response.error);
                         }
                     })
-                    .catch((e) => console.log(e));
+                    .catch((e) => console.error(e));
 
                 promises.push(promise);
             }

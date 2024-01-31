@@ -83,7 +83,7 @@ export function useAddressHistory(
             }
             return null;
         } catch {
-            console.log("Failed loading transaction history details!");
+            console.error("Failed loading transaction history details!");
             return null;
         }
     };

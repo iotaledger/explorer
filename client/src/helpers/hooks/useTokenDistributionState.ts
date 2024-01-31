@@ -23,10 +23,10 @@ export function useTokenDistributionState(): [IRichAddress[] | null, IDistributi
                 if (!response.error && response.distribution) {
                     setTokenDistribution(response.distribution);
                 } else {
-                    console.log(`Fetching token distribution failed (${network})`, response.error);
+                    console.error(`Fetching token distribution failed (${network})`, response.error);
                 }
             })
-            .catch((e) => console.log(`Fetching token distribution failed (${network})`, e));
+            .catch((e) => console.error(`Fetching token distribution failed (${network})`, e));
 
         apiClient
             .richestAddresses({ network })
@@ -34,10 +34,10 @@ export function useTokenDistributionState(): [IRichAddress[] | null, IDistributi
                 if (!response.error && response.top) {
                     setRichestAddresses(response.top);
                 } else {
-                    console.log(`Fetching richest addresses failed (${network})`, response.error);
+                    console.error(`Fetching richest addresses failed (${network})`, response.error);
                 }
             })
-            .catch((e) => console.log(`Fetching richest addresses failed (${network})`, e));
+            .catch((e) => console.error(`Fetching richest addresses failed (${network})`, e));
     }, [network]);
 
     return [richestAddresses, tokenDistribution];
