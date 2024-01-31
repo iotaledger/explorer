@@ -1,5 +1,5 @@
 import { Output } from "@iota/sdk-wasm/web";
-import { IPreExpandedConfig } from "./interfaces";
+import { IPreExpandedConfig } from "~models/components";
 
 export interface OutputProps {
     /**

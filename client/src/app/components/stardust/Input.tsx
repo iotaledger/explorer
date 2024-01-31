@@ -7,10 +7,10 @@ import { Link, useHistory } from "react-router-dom";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { IInput } from "~models/api/stardust/IInput";
+import { IPreExpandedConfig } from "~models/components";
 import NetworkContext from "../../context/NetworkContext";
 import Output from "./Output";
 import Bech32Address from "./address/Bech32Address";
-import { IPreExpandedConfig } from "./interfaces";
 
 interface InputProps {
     /**
