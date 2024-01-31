@@ -107,7 +107,7 @@ export class NovaApiService {
     /**
      * Get the output mana rewards.
      * @param outputId The outputId to get the rewards for.
-     * @returns The account details.
+     * @returns The mana rewards.
      */
     public async getRewards(outputId: string): Promise<IRewardsResponse> {
         const manaRewardsResponse = await this.client.getRewards(outputId);

@@ -10,7 +10,7 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param network The Network in context
  * @param outputId The output id
  * @param slotIndex The slot index
- * @returns The output, metadata, loading bool and error message.
+ * @returns The mana rewards, loading bool and error message.
  **/
 export function useOutputManaRewards(
     network: string,
