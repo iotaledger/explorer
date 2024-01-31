@@ -67,7 +67,7 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
                     isExternal: true,
                 },
                 {
-                    label: "ShimmerEVM Testnet Testnet",
+                    label: "ShimmerEVM Testnet Explorer",
                     url: "https://explorer.evm.testnet.shimmer.network/",
                     isExternal: true,
                 },
