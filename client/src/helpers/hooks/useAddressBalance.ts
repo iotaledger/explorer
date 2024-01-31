@@ -34,8 +34,8 @@ export function useAddressBalance(
                     let totalBalance = response.totalBalance;
                     let availableBalance = response.availableBalance ?? 0;
                     if (output) {
-                        totalBalance = totalBalance + Number(output.amount);
-                        availableBalance = availableBalance + Number(output.amount);
+                        totalBalance = Number(totalBalance) + Number(output.amount);
+                        availableBalance = Number(availableBalance) + Number(output.amount);
                     }
                     setBalance(totalBalance);
                     setAvailableBalance(availableBalance > 0 ? availableBalance : null);
@@ -46,7 +46,7 @@ export function useAddressBalance(
                     if (addressDetailsWithBalance && isMounted) {
                         let totalBalance = Number(addressDetailsWithBalance.balance);
                         if (output) {
-                            totalBalance = totalBalance + Number(output.amount);
+                            totalBalance = Number(totalBalance) + Number(output.amount);
                         }
                         setBalance(totalBalance);
                         setAvailableBalance(null);
