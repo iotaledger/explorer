@@ -14,30 +14,20 @@ import { HexHelper } from "../stardust/hexHelper";
  */
 export function useAliasDetails(network: string, aliasId: string | null): [AliasOutput | null, boolean] {
     const isMounted = useIsMounted();
-    const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const [aliasOutput, setAliasOutput] = useState<AliasOutput | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        if (aliasId) {
+        if (aliasId && isMounted) {
             // eslint-disable-next-line no-void
             void (async () => {
-                apiClient
-                    .aliasDetails({
-                        network,
-                        aliasId: HexHelper.addPrefix(aliasId),
-                    })
-                    .then((response) => {
-                        if (!response?.error && isMounted) {
-                            const output = response.aliasDetails?.output as AliasOutput;
-
-                            setAliasOutput(output);
-                        }
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
+                try {
+                    const aliasOutput = await fetchAliasDetailsOutput(network, aliasId);
+                    setAliasOutput(aliasOutput);
+                } finally {
+                    setIsLoading(false);
+                }
             })();
         } else {
             setIsLoading(false);
@@ -46,3 +36,22 @@ export function useAliasDetails(network: string, aliasId: string | null): [Alias
 
     return [aliasOutput, isLoading];
 }
+
+export const fetchAliasDetailsOutput = async (network: string, aliasId: string | null): Promise<AliasOutput | null> => {
+    if (!aliasId) {
+        return null;
+    }
+
+    const apiClient = ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`);
+
+    const response = await apiClient.aliasDetails({
+        network,
+        aliasId: HexHelper.addPrefix(aliasId),
+    });
+
+    if (!response?.error) {
+        return response.aliasDetails?.output as AliasOutput;
+    }
+
+    return null;
+};

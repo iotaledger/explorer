@@ -118,16 +118,17 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const addressBech32: string | null = state.bech32AddressDetails?.bech32 ?? null;
     const addressHex: string | null = state.bech32AddressDetails?.hex ?? null;
     const addressType: number | null = state.bech32AddressDetails?.type ?? null;
+    const aliasId = addressType === AddressType.Alias ? addressHex : null;
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
     const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(network, addressType === AddressType.Nft ? addressHex : null);
-    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressType === AddressType.Alias ? addressHex : null);
+    const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, aliasId);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
         network,
         addressType === AddressType.Alias ? state.bech32AddressDetails : null,
     );
-    const [balance, availableBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null);
+    const [balance, availableBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null, { aliasId: aliasId });
     const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
 
     const [aliasContainsDID] = useAliasContainsDID(aliasOutput);
@@ -153,7 +154,6 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     }, [addressFromPath]);
 
     useEffect(() => {
-        const consolidatedAvailableBalance = consolidateOutputBalance(availableBalance, aliasOutput);
         setState({
             addressBasicOutputs,
             isBasicOutputsLoading,
@@ -169,7 +169,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             aliasFoundries,
             isAliasFoundriesLoading,
             balance,
-            availableBalance: consolidatedAvailableBalance,
+            availableBalance,
             eventDetails,
             aliasContainsDID,
             resolvedDID,
@@ -235,14 +235,4 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
 
     return [state, setState];
-};
-
-const consolidateOutputBalance = (currentBalance: number | string | null, additionalOutput: AliasOutput | null) => {
-    let total = currentBalance ? parseInt(currentBalance as string) : 0;
-
-    if (additionalOutput?.type === OutputType.Alias) {
-        total += parseInt(additionalOutput.amount);
-    }
-
-    return total;
 };
