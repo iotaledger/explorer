@@ -7,6 +7,10 @@ import OutputView from "~/app/components/nova/OutputView";
 import { useOutputDetails } from "~/helpers/nova/hooks/useOutputDetails";
 import CopyButton from "~/app/components/CopyButton";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { buildManaDetailsForOutput, OutputManaDetails } from "~/helpers/nova/manaUtils";
+import { Converter } from "~/helpers/stardust/convertUtils";
+import { useOutputManaRewards } from "~/helpers/nova/hooks/useOutputManaRewards";
 import "./OutputPage.scss";
 
 interface OutputPageProps {
@@ -27,6 +31,8 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     },
 }) => {
     const { output, outputMetadataResponse, error } = useOutputDetails(network, outputId);
+    const { manaRewards } = useOutputManaRewards(network, outputId);
+    const { protocolInfo, latestConfirmedSlot } = useNetworkInfoNova((s) => s.networkInfo);
 
     if (error) {
         return (
@@ -45,7 +51,22 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         );
     }
 
-    const { blockId, transactionId, outputIndex, isSpent, transactionIdSpent } = outputMetadataResponse ?? {};
+    const { blockId, included, spent } = outputMetadataResponse ?? {};
+
+    const transactionId = included?.transactionId ?? null;
+    const createdSlotIndex = (included?.slot as number) ?? null;
+    const spentSlotIndex = (spent?.slot as number) ?? null;
+    const isSpent = spentSlotIndex !== null;
+    const transactionIdSpent = spent?.transactionId ?? null;
+    const outputIndex = computeOutputIndexFromOutputId(outputId);
+
+    let outputManaDetails: OutputManaDetails | null = null;
+    if (output && createdSlotIndex && protocolInfo) {
+        const untilSlotIndex = spentSlotIndex ? spentSlotIndex : latestConfirmedSlot > 0 ? latestConfirmedSlot : null;
+        outputManaDetails = untilSlotIndex
+            ? buildManaDetailsForOutput(output, createdSlotIndex, untilSlotIndex, protocolInfo.parameters, manaRewards)
+            : null;
+    }
 
     return (
         (output && (
@@ -60,13 +81,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                         </div>
                         <div className="section">
                             <div className="card">
-                                <OutputView
-                                    network={network}
-                                    outputId={outputId}
-                                    output={output}
-                                    showCopyAmount={true}
-                                    isPreExpanded={true}
-                                />
+                                <OutputView outputId={outputId} output={output} showCopyAmount={true} isPreExpanded={true} />
                             </div>
 
                             <div className="section--header row row--tablet-responsive middle space-between">
@@ -125,6 +140,43 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                     </div>
                                 </div>
                             )}
+
+                            {outputManaDetails && (
+                                <>
+                                    <div className="section--data">
+                                        <div className="label">Stored mana</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.storedMana}</span>
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Stored mana (decayed)</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.storedManaDecayed}</span>
+                                        </div>
+                                    </div>
+                                    <div className="section--data">
+                                        <div className="label">Potential mana</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.potentialMana}</span>
+                                        </div>
+                                    </div>
+                                    {outputManaDetails.delegationRewards && (
+                                        <div className="section--data">
+                                            <div className="label">Mana rewards</div>
+                                            <div className="value code row middle">
+                                                <span className="margin-r-t">{outputManaDetails.delegationRewards}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="section--data">
+                                        <div className="label">Total mana</div>
+                                        <div className="value code row middle">
+                                            <span className="margin-r-t">{outputManaDetails.totalMana}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -133,5 +185,16 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
         null
     );
 };
+
+function computeOutputIndexFromOutputId(outputId: string | null) {
+    if (!outputId) {
+        return null;
+    }
+
+    const outputIndexPart = outputId.slice(-4);
+    const outputIndexBigEndian = Converter.convertToBigEndian(outputIndexPart);
+
+    return Number(outputIndexBigEndian);
+}
 
 export default OutputPage;
