@@ -1,4 +1,5 @@
 import { Output } from "@iota/sdk-wasm/web";
+import { IPreExpandedConfig } from "~models/components";
 
 export interface OutputProps {
     /**
@@ -22,11 +23,6 @@ export interface OutputProps {
     showCopyAmount: boolean;
 
     /**
-     * Should the output be pre-expanded.
-     */
-    isPreExpanded?: boolean;
-
-    /**
      * Should the outputId be displayed in full (default truncated).
      */
     displayFullOutputId?: boolean;
@@ -40,4 +36,9 @@ export interface OutputProps {
      * Disable links if block is conflicting.
      */
     isLinksDisabled?: boolean;
+
+    /**
+     * Should the output and its fields be pre-expanded.
+     */
+    preExpandedConfig?: IPreExpandedConfig;
 }

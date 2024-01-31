@@ -2,14 +2,15 @@
 /* eslint-disable jsdoc/require-returns */
 import { Utils } from "@iota/sdk-wasm/web";
 import classNames from "classnames";
-import React, { useContext, useState } from "react";
-import { useHistory, Link } from "react-router-dom";
-import Bech32Address from "./address/Bech32Address";
-import Output from "./Output";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { IInput } from "~models/api/stardust/IInput";
+import { IPreExpandedConfig } from "~models/components";
 import NetworkContext from "../../context/NetworkContext";
+import Output from "./Output";
+import Bech32Address from "./address/Bech32Address";
 
 interface InputProps {
     /**
@@ -20,16 +21,24 @@ interface InputProps {
      * The network in context.
      */
     readonly network: string;
+    /**
+     * Should the input be pre-expanded.
+     */
+    readonly preExpandedConfig?: IPreExpandedConfig;
 }
 
 /**
  * Component which will display an Input on stardust.
  */
-const Input: React.FC<InputProps> = ({ input, network }) => {
+const Input: React.FC<InputProps> = ({ input, network, preExpandedConfig }) => {
     const history = useHistory();
     const { tokenInfo } = useContext(NetworkContext);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+
+    useEffect(() => {
+        setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
+    }, [preExpandedConfig]);
 
     const fallbackInputView = (
         <React.Fragment>
@@ -89,6 +98,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
             amount={Number(input.output.output.amount)}
             network={network}
             showCopyAmount={true}
+            preExpandedConfig={preExpandedConfig}
         />
     ) : (
         fallbackInputView

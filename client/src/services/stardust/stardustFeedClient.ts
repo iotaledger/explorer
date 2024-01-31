@@ -113,7 +113,7 @@ export class StardustFeedClient {
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (subscribeResponse.error) {
-                        console.log("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
+                        console.error("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
                     } else {
                         this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
@@ -151,7 +151,7 @@ export class StardustFeedClient {
                 this.socket.emit("subscribe", subscribeRequest);
             }
         } catch (error) {
-            console.log("Failed subscribing to block feed", this._networkConfig?.network, error);
+            console.error("Failed subscribing to block feed", this._networkConfig?.network, error);
         }
     }
 
@@ -180,7 +180,7 @@ export class StardustFeedClient {
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (subscribeResponse.error) {
-                        console.log("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
+                        console.error("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
                     } else {
                         this.milestoneSubscriptionId = subscribeResponse.subscriptionId;
                     }
@@ -193,7 +193,7 @@ export class StardustFeedClient {
                 });
             }
         } catch (error) {
-            console.log("Failed subscribing to milestone feed", this._networkConfig?.network, error);
+            console.error("Failed subscribing to milestone feed", this._networkConfig?.network, error);
         }
     }
 

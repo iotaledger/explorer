@@ -14,11 +14,9 @@
         "start": "vite",
         "preview": "vite preview",
         "format": "prettier --ignore-path=.prettierignore --write src && eslint src --ext .tsx,.ts --fix",
-        "lint:check": "eslint src --ext .tsx,.ts",
+        "lint:check": "eslint src --ext .tsx,.ts && stylelint ./src/**/*.scss",
         "format:check": "prettier --ignore-path=.prettierignore --check src",
-        "sass-lint": "stylelint ./src/**/*.scss",
-        "build-internal": "tsc && vite build",
-        "build": "run-s lint:check sass-lint build-internal",
+        "build": "tsc && vite build",
         "test": "vitest"
     },
     "dependencies": {
@@ -115,6 +113,6 @@
     ],
     "lint-staged": {
         "src/**/*.{ts,js,tsx,jsx}": "eslint --cache --fix",
-        "src/**/*.{ts,js,scss,css}": "prettier --ignore-path=.prettierignore --write"
+        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write"
     }
 }
