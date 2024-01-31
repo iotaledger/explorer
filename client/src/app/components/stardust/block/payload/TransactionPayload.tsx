@@ -104,7 +104,7 @@ const TransactionPayload: React.FC<TransactionPayloadProps> = ({ network, inputs
             });
             setInputsPreExpandedConfig(inputsPreExpandedConfig);
         }
-    });
+    }, [bech32Hrp]);
 
     // for basic outputs, always expand all the OUTPUT_EXPAND_CONDITIONS
     const outputsPreExpandedConfig: IPreExpandedConfig[] = outputs.map((output) => {
