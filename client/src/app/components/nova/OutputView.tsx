@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import classNames from "classnames";
 import {
@@ -34,8 +34,8 @@ interface OutputViewProps {
 }
 
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
-    const [isExpanded, setIsExpanded] = React.useState(isPreExpanded ?? false);
-    const [isFormattedBalance, setIsFormattedBalance] = React.useState(true);
+    const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
     const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);

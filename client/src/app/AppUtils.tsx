@@ -40,6 +40,8 @@ export const populateNetworkInfoNova = (networkName: string) => {
             name: networkName,
             tokenInfo: nodeInfo?.baseToken ?? {},
             protocolVersion: protocolInfo?.parameters.version ?? -1,
+            protocolInfo,
+            latestConfirmedSlot: nodeInfo?.status?.latestConfirmedBlockSlot ?? -1,
             bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
         });
     }

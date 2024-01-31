@@ -15,17 +15,11 @@ import { HexHelper } from "../../utils/hexHelper";
  */
 export class NovaApiService {
     /**
-     * The network in context.
-     */
-    private readonly network: INetwork;
-
-    /**
      * The client to use for requests.
      */
     private readonly client: Client;
 
     constructor(network: INetwork) {
-        this.network = network;
         this.client = ServiceFactory.get<Client>(`client-${network.network}`);
     }
 
