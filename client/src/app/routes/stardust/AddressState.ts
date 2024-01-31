@@ -130,11 +130,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
         network,
         addressType === AddressType.Alias ? state.bech32AddressDetails : null,
     );
-    const [balance, availableBalance] = useAddressBalance(
-        network,
-        state.bech32AddressDetails?.bech32 ?? null,
-        aliasOutput ?? nftOutput ?? null,
-    );
+    const [balance, availableBalance] = useAddressBalance(network, state.bech32AddressDetails, aliasOutput ?? nftOutput ?? null);
     const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
 
     const [aliasContainsDID] = useAliasContainsDID(aliasOutput);

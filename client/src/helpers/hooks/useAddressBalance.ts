@@ -1,5 +1,6 @@
-import { AliasOutput, NftOutput } from "@iota/sdk-wasm/web";
+import { AddressType, AliasOutput, NftOutput } from "@iota/sdk-wasm/web";
 import { useEffect, useState } from "react";
+import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
@@ -14,7 +15,7 @@ import { useIsMounted } from "./useIsMounted";
  */
 export function useAddressBalance(
     network: string,
-    address: string | null,
+    addressDetails: IBech32AddressDetails | null,
     output: AliasOutput | NftOutput | null,
 ): [number | null, number | null, boolean] {
     const isMounted = useIsMounted();
@@ -25,7 +26,10 @@ export function useAddressBalance(
 
     useEffect(() => {
         setIsLoading(true);
-        if (address) {
+        const address = addressDetails?.bech32;
+        const needsOutputToProceed = addressDetails?.type === AddressType.Alias || addressDetails?.type === AddressType.Nft;
+        const canLoad = address && (!needsOutputToProceed || (needsOutputToProceed && output));
+        if (canLoad) {
             // eslint-disable-next-line no-void
             void (async () => {
                 const response = await apiClient.addressBalanceChronicle({ network, address });
@@ -56,7 +60,7 @@ export function useAddressBalance(
         } else {
             setIsLoading(false);
         }
-    }, [network, address, output]);
+    }, [network, addressDetails, output]);
 
     return [balance, availableBalance, isLoading];
 }
