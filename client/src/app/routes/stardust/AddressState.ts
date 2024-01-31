@@ -153,6 +153,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     }, [addressFromPath]);
 
     useEffect(() => {
+        const consolidatedAvailableBalance = consolidateOutputBalance(availableBalance, aliasOutput);
         setState({
             addressBasicOutputs,
             isBasicOutputsLoading,
@@ -168,7 +169,7 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
             aliasFoundries,
             isAliasFoundriesLoading,
             balance,
-            availableBalance,
+            availableBalance: consolidatedAvailableBalance,
             eventDetails,
             aliasContainsDID,
             resolvedDID,
@@ -234,4 +235,14 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     }, [addressBasicOutputs, addressAliasOutputs, addressNftOutputs]);
 
     return [state, setState];
+};
+
+const consolidateOutputBalance = (currentBalance: number | string | null, additionalOutput: AliasOutput | null) => {
+    let total = currentBalance ? parseInt(currentBalance as string) : 0;
+
+    if (additionalOutput?.type === OutputType.Alias) {
+        total += parseInt(additionalOutput.amount);
+    }
+
+    return total;
 };
