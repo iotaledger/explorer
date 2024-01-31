@@ -38,7 +38,7 @@ export interface IAddressState {
     bech32AddressDetails: IBech32AddressDetails | null;
     balance: number | null;
     availableBalance: number | null;
-    storageRentBalance: number | null;
+    storageDeposit: number | null;
     addressOutputs: OutputResponse[] | null;
     addressBasicOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
@@ -70,7 +70,7 @@ const initialState = {
     bech32AddressDetails: null,
     balance: null,
     availableBalance: null,
-    storageRentBalance: null,
+    storageDeposit: null,
     addressOutputs: null,
     addressBasicOutputs: null,
     isBasicOutputsLoading: true,
@@ -121,13 +121,20 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, addressBech32);
     const [addressAliasOutputs, isAliasOutputsLoading] = useAddressAliasOutputs(network, addressBech32);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, addressBech32);
-    const [, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(network, addressType === AddressType.Nft ? addressHex : null);
+    const [nftOutput, nftMetadata, issuerId, isNftDetailsLoading] = useNftDetails(
+        network,
+        addressType === AddressType.Nft ? addressHex : null,
+    );
     const [aliasOutput, isAliasDetailsLoading] = useAliasDetails(network, addressType === AddressType.Alias ? addressHex : null);
     const [aliasFoundries, isAliasFoundriesLoading] = useAliasControlledFoundries(
         network,
         addressType === AddressType.Alias ? state.bech32AddressDetails : null,
     );
-    const [balance, availableBalance] = useAddressBalance(network, state.bech32AddressDetails?.bech32 ?? null);
+    const [balance, availableBalance] = useAddressBalance(
+        network,
+        state.bech32AddressDetails?.bech32 ?? null,
+        aliasOutput ?? nftOutput ?? null,
+    );
     const [eventDetails] = useParticipationEventDetails(state.participations ?? undefined);
 
     const [aliasContainsDID] = useAliasContainsDID(aliasOutput);
@@ -197,16 +204,19 @@ export const useAddressPageState = (): [IAddressState, React.Dispatch<Partial<IA
     ]);
 
     useEffect(() => {
-        if (addressBasicOutputs && addressAliasOutputs && addressNftOutputs) {
-            const mergedOutputResponses = [...addressBasicOutputs, ...addressAliasOutputs, ...addressNftOutputs];
-            const outputs = mergedOutputResponses.map<Output>((or) => or.output);
-            const storageRentBalanceUpdate = TransactionsHelper.computeStorageRentBalance(outputs, rentStructure);
-
-            setState({
-                addressOutputs: mergedOutputResponses,
-                storageRentBalance: storageRentBalanceUpdate,
-            });
+        const addressOutputs =
+            [...(addressBasicOutputs ?? []), ...(addressAliasOutputs ?? []), ...(addressNftOutputs ?? [])].filter((o) => o !== null) ?? [];
+        let outputsComputedInStorageDeposit = addressOutputs?.map<Output>((or) => or.output);
+        const addressOutputItself = nftOutput ?? aliasOutput;
+        if (addressOutputItself) {
+            outputsComputedInStorageDeposit = [...outputsComputedInStorageDeposit, addressOutputItself];
         }
+        const storageDeposit = TransactionsHelper.computeStorageDeposit(outputsComputedInStorageDeposit, rentStructure);
+
+        setState({
+            addressOutputs,
+            storageDeposit,
+        });
         if (addressBasicOutputs && !state.participations) {
             let foundParticipations: IParticipation[] = [];
             for (const outputResponse of addressBasicOutputs) {

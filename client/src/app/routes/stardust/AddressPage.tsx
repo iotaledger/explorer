@@ -24,7 +24,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
         bech32AddressDetails,
         balance,
         availableBalance,
-        storageRentBalance,
+        storageDeposit,
         isBasicOutputsLoading,
         isAliasOutputsLoading,
         isNftOutputsLoading,
@@ -88,7 +88,7 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
                                         <AddressBalance
                                             balance={balance}
                                             spendableBalance={availableBalance}
-                                            storageRentBalance={storageRentBalance}
+                                            storageDeposit={storageDeposit}
                                         />
                                     )}
                                 </div>
