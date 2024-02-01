@@ -1,3 +1,4 @@
+import { TransactionState } from "@iota/sdk-wasm-nova/web";
 import { Color } from "three";
 import { ThemeMode } from "./enums";
 
@@ -22,19 +23,14 @@ export const ANIMATION_TIME_SECONDS = 3;
 
 // colors
 export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
-
-export const ACCEPTED_BLOCK_COLORS = [new Color("#0101FF"), new Color("#0000DB"), new Color("#0101AB")];
-
-export const COLORS = [
-    new Color("#F0F4FF"),
-    new Color("#E0EAFF"),
-    new Color("#C8DAFE"),
-    PENDING_BLOCK_COLOR,
-    new Color("#82A5F8"),
-    new Color("#5C84FA"),
-    new Color("#2559F5"),
-    ...ACCEPTED_BLOCK_COLORS,
-];
+export const ACCEPTED_TRANSACTION_COLOR = new Color("#0101AB");
+export const APPROVED_TRANSACTION_COLOR = new Color("#0000DB");
+export const FINALIZED_TRANSACTION_COLOR = new Color("#0101FF");
+export const TRANSACTION_STATE_TO_COLOR = new Map<TransactionState, Color>([
+    ["accepted", ACCEPTED_TRANSACTION_COLOR],
+    ["confirmed", APPROVED_TRANSACTION_COLOR],
+    ["finalized", FINALIZED_TRANSACTION_COLOR],
+]);
 
 // emitter
 export const EMITTER_SPEED_MULTIPLIER = 80;
