@@ -72,7 +72,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                     output={output}
                                     amount={Number(output.amount)}
                                     showCopyAmount={true}
-                                    isPreExpanded={true}
+                                    preExpandedConfig={{ isAllPreExpanded: true }}
                                 />
                             </div>
 

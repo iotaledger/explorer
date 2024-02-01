@@ -1,6 +1,5 @@
-import { Block, Unlock, PayloadType } from "@iota/sdk-wasm/web";
+import { Block, PayloadType, Unlock } from "@iota/sdk-wasm/web";
 import { useContext, useEffect, useState } from "react";
-import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import NetworkContext from "~app/context/NetworkContext";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IInput } from "~models/api/stardust/IInput";
@@ -19,7 +18,6 @@ export function useInputsAndOutputs(
     network: string,
     block: Block | null,
 ): [IInput[] | null, Unlock[] | null, IOutput[] | null, number | null, boolean] {
-    const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<StardustApiClient>(`api-client-${STARDUST}`));
     const { bech32Hrp } = useContext(NetworkContext);
     const [tsxInputs, setInputs] = useState<IInput[] | null>(null);
@@ -30,7 +28,13 @@ export function useInputsAndOutputs(
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        let isMounted = true;
+
         setIsLoading(true);
+        setTransferTotal(null);
+        setInputs(null);
+        setUnlocks(null);
+        setOutputs(null);
         if (block?.payload?.type === PayloadType.Transaction) {
             // eslint-disable-next-line no-void
             void (async () => {
@@ -51,6 +55,10 @@ export function useInputsAndOutputs(
         } else {
             setIsLoading(false);
         }
+
+        return () => {
+            isMounted = false;
+        };
     }, [network, block]);
 
     return [tsxInputs, tsxUnlocks, tsxOutputs, tsxTransferTotal, isLoading];

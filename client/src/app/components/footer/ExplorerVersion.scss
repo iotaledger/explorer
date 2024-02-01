@@ -1,0 +1,25 @@
+@import "../../../scss/fonts";
+@import "../../../scss/media-queries";
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+
+.explorer-version {
+    display: flex;
+    width: 100%;
+    background-color: $gray-11;
+    justify-content: center;
+    padding-bottom: 12px;
+
+    &.shimmer-version {
+        position: absolute;
+        bottom: 0;
+        background-color: transparent;
+    }
+
+    span {
+        @include font-size(13px);
+
+        font-family: $inter;
+        color: $gray-6;
+    }
+}

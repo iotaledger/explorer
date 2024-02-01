@@ -12,7 +12,7 @@ interface DownloadModalProps {
     readonly address: string;
 }
 
-const DOWNLOAD_INFO = "History will be downloaded from present date up to target date.";
+const DOWNLOAD_INFO = "History will be downloaded from start date to present.";
 
 const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
     const [showModal, setShowModal] = useState(false);
@@ -58,7 +58,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ network, address }) => {
                         <div className="modal--body">
                             <div className="input-container">
                                 <div className="row middle">
-                                    <div className="date-label">Select target date</div>
+                                    <div className="date-label">Select start date</div>
                                     <Tooltip tooltipContent={DOWNLOAD_INFO}>
                                         <div className="modal--icon">
                                             <span className="material-icons">info</span>

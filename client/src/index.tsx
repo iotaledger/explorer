@@ -39,8 +39,9 @@ const apiEndpoint = (window as any).env.API_ENDPOINT;
 initialiseServices()
     .then(async () => {
         // load the wasm
-        await initSdkStardust("/wasm/iota_sdk_stardust_wasm_bg.wasm");
-        await initSdkNova("/wasm/iota_sdk_nova_wasm_bg.wasm");
+        const origin = window?.location?.origin ?? "";
+        await initSdkStardust(origin + "/wasm/iota_sdk_stardust_wasm_bg.wasm");
+        await initSdkNova(origin + "/wasm/iota_sdk_nova_wasm_bg.wasm");
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const container = document.querySelector("#root")!;

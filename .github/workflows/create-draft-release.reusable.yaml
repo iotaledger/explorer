@@ -1,0 +1,113 @@
+name: Create Draft Release
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version_tag:
+        required: true
+        type: string
+
+jobs:
+  github_draft_release:
+    name: Create Draft Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Prepare repository tags
+        run: |
+          if git rev-parse --is-shallow-repository | grep -q 'true'; then
+            git fetch --prune --unshallow --tags -f
+          else
+            git fetch --prune --tags -f
+          fi
+
+      - name: Select compare tag
+        id: select_compare_tag
+        run: |
+          # Retrieve all tags by date, sorted in reverse order
+          tags=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$')
+
+          # Extract the input version tag
+          version_tag="${{ inputs.version_tag }}"
+
+          # Initialize compare_tag variable
+          compare_tag=""
+
+          # Check if version_tag is a release candidate format (e.g., vX.Y.Z-rc.W)
+          if [[ "$version_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+            # Filter for tags that match vX.Y.Z-rc.W or vX.Y.Z
+            for tag in $tags; do
+              if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ && "$tag" != "$version_tag" ]]; then
+                compare_tag="$tag"
+                break
+              fi
+            done
+          else
+            # For production releases (vX.Y.Z), filter only vX.Y.Z tags
+            for tag in $tags; do
+              if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ && "$tag" != "$version_tag" ]]; then
+                compare_tag="$tag"
+                break
+              fi
+            done
+          fi
+
+          # If no previous tag is found, use the initial commit
+          if [ -z "$compare_tag" ]; then
+            echo "No previous tag found. Using the initial commit for comparison."
+            compare_tag=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          # Set the compare_tag as output
+          echo "Compare tag (or initial commit): $compare_tag"
+          echo "compare_tag=$compare_tag" >> $GITHUB_OUTPUT
+
+      - name: Build changelog
+        id: build_changelog
+        run: |
+          echo "Building changelog..."
+
+          # Create a changelog file with a header:
+          echo "# Changelog" > CHANGELOG.md
+
+          # Retrieve the compare tag from the previous step
+          compare_tag="${{ steps.select_compare_tag.outputs.compare_tag }}"
+
+          # Current tag
+          current_tag="${{ inputs.version_tag }}"
+          echo "Current tag: $current_tag"
+
+          # Check if we're comparing against an initial commit or a tag
+          if git rev-parse "$compare_tag" >/dev/null 2>&1; then
+            # It's a valid commit or tag
+            compare_point="$compare_tag"
+          else
+            # Default to the initial commit if the compare tag is not valid
+            compare_point=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          echo "Comparing against: $compare_point"
+
+          # Fill the changelog file with the commits since the compare point
+          git log --pretty=format:"- %s" "$compare_point".."$current_tag" >> CHANGELOG.md
+
+          # Add blank lines for formatting
+          echo >> CHANGELOG.md
+          echo >> CHANGELOG.md
+
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${compare_point}...${current_tag}" >> CHANGELOG.md
+
+          echo "Changelog built successfully."
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ inputs.name }}
+          tag_name: ${{ inputs.version_tag }}
+          draft: true
+          body_path: CHANGELOG.md

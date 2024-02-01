@@ -74,7 +74,7 @@ export class NovaFeedClient {
 
                 this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
                     if (subscribeResponse.error) {
-                        console.log("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
+                        console.error("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
                     } else {
                         this.blockSubscriptionId = subscribeResponse.subscriptionId;
                     }
@@ -91,7 +91,7 @@ export class NovaFeedClient {
                 this.socket.emit("subscribe", subscribeRequest);
             }
         } catch (error) {
-            console.log("Failed subscribing to block feed", this._networkConfig?.network, error);
+            console.error("Failed subscribing to block feed", this._networkConfig?.network, error);
         }
     }
 

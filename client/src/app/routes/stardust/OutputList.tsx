@@ -72,7 +72,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
                                                 output={item.outputDetails.output}
                                                 amount={Number(item.outputDetails.output.amount)}
                                                 showCopyAmount={true}
-                                                isPreExpanded={false}
+                                                preExpandedConfig={{ isPreExpanded: false }}
                                             />
                                         </div>
                                     ))}
@@ -108,7 +108,7 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
                                                 output={item.outputDetails.output}
                                                 amount={Number(item.outputDetails.output.amount)}
                                                 showCopyAmount={true}
-                                                isPreExpanded={false}
+                                                preExpandedConfig={{ isPreExpanded: false }}
                                             />
                                         </div>
                                     ))}

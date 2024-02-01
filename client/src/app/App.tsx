@@ -3,20 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { AppRouteProps } from "./AppRouteProps";
-import {
-    buildMetaLabel,
-    buildUtilities,
-    getFooterItems,
-    getPages,
-    getFaviconHelmet,
-    networkContextWrapper,
-    populateNetworkInfoNova,
-} from "./AppUtils";
+import { buildMetaLabel, getFooterItems, getPages, getFaviconHelmet, networkContextWrapper, populateNetworkInfoNova } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
-import SearchInput from "./components/SearchInput";
 import buildAppRoutes from "./routes";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { isShimmerUiTheme } from "~helpers/networkHelper";
@@ -74,6 +65,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
     }
 
     const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", withNetworkContext);
+    const pages = getPages(networkConfig, networks);
 
     const metaLabel = buildMetaLabel(currentNetworkName);
     const faviconHelmet = getFaviconHelmet(isShimmer);
@@ -93,14 +85,8 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
                 networks={networks}
                 action={action}
                 history={history}
-                search={
-                    <SearchInput
-                        onSearch={(query) => history.push(`/${currentNetworkName}/search/${query}`)}
-                        protocolVersion={networkConfig?.protocolVersion ?? STARDUST}
-                    />
-                }
-                pages={getPages(networkConfig, networks)}
-                utilities={buildUtilities(network ?? "", networks, identityResolverEnabled)}
+                protocolVersion={protocolVersion}
+                pages={pages}
             />
             <div className="content">
                 {networks.length > 0 ? (

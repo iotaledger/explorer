@@ -148,8 +148,8 @@ export default IdentityStardustResolver;
 
 async function constructVerifiedDomains(resolvedDID: IDIDResolverResponse): Promise<Map<string, Promise<void>>> {
     const newVerifiedDomains = new Map<string, Promise<void>>();
-
-    await ServiceFactory.get<IdentityService>("identity").initLibrary();
+    const origin = window?.location?.origin ?? "";
+    await ServiceFactory.get<IdentityService>("identity").initLibrary(origin + "/wasm/identity_wasm_bg.wasm");
 
     const didDocument = identity.IotaDocument.fromJSON(resolvedDID.document);
     // Get the Linked Domain Services from the DID Document.
@@ -192,17 +192,17 @@ async function constructVerifiedDomains(resolvedDID: IDIDResolverResponse): Prom
                                             reject(err);
                                         }
                                     } catch (err) {
-                                        console.log(err);
+                                        console.error(err);
                                         reject(new Error(`Domain Linkage credential invalid domain ${domain}`));
                                     }
                                 })
                                 .catch((err) => {
-                                    console.log(err);
+                                    console.error(err);
                                     reject(new Error(`could not parse configuration from domain ${domain}`));
                                 });
                         })
                         .catch((err) => {
-                            console.log(err);
+                            console.error(err);
                             reject(new Error(`could not fetch configuration from ${domain}, this could be a CORS error`));
                         });
                 }),

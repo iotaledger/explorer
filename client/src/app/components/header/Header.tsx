@@ -1,324 +1,234 @@
-/* eslint-disable react/jsx-closing-tag-location */
+import React, { useEffect, useState } from "react";
+import * as H from "history";
 import classNames from "classnames";
-import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { HeaderProps } from "./HeaderProps";
-import { HeaderState } from "./HeaderState";
 import Logo from "~assets/logo-header.svg?react";
+import { IDropdownRoute, IRoute } from "~/app/lib/interfaces";
 import mainChrysalisMessage from "~assets/modals/chrysalis/search/main-header.json";
 import mainLegacyMessage from "~assets/modals/legacy/search/main-header.json";
 import mainStardustMessage from "~assets/modals/stardust/search/main-header.json";
 import ShimmerLogo from "~assets/shimmer-logo-header.svg?react";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { isMarketedNetwork, isShimmerUiTheme } from "~helpers/networkHelper";
-import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, ProtocolVersion, STARDUST } from "~models/config/protocolVersion";
 import { SettingsService } from "~services/settingsService";
 import FiatSelector from "../FiatSelector";
-import "./Header.scss";
 import Modal from "../Modal";
 import NetworkSwitcher from "../NetworkSwitcher";
+import { INetwork } from "~/models/config/INetwork";
+import SearchInput from "../SearchInput";
+import HeaderDropdown from "./HeaderDropdown";
+import "./Header.scss";
 
-/**
- * Component which will show the header.
- */
-class Header extends Component<HeaderProps, HeaderState> {
-    /**
-     * Settings service.
-     */
-    private readonly _settingsService: SettingsService;
+const NETWORK_DROPDOWN_LABEL = "Network Switcher";
 
-    /**
-     * Create a new instance of Header.
-     * @param props The props.
-     */
-    constructor(props: HeaderProps) {
-        super(props);
+const MODAL_MESSAGE: Record<ProtocolVersion, { title: string; description: string }> = {
+    [LEGACY]: mainLegacyMessage,
+    [CHRYSALIS]: mainChrysalisMessage,
+    [STARDUST]: mainStardustMessage,
+};
 
-        this._settingsService = ServiceFactory.get<SettingsService>("settings");
+interface IHeader {
+    rootPath: string;
+    currentNetwork?: INetwork;
+    networks: INetwork[];
+    history?: H.History;
+    action?: string;
+    protocolVersion: ProtocolVersion;
+    pages?: (IRoute | IDropdownRoute)[];
+}
 
-        this.state = {
-            isNetworkSwitcherExpanded: false,
-            isUtilitiesExpanded: false,
-            isMenuExpanded: false,
-            darkMode: this._settingsService.get().darkMode ?? false,
-            show: false,
-        };
-    }
+export default function Header({ rootPath, currentNetwork, networks, history, action, protocolVersion, pages: routes }: IHeader) {
+    const settingsService = ServiceFactory.get<SettingsService>("settings");
 
-    /**
-     * The component mounted.
-     */
-    public componentDidMount(): void {
-        if (this.state.darkMode) {
-            this.toggleModeClass();
-        }
-    }
+    const [isMenuExpanded, setIsMenuExpanded] = useState<boolean>(false);
+    const [darkMode, setDarkMode] = useState<boolean>(settingsService.get().darkMode ?? false);
+    const [show, setShow] = useState<boolean>(false);
+    const [expandedDropdownLabel, setExpandedDropdownLabel] = useState<string | undefined>();
 
-    /**
-     * Render the component.
-     * @returns The node to render.
-     */
-    public render(): ReactNode {
-        const { rootPath, currentNetwork, networks, history, action, search, utilities, pages } = this.props;
-        const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
-        const isMarketed = isMarketedNetwork(currentNetwork?.network);
+    const isNetworkSwitcherExpanded = expandedDropdownLabel === NETWORK_DROPDOWN_LABEL;
+    const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
+    const isMarketed = isMarketedNetwork(currentNetwork?.network);
 
-        return (
-            <header className={classNames({ "full-height": this.state.show })}>
-                <nav className="inner">
-                    <div className="inner--main">
-                        <div className="inner-wrapper">
-                            <Link to={rootPath} onClick={() => this.resetExpandedDropdowns()} className="logo-image--wrapper">
-                                {isShimmerUi ? (
-                                    <React.Fragment>
-                                        <div className="shimmer-logo">
-                                            <ShimmerLogo />
-                                        </div>
-                                        <h2 className="shimmer-heading">EXPLORER</h2>
-                                    </React.Fragment>
-                                ) : (
-                                    <Logo />
-                                )}
-                            </Link>
-                            {pages &&
-                                pages.length > 0 &&
-                                pages.map((page) => (
-                                    <Link
-                                        key={page.url}
-                                        to={page.url}
-                                        onClick={() =>
-                                            this.setState({
-                                                isUtilitiesExpanded: false,
-                                                isNetworkSwitcherExpanded: false,
-                                            })
-                                        }
-                                        className={classNames("navigation--item", { "active-item": page.url === window.location.pathname })}
-                                    >
-                                        {page.label}
-                                    </Link>
-                                ))}
-                            {utilities && utilities?.length > 0 && (
-                                <div className="utilities--wrapper">
-                                    <div
-                                        className={classNames("utilities--dropdown", {
-                                            opened: this.state.isUtilitiesExpanded,
-                                        })}
-                                        onClick={() =>
-                                            this.setState({
-                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
-                                                isNetworkSwitcherExpanded: false,
-                                            })
-                                        }
-                                    >
-                                        <div className="label">Utilities</div>
-                                        <div className="icon">
-                                            <span className="material-icons">expand_more</span>
-                                        </div>
-                                    </div>
+    useEffect(() => {
+        saveThemeAndDispatchEvent(darkMode);
+        toggleBodyThemeClass();
+    }, [darkMode]);
 
-                                    <div
-                                        className={classNames("header--expanded", {
-                                            opened: this.state.isUtilitiesExpanded,
-                                        })}
-                                    >
-                                        <div className="utilities">
-                                            <div className="utilities--label">Utilities</div>
-                                            {utilities?.map((utility) => (
-                                                <div key={utility.url} className="utilities--item">
-                                                    <Link
-                                                        to={utility.url}
-                                                        onClick={() => this.setState({ isUtilitiesExpanded: false })}
-                                                        className={classNames({ "active-item": utility.url === window.location.pathname })}
-                                                    >
-                                                        {utility.label}
-                                                    </Link>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {this.state.isUtilitiesExpanded && (
-                                        <div
-                                            className="header--expanded--shield"
-                                            onClick={() => this.setState({ isUtilitiesExpanded: false })}
-                                        />
-                                    )}
-                                </div>
-                            )}
-                            {/* ----- Only visible in mobile ----- */}
-                            {isMarketed && (
-                                <div className="mobile-fiat">
-                                    <FiatSelector />
-                                </div>
-                            )}
-                            {/* ---------- */}
-
-                            {search}
-                            {currentNetwork?.protocolVersion === LEGACY && (
-                                <Modal icon="info" data={mainLegacyMessage} showModal={(show) => this.setState({ show })} />
-                            )}
-                            {currentNetwork?.protocolVersion === CHRYSALIS && (
-                                <Modal icon="info" data={mainChrysalisMessage} showModal={(show) => this.setState({ show })} />
-                            )}
-                            {currentNetwork?.protocolVersion === STARDUST && (
-                                <Modal icon="info" data={mainStardustMessage} showModal={(show) => this.setState({ show })} />
-                            )}
-
-                            {/* ----- Only visible in desktop ----- */}
-                            {isMarketed && (
-                                <div className="desktop-fiat">
-                                    <FiatSelector />
-                                </div>
-                            )}
-                        </div>
-                        {/* ---------- */}
-                        <button type="button" className="button--unstyled theme-toggle" onClick={() => this.toggleMode()}>
-                            {this.state.darkMode ? (
-                                <span className="material-icons">light_mode</span>
-                            ) : (
-                                <span className="material-icons">dark_mode</span>
-                            )}
-                        </button>
-                        <div className="hamburger--menu">
-                            <button
-                                type="button"
-                                className="button--unstyled hamburger--menu__icon"
-                                onClick={() => this.setState({ isMenuExpanded: !this.state.isMenuExpanded })}
-                            >
-                                {this.state.isMenuExpanded ? (
-                                    <span className="material-icons">close</span>
-                                ) : (
-                                    <span className="material-icons"> menu</span>
-                                )}
-                            </button>
-                            <div
-                                className={classNames("menu--expanded", {
-                                    opened: this.state.isMenuExpanded,
-                                })}
-                            >
-                                <ul>
-                                    {pages &&
-                                        pages.length > 0 &&
-                                        pages.map((page) => (
-                                            <Link key={page.url} to={page.url} onClick={() => this.resetExpandedDropdowns()}>
-                                                <li className="menu--expanded__item" key={page.url}>
-                                                    <span className={classNames({ "active-item": page.url === window.location.pathname })}>
-                                                        {page.label}
-                                                    </span>
-                                                </li>
-                                            </Link>
-                                        ))}
-                                    <li
-                                        className={classNames("menu--expanded__item", {
-                                            opened: this.state.isUtilitiesExpanded,
-                                        })}
-                                        onClick={() =>
-                                            this.setState({
-                                                isUtilitiesExpanded: !this.state.isUtilitiesExpanded,
-                                            })
-                                        }
-                                    >
-                                        <div className="label">Utilities</div>
-                                        <div className="icon">
-                                            <span className="material-icons">expand_more</span>
-                                        </div>
-                                    </li>
-                                    {/* ----- Only visible in mobile ----- */}
-                                    <div
-                                        className={classNames("utilities--mobile", {
-                                            opened: this.state.isUtilitiesExpanded,
-                                        })}
-                                    >
-                                        {utilities?.map((utility) => (
-                                            <Link
-                                                key={utility.url}
-                                                to={utility.url}
-                                                onClick={() =>
-                                                    this.setState({
-                                                        isMenuExpanded: false,
-                                                        isNetworkSwitcherExpanded: false,
-                                                    })
-                                                }
-                                            >
-                                                <li
-                                                    key={utility.url}
-                                                    className={classNames("menu--expanded__item margin-l-t", {
-                                                        "active-item": utility.url === window.location.pathname,
-                                                    })}
-                                                >
-                                                    {utility.label}
-                                                </li>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                    {/* ---------- */}
-                                </ul>
-                            </div>
-                            {/* )} */}
-                        </div>
-                    </div>
-                    <div className="inner--networks">
-                        <NetworkSwitcher
-                            eyebrow="Network"
-                            label={currentNetwork?.label}
-                            networks={networks}
-                            isExpanded={this.state.isNetworkSwitcherExpanded}
-                            onClick={() => {
-                                this.setState({
-                                    isNetworkSwitcherExpanded: !this.state.isNetworkSwitcherExpanded,
-                                    isUtilitiesExpanded: false,
-                                });
-                            }}
-                            onChange={(targetNetwork) => {
-                                history?.push(
-                                    action === "streams"
-                                        ? `/${targetNetwork}/streams/0/`
-                                        : action === "visualizer"
-                                          ? `/${targetNetwork}/visualizer/`
-                                          : `/${targetNetwork}`,
-                                );
-                            }}
-                        />
-                    </div>
-                </nav>
-            </header>
-        );
-    }
-
-    /**
-     * Close expanded dropdowns
-     */
-    private resetExpandedDropdowns(): void {
-        this.setState({
-            isUtilitiesExpanded: false,
-            isNetworkSwitcherExpanded: false,
-            isMenuExpanded: false,
-        });
+    function saveThemeAndDispatchEvent(newDarkMode: boolean): void {
+        settingsService.saveSingle("darkMode", newDarkMode);
+        const event = new CustomEvent("theme-change", { detail: { darkMode: newDarkMode } });
+        window.dispatchEvent(event);
     }
 
     /**
      * Toggle the display mode.
      */
-    private toggleMode(): void {
-        this.setState(
-            {
-                darkMode: !this.state.darkMode,
-            },
-            () => {
-                this._settingsService.saveSingle("darkMode", this.state.darkMode);
-                const event = new CustomEvent("theme-change", { detail: { darkMode: this.state.darkMode } });
-                window.dispatchEvent(event);
-            },
-        );
-        this.toggleModeClass();
+    function handleThemeChange(): void {
+        setDarkMode((darkMode) => {
+            const newDarkMode = !darkMode;
+            saveThemeAndDispatchEvent(darkMode);
+            return newDarkMode;
+        });
+
+        toggleBodyThemeClass();
     }
 
-    /**
-     * Toggle darkmode classname to the body DOM node
-     */
-    private toggleModeClass(): void {
+    function toggleBodyThemeClass(): void {
         const body = document.querySelector("body");
-        body?.classList.toggle("darkmode");
+        if (body) {
+            body.classList.toggle("darkmode", darkMode);
+        }
     }
-}
 
-export default Header;
+    function resetExpandedDropdowns(e?: React.MouseEvent): void {
+        setIsMenuExpanded(false);
+        closeDropdowns();
+    }
+
+    function closeDropdowns(e?: React.MouseEvent): void {
+        setExpandedDropdownLabel(undefined);
+    }
+
+    function routeIsDropdown(route: IRoute | IDropdownRoute): route is IDropdownRoute {
+        return Object.prototype.hasOwnProperty.call(route, "routes");
+    }
+
+    return (
+        <header className={classNames({ "full-height": show })}>
+            <nav className="inner">
+                <div className="inner--main">
+                    <div className="inner-wrapper">
+                        <Link to={rootPath} onClick={resetExpandedDropdowns} className="logo-image--wrapper">
+                            {isShimmerUi ? (
+                                <React.Fragment>
+                                    <div className="shimmer-logo">
+                                        <ShimmerLogo />
+                                    </div>
+                                    <h2 className="shimmer-heading">EXPLORER</h2>
+                                </React.Fragment>
+                            ) : (
+                                <Logo />
+                            )}
+                        </Link>
+                        {routes &&
+                            routes.length > 0 &&
+                            routes.map((route) =>
+                                !routeIsDropdown(route) ? (
+                                    <Link
+                                        key={route.url}
+                                        to={route.url}
+                                        target={route.isExternal ? "_blank" : undefined}
+                                        rel={route.isExternal ? "noopener noreferrer" : undefined}
+                                        onClick={closeDropdowns}
+                                        className={classNames("navigation--item", {
+                                            "active-item": route.url === window.location.pathname,
+                                        })}
+                                    >
+                                        {route.label}
+                                    </Link>
+                                ) : (
+                                    <HeaderDropdown
+                                        key={route.label}
+                                        {...route}
+                                        isExpanded={expandedDropdownLabel === route.label}
+                                        setExpandedDropdownId={setExpandedDropdownLabel}
+                                    />
+                                ),
+                            )}
+
+                        {isMarketed && (
+                            <div className="mobile-fiat">
+                                <FiatSelector />
+                            </div>
+                        )}
+
+                        <SearchInput
+                            onSearch={(query) => history?.push(`/${currentNetwork?.network}/search/${query}`)}
+                            protocolVersion={protocolVersion}
+                        />
+
+                        {currentNetwork?.protocolVersion && (
+                            <Modal icon="info" data={MODAL_MESSAGE[currentNetwork.protocolVersion]} showModal={setShow} />
+                        )}
+
+                        {/* ----- Only visible in desktop ----- */}
+                        {isMarketed && (
+                            <div className="desktop-fiat">
+                                <FiatSelector />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Theme Button */}
+                    <button type="button" className="button--unstyled theme-toggle" onClick={() => handleThemeChange()}>
+                        {darkMode ? <span className="material-icons">light_mode</span> : <span className="material-icons">dark_mode</span>}
+                    </button>
+
+                    {/* Hamburger Menu */}
+                    <div className="hamburger--menu">
+                        <button
+                            type="button"
+                            className="button--unstyled hamburger--menu__icon"
+                            onClick={() => setIsMenuExpanded((isMenuExpanded) => !isMenuExpanded)}
+                        >
+                            {isMenuExpanded ? <span className="material-icons">close</span> : <span className="material-icons"> menu</span>}
+                        </button>
+
+                        {/* ----- Menu: Only visible in mobile ----- */}
+                        <div
+                            className={classNames("menu--expanded", {
+                                opened: isMenuExpanded,
+                            })}
+                        >
+                            <ul>
+                                {routes &&
+                                    routes.length > 0 &&
+                                    routes.map((route) =>
+                                        !routeIsDropdown(route) ? (
+                                            <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
+                                                <li className="menu--expanded__item" key={route.url}>
+                                                    <span className={classNames({ "active-item": route.url === window.location.pathname })}>
+                                                        {route.label}
+                                                    </span>
+                                                </li>
+                                            </Link>
+                                        ) : (
+                                            <HeaderDropdown
+                                                key={route.label}
+                                                {...route}
+                                                isExpanded={route.label === expandedDropdownLabel}
+                                                setExpandedDropdownId={setExpandedDropdownLabel}
+                                                setIsMenuExpanded={setIsMenuExpanded}
+                                                mobileOnly
+                                            />
+                                        ),
+                                    )}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ----- Network Switcher ----- */}
+                <div className="inner--networks">
+                    <NetworkSwitcher
+                        eyebrow="Network"
+                        label={currentNetwork?.label}
+                        networks={networks}
+                        isExpanded={isNetworkSwitcherExpanded}
+                        onClick={() => setExpandedDropdownLabel(isNetworkSwitcherExpanded ? undefined : NETWORK_DROPDOWN_LABEL)}
+                        onChange={(targetNetwork) => {
+                            history?.push(
+                                action === "streams"
+                                    ? `/${targetNetwork}/streams/0/`
+                                    : action === "visualizer"
+                                      ? `/${targetNetwork}/visualizer/`
+                                      : `/${targetNetwork}`,
+                            );
+                        }}
+                    />
+                </div>
+            </nav>
+        </header>
+    );
+}

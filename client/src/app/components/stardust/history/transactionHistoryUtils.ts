@@ -71,11 +71,7 @@ export const getTransactionHistoryRecords = (
 
         const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis);
 
-        const isSpent = balanceChange < 0;
-
-        if (balanceChange === 0) {
-            return;
-        }
+        const isSpent = balanceChange <= 0;
 
         calculatedTransactions.push({
             isGenesisByDate: isGenesisByDate,

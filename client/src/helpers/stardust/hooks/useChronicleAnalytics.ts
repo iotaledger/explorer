@@ -64,7 +64,7 @@ export function useChronicleAnalytics(network: string): [IAnalyticStats | null] 
                     unclaimedShimmer: analyticStats?.unclaimedShimmer,
                 });
             } else {
-                console.log("Analytics stats refresh failed.");
+                console.error("Analytics stats refresh failed.");
             }
         }
     };

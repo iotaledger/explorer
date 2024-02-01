@@ -8,6 +8,7 @@ import { IStardustNodeInfo } from "~services/stardust/nodeInfoService";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { NavigationRoute } from "./lib/interfaces";
 
 export const networkContextWrapper = (currentNetwork: string | undefined, nodeInfo: IStardustNodeInfo | null, uiTheme: Theme | undefined) =>
     function withNetworkContext(wrappedComponent: ReactNode) {
@@ -27,50 +28,57 @@ export const networkContextWrapper = (currentNetwork: string | undefined, nodeIn
         ) : null;
     };
 
-export const populateNetworkInfoNova = (networkName: string) => {
-    const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
-    if (nodeService) {
-        const nodeInfo = nodeService.get(networkName);
-        const protocolInfo =
-            nodeInfo?.protocolParameters.reduce((params, cur) => {
-                return params.startEpoch > cur.startEpoch ? params : cur;
-            }) ?? null;
-        const setNetworkInfoNova = useNetworkInfoNova.getState().setNetworkInfo;
-        setNetworkInfoNova({
-            name: networkName,
-            tokenInfo: nodeInfo?.baseToken ?? {},
-            protocolVersion: protocolInfo?.parameters.version ?? -1,
-            protocolInfo,
-            latestConfirmedSlot: nodeInfo?.status?.latestConfirmedBlockSlot ?? -1,
-            bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
-        });
-    }
-};
+export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]): NavigationRoute[] => {
+    const hasNetworks = networks.length > 0 && currentNetwork !== undefined;
 
-export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]) => {
-    const pages = [];
-    if (networks.length > 0 && currentNetwork !== undefined) {
-        pages.push({ label: "Explorer", url: `/${currentNetwork.network}/` });
-        pages.push({ label: "Visualizer", url: `/${currentNetwork.network}/visualizer/` });
+    const { network, hasStatisticsSupport } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
 
-        if (currentNetwork.hasStatisticsSupport) {
-            pages.push({ label: "Statistics", url: `/${currentNetwork.network}/statistics/` });
-        }
-    }
+    const routes: NavigationRoute[] = [
+        {
+            label: "Explorer",
+            url: `/${network}/`,
+            disabled: !hasNetworks,
+        },
+        {
+            label: "Visualizer",
+            url: `/${network}/visualizer/`,
+            disabled: !hasNetworks,
+        },
+        {
+            label: "Statistics",
+            url: `/${network}/statistics/`,
+            disabled: !hasStatisticsSupport || !hasNetworks,
+        },
+        {
+            label: "Utilities",
+            disabled: network !== CHRYSALIS_MAINNET || !hasNetworks,
+            routes: [
+                { label: "Streams v0", url: `/${network}/streams/0/` },
+                {
+                    label: "Decentralized Identifier",
+                    url: `/${network}/identity-resolver/`,
+                    disabled: network !== CHRYSALIS_MAINNET,
+                },
+            ],
+        },
+        {
+            label: "EVM",
+            routes: [
+                {
+                    label: "ShimmerEVM Explorer",
+                    url: "https://explorer.evm.shimmer.network/",
+                    isExternal: true,
+                },
+                {
+                    label: "ShimmerEVM Testnet Explorer",
+                    url: "https://explorer.evm.testnet.shimmer.network/",
+                    isExternal: true,
+                },
+            ],
+        },
+    ];
 
-    return pages;
-};
-
-export const buildUtilities = (currentNetwork: string, networks: INetwork[], identityResolverEnabled: boolean) => {
-    const utilities = [];
-    if (networks.length > 0) {
-        utilities.push({ label: "Streams v0", url: `/${currentNetwork}/streams/0/` });
-        if (identityResolverEnabled) {
-            utilities.push({ label: "Decentralized Identifier", url: `/${currentNetwork}/identity-resolver/` });
-        }
-    }
-
-    return utilities;
+    return routes;
 };
 
 /**
@@ -139,4 +147,24 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
             <link rel="icon" type="image/png" sizes="16x16" href={`/favicon/${folder}/favicon-16x16.png`} data-react-helmet="true" />
         </Helmet>
     );
+};
+
+export const populateNetworkInfoNova = (networkName: string) => {
+    const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
+    if (nodeService) {
+        const nodeInfo = nodeService.get(networkName);
+        const protocolInfo =
+            nodeInfo?.protocolParameters.reduce((params, cur) => {
+                return params.startEpoch > cur.startEpoch ? params : cur;
+            }) ?? null;
+        const setNetworkInfoNova = useNetworkInfoNova.getState().setNetworkInfo;
+        setNetworkInfoNova({
+            name: networkName,
+            tokenInfo: nodeInfo?.baseToken ?? {},
+            protocolVersion: protocolInfo?.parameters.version ?? -1,
+            protocolInfo,
+            latestConfirmedSlot: nodeInfo?.status?.latestConfirmedBlockSlot ?? -1,
+            bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
+        });
+    }
 };

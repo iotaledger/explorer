@@ -1,0 +1,58 @@
+name: Release Explorer to Production
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "!v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"
+
+jobs:
+  set_tags:
+    name: Set Tags
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
+    steps:
+      - name: Set up the version tag for docker images
+        id: set_version_tag
+        run: |
+          echo "VERSION_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+  use-reusable-workflow:
+    strategy:
+      matrix:
+        directory: [api, client]
+    name: Build Images
+    needs: set_tags
+    uses: ./.github/workflows/build-images.reusable.yaml
+    with:
+      directory: ${{ matrix.directory }}
+      image_tags: |
+        iotaledger/explorer-${{ matrix.directory }}:${{ needs.set_tags.outputs.version_tag }}
+        iotaledger/explorer-${{ matrix.directory }}:latest
+    secrets: inherit
+
+  deploy_to_server:
+    name: Deploy Production to Server
+    needs: [set_tags, use-reusable-workflow]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [prod, shimmer-prod]
+    steps:
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.2
+        with:
+          ssh-private-key: ${{ secrets.UPDATER_SSH_PRIVATE_KEY }}
+
+      - name: Deploy to Server
+        run: |
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_GATEWAY }} "${{ matrix.environment }} ${{ needs.set_tags.outputs.version_tag }}"
+
+  create_draft_release:
+    name: Create Draft Release
+    needs: [set_tags, use-reusable-workflow, deploy_to_server]
+    uses: ./.github/workflows/create-draft-release.reusable.yaml
+    with:
+      name: Explorer ${{ needs.set_tags.outputs.version_tag }}
+      version_tag: ${{ needs.set_tags.outputs.version_tag }}
