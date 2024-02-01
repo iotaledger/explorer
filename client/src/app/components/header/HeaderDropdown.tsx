@@ -102,7 +102,7 @@ const MobileDropdown = ({
 
     return (
         <>
-            {disabled && (
+            {!disabled && (
                 <>
                     <li
                         className={classNames("menu--expanded__item", {

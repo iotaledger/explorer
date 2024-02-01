@@ -51,21 +51,30 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
     const isMarketed = isMarketedNetwork(currentNetwork?.network);
 
     useEffect(() => {
-        toggleModeClass();
-    }, []);
+        saveThemeAndDispatchEvent(darkMode);
+        toggleBodyThemeClass();
+    }, [darkMode]);
+
+    function saveThemeAndDispatchEvent(newDarkMode: boolean): void {
+        settingsService.saveSingle("darkMode", newDarkMode);
+        const event = new CustomEvent("theme-change", { detail: { darkMode: newDarkMode } });
+        window.dispatchEvent(event);
+    }
 
     /**
      * Toggle the display mode.
      */
-    function toggleMode(): void {
-        setDarkMode((darkMode) => !darkMode);
-        settingsService.saveSingle("darkMode", darkMode);
-        const event = new CustomEvent("theme-change", { detail: { darkMode: darkMode } });
-        window.dispatchEvent(event);
-        toggleModeClass();
+    function handleThemeChange(): void {
+        setDarkMode((darkMode) => {
+            const newDarkMode = !darkMode;
+            saveThemeAndDispatchEvent(darkMode);
+            return newDarkMode;
+        });
+
+        toggleBodyThemeClass();
     }
 
-    function toggleModeClass(): void {
+    function toggleBodyThemeClass(): void {
         const body = document.querySelector("body");
         if (body) {
             body.classList.toggle("darkmode", darkMode);
@@ -152,7 +161,7 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                     </div>
 
                     {/* Theme Button */}
-                    <button type="button" className="button--unstyled theme-toggle" onClick={() => toggleMode()}>
+                    <button type="button" className="button--unstyled theme-toggle" onClick={() => handleThemeChange()}>
                         {darkMode ? <span className="material-icons">light_mode</span> : <span className="material-icons">dark_mode</span>}
                     </button>
 
