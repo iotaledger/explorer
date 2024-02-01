@@ -13,7 +13,7 @@ import {
     PENDING_BLOCK_COLOR,
     VISUALIZER_BACKGROUND,
     EMITTER_X_POSITION_MULTIPLIER,
-    TRANSACTION_STATE_TO_COLOR,
+    BLOCK_STATE_TO_COLOR,
 } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
@@ -177,8 +177,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     };
 
     function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
-        if (metadataUpdate?.transactionMetadata) {
-            const selectedColor = TRANSACTION_STATE_TO_COLOR.get(metadataUpdate.transactionMetadata.transactionState);
+        if (metadataUpdate?.blockState) {
+            const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
             if (selectedColor) {
                 addToColorQueue(metadataUpdate.blockId, selectedColor);
             }
