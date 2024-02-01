@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-import { Block } from "@iota/sdk-nova";
+import { Block, IBlockMetadata } from "@iota/sdk-nova";
 
 interface IFeedBlockUpdate {
     blockId: string;
@@ -10,4 +10,5 @@ interface IFeedBlockUpdate {
 export interface IFeedUpdate {
     subscriptionId: string;
     blockUpdate?: IFeedBlockUpdate;
+    blockMetadataUpdate?: IBlockMetadata;
 }

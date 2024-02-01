@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Block, Client } from "@iota/sdk-nova";
+import { Block, Client, IBlockMetadata } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
@@ -95,6 +95,23 @@ export class NovaFeed {
                 logger.error("[NovaFeed]: Failed broadcasting block downstream.");
             }
         });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listenMqtt(["block-metadata/accepted", "block-metadata/confirmed"], async (_, message) => {
+            try {
+                const deserializedMessage: { topic: string; payload: string } = JSON.parse(message);
+                const blockMetadataUpdate: IBlockMetadata = JSON.parse(deserializedMessage.payload);
+
+                const update: Partial<IFeedUpdate> = {
+                    blockMetadataUpdate,
+                };
+
+                // eslint-disable-next-line no-void
+                void this.broadcastBlock(update);
+            } catch {
+                logger.error("[NovaFeed]: Failed broadcasting block-metadata downstream.");
+            }
+        });
     }
 
     private parseMqttPayloadMessage<T>(cls: ClassConstructor<T>, serializedMessage: string): T {
@@ -115,7 +132,7 @@ export class NovaFeed {
     private async broadcastBlock(payload: Partial<Record<string, unknown>>) {
         for (const subscriptionId in this.blockSubscribers) {
             try {
-                logger.debug(`Broadcasting block to subscriber ${subscriptionId}`);
+                logger.debug(`[NovaFeed] Broadcasting block to subscriber ${subscriptionId}`);
                 // push data through callback
                 await this.blockSubscribers[subscriptionId]({
                     ...payload,
