@@ -27,7 +27,7 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import CameraControls from "./CameraControls";
-import { BlockBodyType, IBlockMetadata, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, IBlockMetadata } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import "./Visualizer.scss";
 
@@ -158,9 +158,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             blockMetadata.set(blockData.blockId, blockData);
 
-            const isValidationBlock = blockData.block.body.type === BlockBodyType.Validation;
-            if (isValidationBlock) {
-                addToEdgeQueue(blockData.blockId, (blockData.block.body as ValidationBlockBody).strongParents ?? []);
+            // edges
+            const blockStrongParents = (blockData.block.body as BasicBlockBody).strongParents ?? [];
+            const blockWeakParents = (blockData.block.body as BasicBlockBody).weakParents ?? [];
+            if (blockStrongParents.length > 0) {
+                addToEdgeQueue(blockData.blockId, blockStrongParents);
+            }
+            if (blockWeakParents.length > 0) {
+                addToEdgeQueue(blockData.blockId, blockWeakParents);
             }
 
             addBlock({
