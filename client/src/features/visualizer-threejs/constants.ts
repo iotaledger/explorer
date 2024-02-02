@@ -23,11 +23,14 @@ export const ANIMATION_TIME_SECONDS = 3;
 
 // colors
 export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
-export const APPROVED_BLOCK_COLOR = new Color("#0000DB");
+export const ACCEPTED_BLOCK_COLOR = new Color("#0101AB");
+export const CONFIRMED_BLOCK_COLOR = new Color("#0000DB");
 export const FINALIZED_BLOCK_COLOR = new Color("#0101FF");
-export const BLOCK_STATE_TO_COLOR = new Map<BlockState, Color>([
+// TODO Remove accepted state once is added to the SDK (missing)
+export const BLOCK_STATE_TO_COLOR = new Map<BlockState | "accepted", Color>([
     ["pending", PENDING_BLOCK_COLOR],
-    ["confirmed", APPROVED_BLOCK_COLOR],
+    ["accepted", ACCEPTED_BLOCK_COLOR],
+    ["confirmed", CONFIRMED_BLOCK_COLOR],
     ["finalized", FINALIZED_BLOCK_COLOR],
 ]);
 
