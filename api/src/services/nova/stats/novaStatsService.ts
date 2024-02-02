@@ -1,13 +1,7 @@
-import { Client } from "@iota/sdk";
+import { Client } from "@iota/sdk-nova";
 import { BaseStatsService } from "./baseStatsService";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
-
-interface NovaMetrics {
-    blocksPerSecond: number;
-    confirmedBlocksPerSecond: number;
-    confirmationRate: number;
-}
 
 /**
  * Class to handle stats service.
@@ -22,7 +16,7 @@ export class NovaStatsService extends BaseStatsService {
             const response = await client.getInfo();
 
             if (response) {
-                const metrics = response.nodeInfo.metrics as unknown as NovaMetrics;
+                const metrics = response.nodeInfo.metrics;
                 this._statistics.push({
                     itemsPerSecond: Number(metrics.blocksPerSecond),
                     confirmedItemsPerSecond: Number(metrics.confirmedBlocksPerSecond),
