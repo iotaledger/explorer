@@ -2,7 +2,7 @@ import { Color } from "three";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { ZOOM_DEFAULT, ANIMATION_TIME_SECONDS } from "../constants";
-import { IFeedBlockData } from "~models/api/stardust/feed/IFeedBlockData";
+import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 
 interface IPosition {
     x: number;

@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "~/app/components/Modal";
-import { TSelectFeedItem, TSelectNode } from "~/app/types/visualizer.types";
+import { TSelectFeedItemNova, TSelectNode } from "~/app/types/visualizer.types";
 import { INetwork } from "~/models/config/INetwork";
 import { KeyPanel } from "./KeyPanel";
 import mainHeader from "~assets/modals/visualizer/main-header.json";
@@ -29,7 +29,7 @@ export const Wrapper = ({
     readonly networkConfig: INetwork;
     readonly onChangeFilter: React.ChangeEventHandler<HTMLInputElement>;
     readonly selectNode: TSelectNode;
-    readonly selectedFeedItem: TSelectFeedItem;
+    readonly selectedFeedItem: TSelectFeedItemNova;
     readonly setIsPlaying: (isPlaying: boolean) => void;
     readonly isEdgeRenderingEnabled?: boolean;
     readonly setEdgeRenderingEnabled?: (isEnabled: boolean) => void;
@@ -69,7 +69,7 @@ export const Wrapper = ({
             </div>
         </div>
         <StatsPanel blocksCount={blocksCount} network={network} />
-        <SelectedFeedInfo networkConfig={networkConfig} network={network} selectNode={selectNode} />
+        {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
         <KeyPanel />
     </div>
 );

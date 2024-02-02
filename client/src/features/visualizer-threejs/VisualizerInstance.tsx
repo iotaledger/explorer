@@ -22,7 +22,7 @@ import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
-import { IFeedBlockData } from "../../models/api/stardust/feed/IFeedBlockData";
+import { IFeedBlockData } from "../../models/api/nova/feed/IFeedBlockData";
 import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import "./Visualizer.scss";
@@ -31,6 +31,7 @@ import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { StardustFeedClient } from "~/services/stardust/stardustFeedClient";
 import CameraControls from "./CameraControls";
+import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
 
 const features = {
     statsEnabled: true,
@@ -66,6 +67,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
+    const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+
+    const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const feedServiceRef = useRef<StardustFeedClient | NovaFeedClient | null>(null);
@@ -221,7 +225,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             networkConfig={networkConfig}
             onChangeFilter={() => {}}
             selectNode={() => {}}
-            selectedFeedItem={null}
+            selectedFeedItem={selectedFeedItem}
             setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
