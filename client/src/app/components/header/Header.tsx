@@ -22,7 +22,7 @@ import "./Header.scss";
 
 const NETWORK_DROPDOWN_LABEL = "Network Switcher";
 
-const MODAL_MESSAGE: Record<ProtocolVersion, { title: string; description: string }> = {
+const MODAL_MESSAGE: { [key in ProtocolVersion]?: { title: string; description: string } } = {
     [LEGACY]: mainLegacyMessage,
     [CHRYSALIS]: mainChrysalisMessage,
     [STARDUST]: mainStardustMessage,
@@ -49,6 +49,7 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
     const isNetworkSwitcherExpanded = expandedDropdownLabel === NETWORK_DROPDOWN_LABEL;
     const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
     const isMarketed = isMarketedNetwork(currentNetwork?.network);
+    const modalMessage = currentNetwork?.protocolVersion ? MODAL_MESSAGE[currentNetwork.protocolVersion] : undefined;
 
     useEffect(() => {
         saveThemeAndDispatchEvent(darkMode);
@@ -148,9 +149,7 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                             protocolVersion={protocolVersion}
                         />
 
-                        {currentNetwork?.protocolVersion && (
-                            <Modal icon="info" data={MODAL_MESSAGE[currentNetwork.protocolVersion]} showModal={setShow} />
-                        )}
+                        {modalMessage && <Modal icon="info" data={modalMessage} showModal={setShow} />}
 
                         {/* ----- Only visible in desktop ----- */}
                         {isMarketed && (
