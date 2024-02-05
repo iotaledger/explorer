@@ -38,7 +38,7 @@ import NovaOutputPage from "./routes/nova/OutputPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
-// import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
+import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
 import NovaVisualizer from "../features/visualizer-threejs/VisualizerInstance";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
@@ -157,12 +157,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
 
     const stardustRoutes = [
         <Route exact path="/:network" key={keys.next().value} component={StardustLanding} />,
-        <Route
-            path="/:network/visualizer/"
-            key={keys.next().value}
-            // component={StardustVisualizer}
-            component={NovaVisualizer}
-        />,
+        <Route path="/:network/visualizer/" key={keys.next().value} component={StardustVisualizer} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={StardustSearch} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={StardustAddressPage} />,
         <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRoute} />,
