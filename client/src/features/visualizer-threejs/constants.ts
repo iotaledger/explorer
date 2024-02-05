@@ -9,7 +9,7 @@ export const STEP_CAMERA_SHIFT_PX = 100;
 export const MAX_BLOCK_INSTANCES = 5000;
 
 // nodes
-export const NODE_SIZE_DEFAULT = 5;
+export const NODE_SIZE_DEFAULT = 10;
 export const NODE_SIZE_INCREMENT = 3;
 
 // zoom
@@ -76,8 +76,8 @@ export const EMITTER_DEPTH = 250;
 export const MIN_TANGLE_RADIUS = 100;
 export const MAX_TANGLE_RADIUS = 300;
 
-export const MIN_BLOCKS_PER_SECOND = 50;
-export const MAX_BLOCKS_PER_SECOND = 200;
+export const MIN_BLOCKS_PER_SECOND = 100;
+export const MAX_BLOCKS_PER_SECOND = 250;
 
 export const MIN_BLOCK_NEAR_RADIUS = 20;
 
@@ -87,6 +87,6 @@ export const MAX_PREV_POINTS = 20;
 export const EMITTER_X_POSITION_MULTIPLIER = 3;
 
 export const MAX_SINUSOIDAL_AMPLITUDE = 200;
-export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 10;
-export const INITIAL_SINUSOIDAL_AMPLITUDE = 40;
-export const HALF_WAVE_PERIOD_SECONDS = 4;
+export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 30;
+export const INITIAL_SINUSOIDAL_AMPLITUDE = 80;
+export const HALF_WAVE_PERIOD_SECONDS = 5;

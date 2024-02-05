@@ -6,7 +6,7 @@ on:
       TARGET_COMMIT:
         description: "Target Commit Hash for the SDK"
         required: false
-        default: "08318f6e3f92af609b89c571462ea31b32e7c121"
+        default: "7d32ae0bb7e93552618923fb272a5c1cc67c2c60"
       environment:
         type: choice
         description: "Select the environment to deploy to"
