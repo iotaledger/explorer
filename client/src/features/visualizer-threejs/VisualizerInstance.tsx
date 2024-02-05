@@ -206,8 +206,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!feedServiceRef.current) {
             return;
         }
-        const novaFeedService = feedServiceRef.current as NovaFeedClient;
-        novaFeedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
+        feedServiceRef.current.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
 
         bpsCounter.start();
         setIsPlaying(true);
