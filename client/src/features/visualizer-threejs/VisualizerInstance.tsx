@@ -69,9 +69,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
+    const resetConfigState = useTangleStore((s) => s.resetConfigState);
 
     const emitterRef = useRef<THREE.Mesh>(null);
-    const feedServiceRef = useRef<NovaFeedClient | null>(null);
+    const [feedService, setFeedService] = React.useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
 
     /**
      * Pause on tab or window change
@@ -79,16 +80,31 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     useEffect(() => {
         const handleVisibilityChange = async () => {
             if (document.hidden) {
-                return feedSubscriptionStop();
+                await feedSubscriptionStop();
+                setIsPlaying(false);
             }
         };
 
+        const handleBlur = async () => {
+            await feedSubscriptionStop();
+            setIsPlaying(false);
+        };
+
         document.addEventListener("visibilitychange", handleVisibilityChange);
-        window.addEventListener("blur", feedSubscriptionStop);
+        window.addEventListener("blur", handleBlur);
 
         return () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
-            window.removeEventListener("blur", feedSubscriptionStop);
+            window.removeEventListener("blur", handleBlur);
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            setRunListeners(false);
+            setIsPlaying(false);
+            resetConfigState();
+            feedService?.unsubscribeBlocks();
         };
     }, []);
 
@@ -98,7 +114,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     useEffect(() => {
         // eslint-disable-next-line no-void
         void (async () => {
-            if (!runListeners || !feedServiceRef?.current) {
+            if (!runListeners || !feedService) {
                 return;
             }
 
@@ -108,7 +124,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 await feedSubscriptionStop();
             }
         })();
-    }, [feedServiceRef?.current, isPlaying, runListeners]);
+    }, [feedService, isPlaying, runListeners]);
 
     /**
      * Control width and height of canvas
@@ -135,6 +151,16 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             resizeObserver.disconnect();
         };
     }, []);
+
+    useEffect(() => {
+        (async () => {
+            setRunListeners(false);
+            setIsPlaying(false);
+            resetConfigState();
+            await feedSubscriptionStop();
+            setFeedService(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
+        })();
+    }, [network]);
 
     /**
      * Subscribe to updates
@@ -198,7 +224,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
-        feedServiceRef.current = ServiceFactory.get<NovaFeedClient>(`feed-${network}`);
         setIsPlaying(true);
 
         return () => {
@@ -207,26 +232,24 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     }, [runListeners]);
 
     const feedSubscriptionStart = () => {
-        if (!feedServiceRef.current) {
+        if (!feedService) {
             return;
         }
-        feedServiceRef.current.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
-
+        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
         bpsCounter.start();
-        setIsPlaying(true);
     };
 
     const feedSubscriptionStop = async () => {
-        if (!feedServiceRef.current) {
+        if (!feedService) {
             return;
         }
-        await feedServiceRef.current.unsubscribeBlocks();
-        bpsCounter.stop();
-        setIsPlaying(false);
+        await feedService.unsubscribeBlocks();
+        bpsCounter.reset();
     };
 
     return (
         <Wrapper
+            key={network}
             blocksCount={indexToBlockId.length}
             filter=""
             isPlaying={isPlaying}
