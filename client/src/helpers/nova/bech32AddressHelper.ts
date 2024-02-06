@@ -41,7 +41,7 @@ export class Bech32AddressHelper {
 
         return {
             bech32,
-            hex,
+            hex: hex ? HexHelper.addPrefix(hex) : hex,
             type,
             typeLabel: Bech32AddressHelper.typeLabel(type),
         };
