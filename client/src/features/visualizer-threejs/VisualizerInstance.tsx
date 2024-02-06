@@ -9,11 +9,11 @@ import { Box3 } from "three";
 import {
     FAR_PLANE,
     NEAR_PLANE,
-    ACCEPTED_BLOCK_COLORS,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
     VISUALIZER_BACKGROUND,
     EMITTER_X_POSITION_MULTIPLIER,
+    BLOCK_STATE_TO_COLOR,
 } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
@@ -22,16 +22,15 @@ import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
-import { IFeedBlockData } from "../../models/api/nova/feed/IFeedBlockData";
 import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
-import "./Visualizer.scss";
-import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
-import { StardustFeedClient } from "~/services/stardust/stardustFeedClient";
-import CameraControls from "./CameraControls";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
+import { BasicBlockBody, IBlockMetadata } from "@iota/sdk-wasm-nova/web";
+import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
+import CameraControls from "./CameraControls";
+import "./Visualizer.scss";
 
 const features = {
     statsEnabled: true,
@@ -72,7 +71,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
 
     const emitterRef = useRef<THREE.Mesh>(null);
-    const feedServiceRef = useRef<StardustFeedClient | NovaFeedClient | null>(null);
+    const feedServiceRef = useRef<NovaFeedClient | null>(null);
 
     /**
      * Pause on tab or window change
@@ -163,7 +162,15 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
             blockMetadata.set(blockData.blockId, blockData);
 
-            addToEdgeQueue(blockData.blockId, blockData.parents ?? []);
+            // edges
+            const blockStrongParents = (blockData.block.body as BasicBlockBody).strongParents ?? [];
+            const blockWeakParents = (blockData.block.body as BasicBlockBody).weakParents ?? [];
+            if (blockStrongParents.length > 0) {
+                addToEdgeQueue(blockData.blockId, blockStrongParents);
+            }
+            if (blockWeakParents.length > 0) {
+                addToEdgeQueue(blockData.blockId, blockWeakParents);
+            }
 
             addBlock({
                 id: blockData.blockId,
@@ -178,19 +185,20 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         }
     };
 
-    function onBlockMetadataUpdate(metadataUpdate: { [id: string]: IFeedBlockMetadata }): void {
-        for (const [blockId, metadata] of Object.entries(metadataUpdate)) {
-            if (metadata.referenced && !metadata.conflicting) {
-                const colorIndex = randomIntFromInterval(0, ACCEPTED_BLOCK_COLORS.length - 1);
-                addToColorQueue(blockId, ACCEPTED_BLOCK_COLORS[colorIndex]);
+    function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
+        if (metadataUpdate?.blockState) {
+            const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
+            if (selectedColor) {
+                addToColorQueue(metadataUpdate.blockId, selectedColor);
             }
         }
     }
+
     useEffect(() => {
         if (!runListeners) {
             return;
         }
-        feedServiceRef.current = ServiceFactory.get<NovaFeedClient | StardustFeedClient>(`feed-${network}`);
+        feedServiceRef.current = ServiceFactory.get<NovaFeedClient>(`feed-${network}`);
         setIsPlaying(true);
 
         return () => {
@@ -203,6 +211,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             return;
         }
         feedServiceRef.current.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
+
         bpsCounter.start();
         setIsPlaying(true);
     };

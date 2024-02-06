@@ -101,13 +101,13 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
             {/* TangleWrapper Mesh */}
             <mesh name={CanvasElement.TangleWrapperMesh} position={[-(xTangleDistance / 2), 0, 0]}>
                 <boxGeometry args={[xTangleDistance, yTangleDistance, 0]} attach="geometry" />
-                <meshPhongMaterial opacity={1} wireframe={true} transparent attach="material" />
+                <meshPhongMaterial transparent opacity={0} wireframe={true} attach="material" />
             </mesh>
 
             {/* Emitter Mesh */}
             <mesh ref={emitterRef} name={CanvasElement.EmitterMesh} position={[0, 0, 0]}>
                 <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
-                <meshPhongMaterial transparent={true} opacity={0.6} />
+                <meshPhongMaterial transparent opacity={0} />
             </mesh>
         </group>
     );
