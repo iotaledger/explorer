@@ -151,6 +151,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         };
     }, []);
 
+    useEffect(() => {
+        setRunListeners(false);
+        setIsPlaying(false);
+        resetConfigState();
+    }, [network]);
+
     /**
      * Subscribe to updates
      * @param blockData The new block data
@@ -229,6 +235,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     return (
         <Wrapper
+            key={network}
             blocksCount={indexToBlockId.length}
             filter=""
             isPlaying={isPlaying}
