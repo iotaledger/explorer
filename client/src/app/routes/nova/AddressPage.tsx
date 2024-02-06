@@ -1,28 +1,31 @@
-import { Address, AddressType, Utils } from "@iota/sdk-wasm-nova/web";
+import { AccountAddress, Address, AddressType, Ed25519Address, Utils } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import AddressNotFoundPage from "~/app/components/nova/address/AddressNotFoundPage";
 import { AddressRouteProps } from "../AddressRouteProps";
 import AccountAddressView from "~/app/components/nova/address/AccountAddressView";
+import Ed25519AddressView from "~/app/components/nova/address/Ed25519AddressView";
 import "./AddressPage.scss";
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
     match: {
-        params: { address },
+        params: { address: addressString },
     },
 }) => {
-    const isValidBech32Address = Utils.isAddressValid(address);
+    const isValidBech32Address = Utils.isAddressValid(addressString);
 
     if (!isValidBech32Address) {
-        return <AddressNotFoundPage address={address} />;
+        return <AddressNotFoundPage address={addressString} />;
     }
 
-    const parsedAddress = Utils.parseBech32Address(address);
+    const parsedAddress = Utils.parseBech32Address(addressString);
 
     const renderAddressView = (parsedAddress: Address) => {
         switch (parsedAddress.type) {
+            case AddressType.Ed25519:
+                return <Ed25519AddressView ed25519Address={parsedAddress as Ed25519Address} />;
             case AddressType.Account:
-                return <AccountAddressView accountAddress={parsedAddress} />;
+                return <AccountAddressView accountAddress={parsedAddress as AccountAddress} />;
             default:
                 return (
                     <div className="address-page">
