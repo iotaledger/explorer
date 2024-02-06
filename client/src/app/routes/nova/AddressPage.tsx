@@ -1,12 +1,11 @@
+import { Utils } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import Modal from "~/app/components/Modal";
-import NotFound from "~/app/components/NotFound";
 import AssociatedOutputs from "~/app/components/nova/address/section/association/AssociatedOutputs";
+import AddressNotFoundPage from "~/app/components/nova/address/AddressNotFoundPage";
 import Spinner from "~/app/components/Spinner";
 import Bech32Address from "~/app/components/stardust/address/Bech32Address";
 import { useAddressPageState } from "~/helpers/nova/hooks/useAddressPageState";
-import addressMainHeaderInfo from "~assets/modals/stardust/address/main-header.json";
 import { AddressRouteProps } from "../AddressRouteProps";
 import "./AddressPage.scss";
 
@@ -15,11 +14,12 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
         params: { address },
     },
 }) => {
+    const isValidBech32Address = Utils.isAddressValid(address);
     const [state] = useAddressPageState();
     const { bech32AddressDetails, isAccountDetailsLoading } = state;
 
-    if (!bech32AddressDetails) {
-        renderAddressNotFound(address);
+    if (!isValidBech32Address) {
+        return <AddressNotFoundPage address={address} />;
     }
 
     const isPageLoading = isAccountDetailsLoading;
@@ -59,21 +59,5 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
         </div>
     );
 };
-
-const renderAddressNotFound = (address: string) => (
-    <div className="address-page">
-        <div className="wrapper">
-            <div className="inner">
-                <div className="addr--header">
-                    <div className="row middle">
-                        <h1>Address</h1>
-                        <Modal icon="info" data={addressMainHeaderInfo} />
-                    </div>
-                </div>
-                <NotFound searchTarget="address" query={address} />
-            </div>
-        </div>
-    </div>
-);
 
 export default AddressPage;
