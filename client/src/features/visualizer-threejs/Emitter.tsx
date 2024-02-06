@@ -48,7 +48,12 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
             setIsPlaying(true);
             setRunListeners(true);
         }
-    }, [emitterRef]);
+
+        return () => {
+            setIsPlaying(false);
+            setRunListeners(false);
+        };
+    }, [emitterRef?.current]);
 
     useFrame(() => {
         if (camera && groupRef.current) {

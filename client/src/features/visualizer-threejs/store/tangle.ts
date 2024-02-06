@@ -63,22 +63,28 @@ interface TangleState {
     setClickedInstanceId: (instanceId: string | null) => void;
 
     updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
+    resetConfigState: () => void;
 }
+
+const INITIAL_STATE = {
+    blockQueue: [],
+    edgeQueue: [],
+    colorQueue: [],
+    blockIdToEdges: new Map(),
+    blockIdToIndex: new Map(),
+    blockIdToPosition: new Map(),
+    blockMetadata: new Map(),
+    blockIdToAnimationPosition: new Map(),
+    indexToBlockId: [],
+    zoom: ZOOM_DEFAULT,
+    bps: 0,
+    clickedInstanceId: null,
+};
 
 export const useTangleStore = create<TangleState>()(
     devtools((set) => ({
-        blockQueue: [],
-        edgeQueue: [],
-        colorQueue: [],
-        blockIdToEdges: new Map(),
-        blockIdToIndex: new Map(),
-        blockIdToPosition: new Map(),
-        blockMetadata: new Map(),
-        blockIdToAnimationPosition: new Map(),
-        indexToBlockId: [],
-        zoom: ZOOM_DEFAULT,
-        bps: 0,
-        clickedInstanceId: null,
+        ...INITIAL_STATE,
+        resetConfigState: () => set(INITIAL_STATE),
         updateBlockIdToAnimationPosition: (updatedPositions) => {
             set((state) => {
                 updatedPositions.forEach((value, key) => {
