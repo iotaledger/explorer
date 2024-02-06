@@ -68,7 +68,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
 
-    const [feedService] = React.useState<StardustFeedClient | NovaFeedClient | null>(
+    const [feedService, setFeedService] = React.useState<StardustFeedClient | NovaFeedClient | null>(
         ServiceFactory.get<NovaFeedClient | StardustFeedClient>(`feed-${network}`),
     );
     const emitterRef = useRef<THREE.Mesh>(null);
@@ -152,9 +152,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     }, []);
 
     useEffect(() => {
-        setRunListeners(false);
-        setIsPlaying(false);
-        resetConfigState();
+        (async () => {
+            setRunListeners(false);
+            setIsPlaying(false);
+            resetConfigState();
+            await feedSubscriptionStop();
+            setFeedService(ServiceFactory.get<NovaFeedClient | StardustFeedClient>(`feed-${network}`));
+        })();
     }, [network]);
 
     /**
