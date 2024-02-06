@@ -1,10 +1,10 @@
+import { IBlockMetadata } from "@iota/sdk-wasm-nova/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { IFeedSubscribeResponse } from "~/models/api/IFeedSubscribeResponse";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import { IFeedSubscribeRequest } from "~/models/api/nova/feed/IFeedSubscribeRequest";
 import { IFeedUpdate } from "~/models/api/nova/feed/IFeedUpdate";
-import { IFeedBlockMetadata } from "~/models/api/stardust/feed/IFeedBlockMetadata";
 import { IFeedUnsubscribeRequest } from "~/models/api/stardust/feed/IFeedUnsubscribeRequest";
 import { INetwork } from "~/models/config/INetwork";
 import { NetworkService } from "../networkService";
@@ -53,8 +53,7 @@ export class NovaFeedClient {
      */
     public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
-        // TODO Support metadata update when 'blocks-metadata' topic becomes supported
-        onMetadataUpdatedCallback?: (metadataUpdate: { [id: string]: IFeedBlockMetadata }) => void,
+        onMetadataUpdatedCallback?: (blockMetadata: IBlockMetadata) => void,
     ) {
         this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 
@@ -84,6 +83,10 @@ export class NovaFeedClient {
                     if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.blockUpdate) {
                             onBlockDataCallback?.(update.blockUpdate);
+                        }
+
+                        if (update.blockMetadataUpdate) {
+                            onMetadataUpdatedCallback?.(update.blockMetadataUpdate);
                         }
                     }
                 });
