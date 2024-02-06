@@ -31,6 +31,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
 
     const { xTangleDistance, yTangleDistance } = getTangleDistances();
     const isPlaying = useConfigStore((state) => state.isPlaying);
+    const setIsPlaying = useConfigStore((state) => state.setIsPlaying);
 
     const animationTime = useRef<number>(0);
     const currentAmplitude = useRef<number>(INITIAL_SINUSOIDAL_AMPLITUDE);
@@ -44,6 +45,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
 
     useEffect(() => {
         if (emitterRef?.current) {
+            setIsPlaying(true);
             setRunListeners(true);
         }
     }, [emitterRef]);
