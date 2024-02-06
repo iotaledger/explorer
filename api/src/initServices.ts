@@ -25,6 +25,7 @@ import { NetworkService } from "./services/networkService";
 import { NovaFeed } from "./services/nova/feed/novaFeed";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { NovaApiService } from "./services/nova/novaApiService";
+import { NovaStatsService } from "./services/nova/stats/novaStatsService";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
@@ -222,6 +223,9 @@ function initNovaServices(networkConfig: INetwork): void {
         const chronicleService = new ChronicleService(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
+
+    const novaStatsService = new NovaStatsService(networkConfig);
+    ServiceFactory.register(`stats-${networkConfig.network}`, () => novaStatsService);
 
     // eslint-disable-next-line no-void
     void NovaClient.create(novaClientParams).then((novaClient) => {

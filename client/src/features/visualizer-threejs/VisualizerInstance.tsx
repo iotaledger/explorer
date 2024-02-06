@@ -26,9 +26,10 @@ import { NovaFeedClient } from "../../services/nova/novaFeedClient";
 import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
-import CameraControls from "./CameraControls";
+import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
 import { BasicBlockBody, IBlockMetadata } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
+import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
 
 const features = {
@@ -65,6 +66,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
+    const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+
+    const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
 
     const emitterRef = useRef<THREE.Mesh>(null);
@@ -253,7 +257,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             networkConfig={networkConfig}
             onChangeFilter={() => {}}
             selectNode={() => {}}
-            selectedFeedItem={null}
+            selectedFeedItem={selectedFeedItem}
             setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}

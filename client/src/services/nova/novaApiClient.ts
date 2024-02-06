@@ -13,6 +13,8 @@ import { IBlockDetailsRequest } from "~/models/api/nova/block/IBlockDetailsReque
 import { IBlockDetailsResponse } from "~/models/api/nova/block/IBlockDetailsResponse";
 import { IRewardsRequest } from "~/models/api/nova/IRewardsRequest";
 import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
+import { IStatsGetRequest } from "~/models/api/stats/IStatsGetRequest";
+import { IStatsGetResponse } from "~/models/api/stats/IStatsGetResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -83,5 +85,17 @@ export class NovaApiClient extends ApiClient {
      */
     public async getRewards(request: IRewardsRequest): Promise<IRewardsResponse> {
         return this.callApi<unknown, IRewardsResponse>(`nova/output/rewards/${request.network}/${request.outputId}`, "get");
+    }
+
+    /**
+     * Get the stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
+        return this.callApi<unknown, IStatsGetResponse>(
+            `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
+            "get",
+        );
     }
 }
