@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import FeatureView from "./FeaturesView";
 import TruncatedId from "../stardust/TruncatedId";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -230,7 +230,7 @@ function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: 
         addressType = AddressType.Nft;
     }
 
-    return Bech32AddressHelper.buildAddress(bech32Hrp, address, addressType).bech32;
+    return AddressHelper.buildAddress(bech32Hrp, address, addressType).bech32;
 }
 
 function getOutputTypeName(type: OutputType): string {
