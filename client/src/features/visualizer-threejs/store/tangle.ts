@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { ZOOM_DEFAULT, ANIMATION_TIME_SECONDS } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
+import { BlockId, SlotIndex } from "@iota/sdk-wasm-nova/web";
 
 interface IPosition {
     x: number;
@@ -63,6 +64,11 @@ interface TangleState {
     setClickedInstanceId: (instanceId: string | null) => void;
 
     updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
+
+    // Handle finalized blocks
+    confirmedBlocksBySlot: Map<number, string[]>;
+    addToConfirmedBlocksBySlot: (blockId: BlockId, slot: SlotIndex) => void;
+    removeConfirmedBlocksSlot: (slot: SlotIndex) => void;
 }
 
 export const useTangleStore = create<TangleState>()(
@@ -75,6 +81,7 @@ export const useTangleStore = create<TangleState>()(
         blockIdToPosition: new Map(),
         blockMetadata: new Map(),
         blockIdToAnimationPosition: new Map(),
+        confirmedBlocksBySlot: new Map(),
         indexToBlockId: [],
         zoom: ZOOM_DEFAULT,
         bps: 0,
@@ -195,6 +202,34 @@ export const useTangleStore = create<TangleState>()(
                 ...state,
                 clickedInstanceId,
             }));
+        },
+        addToConfirmedBlocksBySlot: (blockId, slot) => {
+            set((state) => {
+                state.confirmedBlocksBySlot.has(slot)
+                    ? state.confirmedBlocksBySlot.get(slot)?.push(blockId)
+                    : state.confirmedBlocksBySlot.set(slot, [blockId]);
+                return {
+                    ...state,
+                    confirmedBlocksBySlot: state.confirmedBlocksBySlot,
+                };
+            });
+        },
+        removeConfirmedBlocksSlot: (slot) => {
+            set((state) => {
+                state.confirmedBlocksBySlot.delete(slot);
+
+                // Cleanup all slots that are lower than the current slot
+                for (const existingSlot of state.confirmedBlocksBySlot.keys()) {
+                    if (existingSlot < slot) {
+                        state.confirmedBlocksBySlot.delete(existingSlot);
+                    }
+                }
+
+                return {
+                    ...state,
+                    confirmedBlocksBySlot: state.confirmedBlocksBySlot,
+                };
+            });
         },
     })),
 );
