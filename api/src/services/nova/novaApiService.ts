@@ -4,6 +4,7 @@ import { Client } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IAccountDetailsResponse } from "../../models/api/nova/IAccountDetailsResponse";
+import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
@@ -121,6 +122,25 @@ export class NovaApiService {
             }
         } catch {
             return { message: "Nft output not found" };
+        }
+    }
+
+    /**
+     * Get the anchor output details.
+     * @param anchorId The anchorId to get the output details for.
+     * @returns The anchor output details.
+     */
+    public async anchorDetails(anchorId: string): Promise<IAnchorDetailsResponse | undefined> {
+        try {
+            const anchorOutputId = await this.client.anchorOutputId(anchorId);
+
+            if (anchorOutputId) {
+                const outputResponse = await this.outputDetails(anchorOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { anchorOutputDetails: outputResponse.output };
+            }
+        } catch {
+            return { message: "Anchor output not found" };
         }
     }
 

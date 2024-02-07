@@ -1,5 +1,5 @@
 import { Bech32Helper } from "@iota/iota.js";
-import { Address, AddressType, AccountAddress, Ed25519Address, NftAddress } from "@iota/sdk-wasm-nova/web";
+import { Address, AddressType, AccountAddress, Ed25519Address, NftAddress, AnchorAddress } from "@iota/sdk-wasm-nova/web";
 import { Converter } from "../stardust/convertUtils";
 import { HexHelper } from "../stardust/hexHelper";
 import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
@@ -56,6 +56,8 @@ export class Bech32AddressHelper {
             hex = HexHelper.stripPrefix((address as AccountAddress).accountId);
         } else if (address.type === AddressType.Nft) {
             hex = HexHelper.stripPrefix((address as NftAddress).nftId);
+        } else if (address.type === AddressType.Anchor) {
+            hex = HexHelper.stripPrefix((address as AnchorAddress).anchorId);
         }
 
         return this.buildAddressFromString(hrp, hex, address.type);
@@ -73,6 +75,8 @@ export class Bech32AddressHelper {
             return "Account";
         } else if (addressType === AddressType.Nft) {
             return "NFT";
+        } else if (addressType === AddressType.Anchor) {
+            return "Anchor";
         }
     }
 }

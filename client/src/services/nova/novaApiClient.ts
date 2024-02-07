@@ -17,6 +17,8 @@ import { IStatsGetRequest } from "~/models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "~/models/api/stats/IStatsGetResponse";
 import { INftDetailsRequest } from "~/models/api/nova/INftDetailsRequest";
 import { INftDetailsResponse } from "~/models/api/nova/INftDetailsResponse";
+import { IAnchorDetailsRequest } from "~/models/api/nova/IAnchorDetailsRequest";
+import { IAnchorDetailsResponse } from "~/models/api/nova/IAnchorDetailsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -74,6 +76,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
         return this.callApi<unknown, INftDetailsResponse>(`nova/nft/${request.network}/${request.nftId}`, "get");
+    }
+
+    /**
+     * Get the anchor output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async anchorDetails(request: IAnchorDetailsRequest): Promise<IAnchorDetailsResponse> {
+        return this.callApi<unknown, IAnchorDetailsResponse>(`nova/anchor/${request.network}/${request.anchorId}`, "get");
     }
 
     /**
