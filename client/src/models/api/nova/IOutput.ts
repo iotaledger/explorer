@@ -1,5 +1,5 @@
 import { Output } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "../IBech32AddressDetails";
+import { IAddressDetails } from "./IAddressDetails";
 
 export interface IOutput {
     /**
@@ -9,7 +9,7 @@ export interface IOutput {
     /**
      * The Bech32 address details.
      */
-    address?: IBech32AddressDetails;
+    address?: IAddressDetails;
     /**
      * The output.
      */

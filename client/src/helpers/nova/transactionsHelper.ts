@@ -19,17 +19,17 @@ import {
     Utils,
     UTXOInput,
 } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { IInput } from "~/models/api/nova/IInput";
 import { IOutput } from "~/models/api/nova/IOutput";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
-import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
 import { Converter } from "../stardust/convertUtils";
+import { AddressHelper } from "./addressHelper";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];
     outputs: IOutput[];
-    unlockAddresses: IBech32AddressDetails[];
+    unlockAddresses: IAddressDetails[];
     transferTotal: number;
 }
 
@@ -44,7 +44,7 @@ export class TransactionsHelper {
         const inputs: IInput[] = [];
         const outputs: IOutput[] = [];
         const remainderOutputs: IOutput[] = [];
-        const unlockAddresses: IBech32AddressDetails[] = [];
+        const unlockAddresses: IAddressDetails[] = [];
         let transferTotal = 0;
         let sortedOutputs: IOutput[] = [];
 
@@ -81,7 +81,7 @@ export class TransactionsHelper {
                 }
                 if (signatureUnlock) {
                     unlockAddresses.push(
-                        Bech32AddressHelper.buildAddress(
+                        AddressHelper.buildAddress(
                             _bechHrp,
                             Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp),
                         ),
@@ -144,7 +144,7 @@ export class TransactionsHelper {
                 } else {
                     const output = transaction.outputs[i] as CommonOutput;
 
-                    const address: IBech32AddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
+                    const address: IAddressDetails = TransactionsHelper.bechAddressFromAddressUnlockCondition(
                         output.unlockConditions,
                         _bechHrp,
                         output.type,
@@ -204,8 +204,8 @@ export class TransactionsHelper {
         unlockConditions: UnlockCondition[],
         _bechHrp: string,
         outputType: number,
-    ): IBech32AddressDetails {
-        let address: IBech32AddressDetails = { bech32: "" };
+    ): IAddressDetails {
+        let address: IAddressDetails = { bech32: "" };
         let unlockCondition;
 
         if (outputType === OutputType.Basic || outputType === OutputType.Nft) {

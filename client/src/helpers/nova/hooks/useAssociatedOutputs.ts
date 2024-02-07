@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { IAssociation } from "~/models/api/nova/IAssociationsResponse";
 import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
@@ -15,7 +15,7 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  */
 export function useAssociatedOutputs(
     network: string,
-    addressDetails: IBech32AddressDetails,
+    addressDetails: IAddressDetails,
     setOutputCount?: (count: number) => void,
 ): [IAssociation[], boolean] {
     const isMounted = useIsMounted();

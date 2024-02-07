@@ -2,11 +2,11 @@ import { Ed25519Address } from "@iota/sdk-wasm-nova/web";
 import { Reducer, useEffect, useReducer } from "react";
 import { useLocation } from "react-router-dom";
 import { useNetworkInfoNova } from "../networkInfo";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
 
 export interface IEd25519AddressState {
-    ed25519AddressDetails: IBech32AddressDetails | null;
+    ed25519AddressDetails: IAddressDetails | null;
 }
 
 const initialState = {
@@ -17,7 +17,7 @@ const initialState = {
  * Route Location Props
  */
 interface IAddressPageLocationProps {
-    addressDetails: IBech32AddressDetails;
+    addressDetails: IAddressDetails;
 }
 
 export const useEd25519AddressState = (address: Ed25519Address) => {
@@ -32,7 +32,7 @@ export const useEd25519AddressState = (address: Ed25519Address) => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails
             ? locationState
-            : { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
+            : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
             ...initialState,
