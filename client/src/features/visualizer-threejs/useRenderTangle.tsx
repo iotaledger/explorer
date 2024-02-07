@@ -115,7 +115,11 @@ export const useRenderTangle = () => {
             updateBlockIdToAnimationPosition(updatedAnimationPositions);
         }, PERIOD);
 
-        return () => clearInterval(int);
+        return () => {
+            clearInterval(int);
+            blockIdToAnimationPosition.clear();
+            blockIdToPosition.clear();
+        };
     }, []);
 
     useEffect(() => {

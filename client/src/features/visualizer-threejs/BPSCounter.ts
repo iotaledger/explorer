@@ -43,6 +43,15 @@ export class BPSCounter {
         }
     }
 
+    public reset() {
+        this.blockTimes.length = 0;
+        this.currentBlockCount = 0;
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    }
+
     public addBlock() {
         this.currentBlockCount++;
     }
