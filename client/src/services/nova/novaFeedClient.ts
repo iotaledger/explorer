@@ -1,4 +1,4 @@
-import { IBlockMetadata } from "@iota/sdk-wasm-nova/web";
+import { IBlockMetadata, SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { io, Socket } from "socket.io-client";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { IFeedSubscribeResponse } from "~/models/api/IFeedSubscribeResponse";
@@ -54,6 +54,7 @@ export class NovaFeedClient {
     public subscribeBlocks(
         onBlockDataCallback?: (blockData: IFeedBlockData) => void,
         onMetadataUpdatedCallback?: (blockMetadata: IBlockMetadata) => void,
+        onSlotFinalizedCallback?: (slotFinalized: SlotIndex) => void,
     ) {
         this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
 
@@ -87,6 +88,10 @@ export class NovaFeedClient {
 
                         if (update.blockMetadataUpdate) {
                             onMetadataUpdatedCallback?.(update.blockMetadataUpdate);
+                        }
+
+                        if (update.slotFinalized) {
+                            onSlotFinalizedCallback?.(update.slotFinalized);
                         }
                     }
                 });
