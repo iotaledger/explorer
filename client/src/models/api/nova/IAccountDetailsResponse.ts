@@ -1,9 +1,9 @@
 import { OutputResponse } from "@iota/sdk-wasm-nova/web";
 import { IResponse } from "./IResponse";
 
-export interface IAccountResponse extends IResponse {
+export interface IAccountDetailsResponse extends IResponse {
     /**
      * The account details response.
      */
-    accountDetails?: OutputResponse;
+    accountOutputDetails?: OutputResponse;
 }

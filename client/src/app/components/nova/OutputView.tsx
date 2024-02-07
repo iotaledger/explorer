@@ -14,6 +14,7 @@ import {
     SimpleTokenScheme,
     DelegationOutput,
     AddressType,
+    Utils,
 } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
@@ -21,7 +22,6 @@ import { Link } from "react-router-dom";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import FeatureView from "./FeaturesView";
 import TruncatedId from "../stardust/TruncatedId";
-import { TransactionsHelper } from "~/helpers/stardust/transactionsHelper";
 import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
 import "./OutputView.scss";
 
@@ -216,16 +216,16 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     );
 };
 
-function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string) {
+function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string): string {
     let address: string = "";
     let addressType: number = 0;
 
     if (output.type === OutputType.Account) {
-        const aliasId = TransactionsHelper.buildIdHashForNft((output as AccountOutput).accountId, outputId);
-        address = aliasId;
+        const accountId = Utils.computeAccountId(outputId);
+        address = accountId;
         addressType = AddressType.Account;
     } else if (output.type === OutputType.Nft) {
-        const nftId = TransactionsHelper.buildIdHashForAlias((output as NftOutput).nftId, outputId);
+        const nftId = Utils.computeNftId(outputId);
         address = nftId;
         addressType = AddressType.Nft;
     }

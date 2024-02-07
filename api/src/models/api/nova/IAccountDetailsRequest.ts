@@ -1,4 +1,4 @@
-export interface IAccountRequest {
+export interface IAccountDetailsRequest {
     /**
      * The network to search on.
      */

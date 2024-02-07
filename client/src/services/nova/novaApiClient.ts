@@ -2,8 +2,8 @@ import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
 import { IBlockRequest } from "~/models/api/nova/block/IBlockRequest";
 import { IBlockResponse } from "~/models/api/nova/block/IBlockResponse";
 import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
-import { IAccountRequest } from "~/models/api/nova/IAccountRequest";
-import { IAccountResponse } from "~/models/api/nova/IAccountResponse";
+import { IAccountDetailsRequest } from "~/models/api/nova/IAccountDetailsRequest";
+import { IAccountDetailsResponse } from "~/models/api/nova/IAccountDetailsResponse";
 import { IAssociationsResponse } from "~/models/api/nova/IAssociationsResponse";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
@@ -15,6 +15,8 @@ import { IRewardsRequest } from "~/models/api/nova/IRewardsRequest";
 import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
 import { IStatsGetRequest } from "~/models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "~/models/api/stats/IStatsGetResponse";
+import { INftDetailsRequest } from "~/models/api/nova/INftDetailsRequest";
+import { INftDetailsResponse } from "~/models/api/nova/INftDetailsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -61,8 +63,17 @@ export class NovaApiClient extends ApiClient {
      * @param request The request to send.
      * @returns The response from the request.
      */
-    public async accountDetails(request: IAccountRequest): Promise<IAccountResponse> {
-        return this.callApi<unknown, IAccountResponse>(`nova/account/${request.network}/${request.accountId}`, "get");
+    public async accountDetails(request: IAccountDetailsRequest): Promise<IAccountDetailsResponse> {
+        return this.callApi<unknown, IAccountDetailsResponse>(`nova/account/${request.network}/${request.accountId}`, "get");
+    }
+
+    /**
+     * Get the nft output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async nftDetails(request: INftDetailsRequest): Promise<INftDetailsResponse> {
+        return this.callApi<unknown, INftDetailsResponse>(`nova/nft/${request.network}/${request.nftId}`, "get");
     }
 
     /**

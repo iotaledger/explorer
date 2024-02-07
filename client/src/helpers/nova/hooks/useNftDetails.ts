@@ -1,4 +1,4 @@
-import { AccountOutput } from "@iota/sdk-wasm-nova/web";
+import { NftOutput } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
@@ -7,32 +7,32 @@ import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 
 /**
- * Fetch account output details
+ * Fetch nft output details
  * @param network The Network in context
- * @param accountID The account id
+ * @param nftID The nft id
  * @returns The output response and loading bool.
  */
-export function useAccountDetails(network: string, accountId: string | null): { accountOutput: AccountOutput | null; isLoading: boolean } {
+export function useNftDetails(network: string, nftId: string | null): { nftOutput: NftOutput | null; isLoading: boolean } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [accountOutput, setAccountOutput] = useState<AccountOutput | null>(null);
+    const [nftOutput, setNftOutput] = useState<NftOutput | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        if (accountId) {
+        if (nftId) {
             // eslint-disable-next-line no-void
             void (async () => {
                 apiClient
-                    .accountDetails({
+                    .nftDetails({
                         network,
-                        accountId: HexHelper.addPrefix(accountId),
+                        nftId: HexHelper.addPrefix(nftId),
                     })
                     .then((response) => {
                         if (!response?.error && isMounted) {
-                            const output = response.accountOutputDetails?.output as AccountOutput;
+                            const output = response.nftOutputDetails?.output as NftOutput;
 
-                            setAccountOutput(output);
+                            setNftOutput(output);
                         }
                     })
                     .finally(() => {
@@ -42,7 +42,7 @@ export function useAccountDetails(network: string, accountId: string | null): { 
         } else {
             setIsLoading(false);
         }
-    }, [network, accountId]);
+    }, [network, nftId]);
 
-    return { accountOutput, isLoading };
+    return { nftOutput, isLoading };
 }
