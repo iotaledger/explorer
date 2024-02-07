@@ -20,7 +20,7 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>{anchorAddressDetails.typeLabel?.replace("Ed25519", "Address")}</h1>
+                                <h1>{anchorAddressDetails.label?.replace("Ed25519", "Address")}</h1>
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>

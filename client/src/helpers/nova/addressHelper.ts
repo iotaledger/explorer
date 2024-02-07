@@ -11,7 +11,7 @@ export class AddressHelper {
      * @returns The parts of the address.
      */
     public static buildAddress(hrp: string, address: string | Address, typeHint?: number): IAddressDetails {
-        return typeof address === "string" ? this.buildAddressFromString(hrp, address, typeHint) : this.buildAddressFromTypes(address);
+        return typeof address === "string" ? this.buildAddressFromString(hrp, address, typeHint) : this.buildAddressFromTypes(address, hrp);
     }
 
     private static buildAddressFromString(hrp: string, addressString: string, typeHint?: number): IAddressDetails {
@@ -47,7 +47,7 @@ export class AddressHelper {
         };
     }
 
-    private static buildAddressFromTypes(address: Address): IAddressDetails {
+    private static buildAddressFromTypes(address: Address, hrp: string): IAddressDetails {
         let hex: string = "";
 
         if (address.type === AddressType.Ed25519) {
@@ -61,7 +61,7 @@ export class AddressHelper {
         }
 
         return {
-            bech32: address.toString(),
+            bech32: Utils.hexToBech32(HexHelper.addPrefix(hex), hrp),
             hex,
             type: address.type,
             label: AddressHelper.typeLabel(address.type),

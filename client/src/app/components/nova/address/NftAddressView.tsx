@@ -20,7 +20,7 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>{nftAddressDetails.typeLabel?.replace("Ed25519", "Address")}</h1>
+                                <h1>{nftAddressDetails.label?.replace("Ed25519", "Address")}</h1>
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>

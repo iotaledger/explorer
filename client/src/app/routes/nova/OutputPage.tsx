@@ -187,14 +187,19 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
 };
 
 function computeOutputIndexFromOutputId(outputId: string | null) {
+    let outputIndex = null;
+
     if (!outputId) {
         return null;
     }
 
-    const outputIndexPart = outputId.slice(-4);
-    const outputIndexBigEndian = Converter.convertToBigEndian(outputIndexPart);
+    try {
+        const outputIndexPart = outputId.slice(-4);
+        const outputIndexBigEndian = Converter.convertToBigEndian(outputIndexPart);
+        outputIndex = parseInt(outputIndexBigEndian, 16);
+    } catch {}
 
-    return Number(outputIndexBigEndian);
+    return outputIndex;
 }
 
 export default OutputPage;

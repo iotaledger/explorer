@@ -115,7 +115,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                             showCopyButton
                         />
                     </div>
-                    <div className="card--label">Staten index:</div>
+                    <div className="card--label">State index:</div>
                     <div className="card--value row">{(output as AnchorOutput).stateIndex}</div>
                 </React.Fragment>
             )}

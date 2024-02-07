@@ -20,7 +20,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>{accountAddressDetails.typeLabel?.replace("Ed25519", "Address")}</h1>
+                                <h1>{accountAddressDetails.label?.replace("Ed25519", "Address")}</h1>
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>
