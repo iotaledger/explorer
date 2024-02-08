@@ -21,6 +21,8 @@ import { Link } from "react-router-dom";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import FeatureView from "./FeaturesView";
 import TruncatedId from "../stardust/TruncatedId";
+import { HexHelper } from "~/helpers/stardust/hexHelper";
+import bigInt from "big-integer";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -36,7 +38,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
-    const aliasOrNftBech32 = buildAddressForAliasOrNft(output, bech32Hrp);
+    const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
 
@@ -214,14 +216,18 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     );
 };
 
-function buildAddressForAliasOrNft(output: Output, bech32Hrp: string): string {
+function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string): string {
     let bech32: string = "";
 
     if (output.type === OutputType.Account) {
-        const accountId = (output as AccountOutput).accountId;
+        const accountIdFromOutput = (output as AccountOutput).accountId;
+        const accountId = HexHelper.toBigInt256(accountIdFromOutput).eq(bigInt.zero)
+            ? Utils.computeAccountId(outputId)
+            : accountIdFromOutput;
         bech32 = Utils.accountIdToBech32(accountId, bech32Hrp);
     } else if (output.type === OutputType.Nft) {
-        const nftId = (output as NftOutput).nftId;
+        const nftIdFromOutput = (output as NftOutput).nftId;
+        const nftId = HexHelper.toBigInt256(nftIdFromOutput).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftIdFromOutput;
         bech32 = Utils.nftIdToBech32(nftId, bech32Hrp);
     }
 
