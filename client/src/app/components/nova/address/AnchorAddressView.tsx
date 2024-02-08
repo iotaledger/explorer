@@ -2,7 +2,7 @@ import { AnchorAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
 import Spinner from "../../Spinner";
-import Bech32Address from "../../stardust/address/Bech32Address";
+import Bech32Address from "./Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
 
 interface AnchorAddressViewProps {

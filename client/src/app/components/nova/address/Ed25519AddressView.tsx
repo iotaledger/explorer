@@ -1,7 +1,7 @@
 import { Ed25519Address } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useEd25519AddressState } from "~/helpers/nova/hooks/useEd25519AddressState";
-import Bech32Address from "../../stardust/address/Bech32Address";
+import Bech32Address from "./Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
 
 interface Ed25519AddressViewProps {

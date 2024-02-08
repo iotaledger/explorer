@@ -1,6 +1,17 @@
-import { Address, AddressType, AccountAddress, Ed25519Address, NftAddress, AnchorAddress, Utils } from "@iota/sdk-wasm-nova/web";
+import {
+    Address,
+    AddressType,
+    AccountAddress,
+    Ed25519Address,
+    NftAddress,
+    AnchorAddress,
+    Utils,
+    ImplicitAccountCreationAddress,
+    RestrictedAddress,
+} from "@iota/sdk-wasm-nova/web";
 import { HexHelper } from "../stardust/hexHelper";
 import { IAddressDetails } from "~models/api/nova/IAddressDetails";
+import { plainToInstance } from "class-transformer";
 
 export class AddressHelper {
     /**
@@ -35,7 +46,7 @@ export class AddressHelper {
             // We assume this is hex and either use the hint or assume ed25519
             hex = addressString;
             type = typeHint ?? AddressType.Ed25519;
-            bech32 = Utils.hexToBech32(hex, hrp);
+            bech32 = this.computeBech32FromHexAndType(hex, type, hrp);
         }
 
         return {
@@ -47,26 +58,63 @@ export class AddressHelper {
         };
     }
 
-    private static buildAddressFromTypes(address: Address, hrp: string): IAddressDetails {
+    private static buildAddressFromTypes(
+        address: Address,
+        hrp: string,
+        restricted: boolean = false,
+        capabilities?: number[],
+    ): IAddressDetails {
         let hex: string = "";
+        let bech32: string = "";
 
         if (address.type === AddressType.Ed25519) {
-            hex = HexHelper.stripPrefix((address as Ed25519Address).pubKeyHash);
+            hex = (address as Ed25519Address).pubKeyHash;
         } else if (address.type === AddressType.Account) {
-            hex = HexHelper.stripPrefix((address as AccountAddress).accountId);
+            hex = (address as AccountAddress).accountId;
         } else if (address.type === AddressType.Nft) {
-            hex = HexHelper.stripPrefix((address as NftAddress).nftId);
+            hex = (address as NftAddress).nftId;
         } else if (address.type === AddressType.Anchor) {
-            hex = HexHelper.stripPrefix((address as AnchorAddress).anchorId);
+            hex = (address as AnchorAddress).anchorId;
+        } else if (address.type === AddressType.ImplicitAccountCreation) {
+            const implicitAccountCreationAddress = plainToInstance(ImplicitAccountCreationAddress, address);
+            const innerAddress = implicitAccountCreationAddress.address();
+            hex = (innerAddress as Ed25519Address).pubKeyHash;
+        } else if (address.type === AddressType.Restricted) {
+            const restrictedAddress = plainToInstance(RestrictedAddress, address);
+            const innerAddress = restrictedAddress.address;
+
+            return this.buildAddressFromTypes(innerAddress, hrp, true, Array.from(restrictedAddress.getAllowedCapabilities()));
         }
 
+        bech32 = this.computeBech32FromHexAndType(hex, address.type, hrp);
+
         return {
-            bech32: Utils.hexToBech32(HexHelper.addPrefix(hex), hrp),
+            bech32,
             hex,
             type: address.type,
             label: AddressHelper.typeLabel(address.type),
-            restricted: false,
+            restricted,
+            capabilities,
         };
+    }
+
+    private static computeBech32FromHexAndType(hex: string, addressType: AddressType, hrp: string) {
+        let bech32 = "";
+
+        if (addressType === AddressType.Ed25519) {
+            bech32 = Utils.hexToBech32(hex, hrp);
+        } else if (addressType === AddressType.Account) {
+            bech32 = Utils.accountIdToBech32(hex, hrp);
+        } else if (addressType === AddressType.Nft) {
+            bech32 = Utils.nftIdToBech32(hex, hrp);
+        } else if (addressType === AddressType.Anchor) {
+            // TODO Utils.anchorIdToBech32 does not exist ???
+            bech32 = Utils.accountIdToBech32(hex, hrp);
+        } else if (addressType === AddressType.ImplicitAccountCreation) {
+            bech32 = Utils.hexToBech32(hex, hrp);
+        }
+
+        return bech32;
     }
 
     /**
