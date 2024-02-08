@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IAssociationsRequest } from "../../../../models/api/nova/IAssociationsRequest";
+import { IAssociationsRequestBody } from "../../../../models/api/nova/IAssociationsRequestBody";
 import { IAssociation, IAssociationsResponse } from "../../../../models/api/nova/IAssociationsResponse";
-import { IAssociationsRequest } from "../../../../models/api/stardust/IAssociationsRequest";
-import { IAssociationsRequestBody } from "../../../../models/api/stardust/IAssociationsRequestBody";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";

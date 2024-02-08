@@ -13,7 +13,6 @@ import {
     TokenSchemeType,
     SimpleTokenScheme,
     DelegationOutput,
-    AddressType,
     Utils,
 } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
@@ -22,7 +21,8 @@ import { Link } from "react-router-dom";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import FeatureView from "./FeaturesView";
 import TruncatedId from "../stardust/TruncatedId";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { HexHelper } from "~/helpers/stardust/hexHelper";
+import bigInt from "big-integer";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -115,7 +115,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                             showCopyButton
                         />
                     </div>
-                    <div className="card--label">Staten index:</div>
+                    <div className="card--label">State index:</div>
                     <div className="card--value row">{(output as AnchorOutput).stateIndex}</div>
                 </React.Fragment>
             )}
@@ -217,20 +217,21 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
 };
 
 function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string): string {
-    let address: string = "";
-    let addressType: number = 0;
+    let bech32: string = "";
 
     if (output.type === OutputType.Account) {
-        const accountId = Utils.computeAccountId(outputId);
-        address = accountId;
-        addressType = AddressType.Account;
+        const accountIdFromOutput = (output as AccountOutput).accountId;
+        const accountId = HexHelper.toBigInt256(accountIdFromOutput).eq(bigInt.zero)
+            ? Utils.computeAccountId(outputId)
+            : accountIdFromOutput;
+        bech32 = Utils.accountIdToBech32(accountId, bech32Hrp);
     } else if (output.type === OutputType.Nft) {
-        const nftId = Utils.computeNftId(outputId);
-        address = nftId;
-        addressType = AddressType.Nft;
+        const nftIdFromOutput = (output as NftOutput).nftId;
+        const nftId = HexHelper.toBigInt256(nftIdFromOutput).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftIdFromOutput;
+        bech32 = Utils.nftIdToBech32(nftId, bech32Hrp);
     }
 
-    return Bech32AddressHelper.buildAddress(bech32Hrp, address, addressType).bech32;
+    return bech32;
 }
 
 function getOutputTypeName(type: OutputType): string {

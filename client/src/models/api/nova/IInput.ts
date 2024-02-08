@@ -1,5 +1,5 @@
 import { HexEncodedString, OutputResponse } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "../IBech32AddressDetails";
+import { IAddressDetails } from "./IAddressDetails";
 
 export interface IInput {
     /**
@@ -21,7 +21,7 @@ export interface IInput {
     /**
      * The transaction address details.
      */
-    address: IBech32AddressDetails;
+    address: IAddressDetails;
     /**
      * The amount.
      */

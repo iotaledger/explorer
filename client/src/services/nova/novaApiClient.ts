@@ -7,7 +7,7 @@ import { IAccountDetailsResponse } from "~/models/api/nova/IAccountDetailsRespon
 import { IAssociationsResponse } from "~/models/api/nova/IAssociationsResponse";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
-import { IAssociationsRequest } from "~/models/api/stardust/IAssociationsRequest";
+import { IAssociationsRequest } from "~/models/api/nova/IAssociationsRequest";
 import { ApiClient } from "../apiClient";
 import { IBlockDetailsRequest } from "~/models/api/nova/block/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "~/models/api/nova/block/IBlockDetailsResponse";

@@ -14,8 +14,8 @@ import {
     NftOutputQueryParameters,
 } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
+import { IAddressDetails } from "../../models/api/nova/IAddressDetails";
 import { AssociationType } from "../../models/api/nova/IAssociationsResponse";
-import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
 
 /**
@@ -26,9 +26,9 @@ export class AssociatedOutputsHelper {
 
     private readonly network: INetwork;
 
-    private readonly addressDetails: IBech32AddressDetails;
+    private readonly addressDetails: IAddressDetails;
 
-    constructor(network: INetwork, addressDetails: IBech32AddressDetails) {
+    constructor(network: INetwork, addressDetails: IAddressDetails) {
         this.network = network;
         this.addressDetails = addressDetails;
     }

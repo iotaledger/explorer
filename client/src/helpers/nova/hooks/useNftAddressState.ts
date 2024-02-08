@@ -1,14 +1,14 @@
 import { Reducer, useEffect, useReducer } from "react";
 import { NftAddress, NftOutput } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useNftDetails } from "./useNftDetails";
 import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
 
 export interface INftAddressState {
-    nftAddressDetails: IBech32AddressDetails | null;
+    nftAddressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
     isNftDetailsLoading: boolean;
 }
@@ -23,7 +23,7 @@ const initialState = {
  * Route Location Props
  */
 interface IAddressPageLocationProps {
-    addressDetails: IBech32AddressDetails;
+    addressDetails: IAddressDetails;
 }
 
 export const useNftAddressState = (address: NftAddress): INftAddressState => {
@@ -41,7 +41,7 @@ export const useNftAddressState = (address: NftAddress): INftAddressState => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails
             ? locationState
-            : { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
+            : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
             ...initialState,

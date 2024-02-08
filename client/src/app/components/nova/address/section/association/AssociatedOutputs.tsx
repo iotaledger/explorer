@@ -4,7 +4,7 @@ import { AssociatedOutputTab, buildAssociatedOutputsTabs, outputTypeToAssociatio
 import AssociationSection from "./AssociationSection";
 import { useAssociatedOutputs } from "~helpers/nova/hooks/useAssociatedOutputs";
 import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
-import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~models/api/nova/IAddressDetails";
 import { AssociationType, IAssociation } from "~models/api/nova/IAssociationsResponse";
 import "./AssociatedOutputs.scss";
 
@@ -12,7 +12,7 @@ interface AssociatedOutputsProps {
     /**
      * Address details
      */
-    readonly addressDetails: IBech32AddressDetails;
+    readonly addressDetails: IAddressDetails;
     /**
      * Callback setter to report the associated outputs count.
      */
