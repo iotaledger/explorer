@@ -1,5 +1,10 @@
 import { ProtocolInfo } from "@iota/sdk-wasm-nova/web";
-import { unixTimestampToSlotIndexConverter, slotIndexToUnixTimeRangeConverter } from "./novaTimeUtils";
+import {
+    unixTimestampToSlotIndexConverter,
+    slotIndexToUnixTimeRangeConverter,
+    slotIndexToEpochIndexConverter,
+    unixTimestampToEpochIndexConverter,
+} from "./novaTimeUtils";
 
 const mockProtocolInfo: ProtocolInfo = {
     // @ts-expect-error Irrelevant fields omitted
@@ -10,13 +15,13 @@ const mockProtocolInfo: ProtocolInfo = {
         bech32Hrp: "rms",
         tokenSupply: 1813620509061365n,
 
-        // <properties used in slot calculations>
+        // <properties used in slot/epoch calculations>
         genesisSlot: 5,
         genesisUnixTimestamp: 1707321857n, // 7 February 2024 16:04:17
         slotDurationInSeconds: 10,
-        // </properties used in slot calculations>
-
         slotsPerEpochExponent: 13,
+        // </properties used in slot/epoch calculations>
+
         stakingUnbondingPeriod: 10,
         validationBlocksPerSlot: 10,
         punishmentEpochs: 10,
@@ -34,11 +39,15 @@ const mockProtocolInfo: ProtocolInfo = {
 const genesisSlot = mockProtocolInfo.parameters.genesisSlot;
 const genesisUnixTimestamp = Number(mockProtocolInfo.parameters.genesisUnixTimestamp); // 7 February 2024 16:04:17
 const slotDurationInSeconds = mockProtocolInfo.parameters.slotDurationInSeconds;
+const slotsPerEpochExponent = mockProtocolInfo.parameters.slotsPerEpochExponent;
 
 const slotHalfSeconds = Math.floor(slotDurationInSeconds / 2);
+const slotsInEpoch = Math.pow(2, slotsPerEpochExponent); // 8192
 
 const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(mockProtocolInfo);
 const slotIndexToUnixTimeRange = slotIndexToUnixTimeRangeConverter(mockProtocolInfo);
+const slotIndexToEpochIndex = slotIndexToEpochIndexConverter(mockProtocolInfo);
+const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(mockProtocolInfo);
 
 describe("unixTimestampToSlotIndex", () => {
     test("should return genesis slot when timestamp is lower than genesisUnixTimestamp", () => {
@@ -191,5 +200,41 @@ describe("slotIndexToUnixTimestamp & unixTimestampToSlotIndex", () => {
 
         expect(resultTimestamp.from).toBeLessThan(targetTimestamp);
         expect(resultTimestamp.to).toBeGreaterThan(targetTimestamp);
+    });
+});
+
+describe("slotIndexToEpochIndex", () => {
+    test("should return epoch 0 for slot index less then slotsInEpoch", () => {
+        const targetSlotIndex = slotsInEpoch - 100;
+
+        const epochIndex = slotIndexToEpochIndex(targetSlotIndex);
+
+        expect(epochIndex).toBe(0);
+    });
+
+    test("should return epoch 1 for slot index a bit after slotsInEpoch", () => {
+        const targetSlotIndex = slotsInEpoch + 100;
+
+        const epochIndex = slotIndexToEpochIndex(targetSlotIndex);
+
+        expect(epochIndex).toBe(1);
+    });
+
+    test("should return epoch 1 for slot index a bit after slotsInEpoch", () => {
+        const targetSlotIndex = 50000;
+
+        const epochIndex = slotIndexToEpochIndex(targetSlotIndex);
+
+        expect(epochIndex).toBe(6); // 50000 / 8192 = 6.1
+    });
+});
+
+describe("unixTimestampToEpochIndex", () => {
+    test("should return the correct epoch index based on timestamp", () => {
+        const targetTimestamp = 1707493847; // 9 February 2024 15:50:47
+
+        const epochIndex = unixTimestampToEpochIndex(targetTimestamp);
+
+        expect(epochIndex).toBe(2);
     });
 });
