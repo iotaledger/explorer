@@ -35,6 +35,7 @@ import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
 import NovaBlockPage from "./routes/nova/Block";
 import NovaOutputPage from "./routes/nova/OutputPage";
+import NovaSearch from "./routes/nova/Search";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
@@ -174,6 +175,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/visualizer/" key={keys.next().value} component={NovaVisualizer} />,
         <Route path="/:network/block/:blockId" key={keys.next().value} component={NovaBlockPage} />,
         <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
+        <Route path="/:network/search/:query?" key={keys.next().value} component={NovaSearch} />,
     ];
 
     return (
