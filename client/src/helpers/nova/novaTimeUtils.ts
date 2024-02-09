@@ -39,3 +39,20 @@ export function slotIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): (
         };
     };
 }
+
+export function slotIndexToEpochIndexConverter(protocolInfo: ProtocolInfo): (targetSlotIndex: number) => number {
+    return (targetSlotIndex: number) => {
+        const slotsPerEpochExponent = protocolInfo.parameters.slotsPerEpochExponent;
+        return targetSlotIndex >> slotsPerEpochExponent;
+    };
+}
+
+export function unixTimestampToEpochIndexConverter(protocolInfo: ProtocolInfo): (unixTimestampSeconds: number) => number {
+    return (unixTimestampSeconds: number) => {
+        const slotsPerEpochExponent = protocolInfo.parameters.slotsPerEpochExponent;
+        const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(protocolInfo);
+
+        const targetSlotIndex = unixTimestampToSlotIndex(unixTimestampSeconds);
+        return targetSlotIndex >> slotsPerEpochExponent;
+    };
+}
