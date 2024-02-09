@@ -78,8 +78,8 @@ describe("slotIndexToUnixTimestamp", () => {
     test("should return genesis slot timestamp when passed a slotIndex lower than genesisSlot", () => {
         let target = genesisSlot - 1; // 4
         const expectedGenesisTimestampRange = {
-            from: genesisUnixTimestamp,
-            to: genesisUnixTimestamp + slotDurationInSeconds,
+            from: genesisUnixTimestamp - slotDurationInSeconds,
+            to: genesisUnixTimestamp,
         };
 
         let slotIndex = slotIndexToUnixTimeRange(target);

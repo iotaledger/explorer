@@ -19,13 +19,13 @@ export function unixTimestampToSlotIndexConverter(protocolInfo: ProtocolInfo): (
 export function slotIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): (targetSlotIndex: number) => { from: number; to: number } {
     return (targetSlotIndex: number) => {
         const genesisSlot = protocolInfo.parameters.genesisSlot;
-        const genesisUnixTimestamp = protocolInfo.parameters.genesisUnixTimestamp;
+        const genesisUnixTimestamp = Number(protocolInfo.parameters.genesisUnixTimestamp);
         const slotDurationInSeconds = protocolInfo.parameters.slotDurationInSeconds;
 
         if (targetSlotIndex < genesisSlot) {
             return {
-                from: Number(genesisUnixTimestamp),
-                to: Number(genesisUnixTimestamp) + slotDurationInSeconds,
+                from: genesisUnixTimestamp - slotDurationInSeconds,
+                to: genesisUnixTimestamp,
             };
         }
 
