@@ -27,10 +27,10 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-import { BasicBlockBody, BlockState, IBlockMetadata, SlotIndex } from "@iota/sdk-wasm-nova/web";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { BasicBlockBody, BlockState, IBlockMetadata, SlotIndex, BlockId, IdWithSlotIndex } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
-import { BlockId } from "@iota/sdk-wasm/web";
 import { Converter } from "~/helpers/stardust/convertUtils";
 import "./Visualizer.scss";
 
@@ -226,6 +226,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             const acceptedStates: (BlockState | "accepted")[] = ["confirmed", "accepted"];
 
             if (acceptedStates.includes(metadataUpdate.blockState)) {
+                // console.log({ blockId: new BlockId(metadataUpdate.blockId), copiedBlockId: new _BlockId(metadataUpdate.blockId) });
+                // console.log("=============================");
+                // console.log({
+                //     slotIndex: new IdWithSlotIndex(metadataUpdate.blockId).slotIndex(),
+                //     copiedSlotIndex: new _IdWithSlotIndex(metadataUpdate.blockId).slotIndex(),
+                // });
                 const slot = getSlotIndexFromBlockId(metadataUpdate.blockId);
                 addToConfirmedBlocksSlot(metadataUpdate.blockId, slot);
             }
@@ -319,3 +325,20 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 };
 
 export default VisualizerInstance;
+
+class _IdWithSlotIndex extends String {
+    slotIndex(): SlotIndex {
+        const numberString = super.slice(-8);
+        const chunks = [];
+        for (let i = 0, charsLength = numberString.length; i < charsLength; i += 2) {
+            chunks.push(numberString.substring(i, i + 2));
+        }
+        const separated = chunks.map((n) => parseInt(n, 16));
+        const buf = Uint8Array.from(separated).buffer;
+        const view = new DataView(buf);
+        return view.getUint32(0, true);
+    }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+class _BlockId extends _IdWithSlotIndex {}
