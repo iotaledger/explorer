@@ -28,18 +28,6 @@ export const useRenderTangle = () => {
     const blockIdToPosition = useTangleStore((s) => s.blockIdToPosition);
     const blockIdToAnimationPosition = useTangleStore((s) => s.blockIdToAnimationPosition);
 
-    const updateBlockColor = (blockId: string, color: THREE.Color): void => {
-        const indexToUpdate = blockIdToIndex.get(blockId);
-
-        if (indexToUpdate) {
-            tangleMeshRef.current.setColorAt(indexToUpdate, color);
-            if (tangleMeshRef.current.instanceColor) {
-                tangleMeshRef.current.instanceColor.needsUpdate = true;
-            }
-            removeFromColorQueue(blockId);
-        }
-    };
-
     function updateInstancedMeshPosition(
         instancedMesh: THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>,
         index: number,
@@ -175,12 +163,23 @@ export const useRenderTangle = () => {
     }, [blockQueue, blockIdToAnimationPosition]);
 
     useEffect(() => {
-        if (colorQueue.length === 0) {
-            return;
-        }
+        if (colorQueue.length > 0) {
+            const removeIds: string[] = [];
+            for (const { id, color } of colorQueue) {
+                const indexToUpdate = blockIdToIndex.get(id);
 
-        for (const { id, color } of colorQueue) {
-            updateBlockColor(id, color);
+                if (indexToUpdate) {
+                    tangleMeshRef.current.setColorAt(indexToUpdate, color);
+
+                    if (tangleMeshRef.current.instanceColor) {
+                        tangleMeshRef.current.instanceColor.needsUpdate = true;
+                    }
+
+                    removeIds.push(id);
+                }
+            }
+
+            removeFromColorQueue(removeIds);
         }
-    }, [colorQueue]);
+    }, [colorQueue, blockIdToIndex]);
 };
