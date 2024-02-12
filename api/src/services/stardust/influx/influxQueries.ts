@@ -315,7 +315,7 @@ export const NFT_STAT_TOTAL_QUERY = `
 
 export const STORAGE_DEPOSIT_TOTAL_QUERY = `
     SELECT
-        last("total_storage_deposit_amount") * 100 AS "lockedStorageDeposit"
+        last("total_storage_deposit_amount") AS "lockedStorageDeposit"
     FROM "stardust_ledger_size";
 `;
 
