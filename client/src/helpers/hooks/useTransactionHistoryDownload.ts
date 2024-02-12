@@ -29,7 +29,7 @@ export function useTransactionHistoryDownload(network: string, address: string, 
                             // eslint-disable-next-line no-void
                             void response.raw.blob().then((blob) => {
                                 if (isMounted) {
-                                    triggerDownload(blob, address);
+                                    triggerDownload(blob, `txhistory-${address}`);
                                 }
                             });
                         } else if (response.error && isMounted) {
@@ -48,13 +48,12 @@ export function useTransactionHistoryDownload(network: string, address: string, 
     return [isDownloading, error];
 }
 
-const triggerDownload = (blob: Blob, address: string) => {
+export const triggerDownload = (blob: Blob, filename: string) => {
     const url = window.URL.createObjectURL(blob);
-    const filename = `txhistory-${address}.zip`;
     const tempDlElement = document.createElement("a");
 
     tempDlElement.href = url;
-    tempDlElement.download = filename;
+    tempDlElement.download = `${filename}.zip`;
     document.body.append(tempDlElement);
     tempDlElement.click();
     tempDlElement.remove();
