@@ -91,24 +91,24 @@ describe("slotIndexToUnixTimestamp", () => {
             to: genesisUnixTimestamp,
         };
 
-        let slotIndex = slotIndexToUnixTimeRange(target);
-        expect(slotIndex).toStrictEqual(expectedGenesisTimestampRange);
+        let slotUnixTimeRange = slotIndexToUnixTimeRange(target);
+        expect(slotUnixTimeRange).toStrictEqual(expectedGenesisTimestampRange);
 
         target = genesisSlot - 2; // 3
-        slotIndex = slotIndexToUnixTimeRange(target);
-        expect(slotIndex).toStrictEqual(expectedGenesisTimestampRange);
+        slotUnixTimeRange = slotIndexToUnixTimeRange(target);
+        expect(slotUnixTimeRange).toStrictEqual(expectedGenesisTimestampRange);
 
         target = genesisSlot - 3; // 2
-        slotIndex = slotIndexToUnixTimeRange(target);
-        expect(slotIndex).toStrictEqual(expectedGenesisTimestampRange);
+        slotUnixTimeRange = slotIndexToUnixTimeRange(target);
+        expect(slotUnixTimeRange).toStrictEqual(expectedGenesisTimestampRange);
     });
 
     test("should return correct genesis slot timestamp range", () => {
         const target = genesisSlot;
 
-        const slotIndex = slotIndexToUnixTimeRange(target);
+        const slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: genesisUnixTimestamp - slotDurationInSeconds,
             to: genesisUnixTimestamp,
         });
@@ -117,45 +117,45 @@ describe("slotIndexToUnixTimestamp", () => {
     test("should return timestamp range of 'genesis slot + x' when passed 'genesis slot + x'", () => {
         let target = genesisSlot + 1;
 
-        let slotIndex = slotIndexToUnixTimeRange(target);
+        let slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: genesisUnixTimestamp,
             to: genesisUnixTimestamp + 1 * slotDurationInSeconds,
         });
 
         target = genesisSlot + 2;
 
-        slotIndex = slotIndexToUnixTimeRange(target);
+        slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: genesisUnixTimestamp + 1 * slotDurationInSeconds,
             to: genesisUnixTimestamp + 2 * slotDurationInSeconds,
         });
 
         target = genesisSlot + 3;
 
-        slotIndex = slotIndexToUnixTimeRange(target);
+        slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: genesisUnixTimestamp + 2 * slotDurationInSeconds,
             to: genesisUnixTimestamp + 3 * slotDurationInSeconds,
         });
 
         target = genesisSlot + 5;
 
-        slotIndex = slotIndexToUnixTimeRange(target);
+        slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: genesisUnixTimestamp + 4 * slotDurationInSeconds,
             to: genesisUnixTimestamp + 5 * slotDurationInSeconds,
         });
 
         target = genesisSlot + 8;
 
-        slotIndex = slotIndexToUnixTimeRange(target);
+        slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: genesisUnixTimestamp + 7 * slotDurationInSeconds,
             to: genesisUnixTimestamp + 8 * slotDurationInSeconds,
         });
@@ -164,9 +164,9 @@ describe("slotIndexToUnixTimestamp", () => {
     test("should work for big inputs", () => {
         const target = 397295980; // Slot of 1 January 2150 00:00:01
 
-        const slotIndex = slotIndexToUnixTimeRange(target);
+        const slotUnixTimeRange = slotIndexToUnixTimeRange(target);
 
-        expect(slotIndex).toStrictEqual({
+        expect(slotUnixTimeRange).toStrictEqual({
             from: 5680281597,
             to: 5680281607,
         });
@@ -177,14 +177,14 @@ describe("slotIndexToUnixTimestamp & unixTimestampToSlotIndex", () => {
     test("should be able to go from slot to timestamp and back correctly", () => {
         const targetSlotIndex = 12; // Slot of 1 January 2150 00:00:01
 
-        const slotTimestamp = slotIndexToUnixTimeRange(targetSlotIndex);
+        const targetSlotUnixTimeRange = slotIndexToUnixTimeRange(targetSlotIndex);
 
-        expect(slotTimestamp).toStrictEqual({
+        expect(targetSlotUnixTimeRange).toStrictEqual({
             from: 1707321917,
             to: 1707321927,
         });
 
-        const resultSlotIndex = unixTimestampToSlotIndex(slotTimestamp.from + slotHalfSeconds);
+        const resultSlotIndex = unixTimestampToSlotIndex(targetSlotUnixTimeRange.from + slotHalfSeconds);
 
         expect(resultSlotIndex).toBe(targetSlotIndex);
     });
@@ -196,10 +196,10 @@ describe("slotIndexToUnixTimestamp & unixTimestampToSlotIndex", () => {
 
         expect(slotIndex).toBe(16311);
 
-        const resultTimestamp = slotIndexToUnixTimeRange(slotIndex);
+        const slotUnixTimeRange = slotIndexToUnixTimeRange(slotIndex);
 
-        expect(resultTimestamp.from).toBeLessThan(targetTimestamp);
-        expect(resultTimestamp.to).toBeGreaterThan(targetTimestamp);
+        expect(slotUnixTimeRange.from).toBeLessThan(targetTimestamp);
+        expect(slotUnixTimeRange.to).toBeGreaterThan(targetTimestamp);
     });
 });
 
