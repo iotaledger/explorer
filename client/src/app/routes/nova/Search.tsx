@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect, RouteComponentProps, useLocation, useParams } from "react-router-dom";
 import { SearchRouteProps } from "../SearchRouteProps";
 import { NetworkService } from "~/services/networkService";
@@ -6,13 +6,14 @@ import { ServiceFactory } from "~/factories/serviceFactory";
 import { NOVA, ProtocolVersion } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { SearchState } from "../SearchState";
-import NetworkContext from "~/app/context/NetworkContext";
-import { Bech32AddressHelper } from "~/helpers/stardust/bech32AddressHelper";
 import { scrollToTop } from "~/helpers/pageUtils";
-import { AddressType } from "@iota/sdk-wasm-nova/web";
+import { AddressType, Block } from "@iota/sdk-wasm-nova/web";
 import Spinner from "~/app/components/Spinner";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
+    const { protocolInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const networkService = ServiceFactory.get<NetworkService>("network");
     const protocolVersion: ProtocolVersion =
         (props.match.params.network && networkService.get(props.match.params.network)?.protocolVersion) || NOVA;
@@ -29,7 +30,6 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
         invalidError: "",
     });
 
-    const context = useContext(NetworkContext);
     const location = useLocation();
     const params = useParams<SearchRouteProps>();
 
@@ -57,59 +57,47 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     query,
                 });
 
-                if (response && Object.keys(response).length > 0) {
+                if (!response || response?.error) {
+                    setState((prevState) => ({
+                        ...prevState,
+                        completion: response?.error ? "invalid" : "notFound",
+                        invalidError: response?.error ?? "",
+                        status: "",
+                        statusBusy: false,
+                    }));
+                } else if (Object.keys(response).length > 0) {
                     const routeSearch = new Map<string, string>();
                     let route = "";
                     let routeParam = query;
-                    let redirectState = {};
+
                     if (response.block) {
                         route = "block";
-                    }
-                    // else if (response.addressDetails?.hex) {
-                    //     route = "addr";
-                    //     redirectState = {
-                    //         addressDetails: response.addressDetails,
-                    //     };
-                    // }
-                    // else if (response.output) {
-                    //     route = "output";
-                    //     const outputId = Utils.computeOutputId(
-                    //         response.output.metadata.transactionId,
-                    //         response.output.metadata.outputIndex,
-                    //     );
-                    //     routeParam = outputId;
-                    // }
-                    // else if (response.taggedOutputs) {
-                    //     route = "outputs";
-                    //     redirectState = {
-                    //         outputIds: response.taggedOutputs,
-                    //         tag: query,
-                    //     };
-                    //     routeParam = "";
-                    // }
-                    // else if (response.transactionBlock) {
-                    //     route = "transaction";
-                    // }
-                    else if (response.accountId) {
+                        if (protocolInfo) {
+                            routeParam = Block.id(response.block, protocolInfo.parameters);
+                        }
+                    } else if (response.addressDetails) {
+                        route = "addr";
+                        routeParam = response.addressDetails.bech32;
+                    } else if (response.accountId) {
                         route = "addr";
                         const accountAddress = buildAddressFromIdAndType(response.accountId, AddressType.Account);
-                        redirectState = {
-                            addressDetails: accountAddress,
-                        };
                         routeParam = accountAddress.bech32;
-                        // if (response.did) {
-                        //     routeSearch.set("tab", "DID");
-                        // }
-                    } else if (response.foundryId) {
-                        route = "foundry";
-                        routeParam = response.foundryId;
                     } else if (response.nftId) {
                         route = "addr";
                         const nftAddress = buildAddressFromIdAndType(response.nftId, AddressType.Nft);
-                        redirectState = {
-                            addressDetails: nftAddress,
-                        };
                         routeParam = nftAddress.bech32;
+                    } else if (response.output) {
+                        route = "output";
+                        routeParam = response.output.metadata.outputId;
+                    } else if (response.transactionId) {
+                        route = "transaction";
+                        routeParam = response.transactionId;
+                    } else if (response.foundryId) {
+                        route = "foundry";
+                        routeParam = response.foundryId;
+                    } else if (response.anchorId) {
+                        route = "anchor";
+                        routeParam = response.anchorId;
                     }
 
                     const getEncodedSearch = () => {
@@ -131,14 +119,6 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                         statusBusy: false,
                         redirect: `/${params.network}/${route}/${routeParam}`,
                         search: getEncodedSearch(),
-                        redirectState,
-                    }));
-                } else {
-                    setState((prevState) => ({
-                        ...prevState,
-                        completion: "notFound",
-                        status: "",
-                        statusBusy: false,
                     }));
                 }
             }, 0);
@@ -158,7 +138,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
     };
 
     const buildAddressFromIdAndType = (id: string, type: number) => {
-        return Bech32AddressHelper.buildAddress(context.bech32Hrp, id, type);
+        return AddressHelper.buildAddress(bech32Hrp, id, type);
     };
 
     return state.redirect ? (
@@ -207,11 +187,11 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                                 <ul>
                                     <li>
                                         <span>Blocks</span>
-                                        <span>64 Hex characters</span>
+                                        <span>74 Hex characters</span>
                                     </li>
                                     <li>
                                         <span>Block using Transaction Id</span>
-                                        <span>64 Hex characters</span>
+                                        <span>74 Hex characters</span>
                                     </li>
                                     <li>
                                         <span>Addresses</span>
@@ -223,27 +203,23 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                                     </li>
                                     <li>
                                         <span>Outputs</span>
-                                        <span>68 Hex characters</span>
+                                        <span>78 Hex characters</span>
                                     </li>
                                     <li>
                                         <span>Account Id</span>
-                                        <span>64 Hex characters</span>
+                                        <span>66 Hex characters</span>
                                     </li>
                                     <li>
                                         <span>Foundry Id</span>
-                                        <span>76 Hex characters</span>
+                                        <span>78 Hex characters</span>
                                     </li>
                                     <li>
                                         <span>Token Id</span>
-                                        <span>76 Hex characters</span>
+                                        <span>78 Hex characters</span>
                                     </li>
                                     <li>
                                         <span>NFT Id</span>
-                                        <span>64 Hex characters</span>
-                                    </li>
-                                    <li>
-                                        <span>Milestone Id</span>
-                                        <span>64 Hex characters</span>
+                                        <span>66 Hex characters</span>
                                     </li>
                                 </ul>
                                 <br />

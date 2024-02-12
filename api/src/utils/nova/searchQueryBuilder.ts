@@ -1,34 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
+/* eslint-disable import/no-unresolved */
 import { AddressType, HexEncodedString } from "@iota/sdk-nova";
+import { AddressHelper } from "./addressHelper";
+import { IAddressDetails } from "../../models/api/nova/IAddressDetails";
 import { Converter } from "../convertUtils";
 import { HexHelper } from "../hexHelper";
-
-interface QueryDetails {
-    /**
-     * The bech32 format.
-     */
-    bech32: string;
-    /**
-     * The hex format.
-     */
-    hex?: string;
-    /*
-     * The hex without prefix.
-     */
-    hexNoPrefix?: string;
-    /**
-     * The raw address type.
-     */
-    type: number;
-    /**
-     * The type label.
-     */
-    typeLabel: string;
-    /**
-     * The initial query was already valid bech32.
-     */
-    isBech32: boolean;
-}
 
 export interface SearchQuery {
     /**
@@ -38,7 +14,7 @@ export interface SearchQuery {
     /**
      * The MaybeAddress query.
      */
-    address?: QueryDetails;
+    address?: IAddressDetails;
     /**
      * The blockId query.
      */
@@ -50,7 +26,7 @@ export interface SearchQuery {
     /**
      * The outputId query.
      */
-    output?: string;
+    outputId?: string;
     /**
      * The accountId query.
      */
@@ -63,6 +39,14 @@ export interface SearchQuery {
      * The foundryId query.
      */
     foundryId?: string;
+    /**
+     * The anchorId query.
+     */
+    anchorId?: string;
+    /**
+     * The delegationId query.
+     */
+    delegationId?: string;
     /**
      * The tag of an output.
      */
@@ -104,43 +88,47 @@ export class SearchQueryBuilder {
      * @returns the SearchQuery object.
      */
     public build(): SearchQuery {
-        let address: QueryDetails;
+        let address: IAddressDetails;
         let blockId: string;
         let transactionId: string;
-        let output: string;
+        let outputId: string;
         let accountId: string;
         let nftId: string;
         let foundryId: string;
+        let anchorId: string;
+        let delegationId: string;
         let tag: string;
 
-        const queryDetails = this.buildQueryDetails();
-
+        const queryDetails = AddressHelper.buildAddress(this.networkBechHrp, this.queryLower);
         // if the source query was valid bech32, we should directly look for an address
-        if (queryDetails.isBech32) {
+        if (queryDetails.bech32) {
             address = queryDetails;
         } else {
-            // if the hex without prefix has 64 characters it might be an alias, nft, milestone, block or tx ID
+            // if the hex has 74 characters it might be a block id or a tx id
             if (queryDetails?.hex && queryDetails.hex.length === 74) {
-                accountId = queryDetails.hex;
-                nftId = queryDetails.hex;
                 blockId = queryDetails.hex;
                 transactionId = queryDetails.hex;
+            } else if (queryDetails?.hex && queryDetails.hex.length === 66) {
+                // if the hex has 66 characters it might be a accoount id or a nft id
+                accountId = queryDetails.hex;
+                nftId = queryDetails.hex;
+                anchorId = queryDetails.hex;
+                delegationId = queryDetails.hex;
             } else if (
                 // if the hex without prefix is 76 characters and first byte is 08,
                 // it might be a FoundryId (tokenId)
                 queryDetails.hex &&
-                queryDetails.hexNoPrefix &&
                 Converter.isHex(queryDetails.hex, true) &&
-                queryDetails.hexNoPrefix.length === 76 &&
-                Number.parseInt(queryDetails.hexNoPrefix.slice(0, 2), 16) === AddressType.Account
+                queryDetails.hex.length === 78 &&
+                Number.parseInt(HexHelper.stripPrefix(queryDetails.hex).slice(0, 2), 16) === AddressType.Account
             ) {
                 foundryId = queryDetails.hex;
             } else if (
-                // if the hex is 70 characters it might be an output
+                // if the hex is 70 characters it might be an outputId
                 queryDetails?.hex &&
-                queryDetails.hex.length === 70
+                queryDetails.hex.length === 78
             ) {
-                output = queryDetails.hex;
+                outputId = queryDetails.hex;
             }
 
             // also perform a tag search
@@ -155,71 +143,13 @@ export class SearchQueryBuilder {
             address,
             blockId,
             transactionId,
-            output,
+            outputId,
             accountId,
             nftId,
             foundryId,
+            anchorId,
+            delegationId,
             tag,
         };
-    }
-
-    /**
-     * @returns the QueryDetails object.
-     */
-    private buildQueryDetails(): QueryDetails {
-        let bech32: string;
-        const hex: string;
-        let hexNoPrefix: string;
-        let addressType: number;
-        const isBech32: boolean = false;
-
-        const q = this.queryLower;
-        // const hrp = this.networkBechHrp;
-
-        // if (Bech32Helper.matches(q, hrp)) {
-        //     isBech32 = true;
-
-        //     try {
-        //         const result = Utils.parseBech32Address(q);
-        //         if (result) {
-        //             bech32 = q;
-        //             addressType = result.type;
-        //             hex = HexHelper.addPrefix(result.toString());
-        //             hexNoPrefix = HexHelper.stripPrefix(result.toString());
-        //         }
-        //     } catch {}
-        // }
-
-        // if (!isBech32) {
-        // We assume it's a hex
-        hex = HexHelper.addPrefix(q);
-        // hexNoPrefix = HexHelper.stripPrefix(q);
-        // addressType = AddressType.Ed25519;
-        // bech32 = Bech32Helper.toBech32(AddressType.Ed25519, Converter.hexToBytes(hex), hrp);
-        // }
-
-        return {
-            bech32,
-            hex,
-            hexNoPrefix,
-            type: addressType,
-            typeLabel: this.typeLabel(addressType),
-            isBech32,
-        };
-    }
-
-    /**
-     * Convert the address type number to a label.
-     * @param addressType The address type to get the label for.
-     * @returns The label.
-     */
-    private typeLabel(addressType?: number): string | undefined {
-        if (addressType === AddressType.Ed25519) {
-            return "Ed25519";
-        } else if (addressType === AddressType.Account) {
-            return "Account";
-        } else if (addressType === AddressType.Nft) {
-            return "NFT";
-        }
     }
 }

@@ -36,10 +36,78 @@ export class SearchExecutor {
             );
         }
 
-        await Promise.any(promises);
+        if (searchQuery.outputId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.outputDetails(searchQuery.outputId),
+                    (outputDetails) => {
+                        promisesResult = {
+                            output: outputDetails.output,
+                        };
+                    },
+                    "Output fetch failed",
+                ),
+            );
+        }
+
+        if (searchQuery.accountId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.accountDetails(searchQuery.accountId),
+                    (response) => {
+                        if (response.accountOutputDetails) {
+                            promisesResult = {
+                                accountId: searchQuery.accountId,
+                            };
+                        }
+                    },
+                    "Account id fetch failed",
+                ),
+            );
+        }
+
+        if (searchQuery.nftId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.nftDetails(searchQuery.nftId),
+                    (response) => {
+                        if (response.nftOutputDetails) {
+                            promisesResult = {
+                                nftId: searchQuery.nftId,
+                            };
+                        }
+                    },
+                    "Nft id fetch failed",
+                ),
+            );
+        }
+
+        if (searchQuery.anchorId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.anchorDetails(searchQuery.anchorId),
+                    (response) => {
+                        if (response.anchorOutputDetails) {
+                            promisesResult = {
+                                anchorId: searchQuery.anchorId,
+                            };
+                        }
+                    },
+                    "Anchor id fetch failed",
+                ),
+            );
+        }
+
+        await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {
             return promisesResult;
+        }
+
+        if (searchQuery.address?.bech32) {
+            return {
+                addressDetails: searchQuery.address,
+            };
         }
 
         return {};
