@@ -157,14 +157,20 @@ export const populateNetworkInfoNova = (networkName: string) => {
             nodeInfo?.protocolParameters.reduce((params, cur) => {
                 return params.startEpoch > cur.startEpoch ? params : cur;
             }) ?? null;
-        const setNetworkInfoNova = useNetworkInfoNova.getState().setNetworkInfo;
-        setNetworkInfoNova({
-            name: networkName,
-            tokenInfo: nodeInfo?.baseToken ?? {},
-            protocolVersion: protocolInfo?.parameters.version ?? -1,
-            protocolInfo,
-            latestConfirmedSlot: nodeInfo?.status?.latestConfirmedBlockSlot ?? -1,
-            bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
-        });
+
+        const networkInfoState = useNetworkInfoNova.getState();
+        const currentNetworkInfo = networkInfoState.networkInfo;
+        if (currentNetworkInfo?.name !== networkName || currentNetworkInfo?.protocolInfo === null) {
+            const setNetworkInfoNova = networkInfoState.setNetworkInfo;
+
+            setNetworkInfoNova({
+                name: networkName,
+                tokenInfo: nodeInfo?.baseToken ?? {},
+                protocolVersion: protocolInfo?.parameters.version ?? -1,
+                protocolInfo,
+                latestConfirmedSlot: nodeInfo?.status?.latestConfirmedBlockSlot ?? -1,
+                bech32Hrp: protocolInfo?.parameters.bech32Hrp ?? "",
+            });
+        }
     }
 };
