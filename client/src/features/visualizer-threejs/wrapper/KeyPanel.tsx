@@ -2,6 +2,7 @@ import React from "react";
 import { BlockState } from "@iota/sdk-wasm-nova/web";
 
 import "./KeyPanel.scss";
+import { StatsPanel } from "~features/visualizer-threejs/wrapper/StatsPanel";
 
 export const KeyPanel: React.FC = () => {
     const statuses: {
@@ -58,6 +59,6 @@ export const KeyPanel: React.FC = () => {
                     );
                 })}
             </div>
+          <StatsPanel blocksCount={0} network={'stardust'} />
         </div>
-    );
-};
+);

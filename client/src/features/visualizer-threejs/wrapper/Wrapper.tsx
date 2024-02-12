@@ -68,7 +68,7 @@ export const Wrapper = ({
                 )}
             </div>
         </div>
-        <StatsPanel blocksCount={blocksCount} network={network} />
+
         {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
         <KeyPanel />
     </div>

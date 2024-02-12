@@ -85,14 +85,18 @@
 
     .stats-panel-container {
         display: flex;
-        position: absolute;
+        //position: absolute;
         z-index: 1;
-        top: 90px !important;
-        left: 20px !important;
-        bottom: auto !important;
-        justify-content: left !important;
+        //top: 90px !important;
+        //left: 20px !important;
+        //bottom: auto !important;
+        //justify-content: left !important;
         align-items: center;
         pointer-events: none;
+
+        .card--value.red {
+            color: var(--error);
+        }
 
         .stats-panel {
             background: var(--body-background);
