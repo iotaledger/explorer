@@ -22,7 +22,7 @@ export function slotIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): (
         const genesisUnixTimestamp = Number(protocolInfo.parameters.genesisUnixTimestamp);
         const slotDurationInSeconds = protocolInfo.parameters.slotDurationInSeconds;
 
-        if (targetSlotIndex < genesisSlot) {
+        if (targetSlotIndex <= genesisSlot) {
             return {
                 from: genesisUnixTimestamp - slotDurationInSeconds,
                 to: genesisUnixTimestamp,
