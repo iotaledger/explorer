@@ -47,7 +47,7 @@ export async function post(
         return null;
     }
 
-    const transactionHistoryDownload = await ChrysalisTangleHelper.transactionHistoryDownload(networkConfig, request.address);
+    const transactionHistoryDownload: string = await ChrysalisTangleHelper.transactionHistoryDownload(networkConfig, request.address);
 
     const parsed = parseResponse(transactionHistoryDownload);
 
@@ -142,6 +142,6 @@ function parseRow(row: string): IParsedRow {
         inputsCount,
         outputsCount,
         addressBalanceChange,
-        addressBalanceChangeFormatted: UnitsHelper.formatBest(Number(addressBalanceChange)),
+        addressBalanceChangeFormatted: UnitsHelper.formatUnits(Number(addressBalanceChange), "Mi"),
     };
 }
