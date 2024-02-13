@@ -80,13 +80,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     useEffect(() => {
         const handleVisibilityChange = async () => {
             if (document.hidden) {
-                await feedSubscriptionFinalize();
                 setIsPlaying(false);
             }
         };
 
         const handleBlur = async () => {
-            await feedSubscriptionFinalize();
             setIsPlaying(false);
         };
 
