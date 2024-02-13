@@ -8,7 +8,7 @@ import {
 
 export function useNovaTimeConvert(): {
     unixTimestampToSlotIndex: ((unixTimestampSeconds: number) => number) | null;
-    slotIndexToTimeRange: ((slotIndex: number) => { from: number; to: number }) | null;
+    slotIndexToUnixTimeRange: ((slotIndex: number) => { from: number; to: number }) | null;
     slotIndexToEpochIndex: ((targetSlotIndex: number) => number) | null;
     unixTimestampToEpochIndex: ((unixTimestampSeconds: number) => number) | null;
 } {
@@ -16,7 +16,7 @@ export function useNovaTimeConvert(): {
 
     return {
         unixTimestampToSlotIndex: protocolInfo ? unixTimestampToSlotIndexConverter(protocolInfo) : null,
-        slotIndexToTimeRange: protocolInfo ? slotIndexToUnixTimeRangeConverter(protocolInfo) : null,
+        slotIndexToUnixTimeRange: protocolInfo ? slotIndexToUnixTimeRangeConverter(protocolInfo) : null,
         slotIndexToEpochIndex: protocolInfo ? slotIndexToEpochIndexConverter(protocolInfo) : null,
         unixTimestampToEpochIndex: protocolInfo ? unixTimestampToEpochIndexConverter(protocolInfo) : null,
     };
