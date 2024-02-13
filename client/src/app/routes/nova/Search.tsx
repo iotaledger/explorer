@@ -31,7 +31,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
     });
 
     const location = useLocation();
-    const params = useParams<SearchRouteProps>();
+    const { network, query } = useParams<SearchRouteProps>();
 
     useEffect(() => {
         scrollToTop();
@@ -39,7 +39,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
     }, [location.pathname]);
 
     const updateState = () => {
-        const query = (params.query ?? "").trim();
+        const queryTerm = (query ?? "").trim();
 
         let status = "";
         let statusBusy = false;
@@ -47,16 +47,15 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
         const redirect = "";
         let invalidError = "";
 
-        if (query.length > 0) {
+        if (queryTerm.length > 0) {
             status = "Detecting query type...";
             statusBusy = true;
 
             setTimeout(async () => {
                 const response = await _apiClient.search({
-                    network: params.network,
-                    query,
+                    network,
+                    query: queryTerm,
                 });
-
                 if (!response || response?.error) {
                     setState((prevState) => ({
                         ...prevState,
@@ -69,6 +68,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     const routeSearch = new Map<string, string>();
                     let route = "";
                     let routeParam = query;
+                    let redirectState = {};
 
                     if (response.block) {
                         route = "block";
@@ -78,14 +78,30 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.addressDetails) {
                         route = "addr";
                         routeParam = response.addressDetails.bech32;
+                        redirectState = {
+                            addressDetails: response.addressDetails,
+                        };
                     } else if (response.accountId) {
                         route = "addr";
                         const accountAddress = buildAddressFromIdAndType(response.accountId, AddressType.Account);
+                        redirectState = {
+                            addressDetails: accountAddress,
+                        };
                         routeParam = accountAddress.bech32;
                     } else if (response.nftId) {
                         route = "addr";
                         const nftAddress = buildAddressFromIdAndType(response.nftId, AddressType.Nft);
+                        redirectState = {
+                            addressDetails: nftAddress,
+                        };
                         routeParam = nftAddress.bech32;
+                    } else if (response.anchorId) {
+                        route = "addr";
+                        const anchorAddress = buildAddressFromIdAndType(response.anchorId, AddressType.Anchor);
+                        redirectState = {
+                            addressDetails: anchorAddress,
+                        };
+                        routeParam = anchorAddress.bech32;
                     } else if (response.output) {
                         route = "output";
                         routeParam = response.output.metadata.outputId;
@@ -95,9 +111,6 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.foundryId) {
                         route = "foundry";
                         routeParam = response.foundryId;
-                    } else if (response.anchorId) {
-                        route = "anchor";
-                        routeParam = response.anchorId;
                     }
 
                     const getEncodedSearch = () => {
@@ -117,8 +130,9 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                         ...prevState,
                         status: "",
                         statusBusy: false,
-                        redirect: `/${params.network}/${route}/${routeParam}`,
+                        redirect: `/${network}/${route}/${routeParam}`,
                         search: getEncodedSearch(),
+                        redirectState,
                     }));
                 }
             }, 0);

@@ -26,9 +26,10 @@ export class SearchExecutor {
             promises.push(
                 this.executeQuery(
                     this.apiService.block(searchQuery.blockId),
-                    (blockResponse) => {
+                    (response) => {
                         promisesResult = {
-                            block: blockResponse.block,
+                            block: response.block,
+                            error: response.error || response.message,
                         };
                     },
                     "Block fetch failed",
@@ -40,9 +41,10 @@ export class SearchExecutor {
             promises.push(
                 this.executeQuery(
                     this.apiService.outputDetails(searchQuery.outputId),
-                    (outputDetails) => {
+                    (response) => {
                         promisesResult = {
-                            output: outputDetails.output,
+                            output: response.output,
+                            error: response.error || response.message,
                         };
                     },
                     "Output fetch failed",
@@ -55,11 +57,10 @@ export class SearchExecutor {
                 this.executeQuery(
                     this.apiService.accountDetails(searchQuery.accountId),
                     (response) => {
-                        if (response.accountOutputDetails) {
-                            promisesResult = {
-                                accountId: searchQuery.accountId,
-                            };
-                        }
+                        promisesResult = {
+                            accountId: response.accountOutputDetails ? searchQuery.accountId : undefined,
+                            error: response.error || response.message,
+                        };
                     },
                     "Account id fetch failed",
                 ),
@@ -71,11 +72,10 @@ export class SearchExecutor {
                 this.executeQuery(
                     this.apiService.nftDetails(searchQuery.nftId),
                     (response) => {
-                        if (response.nftOutputDetails) {
-                            promisesResult = {
-                                nftId: searchQuery.nftId,
-                            };
-                        }
+                        promisesResult = {
+                            nftId: response.nftOutputDetails ? searchQuery.nftId : undefined,
+                            error: response.error || response.message,
+                        };
                     },
                     "Nft id fetch failed",
                 ),
@@ -87,11 +87,10 @@ export class SearchExecutor {
                 this.executeQuery(
                     this.apiService.anchorDetails(searchQuery.anchorId),
                     (response) => {
-                        if (response.anchorOutputDetails) {
-                            promisesResult = {
-                                anchorId: searchQuery.anchorId,
-                            };
-                        }
+                        promisesResult = {
+                            anchorId: response.anchorOutputDetails ? searchQuery.anchorId : undefined,
+                            error: response.error || response.message,
+                        };
                     },
                     "Anchor id fetch failed",
                 ),
@@ -122,7 +121,7 @@ export class SearchExecutor {
                 throw new Error(failureMessage);
             }
         } catch {
-            throw new Error(failureMessage);
+            throw new Error(`${failureMessage}`);
         }
     }
 }
