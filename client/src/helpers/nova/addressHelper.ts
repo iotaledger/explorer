@@ -108,7 +108,7 @@ export class AddressHelper {
         } else if (addressType === AddressType.Nft) {
             bech32 = Utils.nftIdToBech32(hex, hrp);
         } else if (addressType === AddressType.Anchor) {
-            // TODO Utils.anchorIdToBech32 does not exist ???
+            // TODO Utils.anchorIdToBech32 does not exist https://github.com/iotaledger/iota-sdk/issues/1973
             bech32 = Utils.accountIdToBech32(hex, hrp);
         } else if (addressType === AddressType.ImplicitAccountCreation) {
             bech32 = Utils.hexToBech32(hex, hrp);
