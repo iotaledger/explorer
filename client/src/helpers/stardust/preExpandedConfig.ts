@@ -44,16 +44,24 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
             };
             if (input?.output?.output && "unlockConditions" in input.output.output) {
                 const commmonOutput = input.output.output as unknown as CommonOutput;
-                let unlock = unlocks[idx];
-                const referenceUnlocks = [UnlockType.Reference, UnlockType.Alias, UnlockType.Nft];
-                if (referenceUnlocks.includes(unlock.type)) {
-                    const referenceUnlock = unlock as ReferenceUnlock;
-                    unlock = unlocks[referenceUnlock.reference];
+
+                const unlock = unlocks[idx];
+                let signatureUnlock: SignatureUnlock;
+                if (unlock.type === UnlockType.Signature) {
+                    signatureUnlock = unlock as SignatureUnlock;
+                } else {
+                    let refUnlockIdx = idx;
+                    // unlock references can be transitive,
+                    // so we need to follow the path until we find the signature
+                    do {
+                        const referenceUnlock = unlocks[refUnlockIdx] as ReferenceUnlock;
+                        signatureUnlock = unlocks[referenceUnlock.reference] as SignatureUnlock;
+                        refUnlockIdx = referenceUnlock.reference;
+                    } while (!signatureUnlock.signature);
                 }
-                const unlockSignatureAddress = Utils.hexPublicKeyToBech32Address(
-                    (unlock as SignatureUnlock).signature.publicKey,
-                    bech32Hrp,
-                );
+
+                const unlockSignatureAddress = Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, bech32Hrp);
+
                 preExpandedConfig = {
                     ...preExpandedConfig,
                     unlockConditions: commmonOutput.unlockConditions?.map((unlockCondition) => {
