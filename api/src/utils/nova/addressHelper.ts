@@ -47,6 +47,9 @@ export class AddressHelper {
         if (!bech32) {
             // We assume this is hex
             hex = addressString;
+            if (typeHint) {
+                bech32 = this.computeBech32FromHexAndType(hex, type, hrp);
+            }
         }
 
         return {
@@ -76,14 +79,22 @@ export class AddressHelper {
         } else if (address.type === AddressType.Anchor) {
             hex = (address as AnchorAddress).anchorId;
         } else if (address.type === AddressType.ImplicitAccountCreation) {
-            const implicitAccountCreationAddress = plainToInstance(ImplicitAccountCreationAddress, address);
+            const implicitAccountCreationAddress = plainToInstance(
+                ImplicitAccountCreationAddress,
+                address as ImplicitAccountCreationAddress,
+            );
             const innerAddress = implicitAccountCreationAddress.address();
             hex = innerAddress.pubKeyHash;
         } else if (address.type === AddressType.Restricted) {
-            const restrictedAddress = plainToInstance(RestrictedAddress, address);
+            const restrictedAddress = plainToInstance(RestrictedAddress, address as RestrictedAddress);
             const innerAddress = restrictedAddress.address;
 
-            return this.buildAddressFromTypes(innerAddress, hrp, true, Array.from(restrictedAddress.getAllowedCapabilities()));
+            return this.buildAddressFromTypes(
+                innerAddress,
+                hrp,
+                true,
+                Array.from(restrictedAddress.getAllowedCapabilities() as ArrayLike<number>),
+            );
         }
 
         bech32 = this.computeBech32FromHexAndType(hex, address.type, hrp);
