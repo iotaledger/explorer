@@ -45,7 +45,8 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
             if (input?.output?.output && "unlockConditions" in input.output.output) {
                 const commmonOutput = input.output.output as unknown as CommonOutput;
                 let unlock = unlocks[idx];
-                if (unlock.type === UnlockType.Reference) {
+                const referenceUnlocks = [UnlockType.Reference, UnlockType.Alias, UnlockType.Nft];
+                if (referenceUnlocks.includes(unlock.type)) {
                     const referenceUnlock = unlock as ReferenceUnlock;
                     unlock = unlocks[referenceUnlock.reference];
                 }
