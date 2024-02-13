@@ -69,7 +69,7 @@ export const getTransactionHistoryRecords = (
             TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex),
         );
 
-        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis);
+        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis, outputs);
 
         const isSpent = balanceChange <= 0;
 
@@ -106,8 +106,20 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     }, 0);
 };
 
-export const getTransactionLink = (network: string, transactionId: string, isTransactionFromStardustGenesis: boolean) => {
-    return isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
-        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-        : `/${network}/transaction/${transactionId}`;
+export const getTransactionLink = (
+    network: string,
+    transactionId: string,
+    isTransactionFromStardustGenesis: boolean,
+    outputs: OutputWithDetails[] | undefined,
+) => {
+    if (isTransactionFromStardustGenesis) {
+        if (transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)) {
+            const relevantOutput = outputs?.[0];
+            return relevantOutput?.outputId ? `/${network}/output/${relevantOutput.outputId}` : "";
+        } else {
+            return `/${CHRYSALIS_MAINNET}/search/${transactionId}`;
+        }
+    } else {
+        return `/${network}/transaction/${transactionId}`;
+    }
 };
