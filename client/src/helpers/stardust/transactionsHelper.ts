@@ -13,9 +13,7 @@ import {
     Output,
     OutputType,
     PayloadType,
-    ReferenceUnlock,
     RegularTransactionEssence,
-    SignatureUnlock,
     StateControllerAddressUnlockCondition,
     TagFeature,
     TransactionPayload,
@@ -23,7 +21,6 @@ import {
     Unlock,
     UnlockCondition,
     UnlockConditionType,
-    UnlockType,
     Utils,
     UTXOInput,
 } from "@iota/sdk-wasm/web";
@@ -36,6 +33,7 @@ import { IOutput } from "~models/api/stardust/IOutput";
 import { MAINNET } from "~models/config/networkType";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { Bech32AddressHelper } from "../stardust/bech32AddressHelper";
+import { resolveTransitiveUnlock } from "./resolveTransiviteUnlock";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];
@@ -82,28 +80,14 @@ export class TransactionsHelper {
 
             // unlock Addresses computed from public keys in unlocks
             for (let i = 0; i < unlocks.length; i++) {
-                const unlock = payload.unlocks[i];
-                let signatureUnlock: SignatureUnlock;
+                const signatureUnlock = resolveTransitiveUnlock(unlocks, i);
 
-                if (unlock.type === UnlockType.Signature) {
-                    signatureUnlock = unlock as SignatureUnlock;
-                } else {
-                    let refUnlockIdx = i;
-                    // unlock references can be transitive,
-                    // so we need to follow the path until we find the signature
-                    do {
-                        const referenceUnlock = payload.unlocks[refUnlockIdx] as ReferenceUnlock;
-                        signatureUnlock = payload.unlocks[referenceUnlock.reference] as SignatureUnlock;
-                        refUnlockIdx = referenceUnlock.reference;
-                    } while (!signatureUnlock.signature);
-                }
-
-                unlockAddresses.push(
-                    Bech32AddressHelper.buildAddress(
-                        _bechHrp,
-                        Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp),
-                    ),
+                const address = Bech32AddressHelper.buildAddress(
+                    _bechHrp,
+                    Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp),
                 );
+
+                unlockAddresses.push(address);
             }
 
             const payloadEssence = payload.essence as RegularTransactionEssence;

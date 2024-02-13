@@ -3,18 +3,16 @@ import {
     CommonOutput,
     ExpirationUnlockCondition,
     GovernorAddressUnlockCondition,
-    ReferenceUnlock,
-    SignatureUnlock,
     StateControllerAddressUnlockCondition,
     Unlock,
     UnlockConditionType,
-    UnlockType,
     Utils,
 } from "@iota/sdk-wasm/web";
 import { Bech32AddressHelper } from "~/helpers/stardust/bech32AddressHelper";
 import { IInput } from "~models/api/stardust/IInput";
 import { IOutput } from "~models/api/stardust/IOutput";
 import { IPreExpandedConfig } from "~models/components";
+import { resolveTransitiveUnlock } from "./resolveTransiviteUnlock";
 
 const OUTPUT_EXPAND_CONDITIONS: UnlockConditionType[] = [
     UnlockConditionType.Address,
@@ -45,21 +43,7 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
             if (input?.output?.output && "unlockConditions" in input.output.output) {
                 const commmonOutput = input.output.output as unknown as CommonOutput;
 
-                const unlock = unlocks[idx];
-                let signatureUnlock: SignatureUnlock;
-                if (unlock.type === UnlockType.Signature) {
-                    signatureUnlock = unlock as SignatureUnlock;
-                } else {
-                    let refUnlockIdx = idx;
-                    // unlock references can be transitive,
-                    // so we need to follow the path until we find the signature
-                    do {
-                        const referenceUnlock = unlocks[refUnlockIdx] as ReferenceUnlock;
-                        signatureUnlock = unlocks[referenceUnlock.reference] as SignatureUnlock;
-                        refUnlockIdx = referenceUnlock.reference;
-                    } while (!signatureUnlock.signature);
-                }
-
+                const signatureUnlock = resolveTransitiveUnlock(unlocks, idx);
                 const unlockSignatureAddress = Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, bech32Hrp);
 
                 preExpandedConfig = {
