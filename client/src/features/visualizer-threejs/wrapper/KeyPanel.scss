@@ -36,31 +36,7 @@
                 width: 12px;
                 height: 12px;
                 margin-right: 10px;
-                border-radius: 3px;
-
-                &.vertex-state--pending {
-                    background-color: #bbbbbb;
-                }
-
-                &.vertex-state--included {
-                    background-color: #4caaff;
-                }
-
-                &.vertex-state--referenced {
-                    background-color: #61e884;
-                }
-
-                &.vertex-state--conflicting {
-                    background-color: #ff8b5c;
-                }
-
-                &.vertex-state--milestone {
-                    background-color: #666af6;
-                }
-
-                &.vertex-state--search-result {
-                    background-color: #c061e8;
-                }
+                border-radius: 50%;
             }
 
             .key-label {
