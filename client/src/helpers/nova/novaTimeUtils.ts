@@ -25,10 +25,10 @@ export function unixTimestampToSlotIndexConverter(protocolInfo: ProtocolInfo): (
 }
 
 /**
- * Convert a slot index to a UNIX time range.
+ * Convert a slot index to a UNIX time range, in seconds.
  * @param protocolInfo The protocol information.
  * @param targetSlotIndex The target slot index.
- * @returns The UNIX time range: from (inclusive) and to (exclusive).
+ * @returns The UNIX time range in seconds: from (inclusive) and to (exclusive).
  */
 export function slotIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): (targetSlotIndex: number) => { from: number; to: number } {
     return (targetSlotIndex: number) => {
