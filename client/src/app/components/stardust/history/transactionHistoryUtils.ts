@@ -11,6 +11,8 @@ export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
     isTransactionFromStardustGenesis: boolean;
     isSpent: boolean;
+    stardustGenesisOutputId?: string;
+    stardustGenesisOutputLink?: string;
     transactionLink: string;
     transactionId: string;
     timestamp: number;
@@ -57,17 +59,31 @@ export const getTransactionHistoryRecords = (
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
 
-    transactionIdToOutputs.forEach((outputs, transactionId) => {
+    let isSet = false; // TODO fake transaction. Remove after confirmation
+    transactionIdToOutputs.forEach((outputs, transactionId, index) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
         const balanceChange = calculateBalanceChange(outputs);
         const ago = moment(lastOutputTime * 1000).fromNow();
 
         const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).some((milestoneTimestamp) => milestoneTimestamp === 0);
 
-        const milestoneIndexes = outputs.map((t) => t.milestoneIndex);
-        const isTransactionFromStardustGenesis = milestoneIndexes.some((milestoneIndex) =>
-            TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex),
-        );
+        // TODO fake transaction. Remove after confirmation
+        if (!isSet) {
+            outputs[0].milestoneIndex = 7669900;
+            isSet = true;
+        }
+
+        let stardustGenesisOutputId;
+        let stardustGenesisOutputLink;
+        const isTransactionFromStardustGenesis = outputs.some(({ milestoneIndex, outputId }) => {
+            const isGenesis = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
+            if (isGenesis) {
+                stardustGenesisOutputId = outputId;
+                stardustGenesisOutputLink = `/${network}/output/${outputId}`;
+            }
+
+            return isGenesis;
+        });
 
         const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis);
 
@@ -77,6 +93,8 @@ export const getTransactionHistoryRecords = (
             isGenesisByDate: isGenesisByDate,
             isTransactionFromStardustGenesis: isTransactionFromStardustGenesis,
             isSpent: isSpent,
+            stardustGenesisOutputId: stardustGenesisOutputId,
+            stardustGenesisOutputLink: stardustGenesisOutputLink,
             transactionLink: transactionLink,
             transactionId: transactionId,
             timestamp: lastOutputTime,
