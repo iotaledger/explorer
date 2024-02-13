@@ -1,17 +1,27 @@
 import { AnchorAddress } from "@iota/sdk-wasm-nova/web";
-import React from "react";
+import React, { Reducer, useReducer } from "react";
 import { useAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
 import Spinner from "../../Spinner";
 import Bech32Address from "./Bech32Address";
-import AssociatedOutputs from "./section/association/AssociatedOutputs";
+import { IEd25519AddressViewState } from "./Ed25519AddressView";
+import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface AnchorAddressViewProps {
     anchorAddress: AnchorAddress;
 }
 
+export interface IAnchorAddressViewState {
+    isAssociatedOutputsLoading: boolean;
+}
+
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
     const { anchorAddressDetails, isAnchorDetailsLoading } = useAnchorAddressState(anchorAddress);
-    const isPageLoading = isAnchorDetailsLoading;
+    const [state, setState] = useReducer<Reducer<IEd25519AddressViewState, Partial<IEd25519AddressViewState>>>(
+        (currentState, newState) => ({ ...currentState, ...newState }),
+        { isAssociatedOutputsLoading: false },
+    );
+    const { isAssociatedOutputsLoading } = state;
+    const isPageLoading = isAnchorDetailsLoading || isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
@@ -36,12 +46,11 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                                 </div>
                             </div>
                         </div>
-                        <div className="section no-border-bottom padding-b-0">
-                            <div className="row middle">
-                                <h2>Associated Outputs</h2>
-                            </div>
-                            <AssociatedOutputs addressDetails={anchorAddressDetails} />
-                        </div>
+                        <AddressPageTabbedSections
+                            key={anchorAddressDetails.bech32}
+                            addressDetails={anchorAddressDetails}
+                            setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                        />
                     </div>
                 )}
             </div>
