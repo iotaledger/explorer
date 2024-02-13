@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import {
     Address,
     AddressType,
@@ -81,12 +82,12 @@ export class AddressHelper {
         } else if (address.type === AddressType.ImplicitAccountCreation) {
             const implicitAccountCreationAddress = plainToInstance(
                 ImplicitAccountCreationAddress,
-                address as ImplicitAccountCreationAddress,
-            );
+                address,
+            ) as unknown as ImplicitAccountCreationAddress;
             const innerAddress = implicitAccountCreationAddress.address();
             hex = innerAddress.pubKeyHash;
         } else if (address.type === AddressType.Restricted) {
-            const restrictedAddress = plainToInstance(RestrictedAddress, address as RestrictedAddress);
+            const restrictedAddress = plainToInstance(RestrictedAddress, address) as unknown as RestrictedAddress;
             const innerAddress = restrictedAddress.address;
 
             return this.buildAddressFromTypes(
