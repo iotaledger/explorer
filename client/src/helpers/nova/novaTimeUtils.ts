@@ -1,5 +1,13 @@
 import { ProtocolInfo } from "@iota/sdk-wasm-nova/web";
 
+// Note: genesisUnixTimestamp is the first second that falls into genesisSlot + 1
+
+/**
+ * Convert a UNIX timestamp to a slot index.
+ * @param protocolInfo The protocol information.
+ * @param unixTimestampSeconds The UNIX timestamp in seconds.
+ * @returns The slot index.
+ */
 export function unixTimestampToSlotIndexConverter(protocolInfo: ProtocolInfo): (unixTimestampSeconds: number) => number {
     return (unixTimestampSeconds: number) => {
         const genesisSlot = protocolInfo.parameters.genesisSlot;
@@ -16,6 +24,12 @@ export function unixTimestampToSlotIndexConverter(protocolInfo: ProtocolInfo): (
     };
 }
 
+/**
+ * Convert a slot index to a UNIX time range.
+ * @param protocolInfo The protocol information.
+ * @param targetSlotIndex The target slot index.
+ * @returns The UNIX time range: from (inclusive) and to (exclusive).
+ */
 export function slotIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): (targetSlotIndex: number) => { from: number; to: number } {
     return (targetSlotIndex: number) => {
         const genesisSlot = protocolInfo.parameters.genesisSlot;
@@ -40,6 +54,12 @@ export function slotIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): (
     };
 }
 
+/**
+ * Convert a slot index to an epoch index.
+ * @param protocolInfo The protocol information.
+ * @param targetSlotIndex The target slot index.
+ * @returns The epoch index.
+ */
 export function slotIndexToEpochIndexConverter(protocolInfo: ProtocolInfo): (targetSlotIndex: number) => number {
     return (targetSlotIndex: number) => {
         const slotsPerEpochExponent = protocolInfo.parameters.slotsPerEpochExponent;
@@ -47,6 +67,12 @@ export function slotIndexToEpochIndexConverter(protocolInfo: ProtocolInfo): (tar
     };
 }
 
+/**
+ * Convert a UNIX timestamp to an epoch index.
+ * @param protocolInfo The protocol information.
+ * @param unixTimestampSeconds The UNIX timestamp in seconds.
+ * @returns The epoch index.
+ */
 export function unixTimestampToEpochIndexConverter(protocolInfo: ProtocolInfo): (unixTimestampSeconds: number) => number {
     return (unixTimestampSeconds: number) => {
         const slotsPerEpochExponent = protocolInfo.parameters.slotsPerEpochExponent;
