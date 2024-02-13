@@ -83,7 +83,7 @@ describe("unixTimestampToSlotIndex", () => {
     });
 });
 
-describe("slotIndexToUnixTimestamp", () => {
+describe("slotIndexToUnixTimeRange", () => {
     test("should return genesis slot timestamp when passed a slotIndex lower than genesisSlot", () => {
         let target = genesisSlot - 1; // 4
         const expectedGenesisTimestampRange = {
@@ -173,7 +173,7 @@ describe("slotIndexToUnixTimestamp", () => {
     });
 });
 
-describe("slotIndexToUnixTimestamp & unixTimestampToSlotIndex", () => {
+describe("slotIndexToUnixTimeRange & unixTimestampToSlotIndex", () => {
     test("should be able to go from slot to timestamp and back correctly", () => {
         const targetSlotIndex = 12; // Slot of 1 January 2150 00:00:01
 
