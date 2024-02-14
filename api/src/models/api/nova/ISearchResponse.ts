@@ -21,7 +21,7 @@ export interface ISearchResponse extends IResponse {
     output?: OutputResponse;
 
     /**
-     * Alias id if it was found.
+     * Account id if it was found.
      */
     accountId?: string;
 
