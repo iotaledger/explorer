@@ -10,6 +10,7 @@ import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
+import { IFoundryResponse } from "../../models/api/nova/nova/IFoundryResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 
@@ -141,6 +142,26 @@ export class NovaApiService {
             }
         } catch {
             return { message: "Anchor output not found" };
+        }
+    }
+
+    /**
+     * Get the foundry details.
+     * @param foundryId The foundryId to get the details for.
+     * @returns The foundry details.
+     */
+    public async foundryDetails(foundryId: string): Promise<IFoundryResponse | undefined> {
+        try {
+            const foundryOutputId = await this.client.foundryOutputId(foundryId);
+
+            if (foundryOutputId) {
+                const outputResponse = await this.outputDetails(foundryOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { foundryDetails: outputResponse.output };
+            }
+            return { message: "Foundry output not found" };
+        } catch {
+            return { message: "Foundry output not found" };
         }
     }
 
