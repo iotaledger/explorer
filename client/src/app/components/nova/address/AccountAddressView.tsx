@@ -4,13 +4,15 @@ import { useAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressSt
 import Spinner from "../../Spinner";
 import Bech32Address from "../../nova/address/Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
+import AddressBalance from "./AddressBalance";
 
 interface AccountAddressViewProps {
     accountAddress: AccountAddress;
 }
 
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
-    const { accountAddressDetails, isAccountDetailsLoading } = useAccountAddressState(accountAddress);
+    const [state] = useAccountAddressState(accountAddress);
+    const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading } = state;
     const isPageLoading = isAccountDetailsLoading;
 
     return (
@@ -33,6 +35,13 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={accountAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@ import { AnchorAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
 import Spinner from "../../Spinner";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
 
@@ -10,7 +11,8 @@ interface AnchorAddressViewProps {
 }
 
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
-    const { anchorAddressDetails, isAnchorDetailsLoading } = useAnchorAddressState(anchorAddress);
+    const [state] = useAnchorAddressState(anchorAddress);
+    const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading } = state;
     const isPageLoading = isAnchorDetailsLoading;
 
     return (
@@ -33,6 +35,13 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={anchorAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@ import { NftAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useNftAddressState } from "~/helpers/nova/hooks/useNftAddressState";
 import Spinner from "../../Spinner";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
 
@@ -10,7 +11,8 @@ interface NftAddressViewProps {
 }
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
-    const { nftAddressDetails, isNftDetailsLoading } = useNftAddressState(nftAddress);
+    const [state] = useNftAddressState(nftAddress);
+    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading } = state;
     const isPageLoading = isNftDetailsLoading;
 
     return (
@@ -33,6 +35,13 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={nftAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
