@@ -1,32 +1,39 @@
 import { Reducer, useEffect, useReducer } from "react";
 import { AccountAddress, AccountOutput } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useAccountDetails } from "./useAccountDetails";
 import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useAddressBalance } from "./useAddressBalance";
 
 export interface IAccountAddressState {
-    accountAddressDetails: IBech32AddressDetails | null;
+    accountAddressDetails: IAddressDetails | null;
     accountOutput: AccountOutput | null;
+    totalBalance: number | null;
+    availableBalance: number | null;
     isAccountDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     accountAddressDetails: null,
     accountOutput: null,
+    totalBalance: null,
+    availableBalance: null,
     isAccountDetailsLoading: true,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
  * Route Location Props
  */
 interface IAddressPageLocationProps {
-    addressDetails: IBech32AddressDetails;
+    addressDetails: IAddressDetails;
 }
 
-export const useAccountAddressState = (address: AccountAddress): IAccountAddressState => {
+export const useAccountAddressState = (address: AccountAddress): [IAccountAddressState, React.Dispatch<Partial<IAccountAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -36,12 +43,13 @@ export const useAccountAddressState = (address: AccountAddress): IAccountAddress
     );
 
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.accountAddressDetails, accountOutput);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails
             ? locationState
-            : { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
+            : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
             ...initialState,
@@ -53,12 +61,10 @@ export const useAccountAddressState = (address: AccountAddress): IAccountAddress
         setState({
             accountOutput,
             isAccountDetailsLoading,
+            totalBalance,
+            availableBalance,
         });
-    }, [accountOutput, isAccountDetailsLoading]);
+    }, [accountOutput, totalBalance, availableBalance, isAccountDetailsLoading]);
 
-    return {
-        accountAddressDetails: state.accountAddressDetails,
-        accountOutput: state.accountOutput,
-        isAccountDetailsLoading: state.isAccountDetailsLoading,
-    };
+    return [state, setState];
 };

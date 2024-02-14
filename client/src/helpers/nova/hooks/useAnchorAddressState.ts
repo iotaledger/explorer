@@ -1,32 +1,39 @@
 import { Reducer, useEffect, useReducer } from "react";
 import { AnchorAddress, AnchorOutput } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useAnchorDetails } from "./useAnchorDetails";
 import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useAddressBalance } from "./useAddressBalance";
 
 export interface IAnchorAddressState {
-    anchorAddressDetails: IBech32AddressDetails | null;
+    anchorAddressDetails: IAddressDetails | null;
     anchorOutput: AnchorOutput | null;
+    availableBalance: number | null;
+    totalBalance: number | null;
     isAnchorDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     anchorAddressDetails: null,
     anchorOutput: null,
+    totalBalance: null,
+    availableBalance: null,
     isAnchorDetailsLoading: true,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
  * Route Location Props
  */
 interface IAddressPageLocationProps {
-    addressDetails: IBech32AddressDetails;
+    addressDetails: IAddressDetails;
 }
 
-export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressState => {
+export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressState, React.Dispatch<Partial<IAnchorAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -36,12 +43,13 @@ export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressSta
     );
 
     const { anchorOutput, isLoading: isAnchorDetailsLoading } = useAnchorDetails(network, address.anchorId);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.anchorAddressDetails, anchorOutput);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails
             ? locationState
-            : { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
+            : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
             ...initialState,
@@ -52,13 +60,11 @@ export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressSta
     useEffect(() => {
         setState({
             anchorOutput,
+            totalBalance,
+            availableBalance,
             isAnchorDetailsLoading,
         });
-    }, [anchorOutput, isAnchorDetailsLoading]);
+    }, [anchorOutput, totalBalance, availableBalance, isAnchorDetailsLoading]);
 
-    return {
-        anchorAddressDetails: state.anchorAddressDetails,
-        anchorOutput: state.anchorOutput,
-        isAnchorDetailsLoading: state.isAnchorDetailsLoading,
-    };
+    return [state, setState];
 };

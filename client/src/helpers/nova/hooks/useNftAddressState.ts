@@ -1,32 +1,39 @@
 import { Reducer, useEffect, useReducer } from "react";
 import { NftAddress, NftOutput } from "@iota/sdk-wasm-nova/web";
-import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
+import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useNftDetails } from "./useNftDetails";
 import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
-import { Bech32AddressHelper } from "~/helpers/nova/bech32AddressHelper";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useAddressBalance } from "./useAddressBalance";
 
 export interface INftAddressState {
-    nftAddressDetails: IBech32AddressDetails | null;
+    nftAddressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
+    totalBalance: number | null;
+    availableBalance: number | null;
     isNftDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     nftAddressDetails: null,
     nftOutput: null,
     isNftDetailsLoading: true,
+    totalBalance: null,
+    availableBalance: null,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
  * Route Location Props
  */
 interface IAddressPageLocationProps {
-    addressDetails: IBech32AddressDetails;
+    addressDetails: IAddressDetails;
 }
 
-export const useNftAddressState = (address: NftAddress): INftAddressState => {
+export const useNftAddressState = (address: NftAddress): [INftAddressState, React.Dispatch<Partial<INftAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -36,12 +43,13 @@ export const useNftAddressState = (address: NftAddress): INftAddressState => {
     );
 
     const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.nftAddressDetails, nftOutput);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails
             ? locationState
-            : { addressDetails: Bech32AddressHelper.buildAddress(bech32Hrp, address) };
+            : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
             ...initialState,
@@ -52,13 +60,11 @@ export const useNftAddressState = (address: NftAddress): INftAddressState => {
     useEffect(() => {
         setState({
             nftOutput,
+            totalBalance,
+            availableBalance,
             isNftDetailsLoading,
         });
-    }, [nftOutput, isNftDetailsLoading]);
+    }, [nftOutput, totalBalance, availableBalance, isNftDetailsLoading]);
 
-    return {
-        nftAddressDetails: state.nftAddressDetails,
-        nftOutput: state.nftOutput,
-        isNftDetailsLoading: state.isNftDetailsLoading,
-    };
+    return [state, setState];
 };

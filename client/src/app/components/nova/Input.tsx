@@ -4,7 +4,7 @@ import { Utils } from "@iota/sdk-wasm-nova/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
-import Bech32Address from "../stardust/address/Bech32Address";
+import Bech32Address from "../nova/address/Bech32Address";
 import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
 import OutputView from "./OutputView";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
@@ -57,15 +57,7 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
                 <React.Fragment>
                     <div className="card--label"> Address</div>
                     <div className="card--value">
-                        <Bech32Address
-                            network={network}
-                            history={history}
-                            addressDetails={input.address}
-                            advancedMode
-                            hideLabel
-                            truncateAddress={false}
-                            labelPosition="bottom"
-                        />
+                        <Bech32Address network={network} history={history} addressDetails={input.address} advancedMode hideLabel />
                     </div>
                     <div className="card--label"> Transaction Id</div>
                     <div className="card--value">

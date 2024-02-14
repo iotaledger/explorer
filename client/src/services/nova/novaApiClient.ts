@@ -1,4 +1,6 @@
 import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
+import { IAddressBalanceRequest } from "~/models/api/nova/address/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { IBlockRequest } from "~/models/api/nova/block/IBlockRequest";
 import { IBlockResponse } from "~/models/api/nova/block/IBlockResponse";
 import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
@@ -7,7 +9,7 @@ import { IAccountDetailsResponse } from "~/models/api/nova/IAccountDetailsRespon
 import { IAssociationsResponse } from "~/models/api/nova/IAssociationsResponse";
 import { INodeInfoResponse } from "~/models/api/nova/INodeInfoResponse";
 import { IOutputDetailsResponse } from "~/models/api/nova/IOutputDetailsResponse";
-import { IAssociationsRequest } from "~/models/api/stardust/IAssociationsRequest";
+import { IAssociationsRequest } from "~/models/api/nova/IAssociationsRequest";
 import { ApiClient } from "../apiClient";
 import { IBlockDetailsRequest } from "~/models/api/nova/block/IBlockDetailsRequest";
 import { IBlockDetailsResponse } from "~/models/api/nova/block/IBlockDetailsResponse";
@@ -19,6 +21,8 @@ import { INftDetailsRequest } from "~/models/api/nova/INftDetailsRequest";
 import { INftDetailsResponse } from "~/models/api/nova/INftDetailsResponse";
 import { IAnchorDetailsRequest } from "~/models/api/nova/IAnchorDetailsRequest";
 import { IAnchorDetailsResponse } from "~/models/api/nova/IAnchorDetailsResponse";
+import { ISearchRequest } from "~/models/api/nova/ISearchRequest";
+import { ISearchResponse } from "~/models/api/nova/ISearchResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -31,6 +35,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(`node-info/${request.network}`, "get");
+    }
+
+    /**
+     * Get the balance of and address from chronicle.
+     * @param request The Address Balance request.
+     * @returns The Address balance reponse
+     */
+    public async addressBalanceChronicle(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+        return this.callApi<unknown, IAddressBalanceResponse>(`nova/balance/chronicle/${request.network}/${request.address}`, "get");
     }
 
     /**
@@ -119,5 +132,14 @@ export class NovaApiClient extends ApiClient {
             `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
             "get",
         );
+    }
+
+    /**
+     * Find items from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async search(request: ISearchRequest): Promise<ISearchResponse> {
+        return this.callApi<unknown, ISearchResponse>(`nova/search/${request.network}/${request.query}`, "get");
     }
 }
