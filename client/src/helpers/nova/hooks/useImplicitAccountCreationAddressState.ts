@@ -11,12 +11,14 @@ export interface IImplicitAccountCreationAddressState {
     implicitAccountCreationAddressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     implicitAccountCreationAddressDetails: null,
     totalBalance: null,
     availableBalance: null,
+    isAssociatedOutputsLoading: false,
 };
 
 /**

@@ -4,16 +4,16 @@ import { useAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressStat
 import Spinner from "../../Spinner";
 import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
-import AssociatedOutputs from "./section/association/AssociatedOutputs";
+import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface AnchorAddressViewProps {
     anchorAddress: AnchorAddress;
 }
 
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
-    const [state] = useAnchorAddressState(anchorAddress);
-    const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading } = state;
-    const isPageLoading = isAnchorDetailsLoading;
+    const [state, setState] = useAnchorAddressState(anchorAddress);
+    const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading, isAssociatedOutputsLoading } = state;
+    const isPageLoading = isAnchorDetailsLoading || isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
@@ -45,12 +45,11 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                                 </div>
                             </div>
                         </div>
-                        <div className="section no-border-bottom padding-b-0">
-                            <div className="row middle">
-                                <h2>Associated Outputs</h2>
-                            </div>
-                            <AssociatedOutputs addressDetails={anchorAddressDetails} />
-                        </div>
+                        <AddressPageTabbedSections
+                            key={anchorAddressDetails.bech32}
+                            addressDetails={anchorAddressDetails}
+                            setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                        />
                     </div>
                 )}
             </div>

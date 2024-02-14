@@ -3,7 +3,7 @@ import React from "react";
 import { useAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressState";
 import Spinner from "../../Spinner";
 import Bech32Address from "../../nova/address/Bech32Address";
-import AssociatedOutputs from "./section/association/AssociatedOutputs";
+import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 import AddressBalance from "./AddressBalance";
 
 interface AccountAddressViewProps {
@@ -11,9 +11,9 @@ interface AccountAddressViewProps {
 }
 
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
-    const [state] = useAccountAddressState(accountAddress);
-    const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading } = state;
-    const isPageLoading = isAccountDetailsLoading;
+    const [state, setState] = useAccountAddressState(accountAddress);
+    const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading } = state;
+    const isPageLoading = isAccountDetailsLoading || isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
@@ -45,12 +45,11 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                                 </div>
                             </div>
                         </div>
-                        <div className="section no-border-bottom padding-b-0">
-                            <div className="row middle">
-                                <h2>Associated Outputs</h2>
-                            </div>
-                            <AssociatedOutputs addressDetails={accountAddressDetails} />
-                        </div>
+                        <AddressPageTabbedSections
+                            key={accountAddressDetails.bech32}
+                            addressDetails={accountAddressDetails}
+                            setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                        />
                     </div>
                 )}
             </div>

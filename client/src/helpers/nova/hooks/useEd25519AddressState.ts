@@ -10,12 +10,14 @@ export interface IEd25519AddressState {
     ed25519AddressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     ed25519AddressDetails: null,
     totalBalance: null,
     availableBalance: null,
+    isAssociatedOutputsLoading: false,
 };
 
 /**

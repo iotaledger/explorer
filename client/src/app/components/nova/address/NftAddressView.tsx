@@ -4,16 +4,16 @@ import { useNftAddressState } from "~/helpers/nova/hooks/useNftAddressState";
 import Spinner from "../../Spinner";
 import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
-import AssociatedOutputs from "./section/association/AssociatedOutputs";
+import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface NftAddressViewProps {
     nftAddress: NftAddress;
 }
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
-    const [state] = useNftAddressState(nftAddress);
-    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading } = state;
-    const isPageLoading = isNftDetailsLoading;
+    const [state, setState] = useNftAddressState(nftAddress);
+    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading } = state;
+    const isPageLoading = isNftDetailsLoading || isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
@@ -45,12 +45,11 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="section no-border-bottom padding-b-0">
-                            <div className="row middle">
-                                <h2>Associated Outputs</h2>
-                            </div>
-                            <AssociatedOutputs addressDetails={nftAddressDetails} />
-                        </div>
+                        <AddressPageTabbedSections
+                            key={nftAddressDetails.bech32}
+                            addressDetails={nftAddressDetails}
+                            setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                        />
                     </div>
                 )}
             </div>

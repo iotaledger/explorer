@@ -14,6 +14,7 @@ export interface INftAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     isNftDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
     isNftDetailsLoading: true,
     totalBalance: null,
     availableBalance: null,
+    isAssociatedOutputsLoading: false,
 };
 
 /**

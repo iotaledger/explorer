@@ -14,6 +14,7 @@ export interface IAccountAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     isAccountDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     isAccountDetailsLoading: true,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
