@@ -7,7 +7,7 @@ export interface IAddressBalanceResponse extends IResponse {
     totalBalance?: number;
 
     /**
-     * The balance of trivialy unlockable outputs with address unlock condition.
+     * The balance of all spendable outputs by the address at this time.
      */
     availableBalance?: number;
 
