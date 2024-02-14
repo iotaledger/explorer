@@ -1,4 +1,6 @@
 import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
+import { IAddressBalanceRequest } from "~/models/api/nova/address/IAddressBalanceRequest";
+import { IAddressBalanceResponse } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { IBlockRequest } from "~/models/api/nova/block/IBlockRequest";
 import { IBlockResponse } from "~/models/api/nova/block/IBlockResponse";
 import { IOutputDetailsRequest } from "~/models/api/IOutputDetailsRequest";
@@ -31,6 +33,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async nodeInfo(request: INetworkBoundGetRequest): Promise<INodeInfoResponse> {
         return this.callApi<unknown, INodeInfoResponse>(`node-info/${request.network}`, "get");
+    }
+
+    /**
+     * Get the balance of and address from chronicle.
+     * @param request The Address Balance request.
+     * @returns The Address balance reponse
+     */
+    public async addressBalanceChronicle(request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+        return this.callApi<unknown, IAddressBalanceResponse>(`nova/balance/chronicle/${request.network}/${request.address}`, "get");
     }
 
     /**

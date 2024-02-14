@@ -1,6 +1,7 @@
 import { Ed25519Address } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useEd25519AddressState } from "~/helpers/nova/hooks/useEd25519AddressState";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
 
@@ -9,7 +10,7 @@ interface Ed25519AddressViewProps {
 }
 
 const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address }) => {
-    const { ed25519AddressDetails } = useEd25519AddressState(ed25519Address);
+    const { ed25519AddressDetails, totalBalance, availableBalance } = useEd25519AddressState(ed25519Address);
 
     return (
         <div className="address-page">
@@ -30,6 +31,13 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={ed25519AddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
