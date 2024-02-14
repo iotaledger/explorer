@@ -261,6 +261,23 @@ export class ChrysalisTangleHelper {
     }
 
     /**
+     * Download the transaction history as csv
+     * @param network The network to find the items on.
+     * @param address Address for exporting
+     */
+    public static async transactionHistoryDownload(network: INetwork, address: string): Promise<string> {
+        try {
+            const csvResp = await fetch(`${network.permaNodeEndpoint}/api/core/v1/addresses/${address}/tx-history`, {
+                method: "GET",
+                headers: {
+                    Accept: "text/csv",
+                },
+            });
+            return await csvResp.text();
+        } catch {}
+    }
+
+    /**
      * Get the milestone details.
      * @param network The network to find the items on.
      * @param milestoneIndex The milestone iindex to get the details.
