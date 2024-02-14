@@ -1,9 +1,9 @@
 import { NftAddress } from "@iota/sdk-wasm-nova/web";
-import React, { Reducer, useReducer } from "react";
+import React from "react";
 import { useNftAddressState } from "~/helpers/nova/hooks/useNftAddressState";
 import Spinner from "../../Spinner";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
-import { IEd25519AddressViewState } from "./Ed25519AddressView";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface NftAddressViewProps {
@@ -15,12 +15,8 @@ export interface INftAddressViewState {
 }
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
-    const { nftAddressDetails, isNftDetailsLoading } = useNftAddressState(nftAddress);
-    const [state, setState] = useReducer<Reducer<IEd25519AddressViewState, Partial<IEd25519AddressViewState>>>(
-        (currentState, newState) => ({ ...currentState, ...newState }),
-        { isAssociatedOutputsLoading: false },
-    );
-    const { isAssociatedOutputsLoading } = state;
+    const [state, setState] = useNftAddressState(nftAddress);
+    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading } = state;
     const isPageLoading = isNftDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -43,6 +39,13 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={nftAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

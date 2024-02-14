@@ -6,17 +6,24 @@ import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useAddressBalance } from "./useAddressBalance";
 
 export interface INftAddressState {
     nftAddressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
+    totalBalance: number | null;
+    availableBalance: number | null;
     isNftDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     nftAddressDetails: null,
     nftOutput: null,
     isNftDetailsLoading: true,
+    totalBalance: null,
+    availableBalance: null,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
@@ -26,7 +33,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useNftAddressState = (address: NftAddress): INftAddressState => {
+export const useNftAddressState = (address: NftAddress): [INftAddressState, React.Dispatch<Partial<INftAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -36,6 +43,7 @@ export const useNftAddressState = (address: NftAddress): INftAddressState => {
     );
 
     const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.nftAddressDetails, nftOutput);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -52,13 +60,11 @@ export const useNftAddressState = (address: NftAddress): INftAddressState => {
     useEffect(() => {
         setState({
             nftOutput,
+            totalBalance,
+            availableBalance,
             isNftDetailsLoading,
         });
-    }, [nftOutput, isNftDetailsLoading]);
+    }, [nftOutput, totalBalance, availableBalance, isNftDetailsLoading]);
 
-    return {
-        nftAddressDetails: state.nftAddressDetails,
-        nftOutput: state.nftOutput,
-        isNftDetailsLoading: state.isNftDetailsLoading,
-    };
+    return [state, setState];
 };

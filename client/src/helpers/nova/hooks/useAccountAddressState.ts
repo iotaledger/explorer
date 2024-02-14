@@ -6,17 +6,24 @@ import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useAddressBalance } from "./useAddressBalance";
 
 export interface IAccountAddressState {
     accountAddressDetails: IAddressDetails | null;
     accountOutput: AccountOutput | null;
+    totalBalance: number | null;
+    availableBalance: number | null;
     isAccountDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     accountAddressDetails: null,
     accountOutput: null,
+    totalBalance: null,
+    availableBalance: null,
     isAccountDetailsLoading: true,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
@@ -26,7 +33,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useAccountAddressState = (address: AccountAddress): IAccountAddressState => {
+export const useAccountAddressState = (address: AccountAddress): [IAccountAddressState, React.Dispatch<Partial<IAccountAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -36,6 +43,7 @@ export const useAccountAddressState = (address: AccountAddress): IAccountAddress
     );
 
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.accountAddressDetails, accountOutput);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -53,12 +61,10 @@ export const useAccountAddressState = (address: AccountAddress): IAccountAddress
         setState({
             accountOutput,
             isAccountDetailsLoading,
+            totalBalance,
+            availableBalance,
         });
-    }, [accountOutput, isAccountDetailsLoading]);
+    }, [accountOutput, totalBalance, availableBalance, isAccountDetailsLoading]);
 
-    return {
-        accountAddressDetails: state.accountAddressDetails,
-        accountOutput: state.accountOutput,
-        isAccountDetailsLoading: state.isAccountDetailsLoading,
-    };
+    return [state, setState];
 };

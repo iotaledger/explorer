@@ -1,9 +1,9 @@
 import { AnchorAddress } from "@iota/sdk-wasm-nova/web";
-import React, { Reducer, useReducer } from "react";
+import React from "react";
 import { useAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
 import Spinner from "../../Spinner";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
-import { IEd25519AddressViewState } from "./Ed25519AddressView";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface AnchorAddressViewProps {
@@ -15,12 +15,8 @@ export interface IAnchorAddressViewState {
 }
 
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
-    const { anchorAddressDetails, isAnchorDetailsLoading } = useAnchorAddressState(anchorAddress);
-    const [state, setState] = useReducer<Reducer<IEd25519AddressViewState, Partial<IEd25519AddressViewState>>>(
-        (currentState, newState) => ({ ...currentState, ...newState }),
-        { isAssociatedOutputsLoading: false },
-    );
-    const { isAssociatedOutputsLoading } = state;
+    const [state, setState] = useAnchorAddressState(anchorAddress);
+    const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading, isAssociatedOutputsLoading } = state;
     const isPageLoading = isAnchorDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -43,6 +39,13 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={anchorAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

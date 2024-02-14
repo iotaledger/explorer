@@ -41,7 +41,7 @@ interface TangleState {
 
     colorQueue: Pick<BlockState, "id" | "color">[];
     addToColorQueue: (blockId: string, color: Color) => void;
-    removeFromColorQueue: (blockId: string) => void;
+    removeFromColorQueue: (blockIds: string[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
     blockIdToIndex: Map<string, number>;
@@ -155,11 +155,13 @@ export const useTangleStore = create<TangleState>()(
                 colorQueue: [...state.colorQueue, { id, color }],
             }));
         },
-        removeFromColorQueue: (blockId: string) => {
-            set((state) => ({
-                ...state,
-                colorQueue: state.colorQueue.filter((block) => block.id !== blockId),
-            }));
+        removeFromColorQueue: (blockIds) => {
+            if (blockIds.length > 0) {
+                set((state) => ({
+                    ...state,
+                    colorQueue: state.colorQueue.filter((block) => !blockIds.includes(block.id)),
+                }));
+            }
         },
         updateBlockIdToIndex: (blockId: string, index: number) => {
             set((state) => {

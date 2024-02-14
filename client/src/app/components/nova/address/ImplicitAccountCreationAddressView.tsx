@@ -1,9 +1,9 @@
 import { ImplicitAccountCreationAddress } from "@iota/sdk-wasm-nova/web";
-import React, { Reducer, useReducer } from "react";
+import React from "react";
 import { useImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import Spinner from "../../Spinner";
-import { IEd25519AddressViewState } from "./Ed25519AddressView";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface ImplicitAccountCreationAddressViewProps {
@@ -15,12 +15,8 @@ export interface IImplicitAccountCreationAddressViewState {
 }
 
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
-    const { implicitAccountCreationAddressDetails } = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
-    const [state, setState] = useReducer<Reducer<IEd25519AddressViewState, Partial<IEd25519AddressViewState>>>(
-        (currentState, newState) => ({ ...currentState, ...newState }),
-        { isAssociatedOutputsLoading: false },
-    );
-    const { isAssociatedOutputsLoading } = state;
+    const [state, setState] = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
+    const { implicitAccountCreationAddressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;
     const isPageLoading = isAssociatedOutputsLoading;
 
     return (
@@ -43,6 +39,13 @@ const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddres
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={implicitAccountCreationAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
