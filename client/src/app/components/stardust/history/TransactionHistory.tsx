@@ -60,6 +60,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                                 isSpent={c.isSpent}
                                 isFormattedAmounts={isFormattedAmounts}
                                 setIsFormattedAmounts={setIsFormattedAmounts}
+                                isExpired={c.isExpired}
                             />
                         </React.Fragment>
                     ))}
@@ -81,6 +82,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                                 isSpent={c.isSpent}
                                 isFormattedAmounts={isFormattedAmounts}
                                 setIsFormattedAmounts={setIsFormattedAmounts}
+                                isExpired={c.isExpired}
                             />
                         </React.Fragment>
                     );

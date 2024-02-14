@@ -13,6 +13,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = ({
     isSpent,
     isFormattedAmounts,
     setIsFormattedAmounts,
+    isExpired,
 }) => {
     const valueView = (
         <span className="pointer" onClick={() => setIsFormattedAmounts(!isFormattedAmounts)}>
@@ -29,6 +30,7 @@ const TransactionRow: React.FC<ITransactionEntryProps> = ({
                         transactionId={transactionId}
                         isTransactionFromStardustGenesis={isTransactionFromStardustGenesis}
                         transactionLink={transactionLink}
+                        isTxExpired={isExpired}
                     />
                 </div>
             </td>

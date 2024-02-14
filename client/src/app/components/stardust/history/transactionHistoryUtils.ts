@@ -1,4 +1,4 @@
-import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { CommonOutput, ExpirationUnlockCondition, INodeInfoBaseToken, UnlockCondition, UnlockConditionType } from "@iota/sdk-wasm/web";
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
@@ -18,6 +18,7 @@ export interface ITransactionHistoryRecord {
     balanceChange: number;
     balanceChangeFormatted: string;
     outputs: OutputWithDetails[];
+    isExpired: boolean;
 }
 
 export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetails[]) => {
@@ -73,6 +74,8 @@ export const getTransactionHistoryRecords = (
 
         const isSpent = balanceChange <= 0;
 
+        const isExpired = isTransactionExpired(outputs, balanceChange);
+
         calculatedTransactions.push({
             isGenesisByDate: isGenesisByDate,
             isTransactionFromStardustGenesis: isTransactionFromStardustGenesis,
@@ -84,8 +87,10 @@ export const getTransactionHistoryRecords = (
             balanceChange: balanceChange,
             balanceChangeFormatted: (isSpent ? `-` : `+`) + formatAmount(Math.abs(balanceChange), tokenInfo, !isFormattedAmounts, 2, true),
             outputs: outputs,
+            isExpired,
         });
     });
+
     return calculatedTransactions;
 };
 
@@ -111,3 +116,20 @@ export const getTransactionLink = (network: string, transactionId: string, isTra
         ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
         : `/${network}/transaction/${transactionId}`;
 };
+
+function isExpirationUnlockCondition(unlockCondition: UnlockCondition): unlockCondition is ExpirationUnlockCondition {
+    return unlockCondition.type === UnlockConditionType.Expiration;
+}
+
+function isTransactionExpired(outputs: OutputWithDetails[], balanceChange: number): boolean {
+    const hasExpiredOutput = outputs.some((output) => {
+        const outputFromDetails = output?.details?.output as CommonOutput;
+
+        const expirationUnlockCondition = outputFromDetails.unlockConditions.find(isExpirationUnlockCondition);
+        const hasTimeExpired = expirationUnlockCondition && expirationUnlockCondition.unixTime < Date.now();
+
+        return hasTimeExpired;
+    });
+
+    return hasExpiredOutput && balanceChange <= 0;
+}

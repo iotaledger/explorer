@@ -15,6 +15,11 @@ export interface ITransactionEntryProps {
     isSpent: boolean;
 
     /**
+     * Is the transaction expired.
+     */
+    isExpired: boolean;
+
+    /**
      * Are the amounts formatted.
      */
     isFormattedAmounts: boolean;

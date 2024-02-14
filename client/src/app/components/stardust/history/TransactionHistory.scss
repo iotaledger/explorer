@@ -93,6 +93,20 @@
                         color: var(--expanded-color);
                     }
                 }
+
+                .transaction-indicators {
+                    display: flex;
+
+                    > * {
+                        margin-left: 4px;
+                    }
+
+                    .tx-indicator {
+                        @include font-size(16px);
+
+                        vertical-align: sub;
+                    }
+                }
             }
 
             td,
@@ -136,6 +150,20 @@
 
                         &.negative {
                             color: var(--expanded-color);
+                        }
+                    }
+
+                    .transaction-indicators {
+                        display: flex;
+
+                        > * {
+                            margin-left: 4px;
+                        }
+
+                        .tx-indicator {
+                            @include font-size(20px);
+
+                            vertical-align: sub;
                         }
                     }
                 }
