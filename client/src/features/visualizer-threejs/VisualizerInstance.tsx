@@ -171,17 +171,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         };
     }, [runListeners]);
 
-    useEffect(() => {
-        if (!runListeners) {
-            return;
-        }
-        setIsPlaying(true);
-
-        return () => {
-            bpsCounter.stop();
-        };
-    }, [runListeners]);
-
     const feedSubscriptionStart = () => {
         if (!feedService) {
             return;
