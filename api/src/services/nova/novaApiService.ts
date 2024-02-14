@@ -10,20 +10,29 @@ import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
+import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
 import { IFoundryResponse } from "../../models/api/nova/nova/IFoundryResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
+import { SearchExecutor } from "../../utils/nova/searchExecutor";
+import { SearchQueryBuilder } from "../../utils/nova/searchQueryBuilder";
 
 /**
  * Class to interact with the nova API.
  */
 export class NovaApiService {
     /**
+     * The network in context.
+     */
+    private readonly network: INetwork;
+
+    /**
      * The client to use for requests.
      */
     private readonly client: Client;
 
     constructor(network: INetwork) {
+        this.network = network;
         this.client = ServiceFactory.get<Client>(`client-${network.network}`);
     }
 
@@ -174,5 +183,15 @@ export class NovaApiService {
         const manaRewardsResponse = await this.client.getRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
+    }
+
+    /**
+     * Find item on the stardust network.
+     * @param query The query to use for finding items.
+     * @returns The item found.
+     */
+    public async search(query: string): Promise<ISearchResponse> {
+        const searchQuery = new SearchQueryBuilder(query, this.network.bechHrp).build();
+        return new SearchExecutor(this.network, searchQuery).run();
     }
 }

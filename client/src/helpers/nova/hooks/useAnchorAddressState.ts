@@ -6,17 +6,24 @@ import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
+import { useAddressBalance } from "./useAddressBalance";
 
 export interface IAnchorAddressState {
     anchorAddressDetails: IAddressDetails | null;
     anchorOutput: AnchorOutput | null;
+    availableBalance: number | null;
+    totalBalance: number | null;
     isAnchorDetailsLoading: boolean;
+    isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
     anchorAddressDetails: null,
     anchorOutput: null,
+    totalBalance: null,
+    availableBalance: null,
     isAnchorDetailsLoading: true,
+    isAssociatedOutputsLoading: false,
 };
 
 /**
@@ -26,7 +33,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressState => {
+export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressState, React.Dispatch<Partial<IAnchorAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -36,6 +43,7 @@ export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressSta
     );
 
     const { anchorOutput, isLoading: isAnchorDetailsLoading } = useAnchorDetails(network, address.anchorId);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.anchorAddressDetails, anchorOutput);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -52,13 +60,11 @@ export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressSta
     useEffect(() => {
         setState({
             anchorOutput,
+            totalBalance,
+            availableBalance,
             isAnchorDetailsLoading,
         });
-    }, [anchorOutput, isAnchorDetailsLoading]);
+    }, [anchorOutput, totalBalance, availableBalance, isAnchorDetailsLoading]);
 
-    return {
-        anchorAddressDetails: state.anchorAddressDetails,
-        anchorOutput: state.anchorOutput,
-        isAnchorDetailsLoading: state.isAnchorDetailsLoading,
-    };
+    return [state, setState];
 };

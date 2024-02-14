@@ -1,6 +1,7 @@
 import { Ed25519Address } from "@iota/sdk-wasm-nova/web";
-import React, { Reducer, useReducer } from "react";
+import React from "react";
 import { useEd25519AddressState } from "~/helpers/nova/hooks/useEd25519AddressState";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 import Spinner from "../../Spinner";
@@ -14,13 +15,8 @@ export interface IEd25519AddressViewState {
 }
 
 const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address }) => {
-    const { ed25519AddressDetails } = useEd25519AddressState(ed25519Address);
-    const [state, setState] = useReducer<Reducer<IEd25519AddressViewState, Partial<IEd25519AddressViewState>>>(
-        (currentState, newState) => ({ ...currentState, ...newState }),
-        { isAssociatedOutputsLoading: false },
-    );
-
-    const { isAssociatedOutputsLoading } = state;
+    const [state, setState] = useEd25519AddressState(ed25519Address);
+    const { ed25519AddressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;
     const isPageLoading = isAssociatedOutputsLoading;
 
     return (
@@ -43,6 +39,13 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={ed25519AddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
