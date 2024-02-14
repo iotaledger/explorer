@@ -21,6 +21,8 @@ import { INftDetailsRequest } from "~/models/api/nova/INftDetailsRequest";
 import { INftDetailsResponse } from "~/models/api/nova/INftDetailsResponse";
 import { IAnchorDetailsRequest } from "~/models/api/nova/IAnchorDetailsRequest";
 import { IAnchorDetailsResponse } from "~/models/api/nova/IAnchorDetailsResponse";
+import { ISearchRequest } from "~/models/api/nova/ISearchRequest";
+import { ISearchResponse } from "~/models/api/nova/ISearchResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -130,5 +132,14 @@ export class NovaApiClient extends ApiClient {
             `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
             "get",
         );
+    }
+
+    /**
+     * Find items from the tangle.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async search(request: ISearchRequest): Promise<ISearchResponse> {
+        return this.callApi<unknown, ISearchResponse>(`nova/search/${request.network}/${request.query}`, "get");
     }
 }
