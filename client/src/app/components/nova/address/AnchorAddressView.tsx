@@ -10,10 +10,6 @@ interface AnchorAddressViewProps {
     anchorAddress: AnchorAddress;
 }
 
-export interface IAnchorAddressViewState {
-    isAssociatedOutputsLoading: boolean;
-}
-
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
     const [state, setState] = useAnchorAddressState(anchorAddress);
     const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading, isAssociatedOutputsLoading } = state;
