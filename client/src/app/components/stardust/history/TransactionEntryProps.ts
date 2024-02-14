@@ -35,15 +35,6 @@ export interface ITransactionEntryProps {
     isTransactionFromStardustGenesis: boolean;
 
     /**
-     *
-     */
-    stardustGenesisOutputId?: string;
-    /**
-     *
-     */
-    stardustGenesisOutputLink?: string;
-
-    /**
      * check some of outputs timestamps zero
      */
     isGenesisByDate: boolean;

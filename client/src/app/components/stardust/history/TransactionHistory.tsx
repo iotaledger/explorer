@@ -64,7 +64,6 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                             <TransactionCard
                                 isGenesisByDate={c.isGenesisByDate}
                                 isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
-                                stardustGenesisOutputId={c.stardustGenesisOutputId}
                                 transactionLink={c.transactionLink}
                                 dateFormatted={c.dateFormatted}
                                 balanceChangeFormatted={c.balanceChangeFormatted}

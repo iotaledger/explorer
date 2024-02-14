@@ -3,7 +3,7 @@ import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
 import { OutputWithDetails } from "~helpers/hooks/useAddressHistory";
-import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 
@@ -11,8 +11,6 @@ export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
     isTransactionFromStardustGenesis: boolean;
     isSpent: boolean;
-    stardustGenesisOutputId?: string;
-    stardustGenesisOutputLink?: string;
     transactionLink: string;
     transactionId: string;
     timestamp: number;
@@ -59,33 +57,24 @@ export const getTransactionHistoryRecords = (
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
 
-    let isSet = false; // TODO fake transaction. Remove after confirmation
-    transactionIdToOutputs.forEach((outputs, transactionId, index) => {
+    transactionIdToOutputs.forEach((outputs, transactionId) => {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
         const balanceChange = calculateBalanceChange(outputs);
         const ago = moment(lastOutputTime * 1000).fromNow();
 
         const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).some((milestoneTimestamp) => milestoneTimestamp === 0);
 
-        // TODO fake transaction. Remove after confirmation
-        if (!isSet) {
-            outputs[0].milestoneIndex = 7669900;
-            isSet = true;
-        }
-
         let stardustGenesisOutputId;
-        let stardustGenesisOutputLink;
         const isTransactionFromStardustGenesis = outputs.some(({ milestoneIndex, outputId }) => {
             const isGenesis = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
             if (isGenesis) {
                 stardustGenesisOutputId = outputId;
-                stardustGenesisOutputLink = `/${network}/output/${outputId}`;
             }
 
             return isGenesis;
         });
 
-        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis);
+        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis, stardustGenesisOutputId);
 
         const isSpent = balanceChange <= 0;
 
@@ -93,8 +82,6 @@ export const getTransactionHistoryRecords = (
             isGenesisByDate: isGenesisByDate,
             isTransactionFromStardustGenesis: isTransactionFromStardustGenesis,
             isSpent: isSpent,
-            stardustGenesisOutputId: stardustGenesisOutputId,
-            stardustGenesisOutputLink: stardustGenesisOutputLink,
             transactionLink: transactionLink,
             transactionId: transactionId,
             timestamp: lastOutputTime,
@@ -124,8 +111,19 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     }, 0);
 };
 
-export const getTransactionLink = (network: string, transactionId: string, isTransactionFromStardustGenesis: boolean) => {
-    return isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
-        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-        : `/${network}/transaction/${transactionId}`;
+export const getTransactionLink = (
+    network: string,
+    transactionId: string,
+    isTransactionFromStardustGenesis: boolean,
+    outputId?: string,
+) => {
+    if (isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER)) {
+        return `/${network}/output/${outputId}`;
+    }
+
+    if (isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER)) {
+        return `/${CHRYSALIS_MAINNET}/search/${transactionId}`;
+    }
+
+    return `/${network}/transaction/${transactionId}`;
 };
