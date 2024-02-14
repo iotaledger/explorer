@@ -80,13 +80,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     useEffect(() => {
         const handleVisibilityChange = async () => {
             if (document.hidden) {
-                await feedSubscriptionStop();
                 setIsPlaying(false);
             }
         };
 
         const handleBlur = async () => {
-            await feedSubscriptionStop();
             setIsPlaying(false);
         };
 
@@ -118,13 +116,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 return;
             }
 
-            if (isPlaying) {
-                feedSubscriptionStart();
-            } else {
-                await feedSubscriptionStop();
-            }
+            feedSubscriptionStart();
         })();
-    }, [feedService, isPlaying, runListeners]);
+    }, [feedService, runListeners]);
 
     /**
      * Control width and height of canvas
@@ -157,10 +151,38 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             setRunListeners(false);
             setIsPlaying(false);
             resetConfigState();
-            await feedSubscriptionStop();
+            await feedSubscriptionFinalize();
             setFeedService(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
         })();
     }, [network]);
+
+    useEffect(() => {
+        if (!runListeners) {
+            return;
+        }
+        setIsPlaying(true);
+
+        return () => {
+            bpsCounter.stop();
+        };
+    }, [runListeners]);
+
+    const feedSubscriptionStart = () => {
+        if (!feedService) {
+            return;
+        }
+        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
+
+        bpsCounter.start();
+    };
+
+    const feedSubscriptionFinalize = async () => {
+        if (!feedService) {
+            return;
+        }
+        await feedService.unsubscribeBlocks();
+        bpsCounter.reset();
+    };
 
     /**
      * Subscribe to updates
@@ -168,7 +190,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
         const emitterObj = emitterRef.current;
-        if (emitterObj && blockData) {
+        if (emitterObj && blockData && isPlaying) {
             const emitterBox = new Box3().setFromObject(emitterObj);
 
             const emitterCenter = new THREE.Vector3();
@@ -219,33 +241,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             }
         }
     }
-
-    useEffect(() => {
-        if (!runListeners) {
-            return;
-        }
-        setIsPlaying(true);
-
-        return () => {
-            bpsCounter.stop();
-        };
-    }, [runListeners]);
-
-    const feedSubscriptionStart = () => {
-        if (!feedService) {
-            return;
-        }
-        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
-        bpsCounter.start();
-    };
-
-    const feedSubscriptionStop = async () => {
-        if (!feedService) {
-            return;
-        }
-        await feedService.unsubscribeBlocks();
-        bpsCounter.reset();
-    };
 
     return (
         <Wrapper
