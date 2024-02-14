@@ -1,6 +1,7 @@
 import { ImplicitAccountCreationAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
+import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import AssociatedOutputs from "./section/association/AssociatedOutputs";
 
@@ -9,7 +10,8 @@ interface ImplicitAccountCreationAddressViewProps {
 }
 
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
-    const { implicitAccountCreationAddressDetails } = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
+    const { implicitAccountCreationAddressDetails, totalBalance, availableBalance } =
+        useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
 
     return (
         <div className="address-page">
@@ -30,6 +32,13 @@ const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddres
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={implicitAccountCreationAddressDetails} advancedMode={true} />
+                                    {totalBalance !== null && (
+                                        <AddressBalance
+                                            totalBalance={totalBalance}
+                                            availableBalance={availableBalance}
+                                            storageDeposit={null}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

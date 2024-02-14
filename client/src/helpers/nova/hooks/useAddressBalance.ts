@@ -1,4 +1,4 @@
-import { AddressType, NftOutput, AccountOutput } from "@iota/sdk-wasm-nova/web";
+import { AddressType, NftOutput, AccountOutput, AnchorOutput } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
@@ -16,7 +16,7 @@ import { NOVA } from "~models/config/protocolVersion";
 export function useAddressBalance(
     network: string,
     addressDetails: IAddressDetails | null,
-    output: AccountOutput | NftOutput | null,
+    output: AccountOutput | NftOutput | AnchorOutput | null,
 ): { totalBalance: number | null; availableBalance: number | null; isLoading: boolean } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
@@ -27,7 +27,10 @@ export function useAddressBalance(
     useEffect(() => {
         setIsLoading(true);
         const address = addressDetails?.bech32;
-        const needsOutputToProceed = addressDetails?.type === AddressType.Account || addressDetails?.type === AddressType.Nft;
+        const needsOutputToProceed =
+            addressDetails?.type === AddressType.Account ||
+            addressDetails?.type === AddressType.Nft ||
+            addressDetails?.type === AddressType.Anchor;
         const canLoad = address && (!needsOutputToProceed || (needsOutputToProceed && output));
         if (canLoad) {
             // eslint-disable-next-line no-void
