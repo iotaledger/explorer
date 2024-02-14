@@ -1,4 +1,4 @@
-import { OutputResponse, INodeInfoBaseToken, CommonOutput } from "@iota/sdk";
+import { CommonOutput, INodeInfoBaseToken, OutputResponse } from "@iota/sdk";
 import JSZip from "jszip";
 import moment from "moment";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
@@ -8,6 +8,8 @@ import { ITransactionHistoryDownloadBody } from "../../../../models/api/stardust
 import { ITransactionHistoryRequest } from "../../../../models/api/stardust/chronicle/ITransactionHistoryRequest";
 import { ITransactionHistoryItem } from "../../../../models/api/stardust/chronicle/ITransactionHistoryResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
+import { INetwork } from "../../../../models/db/INetwork";
+import { MAINNET } from "../../../../models/db/networkType";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { ChronicleService } from "../../../../services/stardust/chronicleService";
@@ -20,6 +22,7 @@ export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
     isSpent: boolean;
     transactionId: string;
+    outputIdFromGenesis?: string;
     timestamp: number;
     dateFormatted: string;
     balanceChange: number;
@@ -73,14 +76,18 @@ export async function post(
     });
     const tokenInfo = nodeInfoService.getNodeInfo().baseToken;
 
-    const transactions = getTransactionHistoryRecords(groupOutputsByTransactionId(fulfilledOutputs), tokenInfo);
+    const transactions = getTransactionHistoryRecords(groupOutputsByTransactionId(fulfilledOutputs), tokenInfo, networkConfig);
 
     const headers = ["Timestamp", "TransactionId", "Balance changes"];
 
     let csvContent = `${headers.join(",")}\n`;
 
     for (const transaction of transactions) {
-        const row = [transaction.dateFormatted, transaction.transactionId, transaction.balanceChangeFormatted].join(",");
+        const row = [
+            transaction.dateFormatted,
+            transaction.outputIdFromGenesis ? `Stardust Genesis output: ${transaction.outputIdFromGenesis}` : transaction.transactionId,
+            transaction.balanceChangeFormatted,
+        ].join(",");
         csvContent += `${row}\n`;
     }
 
@@ -140,6 +147,7 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
 export const getTransactionHistoryRecords = (
     transactionIdToOutputs: Map<string, OutputWithDetails[]>,
     tokenInfo: INodeInfoBaseToken,
+    networkConfig: INetwork,
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
 
@@ -149,12 +157,15 @@ export const getTransactionHistoryRecords = (
 
         const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).includes(0);
 
+        const outputIdFromGenesis = getStardustGenesisOutputId(outputs, networkConfig, transactionId);
+
         const isSpent = balanceChange <= 0;
 
         calculatedTransactions.push({
             isGenesisByDate,
             isSpent,
             transactionId,
+            outputIdFromGenesis,
             timestamp: lastOutputTime,
             dateFormatted: moment(lastOutputTime * 1000).format("YYYY-MM-DD HH:mm:ss"),
             balanceChange,
@@ -164,6 +175,29 @@ export const getTransactionHistoryRecords = (
     }
     return calculatedTransactions;
 };
+
+/**
+ * Get the output id from the stardust genesis.
+ * @param outputs List of outputs related to transaction
+ * @param networkConfig Network configuration
+ * @param transactionId Current trancaction
+ * @returns The output id from the stardust genesis or undefined.
+ */
+function getStardustGenesisOutputId(outputs: OutputWithDetails[], networkConfig: INetwork, transactionId: string): string | undefined {
+    const STARDUST_GENESIS_MILESTONE = 7669900;
+    const STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER = "0xb191c4bc825ac6983789e50545d5ef07a1d293a98ad974fc9498cb18";
+
+    const outputFromStardustGenesis = outputs.find((output) => {
+        if (
+            networkConfig.network === MAINNET &&
+            output.milestoneIndex === STARDUST_GENESIS_MILESTONE &&
+            transactionId.includes(STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER)
+        ) {
+            return true;
+        }
+    });
+    return outputFromStardustGenesis?.outputId;
+}
 
 export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     let totalAmount = 0;
