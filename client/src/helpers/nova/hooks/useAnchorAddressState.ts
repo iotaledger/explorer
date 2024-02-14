@@ -31,7 +31,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressState => {
+export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressState, React.Dispatch<Partial<IAnchorAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -64,11 +64,5 @@ export const useAnchorAddressState = (address: AnchorAddress): IAnchorAddressSta
         });
     }, [anchorOutput, totalBalance, availableBalance, isAnchorDetailsLoading]);
 
-    return {
-        anchorAddressDetails: state.anchorAddressDetails,
-        anchorOutput: state.anchorOutput,
-        totalBalance: state.totalBalance,
-        availableBalance: state.availableBalance,
-        isAnchorDetailsLoading: state.isAnchorDetailsLoading,
-    };
+    return [state, setState];
 };

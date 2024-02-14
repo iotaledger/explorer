@@ -31,7 +31,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useNftAddressState = (address: NftAddress): INftAddressState => {
+export const useNftAddressState = (address: NftAddress): [INftAddressState, React.Dispatch<Partial<INftAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -64,11 +64,5 @@ export const useNftAddressState = (address: NftAddress): INftAddressState => {
         });
     }, [nftOutput, totalBalance, availableBalance, isNftDetailsLoading]);
 
-    return {
-        nftAddressDetails: state.nftAddressDetails,
-        nftOutput: state.nftOutput,
-        totalBalance: state.totalBalance,
-        availableBalance: state.availableBalance,
-        isNftDetailsLoading: state.isNftDetailsLoading,
-    };
+    return [state, setState];
 };

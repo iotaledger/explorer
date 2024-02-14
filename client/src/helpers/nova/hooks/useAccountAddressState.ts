@@ -31,7 +31,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useAccountAddressState = (address: AccountAddress): IAccountAddressState => {
+export const useAccountAddressState = (address: AccountAddress): [IAccountAddressState, React.Dispatch<Partial<IAccountAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -64,11 +64,5 @@ export const useAccountAddressState = (address: AccountAddress): IAccountAddress
         });
     }, [accountOutput, totalBalance, availableBalance, isAccountDetailsLoading]);
 
-    return {
-        accountAddressDetails: state.accountAddressDetails,
-        accountOutput: state.accountOutput,
-        totalBalance: state.totalBalance,
-        availableBalance: state.availableBalance,
-        isAccountDetailsLoading: state.isAccountDetailsLoading,
-    };
+    return [state, setState];
 };

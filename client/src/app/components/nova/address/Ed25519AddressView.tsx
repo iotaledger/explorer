@@ -10,7 +10,8 @@ interface Ed25519AddressViewProps {
 }
 
 const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address }) => {
-    const { ed25519AddressDetails, totalBalance, availableBalance } = useEd25519AddressState(ed25519Address);
+    const [state] = useEd25519AddressState(ed25519Address);
+    const { ed25519AddressDetails, totalBalance, availableBalance } = state;
 
     return (
         <div className="address-page">

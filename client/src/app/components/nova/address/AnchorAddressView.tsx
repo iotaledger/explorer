@@ -11,7 +11,8 @@ interface AnchorAddressViewProps {
 }
 
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
-    const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading } = useAnchorAddressState(anchorAddress);
+    const [state] = useAnchorAddressState(anchorAddress);
+    const { anchorAddressDetails, totalBalance, availableBalance, isAnchorDetailsLoading } = state;
     const isPageLoading = isAnchorDetailsLoading;
 
     return (

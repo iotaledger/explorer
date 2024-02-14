@@ -11,7 +11,8 @@ interface AccountAddressViewProps {
 }
 
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
-    const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading } = useAccountAddressState(accountAddress);
+    const [state] = useAccountAddressState(accountAddress);
+    const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading } = state;
     const isPageLoading = isAccountDetailsLoading;
 
     return (

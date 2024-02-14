@@ -10,8 +10,8 @@ interface ImplicitAccountCreationAddressViewProps {
 }
 
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
-    const { implicitAccountCreationAddressDetails, totalBalance, availableBalance } =
-        useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
+    const [state] = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
+    const { implicitAccountCreationAddressDetails, totalBalance, availableBalance } = state;
 
     return (
         <div className="address-page">

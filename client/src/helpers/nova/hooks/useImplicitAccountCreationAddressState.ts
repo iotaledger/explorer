@@ -26,7 +26,9 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useImplicitAccountCreationAddressState = (address: ImplicitAccountCreationAddress) => {
+export const useImplicitAccountCreationAddressState = (
+    address: ImplicitAccountCreationAddress,
+): [IImplicitAccountCreationAddressState, React.Dispatch<Partial<IImplicitAccountCreationAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
     const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -56,9 +58,5 @@ export const useImplicitAccountCreationAddressState = (address: ImplicitAccountC
         });
     }, [totalBalance, availableBalance]);
 
-    return {
-        implicitAccountCreationAddressDetails: state.implicitAccountCreationAddressDetails,
-        totalBalance: state.totalBalance,
-        availableBalance: state.availableBalance,
-    };
+    return [state, setState];
 };

@@ -11,7 +11,8 @@ interface NftAddressViewProps {
 }
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
-    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading } = useNftAddressState(nftAddress);
+    const [state] = useNftAddressState(nftAddress);
+    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading } = state;
     const isPageLoading = isNftDetailsLoading;
 
     return (

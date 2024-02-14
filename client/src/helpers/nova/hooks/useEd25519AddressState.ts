@@ -25,7 +25,7 @@ interface IAddressPageLocationProps {
     addressDetails: IAddressDetails;
 }
 
-export const useEd25519AddressState = (address: Ed25519Address) => {
+export const useEd25519AddressState = (address: Ed25519Address): [IEd25519AddressState, React.Dispatch<Partial<IEd25519AddressState>>] => {
     const location = useLocation();
     const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IEd25519AddressState, Partial<IEd25519AddressState>>>(
@@ -42,7 +42,6 @@ export const useEd25519AddressState = (address: Ed25519Address) => {
             : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
-            ...initialState,
             ed25519AddressDetails: addressDetails,
         });
     }, []);
@@ -54,9 +53,5 @@ export const useEd25519AddressState = (address: Ed25519Address) => {
         });
     }, [totalBalance, availableBalance]);
 
-    return {
-        ed25519AddressDetails: state.ed25519AddressDetails,
-        totalBalance: state.totalBalance,
-        availableBalance: state.availableBalance,
-    };
+    return [state, setState];
 };
