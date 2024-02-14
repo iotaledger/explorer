@@ -12,6 +12,10 @@ export interface SearchQuery {
      */
     queryLower: string;
     /**
+     * The slotIndex query.
+     */
+    slotIndex?: number;
+    /**
      * The MaybeAddress query.
      */
     address?: IAddressDetails;
@@ -100,6 +104,8 @@ export class SearchQueryBuilder {
         let tag: string;
 
         const queryDetails = AddressHelper.buildAddress(this.networkBechHrp, this.queryLower);
+        const slotIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
+
         // if the source query was valid bech32, we should directly look for an address
         if (queryDetails.bech32) {
             address = queryDetails;
@@ -140,6 +146,7 @@ export class SearchQueryBuilder {
 
         return {
             queryLower: this.queryLower,
+            slotIndex,
             address,
             blockId,
             transactionId,
