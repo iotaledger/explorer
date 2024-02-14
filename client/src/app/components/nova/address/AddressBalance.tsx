@@ -53,7 +53,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({ totalBalance, available
                     {amount !== null && amount > 0 ? (
                         <div className="balance-value middle">
                             <div className="row middle">
-                                <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-smr pointer margin-r-5">
+                                <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
                                     {formatAmount(amount, tokenInfo, isFormatFull)}
                                 </span>
                                 <CopyButton copy={String(amount)} />
