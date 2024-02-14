@@ -10,10 +10,6 @@ interface NftAddressViewProps {
     nftAddress: NftAddress;
 }
 
-export interface INftAddressViewState {
-    isAssociatedOutputsLoading: boolean;
-}
-
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
     const [state, setState] = useNftAddressState(nftAddress);
     const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading } = state;

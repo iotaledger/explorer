@@ -10,10 +10,6 @@ interface Ed25519AddressViewProps {
     ed25519Address: Ed25519Address;
 }
 
-export interface IEd25519AddressViewState {
-    isAssociatedOutputsLoading: boolean;
-}
-
 const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address }) => {
     const [state, setState] = useEd25519AddressState(ed25519Address);
     const { ed25519AddressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;

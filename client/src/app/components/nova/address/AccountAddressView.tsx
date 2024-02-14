@@ -10,10 +10,6 @@ interface AccountAddressViewProps {
     accountAddress: AccountAddress;
 }
 
-export interface IAccountAddressViewState {
-    isAssociatedOutputsLoading: boolean;
-}
-
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
     const [state, setState] = useAccountAddressState(accountAddress);
     const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading } = state;

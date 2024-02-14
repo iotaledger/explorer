@@ -10,10 +10,6 @@ interface ImplicitAccountCreationAddressViewProps {
     implicitAccountCreationAddress: ImplicitAccountCreationAddress;
 }
 
-export interface IImplicitAccountCreationAddressViewState {
-    isAssociatedOutputsLoading: boolean;
-}
-
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
     const [state, setState] = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
     const { implicitAccountCreationAddressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;
