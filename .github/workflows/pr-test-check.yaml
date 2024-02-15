@@ -1,0 +1,29 @@
+name: PR build check
+
+on:
+    pull_request:
+        types: [opened, reopened, synchronize]
+
+jobs:
+    build-check:
+        strategy:
+          fail-fast: false
+          matrix:
+            project: [client]
+        runs-on: ubuntu-latest
+        defaults:
+          run:
+            working-directory: ${{ matrix.project }}
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v2
+              with:
+                node-version: "16"
+
+            - name: Install Dependencies
+              run: npm install
+
+            - name: Tests Check
+              run: npm run test run
