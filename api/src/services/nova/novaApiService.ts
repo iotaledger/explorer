@@ -1,9 +1,11 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Client } from "@iota/sdk-nova";
+import { Client, OutputResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
+import { IFoundryResponse } from "../../models/api/nova/foundry/IFoundryResponse";
 import { IAccountDetailsResponse } from "../../models/api/nova/IAccountDetailsResponse";
+import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsResponse";
 import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
@@ -11,7 +13,6 @@ import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
-import { IFoundryResponse } from "../../models/api/nova/nova/IFoundryResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 import { SearchExecutor } from "../../utils/nova/searchExecutor";
@@ -168,10 +169,64 @@ export class NovaApiService {
 
                 return outputResponse.error ? { error: outputResponse.error } : { foundryDetails: outputResponse.output };
             }
-            return { message: "Foundry output not found" };
         } catch {
             return { message: "Foundry output not found" };
         }
+    }
+
+    /**
+     * Get the outputs details.
+     * @param outputIds The output ids to get the details.
+     * @returns The item details.
+     */
+    public async outputsDetails(outputIds: string[]): Promise<OutputResponse[]> {
+        const promises: Promise<IOutputDetailsResponse>[] = [];
+        const outputResponses: OutputResponse[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.outputDetails(outputId);
+            promises.push(promise);
+        }
+        try {
+            await Promise.all(promises).then((results) => {
+                for (const outputDetails of results) {
+                    if (outputDetails.output?.output && outputDetails.output?.metadata) {
+                        outputResponses.push(outputDetails.output);
+                    }
+                }
+            });
+
+            return outputResponses;
+        } catch (e) {
+            logger.error(`Fetching outputs details failed. Cause: ${e}`);
+        }
+    }
+
+    /**
+     * Get the relevant basic output details for an address.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The basic output details.
+     */
+    public async basicOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.basicOutputIds({ address: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching basic output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(outputIds);
+
+        return {
+            outputs: outputResponses,
+        };
     }
 
     /**

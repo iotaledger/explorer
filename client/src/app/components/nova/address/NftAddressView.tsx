@@ -12,17 +12,17 @@ interface NftAddressViewProps {
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
     const [state, setState] = useNftAddressState(nftAddress);
-    const { nftAddressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading } = state;
     const isPageLoading = isNftDetailsLoading || isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
             <div className="wrapper">
-                {nftAddressDetails && (
+                {addressDetails && (
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>{nftAddressDetails.label?.replace("Ed25519", "Address")}</h1>
+                                <h1>{addressDetails.label?.replace("Ed25519", "Address")}</h1>
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>
@@ -34,7 +34,7 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             </div>
                             <div className="general-content">
                                 <div className="section--data">
-                                    <Bech32Address addressDetails={nftAddressDetails} advancedMode={true} />
+                                    <Bech32Address addressDetails={addressDetails} advancedMode={true} />
                                     {totalBalance !== null && (
                                         <AddressBalance
                                             totalBalance={totalBalance}
@@ -46,8 +46,8 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             </div>
                         </div>
                         <AddressPageTabbedSections
-                            key={nftAddressDetails.bech32}
-                            addressDetails={nftAddressDetails}
+                            key={addressDetails.bech32}
+                            addressState={state}
                             setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
                         />
                     </div>

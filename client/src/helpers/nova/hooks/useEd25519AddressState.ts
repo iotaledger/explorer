@@ -1,22 +1,27 @@
-import { Ed25519Address } from "@iota/sdk-wasm-nova/web";
+import { Ed25519Address, OutputResponse } from "@iota/sdk-wasm-nova/web";
 import { Reducer, useEffect, useReducer } from "react";
 import { useLocation } from "react-router-dom";
 import { useNetworkInfoNova } from "../networkInfo";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
+import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 
 export interface IEd25519AddressState {
-    ed25519AddressDetails: IAddressDetails | null;
+    addressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    addressBasicOutputs: OutputResponse[] | null;
+    isBasicOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
-    ed25519AddressDetails: null,
+    addressDetails: null,
     totalBalance: null,
     availableBalance: null,
+    addressBasicOutputs: null,
+    isBasicOutputsLoading: false,
     isAssociatedOutputsLoading: false,
 };
 
@@ -35,7 +40,8 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
         initialState,
     );
 
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.ed25519AddressDetails, null);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, null);
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -44,7 +50,7 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
             : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
-            ed25519AddressDetails: addressDetails,
+            addressDetails,
         });
     }, []);
 
@@ -52,8 +58,10 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
         setState({
             totalBalance,
             availableBalance,
+            addressBasicOutputs,
+            isBasicOutputsLoading,
         });
-    }, [totalBalance, availableBalance]);
+    }, [totalBalance, availableBalance, addressBasicOutputs, isBasicOutputsLoading]);
 
     return [state, setState];
 };

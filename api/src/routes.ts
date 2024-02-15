@@ -216,6 +216,12 @@ export const routes: IRoute[] = [
     { path: "/nova/anchor/:network/:anchorId", method: "get", folder: "nova/anchor", func: "get" },
     { path: "/nova/foundry/:network/:foundryId", method: "get", folder: "nova/foundry", func: "get" },
     {
+        path: "/nova/address/outputs/basic/:network/:address",
+        method: "get",
+        folder: "nova/address/outputs/basic",
+        func: "get",
+    },
+    {
         path: "/nova/output/associated/:network/:address",
         method: "post",
         folder: "nova/output/associated",

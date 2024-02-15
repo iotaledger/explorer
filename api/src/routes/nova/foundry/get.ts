@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
-import { IFoundryRequest } from "../../../models/api/nova/nova/IFoundryRequest";
-import { IFoundryResponse } from "../../../models/api/nova/nova/IFoundryResponse";
+import { IFoundryRequest } from "../../../models/api/nova/foundry/IFoundryRequest";
+import { IFoundryResponse } from "../../../models/api/nova/foundry/IFoundryResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";

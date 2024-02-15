@@ -25,6 +25,8 @@ import { IFoundryRequest } from "~/models/api/nova/foundry/IFoundryRequest";
 import { IFoundryResponse } from "~/models/api/nova/foundry/IFoundryResponse";
 import { ISearchRequest } from "~/models/api/nova/ISearchRequest";
 import { ISearchResponse } from "~/models/api/nova/ISearchResponse";
+import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetailsRequest";
+import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -109,6 +111,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async foundryDetails(request: IFoundryRequest): Promise<IFoundryResponse> {
         return this.callApi<unknown, IFoundryResponse>(`nova/foundry/${request.network}/${request.foundryId}`, "get");
+    }
+
+    /**
+     * Get the basic outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async basicOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(`nova/address/outputs/basic/${request.network}/${request.address}`, "get");
     }
 
     /**
