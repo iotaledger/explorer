@@ -8,20 +8,18 @@ import { SelectedFeedInfo } from "./SelectedFeedInfo";
 
 export const Wrapper = ({
     blocksCount,
-    bps,
     children,
     filter,
-    isEdgeRenderingEnabled,
     isPlaying,
     network,
     networkConfig,
     onChangeFilter,
     selectNode,
     selectedFeedItem,
-    setEdgeRenderingEnabled,
     setIsPlaying,
+    isEdgeRenderingEnabled,
+    setEdgeRenderingEnabled,
 }: {
-    readonly bps: number;
     readonly blocksCount: number;
     readonly children: React.ReactNode;
     readonly filter: string;
@@ -71,7 +69,7 @@ export const Wrapper = ({
         </div>
 
         {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
-        <KeyPanel bps={bps} />
+        <KeyPanel network={network} />
     </div>
 );
 

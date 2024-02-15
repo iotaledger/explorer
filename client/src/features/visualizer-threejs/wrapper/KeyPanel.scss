@@ -59,23 +59,17 @@
         align-items: center;
         pointer-events: none;
 
-        .stats-panel {
-            background: var(--body-background);
-
-            .card--value,
-            .card--label {
-                text-align: left;
-            }
-            .card--label {
-                justify-content: flex-start;
-            }
-            .card--content {
-                padding: 0;
-            }
-            .stats-panel__info {
-                padding: 0 10px;
-                display: inline-block;
-            }
+        .card--label {
+            justify-content: flex-start;
+        }
+        .card--content {
+            padding: 0;
+        }
+        .stats-panel__info {
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         @include tablet-down {

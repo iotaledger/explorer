@@ -33,7 +33,7 @@ import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
 
 const features = {
-    statsEnabled: true,
+    statsEnabled: false,
     cameraControls: true,
 };
 
@@ -244,7 +244,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     return (
         <Wrapper
-            bps={bpsCounter.getBPS()}
             key={network}
             blocksCount={indexToBlockId.length}
             filter=""

@@ -4,7 +4,7 @@ import { BlockState } from "@iota/sdk-wasm-nova/web";
 import "./KeyPanel.scss";
 import { StatsPanel } from "~features/visualizer-threejs/wrapper/StatsPanel";
 
-export const KeyPanel = ({ bps }: { bps: number }) => {
+export const KeyPanel = ({ network }: { network: string }) => {
     const statuses: {
         label: string;
         state: BlockState;
@@ -59,7 +59,7 @@ export const KeyPanel = ({ bps }: { bps: number }) => {
                     );
                 })}
             </div>
-            <StatsPanel bps={bps} />
+            <StatsPanel network={network} />
         </div>
     );
 };
