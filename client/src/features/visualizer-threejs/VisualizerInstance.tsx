@@ -244,6 +244,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     return (
         <Wrapper
+            bps={bpsCounter.getBPS()}
             key={network}
             blocksCount={indexToBlockId.length}
             filter=""

@@ -4,7 +4,7 @@
 @import "../../../scss/variables";
 @import "../../../scss/themes";
 
-.key-panel-container {
+.info-container {
     display: flex;
     position: absolute;
     z-index: 1;
@@ -15,18 +15,21 @@
     pointer-events: none;
     gap: 20px;
 
-    .key-panel {
+    .card {
         background: var(--body-background);
+        padding: 16px 32px;
+    }
+
+    .key-panel-list {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        padding: 16px;
+        gap: 32px;
 
         .key-panel-item {
             display: flex;
             flex-direction: row;
             align-items: center;
-            margin: 0 16px;
 
             @include desktop-down {
                 width: 110px;
@@ -46,6 +49,69 @@
                 color: var(--body-color);
                 font-family: $metropolis;
                 font-weight: 500;
+            }
+        }
+    }
+
+    .stats-panel-container {
+        display: flex;
+        z-index: 1;
+        align-items: center;
+        pointer-events: none;
+
+        .stats-panel {
+            background: var(--body-background);
+
+            .card--value,
+            .card--label {
+                text-align: left;
+            }
+            .card--label {
+                justify-content: flex-start;
+            }
+            .card--content {
+                padding: 0;
+            }
+            .stats-panel__info {
+                padding: 0 10px;
+                display: inline-block;
+            }
+        }
+
+        @include tablet-down {
+            top: 60px;
+            left: 20px;
+            bottom: auto;
+            justify-content: left;
+
+            .stats-panel {
+                .card--value,
+                .card--label {
+                    text-align: left;
+                }
+                .card--label {
+                    justify-content: flex-start;
+                }
+                .card--content {
+                    padding: 0;
+                }
+                .stats-panel__info {
+                    padding: 0 10px;
+                    display: inline-block;
+                }
+            }
+        }
+
+        @include phone-down {
+            left: 10px;
+            .stats-panel {
+                .card--value,
+                .card--label {
+                    font-size: 12px;
+                }
+                .stats-panel__info:last-of-type {
+                    display: block;
+                }
             }
         }
     }

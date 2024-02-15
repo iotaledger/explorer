@@ -40,7 +40,6 @@ export function useNetworkStats(network: string): [string, string, string, numbe
                     includeHistory: true,
                 })
                 .then((ips) => {
-
                     const itemsPerSecond = ips.itemsPerSecond ?? 0;
                     const confirmedItemsPerSecond = ips.confirmedItemsPerSecond ?? 0;
                     const confirmedRate = ips.confirmationRate ? (ips.confirmationRate > 100 ? 100 : ips.confirmationRate) : 0;

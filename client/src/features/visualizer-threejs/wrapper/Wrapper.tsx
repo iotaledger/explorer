@@ -5,22 +5,23 @@ import { INetwork } from "~/models/config/INetwork";
 import { KeyPanel } from "./KeyPanel";
 import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
-import { StatsPanel } from "./StatsPanel";
 
 export const Wrapper = ({
     blocksCount,
+    bps,
     children,
     filter,
+    isEdgeRenderingEnabled,
     isPlaying,
     network,
     networkConfig,
     onChangeFilter,
     selectNode,
     selectedFeedItem,
-    setIsPlaying,
-    isEdgeRenderingEnabled,
     setEdgeRenderingEnabled,
+    setIsPlaying,
 }: {
+    readonly bps: number;
     readonly blocksCount: number;
     readonly children: React.ReactNode;
     readonly filter: string;
@@ -70,7 +71,7 @@ export const Wrapper = ({
         </div>
 
         {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
-        <KeyPanel />
+        <KeyPanel bps={bps} />
     </div>
 );
 

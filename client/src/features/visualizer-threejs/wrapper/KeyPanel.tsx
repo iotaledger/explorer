@@ -4,7 +4,7 @@ import { BlockState } from "@iota/sdk-wasm-nova/web";
 import "./KeyPanel.scss";
 import { StatsPanel } from "~features/visualizer-threejs/wrapper/StatsPanel";
 
-export const KeyPanel: React.FC = () => {
+export const KeyPanel = ({ bps }: { bps: number }) => {
     const statuses: {
         label: string;
         state: BlockState;
@@ -43,8 +43,8 @@ export const KeyPanel: React.FC = () => {
     ];
 
     return (
-        <div className="key-panel-container">
-            <div className="card key-panel">
+        <div className="info-container">
+            <div className="card key-panel-list">
                 {statuses.map((s) => {
                     return (
                         <div className="key-panel-item" key={s.state}>
@@ -59,6 +59,7 @@ export const KeyPanel: React.FC = () => {
                     );
                 })}
             </div>
-          <StatsPanel blocksCount={0} network={'stardust'} />
+            <StatsPanel bps={bps} />
         </div>
-);
+    );
+};
