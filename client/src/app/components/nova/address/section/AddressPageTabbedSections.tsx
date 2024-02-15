@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import associatedOuputsMessage from "~assets/modals/stardust/address/associated-outputs.json";
+import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
@@ -9,10 +10,16 @@ import { IAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState"
 import { IEd25519AddressState } from "~/helpers/nova/hooks/useEd25519AddressState";
 import AssetsTable from "./native-tokens/AssetsTable";
 import { IImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
+import { AddressType } from "@iota/sdk-wasm-nova/web";
+import AccountFoundriesSection from "./account/AccountFoundriesSection";
 
 enum DEFAULT_TABS {
     NativeTokens = "Native Tokens",
     AssocOutputs = "Outputs",
+}
+
+enum ACCOUNT_TABS {
+    Foundries = "Foundries",
 }
 
 const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number) => ({
@@ -27,6 +34,15 @@ const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: num
         hidden: tokensCount === 0,
         counter: tokensCount,
         infoContent: nativeTokensMessage,
+    },
+});
+
+const buildAccountAddressTabsOptions = (foundriesCount: number, isAccountFoundriesLoading: boolean) => ({
+    [ACCOUNT_TABS.Foundries]: {
+        disabled: foundriesCount === 0,
+        hidden: foundriesCount === 0,
+        isLoading: isAccountFoundriesLoading,
+        infoContent: foundriesMessage,
     },
 });
 
@@ -59,11 +75,38 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
     ];
 
-    const tabEnums = DEFAULT_TABS;
-    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount);
-    const tabOptions = defaultTabsOptions;
-    const tabbedSections = defaultSections;
+    const accountAddressSections =
+        addressDetails.type === AddressType.Account
+            ? [
+                  <AccountFoundriesSection
+                      key={`account-foundry-${addressDetails.bech32}`}
+                      foundries={(addressState as IAccountAddressState).foundries}
+                  />,
+              ]
+            : null;
 
+    let tabEnums = DEFAULT_TABS;
+    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount);
+    let tabOptions = defaultTabsOptions;
+    let tabbedSections = defaultSections;
+
+    switch (addressDetails.type) {
+        case AddressType.Account: {
+            tabEnums = { ...DEFAULT_TABS, ...ACCOUNT_TABS };
+            tabOptions = {
+                ...defaultTabsOptions,
+                ...buildAccountAddressTabsOptions(
+                    (addressState as IAccountAddressState).accountOutput?.foundryCounter ?? 0,
+                    (addressState as IAccountAddressState).isFoundriesLoading,
+                ),
+            };
+            tabbedSections = [...defaultSections, ...(accountAddressSections ?? [])];
+            break;
+        }
+        default: {
+            break;
+        }
+    }
     return (
         <TabbedSection key={addressDetails.bech32} tabsEnum={tabEnums} tabOptions={tabOptions}>
             {tabbedSections}
