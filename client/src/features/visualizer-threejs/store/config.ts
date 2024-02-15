@@ -7,8 +7,14 @@ interface ConfigState {
     isPlaying: boolean;
     setIsPlaying: (isPlaying: boolean) => void;
 
+    inView: boolean;
+    setInView: (inView: boolean) => void;
+
     isEdgeRenderingEnabled: boolean;
     setEdgeRenderingEnabled: (isEdgeRenderingEnabled: boolean) => void;
+
+    initialTime: number | null;
+    setInitialTime: (initialTime: number) => void;
 }
 
 export const useConfigStore = create<ConfigState>((set) => ({
@@ -35,6 +41,17 @@ export const useConfigStore = create<ConfigState>((set) => ({
     },
 
     /**
+     * Is canvas in view
+     */
+    inView: false,
+    setInView: (inView) => {
+        set((state) => ({
+            ...state,
+            inView,
+        }));
+    },
+
+    /**
      * Is edge rendering enabled
      */
     isEdgeRenderingEnabled: false,
@@ -42,6 +59,17 @@ export const useConfigStore = create<ConfigState>((set) => ({
         set((state) => ({
             ...state,
             isEdgeRenderingEnabled,
+        }));
+    },
+
+    /**
+     * Initial time
+     */
+    initialTime: null,
+    setInitialTime: (initialTime) => {
+        set((state) => ({
+            ...state,
+            initialTime,
         }));
     },
 }));

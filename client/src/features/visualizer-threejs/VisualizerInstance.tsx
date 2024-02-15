@@ -5,19 +5,16 @@ import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
-import { Box3 } from "three";
 import {
     FAR_PLANE,
     NEAR_PLANE,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
     VISUALIZER_BACKGROUND,
-    EMITTER_X_POSITION_MULTIPLIER,
     BLOCK_STATE_TO_COLOR,
 } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { getGenerateDynamicYZPosition, randomIntFromInterval } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -31,6 +28,8 @@ import { BasicBlockBody, IBlockMetadata } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
+import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
+import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 
 const features = {
     statsEnabled: true,
@@ -43,7 +42,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     },
 }) => {
     const [networkConfig] = useNetworkConfig(network);
-    const generateYZPositions = getGenerateDynamicYZPosition();
     const themeMode = useGetThemeMode();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
@@ -61,6 +59,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const setDimensions = useConfigStore((s) => s.setDimensions);
     const isPlaying = useConfigStore((s) => s.isPlaying);
     const setIsPlaying = useConfigStore((s) => s.setIsPlaying);
+    const inView = useConfigStore((s) => s.inView);
+    const setInView = useConfigStore((s) => s.setInView);
     const addBlock = useTangleStore((s) => s.addToBlockQueue);
     const addToEdgeQueue = useTangleStore((s) => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
@@ -74,6 +74,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const emitterRef = useRef<THREE.Mesh>(null);
     const [feedService, setFeedService] = React.useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
 
+    const getCurrentAnimationTime = useVisualizerTimer();
+
     /**
      * Pause on tab or window change
      */
@@ -81,11 +83,15 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         const handleVisibilityChange = async () => {
             if (document.hidden) {
                 setIsPlaying(false);
+                setInView(false);
+            } else {
+                setInView(true);
             }
         };
 
         const handleBlur = async () => {
             setIsPlaying(false);
+            setInView(false);
         };
 
         document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -160,7 +166,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
+
         setIsPlaying(true);
+        setInView(true);
 
         return () => {
             bpsCounter.stop();
@@ -189,21 +197,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * @param blockData The new block data
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
-        const emitterObj = emitterRef.current;
-        if (emitterObj && blockData && isPlaying) {
-            const emitterBox = new Box3().setFromObject(emitterObj);
-
-            const emitterCenter = new THREE.Vector3();
-            emitterBox.getCenter(emitterCenter);
-
-            const { y, z } = generateYZPositions(bpsCounter.getBPS(), emitterCenter);
-            const minX = emitterBox.min.x - (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
-            const maxX = emitterBox.max.x + (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
-
-            const x = randomIntFromInterval(minX, maxX);
-            const targetPosition = { x, y, z };
+        if (blockData && isPlaying) {
+            const currentAnimationTime = getCurrentAnimationTime();
+            const bps = bpsCounter.getBPS();
+            const initPosition = getBlockInitPosition(currentAnimationTime);
+            const targetPosition = getBlockTargetPosition(initPosition, bps);
 
             bpsCounter.addBlock();
+
             if (!bpsCounter.getBPS()) {
                 bpsCounter.start();
             }
@@ -224,11 +225,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
                 targetPosition,
-                initPosition: {
-                    x: emitterCenter.x,
-                    y: emitterCenter.y,
-                    z: emitterCenter.z,
-                },
+                initPosition,
             });
         }
     };
@@ -253,13 +250,17 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             onChangeFilter={() => {}}
             selectNode={() => {}}
             selectedFeedItem={selectedFeedItem}
-            setIsPlaying={setIsPlaying}
+            handlePauseButton={() => {
+                setIsPlaying(!isPlaying);
+                setInView(!isPlaying);
+            }}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
         >
             <Canvas
                 ref={canvasRef}
                 orthographic
+                frameloop={inView ? "always" : "never"}
                 camera={{
                     name: CanvasElement.MainCamera,
                     near: NEAR_PLANE,
