@@ -4,6 +4,8 @@ import {
     slotIndexToUnixTimeRangeConverter,
     slotIndexToEpochIndexConverter,
     unixTimestampToEpochIndexConverter,
+    epochIndexToUnixTimeRangeConverter,
+    epochIndexToSlotIndexRangeConverter,
 } from "./novaTimeUtils";
 
 const mockProtocolInfo: ProtocolInfo = {
@@ -48,6 +50,8 @@ const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(mockProtocolI
 const slotIndexToUnixTimeRange = slotIndexToUnixTimeRangeConverter(mockProtocolInfo);
 const slotIndexToEpochIndex = slotIndexToEpochIndexConverter(mockProtocolInfo);
 const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(mockProtocolInfo);
+const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(mockProtocolInfo);
+const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(mockProtocolInfo);
 
 describe("unixTimestampToSlotIndex", () => {
     test("should return genesis slot when timestamp is lower than genesisUnixTimestamp", () => {
@@ -204,28 +208,28 @@ describe("slotIndexToUnixTimeRange & unixTimestampToSlotIndex", () => {
 });
 
 describe("slotIndexToEpochIndex", () => {
-    test("should return epoch 0 for slot index less then slotsInEpoch", () => {
-        const targetSlotIndex = slotsInEpoch - 100;
+    test("should return epoch 0 for slot index less then slotsInEpoch + genesisSlot", () => {
+        const targetSlotIndex = slotsInEpoch + genesisSlot - 1;
 
         const epochIndex = slotIndexToEpochIndex(targetSlotIndex);
 
         expect(epochIndex).toBe(0);
     });
 
-    test("should return epoch 1 for slot index a bit after slotsInEpoch", () => {
-        const targetSlotIndex = slotsInEpoch + 100;
+    test("should return epoch 1 for slot index of slotsInEpoch + genesisSlot", () => {
+        const targetSlotIndex = slotsInEpoch + genesisSlot;
 
         const epochIndex = slotIndexToEpochIndex(targetSlotIndex);
 
         expect(epochIndex).toBe(1);
     });
 
-    test("should return epoch 1 for slot index a bit after slotsInEpoch", () => {
-        const targetSlotIndex = 50000;
+    test("should return epoch 2 for slot index a bit after slotsInEpoch", () => {
+        const targetSlotIndex = slotsInEpoch * 2 + genesisSlot;
 
         const epochIndex = slotIndexToEpochIndex(targetSlotIndex);
 
-        expect(epochIndex).toBe(6); // 50000 / 8192 = 6.1
+        expect(epochIndex).toBe(2);
     });
 });
 
@@ -236,5 +240,42 @@ describe("unixTimestampToEpochIndex", () => {
         const epochIndex = unixTimestampToEpochIndex(targetTimestamp);
 
         expect(epochIndex).toBe(2);
+    });
+});
+
+describe("epochIndexToSlotIndexRange", () => {
+    test("should return the correct slot index range for epoch 0", () => {
+        const targetEpoch = 0;
+
+        epochIndexToSlotIndexRange(targetEpoch);
+
+        expect(epochIndexToSlotIndexRange(targetEpoch)).toStrictEqual({
+            from: genesisSlot,
+            to: genesisSlot + slotsInEpoch,
+        });
+    });
+
+    test("should return the correct slot index range for epoch 1", () => {
+        const targetEpoch = 1;
+
+        const slotIndexRange = epochIndexToSlotIndexRange(targetEpoch);
+
+        expect(slotIndexRange).toStrictEqual({
+            from: genesisSlot + slotsInEpoch,
+            to: genesisSlot + slotsInEpoch * 2,
+        });
+    });
+});
+
+describe("epochIndexToUnixTimeRange", () => {
+    test("should return the correct unix time range for epoch 0", () => {
+        const targetEpoch = 0;
+
+        const epochUnixTimeRange = epochIndexToUnixTimeRange(targetEpoch);
+
+        expect(epochUnixTimeRange).toStrictEqual({
+            from: genesisUnixTimestamp - slotDurationInSeconds,
+            to: genesisUnixTimestamp + (slotsInEpoch - 1) * slotDurationInSeconds,
+        });
     });
 });
