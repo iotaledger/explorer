@@ -71,7 +71,7 @@ export class TransactionsHelper {
 
                         if (referencedUnlock.type === UnlockType.Signature) {
                             signatureUnlock = referencedUnlock as SignatureUnlock;
-                        } else if (referencedUnlock.type === UnlockType.Multi || referencedUnlock.type === UnlockType.Empty) {
+                        } else if (referencedUnlock.type === UnlockType.Empty) {
                             break;
                         } else {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any

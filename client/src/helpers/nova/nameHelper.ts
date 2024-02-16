@@ -23,9 +23,6 @@ export class NameHelper {
             case UnlockType.Nft: {
                 return "NFT Unlock";
             }
-            case UnlockType.Multi: {
-                return "Multi Unlock";
-            }
             case UnlockType.Empty: {
                 return "Empty Unlock";
             }
