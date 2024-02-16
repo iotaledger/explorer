@@ -1,7 +1,7 @@
 import { AccountAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressState";
-import Spinner from "../../Spinner";
+import Spinner from "~/app/components/Spinner";
 import Bech32Address from "../../nova/address/Bech32Address";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 import AddressBalance from "./AddressBalance";

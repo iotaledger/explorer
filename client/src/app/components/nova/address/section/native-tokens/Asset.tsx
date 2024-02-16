@@ -1,14 +1,13 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { FoundryOutput, MetadataFeature, FeatureType, Irc30Metadata } from "@iota/sdk-wasm-nova/web";
+import { FoundryOutput, MetadataFeature, FeatureType, Irc30Metadata, hexToUtf8 } from "@iota/sdk-wasm-nova/web";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import { AssetProps } from "./AssetProps";
 import tokenSchemeIRC30 from "~assets/schemas/token-schema-IRC30.json";
-import { useFoundryDetails } from "~helpers/stardust/hooks/useFoundryDetails";
+import { useFoundryDetails } from "~helpers/nova/hooks/useFoundryDetails";
 import { useTokenRegistryNativeTokenCheck } from "~helpers/stardust/hooks/useTokenRegistryNativeTokenCheck";
-import { Converter } from "~helpers/stardust/convertUtils";
-import Spinner from "../../../../Spinner";
+import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
@@ -37,7 +36,7 @@ const Asset: React.FC<AssetProps> = ({ tableFormat, token }) => {
         const validator = new JsonSchemaValidator();
 
         try {
-            const tokenInfo = JSON.parse(Converter.hexToUtf8(metadata.data)) as Irc30Metadata;
+            const tokenInfo = JSON.parse(hexToUtf8(metadata.data)) as Irc30Metadata;
             const result = validator.validate(tokenInfo, tokenSchemeIRC30);
 
             if (result.valid) {

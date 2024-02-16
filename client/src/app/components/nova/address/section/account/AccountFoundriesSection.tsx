@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
-import Pagination from "../../../../Pagination";
+import Pagination from "~/app/components/Pagination";
 import "./AccountFoundriesSection.scss";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
