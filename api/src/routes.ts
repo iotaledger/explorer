@@ -38,6 +38,14 @@ export const routes: IRoute[] = [
         func: "get",
     },
     {
+        path: "/transactionhistory/download/:network/:address",
+        method: "post",
+        folder: "chrysalis/transactionhistory/download",
+        func: "post",
+        dataBody: true,
+        dataResponse: true,
+    },
+    {
         path: "/chrysalis/did/:network/:did/document",
         method: "get",
         folder: "/chrysalis/identity/resolution",

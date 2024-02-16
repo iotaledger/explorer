@@ -279,14 +279,14 @@ export const LEDGER_SIZE_DAILY_QUERY = {
 export const STORAGE_DEPOSIT_DAILY_QUERY = {
     full: `
         SELECT
-            last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
+            last("total_storage_deposit_amount") / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            last("total_storage_deposit_amount") * 100 / 1000000 AS "storageDeposit"
+            last("total_storage_deposit_amount") / 1000000 AS "storageDeposit"
         FROM "stardust_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -315,7 +315,7 @@ export const NFT_STAT_TOTAL_QUERY = `
 
 export const STORAGE_DEPOSIT_TOTAL_QUERY = `
     SELECT
-        last("total_storage_deposit_amount") * 100 AS "lockedStorageDeposit"
+        last("total_storage_deposit_amount") AS "lockedStorageDeposit"
     FROM "stardust_ledger_size";
 `;
 

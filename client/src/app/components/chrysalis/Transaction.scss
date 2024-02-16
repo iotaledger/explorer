@@ -27,6 +27,10 @@
             font-weight: 600;
             text-align: left;
             text-transform: uppercase;
+
+            &:last-child {
+                text-align: right;
+            }
         }
 
         td {
@@ -61,6 +65,10 @@
                 &.negative {
                     color: var(--expanded-color);
                 }
+            }
+
+            &:last-child {
+                text-align: right;
             }
         }
     }

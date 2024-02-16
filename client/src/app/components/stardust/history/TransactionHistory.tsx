@@ -50,17 +50,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                 <tbody>
                     {transactions?.map((c, idx) => (
                         <React.Fragment key={idx}>
-                            <TransactionRow
-                                isGenesisByDate={c.isGenesisByDate}
-                                isTransactionFromStardustGenesis={c.isTransactionFromStardustGenesis}
-                                transactionLink={c.transactionLink}
-                                dateFormatted={c.dateFormatted}
-                                balanceChangeFormatted={c.balanceChangeFormatted}
-                                transactionId={c.transactionId}
-                                isSpent={c.isSpent}
-                                isFormattedAmounts={isFormattedAmounts}
-                                setIsFormattedAmounts={setIsFormattedAmounts}
-                            />
+                            <TransactionRow {...c} isFormattedAmounts={isFormattedAmounts} setIsFormattedAmounts={setIsFormattedAmounts} />
                         </React.Fragment>
                     ))}
                 </tbody>
