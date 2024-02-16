@@ -1,24 +1,46 @@
+import moment from "moment";
 import React from "react";
 import { useCurrentEpochProgress } from "~/helpers/nova/hooks/useCurrentEpochProgress";
 import "./LandingEpochSection.scss";
 
 const LandingEpochSection: React.FC = () => {
-    const { currentEpochIndex, currentEpochProgress } = useCurrentEpochProgress();
+    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useCurrentEpochProgress();
 
-    if (currentEpochIndex === null || currentEpochProgress === null) {
+    if (epochIndex === null || epochProgressPercent === null) {
         return null;
+    }
+
+    let registrationTimeRemaining = "???";
+    let epochTimeRemaining = "???";
+    let epochFrom = "???";
+    let epochTo = "???";
+
+    if (epochUnixTimeRange && registrationTime) {
+        const epochStartTime = moment.unix(epochUnixTimeRange.from);
+        const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
+        epochFrom = epochStartTime.format("DD MMM HH:mm:ss");
+        epochTo = epochEndTime.format("DD MMM HH:mm:ss");
+
+        const diffToEpochEnd = epochEndTime.diff(moment());
+        epochTimeRemaining = moment(diffToEpochEnd).format("H:mm:ss");
+
+        registrationTimeRemaining = moment.unix(registrationTime).fromNow();
     }
 
     return (
         <div className="epoch-section">
             <div className="epoch-progress__wrapper">
-                <h2 className="epoch-progress__header">Epoch {currentEpochIndex} Progress</h2>
+                <h2 className="epoch-progress__header">Epoch {epochIndex} Progress</h2>
                 <div className="epoch-progress__stats-wrapper">
-                    <div className="epoch-progress__stat">Epoch end nearing threshhold</div>
-                    <div className="epoch-progress__stat">Time remaining</div>
-                    <div className="epoch-progress__stat">From/To time</div>
+                    <div className="epoch-progress__stat">Registration end: {registrationTimeRemaining}</div>
+                    <div className="epoch-progress__stat">Time remaining: {epochTimeRemaining}</div>
+                    <div className="epoch-progress__stat">
+                        {epochFrom}
+                        <br />
+                        {epochTo}
+                    </div>
                 </div>
-                <ProgressBar progress={currentEpochProgress} />
+                <ProgressBar progress={epochProgressPercent} />
             </div>
             <div className="epoch-section__controls">
                 <div className="epoch-section__button">previous</div>
