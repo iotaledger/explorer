@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const LEGACY_MAINNET = "legacy-mainnet";
 const CHRYSALIS_MAINNET = "chrysalis-mainnet";
-const MAINNET = "mainnet";
+export const MAINNET = "mainnet";
 const DEVNET = "devnet";
 export const SHIMMER = "shimmer";
 const TESTNET = "testnet";

@@ -51,7 +51,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     } = outputMetadata ?? {};
 
     const isTransactionFromStardustGenesis = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndexBooked ?? 0);
-    const transactionLink = getTransactionLink(network, transactionId ?? "", isTransactionFromStardustGenesis);
+    const transactionLink = getTransactionLink(network, transactionId ?? "", isTransactionFromStardustGenesis, outputId);
 
     return (
         (output && (
