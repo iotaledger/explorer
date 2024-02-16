@@ -24,7 +24,8 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-import { BasicBlockBody, IBlockMetadata } from "@iota/sdk-wasm-nova/web";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex, type BlockId } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
@@ -65,6 +66,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+
+    // Confirmed or accepted blocks by slot
+    const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
+    const addToConfirmedBlocksSlot = useTangleStore((s) => s.addToConfirmedBlocksBySlot);
+    const removeConfirmedBlocksSlot = useTangleStore((s) => s.removeConfirmedBlocksSlot);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
@@ -172,7 +178,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!feedService) {
             return;
         }
-        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate);
+        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate, onSlotFinalized);
 
         bpsCounter.start();
     };
@@ -230,7 +236,29 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             if (selectedColor) {
                 addToColorQueue(metadataUpdate.blockId, selectedColor);
             }
+
+            const acceptedStates: BlockState[] = ["confirmed", "accepted"];
+
+            if (acceptedStates.includes(metadataUpdate.blockState)) {
+                const slot = Utils.computeSlotIndex(metadataUpdate.blockId);
+                addToConfirmedBlocksSlot(metadataUpdate.blockId, slot);
+            }
         }
+    }
+
+    function onSlotFinalized(slot: SlotIndex): void {
+        const blocks = confirmedBlocksBySlot.get(slot);
+
+        if (blocks?.length) {
+            blocks.forEach((blockId) => {
+                const selectedColor = BLOCK_STATE_TO_COLOR.get("finalized");
+                if (selectedColor) {
+                    addToColorQueue(blockId, selectedColor);
+                }
+            });
+        }
+
+        removeConfirmedBlocksSlot(slot);
     }
 
     return (

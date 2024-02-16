@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Block, Client, IBlockMetadata } from "@iota/sdk-nova";
+import { Block, Client, IBlockMetadata, SlotCommitment } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
@@ -110,6 +110,22 @@ export class NovaFeed {
                 void this.broadcastBlock(update);
             } catch {
                 logger.error("[NovaFeed]: Failed broadcasting block-metadata downstream.");
+            }
+        });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listenMqtt(["commitments/finalized"], async (_, message) => {
+            try {
+                const deserializedMessage: { topic: string; payload: string } = JSON.parse(message);
+                const slotCommitment: SlotCommitment = JSON.parse(deserializedMessage.payload);
+                const slotFinalized = slotCommitment.slot;
+
+                const update: Partial<IFeedUpdate> = { slotFinalized };
+
+                // eslint-disable-next-line no-void
+                void this.broadcastBlock(update);
+            } catch {
+                logger.error("[NovaFeed]: Failed broadcasting finalized slot downstream.");
             }
         });
     }

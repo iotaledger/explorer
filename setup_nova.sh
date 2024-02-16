@@ -1,6 +1,6 @@
 #!/bin/bash
 SDK_DIR="iota-sdk"
-TARGET_COMMIT="133f911b18191cda9099f1b4aeaf7d0022dfe0fb"
+TARGET_COMMIT="8f0ff5e1e899a0d960ddfea09237739a88c3bcf1"
 
 if [ ! -d "$SDK_DIR" ]; then
   git clone -b 2.0 git@github.com:iotaledger/iota-sdk.git
