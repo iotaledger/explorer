@@ -129,3 +129,22 @@ export function epochIndexToUnixTimeRangeConverter(protocolInfo: ProtocolInfo): 
         };
     };
 }
+
+/**
+ * Get the registration slot from an epoch index.
+ * @param protocolInfo The protocol information.
+ * @param targetEpochIndex The target epoch index.
+ * @returns The registration slot index.
+ */
+export function getRegistrationSlotFromEpochIndex(protocolInfo: ProtocolInfo): (targetEpochIndex: number) => number {
+    return (targetEpochIndex: number) => {
+        const epochNearingThreshold = protocolInfo.parameters.epochNearingThreshold;
+        const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(protocolInfo);
+
+        const nextEpochSlotIndexRange = epochIndexToSlotIndexRange(targetEpochIndex + 1);
+
+        const registrationSlot = nextEpochSlotIndexRange.from - epochNearingThreshold - 1;
+
+        return registrationSlot;
+    };
+}

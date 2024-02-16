@@ -6,6 +6,7 @@ import {
     unixTimestampToEpochIndexConverter,
     epochIndexToUnixTimeRangeConverter,
     epochIndexToSlotIndexRangeConverter,
+    getRegistrationSlotFromEpochIndex,
 } from "./novaTimeUtils";
 
 const mockProtocolInfo: ProtocolInfo = {
@@ -52,6 +53,7 @@ const slotIndexToEpochIndex = slotIndexToEpochIndexConverter(mockProtocolInfo);
 const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(mockProtocolInfo);
 const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(mockProtocolInfo);
 const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(mockProtocolInfo);
+const getRegistrationSlot = getRegistrationSlotFromEpochIndex(mockProtocolInfo);
 
 describe("unixTimestampToSlotIndex", () => {
     test("should return genesis slot when timestamp is lower than genesisUnixTimestamp", () => {
@@ -277,5 +279,20 @@ describe("epochIndexToUnixTimeRange", () => {
             from: genesisUnixTimestamp - slotDurationInSeconds,
             to: genesisUnixTimestamp + (slotsInEpoch - 1) * slotDurationInSeconds,
         });
+    });
+});
+
+describe("getRegistrationSlotFromEpochIndex", () => {
+    test("should return the correct slot index given an epoch index", () => {
+        const epochNearingThreshold = mockProtocolInfo.parameters.epochNearingThreshold;
+        const currentEpoch = 5;
+
+        const currentEpochSlotRange = epochIndexToSlotIndexRange(currentEpoch);
+
+        const regitrationSlot = getRegistrationSlot(currentEpoch);
+
+        expect(regitrationSlot).toBeGreaterThan(currentEpochSlotRange.from);
+        expect(regitrationSlot).toBeLessThan(currentEpochSlotRange.to);
+        expect(regitrationSlot).toBe(currentEpochSlotRange.to - epochNearingThreshold - 1);
     });
 });

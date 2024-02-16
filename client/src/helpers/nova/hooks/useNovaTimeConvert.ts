@@ -6,6 +6,7 @@ import {
     unixTimestampToSlotIndexConverter,
     epochIndexToSlotIndexRangeConverter,
     epochIndexToUnixTimeRangeConverter,
+    getRegistrationSlotFromEpochIndex,
 } from "../novaTimeUtils";
 
 export function useNovaTimeConvert(): {
@@ -15,6 +16,7 @@ export function useNovaTimeConvert(): {
     unixTimestampToEpochIndex: ((unixTimestampSeconds: number) => number) | null;
     epochIndexToSlotIndexRange: ((targetEpochIndex: number) => { from: number; to: number }) | null;
     epochIndexToUnixTimeRange: ((targetEpochIndex: number) => { from: number; to: number }) | null;
+    getRegistrationSlotFromEpochIndex: ((targetEpochIndex: number) => number) | null;
 } {
     const { protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
 
@@ -25,5 +27,6 @@ export function useNovaTimeConvert(): {
         unixTimestampToEpochIndex: protocolInfo ? unixTimestampToEpochIndexConverter(protocolInfo) : null,
         epochIndexToSlotIndexRange: protocolInfo ? epochIndexToSlotIndexRangeConverter(protocolInfo) : null,
         epochIndexToUnixTimeRange: protocolInfo ? epochIndexToUnixTimeRangeConverter(protocolInfo) : null,
+        getRegistrationSlotFromEpochIndex: protocolInfo ? getRegistrationSlotFromEpochIndex(protocolInfo) : null,
     };
 }
