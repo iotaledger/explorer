@@ -1,4 +1,4 @@
-import { Block, IBlockMetadata } from "@iota/sdk-wasm-nova/web";
+import { Block, IBlockMetadata, SlotIndex } from "@iota/sdk-wasm-nova/web";
 
 interface IFeedBlockUpdate {
     blockId: string;
@@ -9,4 +9,5 @@ export interface IFeedUpdate {
     subscriptionId: string;
     blockUpdate?: IFeedBlockUpdate;
     blockMetadataUpdate?: IBlockMetadata;
+    slotFinalized?: SlotIndex;
 }
