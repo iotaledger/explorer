@@ -22,13 +22,15 @@ export interface ITransactionHistoryRecord {
     isGenesisByDate: boolean;
     isSpent: boolean;
     transactionId: string;
-    outputIdFromGenesis?: string;
+    outputIdFromSupplyIncrease?: string;
     timestamp: number;
     dateFormatted: string;
     balanceChange: number;
     balanceChangeFormatted: string;
     outputs: OutputWithDetails[];
 }
+
+const STARDUST_GENESIS_MILESTONE = 7669900;
 
 /**
  * Download the transaction history from chronicle stardust.
@@ -83,11 +85,14 @@ export async function post(
     let csvContent = `${headers.join(",")}\n`;
 
     for (const transaction of transactions) {
-        const row = [
-            transaction.dateFormatted,
-            transaction.outputIdFromGenesis ? `Stardust Genesis output: ${transaction.outputIdFromGenesis}` : transaction.transactionId,
-            transaction.balanceChangeFormatted,
-        ].join(",");
+        let transactionCell = transaction.transactionId;
+        if (transaction.isGenesisByDate) {
+            transactionCell = `Stardust Genesis (Chrysalis):  ${transactionCell}`;
+            if (transaction.outputIdFromSupplyIncrease) {
+                transactionCell = `Supply Increase Output: ${transaction.outputIdFromSupplyIncrease}`;
+            }
+        }
+        const row = [transaction.dateFormatted, transactionCell, transaction.balanceChangeFormatted].join(",");
         csvContent += `${row}\n`;
     }
 
@@ -154,18 +159,19 @@ export const getTransactionHistoryRecords = (
     for (const [transactionId, outputs] of transactionIdToOutputs.entries()) {
         const lastOutputTime = Math.max(...outputs.map((t) => t.milestoneTimestamp));
         const balanceChange = calculateBalanceChange(outputs);
-
-        const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).includes(0);
-
-        const outputIdFromGenesis = getStardustGenesisOutputId(outputs, networkConfig, transactionId);
-
         const isSpent = balanceChange <= 0;
+        const isGenesisByDate = outputs.some((output) => output.milestoneIndex === STARDUST_GENESIS_MILESTONE);
+
+        let outputIdFromSupplyIncrease;
+        if (isGenesisByDate) {
+            outputIdFromSupplyIncrease = getStardustGenesisOutputId(outputs, networkConfig, transactionId);
+        }
 
         calculatedTransactions.push({
             isGenesisByDate,
             isSpent,
             transactionId,
-            outputIdFromGenesis,
+            outputIdFromSupplyIncrease,
             timestamp: lastOutputTime,
             dateFormatted: moment(lastOutputTime * 1000).format("YYYY-MM-DD HH:mm:ss"),
             balanceChange,
@@ -184,7 +190,6 @@ export const getTransactionHistoryRecords = (
  * @returns The output id from the stardust genesis or undefined.
  */
 function getStardustGenesisOutputId(outputs: OutputWithDetails[], networkConfig: INetwork, transactionId: string): string | undefined {
-    const STARDUST_GENESIS_MILESTONE = 7669900;
     const STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER = "0xb191c4bc825ac6983789e50545d5ef07a1d293a98ad974fc9498cb18";
 
     const outputFromStardustGenesis = outputs.find((output) => {

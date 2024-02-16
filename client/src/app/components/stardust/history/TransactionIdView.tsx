@@ -14,7 +14,7 @@ const TransactionIdView: React.FC<ITransactionIdProps> = ({ transactionId, isTra
     if (isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER)) {
         return (
             <Link to={transactionLink}>
-                <span>Stardust Genesis</span>
+                <span>Supply Increase</span>
             </Link>
         );
     }
