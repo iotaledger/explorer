@@ -4,6 +4,7 @@
 import { Client, OutputResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
+import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/nova/foundry/IFoundryResponse";
 import { IAccountDetailsResponse } from "../../models/api/nova/IAccountDetailsResponse";
 import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsResponse";
@@ -153,6 +154,25 @@ export class NovaApiService {
             }
         } catch {
             return { message: "Anchor output not found" };
+        }
+    }
+
+    /**
+     * Get controlled Foundry output id by controller Account address
+     * @param accountAddress The bech32 account address to get the controlled Foundries for.
+     * @returns The foundry outputs.
+     */
+    public async accountFoundries(accountAddress: string): Promise<IFoundriesResponse | undefined> {
+        try {
+            const response = await this.client.foundryOutputIds({ account: accountAddress });
+
+            if (response) {
+                return {
+                    foundryOutputsResponse: response,
+                };
+            }
+        } catch {
+            return { message: "Foundries output not found" };
         }
     }
 

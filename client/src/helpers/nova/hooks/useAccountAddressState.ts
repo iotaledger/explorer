@@ -8,6 +8,7 @@ import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
+import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -15,9 +16,11 @@ export interface IAccountAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
+    foundries: string[] | null;
     isAccountDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isBasicOutputsLoading: boolean;
+    isFoundriesLoading: boolean;
 }
 
 const initialState = {
@@ -26,9 +29,11 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     addressBasicOutputs: null,
+    foundries: null,
     isAccountDetailsLoading: true,
     isAssociatedOutputsLoading: false,
     isBasicOutputsLoading: false,
+    isFoundriesLoading: false,
 };
 
 /**
@@ -50,6 +55,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, accountOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -69,8 +75,10 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             isAccountDetailsLoading,
             totalBalance,
             availableBalance,
+            foundries,
             addressBasicOutputs,
             isBasicOutputsLoading,
+            isFoundriesLoading,
         });
     }, [accountOutput, totalBalance, availableBalance, addressBasicOutputs, isAccountDetailsLoading, isBasicOutputsLoading]);
 

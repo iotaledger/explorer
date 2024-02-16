@@ -27,6 +27,8 @@ import { ISearchRequest } from "~/models/api/nova/ISearchRequest";
 import { ISearchResponse } from "~/models/api/nova/ISearchResponse";
 import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetailsRequest";
 import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
+import { IFoundriesResponse } from "~/models/api/nova/foundry/IFoundriesResponse";
+import { IFoundriesRequest } from "~/models/api/nova/foundry/IFoundriesRequest";
 
 /**
  * Class to handle api communications on nova.
@@ -111,6 +113,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async foundryDetails(request: IFoundryRequest): Promise<IFoundryResponse> {
         return this.callApi<unknown, IFoundryResponse>(`nova/foundry/${request.network}/${request.foundryId}`, "get");
+    }
+
+    /**
+     * Get the foundries controlled by an account address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async accountFoundries(request: IFoundriesRequest): Promise<IFoundriesResponse> {
+        return this.callApi<unknown, IFoundriesResponse>(`nova/account/foundries/${request.network}/${request.accountAddress}`, "get");
     }
 
     /**
