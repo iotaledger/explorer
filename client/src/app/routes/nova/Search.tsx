@@ -191,7 +191,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                                     <ul>
                                         <li>
                                             <span>Query</span>
-                                            <span>{params.query}</span>
+                                            <span>{props.match.params.query}</span>
                                         </li>
                                     </ul>
                                 </div>
