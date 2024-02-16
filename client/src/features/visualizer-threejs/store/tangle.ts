@@ -66,7 +66,7 @@ interface TangleState {
     updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
     resetConfigState: () => void;
 
-    // Handle finalized blocks
+    // Confirmed/accepted blocks by slot
     confirmedBlocksBySlot: Map<number, string[]>;
     addToConfirmedBlocksBySlot: (blockId: BlockId, slot: SlotIndex) => void;
     removeConfirmedBlocksSlot: (slot: SlotIndex) => void;

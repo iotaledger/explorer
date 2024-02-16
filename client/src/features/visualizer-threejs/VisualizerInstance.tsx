@@ -68,6 +68,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+
+    // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
     const addToConfirmedBlocksSlot = useTangleStore((s) => s.addToConfirmedBlocksBySlot);
     const removeConfirmedBlocksSlot = useTangleStore((s) => s.removeConfirmedBlocksSlot);

@@ -125,7 +125,7 @@ export class NovaFeed {
                 // eslint-disable-next-line no-void
                 void this.broadcastBlock(update);
             } catch {
-                logger.error("[NovaFeed]: Failed broadcasting block-metadata downstream.");
+                logger.error("[NovaFeed]: Failed broadcasting finalized slot downstream.");
             }
         });
     }
