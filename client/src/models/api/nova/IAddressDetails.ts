@@ -5,6 +5,5 @@ export interface IAddressDetails {
     hex?: string;
     type?: AddressType;
     label?: string;
-    restricted?: boolean;
     capabilities?: number[];
 }
