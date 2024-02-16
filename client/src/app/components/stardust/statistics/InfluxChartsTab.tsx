@@ -10,10 +10,12 @@ import { idGenerator } from "~helpers/stardust/statisticsUtils";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { COMMAS_REGEX } from "../../../routes/stardust/landing/ShimmerClaimedUtils";
+import { SHIMMER } from "~/models/config/networkType";
 import Modal from "../../Modal";
 
 export const InfluxChartsTab: React.FC = () => {
-    const { tokenInfo } = useContext(NetworkContext);
+    const { name: networkName, tokenInfo } = useContext(NetworkContext);
+
     const [
         transactions,
         dailyBlocks,
@@ -37,6 +39,8 @@ export const InfluxChartsTab: React.FC = () => {
         formatAmount(Number(analyticStats?.lockedStorageDeposit), tokenInfo).replace(COMMAS_REGEX, ",") ?? "-";
 
     const ids = idGenerator();
+
+    const isShimmerNetwork = networkName === SHIMMER;
 
     return (
         <div className="statistics-page--charts">
@@ -185,30 +189,32 @@ export const InfluxChartsTab: React.FC = () => {
                     />
                 </div>
             </div>
-            <div className="section">
-                <div className="section--header">
-                    <h2>Genesis</h2>
-                    <Modal icon="info" data={graphMessages.genesis} />
+            {isShimmerNetwork && (
+                <div className="section">
+                    <div className="section--header">
+                        <h2>Genesis</h2>
+                        <Modal icon="info" data={graphMessages.genesis} />
+                    </div>
+                    <div className="row statistics-row">
+                        <LineChart
+                            chartId={ids.next().value}
+                            title="Total Unclaimed Tokens"
+                            info={graphMessages.totalUnclaimedTokens}
+                            label="Unclaimed Tokens"
+                            color="#00F5DD"
+                            data={unclaimedTokens}
+                        />
+                        <LineChart
+                            chartId={ids.next().value}
+                            title="Total Unclaimed Outputs"
+                            info={graphMessages.totalUnclaimedOutputs}
+                            label="Outputs"
+                            color="#00F5DD"
+                            data={unclaimedGenesisOutputs}
+                        />
+                    </div>
                 </div>
-                <div className="row statistics-row">
-                    <LineChart
-                        chartId={ids.next().value}
-                        title="Total Unclaimed Tokens"
-                        info={graphMessages.totalUnclaimedTokens}
-                        label="Unclaimed Tokens"
-                        color="#00F5DD"
-                        data={unclaimedTokens}
-                    />
-                    <LineChart
-                        chartId={ids.next().value}
-                        title="Total Unclaimed Outputs"
-                        info={graphMessages.totalUnclaimedOutputs}
-                        label="Outputs"
-                        color="#00F5DD"
-                        data={unclaimedGenesisOutputs}
-                    />
-                </div>
-            </div>
+            )}
             <div className="section">
                 <div className="section--header">
                     <h2>Data Storage</h2>

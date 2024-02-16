@@ -51,23 +51,27 @@ const buildDefaultTabsOptions = (
 ) => ({
     [DEFAULT_TABS.Transactions]: {
         disabled: false,
+        hidden: false,
         isLoading: isAddressHistoryLoading,
         infoContent: transactionHistoryMessage,
     },
     [DEFAULT_TABS.NativeTokens]: {
         disabled: tokensCount === 0,
+        hidden: tokensCount === 0,
         counter: tokensCount,
         isLoading: isAddressOutputsLoading,
         infoContent: nativeTokensMessage,
     },
     [DEFAULT_TABS.Nfts]: {
         disabled: nftCount === 0,
+        hidden: nftCount === 0,
         counter: nftCount,
         isLoading: isNftOutputsLoading,
         infoContent: addressNftsMessage,
     },
     [DEFAULT_TABS.AssocOutputs]: {
         disabled: associatedOutputCount === 0,
+        hidden: associatedOutputCount === 0,
         counter: associatedOutputCount,
         isLoading: isAssociatedOutputsLoading,
         infoContent: associatedOuputsMessage,
@@ -90,16 +94,19 @@ const buildAliasAddressTabsOptions = (
 ) => ({
     [ALIAS_TABS.State]: {
         disabled: isAliasStateTabDisabled,
+        hidden: isAliasStateTabDisabled,
         isLoading: isAliasDetailsLoading,
         infoContent: stateMessage,
     },
     [ALIAS_TABS.Foundries]: {
         disabled: isAliasFoundriesTabDisabled,
+        hidden: isAliasFoundriesTabDisabled,
         isLoading: isAliasFoundriesLoading,
         infoContent: foundriesMessage,
     },
     [ALIAS_TABS.DID]: {
         disabled: isAliasDIDTabDisabled,
+        hidden: isAliasDIDTabDisabled,
         isLoading: isAliasDIDLoading,
         infoContent: didMessage,
     },
@@ -108,6 +115,7 @@ const buildAliasAddressTabsOptions = (
 const buildNftAddressTabsOptions = (isNftMetadataTabDisabled: boolean, isNftDetailsLoading: boolean) => ({
     [NFT_TABS.NftMetadata]: {
         disabled: isNftMetadataTabDisabled,
+        hidden: isNftMetadataTabDisabled,
         isLoading: isNftDetailsLoading,
         infoContent: nftMetadataMessage,
     },
@@ -228,6 +236,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     switch (addressType) {
         case AddressType.Alias: {
             tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            tabOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             tabEnums = { ...ALIAS_TABS, ...DEFAULT_TABS };
             tabOptions = {
                 ...buildAliasAddressTabsOptions(
@@ -245,6 +254,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         }
         case AddressType.Nft: {
             tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            tabOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
             tabOptions = {
                 ...buildNftAddressTabsOptions(!nftMetadata, isNftDetailsLoading),
