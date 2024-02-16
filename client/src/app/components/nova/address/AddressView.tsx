@@ -35,10 +35,8 @@ function getAddressTypeName(type: AddressType): string {
             return "Anchor";
         case AddressType.ImplicitAccountCreation:
             return "ImplicitAccountCreation";
-        case AddressType.Multi:
-            return "Multi";
-        case AddressType.Restricted:
-            return "Restricted";
+        default:
+            return "Unknown";
     }
 }
 
