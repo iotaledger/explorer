@@ -40,7 +40,12 @@ const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: num
     },
 });
 
-const buildAccountAddressTabsOptions = (isBlockIssuer: boolean, foundriesCount: number, isAccountFoundriesLoading: boolean) => ({
+const buildAccountAddressTabsOptions = (
+    isBlockIssuer: boolean,
+    isCongestionLoading: boolean,
+    foundriesCount: number,
+    isAccountFoundriesLoading: boolean,
+) => ({
     [ACCOUNT_TABS.Foundries]: {
         disabled: foundriesCount === 0,
         hidden: foundriesCount === 0,
@@ -50,6 +55,7 @@ const buildAccountAddressTabsOptions = (isBlockIssuer: boolean, foundriesCount: 
     [ACCOUNT_TABS.BlockIssuance]: {
         disabled: !isBlockIssuer,
         hidden: !isBlockIssuer,
+        isLoading: isCongestionLoading,
         infoContent: bicMessage,
     },
 });
@@ -111,6 +117,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                 ...defaultTabsOptions,
                 ...buildAccountAddressTabsOptions(
                     accountAddressState.blockIssuerFeature !== null,
+                    accountAddressState.isCongestionLoading,
                     accountAddressState.accountOutput?.foundryCounter ?? 0,
                     accountAddressState.isFoundriesLoading,
                 ),
