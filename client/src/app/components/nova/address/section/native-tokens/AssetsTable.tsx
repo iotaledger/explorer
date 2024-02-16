@@ -1,7 +1,7 @@
 import { OutputType, OutputResponse, CommonOutput, INativeToken, FeatureType, NativeTokenFeature } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
-import Pagination from "../../../../Pagination";
+import Pagination from "~/app/components/Pagination";
 import { plainToInstance } from "class-transformer";
 import "./AssetsTable.scss";
 

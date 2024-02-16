@@ -1,7 +1,6 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IFoundriesRequest } from "../../../../models/api/nova/foundry/IFoundriesRequest";
 import { IFoundriesResponse } from "../../../../models/api/nova/foundry/IFoundriesResponse";
-
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -18,7 +17,7 @@ export async function get(config: IConfiguration, request: IFoundriesRequest): P
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
-    ValidationHelper.string(request.accountAddress, "aliasAddress");
+    ValidationHelper.string(request.accountAddress, "accountAddress");
 
     const networkConfig = networkService.get(request.network);
 

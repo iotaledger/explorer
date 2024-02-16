@@ -4,7 +4,7 @@ import { useEd25519AddressState } from "~/helpers/nova/hooks/useEd25519AddressSt
 import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
-import Spinner from "../../Spinner";
+import Spinner from "~/app/components/Spinner";
 
 interface Ed25519AddressViewProps {
     ed25519Address: Ed25519Address;

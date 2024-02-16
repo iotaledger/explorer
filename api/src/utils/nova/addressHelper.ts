@@ -10,7 +10,6 @@ import {
     AnchorAddress,
     Utils,
     ImplicitAccountCreationAddress,
-    RestrictedAddress,
 } from "@iota/sdk-nova";
 import { plainToInstance } from "class-transformer";
 import { IAddressDetails } from "../../models/api/nova/IAddressDetails";
@@ -59,16 +58,10 @@ export class AddressHelper {
             hex: hex ? HexHelper.addPrefix(hex) : hex,
             type,
             label: AddressHelper.typeLabel(type),
-            restricted: false,
         };
     }
 
-    private static buildAddressFromTypes(
-        address: Address,
-        hrp: string,
-        restricted: boolean = false,
-        capabilities?: number[],
-    ): IAddressDetails {
+    private static buildAddressFromTypes(address: Address, hrp: string, capabilities?: number[]): IAddressDetails {
         let hex: string = "";
         let bech32: string = "";
 
@@ -84,16 +77,6 @@ export class AddressHelper {
             const implicitAccountCreationAddress = plainToInstance(ImplicitAccountCreationAddress, address);
             const innerAddress = implicitAccountCreationAddress.address();
             hex = innerAddress.pubKeyHash;
-        } else if (address.type === AddressType.Restricted) {
-            const restrictedAddress = plainToInstance(RestrictedAddress, address);
-            const innerAddress = restrictedAddress.address;
-
-            return this.buildAddressFromTypes(
-                innerAddress,
-                hrp,
-                true,
-                Array.from(restrictedAddress.getAllowedCapabilities() as ArrayLike<number>),
-            );
         }
 
         bech32 = this.computeBech32FromHexAndType(hex, address.type, hrp);
@@ -103,7 +86,6 @@ export class AddressHelper {
             hex,
             type: address.type,
             label: AddressHelper.typeLabel(address.type),
-            restricted,
             capabilities,
         };
     }

@@ -2,7 +2,6 @@ import {
     AccountUnlock,
     AnchorUnlock,
     EmptyUnlock,
-    MultiUnlock,
     NftUnlock,
     ReferenceUnlock,
     SignatureUnlock,
@@ -25,7 +24,6 @@ interface UnlockTypeMap {
     [UnlockType.Account]: AccountUnlock;
     [UnlockType.Anchor]: AnchorUnlock;
     [UnlockType.Nft]: NftUnlock;
-    [UnlockType.Multi]: MultiUnlock;
     [UnlockType.Empty]: EmptyUnlock;
 }
 
@@ -80,10 +78,6 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                                     </div>
                                 </div>
                             );
-                        } else if (unlock.type === UnlockType.Multi) {
-                            const multiUnlock = unlock as MultiUnlock;
-
-                            return <Unlocks unlocks={multiUnlock.unlocks} key={idx} />;
                         } else if (unlock.type === UnlockType.Empty) {
                             return (
                                 <div key={idx} className="unlocks-card margin-l-t">
@@ -91,6 +85,8 @@ const Unlocks: React.FC<IUnlocksProps> = ({ unlocks }) => {
                                 </div>
                             );
                         } else {
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
                             const referencedUnlock = unlock as UnlockTypeMap[typeof unlock.type];
 
                             return (

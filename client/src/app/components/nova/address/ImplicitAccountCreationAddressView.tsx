@@ -3,7 +3,7 @@ import React from "react";
 import { useImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
 import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
-import Spinner from "../../Spinner";
+import Spinner from "~/app/components/Spinner";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface ImplicitAccountCreationAddressViewProps {

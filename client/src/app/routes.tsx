@@ -30,6 +30,7 @@ import NovaAddressPage from "./routes/nova/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
 import StardustFoundry from "./routes/stardust/Foundry";
 import { Landing as StardustLanding } from "./routes/stardust/landing/Landing";
+import NovaLanding from "./routes/nova/landing/Landing";
 import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
@@ -171,6 +172,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
     ];
 
     const novaRoutes = [
+        <Route exact path="/:network" key={keys.next().value} component={NovaLanding} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={NovaAddressPage} />,
         <Route path="/:network/visualizer/" key={keys.next().value} component={NovaVisualizer} />,
         <Route path="/:network/block/:blockId" key={keys.next().value} component={NovaBlockPage} />,

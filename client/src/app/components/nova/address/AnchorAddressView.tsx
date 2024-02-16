@@ -1,7 +1,7 @@
 import { AnchorAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
-import Spinner from "../../Spinner";
+import Spinner from "~/app/components/Spinner";
 import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
