@@ -17,7 +17,7 @@ export const Wrapper = ({
     onChangeFilter,
     selectNode,
     selectedFeedItem,
-    handlePauseButton,
+    setIsPlaying,
     isEdgeRenderingEnabled,
     setEdgeRenderingEnabled,
 }: {
@@ -30,7 +30,7 @@ export const Wrapper = ({
     readonly onChangeFilter: React.ChangeEventHandler<HTMLInputElement>;
     readonly selectNode: TSelectNode;
     readonly selectedFeedItem: TSelectFeedItemNova;
-    readonly handlePauseButton: () => void;
+    readonly setIsPlaying: (isPlaying: boolean) => void;
     readonly isEdgeRenderingEnabled?: boolean;
     readonly setEdgeRenderingEnabled?: (isEnabled: boolean) => void;
 }) => (
@@ -51,7 +51,7 @@ export const Wrapper = ({
             {children}
             <div className="action-panel-container">
                 <div className="card">
-                    <button className="pause-button" type="button" onClick={handlePauseButton}>
+                    <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
                         {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play_arrow</span>}
                     </button>
                 </div>
@@ -68,7 +68,7 @@ export const Wrapper = ({
                 )}
             </div>
         </div>
-        <StatsPanel blocksCount={blocksCount} network={network} />
+        <StatsPanel blocksCount={blocksCount} network={network} isPlaying={isPlaying} />
         {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
         <KeyPanel />
     </div>

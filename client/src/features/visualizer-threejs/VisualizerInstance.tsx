@@ -59,8 +59,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const setDimensions = useConfigStore((s) => s.setDimensions);
     const isPlaying = useConfigStore((s) => s.isPlaying);
     const setIsPlaying = useConfigStore((s) => s.setIsPlaying);
-    const inView = useConfigStore((s) => s.inView);
-    const setInView = useConfigStore((s) => s.setInView);
     const addBlock = useTangleStore((s) => s.addToBlockQueue);
     const addToEdgeQueue = useTangleStore((s) => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
@@ -83,15 +81,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         const handleVisibilityChange = async () => {
             if (document.hidden) {
                 setIsPlaying(false);
-                setInView(false);
-            } else {
-                setInView(true);
             }
         };
 
         const handleBlur = async () => {
             setIsPlaying(false);
-            setInView(false);
         };
 
         document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -168,7 +162,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         }
 
         setIsPlaying(true);
-        setInView(true);
 
         return () => {
             bpsCounter.stop();
@@ -197,7 +190,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * @param blockData The new block data
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
-        if (blockData && isPlaying) {
+        if (blockData) {
             const currentAnimationTime = getCurrentAnimationTime();
             const bps = bpsCounter.getBPS();
             const initPosition = getBlockInitPosition(currentAnimationTime);
@@ -224,6 +217,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
+                blockAddedTimestamp: getCurrentAnimationTime(),
                 targetPosition,
                 initPosition,
             });
@@ -250,17 +244,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             onChangeFilter={() => {}}
             selectNode={() => {}}
             selectedFeedItem={selectedFeedItem}
-            handlePauseButton={() => {
-                setIsPlaying(!isPlaying);
-                setInView(!isPlaying);
-            }}
+            setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
         >
             <Canvas
                 ref={canvasRef}
                 orthographic
-                frameloop={inView ? "always" : "never"}
                 camera={{
                     name: CanvasElement.MainCamera,
                     near: NEAR_PLANE,

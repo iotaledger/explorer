@@ -1,3 +1,4 @@
+import { Vector3 } from "three";
 import {
     BLOCK_STEP_PX,
     MIN_BLOCKS_PER_SECOND,
@@ -18,7 +19,7 @@ import {
     SINUSOIDAL_AMPLITUDE_ACCUMULATOR,
     INITIAL_SINUSOIDAL_AMPLITUDE,
 } from "./constants";
-import { ICameraAngles } from "./interfaces";
+import { ICameraAngles, IThreeDimensionalPosition } from "./interfaces";
 
 /**
  * Generates a random number within a specified range.
@@ -97,7 +98,7 @@ function getLinearRadius(bps: number): number {
  */
 function getDynamicRandomYZPoints(
     bps: number,
-    initialPosition: IPos = {
+    initialPosition: IThreeDimensionalPosition = {
         x: 0,
         y: 0,
         z: 0,
@@ -131,7 +132,11 @@ function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTan
  * Retries to generate a point until it passes all the checks.
  * @returns the point that passes all the checks.
  */
-function generateAValidRandomPoint(bps: number, initialPosition: IPos, prevPoints: IBlockTanglePosition[]): IBlockTanglePosition {
+function generateAValidRandomPoint(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    prevPoints: IBlockTanglePosition[],
+): IBlockTanglePosition {
     let trialPoint: IBlockTanglePosition;
     let passAllChecks = false;
     let retries = 0;
@@ -150,11 +155,6 @@ function generateAValidRandomPoint(bps: number, initialPosition: IPos, prevPoint
     return trialPoint;
 }
 
-interface IPos {
-    x: number;
-    y: number;
-    z: number;
-}
 /**
  * Gets a function to generate a random point on a circle.
  * @returns the function to generate the random point on a circle.
@@ -162,7 +162,7 @@ interface IPos {
 export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
     const prevPoints: IBlockTanglePosition[] = [];
 
-    return (bps: number, initialPosition: IPos = { x: 0, y: 0, z: 0 }): IBlockTanglePosition => {
+    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }): IBlockTanglePosition => {
         const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
 
         const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
@@ -245,12 +245,29 @@ export function calculateSinusoidalAmplitude(currentAnimationTime: number): numb
     return yPosition;
 }
 
-export function calculatePositionX(currentAnimationTime: number): number {
+/**
+ * Calculates the emitter position based on the current animation time.
+ * @returns the emitter position
+ */
+export function calculateEmitterPositionX(currentAnimationTime: number): number {
     return currentAnimationTime * EMITTER_SPEED_MULTIPLIER;
 }
 
-export function getEmitterPosition(currentAnimationTime: number): { x: number; y: number; z: number } {
-    const x = calculatePositionX(currentAnimationTime);
+/**
+ * Calculates the emitter position based on the current animation time.
+ * @returns the emitter X,Y,Z positions
+ */
+export function getEmitterPositions(currentAnimationTime: number): IThreeDimensionalPosition {
+    const x = calculateEmitterPositionX(currentAnimationTime);
     const y = calculateSinusoidalAmplitude(currentAnimationTime);
     return { x, y, z: 0 };
+}
+
+/**
+ * Converts a position object to a Vector3 object.
+ * @param position - The position object to convert.
+ * @returns A Vector3 object representing the position.
+ */
+export function positionToVector(position: IThreeDimensionalPosition) {
+    return new Vector3(position.x, position.y, position.z);
 }

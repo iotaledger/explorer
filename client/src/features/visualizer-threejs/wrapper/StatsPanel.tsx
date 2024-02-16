@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
 
-export const StatsPanel: React.FC<{ readonly blocksCount: number; readonly network: string }> = ({ blocksCount, network }) => {
+export const StatsPanel: React.FC<{ readonly blocksCount: number; readonly network: string; readonly isPlaying: boolean }> = ({
+    blocksCount,
+    network,
+    isPlaying,
+}) => {
     const [blocksPerSecond, confirmedBlocksPerSecond, confirmedBlocksPerSecondPercent] = useNetworkStats(network);
+    const [blocksInScreen, setBlocksInScreen] = React.useState<number>(0);
+
+    /**
+     * Sets BPS only when blocks are being emitted.
+     */
+    useEffect(() => {
+        if (isPlaying) {
+            setBlocksInScreen(blocksCount);
+        }
+    }, [isPlaying, blocksCount]);
 
     return (
         <div className="stats-panel-container">
@@ -10,7 +24,7 @@ export const StatsPanel: React.FC<{ readonly blocksCount: number; readonly netwo
                 <div className="card--content">
                     <div className="stats-panel__info">
                         <div className="card--label">Blocks</div>
-                        <div className="card--value">{blocksCount}</div>
+                        <div className="card--value">{blocksInScreen}</div>
                     </div>
                     <div className="stats-panel__info">
                         <div className="card--label">BPS / CBPS</div>

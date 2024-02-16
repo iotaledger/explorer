@@ -3,18 +3,16 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { ZOOM_DEFAULT, ANIMATION_TIME_SECONDS } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
+import { IThreeDimensionalPosition } from "../interfaces";
 
-interface IPosition {
-    x: number;
-    y: number;
-    z: number;
+export interface IBlockAnimationPosition {
+    initPosition: IThreeDimensionalPosition;
+    targetPosition: IThreeDimensionalPosition;
+    blockAddedTimestamp: number;
+    elapsedTime: number;
 }
 
-export interface IBlockInitPosition extends IPosition {
-    duration: number;
-}
-
-export interface BlockState {
+export interface IBlockState extends Omit<IBlockAnimationPosition, "elapsedTime"> {
     id: string;
     color: Color;
 }
@@ -31,15 +29,21 @@ interface EdgeEntry {
 
 interface TangleState {
     // Queue for "add block" operation to the canvas
-    blockQueue: BlockState[];
-    addToBlockQueue: (newBlock: BlockState & { initPosition: IPosition; targetPosition: IPosition }) => void;
+    blockQueue: IBlockState[];
+    addToBlockQueue: (
+        newBlock: IBlockState & {
+            initPosition: IThreeDimensionalPosition;
+            targetPosition: IThreeDimensionalPosition;
+            blockAddedTimestamp: number;
+        },
+    ) => void;
     removeFromBlockQueue: (blockIds: string[]) => void;
 
     edgeQueue: Edge[];
     addToEdgeQueue: (blockId: string, parents: string[]) => void;
     removeFromEdgeQueue: (edges: Edge[]) => void;
 
-    colorQueue: Pick<BlockState, "id" | "color">[];
+    colorQueue: Pick<IBlockState, "id" | "color">[];
     addToColorQueue: (blockId: string, color: Color) => void;
     removeFromColorQueue: (blockIds: string[]) => void;
 
@@ -48,7 +52,6 @@ interface TangleState {
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
     blockMetadata: Map<string, IFeedBlockData>;
-    blockIdToAnimationPosition: Map<string, IBlockInitPosition>;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
@@ -62,7 +65,9 @@ interface TangleState {
     clickedInstanceId: string | null;
     setClickedInstanceId: (instanceId: string | null) => void;
 
-    updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockInitPosition>) => void;
+    blockIdToAnimationPosition: Map<string, IBlockAnimationPosition>;
+    updateBlockIdToAnimationPosition: (updatedPositions: Map<string, IBlockAnimationPosition>) => void;
+
     resetConfigState: () => void;
 }
 
@@ -92,7 +97,7 @@ export const useTangleStore = create<TangleState>()(
                 });
 
                 for (const [key, value] of state.blockIdToAnimationPosition) {
-                    if (value.duration > ANIMATION_TIME_SECONDS) {
+                    if (value.elapsedTime > ANIMATION_TIME_SECONDS) {
                         state.blockIdToAnimationPosition.delete(key);
                     }
                 }
@@ -103,16 +108,18 @@ export const useTangleStore = create<TangleState>()(
         },
         addToBlockQueue: (block) => {
             set((state) => {
-                const { initPosition, targetPosition, ...blockRest } = block;
+                const { initPosition, targetPosition, blockAddedTimestamp, ...blockRest } = block;
 
                 state.blockIdToPosition.set(block.id, [targetPosition.x, targetPosition.y, targetPosition.z]);
                 state.blockIdToAnimationPosition.set(block.id, {
-                    ...initPosition,
-                    duration: 0,
+                    initPosition,
+                    blockAddedTimestamp,
+                    targetPosition,
+                    elapsedTime: 0,
                 });
                 return {
                     ...state,
-                    blockQueue: [...state.blockQueue, blockRest],
+                    blockQueue: [...state.blockQueue, { initPosition, targetPosition, blockAddedTimestamp, ...blockRest }],
                 };
             });
         },
