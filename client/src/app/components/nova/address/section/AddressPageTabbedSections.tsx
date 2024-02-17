@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import associatedOuputsMessage from "~assets/modals/stardust/address/associated-outputs.json";
 import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
+import stateMessage from "~assets/modals/stardust/alias/state.json";
 import bicMessage from "~assets/modals/nova/account/bic.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
@@ -14,6 +15,7 @@ import { IImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useIm
 import { AddressType } from "@iota/sdk-wasm-nova/web";
 import AccountFoundriesSection from "./account/AccountFoundriesSection";
 import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
+import AnchorStateSection from "./anchor/AnchorStateSection";
 
 enum DEFAULT_TABS {
     NativeTokens = "Native Tokens",
@@ -23,6 +25,10 @@ enum DEFAULT_TABS {
 enum ACCOUNT_TABS {
     BlockIssuance = "Block Issuance",
     Foundries = "Foundries",
+}
+
+enum ANCHOR_TABS {
+    State = "State",
 }
 
 const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number) => ({
@@ -57,6 +63,15 @@ const buildAccountAddressTabsOptions = (
         hidden: !isBlockIssuer,
         isLoading: isCongestionLoading,
         infoContent: bicMessage,
+    },
+});
+
+const buildAnchorAddressTabsOptions = (isAnchorStateTabDisabled: boolean, isAnchorDetailsLoading: boolean) => ({
+    [ANCHOR_TABS.State]: {
+        disabled: isAnchorStateTabDisabled,
+        hidden: isAnchorStateTabDisabled,
+        isLoading: isAnchorDetailsLoading,
+        infoContent: stateMessage,
     },
 });
 
@@ -104,6 +119,16 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
               ]
             : null;
 
+    const anchorAddressSections =
+        addressDetails.type === AddressType.Anchor
+            ? [
+                  <AnchorStateSection
+                      key={`anchor-state-${addressDetails.bech32}`}
+                      output={(addressState as IAnchorAddressState).anchorOutput}
+                  />,
+              ]
+            : null;
+
     let tabEnums = DEFAULT_TABS;
     const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount);
     let tabOptions = defaultTabsOptions;
@@ -123,6 +148,16 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                 ),
             };
             tabbedSections = [...defaultSections, ...(accountAddressSections ?? [])];
+            break;
+        }
+        case AddressType.Anchor: {
+            const anchorAddressState = addressState as IAnchorAddressState;
+            tabEnums = { ...DEFAULT_TABS, ...ANCHOR_TABS };
+            tabOptions = {
+                ...defaultTabsOptions,
+                ...buildAnchorAddressTabsOptions(anchorAddressState.anchorOutput === null, anchorAddressState.isAnchorDetailsLoading),
+            };
+            tabbedSections = [...defaultSections, ...(anchorAddressSections ?? [])];
             break;
         }
         default: {
