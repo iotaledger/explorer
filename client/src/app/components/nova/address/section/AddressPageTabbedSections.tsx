@@ -16,8 +16,8 @@ import AccountFoundriesSection from "./account/AccountFoundriesSection";
 import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
 
 enum DEFAULT_TABS {
-    NativeTokens = "Native Tokens",
     AssocOutputs = "Outputs",
+    NativeTokens = "Native Tokens",
 }
 
 enum ACCOUNT_TABS {
@@ -80,13 +80,13 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const { addressDetails, addressBasicOutputs } = addressState;
 
     const defaultSections = [
-        <AssetsTable key={`assets-table-${addressDetails.bech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
         <AssociatedOutputs
             key={`assoc-outputs-${addressDetails.bech32}`}
             addressDetails={addressDetails}
             setOutputCount={setOutputCount}
             setIsLoading={setAssociatedOutputsLoading}
         />,
+        <AssetsTable key={`assets-table-${addressDetails.bech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
     ];
 
     const accountAddressSections =

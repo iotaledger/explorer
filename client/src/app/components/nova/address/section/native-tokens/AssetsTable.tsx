@@ -1,4 +1,4 @@
-import { OutputType, OutputResponse, CommonOutput, INativeToken, FeatureType, NativeTokenFeature } from "@iota/sdk-wasm-nova/web";
+import { OutputType, OutputResponse, CommonOutput, NativeToken, FeatureType, NativeTokenFeature } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
 import Pagination from "~/app/components/Pagination";
@@ -13,8 +13,8 @@ interface AssetsTableProps {
 const TOKEN_PAGE_SIZE: number = 10;
 
 const AssetsTable: React.FC<AssetsTableProps> = ({ outputs, setTokensCount }) => {
-    const [tokens, setTokens] = useState<INativeToken[]>();
-    const [currentPage, setCurrentPage] = useState<INativeToken[]>([]);
+    const [tokens, setTokens] = useState<NativeToken[]>();
+    const [currentPage, setCurrentPage] = useState<NativeToken[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ outputs, setTokensCount }) =>
         }
 
         if (outputs) {
-            const theTokens: INativeToken[] = [];
+            const theTokens: NativeToken[] = [];
             for (const outputResponse of outputs) {
                 const output = outputResponse.output as CommonOutput;
                 if (output.type === OutputType.Basic || output.type === OutputType.Foundry) {
@@ -102,7 +102,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ outputs, setTokensCount }) =>
 };
 
 AssetsTable.defaultProps = {
-    setTokenCount: undefined,
+    setTokensCount: undefined,
 };
 
 export default AssetsTable;

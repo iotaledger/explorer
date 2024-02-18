@@ -3,7 +3,7 @@ import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
 import { OutputWithDetails } from "~helpers/stardust/hooks/useAddressHistory";
-import { STARDUST_SUPPLY_INCREASE_TRANSACTION_ID, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
+import { STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";
 
@@ -64,12 +64,17 @@ export const getTransactionHistoryRecords = (
 
         const isGenesisByDate = outputs.map((t) => t.milestoneTimestamp).some((milestoneTimestamp) => milestoneTimestamp === 0);
 
-        const milestoneIndexes = outputs.map((t) => t.milestoneIndex);
-        const isTransactionFromStardustGenesis = milestoneIndexes.some((milestoneIndex) =>
-            TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex),
-        );
+        let stardustGenesisOutputId;
+        const isTransactionFromStardustGenesis = outputs.some(({ milestoneIndex, outputId }) => {
+            const isGenesis = TransactionsHelper.isTransactionFromIotaStardustGenesis(network, milestoneIndex);
+            if (isGenesis) {
+                stardustGenesisOutputId = outputId;
+            }
 
-        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis);
+            return isGenesis;
+        });
+
+        const transactionLink = getTransactionLink(network, transactionId, isTransactionFromStardustGenesis, stardustGenesisOutputId);
 
         const isSpent = balanceChange <= 0;
 
@@ -106,8 +111,19 @@ export const calculateBalanceChange = (outputs: OutputWithDetails[]) => {
     }, 0);
 };
 
-export const getTransactionLink = (network: string, transactionId: string, isTransactionFromStardustGenesis: boolean) => {
-    return isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_TRANSACTION_ID)
-        ? `/${CHRYSALIS_MAINNET}/search/${transactionId}`
-        : `/${network}/transaction/${transactionId}`;
+export const getTransactionLink = (
+    network: string,
+    transactionId: string,
+    isTransactionFromStardustGenesis: boolean,
+    outputId?: string,
+) => {
+    if (isTransactionFromStardustGenesis && transactionId.includes(STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER)) {
+        return `/${network}/output/${outputId}`;
+    }
+
+    if (isTransactionFromStardustGenesis && !transactionId.includes(STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER)) {
+        return `/${CHRYSALIS_MAINNET}/search/${transactionId}`;
+    }
+
+    return `/${network}/transaction/${transactionId}`;
 };

@@ -20,6 +20,7 @@ import { IOutputDetailsRequest } from "~models/api/IOutputDetailsRequest";
 import { IStatsGetRequest } from "~models/api/stats/IStatsGetRequest";
 import { IStatsGetResponse } from "~models/api/stats/IStatsGetResponse";
 import { ApiClient } from "../apiClient";
+import { IRawResponse } from "~models/api/IRawResponse";
 
 /**
  * Class to handle api communications on chrystalis.
@@ -138,5 +139,9 @@ export class ChrysalisApiClient extends ApiClient {
             "post",
             payload,
         );
+    }
+
+    public async transactionHistoryDownload(network: string, address: string, targetDate: string): Promise<IRawResponse> {
+        return this.callApiRaw(`transactionhistory/download/${network}/${address}`, "post", { targetDate });
     }
 }

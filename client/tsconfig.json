@@ -18,31 +18,31 @@
     "baseUrl": "./",
     "paths": {
       "~/*": [
-        "src/*"
+        "src/iota/explorer/stardust/client/src/*"
       ],
       "~app/*": [
-        "src/app/*"
+        "src/iota/explorer/stardust/client/src/app/*"
       ],
       "~assets/*": [
-        "src/assets/*"
+        "src/iota/explorer/stardust/client/src/assets/*"
       ],
       "~factories/*": [
-        "src/factories/*"
+        "src/iota/explorer/stardust/client/src/factories/*"
       ],
       "~helpers/*": [
-        "src/helpers/*"
+        "src/iota/explorer/stardust/client/src/helpers/*"
       ],
       "~models/*": [
-        "src/models/*"
+        "src/iota/explorer/stardust/client/src/models/*"
       ],
       "~scss/*": [
-        "src/scss/*"
+        "src/iota/explorer/stardust/client/src/scss/*"
       ],
       "~services/*": [
-        "src/services/*"
+        "src/iota/explorer/stardust/client/src/services/*"
       ],
       "~features/*": [
-        "src/features/*"
+        "src/iota/explorer/stardust/client/src/features/*"
       ],
       "~hooks/*": [
         "src/helpers/hooks/*"
