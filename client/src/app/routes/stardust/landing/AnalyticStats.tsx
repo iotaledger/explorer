@@ -19,9 +19,9 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = ({ analytics, circulatingSup
 
     let claimedAndPercentLabels: [string, string] | undefined;
     if (analytics?.unclaimedShimmer && circulatingSupply) {
-        // magic number since influx doesn't account for the unclaimable portion of 20%
-        const shimmerClaimed = circulatingSupply - (Number.parseInt(analytics.unclaimedShimmer, 10) - 362724101812273);
-        claimedAndPercentLabels = buildShimmerClaimedStats(shimmerClaimed.toString(), String(circulatingSupply), tokenInfo);
+        const totalSupplyBigInt = (BigInt(circulatingSupply) * BigInt(100)) / BigInt(80); // https://github.com/iotaledger/explorer/issues/584
+        const shimmerClaimedBigInt = totalSupplyBigInt - BigInt(analytics.unclaimedShimmer);
+        claimedAndPercentLabels = buildShimmerClaimedStats(shimmerClaimedBigInt.toString(), totalSupplyBigInt.toString(), tokenInfo);
     }
 
     return analytics && !analytics.error ? (
