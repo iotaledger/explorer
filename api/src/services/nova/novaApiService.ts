@@ -1,9 +1,13 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Client } from "@iota/sdk-nova";
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Client, OutputResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
+import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
+import { IFoundryResponse } from "../../models/api/nova/foundry/IFoundryResponse";
 import { IAccountDetailsResponse } from "../../models/api/nova/IAccountDetailsResponse";
+import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsResponse";
 import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
@@ -151,6 +155,99 @@ export class NovaApiService {
         } catch {
             return { message: "Anchor output not found" };
         }
+    }
+
+    /**
+     * Get controlled Foundry output id by controller Account address
+     * @param accountAddress The bech32 account address to get the controlled Foundries for.
+     * @returns The foundry outputs.
+     */
+    public async accountFoundries(accountAddress: string): Promise<IFoundriesResponse | undefined> {
+        try {
+            const response = await this.client.foundryOutputIds({ account: accountAddress });
+
+            if (response) {
+                return {
+                    foundryOutputsResponse: response,
+                };
+            }
+        } catch {
+            return { message: "Foundries output not found" };
+        }
+    }
+
+    /**
+     * Get the foundry details.
+     * @param foundryId The foundryId to get the details for.
+     * @returns The foundry details.
+     */
+    public async foundryDetails(foundryId: string): Promise<IFoundryResponse | undefined> {
+        try {
+            const foundryOutputId = await this.client.foundryOutputId(foundryId);
+
+            if (foundryOutputId) {
+                const outputResponse = await this.outputDetails(foundryOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { foundryDetails: outputResponse.output };
+            }
+        } catch {
+            return { message: "Foundry output not found" };
+        }
+    }
+
+    /**
+     * Get the outputs details.
+     * @param outputIds The output ids to get the details.
+     * @returns The item details.
+     */
+    public async outputsDetails(outputIds: string[]): Promise<OutputResponse[]> {
+        const promises: Promise<IOutputDetailsResponse>[] = [];
+        const outputResponses: OutputResponse[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.outputDetails(outputId);
+            promises.push(promise);
+        }
+        try {
+            await Promise.all(promises).then((results) => {
+                for (const outputDetails of results) {
+                    if (outputDetails.output?.output && outputDetails.output?.metadata) {
+                        outputResponses.push(outputDetails.output);
+                    }
+                }
+            });
+
+            return outputResponses;
+        } catch (e) {
+            logger.error(`Fetching outputs details failed. Cause: ${e}`);
+        }
+    }
+
+    /**
+     * Get the relevant basic output details for an address.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The basic output details.
+     */
+    public async basicOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.basicOutputIds({ address: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching basic output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(outputIds);
+
+        return {
+            outputs: outputResponses,
+        };
     }
 
     /**

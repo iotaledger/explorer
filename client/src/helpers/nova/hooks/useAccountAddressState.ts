@@ -1,5 +1,5 @@
 import { Reducer, useEffect, useReducer } from "react";
-import { AccountAddress, AccountOutput } from "@iota/sdk-wasm-nova/web";
+import { AccountAddress, AccountOutput, OutputResponse } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useAccountDetails } from "./useAccountDetails";
 import { useLocation, useParams } from "react-router-dom";
@@ -7,23 +7,33 @@ import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
+import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
+import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 
 export interface IAccountAddressState {
-    accountAddressDetails: IAddressDetails | null;
+    addressDetails: IAddressDetails | null;
     accountOutput: AccountOutput | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    addressBasicOutputs: OutputResponse[] | null;
+    foundries: string[] | null;
     isAccountDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isBasicOutputsLoading: boolean;
+    isFoundriesLoading: boolean;
 }
 
 const initialState = {
-    accountAddressDetails: null,
+    addressDetails: null,
     accountOutput: null,
     totalBalance: null,
     availableBalance: null,
+    addressBasicOutputs: null,
+    foundries: null,
     isAccountDetailsLoading: true,
     isAssociatedOutputsLoading: false,
+    isBasicOutputsLoading: false,
+    isFoundriesLoading: false,
 };
 
 /**
@@ -43,7 +53,9 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     );
 
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.accountAddressDetails, accountOutput);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, accountOutput);
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -53,7 +65,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
 
         setState({
             ...initialState,
-            accountAddressDetails: addressDetails,
+            addressDetails,
         });
     }, []);
 
@@ -63,8 +75,12 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             isAccountDetailsLoading,
             totalBalance,
             availableBalance,
+            foundries,
+            addressBasicOutputs,
+            isBasicOutputsLoading,
+            isFoundriesLoading,
         });
-    }, [accountOutput, totalBalance, availableBalance, isAccountDetailsLoading]);
+    }, [accountOutput, totalBalance, availableBalance, addressBasicOutputs, isAccountDetailsLoading, isBasicOutputsLoading]);
 
     return [state, setState];
 };

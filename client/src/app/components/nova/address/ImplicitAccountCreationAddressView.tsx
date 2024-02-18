@@ -3,7 +3,7 @@ import React from "react";
 import { useImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
 import AddressBalance from "./AddressBalance";
 import Bech32Address from "./Bech32Address";
-import Spinner from "../../Spinner";
+import Spinner from "~/app/components/Spinner";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 
 interface ImplicitAccountCreationAddressViewProps {
@@ -12,17 +12,17 @@ interface ImplicitAccountCreationAddressViewProps {
 
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
     const [state, setState] = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
-    const { implicitAccountCreationAddressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;
     const isPageLoading = isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
             <div className="wrapper">
-                {implicitAccountCreationAddressDetails && (
+                {addressDetails && (
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>{implicitAccountCreationAddressDetails.label?.replace("Ed25519", "Address")}</h1>
+                                <h1>{addressDetails.label?.replace("Ed25519", "Address")}</h1>
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>
@@ -34,7 +34,7 @@ const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddres
                             </div>
                             <div className="general-content">
                                 <div className="section--data">
-                                    <Bech32Address addressDetails={implicitAccountCreationAddressDetails} advancedMode={true} />
+                                    <Bech32Address addressDetails={addressDetails} advancedMode={true} />
                                     {totalBalance !== null && (
                                         <AddressBalance
                                             totalBalance={totalBalance}
@@ -46,8 +46,8 @@ const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddres
                             </div>
                         </div>
                         <AddressPageTabbedSections
-                            key={implicitAccountCreationAddressDetails.bech32}
-                            addressDetails={implicitAccountCreationAddressDetails}
+                            key={addressDetails.bech32}
+                            addressState={state}
                             setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
                         />
                     </div>
