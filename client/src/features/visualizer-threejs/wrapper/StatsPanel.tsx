@@ -1,5 +1,5 @@
-import React from "react";
-import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
+import React, { memo } from "react";
+import { useNetworkStats } from "~helpers/nova/hooks/useNetworkStats";
 
 export const StatsPanel = ({ network }: { network: string }) => {
     const [blocksPerSecond] = useNetworkStats(network);
@@ -14,3 +14,5 @@ export const StatsPanel = ({ network }: { network: string }) => {
         </div>
     );
 };
+
+export default memo(StatsPanel);

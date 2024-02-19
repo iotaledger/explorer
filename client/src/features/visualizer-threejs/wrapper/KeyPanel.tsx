@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import { BlockState } from "@iota/sdk-wasm-nova/web";
 
 import "./KeyPanel.scss";
-import { StatsPanel } from "~features/visualizer-threejs/wrapper/StatsPanel";
+import StatsPanel from "~features/visualizer-threejs/wrapper/StatsPanel";
 
 export const KeyPanel = ({ network }: { network: string }) => {
     const statuses: {
@@ -63,3 +63,5 @@ export const KeyPanel = ({ network }: { network: string }) => {
         </div>
     );
 };
+
+export default memo(KeyPanel);
