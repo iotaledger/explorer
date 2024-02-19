@@ -1,5 +1,5 @@
 import { Reducer, useEffect, useReducer } from "react";
-import { NftAddress, NftOutput } from "@iota/sdk-wasm-nova/web";
+import { NftAddress, NftOutput, OutputResponse } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useNftDetails } from "./useNftDetails";
 import { useLocation, useParams } from "react-router-dom";
@@ -7,22 +7,27 @@ import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
 import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
+import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 
 export interface INftAddressState {
-    nftAddressDetails: IAddressDetails | null;
+    addressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    addressBasicOutputs: OutputResponse[] | null;
+    isBasicOutputsLoading: boolean;
     isNftDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
 }
 
 const initialState = {
-    nftAddressDetails: null,
+    addressDetails: null,
     nftOutput: null,
     isNftDetailsLoading: true,
     totalBalance: null,
     availableBalance: null,
+    addressBasicOutputs: null,
+    isBasicOutputsLoading: false,
     isAssociatedOutputsLoading: false,
 };
 
@@ -43,7 +48,8 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     );
 
     const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.nftAddressDetails, nftOutput);
+    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, nftOutput);
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -53,7 +59,7 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
 
         setState({
             ...initialState,
-            nftAddressDetails: addressDetails,
+            addressDetails,
         });
     }, []);
 
@@ -63,8 +69,10 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
             totalBalance,
             availableBalance,
             isNftDetailsLoading,
+            addressBasicOutputs,
+            isBasicOutputsLoading,
         });
-    }, [nftOutput, totalBalance, availableBalance, isNftDetailsLoading]);
+    }, [nftOutput, totalBalance, availableBalance, isNftDetailsLoading, addressBasicOutputs, isBasicOutputsLoading]);
 
     return [state, setState];
 };

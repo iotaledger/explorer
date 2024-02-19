@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "3.3.3-rc.1",
+    "version": "3.3.4-rc.1",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "type": "module",
     "repository": {
@@ -103,7 +103,7 @@
         "stylelint-config-sass-guidelines": "^9.0.1",
         "stylelint-config-standard-scss": "^5.0.0",
         "typescript": "^4.9.3",
-        "vite": "^4.5.0",
+        "vite": "^4.5.2",
         "vite-aliases": "^0.11.3",
         "vite-plugin-node-polyfills": "^0.16.0",
         "vite-plugin-svgr": "^4.2.0",

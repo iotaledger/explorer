@@ -25,6 +25,7 @@ import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 import { AddressRouteProps } from "../AddressRouteProps";
 import "./Addr.scss";
+import DownloadModal from "~app/components/chrysalis/DownloadModal";
 
 /**
  * Component which will show the address page for chrysalis and older.
@@ -243,9 +244,17 @@ class Addr extends AsyncComponent<RouteComponentProps<AddressRouteProps>, AddrSt
                                 {this.txsHistory.length > 0 && (
                                     <div className="section transaction--section">
                                         <div className="section--header row space-between">
-                                            <div className="row middle">
-                                                <h2>Transaction History</h2>
-                                                <Modal icon="info" data={transactionHistoryMessage} />
+                                            <div className="row middle w-full justify-between">
+                                                <div className="row middle">
+                                                    <h2>Transaction History</h2>
+                                                    <Modal icon="info" data={transactionHistoryMessage} />
+                                                </div>
+                                                <div>
+                                                    <DownloadModal
+                                                        network={this.props.match.params.network}
+                                                        address={this.props.match.params.address}
+                                                    />
+                                                </div>
                                             </div>
                                             {this.state.status && (
                                                 <div className="margin-t-s middle row">

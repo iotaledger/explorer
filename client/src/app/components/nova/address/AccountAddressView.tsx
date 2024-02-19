@@ -1,7 +1,7 @@
 import { AccountAddress } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { useAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressState";
-import Spinner from "../../Spinner";
+import Spinner from "~/app/components/Spinner";
 import Bech32Address from "../../nova/address/Bech32Address";
 import { AddressPageTabbedSections } from "./section/AddressPageTabbedSections";
 import AddressBalance from "./AddressBalance";
@@ -12,17 +12,17 @@ interface AccountAddressViewProps {
 
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
     const [state, setState] = useAccountAddressState(accountAddress);
-    const { accountAddressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading } = state;
     const isPageLoading = isAccountDetailsLoading || isAssociatedOutputsLoading;
 
     return (
         <div className="address-page">
             <div className="wrapper">
-                {accountAddressDetails && (
+                {addressDetails && (
                     <div className="inner">
                         <div className="addr--header">
                             <div className="row middle">
-                                <h1>{accountAddressDetails.label?.replace("Ed25519", "Address")}</h1>
+                                <h1>{addressDetails.label?.replace("Ed25519", "Address")}</h1>
                             </div>
                             {isPageLoading && <Spinner />}
                         </div>
@@ -34,7 +34,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                             </div>
                             <div className="general-content">
                                 <div className="section--data">
-                                    <Bech32Address addressDetails={accountAddressDetails} advancedMode={true} />
+                                    <Bech32Address addressDetails={addressDetails} advancedMode={true} />
                                     {totalBalance !== null && (
                                         <AddressBalance
                                             totalBalance={totalBalance}
@@ -46,8 +46,8 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                             </div>
                         </div>
                         <AddressPageTabbedSections
-                            key={accountAddressDetails.bech32}
-                            addressDetails={accountAddressDetails}
+                            key={addressDetails.bech32}
+                            addressState={state}
                             setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
                         />
                     </div>
