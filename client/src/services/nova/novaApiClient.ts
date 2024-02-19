@@ -21,8 +21,14 @@ import { INftDetailsRequest } from "~/models/api/nova/INftDetailsRequest";
 import { INftDetailsResponse } from "~/models/api/nova/INftDetailsResponse";
 import { IAnchorDetailsRequest } from "~/models/api/nova/IAnchorDetailsRequest";
 import { IAnchorDetailsResponse } from "~/models/api/nova/IAnchorDetailsResponse";
+import { IFoundryRequest } from "~/models/api/nova/foundry/IFoundryRequest";
+import { IFoundryResponse } from "~/models/api/nova/foundry/IFoundryResponse";
 import { ISearchRequest } from "~/models/api/nova/ISearchRequest";
 import { ISearchResponse } from "~/models/api/nova/ISearchResponse";
+import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetailsRequest";
+import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
+import { IFoundriesResponse } from "~/models/api/nova/foundry/IFoundriesResponse";
+import { IFoundriesRequest } from "~/models/api/nova/foundry/IFoundriesRequest";
 
 /**
  * Class to handle api communications on nova.
@@ -98,6 +104,33 @@ export class NovaApiClient extends ApiClient {
      */
     public async anchorDetails(request: IAnchorDetailsRequest): Promise<IAnchorDetailsResponse> {
         return this.callApi<unknown, IAnchorDetailsResponse>(`nova/anchor/${request.network}/${request.anchorId}`, "get");
+    }
+
+    /**
+     * Get the foundry output details.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async foundryDetails(request: IFoundryRequest): Promise<IFoundryResponse> {
+        return this.callApi<unknown, IFoundryResponse>(`nova/foundry/${request.network}/${request.foundryId}`, "get");
+    }
+
+    /**
+     * Get the foundries controlled by an account address.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async accountFoundries(request: IFoundriesRequest): Promise<IFoundriesResponse> {
+        return this.callApi<unknown, IFoundriesResponse>(`nova/account/foundries/${request.network}/${request.accountAddress}`, "get");
+    }
+
+    /**
+     * Get the basic outputs details of an address.
+     * @param request The Address Basic outputs request.
+     * @returns The Address outputs response
+     */
+    public async basicOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(`nova/address/outputs/basic/${request.network}/${request.address}`, "get");
     }
 
     /**
