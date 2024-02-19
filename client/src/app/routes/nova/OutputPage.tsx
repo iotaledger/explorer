@@ -81,7 +81,13 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                         </div>
                         <div className="section">
                             <div className="card">
-                                <OutputView outputId={outputId} output={output} showCopyAmount={true} isPreExpanded={true} />
+                                <OutputView
+                                    outputId={outputId}
+                                    output={output}
+                                    showCopyAmount={true}
+                                    isPreExpanded={true}
+                                    manaDetails={outputManaDetails}
+                                />
                             </div>
 
                             <div className="section--header row row--tablet-responsive middle space-between">
