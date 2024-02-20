@@ -4,6 +4,7 @@ import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
+import { HexHelper } from "~/helpers/stardust/hexHelper";
 
 /**
  * Fetch transaction included block details

@@ -211,7 +211,7 @@ function initNovaServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
 
     const novaClientParams: INovaClientOptions = {
-        primaryNode: networkConfig.provider,
+        primaryNodes: [networkConfig.provider],
     };
 
     if (networkConfig.permaNodeEndpoint) {
