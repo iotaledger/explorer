@@ -165,6 +165,7 @@ export const useRenderTangle = () => {
     useEffect(() => {
         if (colorQueue.length > 0) {
             const removeIds: string[] = [];
+
             for (const { id, color } of colorQueue) {
                 const indexToUpdate = blockIdToIndex.get(id);
 

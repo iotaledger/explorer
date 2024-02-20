@@ -32,6 +32,7 @@ import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotI
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
+import useSearchStore from "~features/visualizer-threejs/store/search";
 
 const features = {
     statsEnabled: true,
@@ -68,6 +69,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+    const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
+
 
     // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
@@ -240,6 +243,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     };
 
     function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
+        // Utils
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
             if (selectedColor) {
@@ -247,7 +251,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 if (currentBlockMetadata) {
                     currentBlockMetadata.treeColor = selectedColor;
                 }
-                addToColorQueue(metadataUpdate.blockId, selectedColor);
+                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
+                    addToColorQueue(metadataUpdate.blockId, selectedColor);
+                }
             }
 
             const acceptedStates: BlockState[] = ["confirmed", "accepted"];
@@ -278,11 +284,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         <Wrapper
             key={network}
             blocksCount={indexToBlockId.length}
-            filter=""
             isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={() => {}}
             selectNode={() => {}}
             selectedFeedItem={selectedFeedItem}
             setIsPlaying={setIsPlaying}

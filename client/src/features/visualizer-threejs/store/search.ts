@@ -4,7 +4,7 @@ interface SearchState {
     searchQuery: string;
     matchingBlockIds: string[];
     setSearchQuery: (query: string) => void;
-    setBlockIds: (ids: string[]) => void;
+    setMatchingBlockIds: (ids: string[]) => void;
 }
 
 // Create the store
@@ -16,7 +16,7 @@ const useSearchStore = create<SearchState>((set) => ({
     setSearchQuery: (query) => set({ searchQuery: query }),
 
     // Action to update the block IDs
-    setBlockIds: (ids) => set({ matchingBlockIds: ids }),
+    setMatchingBlockIds: (ids) => set({ matchingBlockIds: ids }),
 }));
 
 export default useSearchStore;
