@@ -33,7 +33,7 @@ import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 
 const features = {
-    statsEnabled: true,
+    statsEnabled: false,
     cameraControls: true,
 };
 
