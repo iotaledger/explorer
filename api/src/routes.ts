@@ -242,6 +242,12 @@ export const routes: IRoute[] = [
         folder: "nova/account/foundries",
         func: "get",
     },
+    {
+        path: "/nova/transactionhistory/:network/:address",
+        method: "get",
+        folder: "nova/transactionhistory",
+        func: "get",
+    },
     { path: "/nova/block/:network/:blockId", method: "get", folder: "nova/block", func: "get" },
     { path: "/nova/block/metadata/:network/:blockId", method: "get", folder: "nova/block/metadata", func: "get" },
 ];
