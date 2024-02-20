@@ -64,6 +64,10 @@ export async function subscribe(
                 await service.subscribeBlocks(socket.id, async (data) => {
                     socket.emit("block", data);
                 });
+
+                if (request?.feedSelect === "commitments/latest") {
+                    // await service. ?? TODO do I need to subscribe to another stream?
+                }
             }
         } else {
             return {

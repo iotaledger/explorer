@@ -131,4 +131,41 @@ export class NovaFeedClient {
 
         return success;
     }
+
+    public async subscribeCommitments() {
+        const WS_FEED_KEY = "commitments/latest";
+        this.socket = io(this.endpoint, { upgrade: true, transports: ["websocket"] });
+
+        // If reconnect fails then also try polling mode.
+        this.socket.on("reconnect_attempt", () => {
+            if (this.socket) {
+                this.socket.io.opts.transports = ["polling", "websocket"];
+            }
+        });
+
+        try {
+            if (!this.blockSubscriptionId && this._networkConfig?.network && this.socket) {
+                const subscribeRequest: IFeedSubscribeRequest = {
+                    network: this._networkConfig.network,
+                    feedSelect: WS_FEED_KEY,
+                };
+
+                this.socket.on("subscribe", (subscribeResponse: IFeedSubscribeResponse) => {
+                    if (subscribeResponse.error) {
+                        console.error("Failed subscribing to feed", this._networkConfig?.network, subscribeResponse.error);
+                    } else {
+                        this.blockSubscriptionId = subscribeResponse.subscriptionId;
+                    }
+                });
+
+                this.socket.on(WS_FEED_KEY, async (data: IFeedUpdate) => {
+
+                });
+
+                this.socket.emit("subscribe", subscribeRequest);
+            }
+        } catch (error) {
+            console.error("Failed subscribing to block feed", this._networkConfig?.network, error);
+        }
+    }
 }

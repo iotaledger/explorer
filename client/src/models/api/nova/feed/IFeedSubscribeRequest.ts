@@ -1,4 +1,4 @@
-export type IFeedSelect = "block";
+export type IFeedSelect = "block" | "commitments/latest";
 
 export interface IFeedSubscribeRequest {
     /**
