@@ -48,7 +48,7 @@ interface TangleState {
     blockIdToIndex: Map<string, number>;
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
-    blockMetadata: Map<string, IFeedBlockData>;
+    blockMetadata: Map<string, IFeedBlockData & { treeColor: Color; }>;
     blockIdToAnimationPosition: Map<string, IBlockInitPosition>;
 
     indexToBlockId: string[];

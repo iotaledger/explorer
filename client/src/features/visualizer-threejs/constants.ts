@@ -22,10 +22,16 @@ export const DATA_SENDER_TIME_INTERVAL = 500;
 export const ANIMATION_TIME_SECONDS = 3;
 
 // colors
-export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
-export const ACCEPTED_BLOCK_COLOR = new Color("#0101AB");
-export const CONFIRMED_BLOCK_COLOR = new Color("#0000DB");
-export const FINALIZED_BLOCK_COLOR = new Color("#0101FF");
+export const PENDING_BLOCK_COLOR_HASH = "#A6C3FC";
+export const PENDING_BLOCK_COLOR = new Color(PENDING_BLOCK_COLOR_HASH);
+export const ACCEPTED_BLOCK_COLOR_HASH = "#0101AB";
+export const ACCEPTED_BLOCK_COLOR = new Color(ACCEPTED_BLOCK_COLOR_HASH);
+export const CONFIRMED_BLOCK_COLOR_HASH = "#0000DB";
+export const CONFIRMED_BLOCK_COLOR = new Color(CONFIRMED_BLOCK_COLOR_HASH);
+export const FINALIZED_BLOCK_COLOR_HASH = "#0101FF";
+export const FINALIZED_BLOCK_COLOR = new Color(FINALIZED_BLOCK_COLOR_HASH);
+export const SEARCH_RESULT_COLOR_HASH = "#C026D3";
+export const SEARCH_RESULT_COLOR = new Color(SEARCH_RESULT_COLOR_HASH);
 // TODO Remove accepted state once is added to the SDK (missing)
 export const BLOCK_STATE_TO_COLOR = new Map<BlockState | "accepted", Color>([
     ["pending", PENDING_BLOCK_COLOR],

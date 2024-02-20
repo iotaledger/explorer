@@ -2,6 +2,7 @@ import { useThree } from "@react-three/fiber";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { useTangleStore } from "../store";
+import { SEARCH_RESULT_COLOR } from "~features/visualizer-threejs/constants";
 
 export const useMouseMove = ({
     tangleMeshRef,
@@ -12,6 +13,7 @@ export const useMouseMove = ({
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
     const setClickedInstanceId = useTangleStore((s) => s.setClickedInstanceId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+    const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const originalColorsRef = useRef<Map<number, THREE.Color>>(new Map());
 
     const updateMouseMove = useCallback(
@@ -40,7 +42,6 @@ export const useMouseMove = ({
                 cb(null);
             } else {
                 const { instanceId } = firstIntersect;
-                const color = new THREE.Color(0xff0000); // Red color
 
                 // If we're hovering over a new instance, save the current color and set to red
                 if (hoveredInstanceId !== instanceId) {
@@ -51,7 +52,7 @@ export const useMouseMove = ({
                     originalColorsRef.current.set(instanceId, currentColor);
 
                     // Set the new hovered instance color to red
-                    tangleMeshRef.current.setColorAt(instanceId, color);
+                    tangleMeshRef.current.setColorAt(instanceId, SEARCH_RESULT_COLOR);
                     cb(instanceId);
                 }
             }

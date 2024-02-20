@@ -214,7 +214,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 bpsCounter.start();
             }
 
-            blockMetadata.set(blockData.blockId, blockData);
+            blockMetadata.set(blockData.blockId, { ...blockData, treeColor: PENDING_BLOCK_COLOR });
 
             // edges
             const blockStrongParents = (blockData.block.body as BasicBlockBody).strongParents ?? [];
@@ -243,6 +243,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
             if (selectedColor) {
+                const currentBlockMetadata = blockMetadata.get(metadataUpdate.blockId);
+                if (currentBlockMetadata) {
+                    currentBlockMetadata.treeColor = selectedColor;
+                }
                 addToColorQueue(metadataUpdate.blockId, selectedColor);
             }
 

@@ -1,33 +1,38 @@
 import React from "react";
 import { BlockState } from "@iota/sdk-wasm-nova/web";
-
+import {
+    ACCEPTED_BLOCK_COLOR_HASH,
+    CONFIRMED_BLOCK_COLOR_HASH,
+    FINALIZED_BLOCK_COLOR_HASH,
+    PENDING_BLOCK_COLOR_HASH, SEARCH_RESULT_COLOR_HASH
+} from "../constants";
 import "./KeyPanel.scss";
 
 export const KeyPanel: React.FC = () => {
     const statuses: {
         label: string;
-        state: BlockState;
+        state: BlockState | 'searchResult';
         color: string;
     }[] = [
         {
             label: "Pending",
             state: "pending",
-            color: "#A6C3FC",
+            color: PENDING_BLOCK_COLOR_HASH,
         },
         {
             label: "Accepted",
             state: "accepted",
-            color: "#0101AB",
+            color: ACCEPTED_BLOCK_COLOR_HASH,
         },
         {
             label: "Confirmed",
             state: "confirmed",
-            color: "#0000DB",
+            color: CONFIRMED_BLOCK_COLOR_HASH,
         },
         {
             label: "Finalized",
             state: "finalized",
-            color: "#0101FF",
+            color: FINALIZED_BLOCK_COLOR_HASH,
         },
         {
             label: "Rejected",
@@ -38,6 +43,11 @@ export const KeyPanel: React.FC = () => {
             label: "Failed",
             state: "failed",
             color: "#ff1d38",
+        },
+        {
+            label: "Search result",
+            state: "searchResult",
+            color: SEARCH_RESULT_COLOR_HASH,
         },
     ];
 
