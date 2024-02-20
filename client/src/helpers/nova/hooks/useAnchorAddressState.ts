@@ -18,6 +18,8 @@ export interface IAnchorAddressState {
     isBasicOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -29,6 +31,8 @@ const initialState = {
     isBasicOutputsLoading: false,
     isAnchorDetailsLoading: true,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**

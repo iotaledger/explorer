@@ -21,6 +21,8 @@ export interface IAccountAddressState {
     isAssociatedOutputsLoading: boolean;
     isBasicOutputsLoading: boolean;
     isFoundriesLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -34,6 +36,8 @@ const initialState = {
     isAssociatedOutputsLoading: false,
     isBasicOutputsLoading: false,
     isFoundriesLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**

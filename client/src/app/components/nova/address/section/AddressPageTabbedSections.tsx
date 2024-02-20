@@ -4,6 +4,7 @@ import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
+import transactionHistoryMessage from "~assets/modals/stardust/address/transaction-history.json";
 import { IAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressState";
 import { INftAddressState } from "~/helpers/nova/hooks/useNftAddressState";
 import { IAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
@@ -12,8 +13,11 @@ import AssetsTable from "./native-tokens/AssetsTable";
 import { IImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
 import { AddressType } from "@iota/sdk-wasm-nova/web";
 import AccountFoundriesSection from "./account/AccountFoundriesSection";
+import TransactionHistory from "../../history/TransactionHistoryView";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 enum DEFAULT_TABS {
+    Transactions = "Transactions",
     AssocOutputs = "Outputs",
     NativeTokens = "Native Tokens",
 }
@@ -22,7 +26,13 @@ enum ACCOUNT_TABS {
     Foundries = "Foundries",
 }
 
-const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number) => ({
+const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number, isAddressHistoryLoading: boolean) => ({
+    [DEFAULT_TABS.Transactions]: {
+        disabled: false,
+        hidden: false,
+        isLoading: isAddressHistoryLoading,
+        infoContent: transactionHistoryMessage,
+    },
     [DEFAULT_TABS.AssocOutputs]: {
         disabled: associatedOutputCount === 0,
         hidden: associatedOutputCount === 0,
@@ -54,18 +64,35 @@ interface IAddressPageTabbedSectionsProps {
         | IAnchorAddressState
         | IImplicitAccountCreationAddressState;
     readonly setAssociatedOutputsLoading: (isLoading: boolean) => void;
+    readonly setTransactionHistoryLoading: (isLoading: boolean) => void;
+    readonly setTransactionHistoryDisabled: (isDisabled: boolean) => void;
 }
 
-export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps> = ({ addressState, setAssociatedOutputsLoading }) => {
+export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps> = ({
+    addressState,
+    setAssociatedOutputsLoading,
+    setTransactionHistoryLoading,
+    setTransactionHistoryDisabled,
+}) => {
     const [outputCount, setOutputCount] = useState<number>(0);
     const [tokensCount, setTokensCount] = useState<number>(0);
+    const networkInfo = useNetworkInfoNova((s) => s.networkInfo);
 
     if (!addressState.addressDetails) {
         return null;
     }
-    const { addressDetails, addressBasicOutputs } = addressState;
+    const { addressDetails, addressBasicOutputs, isAddressHistoryLoading, isAddressHistoryDisabled } = addressState;
+    const { bech32: addressBech32 } = addressDetails;
+    const { name: network } = networkInfo;
 
     const defaultSections = [
+        <TransactionHistory
+            key={`txs-history-${addressBech32}`}
+            network={network}
+            address={addressBech32}
+            setLoading={setTransactionHistoryLoading}
+            setDisabled={setTransactionHistoryDisabled}
+        />,
         <AssociatedOutputs
             key={`assoc-outputs-${addressDetails.bech32}`}
             addressDetails={addressDetails}
@@ -86,7 +113,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             : null;
 
     let tabEnums = DEFAULT_TABS;
-    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount);
+    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount, isAddressHistoryLoading);
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;
 
@@ -104,6 +131,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             break;
         }
         default: {
+            tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            tabOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             break;
         }
     }
