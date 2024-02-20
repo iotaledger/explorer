@@ -179,7 +179,7 @@ export class NovaApiClient extends ApiClient {
         const params = {
             pageSize: request.pageSize,
             sort: request.sort,
-            startMilestoneIndex: request.startSlotIndex,
+            startSlotIndex: request.startSlotIndex,
             cursor: request.cursor,
         };
 

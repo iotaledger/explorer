@@ -6,7 +6,7 @@ import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
 const CHRONICLE_ENDPOINTS = {
-    updatesByAddress: "/api/explorer/v2/ledger/updates/by-address/",
+    updatesByAddress: "/api/explorer/v3/ledger/updates/by-address/",
     balance: "/api/explorer/v3/balance/",
 };
 
