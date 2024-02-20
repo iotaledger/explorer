@@ -63,7 +63,8 @@ export const useConfigStore = create<ConfigState>((set) => ({
     },
 
     /**
-     * Initial time
+     * The initial time when the emitter was mounted.
+     * Used for all animations based on time.
      */
     initialTime: null,
     setInitialTime: (initialTime) => {

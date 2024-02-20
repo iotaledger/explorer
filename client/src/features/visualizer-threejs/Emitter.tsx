@@ -47,8 +47,6 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
         };
     }, [emitterRef?.current]);
 
-    useFrame(() => {});
-
     /**
      * Emitter shift
      */
