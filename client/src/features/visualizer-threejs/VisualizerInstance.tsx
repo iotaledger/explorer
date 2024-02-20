@@ -34,7 +34,7 @@ import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
 
 const features = {
-    statsEnabled: true,
+    statsEnabled: false,
     cameraControls: true,
 };
 
