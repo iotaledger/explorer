@@ -10,6 +10,7 @@ import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useTangleStore } from "~features/visualizer-threejs/store/tangle";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { SEARCH_RESULT_COLOR } from "~features/visualizer-threejs/constants";
+import { Color } from "three";
 
 export const Wrapper = ({
     blocksCount,
@@ -52,25 +53,48 @@ export const Wrapper = ({
     }, []);
 
     React.useEffect(() => {
-        console.log('--- blo', blockMetadata);
-        if (searchQuery) {
-            const tempMatchingBlockIds: string[] = [];
-            blockMetadata.forEach((i) => {
-                if (matchLatestFinalizedSlot(i, searchQuery)) {
-                    tempMatchingBlockIds.push(i.blockId);
+        // [] Search empty - put value
+            // [] check matches
+            // [] if matches - add to color queue
+        // [] Search empty - remove value
+            // [] remove from color queue
+        // [] Search not empty - put value
+            // [] check matches
+            // [] if matches - add to color queue
+
+        const colorsQueue = [];
+
+        const tempMatchingBlockIds: string[] = [];
+
+        blockMetadata.forEach((i) => {
+            if (matchLatestFinalizedSlot(i, searchQuery)) {
+                tempMatchingBlockIds.push(i.blockId);
+            }
+        });
+
+
+        // before we need to clear the previous search results
+        if (matchingBlockIds.length > 0) {
+            matchingBlockIds.forEach((id) => {
+                const metadata = blockMetadata.get(id);
+                const treeColor = metadata?.treeColor as Color;
+                if (treeColor) {
+                    colorsQueue.push({id: id, color: treeColor});
                 }
             });
-
-
-            addToColorQueueBulk(tempMatchingBlockIds.map((id) => ({id: id, color: SEARCH_RESULT_COLOR})));
-            setMatchingBlockIds(tempMatchingBlockIds);
-        } else {
-            if (matchingBlockIds.length > 0) {
-
-            }
-            setMatchingBlockIds([]);
         }
+
+        if (tempMatchingBlockIds.length > 0) {
+            colorsQueue.push(...tempMatchingBlockIds.map((id) => ({id: id, color: SEARCH_RESULT_COLOR})));
+        }
+
+        addToColorQueueBulk(colorsQueue);
+        setMatchingBlockIds(tempMatchingBlockIds);
     }, [searchQuery]);
+
+    React.useEffect(() => {
+
+    }, [matchingBlockIds]);
 
 
     return (
