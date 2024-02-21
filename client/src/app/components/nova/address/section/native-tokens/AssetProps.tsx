@@ -1,10 +1,10 @@
-import { IToken } from "~models/api/stardust/foundry/IToken";
+import { NativeToken } from "@iota/sdk-wasm-nova/web";
 
 export interface AssetProps {
     /**
      * Token
      */
-    token: IToken;
+    token: NativeToken;
 
     /**
      * True if the asset is rendered like a table
