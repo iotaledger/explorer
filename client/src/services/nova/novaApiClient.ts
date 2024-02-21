@@ -167,6 +167,13 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the slot utxo changes.
+     */
+    public async getSlotUTXOChanges(request: ISlotRequest): Promise<ISlotResponse> {
+        return this.callApi<unknown, ISlotResponse>(`nova/slot/utxochanges/${request.network}/${request.slotIndex}`, "get");
+    }
+
+    /**
      * Get the stats.
      * @param request The request to send.
      * @returns The response from the request.

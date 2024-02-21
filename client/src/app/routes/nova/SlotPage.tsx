@@ -4,7 +4,7 @@ import { ModalData } from "~/app/components/ModalProps";
 import { RouteComponentProps } from "react-router-dom";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import classNames from "classnames";
-import useSlotData from "~/helpers/nova/hooks/useSlot";
+import useSlotCommitment from "~/helpers/nova/hooks/useSlotCommitment";
 import "./SlotPage.scss";
 
 interface SlotPageProps {
@@ -12,12 +12,24 @@ interface SlotPageProps {
     slotIndex: string;
 }
 
+export enum SlotState {
+    /**
+     * The slot is pending.
+     */
+    Pending = "pending",
+
+    /**
+     * The slot is finalized.
+     */
+    Finalized = "finalized",
+}
+
 export default function SlotPage({
     match: {
         params: { network, slotIndex },
     },
 }: RouteComponentProps<SlotPageProps>): React.JSX.Element {
-    const { slotCommitment } = useSlotData(network, slotIndex);
+    const { slotCommitment } = useSlotCommitment(network, slotIndex);
 
     const message: ModalData = {
         title: "Slot Page",
