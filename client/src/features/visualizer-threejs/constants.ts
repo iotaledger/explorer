@@ -90,3 +90,10 @@ export const MAX_SINUSOIDAL_AMPLITUDE = 200;
 export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 30;
 export const INITIAL_SINUSOIDAL_AMPLITUDE = 80;
 export const HALF_WAVE_PERIOD_SECONDS = 5;
+
+/* Values for randomizing the tangle */
+
+// PERIOD
+export const NUMBER_OF_RANDOM_PERIODS = 100;
+export const MIN_SINUSOID_HALF_PERIOD = 1;
+export const MAX_SINUSOID_HALF_PERIOD = 4;

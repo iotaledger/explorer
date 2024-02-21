@@ -44,6 +44,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 }) => {
     const [networkConfig] = useNetworkConfig(network);
     const themeMode = useGetThemeMode();
+    const getCurrentAnimationTime = useVisualizerTimer();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
@@ -72,13 +73,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToConfirmedBlocksSlot = useTangleStore((s) => s.addToConfirmedBlocksBySlot);
     const removeConfirmedBlocksSlot = useTangleStore((s) => s.removeConfirmedBlocksSlot);
 
+    const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
+    const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
+
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const [feedService, setFeedService] = React.useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
-
-    const getCurrentAnimationTime = useVisualizerTimer();
 
     /**
      * Pause on tab or window change
@@ -199,7 +201,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (blockData) {
             const currentAnimationTime = getCurrentAnimationTime();
             const bps = bpsCounter.getBPS();
-            const initPosition = getBlockInitPosition(currentAnimationTime);
+            const initPosition = getBlockInitPosition({
+                currentAnimationTime,
+                periods: sinusoidRandomPeriods,
+                periodsSum: sinusoidPeriodsSum,
+            });
             const targetPosition = getBlockTargetPosition(initPosition, bps);
 
             bpsCounter.addBlock();
