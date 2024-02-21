@@ -306,6 +306,5 @@ function getCurrentPeriodValues(animationTime: number, periods: number[], totalS
         }
     }
 
-    //
     return { period: periods[0], accumulatedTime: 0 };
 }
