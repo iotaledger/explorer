@@ -85,12 +85,11 @@ export const MAX_PREV_POINTS = 20;
 
 export const EMITTER_X_POSITION_MULTIPLIER = 3;
 
-export const MAX_SINUSOIDAL_AMPLITUDE = 200;
-export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 30;
-export const INITIAL_SINUSOIDAL_AMPLITUDE = 80;
-export const HALF_WAVE_PERIOD_SECONDS = 5;
-
 /* Values for randomizing the tangle */
 export const NUMBER_OF_RANDOM_PERIODS = 100;
-export const MIN_SINUSOID_HALF_PERIOD = 1;
-export const MAX_SINUSOID_HALF_PERIOD = 4;
+export const MIN_SINUSOID_HALF_PERIOD = 5;
+export const MAX_SINUSOID_HALF_PERIOD = 8;
+
+export const NUMBER_OF_RANDOM_AMPLITUDES = 100;
+export const MIN_SINUSOID_AMPLITUDE = 100;
+export const MAX_SINUSOID_AMPLITUDE = 200;

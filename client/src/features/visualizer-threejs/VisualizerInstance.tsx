@@ -75,6 +75,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
     const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
+    const sinusoidRandomAmplitudes = useConfigStore((s) => s.randomSinusoidAmplitudes);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
@@ -205,6 +206,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 currentAnimationTime,
                 periods: sinusoidRandomPeriods,
                 periodsSum: sinusoidPeriodsSum,
+                sinusoidAmplitudes: sinusoidRandomAmplitudes,
             });
             const targetPosition = getBlockTargetPosition(initPosition, bps);
 

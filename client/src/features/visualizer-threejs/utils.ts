@@ -10,16 +10,16 @@ import {
     MAX_POINT_RETRIES,
     MAX_BLOCK_INSTANCES,
     EMITTER_SPEED_MULTIPLIER,
-    MAX_SINUSOIDAL_AMPLITUDE,
     CAMERA_X_AXIS_MOVEMENT,
     CAMERA_Y_AXIS_MOVEMENT,
     CAMERA_X_OFFSET,
     CAMERA_Y_OFFSET,
-    SINUSOIDAL_AMPLITUDE_ACCUMULATOR,
-    INITIAL_SINUSOIDAL_AMPLITUDE,
     NUMBER_OF_RANDOM_PERIODS,
     MIN_SINUSOID_HALF_PERIOD,
     MAX_SINUSOID_HALF_PERIOD,
+    NUMBER_OF_RANDOM_AMPLITUDES,
+    MIN_SINUSOID_AMPLITUDE,
+    MAX_SINUSOID_AMPLITUDE,
 } from "./constants";
 import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
 
@@ -193,7 +193,7 @@ export function getTangleDistances(): {
     const maxXDistance = MAX_BLOCK_DISTANCE;
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = MAX_TANGLE_RADIUS * 2 + MAX_SINUSOIDAL_AMPLITUDE * 2;
+    const maxYDistance = MAX_TANGLE_RADIUS * 2 + MAX_SINUSOID_AMPLITUDE * 2;
 
     /* TODO: add sinusoidal distances */
 
@@ -237,16 +237,18 @@ export function getCameraAngles(): ICameraAngles {
  * considering random periods.
  * @returns the sinusoidal position
  */
-export function calculateSinusoidalAmplitude({ currentAnimationTime, periods, periodsSum }: ISinusoidalPositionParams): number {
+export function calculateSinusoidalAmplitude({
+    currentAnimationTime,
+    periods,
+    periodsSum,
+    sinusoidAmplitudes,
+}: ISinusoidalPositionParams): number {
     const elapsedTime = currentAnimationTime % periodsSum;
-    const { period, accumulatedTime } = getCurrentPeriodValues(currentAnimationTime, periods, periodsSum);
+    const { index, period, accumulatedTime } = getCurrentPeriodValues(currentAnimationTime, periods, periodsSum);
 
     const startTimeOfCurrentPeriod = accumulatedTime - period;
     const timeInCurrentPeriod = elapsedTime - startTimeOfCurrentPeriod;
-
-    const currentWaveCount = Math.floor(elapsedTime / period);
-    const accumulatedAmplitude = currentWaveCount * SINUSOIDAL_AMPLITUDE_ACCUMULATOR;
-    const currentAmplitude = Math.min(INITIAL_SINUSOIDAL_AMPLITUDE + accumulatedAmplitude, MAX_SINUSOIDAL_AMPLITUDE);
+    const currentAmplitude = sinusoidAmplitudes[index];
 
     const yPosition = currentAmplitude * Math.sin((2 * Math.PI * timeInCurrentPeriod) / period);
 
@@ -265,9 +267,14 @@ export function calculateEmitterPositionX(currentAnimationTime: number): number 
  * Calculates the emitter position based on the current animation time.
  * @returns the emitter X,Y,Z positions
  */
-export function getEmitterPositions({ currentAnimationTime, periods, periodsSum }: ISinusoidalPositionParams): IThreeDimensionalPosition {
+export function getEmitterPositions({
+    currentAnimationTime,
+    periods,
+    periodsSum,
+    sinusoidAmplitudes,
+}: ISinusoidalPositionParams): IThreeDimensionalPosition {
     const x = calculateEmitterPositionX(currentAnimationTime);
-    const y = calculateSinusoidalAmplitude({ currentAnimationTime, periods, periodsSum });
+    const y = calculateSinusoidalAmplitude({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes });
     return { x, y, z: 0 };
 }
 
@@ -293,18 +300,48 @@ export function generateRandomPeriods(): { periods: number[]; sum: number } {
 type PeriodResult = {
     period: number;
     accumulatedTime: number;
+    index: number;
 };
 
 function getCurrentPeriodValues(animationTime: number, periods: number[], totalSum: number): PeriodResult {
     const effectiveTime = animationTime % totalSum;
 
     let accumulatedTime = 0;
+
     for (let i = 0; i < periods.length; i++) {
-        accumulatedTime += periods[i];
+        const period = periods[i];
+        accumulatedTime += period;
         if (effectiveTime < accumulatedTime) {
-            return { period: periods[i], accumulatedTime };
+            return { index: i, period, accumulatedTime };
         }
     }
 
-    return { period: periods[0], accumulatedTime: 0 };
+    return { index: 0, period: periods[0], accumulatedTime: 0 };
+}
+
+function getNextAmplitudeWithVariation(currentAmplitude: number = 0): number {
+    const variation = (2 * MIN_SINUSOID_AMPLITUDE) / 3;
+    const randomAmplitudeVariation = randomNumberFromInterval(-variation, variation);
+
+    let newAmplitude = currentAmplitude + randomAmplitudeVariation;
+
+    if (newAmplitude > MAX_SINUSOID_AMPLITUDE) {
+        newAmplitude = currentAmplitude - Math.abs(randomAmplitudeVariation);
+    } else if (newAmplitude < MIN_SINUSOID_AMPLITUDE) {
+        newAmplitude = currentAmplitude + Math.abs(randomAmplitudeVariation);
+    }
+
+    newAmplitude = Math.max(MIN_SINUSOID_AMPLITUDE, Math.min(newAmplitude, MAX_SINUSOID_AMPLITUDE));
+
+    return newAmplitude;
+}
+
+export function generateRandomAmplitudes(): number[] {
+    const amplitudes: number[] = [];
+    let currentAmplitude: number = 0;
+    for (let i = 0; i < NUMBER_OF_RANDOM_AMPLITUDES; i++) {
+        currentAmplitude = getNextAmplitudeWithVariation(currentAmplitude);
+        amplitudes.push(currentAmplitude);
+    }
+    return amplitudes;
 }
