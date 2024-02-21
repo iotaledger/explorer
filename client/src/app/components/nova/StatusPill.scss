@@ -1,20 +1,18 @@
-@import "../../../../scss/fonts";
-@import "../../../../scss/mixins";
-@import "../../../../scss/media-queries";
-@import "../../../../scss/variables";
+@import "./../../../scss/fonts";
+@import "./../../../scss/mixins";
+@import "./../../../scss/media-queries";
+@import "./../../../scss/variables";
 
 .status-pill {
     @include font-size(12px);
 
     display: flex;
     align-items: center;
-    height: 24px;
     margin-right: 8px;
-    padding: 0 8px;
+    padding: 6px 12px;
     border: 0;
     border-radius: 6px;
     outline: none;
-    background-color: $gray-light;
     color: $gray-midnight;
     font-family: $inter;
     font-weight: 500;
@@ -33,7 +31,6 @@
 
         &conflicting {
             background-color: var(--message-conflicting-bg);
-            color: $red-7;
         }
 
         &pending {

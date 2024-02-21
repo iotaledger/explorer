@@ -1,45 +1,38 @@
 import React from "react";
-import Modal from "~/app/components/Modal";
-import { ModalData } from "~/app/components/ModalProps";
-import { RouteComponentProps } from "react-router-dom";
-import TruncatedId from "~/app/components/stardust/TruncatedId";
-import classNames from "classnames";
 import useSlotCommitment from "~/helpers/nova/hooks/useSlotCommitment";
+import StatusPill from "~/app/components/nova/StatusPill";
+import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
+import Modal from "~/app/components/Modal";
+import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
+import NotFound from "~/app/components/NotFound";
+import { SlotState } from "~/app/lib/enums";
+import { RouteComponentProps } from "react-router-dom";
+import { PillState } from "~/app/lib/ui/enums";
 import "./SlotPage.scss";
 
-interface SlotPageProps {
-    network: string;
-    slotIndex: string;
-}
-
-export enum SlotState {
-    /**
-     * The slot is pending.
-     */
-    Pending = "pending",
-
-    /**
-     * The slot is finalized.
-     */
-    Finalized = "finalized",
-}
+const SLOT_STATE_TO_PILL_STATE: Record<SlotState, PillState> = {
+    [SlotState.Pending]: PillState.Pending,
+    [SlotState.Finalized]: PillState.Confirmed,
+};
 
 export default function SlotPage({
     match: {
         params: { network, slotIndex },
     },
-}: RouteComponentProps<SlotPageProps>): React.JSX.Element {
+}: RouteComponentProps<{
+    network: string;
+    slotIndex: string;
+}>): React.JSX.Element {
     const { slotCommitment } = useSlotCommitment(network, slotIndex);
 
-    const message: ModalData = {
-        title: "Slot Page",
-        description: "<p>Slot Information here</p>",
-    };
+    const parsedSlotIndex = parseSlotIndex(slotIndex);
+    const slotState = slotCommitment ? SlotState.Finalized : SlotState.Pending;
+    const pillState: PillState = SLOT_STATE_TO_PILL_STATE[slotState];
 
-    const dataRows: IDataRow[] = [
+    const dataRows: IPageDataRow[] = [
         {
             label: "Slot Index",
-            value: slotCommitment?.slot,
+            value: slotCommitment?.slot || parsedSlotIndex,
             highlighted: true,
         },
         {
@@ -48,55 +41,47 @@ export default function SlotPage({
         },
     ];
 
+    function parseSlotIndex(slotIndex: string): number | undefined {
+        const slotIndexNum = parseInt(slotIndex, 10);
+        if (isNaN(slotIndexNum)) {
+            return;
+        }
+        return slotIndexNum;
+    }
+
     return (
         <section className="slot-page">
             <div className="wrapper">
                 <div className="inner">
                     <div className="slot-page--header">
-                        <div className="row middle">
+                        <div className="header--title row middle">
                             <h1>Slot</h1>
-                            <Modal icon="info" data={message} />
+                            <Modal icon="info" data={mainHeaderMessage} />
                         </div>
-                    </div>
-                    <div className="section">
-                        <div className="section--header row row--tablet-responsive middle space-between">
-                            <div className="row middle">
-                                <h2>General</h2>
+                        {slotCommitment && (
+                            <div className="header--status">
+                                <StatusPill state={pillState} label={slotState} />
                             </div>
-                        </div>
-                        {dataRows.map((dataRow, index) => {
-                            if (dataRow.value || dataRow.truncatedId) {
-                                return <DataRow key={index} {...dataRow} />;
-                            }
-                        })}
+                        )}
                     </div>
+                    {parsedSlotIndex && slotCommitment ? (
+                        <div className="section">
+                            <div className="section--header row row--tablet-responsive middle space-between">
+                                <div className="row middle">
+                                    <h2>General</h2>
+                                </div>
+                            </div>
+                            {dataRows.map((dataRow, index) => {
+                                if (dataRow.value || dataRow.truncatedId) {
+                                    return <PageDataRow key={index} {...dataRow} />;
+                                }
+                            })}
+                        </div>
+                    ) : (
+                        <NotFound query={slotIndex} searchTarget="slot" />
+                    )}
                 </div>
             </div>
         </section>
     );
 }
-
-interface IDataRow {
-    label: string;
-    value?: string | number;
-    highlighted?: boolean;
-    truncatedId?: {
-        id: string;
-        link?: string;
-        showCopyButton?: boolean;
-    };
-}
-const DataRow = ({ label, value, truncatedId, highlighted }: IDataRow) => {
-    return (
-        <div className="section--data">
-            <div className="label">{label}</div>
-            <div className={classNames("value code", { highlighted })}>
-                {truncatedId ? (
-                    <TruncatedId id={truncatedId.id} link={truncatedId.link} showCopyButton={truncatedId.showCopyButton} />
-                ) : (
-                    value
-                )}
-            </div>
-        </div>
-    );
-};

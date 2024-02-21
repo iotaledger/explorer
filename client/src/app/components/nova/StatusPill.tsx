@@ -1,23 +1,7 @@
-import classNames from "classnames";
 import React from "react";
+import classNames from "classnames";
+import { PillState } from "~/app/lib/ui/enums";
 import "./StatusPill.scss";
-
-export enum PillStatus {
-    /**
-     * The status is pending.
-     */
-    Pending = "pending",
-
-    /**
-     * The status is confirmed.
-     */
-    Confirmed = "confirmed",
-
-    /**
-     * The status is rejected.
-     */
-    Rejected = "rejected",
-}
 
 interface IStatusPill {
     /**
@@ -27,27 +11,23 @@ interface IStatusPill {
     /**
      * The status of the pill.
      */
-    status: PillStatus;
+    state: PillState;
 }
 
-const StatusPill: React.FC<IStatusPill> = ({ label, status }) => (
-    <div className="status-pill">
-        {status && (
+const StatusPill: React.FC<IStatusPill> = ({ label, state }): React.JSX.Element => (
+    <>
+        {label && (
             <div
-                className={classNames(
-                    {
-                        status__confirmed: status === PillStatus.Confirmed,
-                    },
-                    {
-                        status__conflicting: status === PillStatus.Rejected,
-                    },
-                    { status__pending: status === PillStatus.Pending },
-                )}
+                className={classNames("status-pill", {
+                    status__confirmed: state === PillState.Confirmed,
+                    status__conflicting: state === PillState.Rejected,
+                    status__pending: state === PillState.Pending,
+                })}
             >
                 <span className="capitalize-text">{label}</span>
             </div>
         )}
-    </div>
+    </>
 );
 
 export default StatusPill;

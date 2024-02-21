@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Client, OutputResponse, UtxoChangesResponse } from "@iota/sdk-nova";
+import { Client, OutputResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
@@ -262,6 +262,11 @@ export class NovaApiService {
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
     }
 
+    /**
+     * Get the slot commitment.
+     * @param slotIndex The slot index to get the commitment for.
+     * @returns The slot commitment.
+     */
     public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
         try {
             const slot = await this.client.getCommitmentByIndex(slotIndex);
@@ -269,16 +274,6 @@ export class NovaApiService {
             return { slot };
         } catch (e) {
             logger.error(`Failed fetching slot with slot index ${slotIndex}. Cause: ${e}`);
-        }
-    }
-
-    public async getSlotUTXOChanges(slotIndex: number): Promise<Partial<UtxoChangesResponse>> {
-        try {
-            const response = await this.client.getUtxoChangesByIndex(slotIndex);
-
-            return response;
-        } catch (e) {
-            logger.error(`Failed fetching slot utxo changes with slot index ${slotIndex}. Cause: ${e}`);
         }
     }
 

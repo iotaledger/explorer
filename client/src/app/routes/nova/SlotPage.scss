@@ -37,8 +37,16 @@
 
             .slot-page--header {
                 display: flex;
-                align-items: center;
-                justify-content: space-between;
+                flex-direction: column;
+                align-items: flex-start;
+
+                .header--title {
+                    margin-bottom: 8px;
+                }
+
+                .header--status {
+                    display: flex;
+                }
             }
 
             .section {
@@ -51,35 +59,6 @@
                 .card--content__output {
                     margin-top: 20px;
                 }
-            }
-        }
-    }
-
-    .tooltip {
-        .children {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .tooltip__special {
-            background-color: #fff4df;
-            border-radius: 4px;
-            padding: 0 4px;
-            font-weight: 400;
-        }
-
-        .wrap {
-            left: 0;
-            right: 0;
-            margin-left: auto;
-            margin-right: auto;
-            width: 170px;
-
-            .arrow {
-                left: 0;
-                right: 0;
-                margin-left: auto;
-                margin-right: auto;
             }
         }
     }
