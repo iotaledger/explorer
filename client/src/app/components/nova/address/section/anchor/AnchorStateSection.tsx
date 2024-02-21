@@ -1,5 +1,6 @@
-import { AnchorOutput } from "@iota/sdk-wasm-nova/web";
+import { AnchorOutput, FeatureType, StateMetadataFeature } from "@iota/sdk-wasm-nova/web";
 import React from "react";
+import DataToggle from "~/app/components/DataToggle";
 
 interface AnchorStateSectionProps {
     /**
@@ -9,7 +10,7 @@ interface AnchorStateSectionProps {
 }
 
 const AnchorStateSection: React.FC<AnchorStateSectionProps> = ({ output }) => {
-    // const stateMetadataFeature = output?.features.find(feature => feature.type === FeatureType.StateMetadata) as StateMetadataFeature;
+    const stateMetadata = output?.features?.find((feature) => feature.type === FeatureType.StateMetadata) as StateMetadataFeature;
 
     return (
         <div className="section">
@@ -20,14 +21,14 @@ const AnchorStateSection: React.FC<AnchorStateSectionProps> = ({ output }) => {
                         <span className="margin-r-t">{output?.stateIndex}</span>
                     </div>
                 </div>
-                {/* {stateMetadata && (
-                    <div>
-                        <div className="label margin-t-m">State Metadata</div>
+                {Object.entries(stateMetadata.entries).map(([key, value], index) => (
+                    <div key={index}>
+                        <div className="label margin-t-m">{key}</div>
                         <div className="value row middle margin-t-t">
-                            <DataToggle sourceData={stateMetadata} withSpacedHex={true} />
+                            <DataToggle sourceData={value} withSpacedHex={true} />
                         </div>
                     </div>
-                )} */}
+                ))}
             </div>
         </div>
     );
