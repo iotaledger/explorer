@@ -20,6 +20,7 @@ import AnchorStateSection from "./anchor/AnchorStateSection";
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
     NativeTokens = "Native Tokens",
+    Nfts = "NFTs",
 }
 
 enum ACCOUNT_TABS {
@@ -30,6 +31,10 @@ enum ACCOUNT_TABS {
 enum ANCHOR_TABS {
     State = "State",
 }
+
+// enum NFT_TABS {
+//     NftMetadata = "Metadata",
+// }
 
 const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number) => ({
     [DEFAULT_TABS.AssocOutputs]: {
@@ -44,6 +49,13 @@ const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: num
         counter: tokensCount,
         infoContent: nativeTokensMessage,
     },
+    // [DEFAULT_TABS.Nfts]: {
+    //     disabled: nftCount === 0,
+    //     hidden: nftCount === 0,
+    //     counter: nftCount,
+    //     isLoading: isNftOutputsLoading,
+    //     infoContent: addressNftsMessage,
+    // },
 });
 
 const buildAccountAddressTabsOptions = (
@@ -74,6 +86,15 @@ const buildAnchorAddressTabsOptions = (isAnchorStateTabDisabled: boolean, isAnch
         infoContent: stateMessage,
     },
 });
+
+// const buildNftAddressTabsOptions = (isNftMetadataTabDisabled: boolean, isNftDetailsLoading: boolean) => ({
+//     [NFT_TABS.NftMetadata]: {
+//         disabled: isNftMetadataTabDisabled,
+//         hidden: isNftMetadataTabDisabled,
+//         isLoading: isNftDetailsLoading,
+//         infoContent: nftMetadataMessage,
+//     },
+// });
 
 interface IAddressPageTabbedSectionsProps {
     readonly addressState:

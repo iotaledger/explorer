@@ -50,7 +50,14 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                     {feature.type === FeatureType.Issuer && <AddressView address={(feature as IssuerFeature).address} />}
                     {feature.type === FeatureType.Metadata && (
                         <div className="card--value row">
-                            <DataToggle sourceData={(feature as MetadataFeature).data} withSpacedHex={true} />
+                            {Object.entries((feature as MetadataFeature).entries).map(([key, value], index) => (
+                                <div key={index}>
+                                    <div className="label margin-t-m">{key}</div>
+                                    <div className="value row middle margin-t-t">
+                                        <DataToggle sourceData={value} withSpacedHex={true} />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                     {feature.type === FeatureType.StateMetadata && <div className="card--value row">State metadata unimplemented</div>}
