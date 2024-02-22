@@ -9,8 +9,8 @@ interface IPos {
     y: number;
     z: number;
 }
-export function getBlockTargetPosition(initPosition: IPos, bps: number): IPos {
-    const { y, z } = generateYZPositions(bps, initPosition);
+export function getBlockTargetPosition(initPosition: IPos, bps: number, tiltDegress: number): IPos {
+    const { y, z } = generateYZPositions(bps, initPosition, tiltDegress);
 
     const emitterMinX = initPosition.x - EMITTER_WIDTH / 2;
     const emitterMaxX = initPosition.x + EMITTER_WIDTH / 2;

@@ -11,6 +11,10 @@ export interface IThreeDimensionalPosition {
     z: number;
 }
 
+export interface IThreeDimensionalPositionWithTilt extends IThreeDimensionalPosition {
+    tiltFactor: number;
+}
+
 export interface ITimeBasedPositionParams {
     currentAnimationTime: number;
 }

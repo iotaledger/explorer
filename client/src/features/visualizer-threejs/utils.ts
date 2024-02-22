@@ -20,6 +20,10 @@ import {
     NUMBER_OF_RANDOM_AMPLITUDES,
     MIN_SINUSOID_AMPLITUDE,
     MAX_SINUSOID_AMPLITUDE,
+    NUMBER_OF_RANDOM_TILTINGS,
+    MIN_TILT_FACTOR_DEGREES,
+    MAX_TILT_FACTOR_DEGREES,
+    TILT_DURATION_SECONDS,
 } from "./constants";
 import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
 
@@ -105,6 +109,7 @@ function getDynamicRandomYZPoints(
         y: 0,
         z: 0,
     },
+    tiltDegrees: number,
 ): IBlockTanglePosition {
     const theta = Math.random() * (2 * Math.PI);
 
@@ -112,8 +117,11 @@ function getDynamicRandomYZPoints(
     const randomFactor = Math.random();
     const radius = randomFactor * maxRadius;
 
-    const y = radius * Math.cos(theta) + initialPosition.y;
+    let y = radius * Math.cos(theta) + initialPosition.y;
     const z = radius * Math.sin(theta) + initialPosition.z;
+
+    const tiltRadians = tiltDegrees * (Math.PI / 180);
+    y += Math.tan(tiltRadians) * radius;
 
     return { y, z };
 }
@@ -138,13 +146,14 @@ function generateAValidRandomPoint(
     bps: number,
     initialPosition: IThreeDimensionalPosition,
     prevPoints: IBlockTanglePosition[],
+    tiltDegress: number,
 ): IBlockTanglePosition {
     let trialPoint: IBlockTanglePosition;
     let passAllChecks = false;
     let retries = 0;
 
     do {
-        trialPoint = getDynamicRandomYZPoints(bps, initialPosition);
+        trialPoint = getDynamicRandomYZPoints(bps, initialPosition, tiltDegress);
         passAllChecks = pointPassesAllChecks(trialPoint, prevPoints);
         retries++;
     } while (!passAllChecks && retries < MAX_POINT_RETRIES);
@@ -164,8 +173,8 @@ function generateAValidRandomPoint(
 export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
     const prevPoints: IBlockTanglePosition[] = [];
 
-    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }): IBlockTanglePosition => {
-        const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
+    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }, tiltDegress): IBlockTanglePosition => {
+        const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints, tiltDegress);
 
         const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
         const randomZNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
@@ -344,4 +353,28 @@ export function generateRandomAmplitudes(): number[] {
         amplitudes.push(currentAmplitude);
     }
     return amplitudes;
+}
+
+export function generateRandomTiltings(): number[] {
+    let previousValue: number;
+
+    const tilts: number[] = Array.from({ length: NUMBER_OF_RANDOM_TILTINGS }, () => {
+        let randomTilt = randomIntFromInterval(MIN_TILT_FACTOR_DEGREES, MAX_TILT_FACTOR_DEGREES);
+
+        if ((previousValue < 0 && randomTilt < 0) || (previousValue > 0 && randomTilt > 0)) {
+            randomTilt *= -1;
+        }
+
+        previousValue = randomTilt;
+
+        return randomTilt;
+    });
+    return tilts;
+}
+
+export function getCurrentTiltValue(animationTime: number, tilts: number[]): number {
+    const tiltAnimationDuration = TILT_DURATION_SECONDS * 2;
+    const currentAnimationTime = animationTime % tiltAnimationDuration;
+    currentAnimationTime;
+    return 0;
 }

@@ -4,7 +4,7 @@ import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef, useLayou
 import * as THREE from "three";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { getTangleDistances, getEmitterPositions, generateRandomPeriods, generateRandomAmplitudes } from "./utils";
+import { getTangleDistances, getEmitterPositions, generateRandomPeriods, generateRandomAmplitudes, generateRandomTiltings } from "./utils";
 import { CanvasElement } from "./enums";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from "./constants";
@@ -36,14 +36,18 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     const randomSinusoidAmplitudes = useConfigStore((state) => state.randomSinusoidAmplitudes);
     const setRandomSinusoidAmplitudes = useConfigStore((state) => state.setRandomSinusoidAmplitudes);
 
+    const setRandomTilts = useConfigStore((state) => state.setRandomTilts);
+
     const tangleWrapperRef = useRef<THREE.Mesh | null>(null);
 
     useLayoutEffect(() => {
         const { periods, sum: periodsSum } = generateRandomPeriods();
         const amplitudes = generateRandomAmplitudes();
+        const tiltings = generateRandomTiltings();
         setSinusoidRandomPeriods(periods);
         setSinusoidPeriodsSum(periodsSum);
         setRandomSinusoidAmplitudes(amplitudes);
+        setRandomTilts(tiltings);
     }, []);
 
     useEffect(() => {

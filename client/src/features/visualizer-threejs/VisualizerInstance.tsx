@@ -31,6 +31,7 @@ import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
+import { getCurrentTiltValue } from "./utils";
 
 const features = {
     statsEnabled: false,
@@ -76,6 +77,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
     const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
     const sinusoidRandomAmplitudes = useConfigStore((s) => s.randomSinusoidAmplitudes);
+    const randomTilts = useConfigStore((state) => state.randomTilts);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
@@ -208,7 +210,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 periodsSum: sinusoidPeriodsSum,
                 sinusoidAmplitudes: sinusoidRandomAmplitudes,
             });
-            const targetPosition = getBlockTargetPosition(initPosition, bps);
+            const blockTiltFactor = getCurrentTiltValue(currentAnimationTime, randomTilts);
+            const targetPosition = getBlockTargetPosition(initPosition, bps, blockTiltFactor);
 
             bpsCounter.addBlock();
 
