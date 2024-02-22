@@ -26,8 +26,8 @@ export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
 export const ACCEPTED_BLOCK_COLOR = new Color("#0101AB");
 export const CONFIRMED_BLOCK_COLOR = new Color("#0000DB");
 export const FINALIZED_BLOCK_COLOR = new Color("#0101FF");
-// TODO Remove accepted state once is added to the SDK (missing)
-export const BLOCK_STATE_TO_COLOR = new Map<BlockState | "accepted", Color>([
+
+export const BLOCK_STATE_TO_COLOR = new Map<BlockState, Color>([
     ["pending", PENDING_BLOCK_COLOR],
     ["accepted", ACCEPTED_BLOCK_COLOR],
     ["confirmed", CONFIRMED_BLOCK_COLOR],
@@ -72,7 +72,6 @@ export const EMITTER_HEIGHT = 250;
 export const EMITTER_DEPTH = 250;
 
 // conic emitter
-
 export const MIN_TANGLE_RADIUS = 100;
 export const MAX_TANGLE_RADIUS = 300;
 
@@ -90,3 +89,8 @@ export const MAX_SINUSOIDAL_AMPLITUDE = 200;
 export const SINUSOIDAL_AMPLITUDE_ACCUMULATOR = 30;
 export const INITIAL_SINUSOIDAL_AMPLITUDE = 80;
 export const HALF_WAVE_PERIOD_SECONDS = 5;
+
+/* Values for randomizing the tangle */
+export const NUMBER_OF_RANDOM_PERIODS = 100;
+export const MIN_SINUSOID_PERIOD = 5;
+export const MAX_SINUSOID_PERIOD = 8;

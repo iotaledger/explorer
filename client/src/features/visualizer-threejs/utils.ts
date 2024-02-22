@@ -1,3 +1,4 @@
+import { Vector3 } from "three";
 import {
     BLOCK_STEP_PX,
     MIN_BLOCKS_PER_SECOND,
@@ -7,7 +8,6 @@ import {
     MIN_BLOCK_NEAR_RADIUS,
     MAX_PREV_POINTS,
     MAX_POINT_RETRIES,
-    HALF_WAVE_PERIOD_SECONDS,
     MAX_BLOCK_INSTANCES,
     EMITTER_SPEED_MULTIPLIER,
     MAX_SINUSOIDAL_AMPLITUDE,
@@ -15,9 +15,13 @@ import {
     CAMERA_Y_AXIS_MOVEMENT,
     CAMERA_X_OFFSET,
     CAMERA_Y_OFFSET,
+    SINUSOIDAL_AMPLITUDE_ACCUMULATOR,
+    INITIAL_SINUSOIDAL_AMPLITUDE,
+    NUMBER_OF_RANDOM_PERIODS,
+    MIN_SINUSOID_PERIOD,
+    MAX_SINUSOID_PERIOD,
 } from "./constants";
-import { Vector3 } from "three";
-import { ICameraAngles } from "./interfaces";
+import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
 
 /**
  * Generates a random number within a specified range.
@@ -94,7 +98,14 @@ function getLinearRadius(bps: number): number {
  * Generates a random point on a circle.
  * @returns the random point on a circle.
  */
-function getDynamicRandomYZPoints(bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition {
+function getDynamicRandomYZPoints(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition = {
+        x: 0,
+        y: 0,
+        z: 0,
+    },
+): IBlockTanglePosition {
     const theta = Math.random() * (2 * Math.PI);
 
     const maxRadius = getLinearRadius(bps);
@@ -123,7 +134,11 @@ function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTan
  * Retries to generate a point until it passes all the checks.
  * @returns the point that passes all the checks.
  */
-function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPoints: IBlockTanglePosition[]): IBlockTanglePosition {
+function generateAValidRandomPoint(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    prevPoints: IBlockTanglePosition[],
+): IBlockTanglePosition {
     let trialPoint: IBlockTanglePosition;
     let passAllChecks = false;
     let retries = 0;
@@ -149,7 +164,7 @@ function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPo
 export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
     const prevPoints: IBlockTanglePosition[] = [];
 
-    return (bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition => {
+    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }): IBlockTanglePosition => {
         const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
 
         const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
@@ -218,15 +233,78 @@ export function getCameraAngles(): ICameraAngles {
 }
 
 /**
- * Calculates the sinusoidal position for the emitter
+ * Calculates the sinusoidal position for the emitter based on the current animation time,
+ * considering random periods.
  * @returns the sinusoidal position
  */
-export function getSinusoidalPosition(time: number, amplitude: number): number {
-    const period = HALF_WAVE_PERIOD_SECONDS * 2;
-    const frequency = 1 / period;
-    const phase = (time % period) * frequency;
+export function calculateSinusoidalAmplitude({ currentAnimationTime, periods, periodsSum }: ISinusoidalPositionParams): number {
+    const elapsedTime = currentAnimationTime % periodsSum;
+    const { period, accumulatedTime } = getCurrentPeriodValues(currentAnimationTime, periods, periodsSum);
 
-    const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+    const startTimeOfCurrentPeriod = accumulatedTime - period;
+    const timeInCurrentPeriod = elapsedTime - startTimeOfCurrentPeriod;
 
-    return newY;
+    const currentWaveCount = Math.floor(elapsedTime / period);
+    const accumulatedAmplitude = currentWaveCount * SINUSOIDAL_AMPLITUDE_ACCUMULATOR;
+    const currentAmplitude = Math.min(INITIAL_SINUSOIDAL_AMPLITUDE + accumulatedAmplitude, MAX_SINUSOIDAL_AMPLITUDE);
+
+    const yPosition = currentAmplitude * Math.sin((2 * Math.PI * timeInCurrentPeriod) / period);
+
+    return yPosition;
+}
+
+/**
+ * Calculates the emitter position based on the current animation time.
+ * @returns the emitter position
+ */
+export function calculateEmitterPositionX(currentAnimationTime: number): number {
+    return currentAnimationTime * EMITTER_SPEED_MULTIPLIER;
+}
+
+/**
+ * Calculates the emitter position based on the current animation time.
+ * @returns the emitter X,Y,Z positions
+ */
+export function getEmitterPositions({ currentAnimationTime, periods, periodsSum }: ISinusoidalPositionParams): IThreeDimensionalPosition {
+    const x = calculateEmitterPositionX(currentAnimationTime);
+    const y = calculateSinusoidalAmplitude({ currentAnimationTime, periods, periodsSum });
+    return { x, y, z: 0 };
+}
+
+/**
+ * Converts a position object to a Vector3 object.
+ * @param position - The position object to convert.
+ * @returns A Vector3 object representing the position.
+ */
+export function positionToVector(position: IThreeDimensionalPosition) {
+    return new Vector3(position.x, position.y, position.z);
+}
+
+export function generateRandomPeriods(): { periods: number[]; sum: number } {
+    let sum = 0;
+    const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
+        const period = Number(randomNumberFromInterval(MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD).toFixed(4));
+        sum += period;
+        return period;
+    });
+    return { periods, sum };
+}
+
+type PeriodResult = {
+    period: number;
+    accumulatedTime: number;
+};
+
+function getCurrentPeriodValues(animationTime: number, periods: number[], totalSum: number): PeriodResult {
+    const effectiveTime = animationTime % totalSum;
+
+    let accumulatedTime = 0;
+    for (let i = 0; i < periods.length; i++) {
+        accumulatedTime += periods[i];
+        if (effectiveTime < accumulatedTime) {
+            return { period: periods[i], accumulatedTime };
+        }
+    }
+
+    return { period: periods[0], accumulatedTime: 0 };
 }

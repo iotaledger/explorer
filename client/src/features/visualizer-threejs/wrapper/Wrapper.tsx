@@ -2,10 +2,9 @@ import React from "react";
 import Modal from "~/app/components/Modal";
 import { TSelectFeedItemNova, TSelectNode } from "~/app/types/visualizer.types";
 import { INetwork } from "~/models/config/INetwork";
-import { KeyPanel } from "./KeyPanel";
+import KeyPanel from "./KeyPanel";
 import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
-import { StatsPanel } from "./StatsPanel";
 
 export const Wrapper = ({
     blocksCount,
@@ -68,9 +67,8 @@ export const Wrapper = ({
                 )}
             </div>
         </div>
-        <StatsPanel blocksCount={blocksCount} network={network} />
         {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
-        <KeyPanel />
+        <KeyPanel network={network} />
     </div>
 );
 
