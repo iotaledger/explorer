@@ -146,43 +146,6 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                     </div>
                                 </div>
                             )}
-
-                            {outputManaDetails && (
-                                <>
-                                    <div className="section--data">
-                                        <div className="label">Stored mana</div>
-                                        <div className="value code row middle">
-                                            <span className="margin-r-t">{outputManaDetails.storedMana}</span>
-                                        </div>
-                                    </div>
-                                    <div className="section--data">
-                                        <div className="label">Stored mana (decayed)</div>
-                                        <div className="value code row middle">
-                                            <span className="margin-r-t">{outputManaDetails.storedManaDecayed}</span>
-                                        </div>
-                                    </div>
-                                    <div className="section--data">
-                                        <div className="label">Potential mana</div>
-                                        <div className="value code row middle">
-                                            <span className="margin-r-t">{outputManaDetails.potentialMana}</span>
-                                        </div>
-                                    </div>
-                                    {outputManaDetails.delegationRewards && (
-                                        <div className="section--data">
-                                            <div className="label">Mana rewards</div>
-                                            <div className="value code row middle">
-                                                <span className="margin-r-t">{outputManaDetails.delegationRewards}</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="section--data">
-                                        <div className="label">Total mana</div>
-                                        <div className="value code row middle">
-                                            <span className="margin-r-t">{outputManaDetails.totalMana}</span>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
                         </div>
                     </div>
                 </div>
