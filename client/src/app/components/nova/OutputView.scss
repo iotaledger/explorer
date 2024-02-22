@@ -67,43 +67,6 @@
     }
 }
 
-.key-value-wrapper {
-    display: flex;
-    flex-direction: column;
-
-    .key-value--row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-
-    .key-value {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-
-        .entry--key,
-        .entry--value {
-            @include font-size(12px);
-            font-family: $inter;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            color: var(--card-color);
-            margin-top: 8px;
-        }
-
-        .entry--value {
-            color: var(--body-color);
-            margin-left: 8px;
-        }
-    }
-
-    .key-value-entries {
-        margin-bottom: 12px;
-    }
-}
-
 .card--content--dropdown {
     margin-right: 8px;
     cursor: pointer;

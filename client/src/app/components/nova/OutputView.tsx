@@ -162,7 +162,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                 output.type === OutputType.Account ||
                 output.type === OutputType.Anchor ||
                 output.type === OutputType.Nft) &&
-                manaDetails?.totalMana && <KeyValueEntries {...manaEntries} />}
+                manaDetails?.totalMana && <KeyValueEntries isPreExpanded={true} {...manaEntries} />}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
