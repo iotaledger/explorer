@@ -23,9 +23,9 @@ export function getBlockTargetPosition(initPosition: IPos, bps: number): IPos {
     return { x, y, z };
 }
 
-export function getBlockInitPosition({ currentAnimationTime, periods, periodsSum }: ISinusoidalPositionParams): IPos {
+export function getBlockInitPosition({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes }: ISinusoidalPositionParams): IPos {
     const { xTangleDistance } = getTangleDistances();
-    const { x: xEmitterPos, y, z } = getEmitterPositions({ currentAnimationTime, periods, periodsSum });
+    const { x: xEmitterPos, y, z } = getEmitterPositions({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes });
     const x = xEmitterPos + xTangleDistance / 2;
 
     return { x, y, z };

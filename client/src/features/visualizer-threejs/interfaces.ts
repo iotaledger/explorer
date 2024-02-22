@@ -18,4 +18,5 @@ export interface ITimeBasedPositionParams {
 export interface ISinusoidalPositionParams extends ITimeBasedPositionParams {
     periods: number[];
     periodsSum: number;
+    sinusoidAmplitudes: number[];
 }
