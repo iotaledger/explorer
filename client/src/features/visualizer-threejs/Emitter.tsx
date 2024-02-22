@@ -41,6 +41,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     const tangleWrapperRef = useRef<THREE.Mesh | null>(null);
 
     useLayoutEffect(() => {
+        console.log('--- test');
         const { periods, sum: periodsSum } = generateRandomPeriods();
         const amplitudes = generateRandomAmplitudes();
         const tiltings = generateRandomTiltings();

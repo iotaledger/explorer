@@ -5,6 +5,7 @@ import { INetwork } from "~/models/config/INetwork";
 import KeyPanel from "./KeyPanel";
 import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
+import { Controls } from "../Controls";
 
 export const Wrapper = ({
     blocksCount,
@@ -46,6 +47,7 @@ export const Wrapper = ({
                 </div>
             </div>
         </div>
+        <Controls />
         <div className="graph-border">
             {children}
             <div className="action-panel-container">

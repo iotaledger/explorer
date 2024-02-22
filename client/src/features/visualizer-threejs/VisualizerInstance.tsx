@@ -272,6 +272,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         removeConfirmedBlocksSlot(slot);
     }
 
+    const [localKey, setLocalKey] = React.useState<number>(0);
+    useEffect(() => {
+        setTimeout(() => {
+            // location.reload();
+            // setLocalKey(2);
+        }, 3000);
+    }, []);
+
     return (
         <Wrapper
             key={network}
