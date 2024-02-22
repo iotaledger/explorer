@@ -11,6 +11,7 @@ import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsRe
 import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
+import { ICongestionResponse } from "../../models/api/nova/ICongestionResponse";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
@@ -273,6 +274,25 @@ export class NovaApiService {
         return {
             outputs: outputResponses,
         };
+    }
+
+    /**
+     * Get Congestion for Account
+     * @param accountId The account address to get the congestion for.
+     * @returns The Congestion.
+     */
+    public async getAccountCongestion(accountId: string): Promise<ICongestionResponse | undefined> {
+        try {
+            const response = await this.client.getAccountCongestion(accountId);
+
+            if (response) {
+                return {
+                    congestion: response,
+                };
+            }
+        } catch {
+            return { message: "Account congestion not found" };
+        }
     }
 
     /**

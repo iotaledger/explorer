@@ -1,6 +1,6 @@
 #!/bin/bash
 SDK_DIR="iota-sdk"
-TARGET_COMMIT="bbe86bbc2ef7a38b88768b78142519e0817c370e"
+TARGET_COMMIT="fc9f0f56bb5cfc146993e53aa9656ded220734e1"
 
 if [ ! -d "$SDK_DIR" ]; then
   git clone -b 2.0 git@github.com:iotaledger/iota-sdk.git
@@ -35,5 +35,3 @@ rm package.json.bak
 echo "Building wasm bindings"
 yarn
 yarn build
-
-
