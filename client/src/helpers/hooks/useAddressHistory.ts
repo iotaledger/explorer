@@ -101,8 +101,12 @@ export function useAddressHistory(
                 const { outputs, cursor: newCursor } = await requestOutputsList(cursor);
 
                 if (!newCursor) {
-                    setDisabled?.(true);
+                    // Note: newCursor can be null if there are no more pages, and undefined if there are no results
                     searchMore = false;
+                }
+                if (newCursor === undefined) {
+                    // hide the tab only if there are no results
+                    setDisabled?.(true);
                 }
 
                 const fulfilledOutputs: OutputWithDetails[] = await Promise.all(
