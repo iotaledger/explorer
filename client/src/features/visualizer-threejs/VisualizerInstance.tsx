@@ -33,6 +33,7 @@ import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
 import useSearchStore from "~features/visualizer-threejs/store/search";
+import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
 
 const features = {
     statsEnabled: true,
@@ -44,6 +45,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         params: { network },
     },
 }) => {
+    const { isSearchMatch, highlightSearchBlock } = useSearch();
     const [networkConfig] = useNetworkConfig(network);
     const generateYZPositions = getGenerateDynamicYZPosition();
     const themeMode = useGetThemeMode();
@@ -70,7 +72,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
     const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
-
 
     // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
@@ -229,6 +230,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 addToEdgeQueue(blockData.blockId, blockWeakParents);
             }
 
+            if (isSearchMatch(blockData)) {
+                highlightSearchBlock(blockData.blockId);
+            }
+
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
@@ -243,7 +248,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     };
 
     function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
-        // Utils
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
             if (selectedColor) {

@@ -8,9 +8,10 @@ import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import { StatsPanel } from "./StatsPanel";
 import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useTangleStore } from "~features/visualizer-threejs/store/tangle";
-import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
+// import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { SEARCH_RESULT_COLOR } from "~features/visualizer-threejs/constants";
 import { Color } from "three";
+import { isSearchMatch } from "~features/visualizer-threejs/hooks/useSearch";
 
 export const Wrapper = ({
     blocksCount,
@@ -41,37 +42,25 @@ export const Wrapper = ({
     const blockMetadata = useTangleStore((state) => state.blockMetadata);
     const addToColorQueueBulk = useTangleStore((s) => s.addToColorQueueBulk);
 
-
-    const matchLatestFinalizedSlot = React.useCallback((block: IFeedBlockData, searchQuery: string) => {
-        if (!searchQuery || Number.isNaN(Number(searchQuery))) {
-            return false;
-        }
-
-        const latestFinalizedSlot = block?.block?.header?.latestFinalizedSlot;
-
-        return latestFinalizedSlot === Number(searchQuery);
-    }, []);
-
     React.useEffect(() => {
         // [] Search empty - put value
-            // [] check matches
-            // [] if matches - add to color queue
+        // [] check matches
+        // [] if matches - add to color queue
         // [] Search empty - remove value
-            // [] remove from color queue
+        // [] remove from color queue
         // [] Search not empty - put value
-            // [] check matches
-            // [] if matches - add to color queue
+        // [] check matches
+        // [] if matches - add to color queue
 
         const colorsQueue = [];
 
         const tempMatchingBlockIds: string[] = [];
 
         blockMetadata.forEach((i) => {
-            if (matchLatestFinalizedSlot(i, searchQuery)) {
+            if (isSearchMatch(i, searchQuery)) {
                 tempMatchingBlockIds.push(i.blockId);
             }
         });
-
 
         // before we need to clear the previous search results
         if (matchingBlockIds.length > 0) {
@@ -79,23 +68,20 @@ export const Wrapper = ({
                 const metadata = blockMetadata.get(id);
                 const treeColor = metadata?.treeColor as Color;
                 if (treeColor) {
-                    colorsQueue.push({id: id, color: treeColor});
+                    colorsQueue.push({ id: id, color: treeColor });
                 }
             });
         }
 
         if (tempMatchingBlockIds.length > 0) {
-            colorsQueue.push(...tempMatchingBlockIds.map((id) => ({id: id, color: SEARCH_RESULT_COLOR})));
+            colorsQueue.push(...tempMatchingBlockIds.map((id) => ({ id: id, color: SEARCH_RESULT_COLOR })));
         }
 
         addToColorQueueBulk(colorsQueue);
         setMatchingBlockIds(tempMatchingBlockIds);
     }, [searchQuery]);
 
-    React.useEffect(() => {
-
-    }, [matchingBlockIds]);
-
+    React.useEffect(() => {}, [matchingBlockIds]);
 
     return (
         <div className="visualizer-nova">
@@ -107,9 +93,15 @@ export const Wrapper = ({
                 <div className="card search-filter fill">
                     <div className="card--content row middle">
                         <div className="card--label margin-r-s">Search</div>
-                        <input className="input form-input-long" type="text" value={searchQuery} onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                        }} maxLength={2000} />
+                        <input
+                            className="input form-input-long"
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                            }}
+                            maxLength={2000}
+                        />
                     </div>
                 </div>
             </div>
