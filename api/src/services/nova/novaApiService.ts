@@ -252,6 +252,32 @@ export class NovaApiService {
     }
 
     /**
+     * Get the relevant nft output details for an address.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public async nftOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.nftOutputIds({ address: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching nft output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(outputIds);
+        return {
+            outputs: outputResponses,
+        };
+    }
+
+    /**
      * Get Congestion for Account
      * @param accountId The account address to get the congestion for.
      * @returns The Congestion.

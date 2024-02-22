@@ -6,13 +6,16 @@ import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
+import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 
 export interface IEd25519AddressState {
     addressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
+    addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
+    isNftOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
 }
 
@@ -21,7 +24,9 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     addressBasicOutputs: null,
+    addressNftOutputs: null,
     isBasicOutputsLoading: false,
+    isNftOutputsLoading: false,
     isAssociatedOutputsLoading: false,
 };
 
@@ -42,6 +47,7 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
 
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, null);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -59,9 +65,11 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
             totalBalance,
             availableBalance,
             addressBasicOutputs,
+            addressNftOutputs,
             isBasicOutputsLoading,
+            isNftOutputsLoading,
         });
-    }, [totalBalance, availableBalance, addressBasicOutputs, isBasicOutputsLoading]);
+    }, [totalBalance, availableBalance, addressBasicOutputs, addressNftOutputs, isBasicOutputsLoading, isNftOutputsLoading]);
 
     return [state, setState];
 };

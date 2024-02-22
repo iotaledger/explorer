@@ -3,6 +3,8 @@ import associatedOuputsMessage from "~assets/modals/stardust/address/associated-
 import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
 import stateMessage from "~assets/modals/stardust/alias/state.json";
 import bicMessage from "~assets/modals/nova/account/bic.json";
+import nftMetadataMessage from "~assets/modals/stardust/nft/metadata.json";
+import addressNftsMessage from "~assets/modals/stardust/address/nfts-in-wallet.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
@@ -16,6 +18,8 @@ import { AddressType } from "@iota/sdk-wasm-nova/web";
 import AccountFoundriesSection from "./account/AccountFoundriesSection";
 import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
 import AnchorStateSection from "./anchor/AnchorStateSection";
+import NftSection from "~/app/components/nova/address/section/nft/NftSection";
+import NftMetadataSection from "~/app/components/nova/address/section/nft/NftMetadataSection";
 
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
@@ -32,11 +36,17 @@ enum ANCHOR_TABS {
     State = "State",
 }
 
-// enum NFT_TABS {
-//     NftMetadata = "Metadata",
-// }
+enum NFT_TABS {
+    NftMetadata = "Metadata",
+}
 
-const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number) => ({
+const buildDefaultTabsOptions = (
+    tokensCount: number,
+    nftsCount: number,
+    associatedOutputCount: number,
+    isNativeTokensLoading: boolean,
+    isNftOutputsLoading: boolean,
+) => ({
     [DEFAULT_TABS.AssocOutputs]: {
         disabled: associatedOutputCount === 0,
         hidden: associatedOutputCount === 0,
@@ -47,15 +57,16 @@ const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: num
         disabled: tokensCount === 0,
         hidden: tokensCount === 0,
         counter: tokensCount,
+        isLoading: isNativeTokensLoading,
         infoContent: nativeTokensMessage,
     },
-    // [DEFAULT_TABS.Nfts]: {
-    //     disabled: nftCount === 0,
-    //     hidden: nftCount === 0,
-    //     counter: nftCount,
-    //     isLoading: isNftOutputsLoading,
-    //     infoContent: addressNftsMessage,
-    // },
+    [DEFAULT_TABS.Nfts]: {
+        disabled: nftsCount === 0,
+        hidden: nftsCount === 0,
+        counter: nftsCount,
+        isLoading: isNftOutputsLoading,
+        infoContent: addressNftsMessage,
+    },
 });
 
 const buildAccountAddressTabsOptions = (
@@ -87,14 +98,14 @@ const buildAnchorAddressTabsOptions = (isAnchorStateTabDisabled: boolean, isAnch
     },
 });
 
-// const buildNftAddressTabsOptions = (isNftMetadataTabDisabled: boolean, isNftDetailsLoading: boolean) => ({
-//     [NFT_TABS.NftMetadata]: {
-//         disabled: isNftMetadataTabDisabled,
-//         hidden: isNftMetadataTabDisabled,
-//         isLoading: isNftDetailsLoading,
-//         infoContent: nftMetadataMessage,
-//     },
-// });
+const buildNftAddressTabsOptions = (isNftMetadataTabDisabled: boolean, isNftDetailsLoading: boolean) => ({
+    [NFT_TABS.NftMetadata]: {
+        disabled: isNftMetadataTabDisabled,
+        hidden: isNftMetadataTabDisabled,
+        isLoading: isNftDetailsLoading,
+        infoContent: nftMetadataMessage,
+    },
+});
 
 interface IAddressPageTabbedSectionsProps {
     readonly addressState:
@@ -114,27 +125,29 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         return null;
     }
     const { addressDetails, addressBasicOutputs } = addressState;
+    const addressBech32 = addressDetails.bech32;
 
     const defaultSections = [
         <AssociatedOutputs
-            key={`assoc-outputs-${addressDetails.bech32}`}
+            key={`assoc-outputs-${addressBech32}`}
             addressDetails={addressDetails}
             setOutputCount={setOutputCount}
             setIsLoading={setAssociatedOutputsLoading}
         />,
-        <AssetsTable key={`assets-table-${addressDetails.bech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
+        <AssetsTable key={`assets-table-${addressBech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
+        <NftSection key={`nft-section-${addressBech32}`} outputs={addressState.addressNftOutputs} />,
     ];
 
     const accountAddressSections =
         addressDetails.type === AddressType.Account
             ? [
                   <AccountBlockIssuanceSection
-                      key={`account-block-issuance-${addressDetails.bech32}`}
+                      key={`account-block-issuance-${addressBech32}`}
                       blockIssuerFeature={(addressState as IAccountAddressState).blockIssuerFeature}
                       congestion={(addressState as IAccountAddressState).congestion}
                   />,
                   <AccountFoundriesSection
-                      key={`account-foundry-${addressDetails.bech32}`}
+                      key={`account-foundry-${addressBech32}`}
                       foundries={(addressState as IAccountAddressState).foundries}
                   />,
               ]
@@ -142,16 +155,23 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
 
     const anchorAddressSections =
         addressDetails.type === AddressType.Anchor
-            ? [
-                  <AnchorStateSection
-                      key={`anchor-state-${addressDetails.bech32}`}
-                      output={(addressState as IAnchorAddressState).anchorOutput}
-                  />,
-              ]
+            ? [<AnchorStateSection key={`anchor-state-${addressBech32}`} output={(addressState as IAnchorAddressState).anchorOutput} />]
+            : null;
+
+    const nftAddressSections =
+        addressDetails.type === AddressType.Nft
+            ? [<NftMetadataSection key={`nft-meta-${addressBech32}`} nftOutput={(addressState as INftAddressState).nftOutput} />]
             : null;
 
     let tabEnums = DEFAULT_TABS;
-    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount);
+    const nftsCount = addressState.addressNftOutputs?.length ?? 0;
+    const defaultTabsOptions = buildDefaultTabsOptions(
+        tokensCount,
+        nftsCount,
+        outputCount,
+        addressState.isBasicOutputsLoading,
+        addressState.isNftOutputsLoading,
+    );
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;
 
@@ -169,6 +189,16 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                 ),
             };
             tabbedSections = [...defaultSections, ...(accountAddressSections ?? [])];
+            break;
+        }
+        case AddressType.Nft: {
+            const nftAddressState = addressState as INftAddressState;
+            tabEnums = { ...DEFAULT_TABS, ...NFT_TABS };
+            tabOptions = {
+                ...tabOptions,
+                ...buildNftAddressTabsOptions(!nftAddressState.nftMetadata, nftAddressState.isNftDetailsLoading),
+            };
+            tabbedSections = [...defaultSections, ...(nftAddressSections ?? [])];
             break;
         }
         case AddressType.Anchor: {

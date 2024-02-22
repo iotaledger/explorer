@@ -15,25 +15,25 @@ import { useTokenRegistryNftCheck } from "~helpers/stardust/hooks/useTokenRegist
 import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
 import { INftImmutableMetadata } from "~models/api/stardust/nft/INftImmutableMetadata";
 import "./Nft.scss";
-import { INftBase } from "~/models/api/nova/nft/INftBase";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
-import { Utils } from "@iota/sdk-wasm-nova/web";
+import { MetadataFeature, NftOutput, Utils } from "@iota/sdk-wasm-nova/web";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 
 export interface NftProps {
     /**
-     *
-     *  NFT
+     * The nft output.
      */
-    nft: INftBase;
+    nftOutput: NftOutput;
 }
 
-const Nft: React.FC<NftProps> = ({ nft }) => {
-    const id = nft.nftId;
-    const standardMetadata = nft.metadata ? tryParseMetadata<INftImmutableMetadata>(nft.metadata.entries[0], nftSchemeIRC27) : null;
+const Nft: React.FC<NftProps> = ({ nftOutput }) => {
     const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
-    const nftAddress = Utils.hexToBech32(id, bech32Hrp);
-    const [isWhitelisted] = useTokenRegistryNftCheck(nft.issuerId, id);
+    const [metadata, setMetadata] = useState<MetadataFeature | null>(null);
+    const [issuerId, setIssuerId] = useState<string | null>(null);
+    const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
+    const nftAddress = Utils.hexToBech32(nftOutput.nftId, bech32Hrp);
+    const [isWhitelisted] = useTokenRegistryNftCheck(issuerId, nftOutput.nftId);
     const [name, setName] = useState<string | null>();
     const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
@@ -44,6 +44,20 @@ const Nft: React.FC<NftProps> = ({ nft }) => {
         }
     }, [standardMetadata]);
 
+    useEffect(() => {
+        if (nftOutput) {
+            const nftMetadata = TransactionsHelper.getNftMetadataFeature(nftOutput);
+            const nftIssuerId = TransactionsHelper.getNftIssuerId(nftOutput);
+            if (nftMetadata) {
+                setMetadata(nftMetadata);
+                setStandardMetadata(tryParseMetadata<INftImmutableMetadata>(Object.values(nftMetadata.entries)[0], nftSchemeIRC27));
+            }
+            if (metadata) {
+                setIssuerId(nftIssuerId);
+            }
+        }
+    }, [nftOutput]);
+
     const unsupportedFormatOrLoading = isNftUriLoading ? loadingImagePlaceholderCompact : unsupportedImageFormatPlaceholderCompact;
 
     const standardMetadataImageContent = isWhitelisted
@@ -52,7 +66,7 @@ const Nft: React.FC<NftProps> = ({ nft }) => {
             : unsupportedFormatOrLoading
         : unregisteredMetadataPlaceholder;
 
-    const nftImageContent = nft.metadata
+    const nftImageContent = metadata
         ? standardMetadata
             ? standardMetadataImageContent
             : nonStandardMetadataPlaceholder
@@ -63,7 +77,7 @@ const Nft: React.FC<NftProps> = ({ nft }) => {
             <div className="nft-card__metadata">
                 <Link to={`/${network}/addr/${nftAddress}`}>{nftImageContent}</Link>
                 <span className="nft-card__id">
-                    <TruncatedId id={id} link={`/${network}/addr/${nftAddress}`} />
+                    <TruncatedId id={nftOutput.nftId} link={`/${network}/addr/${nftAddress}`} />
                 </span>
             </div>
             {name && isWhitelisted && <span className="nft-card__name truncate">{name}</span>}

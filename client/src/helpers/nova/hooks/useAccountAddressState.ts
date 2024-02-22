@@ -17,6 +17,7 @@ import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 import { useAccountCongestion } from "./useAccountCongestion";
+import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -25,11 +26,13 @@ export interface IAccountAddressState {
     availableBalance: number | null;
     blockIssuerFeature: BlockIssuerFeature | null;
     addressBasicOutputs: OutputResponse[] | null;
+    addressNftOutputs: OutputResponse[] | null;
     foundries: string[] | null;
     congestion: CongestionResponse | null;
     isAccountDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isBasicOutputsLoading: boolean;
+    isNftOutputsLoading: boolean;
     isFoundriesLoading: boolean;
     isCongestionLoading: boolean;
 }
@@ -41,11 +44,13 @@ const initialState = {
     availableBalance: null,
     blockIssuerFeature: null,
     addressBasicOutputs: null,
+    addressNftOutputs: null,
     foundries: null,
     congestion: null,
     isAccountDetailsLoading: true,
     isAssociatedOutputsLoading: false,
     isBasicOutputsLoading: false,
+    isNftOutputsLoading: false,
     isFoundriesLoading: false,
     isCongestionLoading: false,
 };
@@ -69,6 +74,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, accountOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
     const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
 
@@ -93,7 +99,9 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             foundries,
             congestion,
             addressBasicOutputs,
+            addressNftOutputs,
             isBasicOutputsLoading,
+            isNftOutputsLoading,
             isFoundriesLoading,
             isCongestionLoading,
         };
@@ -116,9 +124,11 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         totalBalance,
         availableBalance,
         addressBasicOutputs,
+        addressNftOutputs,
         congestion,
         isAccountDetailsLoading,
         isBasicOutputsLoading,
+        isNftOutputsLoading,
         isCongestionLoading,
     ]);
 

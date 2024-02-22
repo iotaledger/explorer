@@ -11,40 +11,44 @@ import nftSchemeIRC27 from "~assets/schemas/nft-schema-IRC27.json";
 import { useNftMetadataUri } from "~helpers/stardust/hooks/useNftMetadataUri";
 import { useTokenRegistryNftCheck } from "~helpers/stardust/hooks/useTokenRegistryNftCheck";
 import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
-import { INftBase } from "~models/api/stardust/nft/INftBase";
 import { INftImmutableMetadata } from "~models/api/stardust/nft/INftImmutableMetadata";
-import DataToggle from "../../../../DataToggle";
-import JsonViewer from "../../../../JsonViewer";
-import TruncatedId from "../../../TruncatedId";
+
 import "./NftMetadataSection.scss";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
+import JsonViewer from "~/app/components/JsonViewer";
+import DataToggle from "~/app/components/DataToggle";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { MetadataFeature, NftOutput } from "@iota/sdk-wasm-nova/web";
+import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 
 interface NftMetadataSectionProps {
     /**
-     * The network in context.
+     * The nft output.
      */
-    readonly network: string;
-
-    /**
-     * The nft.
-     */
-    readonly nft: INftBase;
-
-    /**
-     * Is nft output loading.
-     */
-    readonly isLoading: boolean;
+    readonly nftOutput: NftOutput | null;
 }
 
-const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, isLoading }) => {
+const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ nftOutput }) => {
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const [metadata, setMetadata] = useState<MetadataFeature | null>(null);
+    const [issuerId, setIssuerId] = useState<string | null>(null);
     const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
-    const [isWhitelisted, isChecking] = useTokenRegistryNftCheck(nft.issuerId, nft.nftId);
+    const [isWhitelisted, isChecking] = useTokenRegistryNftCheck(issuerId, nftOutput?.nftId);
     const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
     useEffect(() => {
-        if (nft.metadata) {
-            setStandardMetadata(tryParseMetadata<INftImmutableMetadata>(nft.metadata, nftSchemeIRC27));
+        if (nftOutput) {
+            const nftMetadata = TransactionsHelper.getNftMetadataFeature(nftOutput);
+            const nftIssuerId = TransactionsHelper.getNftIssuerId(nftOutput);
+            if (nftMetadata) {
+                setMetadata(nftMetadata);
+                setStandardMetadata(tryParseMetadata<INftImmutableMetadata>(Object.values(nftMetadata.entries)[0], nftSchemeIRC27));
+            }
+            if (metadata) {
+                setIssuerId(nftIssuerId);
+            }
         }
-    }, [nft.metadata]);
+    }, [nftOutput]);
 
     const unsupportedFormatOrLoading = isNftUriLoading ? loadingImagePlaceholder : unsupportedImageFormatPlaceholder;
 
@@ -79,11 +83,11 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, i
                                     <span className="value truncate">{standardMetadata.collectionName}</span>
                                 </li>
                             )}
-                            {nft.issuerId && (
+                            {issuerId && (
                                 <li className="row margin-t-t">
                                     <span className="label">Issuer Id:</span>
                                     <span className="value truncate">
-                                        <TruncatedId id={nft.issuerId} link={`/${network}/search/${nft.issuerId}`} showCopyButton />
+                                        <TruncatedId id={issuerId} link={`/${network}/search/${issuerId}`} showCopyButton />
                                     </span>
                                 </li>
                             )}
@@ -139,7 +143,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, i
                             Token Registry.
                         </Link>
                     </p>
-                    <DataToggle sourceData={nft.metadata ?? ""} withSpacedHex={true} />
+                    <DataToggle sourceData={metadata?.toString() ?? ""} withSpacedHex={true} />
                 </div>
             </div>
         ) : null;
@@ -147,7 +151,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, i
     const notIRC27Metadata = (
         <div className="section">
             <div className="section--data">
-                <DataToggle sourceData={nft.metadata ?? ""} withSpacedHex={true} />
+                <DataToggle sourceData={metadata?.toString() ?? ""} withSpacedHex={true} />
             </div>
         </div>
     );
@@ -160,11 +164,7 @@ const NftMetadataSection: React.FC<NftMetadataSectionProps> = ({ network, nft, i
         </div>
     );
 
-    if (isLoading) {
-        return null;
-    }
-
-    if (nft.metadata && !isChecking) {
+    if (metadata && !isChecking) {
         if (whitelistedNft) {
             return whitelistedNft;
         }
