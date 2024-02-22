@@ -13,7 +13,6 @@ export const useMouseMove = ({
     const [hoveredInstanceId, setHoveredInstanceId] = useState<number | null>(null);
     const setClickedInstanceId = useTangleStore((s) => s.setClickedInstanceId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
-    const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const originalColorsRef = useRef<Map<number, THREE.Color>>(new Map());
 
     const updateMouseMove = useCallback(

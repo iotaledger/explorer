@@ -188,7 +188,6 @@ export const useRenderTangle = () => {
     }, [colorQueue, blockIdToIndex, matchingBlockIds]);
 };
 
-
 function determineColor(matchingBlockIds: string[], metadataColor: Color, blockId: string) {
     if (matchingBlockIds.includes(blockId)) {
         return SEARCH_RESULT_COLOR;

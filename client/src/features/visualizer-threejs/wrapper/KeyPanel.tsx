@@ -4,14 +4,15 @@ import {
     ACCEPTED_BLOCK_COLOR_HASH,
     CONFIRMED_BLOCK_COLOR_HASH,
     FINALIZED_BLOCK_COLOR_HASH,
-    PENDING_BLOCK_COLOR_HASH, SEARCH_RESULT_COLOR_HASH
+    PENDING_BLOCK_COLOR_HASH,
+    SEARCH_RESULT_COLOR_HASH,
 } from "../constants";
 import "./KeyPanel.scss";
 
 export const KeyPanel: React.FC = () => {
     const statuses: {
         label: string;
-        state: BlockState | 'searchResult';
+        state: BlockState | "searchResult";
         color: string;
     }[] = [
         {
