@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { BlockState } from "@iota/sdk-wasm-nova/web";
 import {
     ACCEPTED_BLOCK_COLOR_HASH,
@@ -8,8 +8,9 @@ import {
     SEARCH_RESULT_COLOR_HASH,
 } from "../constants";
 import "./KeyPanel.scss";
+import StatsPanel from "~features/visualizer-threejs/wrapper/StatsPanel";
 
-export const KeyPanel: React.FC = () => {
+export const KeyPanel = ({ network }: { network: string }) => {
     const statuses: {
         label: string;
         state: BlockState | "searchResult";
@@ -53,8 +54,8 @@ export const KeyPanel: React.FC = () => {
     ];
 
     return (
-        <div className="key-panel-container">
-            <div className="card key-panel">
+        <div className="info-container">
+            <div className="card key-panel-list">
                 {statuses.map((s) => {
                     return (
                         <div className="key-panel-item" key={s.state}>
@@ -69,6 +70,9 @@ export const KeyPanel: React.FC = () => {
                     );
                 })}
             </div>
+            <StatsPanel network={network} />
         </div>
     );
 };
+
+export default memo(KeyPanel);
