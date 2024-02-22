@@ -4,3 +4,9 @@ export interface ICameraAngles {
     maxPolarAngle: number;
     maxAzimuthAngle: number;
 }
+
+export interface IThreeDimensionalPosition {
+    x: number;
+    y: number;
+    z: number;
+}

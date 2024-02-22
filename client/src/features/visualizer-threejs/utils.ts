@@ -1,3 +1,4 @@
+import { Vector3 } from "three";
 import {
     BLOCK_STEP_PX,
     MIN_BLOCKS_PER_SECOND,
@@ -15,9 +16,10 @@ import {
     CAMERA_Y_AXIS_MOVEMENT,
     CAMERA_X_OFFSET,
     CAMERA_Y_OFFSET,
+    SINUSOIDAL_AMPLITUDE_ACCUMULATOR,
+    INITIAL_SINUSOIDAL_AMPLITUDE,
 } from "./constants";
-import { Vector3 } from "three";
-import { ICameraAngles } from "./interfaces";
+import { ICameraAngles, IThreeDimensionalPosition } from "./interfaces";
 
 /**
  * Generates a random number within a specified range.
@@ -94,7 +96,14 @@ function getLinearRadius(bps: number): number {
  * Generates a random point on a circle.
  * @returns the random point on a circle.
  */
-function getDynamicRandomYZPoints(bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition {
+function getDynamicRandomYZPoints(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition = {
+        x: 0,
+        y: 0,
+        z: 0,
+    },
+): IBlockTanglePosition {
     const theta = Math.random() * (2 * Math.PI);
 
     const maxRadius = getLinearRadius(bps);
@@ -123,7 +132,11 @@ function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTan
  * Retries to generate a point until it passes all the checks.
  * @returns the point that passes all the checks.
  */
-function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPoints: IBlockTanglePosition[]): IBlockTanglePosition {
+function generateAValidRandomPoint(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    prevPoints: IBlockTanglePosition[],
+): IBlockTanglePosition {
     let trialPoint: IBlockTanglePosition;
     let passAllChecks = false;
     let retries = 0;
@@ -149,7 +162,7 @@ function generateAValidRandomPoint(bps: number, initialPosition: Vector3, prevPo
 export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
     const prevPoints: IBlockTanglePosition[] = [];
 
-    return (bps: number, initialPosition: Vector3 = new Vector3(0, 0, 0)): IBlockTanglePosition => {
+    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }): IBlockTanglePosition => {
         const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
 
         const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
@@ -218,15 +231,43 @@ export function getCameraAngles(): ICameraAngles {
 }
 
 /**
- * Calculates the sinusoidal position for the emitter
+ * Calculates the sinusoidal position for the emitter based on the current animation time.
  * @returns the sinusoidal position
  */
-export function getSinusoidalPosition(time: number, amplitude: number): number {
-    const period = HALF_WAVE_PERIOD_SECONDS * 2;
-    const frequency = 1 / period;
-    const phase = (time % period) * frequency;
+export function calculateSinusoidalAmplitude(currentAnimationTime: number): number {
+    const wavePeriod = HALF_WAVE_PERIOD_SECONDS * 2;
+    const currentWaveCount = Math.floor(currentAnimationTime / wavePeriod);
+    const accumulatedAmplitude = currentWaveCount * SINUSOIDAL_AMPLITUDE_ACCUMULATOR;
+    const currentAmplitude = Math.min(INITIAL_SINUSOIDAL_AMPLITUDE + accumulatedAmplitude, MAX_SINUSOIDAL_AMPLITUDE);
 
-    const newY = amplitude * Math.sin(phase * 2 * Math.PI);
+    const yPosition = currentAmplitude * Math.sin((2 * Math.PI * currentAnimationTime) / wavePeriod);
 
-    return newY;
+    return yPosition;
+}
+
+/**
+ * Calculates the emitter position based on the current animation time.
+ * @returns the emitter position
+ */
+export function calculateEmitterPositionX(currentAnimationTime: number): number {
+    return currentAnimationTime * EMITTER_SPEED_MULTIPLIER;
+}
+
+/**
+ * Calculates the emitter position based on the current animation time.
+ * @returns the emitter X,Y,Z positions
+ */
+export function getEmitterPositions(currentAnimationTime: number): IThreeDimensionalPosition {
+    const x = calculateEmitterPositionX(currentAnimationTime);
+    const y = calculateSinusoidalAmplitude(currentAnimationTime);
+    return { x, y, z: 0 };
+}
+
+/**
+ * Converts a position object to a Vector3 object.
+ * @param position - The position object to convert.
+ * @returns A Vector3 object representing the position.
+ */
+export function positionToVector(position: IThreeDimensionalPosition) {
+    return new Vector3(position.x, position.y, position.z);
 }
