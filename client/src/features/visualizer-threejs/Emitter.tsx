@@ -1,10 +1,10 @@
 /* eslint-disable react/no-unknown-property */
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef } from "react";
+import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef, useLayoutEffect } from "react";
 import * as THREE from "three";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { getTangleDistances, getEmitterPositions } from "./utils";
+import { getTangleDistances, getEmitterPositions, generateRandomPeriods } from "./utils";
 import { CanvasElement } from "./enums";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from "./constants";
@@ -28,7 +28,18 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     const setIsPlaying = useConfigStore((state) => state.setIsPlaying);
     const setInitialTime = useConfigStore((state) => state.setInitialTime);
 
+    const sinusoidPeriodsSum = useConfigStore((state) => state.sinusoidPeriodsSum);
+    const setSinusoidPeriodsSum = useConfigStore((state) => state.setSinusoidPeriodsSum);
+    const randomizedSinusoidPeriods = useConfigStore((state) => state.sinusoidRandomPeriods);
+    const setRandomizedSinusoidPeriods = useConfigStore((state) => state.setSinusoidRandomPeriods);
+
     const tangleWrapperRef = useRef<THREE.Mesh | null>(null);
+
+    useLayoutEffect(() => {
+        const { periods, sum: periodsSum } = generateRandomPeriods();
+        setRandomizedSinusoidPeriods(periods);
+        setSinusoidPeriodsSum(periodsSum);
+    }, []);
 
     useEffect(() => {
         setZoom(currentZoom);
@@ -52,7 +63,11 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
      */
     useFrame(() => {
         const currentAnimationTime = getVisualizerTimeDiff();
-        const { x, y } = getEmitterPositions(currentAnimationTime);
+        const { x, y } = getEmitterPositions({
+            currentAnimationTime,
+            periods: randomizedSinusoidPeriods,
+            periodsSum: sinusoidPeriodsSum,
+        });
 
         if (isPlaying) {
             if (emitterRef.current) {
