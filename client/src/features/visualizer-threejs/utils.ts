@@ -15,8 +15,8 @@ import {
     CAMERA_X_OFFSET,
     CAMERA_Y_OFFSET,
     NUMBER_OF_RANDOM_PERIODS,
-    MIN_SINUSOID_HALF_PERIOD,
-    MAX_SINUSOID_HALF_PERIOD,
+    MIN_SINUSOID_PERIOD,
+    MAX_SINUSOID_PERIOD,
     NUMBER_OF_RANDOM_AMPLITUDES,
     MIN_SINUSOID_AMPLITUDE,
     MAX_SINUSOID_AMPLITUDE,
@@ -290,7 +290,7 @@ export function positionToVector(position: IThreeDimensionalPosition) {
 export function generateRandomPeriods(): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
-        const period = Number(randomNumberFromInterval(MIN_SINUSOID_HALF_PERIOD, MAX_SINUSOID_HALF_PERIOD).toFixed(4));
+        const period = Number(randomNumberFromInterval(MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD).toFixed(4));
         sum += period;
         return period;
     });

@@ -87,8 +87,8 @@ export const EMITTER_X_POSITION_MULTIPLIER = 3;
 
 /* Values for randomizing the tangle */
 export const NUMBER_OF_RANDOM_PERIODS = 100;
-export const MIN_SINUSOID_HALF_PERIOD = 5;
-export const MAX_SINUSOID_HALF_PERIOD = 8;
+export const MIN_SINUSOID_PERIOD = 5;
+export const MAX_SINUSOID_PERIOD = 8;
 
 export const NUMBER_OF_RANDOM_AMPLITUDES = 100;
 export const MIN_SINUSOID_AMPLITUDE = 100;
