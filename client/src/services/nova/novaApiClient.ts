@@ -29,6 +29,8 @@ import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetail
 import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
 import { IFoundriesResponse } from "~/models/api/nova/foundry/IFoundriesResponse";
 import { IFoundriesRequest } from "~/models/api/nova/foundry/IFoundriesRequest";
+import { ICongestionRequest } from "~/models/api/nova/ICongestionRequest";
+import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -144,6 +146,15 @@ export class NovaApiClient extends ApiClient {
             "post",
             { addressDetails: request.addressDetails },
         );
+    }
+
+    /**
+     * Get the account congestion.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getAccountCongestion(request: ICongestionRequest): Promise<ICongestionResponse> {
+        return this.callApi<unknown, ICongestionResponse>(`nova/account/congestion/${request.network}/${request.accountId}`, "get");
     }
 
     /**
