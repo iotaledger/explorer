@@ -52,7 +52,7 @@ const CameraControls = () => {
         if (cameraControls && canvasDimensions.width && canvasDimensions.height) {
             const camera = controls.current?.camera;
             const renderVerticalScene = canvasDimensions.width < canvasDimensions.height;
-            const cameraUp: [number, number, number] = renderVerticalScene ? [-1, 0, 0] : [0, 1, 0];
+            const cameraUp: [number, number, number] = renderVerticalScene ? [1, 0, 0] : [0, 1, 0];
             camera.up.set(...cameraUp);
         }
     }, [canvasDimensions, controls, mesh]);
