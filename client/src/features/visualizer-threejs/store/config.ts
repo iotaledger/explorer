@@ -15,6 +15,11 @@ interface ConfigState {
 
     initialTime: number | null;
     setInitialTime: (initialTime: number) => void;
+
+    sinusoidPeriodsSum: number;
+    setSinusoidPeriodsSum: (totalPeriodsSum: number) => void;
+    sinusoidRandomPeriods: number[];
+    setSinusoidRandomPeriods: (randomizedPeriods: number[]) => void;
 }
 
 export const useConfigStore = create<ConfigState>((set) => ({
@@ -71,6 +76,24 @@ export const useConfigStore = create<ConfigState>((set) => ({
         set((state) => ({
             ...state,
             initialTime,
+        }));
+    },
+
+    /**
+     * Randomized periods for the tangle.
+     */
+    sinusoidPeriodsSum: 0,
+    setSinusoidPeriodsSum: (totalPeriodsSum) => {
+        set((state) => ({
+            ...state,
+            sinusoidPeriodsSum: totalPeriodsSum,
+        }));
+    },
+    sinusoidRandomPeriods: [],
+    setSinusoidRandomPeriods: (randomizedPeriods) => {
+        set((state) => ({
+            ...state,
+            sinusoidRandomPeriods: randomizedPeriods,
         }));
     },
 }));
