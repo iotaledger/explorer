@@ -1,12 +1,10 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT, ANIMATION_TIME_SECONDS, SEARCH_RESULT_COLOR } from "./constants";
+import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT, ANIMATION_TIME_SECONDS } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
 import { BlockState, IBlockInitPosition, useConfigStore, useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
-import useSearchStore from "~features/visualizer-threejs/store/search";
-import { Color } from "three";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
@@ -29,7 +27,7 @@ export const useRenderTangle = () => {
     const updateBlockIdToIndex = useTangleStore((s) => s.updateBlockIdToIndex);
     const blockIdToPosition = useTangleStore((s) => s.blockIdToPosition);
     const blockIdToAnimationPosition = useTangleStore((s) => s.blockIdToAnimationPosition);
-    const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
+
     function updateInstancedMeshPosition(
         instancedMesh: THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>,
         index: number,
@@ -167,12 +165,10 @@ export const useRenderTangle = () => {
     useEffect(() => {
         if (colorQueue.length > 0) {
             const removeIds: string[] = [];
-
-            for (const { id, color: colorFromQueue } of colorQueue) {
+            for (const { id, color } of colorQueue) {
                 const indexToUpdate = blockIdToIndex.get(id);
 
                 if (indexToUpdate) {
-                    const color = determineColor(matchingBlockIds, colorFromQueue, id);
                     tangleMeshRef.current.setColorAt(indexToUpdate, color);
 
                     if (tangleMeshRef.current.instanceColor) {
@@ -185,12 +181,5 @@ export const useRenderTangle = () => {
 
             removeFromColorQueue(removeIds);
         }
-    }, [colorQueue, blockIdToIndex, matchingBlockIds]);
+    }, [colorQueue, blockIdToIndex]);
 };
-
-function determineColor(matchingBlockIds: string[], metadataColor: Color, blockId: string) {
-    if (matchingBlockIds.includes(blockId)) {
-        return SEARCH_RESULT_COLOR;
-    }
-    return metadataColor;
-}

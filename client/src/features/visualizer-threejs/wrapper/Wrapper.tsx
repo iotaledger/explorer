@@ -43,15 +43,6 @@ export const Wrapper = ({
     const addToColorQueueBulk = useTangleStore((s) => s.addToColorQueueBulk);
 
     React.useEffect(() => {
-        // [] Search empty - put value
-        // [] check matches
-        // [] if matches - add to color queue
-        // [] Search empty - remove value
-        // [] remove from color queue
-        // [] Search not empty - put value
-        // [] check matches
-        // [] if matches - add to color queue
-
         const colorsQueue = [];
 
         const tempMatchingBlockIds: string[] = [];
