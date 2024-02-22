@@ -7,6 +7,7 @@ import {
     MIN_TILT_FACTOR_DEGREES,
     MAX_TILT_FACTOR_DEGREES,
     TILT_DURATION_SECONDS,
+    EMITTER_SPEED_MULTIPLIER,
     features,
 } from "./constants";
 import { useTangleStore } from "~features/visualizer-threejs/store";
@@ -20,6 +21,7 @@ enum VisualizerConfig {
     MinTiltDegrees = "minTiltDegrees",
     MaxTiltDegrees = "maxTiltDegrees",
     TiltDurationSeconds = "tiltDurationSeconds",
+    EmitterSpeedMultiplier = "emitterSpeedMultiplier",
 }
 
 const VISUALIZER_CONFIG_LOCAL_STORAGE_KEY = "visualizerConfigs";
@@ -32,6 +34,7 @@ const DEFAULT_VISUALIZER_CONFIG_VALUES: Record<VisualizerConfig, number> = {
     [VisualizerConfig.MinTiltDegrees]: MIN_TILT_FACTOR_DEGREES,
     [VisualizerConfig.MaxTiltDegrees]: MAX_TILT_FACTOR_DEGREES,
     [VisualizerConfig.TiltDurationSeconds]: TILT_DURATION_SECONDS,
+    [VisualizerConfig.EmitterSpeedMultiplier]: EMITTER_SPEED_MULTIPLIER,
 };
 
 /**
@@ -125,6 +128,12 @@ export const ConfigControls = () => {
             min: 1,
             max: 100,
         },
+        {
+            key: VisualizerConfig.EmitterSpeedMultiplier,
+            label: "Emitter Speed Multiplier",
+            min: 0,
+            max: 1000,
+        },
     ];
 
     const handleApply = () => {
@@ -197,45 +206,51 @@ export const ConfigControls = () => {
                 )}
             </div>
 
-            <div style={{ marginTop: "16px" }}>
-                <label style={{ display: "block" }}>Zoom</label>
-                <input
-                    value={localZoom === undefined ? "" : localZoom}
-                    onChange={(e) => {
-                        const input = e.target.value;
+            <div className="controls__list">
+                <div style={{ marginTop: "16px" }} className={"controls__item"}>
+                    <label style={{ display: "block" }}>Zoom</label>
+                    <input
+                        value={localZoom === undefined ? "" : localZoom}
+                        onChange={(e) => {
+                            const input = e.target.value;
+                            setErrors((prevErrors) => ({ ...prevErrors, zoom: "" }));
 
-                        if (!input) {
-                            setLocalZoom(undefined);
-                            return;
-                        }
-
-                        const numberRegExp = /^-?\d+(\.|\.\d*|\d*)?$/;
-                        if (numberRegExp.test(input)) {
-                            if (input.endsWith(".")) {
-                                setLocalZoom(input as any);
-                            } else {
-                                const value = parseFloat(input);
-                                if (value > 2) {
-                                    setLocalZoom(2);
-                                    return;
-                                }
-                                setLocalZoom(value);
-                            }
-                        }
-                    }}
-                />
-                <div className="controls__actions">
-                    <button
-                        type={"button"}
-                        onClick={() => {
-                            if (localZoom === undefined || `${localZoom}`.endsWith(".")) {
+                            if (!input) {
+                                setLocalZoom(undefined);
                                 return;
                             }
-                            setForcedZoom(localZoom);
+
+                            const numberRegExp = /^-?\d+(\.|\.\d*|\d*)?$/;
+                            if (numberRegExp.test(input)) {
+                                if (input.endsWith(".")) {
+                                    setLocalZoom(input as any);
+                                } else {
+                                    const value = parseFloat(input);
+                                    if (value > 2) {
+                                        setErrors((prevErrors) => ({ ...prevErrors, zoom: "Value must be between 0 and 2" }));
+
+                                        setLocalZoom(2);
+                                        return;
+                                    }
+                                    setLocalZoom(value);
+                                }
+                            }
                         }}
-                    >
-                        Apply
-                    </button>
+                    />
+                    {!!errors["zoom"] && <div className={"controls__error"}>{errors["zoom"]}</div>}
+                    <div className="controls__actions">
+                        <button
+                            type={"button"}
+                            onClick={() => {
+                                if (localZoom === undefined || `${localZoom}`.endsWith(".")) {
+                                    return;
+                                }
+                                setForcedZoom(localZoom);
+                            }}
+                        >
+                            Apply
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

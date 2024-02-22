@@ -5,7 +5,6 @@ import {
     MIN_TANGLE_RADIUS,
     MAX_TANGLE_RADIUS,
     MAX_BLOCK_INSTANCES,
-    EMITTER_SPEED_MULTIPLIER,
     CAMERA_X_AXIS_MOVEMENT,
     CAMERA_Y_AXIS_MOVEMENT,
     CAMERA_X_OFFSET,
@@ -177,12 +176,12 @@ export function getTangleDistances(): {
     xTangleDistance: number;
     yTangleDistance: number;
 } {
-    const { maxSinusoidAmplitude } = getVisualizerConfigValues();
+    const { maxSinusoidAmplitude, emitterSpeedMultiplier } = getVisualizerConfigValues();
 
     /* We assume MAX BPS to get the max possible Y */
     const MAX_TANGLE_DISTANCE_SECONDS = MAX_BLOCK_INSTANCES / MIN_BLOCKS_PER_SECOND;
 
-    const MAX_BLOCK_DISTANCE = EMITTER_SPEED_MULTIPLIER * MAX_TANGLE_DISTANCE_SECONDS;
+    const MAX_BLOCK_DISTANCE = emitterSpeedMultiplier * MAX_TANGLE_DISTANCE_SECONDS;
 
     const maxXDistance = MAX_BLOCK_DISTANCE;
 
@@ -254,7 +253,8 @@ export function calculateSinusoidalAmplitude({
  * @returns the emitter position
  */
 export function calculateEmitterPositionX(currentAnimationTime: number): number {
-    return currentAnimationTime * EMITTER_SPEED_MULTIPLIER;
+    const { emitterSpeedMultiplier } = getVisualizerConfigValues();
+    return currentAnimationTime * emitterSpeedMultiplier;
 }
 
 /**

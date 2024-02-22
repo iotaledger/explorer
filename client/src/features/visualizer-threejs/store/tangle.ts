@@ -1,10 +1,11 @@
 import { Color } from "three";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { ZOOM_DEFAULT, EMITTER_SPEED_MULTIPLIER, SPRAY_DISTANCE } from "../constants";
+import { ZOOM_DEFAULT, SPRAY_DISTANCE } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { IThreeDimensionalPosition } from "../interfaces";
 import { BlockId, SlotIndex } from "@iota/sdk-wasm-nova/web";
+import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 export interface IBlockAnimationPosition {
     initPosition: IThreeDimensionalPosition;
@@ -107,8 +108,11 @@ export const useTangleStore = create<TangleState>()(
                     state.blockIdToAnimationPosition.set(key, value);
                 });
 
+                const { emitterSpeedMultiplier } = getVisualizerConfigValues();
+
                 for (const [key, value] of state.blockIdToAnimationPosition) {
-                    const animationTime = SPRAY_DISTANCE / EMITTER_SPEED_MULTIPLIER;
+                    // const animationTime = SPRAY_DISTANCE / emitterSpeedMultiplier;
+                    const animationTime = SPRAY_DISTANCE / emitterSpeedMultiplier;
                     if (value.elapsedTime > animationTime) {
                         state.blockIdToAnimationPosition.delete(key);
                     }
