@@ -35,5 +35,3 @@ rm package.json.bak
 echo "Building wasm bindings"
 yarn
 yarn build
-
-

@@ -5,19 +5,16 @@ import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
-import { Box3 } from "three";
 import {
     FAR_PLANE,
     NEAR_PLANE,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
     VISUALIZER_BACKGROUND,
-    EMITTER_X_POSITION_MULTIPLIER,
     BLOCK_STATE_TO_COLOR,
 } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { getGenerateDynamicYZPosition, randomIntFromInterval } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -32,9 +29,11 @@ import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotI
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import "./Visualizer.scss";
+import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
+import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 
 const features = {
-    statsEnabled: true,
+    statsEnabled: false,
     cameraControls: true,
 };
 
@@ -44,8 +43,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     },
 }) => {
     const [networkConfig] = useNetworkConfig(network);
-    const generateYZPositions = getGenerateDynamicYZPosition();
     const themeMode = useGetThemeMode();
+    const getCurrentAnimationTime = useVisualizerTimer();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
@@ -73,6 +72,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
     const addToConfirmedBlocksSlot = useTangleStore((s) => s.addToConfirmedBlocksBySlot);
     const removeConfirmedBlocksSlot = useTangleStore((s) => s.removeConfirmedBlocksSlot);
+
+    const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
+    const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
@@ -166,6 +168,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
+
         setIsPlaying(true);
 
         return () => {
@@ -195,21 +198,18 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * @param blockData The new block data
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
-        const emitterObj = emitterRef.current;
-        if (emitterObj && blockData && isPlaying) {
-            const emitterBox = new Box3().setFromObject(emitterObj);
-
-            const emitterCenter = new THREE.Vector3();
-            emitterBox.getCenter(emitterCenter);
-
-            const { y, z } = generateYZPositions(bpsCounter.getBPS(), emitterCenter);
-            const minX = emitterBox.min.x - (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
-            const maxX = emitterBox.max.x + (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
-
-            const x = randomIntFromInterval(minX, maxX);
-            const targetPosition = { x, y, z };
+        if (blockData) {
+            const currentAnimationTime = getCurrentAnimationTime();
+            const bps = bpsCounter.getBPS();
+            const initPosition = getBlockInitPosition({
+                currentAnimationTime,
+                periods: sinusoidRandomPeriods,
+                periodsSum: sinusoidPeriodsSum,
+            });
+            const targetPosition = getBlockTargetPosition(initPosition, bps);
 
             bpsCounter.addBlock();
+
             if (!bpsCounter.getBPS()) {
                 bpsCounter.start();
             }
@@ -229,12 +229,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
+                blockAddedTimestamp: getCurrentAnimationTime(),
                 targetPosition,
-                initPosition: {
-                    x: emitterCenter.x,
-                    y: emitterCenter.y,
-                    z: emitterCenter.z,
-                },
+                initPosition,
             });
         }
     };
