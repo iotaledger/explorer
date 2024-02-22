@@ -10,8 +10,7 @@ export const useSearch = () => {
 
     const isSearchMatch = (block: IFeedBlockData) => {
         const searchQuery = useSearchStore.getState().searchQuery;
-
-        return matchLatestFinalizedSlot(block, searchQuery);
+        return matchLatestFinalizedSlot(block, searchQuery) || matchByBlockId(block, searchQuery);
     };
 
     const highlightSearchBlock = (blockId: string) => {
@@ -27,7 +26,11 @@ export const useSearch = () => {
 };
 
 export function isSearchMatch(block: IFeedBlockData, searchQuery: string) {
-    return matchLatestFinalizedSlot(block, searchQuery); // note: here we can add more checks as separate functions
+    return matchLatestFinalizedSlot(block, searchQuery) || matchByBlockId(block, searchQuery); // note: here we can add more checks as separate functions
+}
+
+export function matchByBlockId(block: IFeedBlockData, searchQuery: string) {
+    return block.blockId === searchQuery;
 }
 
 export function matchLatestFinalizedSlot(block: IFeedBlockData, searchQuery: string) {
