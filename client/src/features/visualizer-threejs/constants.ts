@@ -19,7 +19,6 @@ export const ZOOM_DEFAULT = 2;
 export const TIME_DIFF_COUNTER = 250;
 export const SECOND = 1000;
 export const DATA_SENDER_TIME_INTERVAL = 500;
-export const ANIMATION_TIME_SECONDS = 3;
 
 // colors
 export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
@@ -35,7 +34,7 @@ export const BLOCK_STATE_TO_COLOR = new Map<BlockState, Color>([
 ]);
 
 // emitter
-export const EMITTER_SPEED_MULTIPLIER = 80;
+export const EMITTER_SPEED_MULTIPLIER = 150;
 export const EMITTER_PADDING_RIGHT = 150;
 export const VISUALIZER_SAFE_ZONE = 150;
 
@@ -72,10 +71,10 @@ export const EMITTER_HEIGHT = 250;
 export const EMITTER_DEPTH = 250;
 
 // conic emitter
-export const MIN_TANGLE_RADIUS = 100;
-export const MAX_TANGLE_RADIUS = 300;
+export const MIN_TANGLE_RADIUS = 200;
+export const MAX_TANGLE_RADIUS = 600;
 
-export const MIN_BLOCKS_PER_SECOND = 100;
+export const MIN_BLOCKS_PER_SECOND = 150;
 export const MAX_BLOCKS_PER_SECOND = 250;
 
 export const MIN_BLOCK_NEAR_RADIUS = 20;
@@ -83,7 +82,8 @@ export const MIN_BLOCK_NEAR_RADIUS = 20;
 export const MAX_POINT_RETRIES = 10;
 export const MAX_PREV_POINTS = 20;
 
-export const EMITTER_X_POSITION_MULTIPLIER = 3;
+export const SPRAY_DISTANCE = 500;
+export const SPRAY_ANIMATION_DURATION = SPRAY_DISTANCE / EMITTER_SPEED_MULTIPLIER;
 
 /* Values for randomizing the tangle */
 export const NUMBER_OF_RANDOM_PERIODS = 100;

@@ -1,7 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { ANIMATION_TIME_SECONDS, MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
+import { SPRAY_ANIMATION_DURATION, MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
 import { IBlockState, IBlockAnimationPosition, useConfigStore, useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
@@ -161,10 +161,10 @@ export const useRenderTangle = () => {
         blockIdToAnimationPosition.forEach(({ initPosition, targetPosition, blockAddedTimestamp }, blockId) => {
             const currentAnimationTime = getVisualizerTimeDiff();
             const elapsedTime = currentAnimationTime - blockAddedTimestamp;
-            const positionBasedOnTime = Math.min(elapsedTime / ANIMATION_TIME_SECONDS, 1);
+            const animationAlpha = Math.min(elapsedTime / SPRAY_ANIMATION_DURATION, 1);
             const targetPositionVector = new THREE.Vector3();
 
-            targetPositionVector.lerpVectors(positionToVector(initPosition), positionToVector(targetPosition), positionBasedOnTime);
+            targetPositionVector.lerpVectors(positionToVector(initPosition), positionToVector(targetPosition), animationAlpha);
             updatedAnimationPositions.set(blockId, { initPosition, elapsedTime, targetPosition, blockAddedTimestamp });
 
             const index = blockIdToIndex.get(blockId);

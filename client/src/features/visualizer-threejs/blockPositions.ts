@@ -1,6 +1,6 @@
-import { EMITTER_WIDTH, EMITTER_X_POSITION_MULTIPLIER } from "./constants";
+import { SPRAY_DISTANCE } from "./constants";
 import { ISinusoidalPositionParams } from "./interfaces";
-import { getEmitterPositions, getGenerateDynamicYZPosition, getTangleDistances, randomIntFromInterval } from "./utils";
+import { getEmitterPositions, getGenerateDynamicYZPosition, getTangleDistances } from "./utils";
 
 const generateYZPositions = getGenerateDynamicYZPosition();
 
@@ -11,16 +11,7 @@ interface IPos {
 }
 export function getBlockTargetPosition(initPosition: IPos, bps: number, tiltDegress: number): IPos {
     const { y, z } = generateYZPositions(bps, initPosition, tiltDegress);
-
-    const emitterMinX = initPosition.x - EMITTER_WIDTH / 2;
-    const emitterMaxX = initPosition.x + EMITTER_WIDTH / 2;
-
-    const minX = emitterMinX - (emitterMaxX - emitterMinX) * EMITTER_X_POSITION_MULTIPLIER;
-    const maxX = emitterMaxX + (emitterMaxX - emitterMinX) * EMITTER_X_POSITION_MULTIPLIER;
-
-    const x = randomIntFromInterval(minX, maxX);
-
-    return { x, y, z };
+    return { x: initPosition.x - SPRAY_DISTANCE, y, z };
 }
 
 export function getBlockInitPosition({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes }: ISinusoidalPositionParams): IPos {
