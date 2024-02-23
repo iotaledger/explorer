@@ -17,7 +17,9 @@ const CameraControls = () => {
      * Locks the camera zoom to the current zoom value.
      */
     function lockCameraZoom(controls: DreiCameraControls) {
-        const zoom = controls.camera.zoom;
+        // const zoom = controls.camera.zoom;
+        // console.log('--- zoom', zoom);
+        const zoom = 0.5;
         controls.maxZoom = zoom;
         controls.minZoom = zoom;
     }

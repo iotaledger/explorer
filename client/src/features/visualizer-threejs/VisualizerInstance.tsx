@@ -7,6 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import {
     FAR_PLANE,
+    features,
     NEAR_PLANE,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
@@ -32,12 +33,6 @@ import "./Visualizer.scss";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 import { getCurrentTiltValue } from "./utils";
-
-export const features = {
-    statsEnabled: false,
-    cameraControls: true,
-    controlsVisualiserEnabled: true,
-};
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
@@ -272,15 +267,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
         removeConfirmedBlocksSlot(slot);
     }
-
-    const [localKey, setLocalKey] = React.useState<number>(0);
-    useEffect(() => {
-        setTimeout(() => {
-            // location.reload();
-            // setLocalKey(2);
-        }, 3000);
-    }, []);
-
+    // const [z, setZ] = useState(1);
     return (
         <Wrapper
             key={network}

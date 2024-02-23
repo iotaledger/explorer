@@ -16,11 +16,7 @@ import {
     CAMERA_Y_OFFSET,
     NUMBER_OF_RANDOM_PERIODS,
     NUMBER_OF_RANDOM_AMPLITUDES,
-    MIN_SINUSOID_AMPLITUDE,
-    MAX_SINUSOID_AMPLITUDE,
     NUMBER_OF_RANDOM_TILTINGS,
-    MIN_TILT_FACTOR_DEGREES,
-    MAX_TILT_FACTOR_DEGREES,
     TILT_DURATION_SECONDS,
 } from "./constants";
 import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
@@ -193,6 +189,8 @@ export function getTangleDistances(): {
     xTangleDistance: number;
     yTangleDistance: number;
 } {
+    const { MAX_SINUSOID_AMPLITUDE } = getFromLocalStorage();
+
     /* We assume MAX BPS to get the max possible Y */
     const MAX_TANGLE_DISTANCE_SECONDS = MAX_BLOCK_INSTANCES / MIN_BLOCKS_PER_SECOND;
 
@@ -298,7 +296,6 @@ export function positionToVector(position: IThreeDimensionalPosition) {
 export function generateRandomPeriods(): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
-
         const { MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD } = getFromLocalStorage();
         const period = Number(randomNumberFromInterval(MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD).toFixed(4));
         sum += period;
@@ -330,6 +327,7 @@ function getCurrentPeriodValues(animationTime: number, periods: number[], totalS
 }
 
 function getNextAmplitudeWithVariation(currentAmplitude: number = 0): number {
+    const { MIN_SINUSOID_AMPLITUDE, MAX_SINUSOID_AMPLITUDE } = getFromLocalStorage();
     const variation = (2 * MIN_SINUSOID_AMPLITUDE) / 3;
     const randomAmplitudeVariation = randomNumberFromInterval(-variation, variation);
 
@@ -358,6 +356,7 @@ export function generateRandomAmplitudes(): number[] {
 
 export function generateRandomTiltings(): number[] {
     let previousValue: number;
+    const { MIN_TILT_FACTOR_DEGREES, MAX_TILT_FACTOR_DEGREES } = getFromLocalStorage();
 
     const tilts: number[] = Array.from({ length: NUMBER_OF_RANDOM_TILTINGS }, () => {
         let randomTilt = randomIntFromInterval(MIN_TILT_FACTOR_DEGREES, MAX_TILT_FACTOR_DEGREES);

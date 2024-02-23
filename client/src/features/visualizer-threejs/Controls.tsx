@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { features } from "./VisualizerInstance";
 import {
     MIN_SINUSOID_PERIOD,
     MAX_SINUSOID_PERIOD,
@@ -7,17 +6,10 @@ import {
     MAX_SINUSOID_AMPLITUDE,
     MIN_TILT_FACTOR_DEGREES,
     MAX_TILT_FACTOR_DEGREES,
+    TILT_DURATION_SECONDS,
+    features,
 } from "./constants";
 import "./Controls.scss";
-
-const defaultControlsVisualiser: IControlsVisualiser = {
-    MIN_SINUSOID_PERIOD: MIN_SINUSOID_PERIOD,
-    MAX_SINUSOID_PERIOD: MAX_SINUSOID_PERIOD,
-    MIN_SINUSOID_AMPLITUDE: MIN_SINUSOID_AMPLITUDE,
-    MAX_SINUSOID_AMPLITUDE: MAX_SINUSOID_AMPLITUDE,
-    MIN_TILT_FACTOR_DEGREES: MIN_TILT_FACTOR_DEGREES,
-    MAX_TILT_FACTOR_DEGREES: MAX_TILT_FACTOR_DEGREES,
-};
 
 interface IControlsVisualiser {
     MIN_SINUSOID_PERIOD: number;
@@ -26,7 +18,18 @@ interface IControlsVisualiser {
     MAX_SINUSOID_AMPLITUDE: number;
     MIN_TILT_FACTOR_DEGREES: number;
     MAX_TILT_FACTOR_DEGREES: number;
+    TILT_DURATION_SECONDS: number;
 }
+
+const defaultControlsVisualiser: IControlsVisualiser = {
+    MIN_SINUSOID_PERIOD: MIN_SINUSOID_PERIOD,
+    MAX_SINUSOID_PERIOD: MAX_SINUSOID_PERIOD,
+    MIN_SINUSOID_AMPLITUDE: MIN_SINUSOID_AMPLITUDE,
+    MAX_SINUSOID_AMPLITUDE: MAX_SINUSOID_AMPLITUDE,
+    MIN_TILT_FACTOR_DEGREES: MIN_TILT_FACTOR_DEGREES,
+    MAX_TILT_FACTOR_DEGREES: MAX_TILT_FACTOR_DEGREES,
+    TILT_DURATION_SECONDS: TILT_DURATION_SECONDS,
+};
 
 type TKey = keyof IControlsVisualiser;
 
@@ -35,7 +38,7 @@ type TKey = keyof IControlsVisualiser;
  */
 const LOCAL_STORAGE_KEY = "controlsVisualiser";
 
-export function getFromLocalStorage(): IControlsVisualiser {
+export const getFromLocalStorage = (): IControlsVisualiser => {
     if (features.controlsVisualiserEnabled) {
         const item = localStorage.getItem(LOCAL_STORAGE_KEY);
         return item ? JSON.parse(item) : defaultControlsVisualiser;
@@ -43,7 +46,7 @@ export function getFromLocalStorage(): IControlsVisualiser {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
         return defaultControlsVisualiser;
     }
-}
+};
 
 /**
  * Saves a value to localStorage as a JSON string.
@@ -113,6 +116,12 @@ export const Controls = () => {
             min: 16,
             max: 100,
         },
+        {
+            key: "TILT_DURATION_SECONDS",
+            label: "Tilt_duration_seconds",
+            min: 1,
+            max: 10,
+        },
     ];
 
     const handleApply = () => {
@@ -129,6 +138,12 @@ export const Controls = () => {
     const handleChange = (key: TKey, val: string) => {
         const input = inputs.find((input) => input.key === key);
         if (!input) return;
+
+        if (!val) {
+            setErrors((prevErrors) => ({ ...prevErrors, [key]: "Value is required" }));
+            setState((prevState) => ({ ...prevState, [key]: "" }));
+            return;
+        }
 
         const numericValue = Number(val);
         if (numericValue < input.min || numericValue > input.max) {
