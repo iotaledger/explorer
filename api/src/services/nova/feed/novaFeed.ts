@@ -8,6 +8,8 @@ import { IFeedUpdate } from "../../../models/api/nova/feed/IFeedUpdate";
 import { INetwork } from "../../../models/db/INetwork";
 import { NodeInfoService } from "../nodeInfoService";
 
+const LATEST_SLOT_COMMITMENT_LIMIT = 30;
+
 /**
  * Wrapper class around Nova MqttClient.
  * Streaming blocks from mqtt (upstream) to explorer-client connections (downstream).
@@ -24,6 +26,11 @@ export class NovaFeed {
      * Mqtt service for data (upstream).
      */
     private _mqttClient: Client;
+
+    /**
+     * The latest slot commitments cache.
+     */
+    private readonly latestSlotCommitmentCache: SlotCommitment[] = [];
 
     /**
      * The network in context.
@@ -52,6 +59,14 @@ export class NovaFeed {
                 throw new Error(`Failed to build novaFeed instance for ${this.networkId}`);
             }
         });
+    }
+
+    /**
+     * Get the latest slot commitment cache state.
+     * @returns The latest slot commitments.
+     */
+    public get getLatestSlotCommitments() {
+        return this.latestSlotCommitmentCache;
     }
 
     /**
@@ -124,6 +139,9 @@ export class NovaFeed {
 
                 // eslint-disable-next-line no-void
                 void this.broadcastBlock(update);
+
+                // eslint-disable-next-line no-void
+                void this.updateLatestSlotCommitmentCache(slotCommitment);
             } catch {
                 logger.error("[NovaFeed]: Failed broadcasting finalized slot downstream.");
             }
@@ -156,6 +174,20 @@ export class NovaFeed {
                 });
             } catch (error) {
                 logger.warn(`[NovaFeed] Failed to send callback to block subscribers for ${subscriptionId}. Cause: ${error}`);
+            }
+        }
+    }
+
+    /**
+     * Updates the slot commitment cache.
+     * @param newSlotCommitment The new slot commitment.
+     */
+    private async updateLatestSlotCommitmentCache(newSlotCommitment: SlotCommitment): Promise<void> {
+        if (!this.latestSlotCommitmentCache.map((commitment) => commitment.slot).includes(newSlotCommitment.slot)) {
+            this.latestSlotCommitmentCache.unshift(newSlotCommitment);
+
+            if (this.latestSlotCommitmentCache.length > LATEST_SLOT_COMMITMENT_LIMIT) {
+                this.latestSlotCommitmentCache.pop();
             }
         }
     }
