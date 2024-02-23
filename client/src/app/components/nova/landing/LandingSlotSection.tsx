@@ -23,14 +23,18 @@ const LandingSlotSection: React.FC = () => {
                     </div>
                 </ProgressBar>
                 {latestSlotIndexes?.map((slot) => {
-                    const commitment = latestSlotCommitments?.find((commitment) => commitment.slot === slot) ?? null;
-                    const commitmentId = !commitment ? (
+                    const commitmentWrapper = latestSlotCommitments?.find((commitment) => commitment.slotCommitment.slot === slot) ?? null;
+                    const commitmentId = !commitmentWrapper ? (
                         <Spinner compact />
                     ) : (
-                        <TruncatedId id={Utils.computeSlotCommitmentId(commitment)} showCopyButton />
+                        <TruncatedId id={Utils.computeSlotCommitmentId(commitmentWrapper.slotCommitment)} showCopyButton />
                     );
-                    const referenceManaCost = !commitment ? <Spinner compact /> : commitment.referenceManaCost.toString();
-                    const slotStatus = !commitment ? "pending" : "committed";
+                    const referenceManaCost = !commitmentWrapper ? (
+                        <Spinner compact />
+                    ) : (
+                        commitmentWrapper.slotCommitment.referenceManaCost.toString()
+                    );
+                    const slotStatus = !commitmentWrapper ? "pending" : commitmentWrapper.status;
 
                     return (
                         <div key={`slot-key-${slot}`} className="slots-feed__item">

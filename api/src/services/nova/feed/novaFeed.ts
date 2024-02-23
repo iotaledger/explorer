@@ -4,6 +4,7 @@ import { Block, Client, IBlockMetadata, SlotCommitment } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
+import { ISlotCommitmentWrapper, SlotCommitmentStatus } from "../../../models/api/nova/commitment/ILatestSlotCommitmentsResponse";
 import { IFeedUpdate } from "../../../models/api/nova/feed/IFeedUpdate";
 import { INetwork } from "../../../models/db/INetwork";
 import { NodeInfoService } from "../nodeInfoService";
@@ -30,7 +31,7 @@ export class NovaFeed {
     /**
      * The latest slot commitments cache.
      */
-    private readonly latestSlotCommitmentCache: SlotCommitment[] = [];
+    private readonly latestSlotCommitmentCache: ISlotCommitmentWrapper[] = [];
 
     /**
      * The network in context.
@@ -141,9 +142,22 @@ export class NovaFeed {
                 void this.broadcastBlock(update);
 
                 // eslint-disable-next-line no-void
-                void this.updateLatestSlotCommitmentCache(slotCommitment);
+                void this.updateLatestSlotCommitmentCache(slotCommitment, true);
             } catch {
                 logger.error("[NovaFeed]: Failed broadcasting finalized slot downstream.");
+            }
+        });
+
+        // eslint-disable-next-line no-void
+        void this._mqttClient.listenMqtt(["commitments/latest"], async (_, message) => {
+            try {
+                const deserializedMessage: { topic: string; payload: string } = JSON.parse(message);
+                const slotCommitment: SlotCommitment = JSON.parse(deserializedMessage.payload);
+
+                // eslint-disable-next-line no-void
+                void this.updateLatestSlotCommitmentCache(slotCommitment, false);
+            } catch {
+                logger.error("[NovaFeed]: Failed broadcasting commited slot downstream.");
             }
         });
     }
@@ -181,13 +195,25 @@ export class NovaFeed {
     /**
      * Updates the slot commitment cache.
      * @param newSlotCommitment The new slot commitment.
+     * @param isFinalized Did the SlotCommitment get emitted from the 'commitments/finalized' topic or not ('commitments/latest').
      */
-    private async updateLatestSlotCommitmentCache(newSlotCommitment: SlotCommitment): Promise<void> {
-        if (!this.latestSlotCommitmentCache.map((commitment) => commitment.slot).includes(newSlotCommitment.slot)) {
-            this.latestSlotCommitmentCache.unshift(newSlotCommitment);
+    private async updateLatestSlotCommitmentCache(newSlotCommitment: SlotCommitment, isFinalized: boolean): Promise<void> {
+        if (!this.latestSlotCommitmentCache.map((commitment) => commitment.slotCommitment.slot).includes(newSlotCommitment.slot)) {
+            this.latestSlotCommitmentCache.unshift({
+                slotCommitment: newSlotCommitment,
+                status: isFinalized ? SlotCommitmentStatus.FINALIZED : SlotCommitmentStatus.COMMITTED,
+            });
 
             if (this.latestSlotCommitmentCache.length > LATEST_SLOT_COMMITMENT_LIMIT) {
                 this.latestSlotCommitmentCache.pop();
+            }
+        } else if (isFinalized) {
+            const commitmentToUpdate = this.latestSlotCommitmentCache.find(
+                (commitment) => commitment.slotCommitment.slot === newSlotCommitment.slot,
+            );
+
+            if (commitmentToUpdate) {
+                commitmentToUpdate.status = SlotCommitmentStatus.FINALIZED;
             }
         }
     }

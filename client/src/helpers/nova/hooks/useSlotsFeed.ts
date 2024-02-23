@@ -1,8 +1,8 @@
-import { SlotCommitment } from "@iota/sdk-wasm-nova/web";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
+import { ISlotCommitmentWrapper } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { useNetworkInfoNova } from "../networkInfo";
@@ -18,7 +18,7 @@ export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
     currentSlotIndex: number | null;
     currentSlotProgressPercent: number | null;
     latestSlotIndexes: number[] | null;
-    latestSlotCommitments: SlotCommitment[];
+    latestSlotCommitments: ISlotCommitmentWrapper[];
 } {
     const isMounted = useIsMounted();
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
@@ -27,7 +27,7 @@ export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
     const [currentSlotIndex, setCurrentSlotIndex] = useState<number | null>(null);
     const [latestSlotIndexes, setLatestSlotIndexes] = useState<number[] | null>(null);
 
-    const [latestSlotCommitments, setLatestSlotCommitments] = useState<SlotCommitment[]>([]);
+    const [latestSlotCommitments, setLatestSlotCommitments] = useState<ISlotCommitmentWrapper[]>([]);
 
     const [currentSlotProgressPercent, setCurrentSlotProgressPercent] = useState<number | null>(null);
 
