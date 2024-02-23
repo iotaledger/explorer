@@ -20,7 +20,7 @@ import {
     TILT_DURATION_SECONDS,
 } from "./constants";
 import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
-import { getFromLocalStorage } from "~features/visualizer-threejs/Controls";
+import { getFromLocalStorage } from "~features/visualizer-threejs/ConfigControls";
 
 /**
  * Generates a random number within a specified range.

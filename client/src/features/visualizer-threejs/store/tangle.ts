@@ -60,6 +60,9 @@ interface TangleState {
     zoom: number;
     setZoom: (zoom: number) => void;
 
+    forcedZoom: number | undefined;
+    setForcedZoom: (zoom: number | undefined) => void;
+
     bps: number;
     setBps: (bps: number) => void;
 
@@ -88,6 +91,7 @@ const INITIAL_STATE = {
     blockIdToAnimationPosition: new Map(),
     indexToBlockId: [],
     zoom: ZOOM_DEFAULT,
+    forcedZoom: undefined,
     bps: 0,
     clickedInstanceId: null,
     confirmedBlocksBySlot: new Map(),
@@ -205,6 +209,12 @@ export const useTangleStore = create<TangleState>()(
             set((state) => ({
                 ...state,
                 zoom,
+            }));
+        },
+        setForcedZoom: (forcedZoom) => {
+            set((state) => ({
+                ...state,
+                forcedZoom,
             }));
         },
         setBps: (bps) => {

@@ -10,6 +10,7 @@ import {
     features,
 } from "./constants";
 import "./Controls.scss";
+import { useTangleStore } from "~features/visualizer-threejs/store";
 
 interface IControlsVisualiser {
     MIN_SINUSOID_PERIOD: number;
@@ -61,7 +62,11 @@ function isExistsInLocalStorage(): boolean {
     return !!localStorage.getItem(LOCAL_STORAGE_KEY);
 }
 
-export const Controls = () => {
+export const ConfigControls = () => {
+    const forcedZoom = useTangleStore((state) => state.forcedZoom);
+    const setForcedZoom = useTangleStore((state) => state.setForcedZoom);
+    const [localZoom, setLocalZoom] = useState<number | undefined>(forcedZoom);
+
     const [state, setState] = useState<IControlsVisualiser>(() => {
         // Use getFromLocalStorage to retrieve the state
         return getFromLocalStorage() || defaultControlsVisualiser;
@@ -190,12 +195,42 @@ export const Controls = () => {
                         onClick={() => {
                             localStorage.removeItem(LOCAL_STORAGE_KEY);
                             setIsShowReset(false);
+                            location.reload();
                         }}
                     >
                         Reset
                     </button>
                 )}
             </div>
+
+            <div style={{ marginTop: "16px" }}>
+                <label style={{ display: "block" }}>Zoom</label>
+                <input
+                    type="number"
+                    value={localZoom || `${localZoom}`}
+                    onChange={(e) => {
+                        if (!e.target.value) {
+                            setLocalZoom(undefined);
+                            return;
+                        }
+
+                        const value = Number(e.target.value);
+
+                        if (value > 2) {
+                            setLocalZoom(2);
+                            return;
+                        }
+                        setLocalZoom(Number(e.target.value));
+                    }}
+                />
+                <div className="controls__actions">
+                    <button type={"button"} onClick={() => setForcedZoom(localZoom)}>
+                        Apply
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
+
+export default React.memo(ConfigControls);
