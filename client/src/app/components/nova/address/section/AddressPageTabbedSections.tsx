@@ -20,6 +20,7 @@ import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
 import AnchorStateSection from "./anchor/AnchorStateSection";
 import NftSection from "~/app/components/nova/address/section/nft/NftSection";
 import NftMetadataSection from "~/app/components/nova/address/section/nft/NftMetadataSection";
+import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
@@ -193,10 +194,11 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         }
         case AddressType.Nft: {
             const nftAddressState = addressState as INftAddressState;
+            const nftMetadata = nftAddressState.nftOutput ? TransactionsHelper.getNftMetadataFeature(nftAddressState.nftOutput) : null;
             tabEnums = { ...DEFAULT_TABS, ...NFT_TABS };
             tabOptions = {
                 ...tabOptions,
-                ...buildNftAddressTabsOptions(!nftAddressState.nftMetadata, nftAddressState.isNftDetailsLoading),
+                ...buildNftAddressTabsOptions(!nftMetadata, nftAddressState.isNftDetailsLoading),
             };
             tabbedSections = [...defaultSections, ...(nftAddressSections ?? [])];
             break;
