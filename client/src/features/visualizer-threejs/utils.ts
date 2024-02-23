@@ -373,8 +373,25 @@ export function generateRandomTiltings(): number[] {
 }
 
 export function getCurrentTiltValue(animationTime: number, tilts: number[]): number {
-    const tiltAnimationDuration = TILT_DURATION_SECONDS * 2;
-    const currentAnimationTime = animationTime % tiltAnimationDuration;
-    currentAnimationTime;
-    return 0;
+    const tiltAnimationDuration = TILT_DURATION_SECONDS * 2; // Multiplied by 2 so it goes back to the initial position
+    const totalIntervalDuration = tilts.length * tiltAnimationDuration; // The total duration of the random tilts
+
+    const currentTiltAnimationSeconds = animationTime % tiltAnimationDuration;
+    const currentAnimationSecondsInInterval = animationTime % totalIntervalDuration;
+
+    const currentTiltIndex = Math.floor(currentAnimationSecondsInInterval / tiltAnimationDuration);
+    const tilt = tilts[currentTiltIndex];
+
+    // Calculate the proportion of the current animation time within the half-duration
+    const proportionOfHalfDuration = currentTiltAnimationSeconds / (tiltAnimationDuration / 2);
+    let currentTilt;
+
+    if (currentTiltAnimationSeconds <= tiltAnimationDuration / 2) {
+        currentTilt = tilt * proportionOfHalfDuration;
+    } else {
+        // We subtract from 2 to reverse the effect after the peak
+        currentTilt = tilt * (2 - proportionOfHalfDuration);
+    }
+
+    return currentTilt;
 }
