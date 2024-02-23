@@ -267,7 +267,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
         removeConfirmedBlocksSlot(slot);
     }
-    // const [z, setZ] = useState(1);
+
     return (
         <Wrapper
             key={network}
