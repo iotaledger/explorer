@@ -52,10 +52,19 @@ function setToLocalStorage(value: IControlsVisualiser) {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value));
 }
 
+/**
+ */
+function isExistsInLocalStorage(): boolean {
+    return !!localStorage.getItem(LOCAL_STORAGE_KEY);
+}
+
 export const Controls = () => {
     const [state, setState] = useState<IControlsVisualiser>(() => {
         // Use getFromLocalStorage to retrieve the state
         return getFromLocalStorage() || defaultControlsVisualiser;
+    });
+    const [isShowReset, setIsShowReset] = useState(() => {
+        return isExistsInLocalStorage();
     });
 
     const [errors, setErrors] = useState<{
@@ -156,9 +165,22 @@ export const Controls = () => {
                 })}
             </div>
 
-            <button type={"button"} onClick={handleApply}>
-                Apply
-            </button>
+            <div className="controls__actions">
+                <button type={"button"} onClick={handleApply}>
+                    Apply
+                </button>
+                {isShowReset && (
+                    <button
+                        type={"button"}
+                        onClick={() => {
+                            localStorage.removeItem(LOCAL_STORAGE_KEY);
+                            setIsShowReset(false);
+                        }}
+                    >
+                        Reset
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
