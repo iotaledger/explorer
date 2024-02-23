@@ -1,53 +1,98 @@
+import { SlotCommitment } from "@iota/sdk-wasm-nova/web";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ServiceFactory } from "~/factories/serviceFactory";
+import { useIsMounted } from "~/helpers/hooks/useIsMounted";
+import { NOVA } from "~/models/config/protocolVersion";
+import { NovaApiClient } from "~/services/nova/novaApiClient";
+import { useNetworkInfoNova } from "../networkInfo";
 import { useNovaTimeConvert } from "./useNovaTimeConvert";
 
 const DEFAULT_SLOT_LIMIT = 10;
+const MAX_LATEST_SLOT_COMMITMENTS = 20;
+
+const CHECK_SLOT_INDEX_INTERVAL = 950;
+const CHECK_SLOT_COMMITMENTS_INTERVAL = 3500;
 
 export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
-    currentSlot: number | null;
+    currentSlotIndex: number | null;
     currentSlotProgressPercent: number | null;
-    latestSlots: number[] | null;
+    latestSlotIndexes: number[] | null;
+    latestSlotCommitments: SlotCommitment[];
 } {
+    const isMounted = useIsMounted();
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const { unixTimestampToSlotIndex, slotIndexToUnixTimeRange } = useNovaTimeConvert();
-    const [currentSlot, setCurrentSlot] = useState<number | null>(null);
-    const [latestSlots, setLatestSlots] = useState<number[] | null>(null);
-    const [currentSlotProgressPercent, setCurrentSlotProgressPercent] = useState<number | null>(null);
-    const [slotTimeUpdateHandle, setSlotTimeUpdateHandle] = useState<NodeJS.Timeout | null>(null);
+    const [currentSlotIndex, setCurrentSlotIndex] = useState<number | null>(null);
+    const [latestSlotIndexes, setLatestSlotIndexes] = useState<number[] | null>(null);
 
-    const checkCurrentSlot = () => {
+    const [latestSlotCommitments, setLatestSlotCommitments] = useState<SlotCommitment[]>([]);
+
+    const [currentSlotProgressPercent, setCurrentSlotProgressPercent] = useState<number | null>(null);
+
+    const [slotIndexCheckerHandle, setSlotIndexCheckerHandle] = useState<NodeJS.Timeout | null>(null);
+    const [slotCommitmentsCheckerHandle, setSlotCommitmentsCheckerHandle] = useState<NodeJS.Timeout | null>(null);
+
+    const checkCurrentSlotIndex = () => {
         if (unixTimestampToSlotIndex && slotIndexToUnixTimeRange) {
             const now = moment().unix();
             const currentSlotIndex = unixTimestampToSlotIndex(now);
             const slotTimeRange = slotIndexToUnixTimeRange(currentSlotIndex);
 
             const slotProgressPercent = Math.trunc(((now - slotTimeRange.from) / (slotTimeRange.to - 1 - slotTimeRange.from)) * 100);
-            setCurrentSlot(currentSlotIndex);
-            setCurrentSlotProgressPercent(slotProgressPercent);
-            setLatestSlots(Array.from({ length: slotsLimit - 1 }, (_, i) => currentSlotIndex - 1 - i));
+
+            if (isMounted) {
+                setCurrentSlotIndex(currentSlotIndex);
+                setCurrentSlotProgressPercent(slotProgressPercent);
+                setLatestSlotIndexes(Array.from({ length: slotsLimit - 1 }, (_, i) => currentSlotIndex - 1 - i));
+            }
         }
     };
 
-    useEffect(() => {
-        if (slotTimeUpdateHandle === null) {
-            checkCurrentSlot();
-            const intervalTimerHandle = setInterval(() => {
-                checkCurrentSlot();
-            }, 950);
+    const getLatestSlotCommitments = useCallback(async () => {
+        if (apiClient) {
+            const latestSlotCommitments = await apiClient.latestSlotCommitments(network);
+            if (isMounted && latestSlotCommitments.slotCommitments && latestSlotCommitments.slotCommitments.length > 0) {
+                setLatestSlotCommitments(latestSlotCommitments.slotCommitments.slice(0, MAX_LATEST_SLOT_COMMITMENTS));
+            }
+        }
+    }, [network]);
 
-            setSlotTimeUpdateHandle(intervalTimerHandle);
+    useEffect(() => {
+        if (slotIndexCheckerHandle === null) {
+            getLatestSlotCommitments();
+            checkCurrentSlotIndex();
+
+            const slotCommitmentCheckerHandle = setInterval(() => {
+                getLatestSlotCommitments();
+            }, CHECK_SLOT_COMMITMENTS_INTERVAL);
+
+            const slotIndexIntervalHandle = setInterval(() => {
+                checkCurrentSlotIndex();
+            }, CHECK_SLOT_INDEX_INTERVAL);
+
+            setSlotCommitmentsCheckerHandle(slotCommitmentCheckerHandle);
+            setSlotIndexCheckerHandle(slotIndexIntervalHandle);
         }
 
         return () => {
-            if (slotTimeUpdateHandle) {
-                clearInterval(slotTimeUpdateHandle);
+            if (slotCommitmentsCheckerHandle) {
+                clearInterval(slotCommitmentsCheckerHandle);
             }
-            setSlotTimeUpdateHandle(null);
-            setCurrentSlot(null);
+
+            if (slotIndexCheckerHandle) {
+                clearInterval(slotIndexCheckerHandle);
+            }
+
+            setSlotCommitmentsCheckerHandle(null);
+            setSlotIndexCheckerHandle(null);
+            setCurrentSlotIndex(null);
             setCurrentSlotProgressPercent(null);
-            setLatestSlots(null);
+            setLatestSlotIndexes(null);
+            setLatestSlotCommitments([]);
         };
     }, []);
 
-    return { currentSlot, currentSlotProgressPercent, latestSlots };
+    return { currentSlotIndex, currentSlotProgressPercent, latestSlotIndexes, latestSlotCommitments };
 }
