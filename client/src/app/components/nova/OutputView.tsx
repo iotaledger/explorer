@@ -4,7 +4,6 @@ import classNames from "classnames";
 import {
     Output,
     OutputType,
-    BasicOutput,
     CommonOutput,
     AccountOutput,
     AnchorOutput,
@@ -23,6 +22,8 @@ import FeatureView from "./FeaturesView";
 import TruncatedId from "../stardust/TruncatedId";
 import { HexHelper } from "~/helpers/stardust/hexHelper";
 import bigInt from "big-integer";
+import { OutputManaDetails, getManaKeyValueEntries } from "~/helpers/nova/manaUtils";
+import KeyValueEntries from "./KeyValueEntries";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -31,9 +32,10 @@ interface OutputViewProps {
     showCopyAmount: boolean;
     isPreExpanded?: boolean;
     isLinksDisabled?: boolean;
+    manaDetails: OutputManaDetails | null;
 }
 
-const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled }) => {
+const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
     const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
@@ -41,6 +43,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
+    const manaEntries = getManaKeyValueEntries(manaDetails);
 
     const header = (
         <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
@@ -158,12 +161,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             {(output.type === OutputType.Basic ||
                 output.type === OutputType.Account ||
                 output.type === OutputType.Anchor ||
-                output.type === OutputType.Nft) && (
-                <React.Fragment>
-                    <div className="card--label">Stored mana:</div>
-                    <div className="card--value row">{(output as BasicOutput).mana?.toString()}</div>
-                </React.Fragment>
-            )}
+                output.type === OutputType.Nft) &&
+                manaDetails?.totalMana && <KeyValueEntries isPreExpanded={true} {...manaEntries} />}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
