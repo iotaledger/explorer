@@ -34,7 +34,7 @@ export interface TransactionPageProps {
 
 enum TRANSACTION_PAGE_TABS {
     Payload = "Payload",
-    BlockMetadata = "Block Metadata",
+    Metadata = "Metadata",
 }
 
 const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
@@ -43,7 +43,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         params: { network, transactionId },
     },
 }) => {
-    const { tokenInfo, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { tokenInfo, protocolInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const [block, isIncludedBlockLoading, blockError] = useTransactionIncludedBlock(network, transactionId);
     const [inputs, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
     const [blockId, setBlockId] = useState<string | null>(null);
@@ -56,7 +56,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         }
     }, [block]);
 
-    const tabbedSections = [];
+    const tabbedSections: JSX.Element[] = [];
     let idx = 0;
     if (block) {
         tabbedSections.push(
@@ -133,7 +133,11 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             <div className="section--data">
                 <div className="label">Issuer</div>
                 <div className="value code highlight">
-                    <TruncatedId id={block.header.issuerId} link={`/${network}/account/${block.header.issuerId}`} showCopyButton={true} />
+                    <TruncatedId
+                        id={block.header.issuerId}
+                        link={`/${network}/addr/${Utils.accountIdToBech32(block.header.issuerId, bech32Hrp)}`}
+                        showCopyButton={true}
+                    />
                 </div>
             </div>
             {transferTotal !== null && (
@@ -154,7 +158,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                         isLoading: isInputsAndOutputsLoading,
                         infoContent: transactionPayloadMessage,
                     },
-                    [TRANSACTION_PAGE_TABS.BlockMetadata]: {
+                    [TRANSACTION_PAGE_TABS.Metadata]: {
                         infoContent: metadataInfoMessage,
                     },
                 }}
