@@ -33,9 +33,10 @@ import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 import { getCurrentTiltValue } from "./utils";
 
-const features = {
+export const features = {
     statsEnabled: false,
     cameraControls: true,
+    controlsVisualiserEnabled: true,
 };
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({

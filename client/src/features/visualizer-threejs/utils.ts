@@ -15,8 +15,6 @@ import {
     CAMERA_X_OFFSET,
     CAMERA_Y_OFFSET,
     NUMBER_OF_RANDOM_PERIODS,
-    MIN_SINUSOID_PERIOD,
-    MAX_SINUSOID_PERIOD,
     NUMBER_OF_RANDOM_AMPLITUDES,
     MIN_SINUSOID_AMPLITUDE,
     MAX_SINUSOID_AMPLITUDE,
@@ -301,8 +299,7 @@ export function generateRandomPeriods(): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
 
-        const { MIN_SINUSOID_PERIOD } = getFromLocalStorage();
-        console.log('--- MIN_SINUSOID_PERIOD', MIN_SINUSOID_PERIOD);
+        const { MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD } = getFromLocalStorage();
         const period = Number(randomNumberFromInterval(MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD).toFixed(4));
         sum += period;
         return period;

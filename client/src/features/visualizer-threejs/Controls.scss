@@ -1,0 +1,17 @@
+.controls-container {
+  background: var(--body-background);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  .controls__list {
+    display: flex;
+    gap: 8px;
+  }
+  .controls__item {
+    flex: 1;
+
+    input {
+      padding: 8px 16px;
+    }
+  }
+}
