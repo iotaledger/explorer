@@ -24,14 +24,13 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex, type BlockId } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
-import "./Visualizer.scss";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 import { getCurrentTiltValue } from "./utils";
+import "./Visualizer.scss";
 
 const features = {
     statsEnabled: false,
@@ -230,11 +229,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             if (blockWeakParents.length > 0) {
                 addToEdgeQueue(blockData.blockId, blockWeakParents);
             }
-
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
-                blockAddedTimestamp: getCurrentAnimationTime(),
+                blockAddedTimestamp: currentAnimationTime,
                 targetPosition,
                 initPosition,
             });

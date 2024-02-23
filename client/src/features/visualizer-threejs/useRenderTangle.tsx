@@ -1,5 +1,5 @@
-import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useThree } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SPRAY_ANIMATION_DURATION, MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
@@ -15,7 +15,8 @@ const INITIAL_SPHERE_SCALE = 0.7;
 
 export const useRenderTangle = () => {
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
-    const objectIndexRef = useRef(0);
+    const [updateAnimationPositionQueue, setUpdateAnimationPositionQueue] = useState<Map<number, THREE.Vector3>>(new Map());
+    const objectIndexRef = useRef(1);
     const { scene } = useThree();
     const isPlaying = useConfigStore((s) => s.isPlaying);
 
@@ -28,6 +29,8 @@ export const useRenderTangle = () => {
     const blockIdToIndex = useTangleStore((s) => s.blockIdToIndex);
     const updateBlockIdToIndex = useTangleStore((s) => s.updateBlockIdToIndex);
     const blockIdToAnimationPosition = useTangleStore((s) => s.blockIdToAnimationPosition);
+    const updateBlockIdToAnimationPosition = useTangleStore((s) => s.updateBlockIdToAnimationPosition);
+
     const getVisualizerTimeDiff = useVisualizerTimer();
 
     const assignBlockToMesh = (block: IBlockState) => {
@@ -42,10 +45,10 @@ export const useRenderTangle = () => {
 
         // Reuses old indexes when MAX_INSTANCES is reached
         // This also makes it so that old nodes are removed
-        if (objectIndexRef.current < MAX_BLOCK_INSTANCES - 1) {
+        if (objectIndexRef.current < MAX_BLOCK_INSTANCES) {
             objectIndexRef.current += 1;
         } else {
-            objectIndexRef.current = 0;
+            objectIndexRef.current = 1;
         }
 
         return block.id;
@@ -146,33 +149,49 @@ export const useRenderTangle = () => {
     /**
      * Spray animation
      */
-    useFrame(() => {
-        const isPlaying = useConfigStore.getState().isPlaying;
-
-        if (!isPlaying) {
-            return;
-        }
-
-        const blockIdToAnimationPosition = useTangleStore.getState().blockIdToAnimationPosition;
-        const updateBlockIdToAnimationPosition = useTangleStore.getState().updateBlockIdToAnimationPosition;
-
+    useEffect(() => {
         const updatedAnimationPositions: Map<string, IBlockAnimationPosition> = new Map();
+        const updateAnimationPositionQueue: Map<number, THREE.Vector3> = new Map();
+        const SPRAY_FRAMES_PER_SECOND = 24;
 
-        blockIdToAnimationPosition.forEach(({ initPosition, targetPosition, blockAddedTimestamp }, blockId) => {
-            const currentAnimationTime = getVisualizerTimeDiff();
-            const elapsedTime = currentAnimationTime - blockAddedTimestamp;
-            const animationAlpha = Math.min(elapsedTime / SPRAY_ANIMATION_DURATION, 1);
-            const targetPositionVector = new THREE.Vector3();
+        const interval = setInterval(() => {
+            blockIdToAnimationPosition.forEach((properties, blockId) => {
+                const { initPosition, targetPosition, blockAddedTimestamp } = properties;
+                const currentAnimationTime = getVisualizerTimeDiff();
+                const elapsedTime = currentAnimationTime - blockAddedTimestamp;
+                const animationAlpha = Math.min(elapsedTime / SPRAY_ANIMATION_DURATION, 1);
+                const targetPositionVector = new THREE.Vector3();
 
-            targetPositionVector.lerpVectors(positionToVector(initPosition), positionToVector(targetPosition), animationAlpha);
-            updatedAnimationPositions.set(blockId, { initPosition, elapsedTime, targetPosition, blockAddedTimestamp });
+                targetPositionVector.lerpVectors(positionToVector(initPosition), positionToVector(targetPosition), animationAlpha);
+                updatedAnimationPositions.set(blockId, { initPosition, elapsedTime, targetPosition, blockAddedTimestamp });
 
-            const index = blockIdToIndex.get(blockId);
-            if (index) {
-                updateInstancedMeshPosition(tangleMeshRef.current, index, targetPositionVector);
-            }
-        });
+                const index = blockIdToIndex.get(blockId);
+                if (index) {
+                    if (isPlaying) {
+                        updateInstancedMeshPosition(tangleMeshRef.current, index, targetPositionVector);
+                    } else {
+                        updateAnimationPositionQueue.set(index, targetPositionVector);
+                    }
+                }
+            });
+        }, 1000 / SPRAY_FRAMES_PER_SECOND);
 
         updateBlockIdToAnimationPosition(updatedAnimationPositions);
-    });
+        setUpdateAnimationPositionQueue(updateAnimationPositionQueue);
+
+        return () => clearInterval(interval);
+    }, [blockIdToAnimationPosition, isPlaying]);
+
+    /**
+     * Update animation positions after unpausing
+     */
+    useEffect(() => {
+        if (isPlaying) {
+            updateAnimationPositionQueue.forEach((position, index) => {
+                updateInstancedMeshPosition(tangleMeshRef.current, index, position);
+            });
+            updateAnimationPositionQueue.clear();
+            setUpdateAnimationPositionQueue(updateAnimationPositionQueue);
+        }
+    }, [isPlaying, updateAnimationPositionQueue]);
 };
