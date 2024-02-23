@@ -7,17 +7,17 @@
     background-color: $gray-1;
     border-radius: 8px;
 
+    .epoch-section__header {
+        width: fit-content;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
     .epoch-progress__wrapper {
         display: flow-root;
         background-color: $gray-3;
-        margin: 20px;
+        margin: 0 20px 20px;
         border-radius: 8px;
-
-        .epoch-progress__header {
-            width: fit-content;
-            margin: 0 auto;
-            padding: 20px;
-        }
 
         .epoch-progress__stats-wrapper {
             display: flex;
@@ -31,37 +31,6 @@
                 padding: 10px 20px;
                 border-radius: 8px;
                 text-align: center;
-            }
-        }
-
-        .progress-bar__wrapper {
-            $bar-height: 32px;
-
-            .progress-bar {
-                position: relative;
-                background-color: $gray-5;
-                margin: 20px 12px;
-                height: $bar-height;
-                border-radius: 4px;
-                text-align: center;
-                overflow: hidden;
-
-                .progress-bar__label {
-                    position: absolute;
-                    left: 0;
-                    right: 0;
-                    line-height: $bar-height;
-                    margin: 0 auto;
-                    font-weight: 600;
-                }
-
-                .progress-bar__fill {
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    background-color: #36c636;
-                    transform: translateX(-100%);
-                }
             }
         }
     }
