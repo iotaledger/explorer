@@ -97,6 +97,21 @@ export class SearchExecutor {
             );
         }
 
+        if (searchQuery.delegationId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.delegationDetails(searchQuery.delegationId),
+                    (response) => {
+                        promisesResult = {
+                            output: response.output,
+                            error: response.error || response.message,
+                        };
+                    },
+                    "Delegation id fetch failed",
+                ),
+            );
+        }
+
         await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {
