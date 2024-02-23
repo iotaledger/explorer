@@ -6,6 +6,7 @@ import {
     CongestionResponse,
     FeatureType,
     OutputResponse,
+    ValidatorResponse,
 } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useAccountDetails } from "./useAccountDetails";
@@ -18,6 +19,7 @@ import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutp
 import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 import { useAccountCongestion } from "./useAccountCongestion";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -25,6 +27,7 @@ export interface IAccountAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     blockIssuerFeature: BlockIssuerFeature | null;
+    validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
     foundries: string[] | null;
@@ -35,6 +38,7 @@ export interface IAccountAddressState {
     isNftOutputsLoading: boolean;
     isFoundriesLoading: boolean;
     isCongestionLoading: boolean;
+    isValidatorDetailsLoading: boolean;
 }
 
 const initialState = {
@@ -43,6 +47,7 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     blockIssuerFeature: null,
+    validatorDetails: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     foundries: null,
@@ -53,6 +58,7 @@ const initialState = {
     isNftOutputsLoading: false,
     isFoundriesLoading: false,
     isCongestionLoading: false,
+    isValidatorDetailsLoading: false,
 };
 
 /**
@@ -77,6 +83,10 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
     const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
+    const { validatorDetails, isLoading: isValidatorDetailsLoading } = useAccountValidatorDetails(
+        network,
+        state.addressDetails?.hex ?? null,
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -98,12 +108,14 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             availableBalance,
             foundries,
             congestion,
+            validatorDetails,
             addressBasicOutputs,
             addressNftOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
             isFoundriesLoading,
             isCongestionLoading,
+            isValidatorDetailsLoading,
         };
 
         if (accountOutput && !state.blockIssuerFeature) {
@@ -126,10 +138,12 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         addressBasicOutputs,
         addressNftOutputs,
         congestion,
+        validatorDetails,
         isAccountDetailsLoading,
         isBasicOutputsLoading,
         isNftOutputsLoading,
         isCongestionLoading,
+        isValidatorDetailsLoading,
     ]);
 
     return [state, setState];
