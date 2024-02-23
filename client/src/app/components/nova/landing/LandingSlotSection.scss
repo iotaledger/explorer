@@ -1,0 +1,37 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/fonts";
+
+.slots-section {
+    font-family: $metropolis;
+    margin-top: 40px;
+    background-color: $gray-1;
+    border-radius: 8px;
+
+    .slots-section__header {
+        width: fit-content;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .slots-feed__wrapper {
+        margin: 0 20px 20px;
+
+        .slots-feed__item {
+            display: flex;
+            margin: 0px 12px;
+            align-items: center;
+            line-height: 32px;
+            justify-content: center;
+            background-color: $gray-5;
+            border-radius: 4px;
+
+            &.transparent {
+                background-color: transparent;
+            }
+
+            &:not(:last-child) {
+                margin-bottom: 20px;
+            }
+        }
+    }
+}
