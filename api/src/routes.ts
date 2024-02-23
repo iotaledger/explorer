@@ -250,4 +250,10 @@ export const routes: IRoute[] = [
     },
     { path: "/nova/block/:network/:blockId", method: "get", folder: "nova/block", func: "get" },
     { path: "/nova/block/metadata/:network/:blockId", method: "get", folder: "nova/block/metadata", func: "get" },
+    {
+        path: "/nova/commitment/latest/:network",
+        method: "get",
+        folder: "nova/commitment/latest",
+        func: "get",
+    },
 ];
