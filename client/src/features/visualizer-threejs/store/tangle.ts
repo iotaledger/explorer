@@ -1,7 +1,7 @@
 import { Color } from "three";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { ZOOM_DEFAULT, ANIMATION_TIME_SECONDS } from "../constants";
+import { ZOOM_DEFAULT, EMITTER_SPEED_MULTIPLIER, SPRAY_DISTANCE } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { IThreeDimensionalPosition } from "../interfaces";
 import { BlockId, SlotIndex } from "@iota/sdk-wasm-nova/web";
@@ -104,7 +104,8 @@ export const useTangleStore = create<TangleState>()(
                 });
 
                 for (const [key, value] of state.blockIdToAnimationPosition) {
-                    if (value.elapsedTime > ANIMATION_TIME_SECONDS) {
+                    const animationTime = SPRAY_DISTANCE / EMITTER_SPEED_MULTIPLIER;
+                    if (value.elapsedTime > animationTime) {
                         state.blockIdToAnimationPosition.delete(key);
                     }
                 }
