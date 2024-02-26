@@ -174,7 +174,7 @@ export const ConfigControls = () => {
                                 value={visualizerConfigValues[i.key]}
                                 onChange={(e) => handleChange(i.key, e.target.value)}
                             />
-                            {!!errors[i.key] && <div>{errors[i.key]}</div>}
+                            {!!errors[i.key] && <div className={"controls__error"}>{errors[i.key]}</div>}
                         </div>
                     );
                 })}
