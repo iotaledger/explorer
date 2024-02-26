@@ -40,41 +40,4 @@
             }
         }
     }
-
-    .block-tangle-state {
-        @include font-size(12px);
-
-        display: flex;
-        align-items: center;
-        height: 24px;
-        margin-right: 8px;
-        padding: 0 8px;
-        border: 0;
-        border-radius: 6px;
-        outline: none;
-        background-color: $gray-light;
-        color: $gray-midnight;
-        font-family: $inter;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-        white-space: nowrap;
-
-        @include phone-down {
-            height: 32px;
-        }
-
-        &.block-tangle-state__confirmed {
-            background-color: var(--message-confirmed-bg);
-            color: $mint-green-7;
-        }
-
-        &.block-tangle-state__conflicting {
-            background-color: var(--message-conflicting-bg);
-        }
-
-        &.block-tangle-state__pending {
-            background-color: var(--light-bg);
-            color: #8493ad;
-        }
-    }
 }
