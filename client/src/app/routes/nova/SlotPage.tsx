@@ -22,12 +22,11 @@ export default function SlotPage({
     const dataRows: IPageDataRow[] = [
         {
             label: "Slot Index",
-            value: slotCommitment?.slot || parsedSlotIndex,
-            highlight: true,
+            value: parsedSlotIndex ?? "-",
         },
         {
             label: "RMC",
-            value: slotCommitment?.referenceManaCost.toString(),
+            value: slotCommitment?.referenceManaCost?.toString() ?? "-",
         },
     ];
 
