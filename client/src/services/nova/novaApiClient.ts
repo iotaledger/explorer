@@ -35,6 +35,7 @@ import { ITransactionDetailsRequest } from "~/models/api/nova/ITransactionDetail
 import { ITransactionDetailsResponse } from "~/models/api/nova/ITransactionDetailsResponse";
 import { ICongestionRequest } from "~/models/api/nova/ICongestionRequest";
 import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
+import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -159,6 +160,15 @@ export class NovaApiClient extends ApiClient {
             "post",
             { addressDetails: request.addressDetails },
         );
+    }
+
+    /**
+     * Get the latest slot commitments.
+     * @param network The network in context.
+     * @returns The latest slot commitments response.
+     */
+    public async latestSlotCommitments(network: string): Promise<ILatestSlotCommitmentResponse> {
+        return this.callApi<unknown, ILatestSlotCommitmentResponse>(`nova/commitment/latest/${network}`, "get");
     }
 
     /**
