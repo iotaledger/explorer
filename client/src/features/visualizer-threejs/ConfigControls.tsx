@@ -9,57 +9,56 @@ import {
     TILT_DURATION_SECONDS,
     features,
 } from "./constants";
-import "./Controls.scss";
 import { useTangleStore } from "~features/visualizer-threejs/store";
+import "./ConfigControls.scss";
 
-enum VisualizerInput {
-    MinSinusoidPeriod = 'minSinusoidPeriod',
-    MaxSinusoidPeriod = 'maxSinusoidPeriod',
-    MinSinusiudAmplitude = 'minSinusiudAmplitude',
-    MaxSinusoidAmplitude = 'maxSinusoidAmplitude',
-    MinTiltDegrees = 'minTiltDegrees',
-    MaxTiltDegrees = 'maxTiltDegrees',
-    TiltDurationSeconds = 'tiltDurationSeconds'
+enum VisualizerConfig {
+    MinSinusoidPeriod = "minSinusoidPeriod",
+    MaxSinusoidPeriod = "maxSinusoidPeriod",
+    MinSinusoidAmplitude = "minSinusoidAmplitude",
+    MaxSinusoidAmplitude = "maxSinusoidAmplitude",
+    MinTiltDegrees = "minTiltDegrees",
+    MaxTiltDegrees = "maxTiltDegrees",
+    TiltDurationSeconds = "tiltDurationSeconds",
 }
 
-const DEFAULT_VISUALIZER_CONTROLS: Record<VisualizerInput, number> = {
-    MIN_SINUSOID_PERIOD: MIN_SINUSOID_PERIOD,
-    MAX_SINUSOID_PERIOD: MAX_SINUSOID_PERIOD,
-    MIN_SINUSOID_AMPLITUDE: MIN_SINUSOID_AMPLITUDE,
-    MAX_SINUSOID_AMPLITUDE: MAX_SINUSOID_AMPLITUDE,
-    MIN_TILT_FACTOR_DEGREES: MIN_TILT_FACTOR_DEGREES,
-    MAX_TILT_FACTOR_DEGREES: MAX_TILT_FACTOR_DEGREES,
-    TILT_DURATION_SECONDS: TILT_DURATION_SECONDS,
-};
+const VISUALIZER_CONFIG_LOCAL_STORAGE_KEY = "visualizerConfigs";
 
-type TKey = keyof IControlsVisualiser;
+const DEFAULT_VISUALIZER_CONFIG_VALUES: Record<VisualizerConfig, number> = {
+    [VisualizerConfig.MinSinusoidPeriod]: MIN_SINUSOID_PERIOD,
+    [VisualizerConfig.MaxSinusoidPeriod]: MAX_SINUSOID_PERIOD,
+    [VisualizerConfig.MinSinusoidAmplitude]: MIN_SINUSOID_AMPLITUDE,
+    [VisualizerConfig.MaxSinusoidAmplitude]: MAX_SINUSOID_AMPLITUDE,
+    [VisualizerConfig.MinTiltDegrees]: MIN_TILT_FACTOR_DEGREES,
+    [VisualizerConfig.MaxTiltDegrees]: MAX_TILT_FACTOR_DEGREES,
+    [VisualizerConfig.TiltDurationSeconds]: TILT_DURATION_SECONDS,
+};
 
 /**
  * Retrieves a value from localStorage and parses it as JSON.
  */
-const LOCAL_STORAGE_KEY = "controlsVisualiser";
-
-export const getFromLocalStorage = (): IControlsVisualiser => {
+export const getVisualizerConfigValues = (): Record<VisualizerConfig, number> => {
     if (features.controlsVisualiserEnabled) {
-        const item = localStorage.getItem(LOCAL_STORAGE_KEY);
-        return item ? JSON.parse(item) : defaultControlsVisualiser;
+        const item = localStorage.getItem(VISUALIZER_CONFIG_LOCAL_STORAGE_KEY);
+        return item ? JSON.parse(item) : DEFAULT_VISUALIZER_CONFIG_VALUES;
     } else {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        return defaultControlsVisualiser;
+        localStorage.removeItem(VISUALIZER_CONFIG_LOCAL_STORAGE_KEY);
+        return DEFAULT_VISUALIZER_CONFIG_VALUES;
     }
 };
 
 /**
  * Saves a value to localStorage as a JSON string.
  */
-function setToLocalStorage(value: IControlsVisualiser) {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value));
+function setToLocalStorage(value: Record<VisualizerConfig, number>) {
+    localStorage.setItem(VISUALIZER_CONFIG_LOCAL_STORAGE_KEY, JSON.stringify(value));
 }
 
 /**
+ * Checks if config for visualizer inputs exists in localStorage.
  */
-function isExistsInLocalStorage(): boolean {
-    return !!localStorage.getItem(LOCAL_STORAGE_KEY);
+function controlsExistInLocalStorage(): boolean {
+    return !!localStorage.getItem(VISUALIZER_CONFIG_LOCAL_STORAGE_KEY);
 }
 
 export const ConfigControls = () => {
@@ -67,12 +66,11 @@ export const ConfigControls = () => {
     const setForcedZoom = useTangleStore((state) => state.setForcedZoom);
     const [localZoom, setLocalZoom] = useState<number | undefined>(forcedZoom);
 
-    const [state, setState] = useState<IControlsVisualiser>(() => {
-        // Use getFromLocalStorage to retrieve the state
-        return getFromLocalStorage() || defaultControlsVisualiser;
+    const [visualizerConfigValues, setVisualizerConfigValues] = useState<Record<VisualizerConfig, number>>(() => {
+        return getVisualizerConfigValues() || DEFAULT_VISUALIZER_CONFIG_VALUES; // Use getFromLocalStorage to retrieve the state
     });
-    const [isShowReset, setIsShowReset] = useState(() => {
-        return isExistsInLocalStorage();
+    const [showResetButton, setShowResetButton] = useState(() => {
+        return controlsExistInLocalStorage();
     });
 
     const [errors, setErrors] = useState<{
@@ -80,52 +78,52 @@ export const ConfigControls = () => {
     }>({});
 
     const inputs: {
-        key: TKey;
+        key: VisualizerConfig;
         label: string;
         min: number;
         max: number;
     }[] = [
         {
-            key: "MIN_SINUSOID_PERIOD",
+            key: VisualizerConfig.MinSinusoidPeriod,
             label: "Min sinusoid period",
             min: 1,
             max: 7,
         },
         {
-            key: "MAX_SINUSOID_PERIOD",
+            key: VisualizerConfig.MaxSinusoidPeriod,
             label: "Max sinusoid period",
             min: 8,
             max: 15,
         },
         {
-            key: "MIN_SINUSOID_AMPLITUDE",
+            key: VisualizerConfig.MinSinusoidAmplitude,
             label: "Min sinusoid amplitude",
-            min: 100,
+            min: 50,
             max: 199,
         },
         {
-            key: "MAX_SINUSOID_AMPLITUDE",
+            key: VisualizerConfig.MaxSinusoidAmplitude,
             label: "Max sinusoid amplitude",
             min: 200,
             max: 500,
         },
         {
-            key: "MIN_TILT_FACTOR_DEGREES",
+            key: VisualizerConfig.MinTiltDegrees,
             label: "Min tilt factor degrees",
-            min: 1,
-            max: 15,
+            min: 0,
+            max: 90,
         },
         {
-            key: "MAX_TILT_FACTOR_DEGREES",
+            key: VisualizerConfig.MaxTiltDegrees,
             label: "Max tilt factor degrees",
-            min: 16,
-            max: 100,
+            min: 0,
+            max: 90,
         },
         {
-            key: "TILT_DURATION_SECONDS",
-            label: "Tilt_duration_seconds",
+            key: VisualizerConfig.TiltDurationSeconds,
+            label: "Tilt duration (seconds)",
             min: 1,
-            max: 10,
+            max: 100,
         },
     ];
 
@@ -136,17 +134,17 @@ export const ConfigControls = () => {
             return;
         }
 
-        setToLocalStorage(state);
+        setToLocalStorage(visualizerConfigValues);
         location.reload();
     };
 
-    const handleChange = (key: TKey, val: string) => {
+    const handleChange = (key: VisualizerConfig, val: string) => {
         const input = inputs.find((input) => input.key === key);
         if (!input) return;
 
         if (!val) {
             setErrors((prevErrors) => ({ ...prevErrors, [key]: "Value is required" }));
-            setState((prevState) => ({ ...prevState, [key]: "" }));
+            setVisualizerConfigValues((prevState) => ({ ...prevState, [key]: "" }));
             return;
         }
 
@@ -157,7 +155,7 @@ export const ConfigControls = () => {
             setErrors((prevErrors) => ({ ...prevErrors, [key]: "" }));
         }
 
-        setState((prevState) => ({ ...prevState, [key]: numericValue }));
+        setVisualizerConfigValues((prevState) => ({ ...prevState, [key]: numericValue }));
     };
 
     if (!features.controlsVisualiserEnabled) {
@@ -170,16 +168,13 @@ export const ConfigControls = () => {
                 {inputs.map((i) => {
                     return (
                         <div key={i.key} className="controls__item">
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
-                            >
-                                <label>{i.label}</label>
-                                <input type="number" value={state[i.key]} onChange={(e) => handleChange(i.key, e.target.value)} />
-                                {!!errors[i.key] && <div>{errors[i.key]}</div>}
-                            </div>
+                            <label>{i.label}</label>
+                            <input
+                                type="number"
+                                value={visualizerConfigValues[i.key]}
+                                onChange={(e) => handleChange(i.key, e.target.value)}
+                            />
+                            {!!errors[i.key] && <div>{errors[i.key]}</div>}
                         </div>
                     );
                 })}
@@ -189,12 +184,11 @@ export const ConfigControls = () => {
                 <button type={"button"} onClick={handleApply}>
                     Apply
                 </button>
-                {isShowReset && (
+                {showResetButton && (
                     <button
-                        type={"button"}
                         onClick={() => {
-                            localStorage.removeItem(LOCAL_STORAGE_KEY);
-                            setIsShowReset(false);
+                            localStorage.removeItem(VISUALIZER_CONFIG_LOCAL_STORAGE_KEY);
+                            setShowResetButton(false);
                             location.reload();
                         }}
                     >
@@ -206,25 +200,40 @@ export const ConfigControls = () => {
             <div style={{ marginTop: "16px" }}>
                 <label style={{ display: "block" }}>Zoom</label>
                 <input
-                    type="number"
-                    value={localZoom || `${localZoom}`}
+                    value={localZoom === undefined ? "" : localZoom}
                     onChange={(e) => {
-                        if (!e.target.value) {
+                        const input = e.target.value;
+
+                        if (!input) {
                             setLocalZoom(undefined);
                             return;
                         }
 
-                        const value = Number(e.target.value);
-
-                        if (value > 2) {
-                            setLocalZoom(2);
-                            return;
+                        const numberRegExp = /^-?\d+(\.|\.\d*|\d*)?$/;
+                        if (numberRegExp.test(input)) {
+                            if (input.endsWith(".")) {
+                                setLocalZoom(input as any);
+                            } else {
+                                const value = parseFloat(input);
+                                if (value > 2) {
+                                    setLocalZoom(2);
+                                    return;
+                                }
+                                setLocalZoom(value);
+                            }
                         }
-                        setLocalZoom(Number(e.target.value));
                     }}
                 />
                 <div className="controls__actions">
-                    <button type={"button"} onClick={() => setForcedZoom(localZoom)}>
+                    <button
+                        type={"button"}
+                        onClick={() => {
+                            if (localZoom === undefined || `${localZoom}`.endsWith(".")) {
+                                return;
+                            }
+                            setForcedZoom(localZoom);
+                        }}
+                    >
                         Apply
                     </button>
                 </div>

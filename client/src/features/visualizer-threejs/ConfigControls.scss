@@ -1,4 +1,5 @@
 .controls-container {
+    //background-color: transparent;
     background: var(--body-background);
     border: 1px solid var(--border-color);
     padding: 8px 16px;
@@ -9,9 +10,10 @@
     }
     .controls__item {
         flex: 1;
+        display: flex;
+        flex-direction: column;
 
         input {
-            padding: 8px 16px;
             width: 100%;
         }
     }
@@ -19,5 +21,10 @@
         margin-top: 16px;
         display: flex;
         gap: 8px;
+    }
+
+    input {
+        background: var(--body-background);
+        padding: 8px 16px;
     }
 }

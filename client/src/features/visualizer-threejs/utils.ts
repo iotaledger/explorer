@@ -20,7 +20,7 @@ import {
     TILT_DURATION_SECONDS,
 } from "./constants";
 import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
-import { getFromLocalStorage } from "~features/visualizer-threejs/ConfigControls";
+import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 /**
  * Generates a random number within a specified range.
@@ -189,7 +189,7 @@ export function getTangleDistances(): {
     xTangleDistance: number;
     yTangleDistance: number;
 } {
-    const { MAX_SINUSOID_AMPLITUDE } = getFromLocalStorage();
+    const { maxSinusoidAmplitude } = getVisualizerConfigValues();
 
     /* We assume MAX BPS to get the max possible Y */
     const MAX_TANGLE_DISTANCE_SECONDS = MAX_BLOCK_INSTANCES / MIN_BLOCKS_PER_SECOND;
@@ -199,7 +199,7 @@ export function getTangleDistances(): {
     const maxXDistance = MAX_BLOCK_DISTANCE;
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = MAX_TANGLE_RADIUS * 2 + MAX_SINUSOID_AMPLITUDE * 2;
+    const maxYDistance = MAX_TANGLE_RADIUS * 2 + maxSinusoidAmplitude * 2;
 
     /* TODO: add sinusoidal distances */
 
@@ -296,8 +296,8 @@ export function positionToVector(position: IThreeDimensionalPosition) {
 export function generateRandomPeriods(): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
-        const { MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD } = getFromLocalStorage();
-        const period = Number(randomNumberFromInterval(MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD).toFixed(4));
+        const { minSinusoidPeriod, maxSinusoidPeriod } = getVisualizerConfigValues();
+        const period = Number(randomNumberFromInterval(minSinusoidPeriod, maxSinusoidPeriod).toFixed(4));
         sum += period;
         return period;
     });
@@ -327,19 +327,19 @@ function getCurrentPeriodValues(animationTime: number, periods: number[], totalS
 }
 
 function getNextAmplitudeWithVariation(currentAmplitude: number = 0): number {
-    const { MIN_SINUSOID_AMPLITUDE, MAX_SINUSOID_AMPLITUDE } = getFromLocalStorage();
-    const variation = (2 * MIN_SINUSOID_AMPLITUDE) / 3;
+    const { minSinusoidAmplitude, maxSinusoidAmplitude } = getVisualizerConfigValues();
+    const variation = (2 * minSinusoidAmplitude) / 3;
     const randomAmplitudeVariation = randomNumberFromInterval(-variation, variation);
 
     let newAmplitude = currentAmplitude + randomAmplitudeVariation;
 
-    if (newAmplitude > MAX_SINUSOID_AMPLITUDE) {
+    if (newAmplitude > maxSinusoidAmplitude) {
         newAmplitude = currentAmplitude - Math.abs(randomAmplitudeVariation);
-    } else if (newAmplitude < MIN_SINUSOID_AMPLITUDE) {
+    } else if (newAmplitude < minSinusoidAmplitude) {
         newAmplitude = currentAmplitude + Math.abs(randomAmplitudeVariation);
     }
 
-    newAmplitude = Math.max(MIN_SINUSOID_AMPLITUDE, Math.min(newAmplitude, MAX_SINUSOID_AMPLITUDE));
+    newAmplitude = Math.max(minSinusoidAmplitude, Math.min(newAmplitude, maxSinusoidAmplitude));
 
     return newAmplitude;
 }
@@ -356,10 +356,10 @@ export function generateRandomAmplitudes(): number[] {
 
 export function generateRandomTiltings(): number[] {
     let previousValue: number;
-    const { MIN_TILT_FACTOR_DEGREES, MAX_TILT_FACTOR_DEGREES } = getFromLocalStorage();
+    const { minTiltDegrees, maxTiltDegrees } = getVisualizerConfigValues();
 
     const tilts: number[] = Array.from({ length: NUMBER_OF_RANDOM_TILTINGS }, () => {
-        let randomTilt = randomIntFromInterval(MIN_TILT_FACTOR_DEGREES, MAX_TILT_FACTOR_DEGREES);
+        let randomTilt = randomIntFromInterval(minTiltDegrees, maxTiltDegrees);
 
         if ((previousValue < 0 && randomTilt < 0) || (previousValue > 0 && randomTilt > 0)) {
             randomTilt *= -1;
