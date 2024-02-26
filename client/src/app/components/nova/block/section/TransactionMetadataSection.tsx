@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { TRANSACTION_FAILURE_REASON_STRINGS, Transaction, TransactionMetadata } from "@iota/sdk-wasm-nova/web";
+import { TRANSACTION_FAILURE_REASON_STRINGS, Transaction, TransactionMetadata, Utils } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import "./TransactionMetadataSection.scss";
 import Spinner from "../../../Spinner";
@@ -14,7 +14,7 @@ interface TransactionMetadataSectionProps {
 }
 
 const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({ transaction, transactionMetadata, metadataError }) => {
-    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
 
     return (
         <div className="section metadata-section">
@@ -73,7 +73,7 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                             <div className="value code highlight margin-b-t" key={idx}>
                                                 <TruncatedId
                                                     id={allotment.accountId}
-                                                    link={`/${network}/account/${allotment.accountId}`}
+                                                    link={`/${network}/addr/${Utils.accountIdToBech32(allotment.accountId, bech32Hrp)}`}
                                                     showCopyButton
                                                 />
                                             </div>

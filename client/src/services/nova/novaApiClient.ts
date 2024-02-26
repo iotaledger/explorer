@@ -29,6 +29,8 @@ import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetail
 import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
 import { IFoundriesResponse } from "~/models/api/nova/foundry/IFoundriesResponse";
 import { IFoundriesRequest } from "~/models/api/nova/foundry/IFoundriesRequest";
+import { ITransactionDetailsRequest } from "~/models/api/nova/ITransactionDetailsRequest";
+import { ITransactionDetailsResponse } from "~/models/api/nova/ITransactionDetailsResponse";
 import { ICongestionRequest } from "~/models/api/nova/ICongestionRequest";
 import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
 
@@ -70,6 +72,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async blockDetails(request: IBlockDetailsRequest): Promise<IBlockDetailsResponse> {
         return this.callApi<unknown, IBlockDetailsResponse>(`nova/block/metadata/${request.network}/${request.blockId}`, "get");
+    }
+
+    /**
+     * Get the transaction included block.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionIncludedBlockDetails(request: ITransactionDetailsRequest): Promise<ITransactionDetailsResponse> {
+        return this.callApi<unknown, ITransactionDetailsResponse>(`nova/transaction/${request.network}/${request.transactionId}`, "get");
     }
 
     /**
