@@ -55,6 +55,13 @@ export function useAddressBalance(
                         setBalance(totalBalance);
                         setAvailableBalance(null);
                     }
+                } else {
+                    // fallback if there is no balance response but its an output address, set the output amount as balance
+                    if (output) {
+                        const outputBalance = Number(output.amount);
+                        setBalance(outputBalance);
+                        setAvailableBalance(outputBalance);
+                    }
                 }
             })();
         } else {
