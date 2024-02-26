@@ -51,8 +51,10 @@ const buildDefaultTabsOptions = (
     tokensCount: number,
     nftsCount: number,
     associatedOutputCount: number,
+    delegationCount: number,
     isNativeTokensLoading: boolean,
     isNftOutputsLoading: boolean,
+    isDelegationOutputsLoading: boolean,
 ) => ({
     [DEFAULT_TABS.AssocOutputs]: {
         disabled: associatedOutputCount === 0,
@@ -75,10 +77,10 @@ const buildDefaultTabsOptions = (
         infoContent: addressNftsMessage,
     },
     [DEFAULT_TABS.Delegation]: {
-        disabled: false,
-        hidden: false,
-        counter: 0,
-        isLoading: false,
+        disabled: delegationCount === 0,
+        hidden: delegationCount === 0,
+        counter: delegationCount,
+        isLoading: isDelegationOutputsLoading,
         infoContent: delegationMessage,
     },
 });
@@ -158,7 +160,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
         <AssetsTable key={`assets-table-${addressBech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
         <NftSection key={`nft-section-${addressBech32}`} outputs={addressState.addressNftOutputs} />,
-        <DelegationSection key={`delegation-${addressBech32}`} delegation={"Delegation test"} />,
+        <DelegationSection key={`delegation-${addressBech32}`} delegation={addressState.addressDelegationOutputs} />,
     ];
 
     const accountAddressSections =
@@ -192,12 +194,15 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
 
     let tabEnums = DEFAULT_TABS;
     const nftsCount = addressState.addressNftOutputs?.length ?? 0;
+    const delegationCount = addressState.addressDelegationOutputs?.length ?? 0;
     const defaultTabsOptions = buildDefaultTabsOptions(
         tokensCount,
         nftsCount,
         outputCount,
+        delegationCount,
         addressState.isBasicOutputsLoading,
         addressState.isNftOutputsLoading,
+        addressState.isDelegationOutputsLoading,
     );
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;
