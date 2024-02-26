@@ -7,6 +7,7 @@ import logger from "../../logger";
 import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/nova/foundry/IFoundryResponse";
 import { IAccountDetailsResponse } from "../../models/api/nova/IAccountDetailsResponse";
+import { IAccountValidatorDetailsResponse } from "../../models/api/nova/IAccountValidatorDetailsResponse";
 import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsResponse";
 import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
@@ -319,6 +320,25 @@ export class NovaApiService {
             }
         } catch {
             return { message: "Account congestion not found" };
+        }
+    }
+
+    /**
+     * Get validator details for Account
+     * @param accountId The account id to get the validator details for.
+     * @returns The Congestion.
+     */
+    public async getAccountValidatorDetails(accountId: string): Promise<IAccountValidatorDetailsResponse | undefined> {
+        try {
+            const response = await this.client.getValidator(accountId);
+
+            if (response) {
+                return {
+                    validatorDetails: response,
+                };
+            }
+        } catch {
+            return { message: "Validator details not found" };
         }
     }
 

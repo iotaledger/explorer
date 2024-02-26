@@ -35,6 +35,8 @@ import { ITransactionDetailsRequest } from "~/models/api/nova/ITransactionDetail
 import { ITransactionDetailsResponse } from "~/models/api/nova/ITransactionDetailsResponse";
 import { ICongestionRequest } from "~/models/api/nova/ICongestionRequest";
 import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
+import { IAccountValidatorDetailsRequest } from "~/models/api/nova/IAccountValidatorDetailsRequest";
+import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountValidatorDetailsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -177,6 +179,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getAccountCongestion(request: ICongestionRequest): Promise<ICongestionResponse> {
         return this.callApi<unknown, ICongestionResponse>(`nova/account/congestion/${request.network}/${request.accountId}`, "get");
+    }
+
+    /**
+     * Get the account validator info.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getAccountValidatorDetails(request: IAccountValidatorDetailsRequest): Promise<IAccountValidatorDetailsResponse> {
+        return this.callApi<unknown, ICongestionResponse>(`nova/account/validator/${request.network}/${request.accountId}`, "get");
     }
 
     /**

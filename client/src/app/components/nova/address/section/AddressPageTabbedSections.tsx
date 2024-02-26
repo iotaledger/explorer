@@ -3,6 +3,7 @@ import associatedOuputsMessage from "~assets/modals/stardust/address/associated-
 import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
 import stateMessage from "~assets/modals/stardust/alias/state.json";
 import bicMessage from "~assets/modals/nova/account/bic.json";
+import validatorMessage from "~assets/modals/nova/account/validator.json";
 import nftMetadataMessage from "~assets/modals/stardust/nft/metadata.json";
 import addressNftsMessage from "~assets/modals/stardust/address/nfts-in-wallet.json";
 import TabbedSection from "../../../hoc/TabbedSection";
@@ -21,6 +22,7 @@ import AnchorStateSection from "./anchor/AnchorStateSection";
 import NftSection from "~/app/components/nova/address/section/nft/NftSection";
 import NftMetadataSection from "~/app/components/nova/address/section/nft/NftMetadataSection";
 import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
+import AccountValidatorSection from "./account/AccountValidatorSection";
 
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
@@ -31,6 +33,7 @@ enum DEFAULT_TABS {
 enum ACCOUNT_TABS {
     BlockIssuance = "Block Issuance",
     Foundries = "Foundries",
+    Validation = "Validation",
 }
 
 enum ANCHOR_TABS {
@@ -74,7 +77,9 @@ const buildAccountAddressTabsOptions = (
     isBlockIssuer: boolean,
     isCongestionLoading: boolean,
     foundriesCount: number,
+    hasStakingFeature: boolean,
     isAccountFoundriesLoading: boolean,
+    isValidatorDetailsLoading: boolean,
 ) => ({
     [ACCOUNT_TABS.Foundries]: {
         disabled: foundriesCount === 0,
@@ -87,6 +92,12 @@ const buildAccountAddressTabsOptions = (
         hidden: !isBlockIssuer,
         isLoading: isCongestionLoading,
         infoContent: bicMessage,
+    },
+    [ACCOUNT_TABS.Validation]: {
+        disabled: !hasStakingFeature,
+        hidden: !hasStakingFeature,
+        isLoading: isValidatorDetailsLoading,
+        infoContent: validatorMessage,
     },
 });
 
@@ -151,6 +162,10 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                       key={`account-foundry-${addressBech32}`}
                       foundries={(addressState as IAccountAddressState).foundries}
                   />,
+                  <AccountValidatorSection
+                      key={`account-validator-${addressBech32}`}
+                      validatorDetails={(addressState as IAccountAddressState).validatorDetails}
+                  />,
               ]
             : null;
 
@@ -186,7 +201,9 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                     accountAddressState.blockIssuerFeature !== null,
                     accountAddressState.isCongestionLoading,
                     accountAddressState.accountOutput?.foundryCounter ?? 0,
+                    accountAddressState.stakingFeature !== null,
                     accountAddressState.isFoundriesLoading,
+                    accountAddressState.isValidatorDetailsLoading,
                 ),
             };
             tabbedSections = [...defaultSections, ...(accountAddressSections ?? [])];
