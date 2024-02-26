@@ -22,7 +22,7 @@ enum VisualizerInput {
     TiltDurationSeconds = 'tiltDurationSeconds'
 }
 
-const defaultControlsVisualiser: IControlsVisualiser = {
+const DEFAULT_VISUALIZER_CONTROLS: Record<VisualizerInput, number> = {
     MIN_SINUSOID_PERIOD: MIN_SINUSOID_PERIOD,
     MAX_SINUSOID_PERIOD: MAX_SINUSOID_PERIOD,
     MIN_SINUSOID_AMPLITUDE: MIN_SINUSOID_AMPLITUDE,
