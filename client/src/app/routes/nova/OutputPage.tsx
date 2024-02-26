@@ -112,7 +112,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                 <div className="section--data">
                                     <div className="label">Transaction ID</div>
                                     <div className="value code highlight row middle">
-                                        <TruncatedId id={transactionId} showCopyButton />
+                                        <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} showCopyButton />
                                     </div>
                                 </div>
                             )}

@@ -35,6 +35,7 @@ import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
 import NovaBlockPage from "./routes/nova/Block";
+import NovaTransactionPage from "./routes/nova/TransactionPage";
 import NovaOutputPage from "./routes/nova/OutputPage";
 import NovaSearch from "./routes/nova/Search";
 import NovaSlotPage from "./routes/nova/SlotPage";
@@ -180,6 +181,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={NovaSearch} />,
         <Route path="/:network/slot/:slotIndex" key={keys.next().value} component={NovaSlotPage} />,
+        <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={NovaTransactionPage} />,
     ];
 
     return (

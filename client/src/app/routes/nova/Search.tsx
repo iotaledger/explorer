@@ -105,9 +105,8 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.output) {
                         route = "output";
                         routeParam = response.output.metadata.outputId;
-                    } else if (response.transactionId) {
+                    } else if (response.transactionBlock) {
                         route = "transaction";
-                        routeParam = response.transactionId;
                     } else if (response.foundryId) {
                         route = "foundry";
                         routeParam = response.foundryId;
