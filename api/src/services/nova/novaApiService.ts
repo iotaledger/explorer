@@ -185,6 +185,25 @@ export class NovaApiService {
     }
 
     /**
+     * Get the delegation output details.
+     * @param delegationId The delegationId to get the output details for.
+     * @returns The delegation output details.
+     */
+    public async delegationDetails(delegationId: string): Promise<IOutputDetailsResponse | undefined> {
+        try {
+            const delegationOutputId = await this.client.delegationOutputId(delegationId);
+
+            if (delegationOutputId) {
+                const outputResponse = await this.outputDetails(delegationOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { output: outputResponse.output };
+            }
+        } catch {
+            return { message: "Delegation output not found" };
+        }
+    }
+
+    /**
      * Get controlled Foundry output id by controller Account address
      * @param accountAddress The bech32 account address to get the controlled Foundries for.
      * @returns The foundry outputs.
