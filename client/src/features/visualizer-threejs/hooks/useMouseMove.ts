@@ -50,7 +50,7 @@ export const useMouseMove = ({
                     tangleMeshRef.current.getColorAt(instanceId, currentColor);
                     originalColorsRef.current.set(instanceId, currentColor);
 
-                    // Set the new hovered instance color to red
+                    // Set the instance to the hovered color
                     tangleMeshRef.current.setColorAt(instanceId, SEARCH_RESULT_COLOR);
                     cb(instanceId);
                 }
