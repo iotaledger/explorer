@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import associatedOuputsMessage from "~assets/modals/stardust/address/associated-outputs.json";
 import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
+import stateMessage from "~assets/modals/stardust/alias/state.json";
+import bicMessage from "~assets/modals/nova/account/bic.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
@@ -12,6 +14,8 @@ import AssetsTable from "./native-tokens/AssetsTable";
 import { IImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
 import { AddressType } from "@iota/sdk-wasm-nova/web";
 import AccountFoundriesSection from "./account/AccountFoundriesSection";
+import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
+import AnchorStateSection from "./anchor/AnchorStateSection";
 
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
@@ -19,7 +23,12 @@ enum DEFAULT_TABS {
 }
 
 enum ACCOUNT_TABS {
+    BlockIssuance = "Block Issuance",
     Foundries = "Foundries",
+}
+
+enum ANCHOR_TABS {
+    State = "State",
 }
 
 const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number) => ({
@@ -37,12 +46,32 @@ const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: num
     },
 });
 
-const buildAccountAddressTabsOptions = (foundriesCount: number, isAccountFoundriesLoading: boolean) => ({
+const buildAccountAddressTabsOptions = (
+    isBlockIssuer: boolean,
+    isCongestionLoading: boolean,
+    foundriesCount: number,
+    isAccountFoundriesLoading: boolean,
+) => ({
     [ACCOUNT_TABS.Foundries]: {
         disabled: foundriesCount === 0,
         hidden: foundriesCount === 0,
         isLoading: isAccountFoundriesLoading,
         infoContent: foundriesMessage,
+    },
+    [ACCOUNT_TABS.BlockIssuance]: {
+        disabled: !isBlockIssuer,
+        hidden: !isBlockIssuer,
+        isLoading: isCongestionLoading,
+        infoContent: bicMessage,
+    },
+});
+
+const buildAnchorAddressTabsOptions = (isAnchorStateTabDisabled: boolean, isAnchorDetailsLoading: boolean) => ({
+    [ANCHOR_TABS.State]: {
+        disabled: isAnchorStateTabDisabled,
+        hidden: isAnchorStateTabDisabled,
+        isLoading: isAnchorDetailsLoading,
+        infoContent: stateMessage,
     },
 });
 
@@ -78,9 +107,24 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
     const accountAddressSections =
         addressDetails.type === AddressType.Account
             ? [
+                  <AccountBlockIssuanceSection
+                      key={`account-block-issuance-${addressDetails.bech32}`}
+                      blockIssuerFeature={(addressState as IAccountAddressState).blockIssuerFeature}
+                      congestion={(addressState as IAccountAddressState).congestion}
+                  />,
                   <AccountFoundriesSection
                       key={`account-foundry-${addressDetails.bech32}`}
                       foundries={(addressState as IAccountAddressState).foundries}
+                  />,
+              ]
+            : null;
+
+    const anchorAddressSections =
+        addressDetails.type === AddressType.Anchor
+            ? [
+                  <AnchorStateSection
+                      key={`anchor-state-${addressDetails.bech32}`}
+                      output={(addressState as IAnchorAddressState).anchorOutput}
                   />,
               ]
             : null;
@@ -92,15 +136,28 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
 
     switch (addressDetails.type) {
         case AddressType.Account: {
+            const accountAddressState = addressState as IAccountAddressState;
             tabEnums = { ...DEFAULT_TABS, ...ACCOUNT_TABS };
             tabOptions = {
                 ...defaultTabsOptions,
                 ...buildAccountAddressTabsOptions(
-                    (addressState as IAccountAddressState).accountOutput?.foundryCounter ?? 0,
-                    (addressState as IAccountAddressState).isFoundriesLoading,
+                    accountAddressState.blockIssuerFeature !== null,
+                    accountAddressState.isCongestionLoading,
+                    accountAddressState.accountOutput?.foundryCounter ?? 0,
+                    accountAddressState.isFoundriesLoading,
                 ),
             };
             tabbedSections = [...defaultSections, ...(accountAddressSections ?? [])];
+            break;
+        }
+        case AddressType.Anchor: {
+            const anchorAddressState = addressState as IAnchorAddressState;
+            tabEnums = { ...DEFAULT_TABS, ...ANCHOR_TABS };
+            tabOptions = {
+                ...defaultTabsOptions,
+                ...buildAnchorAddressTabsOptions(anchorAddressState.anchorOutput === null, anchorAddressState.isAnchorDetailsLoading),
+            };
+            tabbedSections = [...defaultSections, ...(anchorAddressSections ?? [])];
             break;
         }
         default: {

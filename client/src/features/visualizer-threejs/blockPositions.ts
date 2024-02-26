@@ -1,4 +1,5 @@
 import { EMITTER_WIDTH, EMITTER_X_POSITION_MULTIPLIER } from "./constants";
+import { ISinusoidalPositionParams } from "./interfaces";
 import { getEmitterPositions, getGenerateDynamicYZPosition, getTangleDistances, randomIntFromInterval } from "./utils";
 
 const generateYZPositions = getGenerateDynamicYZPosition();
@@ -22,9 +23,9 @@ export function getBlockTargetPosition(initPosition: IPos, bps: number): IPos {
     return { x, y, z };
 }
 
-export function getBlockInitPosition(currentAnimationTime: number): IPos {
+export function getBlockInitPosition({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes }: ISinusoidalPositionParams): IPos {
     const { xTangleDistance } = getTangleDistances();
-    const { x: xEmitterPos, y, z } = getEmitterPositions(currentAnimationTime);
+    const { x: xEmitterPos, y, z } = getEmitterPositions({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes });
     const x = xEmitterPos + xTangleDistance / 2;
 
     return { x, y, z };
