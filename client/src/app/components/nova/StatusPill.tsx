@@ -1,6 +1,7 @@
-import React from "react";
 import classNames from "classnames";
-import { PillState } from "~/app/lib/ui/enums";
+import React from "react";
+import { PillStatus } from "~/app/lib/ui/enums";
+import Tooltip from "../Tooltip";
 import "./StatusPill.scss";
 
 interface IStatusPill {
@@ -11,22 +12,30 @@ interface IStatusPill {
     /**
      * The status of the pill.
      */
-    state: PillState;
+    status: PillStatus;
+    /**
+     * Tooltip explaining further for the label.
+     */
+    tooltip?: string;
 }
 
-const StatusPill: React.FC<IStatusPill> = ({ label, state }): React.JSX.Element => (
+const StatusPill: React.FC<IStatusPill> = ({ label, status, tooltip }): React.JSX.Element => (
     <>
-        {label && (
-            <div
-                className={classNames("status-pill", {
-                    status__confirmed: state === PillState.Confirmed,
-                    status__conflicting: state === PillState.Rejected,
-                    status__pending: state === PillState.Pending,
-                })}
-            >
+        <div
+            className={classNames("status-pill", {
+                status__success: status === PillStatus.Success,
+                status__error: status === PillStatus.Error,
+                status__pending: status === PillStatus.Pending,
+            })}
+        >
+            {tooltip ? (
+                <Tooltip tooltipContent={tooltip}>
+                    <span className="capitalize-text">{status}</span>
+                </Tooltip>
+            ) : (
                 <span className="capitalize-text">{label}</span>
-            </div>
-        )}
+            )}
+        </div>
     </>
 );
 

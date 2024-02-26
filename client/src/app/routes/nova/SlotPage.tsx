@@ -7,13 +7,13 @@ import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
 import { SlotState } from "~/app/lib/enums";
 import { RouteComponentProps } from "react-router-dom";
-import { PillState } from "~/app/lib/ui/enums";
+import { PillStatus } from "~/app/lib/ui/enums";
 import "./SlotPage.scss";
 
-const SLOT_STATE_TO_PILL_STATE: Record<SlotState, PillState> = {
-    [SlotState.Pending]: PillState.Pending,
-    [SlotState.Committed]: PillState.Confirmed,
-    [SlotState.Finalized]: PillState.Confirmed,
+const SLOT_STATE_TO_PILL_STATUS: Record<SlotState, PillStatus> = {
+    [SlotState.Pending]: PillStatus.Pending,
+    [SlotState.Committed]: PillStatus.Success,
+    [SlotState.Finalized]: PillStatus.Success,
 };
 
 export default function SlotPage({
@@ -28,7 +28,7 @@ export default function SlotPage({
 
     const parsedSlotIndex = parseSlotIndex(slotIndex);
     const slotState = slotCommitment ? SlotState.Finalized : SlotState.Pending;
-    const pillState: PillState = SLOT_STATE_TO_PILL_STATE[slotState];
+    const pillStatus: PillStatus = SLOT_STATE_TO_PILL_STATUS[slotState];
 
     const dataRows: IPageDataRow[] = [
         {
@@ -61,7 +61,7 @@ export default function SlotPage({
                         </div>
                         {parsedSlotIndex && (
                             <div className="header--status">
-                                <StatusPill state={pillState} label={slotState} />
+                                <StatusPill status={pillStatus} label={slotState} />
                             </div>
                         )}
                     </div>

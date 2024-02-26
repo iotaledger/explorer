@@ -24,12 +24,12 @@
     }
 
     &.status__ {
-        &confirmed {
+        &success {
             background-color: var(--message-confirmed-bg);
             color: $mint-green-7;
         }
 
-        &conflicting {
+        &error {
             background-color: var(--message-conflicting-bg);
         }
 
