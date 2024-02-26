@@ -202,7 +202,7 @@ export class NovaFeed {
         if (!this.latestSlotCommitmentCache.map((commitment) => commitment.slotCommitment.slot).includes(newSlotCommitment.slot)) {
             this.latestSlotCommitmentCache.unshift({
                 slotCommitment: newSlotCommitment,
-                status: isFinalized ? SlotCommitmentStatus.FINALIZED : SlotCommitmentStatus.COMMITTED,
+                status: isFinalized ? SlotCommitmentStatus.Finalized : SlotCommitmentStatus.Committed,
             });
 
             if (this.latestSlotCommitmentCache.length > LATEST_SLOT_COMMITMENT_LIMIT) {
@@ -214,7 +214,7 @@ export class NovaFeed {
             );
 
             if (commitmentToUpdate) {
-                commitmentToUpdate.status = SlotCommitmentStatus.FINALIZED;
+                commitmentToUpdate.status = SlotCommitmentStatus.Finalized;
             }
         }
     }
