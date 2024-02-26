@@ -12,14 +12,14 @@ import {
 import "./Controls.scss";
 import { useTangleStore } from "~features/visualizer-threejs/store";
 
-interface IControlsVisualiser {
-    MIN_SINUSOID_PERIOD: number;
-    MAX_SINUSOID_PERIOD: number;
-    MIN_SINUSOID_AMPLITUDE: number;
-    MAX_SINUSOID_AMPLITUDE: number;
-    MIN_TILT_FACTOR_DEGREES: number;
-    MAX_TILT_FACTOR_DEGREES: number;
-    TILT_DURATION_SECONDS: number;
+enum VisualizerInput {
+    MinSinusoidPeriod = 'minSinusoidPeriod',
+    MaxSinusoidPeriod = 'maxSinusoidPeriod',
+    MinSinusiudAmplitude = 'minSinusiudAmplitude',
+    MaxSinusoidAmplitude = 'maxSinusoidAmplitude',
+    MinTiltDegrees = 'minTiltDegrees',
+    MaxTiltDegrees = 'maxTiltDegrees',
+    TiltDurationSeconds = 'tiltDurationSeconds'
 }
 
 const defaultControlsVisualiser: IControlsVisualiser = {
