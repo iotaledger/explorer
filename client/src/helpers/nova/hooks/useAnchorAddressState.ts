@@ -17,8 +17,10 @@ export interface IAnchorAddressState {
     totalBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
+    addressDelegationOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
+    isDelegationOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
 }
@@ -30,8 +32,10 @@ const initialState = {
     availableBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
+    addressDelegationOutputs: null,
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
+    isDelegationOutputsLoading: false,
     isAnchorDetailsLoading: true,
     isAssociatedOutputsLoading: false,
 };
@@ -56,6 +60,10 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, anchorOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
+        network,
+        state.addressDetails?.bech32 ?? null,
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -76,8 +84,10 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             availableBalance,
             addressBasicOutputs,
             addressNftOutputs,
+            addressDelegationOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
+            isDelegationOutputsLoading,
             isAnchorDetailsLoading,
         });
     }, [
@@ -86,8 +96,10 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
         availableBalance,
         addressBasicOutputs,
         addressNftOutputs,
+        addressDelegationOutputs,
         isBasicOutputsLoading,
         isNftOutputsLoading,
+        isDelegationOutputsLoading,
         isAnchorDetailsLoading,
     ]);
 

@@ -158,6 +158,18 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the delegation outputs details of an address.
+     * @param request The Address Delegation outputs request.
+     * @returns The Address outputs response
+     */
+    public async delegationOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(
+            `nova/address/outputs/delegation/${request.network}/${request.address}`,
+            "get",
+        );
+    }
+
+    /**
      * Get the associated outputs.
      * @param request The request to send.
      * @returns The response from the request.
