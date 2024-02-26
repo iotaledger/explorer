@@ -1,9 +1,9 @@
 import { SlotCommitment } from "@iota/sdk-wasm-nova/web";
 import { IResponse } from "../IResponse";
 
-enum SlotCommitmentStatus {
-    COMMITTED = "committed",
-    FINALIZED = "finalized",
+export enum SlotCommitmentStatus {
+    Committed = "committed",
+    Finalized = "finalized",
 }
 
 export interface ISlotCommitmentWrapper {
