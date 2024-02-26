@@ -42,7 +42,7 @@ export const useMouseMove = ({
             } else {
                 const { instanceId } = firstIntersect;
 
-                // If we're hovering over a new instance, save the current color and set to red
+                // If we're hovering over a new instance, save the current color and set the hovered color
                 if (hoveredInstanceId !== instanceId) {
                     clearHoveredSpheres();
                     // Save the original color of the new hovered instance
