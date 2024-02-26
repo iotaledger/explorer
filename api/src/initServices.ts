@@ -26,6 +26,7 @@ import { NovaFeed } from "./services/nova/feed/novaFeed";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { NovaApiService } from "./services/nova/novaApiService";
 import { NovaStatsService } from "./services/nova/stats/novaStatsService";
+import { ValidatorService } from "./services/nova/validatorService";
 import { ChronicleService } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
@@ -242,6 +243,10 @@ function initNovaServices(networkConfig: INetwork): void {
             const novaFeed = new NovaFeed(networkConfig);
             ServiceFactory.register(`feed-${networkConfig.network}`, () => novaFeed);
         });
+
+        const validatorService = new ValidatorService(networkConfig);
+        validatorService.setupValidatorsCollection();
+        ServiceFactory.register(`validator-service-${networkConfig.network}`, () => validatorService);
     });
 }
 
