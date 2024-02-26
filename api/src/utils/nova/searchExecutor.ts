@@ -97,6 +97,21 @@ export class SearchExecutor {
             );
         }
 
+        if (searchQuery.transactionId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.transactionIncludedBlock(searchQuery.transactionId),
+                    (response) => {
+                        promisesResult = {
+                            transactionBlock: response.block,
+                            error: response.error || response.message,
+                        };
+                    },
+                    "Transaction included block fetch failed",
+                ),
+            );
+        }
+
         await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {

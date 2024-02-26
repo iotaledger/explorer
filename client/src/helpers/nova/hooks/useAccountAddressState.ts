@@ -6,6 +6,7 @@ import {
     CongestionResponse,
     FeatureType,
     OutputResponse,
+    StakingFeature,
     ValidatorResponse,
 } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
@@ -27,6 +28,7 @@ export interface IAccountAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     blockIssuerFeature: BlockIssuerFeature | null;
+    stakingFeature: StakingFeature | null;
     validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
@@ -47,6 +49,7 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     blockIssuerFeature: null,
+    stakingFeature: null,
     validatorDetails: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
@@ -78,6 +81,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     );
 
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
+
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, accountOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
@@ -118,15 +122,26 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             isValidatorDetailsLoading,
         };
 
-        if (accountOutput && !state.blockIssuerFeature) {
-            const blockIssuerFeature = accountOutput?.features?.find(
-                (feature) => feature.type === FeatureType.BlockIssuer,
-            ) as BlockIssuerFeature;
-            if (blockIssuerFeature) {
-                updatedState = {
-                    ...updatedState,
-                    blockIssuerFeature,
-                };
+        if (accountOutput) {
+            if (!state.blockIssuerFeature) {
+                const blockIssuerFeature = accountOutput?.features?.find(
+                    (feature) => feature.type === FeatureType.BlockIssuer,
+                ) as BlockIssuerFeature;
+                if (blockIssuerFeature) {
+                    updatedState = {
+                        ...updatedState,
+                        blockIssuerFeature,
+                    };
+                }
+            }
+            if (!state.stakingFeature) {
+                const stakingFeature = accountOutput?.features?.find((feature) => feature.type === FeatureType.Staking) as StakingFeature;
+                if (stakingFeature) {
+                    updatedState = {
+                        ...updatedState,
+                        stakingFeature,
+                    };
+                }
             }
         }
 

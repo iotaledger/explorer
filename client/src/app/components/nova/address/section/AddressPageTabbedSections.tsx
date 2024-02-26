@@ -87,7 +87,7 @@ const buildAccountAddressTabsOptions = (
     isBlockIssuer: boolean,
     isCongestionLoading: boolean,
     foundriesCount: number,
-    hasValidatorDetails: boolean,
+    hasStakingFeature: boolean,
     isAccountFoundriesLoading: boolean,
     isValidatorDetailsLoading: boolean,
 ) => ({
@@ -104,8 +104,8 @@ const buildAccountAddressTabsOptions = (
         infoContent: bicMessage,
     },
     [ACCOUNT_TABS.Validation]: {
-        disabled: !hasValidatorDetails,
-        hidden: !hasValidatorDetails,
+        disabled: !hasStakingFeature,
+        hidden: !hasStakingFeature,
         isLoading: isValidatorDetailsLoading,
         infoContent: validatorMessage,
     },
@@ -212,7 +212,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                     accountAddressState.blockIssuerFeature !== null,
                     accountAddressState.isCongestionLoading,
                     accountAddressState.accountOutput?.foundryCounter ?? 0,
-                    accountAddressState.validatorDetails !== null,
+                    accountAddressState.stakingFeature !== null,
                     accountAddressState.isFoundriesLoading,
                     accountAddressState.isValidatorDetailsLoading,
                 ),

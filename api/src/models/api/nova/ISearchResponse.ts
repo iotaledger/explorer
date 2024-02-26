@@ -39,4 +39,9 @@ export interface ISearchResponse extends IResponse {
      * Nft id if it was found.
      */
     nftId?: string;
+
+    /**
+     * Transaction included block.
+     */
+    transactionBlock?: Block;
 }
