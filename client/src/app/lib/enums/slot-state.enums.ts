@@ -5,6 +5,11 @@ export enum SlotState {
     Pending = "pending",
 
     /**
+     * The slot is committed.
+     */
+    Committed = "committed",
+
+    /**
      * The slot is finalized.
      */
     Finalized = "finalized",

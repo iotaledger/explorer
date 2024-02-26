@@ -12,6 +12,7 @@ import "./SlotPage.scss";
 
 const SLOT_STATE_TO_PILL_STATE: Record<SlotState, PillState> = {
     [SlotState.Pending]: PillState.Pending,
+    [SlotState.Committed]: PillState.Confirmed,
     [SlotState.Finalized]: PillState.Confirmed,
 };
 
@@ -33,7 +34,7 @@ export default function SlotPage({
         {
             label: "Slot Index",
             value: slotCommitment?.slot || parsedSlotIndex,
-            highlighted: true,
+            highlight: true,
         },
         {
             label: "RMC",
@@ -58,13 +59,13 @@ export default function SlotPage({
                             <h1>Slot</h1>
                             <Modal icon="info" data={mainHeaderMessage} />
                         </div>
-                        {slotCommitment && (
+                        {parsedSlotIndex && (
                             <div className="header--status">
                                 <StatusPill state={pillState} label={slotState} />
                             </div>
                         )}
                     </div>
-                    {parsedSlotIndex && slotCommitment ? (
+                    {parsedSlotIndex ? (
                         <div className="section">
                             <div className="section--header row row--tablet-responsive middle space-between">
                                 <div className="row middle">

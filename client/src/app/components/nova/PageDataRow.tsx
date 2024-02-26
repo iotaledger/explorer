@@ -5,18 +5,18 @@ import TruncatedId from "../stardust/TruncatedId";
 export interface IPageDataRow {
     label: string;
     value?: string | number;
-    highlighted?: boolean;
+    highlight?: boolean;
     truncatedId?: {
         id: string;
         link?: string;
         showCopyButton?: boolean;
     };
 }
-const PageDataRow = ({ label, value, truncatedId, highlighted }: IPageDataRow): React.JSX.Element => {
+const PageDataRow = ({ label, value, truncatedId, highlight }: IPageDataRow): React.JSX.Element => {
     return (
         <div className="section--data">
             <div className="label">{label}</div>
-            <div className={classNames("value code", { highlighted })}>
+            <div className={classNames("value code", { highlight })}>
                 {truncatedId ? (
                     <TruncatedId id={truncatedId.id} link={truncatedId.link} showCopyButton={truncatedId.showCopyButton} />
                 ) : (
