@@ -6,13 +6,13 @@ import { useIsMounted } from "~/helpers/hooks/useIsMounted";
 import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 
-interface IUseSlotData {
+interface IUseSlotDetails {
     slotCommitment: SlotCommitment | null;
     error: string | undefined;
     isLoading: boolean;
 }
 
-export default function useSlotData(network: string, slotIndex: string): IUseSlotData {
+export default function useSlotDetails(network: string, slotIndex: string): IUseSlotDetails {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [slotCommitment, setSlotCommitment] = useState<SlotCommitment | null>(null);

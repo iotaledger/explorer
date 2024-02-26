@@ -1,5 +1,5 @@
 import React from "react";
-import useSlotCommitment from "~/helpers/nova/hooks/useSlotCommitment";
+import useuseSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
 import StatusPill from "~/app/components/nova/StatusPill";
 import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
 import Modal from "~/app/components/Modal";
@@ -24,7 +24,7 @@ export default function SlotPage({
     network: string;
     slotIndex: string;
 }>): React.JSX.Element {
-    const { slotCommitment } = useSlotCommitment(network, slotIndex);
+    const { slotCommitment } = useuseSlotDetails(network, slotIndex);
 
     const parsedSlotIndex = parseSlotIndex(slotIndex);
     const slotState = slotCommitment ? SlotState.Finalized : SlotState.Pending;
