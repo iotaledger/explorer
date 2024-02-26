@@ -5,6 +5,11 @@ export interface ICameraAngles {
     maxAzimuthAngle: number;
 }
 
+export interface ITwoDimensionalPosition {
+    x: number;
+    y: number;
+}
+
 export interface IThreeDimensionalPosition {
     x: number;
     y: number;

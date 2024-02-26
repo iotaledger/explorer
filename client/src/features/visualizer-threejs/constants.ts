@@ -82,7 +82,7 @@ export const MIN_BLOCK_NEAR_RADIUS = 20;
 export const MAX_POINT_RETRIES = 10;
 export const MAX_PREV_POINTS = 20;
 
-export const SPRAY_DISTANCE = 500;
+export const SPRAY_DISTANCE = 400;
 export const SPRAY_ANIMATION_DURATION = SPRAY_DISTANCE / EMITTER_SPEED_MULTIPLIER;
 
 /* Values for randomizing the tangle */

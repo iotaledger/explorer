@@ -1,13 +1,9 @@
-import { Vector3 } from "three";
+import { Vector3, MathUtils } from "three";
 import {
-    BLOCK_STEP_PX,
     MIN_BLOCKS_PER_SECOND,
     MAX_BLOCKS_PER_SECOND,
     MIN_TANGLE_RADIUS,
     MAX_TANGLE_RADIUS,
-    MIN_BLOCK_NEAR_RADIUS,
-    MAX_PREV_POINTS,
-    MAX_POINT_RETRIES,
     MAX_BLOCK_INSTANCES,
     EMITTER_SPEED_MULTIPLIER,
     CAMERA_X_AXIS_MOVEMENT,
@@ -18,8 +14,12 @@ import {
     NUMBER_OF_RANDOM_AMPLITUDES,
     NUMBER_OF_RANDOM_TILTINGS,
     TILT_DURATION_SECONDS,
+    SPRAY_DISTANCE,
+    MAX_PREV_POINTS,
+    MAX_POINT_RETRIES,
+    MIN_BLOCK_NEAR_RADIUS,
 } from "./constants";
-import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
+import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition, ITwoDimensionalPosition } from "./interfaces";
 import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 /**
@@ -69,16 +69,6 @@ interface IBlockTanglePosition {
 }
 
 /**
- * Calculates the distance between two points.
- * @returns the distance between two points.
- */
-function distanceBetweenPoints(point1: IBlockTanglePosition, point2: IBlockTanglePosition): number {
-    const { z: z1, y: y1 } = point1;
-    const { z: z2, y: y2 } = point2;
-    return Math.sqrt((y2 - y1) ** 2 + (z2 - z1) ** 2);
-}
-
-/**
  * Calculates the radius of the circle based on the blocks per second.
  * @returns the radius of the circle.
  */
@@ -93,32 +83,8 @@ function getLinearRadius(bps: number): number {
     return radius;
 }
 
-/**
- * Generates a random point on a circle.
- * @returns the random point on a circle.
- */
-function getDynamicRandomYZPoints(
-    bps: number,
-    initialPosition: IThreeDimensionalPosition = {
-        x: 0,
-        y: 0,
-        z: 0,
-    },
-    tiltDegrees: number,
-): IBlockTanglePosition {
-    const theta = Math.random() * (2 * Math.PI);
-
-    const maxRadius = getLinearRadius(bps);
-    const randomFactor = Math.random();
-    const radius = randomFactor * maxRadius;
-
-    let y = radius * Math.cos(theta) + initialPosition.y;
-    const z = radius * Math.sin(theta) + initialPosition.z;
-
-    const tiltRadians = tiltDegrees * (Math.PI / 180);
-    y += Math.tan(tiltRadians) * radius;
-
-    return { y, z };
+function distanceBetweenPoints(point1: IBlockTanglePosition, point2: IBlockTanglePosition): number {
+    return Math.sqrt(Math.pow(point1.y - point2.y, 2) + Math.pow(point1.z - point2.z, 2));
 }
 
 /**
@@ -133,6 +99,20 @@ function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTan
     return prevPoints.some((prevPoint) => distanceBetweenPoints(point, prevPoint) > MIN_BLOCK_NEAR_RADIUS);
 }
 
+export function getBlockPositionGenerator(): (
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    tiltDegress: number,
+) => IThreeDimensionalPosition {
+    const prevPoints: IBlockTanglePosition[] = [];
+
+    return (bps: number, initialPosition: IThreeDimensionalPosition, tiltDegress: number) => {
+        const point = generateAValidRandomPoint(bps, initialPosition, prevPoints, tiltDegress);
+        prevPoints.push({ y: point.y, z: point.z });
+        return point;
+    };
+}
+
 /**
  * Retries to generate a point until it passes all the checks.
  * @returns the point that passes all the checks.
@@ -142,18 +122,19 @@ function generateAValidRandomPoint(
     initialPosition: IThreeDimensionalPosition,
     prevPoints: IBlockTanglePosition[],
     tiltDegress: number,
-): IBlockTanglePosition {
-    let trialPoint: IBlockTanglePosition;
+): IThreeDimensionalPosition {
+    let trialPoint: IThreeDimensionalPosition;
     let passAllChecks = false;
     let retries = 0;
 
     do {
-        trialPoint = getDynamicRandomYZPoints(bps, initialPosition, tiltDegress);
+        trialPoint = generateRandomXYZPoints(bps, initialPosition, tiltDegress);
         passAllChecks = pointPassesAllChecks(trialPoint, prevPoints);
         retries++;
     } while (!passAllChecks && retries < MAX_POINT_RETRIES);
 
     prevPoints.push(trialPoint);
+
     if (prevPoints.length > MAX_PREV_POINTS) {
         prevPoints.shift();
     }
@@ -162,23 +143,30 @@ function generateAValidRandomPoint(
 }
 
 /**
- * Gets a function to generate a random point on a circle.
- * @returns the function to generate the random point on a circle.
+ * Generates a random point on a circle.
+ * @returns the random point on a circle.
  */
-export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
-    const prevPoints: IBlockTanglePosition[] = [];
-
-    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }, tiltDegress): IBlockTanglePosition => {
-        const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints, tiltDegress);
-
-        const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
-        const randomZNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
-
-        validPoint.y += randomYNumber;
-        validPoint.z += randomZNumber;
-
-        return validPoint;
+export function generateRandomXYZPoints(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    tiltDegrees: number,
+): IThreeDimensionalPosition {
+    const tiltRad = MathUtils.degToRad(-tiltDegrees);
+    const opposite = SPRAY_DISTANCE * Math.sin(tiltRad);
+    const adjacent = SPRAY_DISTANCE * Math.cos(tiltRad);
+    const circumferenceCenter: ITwoDimensionalPosition = {
+        x: initialPosition.x - adjacent,
+        y: initialPosition.y + opposite,
     };
+
+    const _radius = getLinearRadius(bps);
+    const randomFactor = Math.random();
+    const radius = _radius * randomFactor;
+
+    const y = circumferenceCenter.y + radius * Math.cos(radius);
+    const z = initialPosition.z + radius * Math.sin(radius);
+
+    return { x: circumferenceCenter.x, y, z };
 }
 
 /**
@@ -351,6 +339,7 @@ export function generateRandomAmplitudes(): number[] {
         currentAmplitude = getNextAmplitudeWithVariation(currentAmplitude);
         amplitudes.push(currentAmplitude);
     }
+
     return amplitudes;
 }
 
