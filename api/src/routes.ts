@@ -262,4 +262,5 @@ export const routes: IRoute[] = [
         folder: "nova/commitment/latest",
         func: "get",
     },
+    { path: "/nova/slot/:network/:slotIndex", method: "get", folder: "nova/slot", func: "get" },
 ];
