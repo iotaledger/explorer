@@ -1,6 +1,7 @@
 import moment from "moment";
 import React from "react";
 import { useCurrentEpochProgress } from "~/helpers/nova/hooks/useCurrentEpochProgress";
+import ProgressBar from "./ProgressBar";
 import "./LandingEpochSection.scss";
 
 const LandingEpochSection: React.FC = () => {
@@ -29,8 +30,8 @@ const LandingEpochSection: React.FC = () => {
 
     return (
         <div className="epoch-section">
+            <h2 className="epoch-section__header">Epoch {epochIndex} Progress</h2>
             <div className="epoch-progress__wrapper">
-                <h2 className="epoch-progress__header">Epoch {epochIndex} Progress</h2>
                 <div className="epoch-progress__stats-wrapper">
                     <div className="epoch-progress__stat">Registration end: {registrationTimeRemaining}</div>
                     <div className="epoch-progress__stat">Time remaining: {epochTimeRemaining}</div>
@@ -40,7 +41,7 @@ const LandingEpochSection: React.FC = () => {
                         {epochTo}
                     </div>
                 </div>
-                <ProgressBar progress={epochProgressPercent} />
+                <ProgressBar progress={epochProgressPercent} showLabel />
             </div>
             <div className="epoch-section__controls">
                 <div className="epoch-section__button">previous</div>
@@ -50,14 +51,5 @@ const LandingEpochSection: React.FC = () => {
         </div>
     );
 };
-
-const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (
-    <div className="progress-bar__wrapper">
-        <div className="progress-bar">
-            <div className="progress-bar__fill" style={{ transform: `translateX(-${100 - progress}%)` }}></div>
-            <div className="progress-bar__label">{progress}%</div>
-        </div>
-    </div>
-);
 
 export default LandingEpochSection;
