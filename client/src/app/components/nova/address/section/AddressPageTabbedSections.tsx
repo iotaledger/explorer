@@ -174,7 +174,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                       foundries={(addressState as IAccountAddressState).foundries}
                   />,
                   <AccountValidatorSection
-                      key={`account-foundry-${addressBech32}`}
+                      key={`account-validator-${addressBech32}`}
                       validatorDetails={(addressState as IAccountAddressState).validatorDetails}
                   />,
               ]
