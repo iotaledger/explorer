@@ -4,6 +4,7 @@ import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
 import stateMessage from "~assets/modals/stardust/alias/state.json";
 import bicMessage from "~assets/modals/nova/account/bic.json";
 import validatorMessage from "~assets/modals/nova/account/validator.json";
+import delegationMessage from "~assets/modals/nova/delegation.json";
 import nftMetadataMessage from "~assets/modals/stardust/nft/metadata.json";
 import addressNftsMessage from "~assets/modals/stardust/address/nfts-in-wallet.json";
 import TabbedSection from "../../../hoc/TabbedSection";
@@ -23,11 +24,13 @@ import NftSection from "~/app/components/nova/address/section/nft/NftSection";
 import NftMetadataSection from "~/app/components/nova/address/section/nft/NftMetadataSection";
 import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 import AccountValidatorSection from "./account/AccountValidatorSection";
+import DelegationSection from "./DelegationSection";
 
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
     NativeTokens = "Native Tokens",
     Nfts = "NFTs",
+    Delegation = "Delegation",
 }
 
 enum ACCOUNT_TABS {
@@ -70,6 +73,13 @@ const buildDefaultTabsOptions = (
         counter: nftsCount,
         isLoading: isNftOutputsLoading,
         infoContent: addressNftsMessage,
+    },
+    [DEFAULT_TABS.Delegation]: {
+        disabled: false,
+        hidden: false,
+        counter: 0,
+        isLoading: false,
+        infoContent: delegationMessage,
     },
 });
 
@@ -148,6 +158,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
         <AssetsTable key={`assets-table-${addressBech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
         <NftSection key={`nft-section-${addressBech32}`} outputs={addressState.addressNftOutputs} />,
+        <DelegationSection key={`delegation-${addressBech32}`} delegation={"Delegation test"} />,
     ];
 
     const accountAddressSections =
