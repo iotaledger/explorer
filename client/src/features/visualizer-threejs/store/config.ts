@@ -23,6 +23,9 @@ interface ConfigState {
 
     randomSinusoidAmplitudes: number[];
     setRandomSinusoidAmplitudes: (randomizedAmplitudes: number[]) => void;
+
+    randomTilts: number[];
+    setRandomTilts: (randomTilts: number[]) => void;
 }
 
 export const useConfigStore = create<ConfigState>((set) => ({
@@ -108,6 +111,17 @@ export const useConfigStore = create<ConfigState>((set) => ({
         set((state) => ({
             ...state,
             randomSinusoidAmplitudes: randomizedAmplitudes,
+        }));
+    },
+
+    /**
+     * Randomized tilts for the tangle.
+     */
+    randomTilts: [],
+    setRandomTilts: (randomTilts) => {
+        set((state) => ({
+            ...state,
+            randomTilts,
         }));
     },
 }));

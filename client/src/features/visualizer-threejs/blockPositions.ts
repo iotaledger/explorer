@@ -1,29 +1,22 @@
-import { EMITTER_WIDTH, EMITTER_X_POSITION_MULTIPLIER } from "./constants";
-import { ISinusoidalPositionParams } from "./interfaces";
-import { getEmitterPositions, getGenerateDynamicYZPosition, getTangleDistances, randomIntFromInterval } from "./utils";
+import { ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
+import { getEmitterPositions, getTangleDistances, getBlockPositionGenerator } from "./utils";
 
-const generateYZPositions = getGenerateDynamicYZPosition();
+const generateBlockTargetPosition = getBlockPositionGenerator();
 
-interface IPos {
-    x: number;
-    y: number;
-    z: number;
-}
-export function getBlockTargetPosition(initPosition: IPos, bps: number): IPos {
-    const { y, z } = generateYZPositions(bps, initPosition);
-
-    const emitterMinX = initPosition.x - EMITTER_WIDTH / 2;
-    const emitterMaxX = initPosition.x + EMITTER_WIDTH / 2;
-
-    const minX = emitterMinX - (emitterMaxX - emitterMinX) * EMITTER_X_POSITION_MULTIPLIER;
-    const maxX = emitterMaxX + (emitterMaxX - emitterMinX) * EMITTER_X_POSITION_MULTIPLIER;
-
-    const x = randomIntFromInterval(minX, maxX);
-
-    return { x, y, z };
+export function getBlockTargetPosition(
+    initPosition: IThreeDimensionalPosition,
+    bps: number,
+    tiltDegress: number,
+): IThreeDimensionalPosition {
+    return generateBlockTargetPosition(bps, initPosition, tiltDegress);
 }
 
-export function getBlockInitPosition({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes }: ISinusoidalPositionParams): IPos {
+export function getBlockInitPosition({
+    currentAnimationTime,
+    periods,
+    periodsSum,
+    sinusoidAmplitudes,
+}: ISinusoidalPositionParams): IThreeDimensionalPosition {
     const { xTangleDistance } = getTangleDistances();
     const { x: xEmitterPos, y, z } = getEmitterPositions({ currentAnimationTime, periods, periodsSum, sinusoidAmplitudes });
     const x = xEmitterPos + xTangleDistance / 2;

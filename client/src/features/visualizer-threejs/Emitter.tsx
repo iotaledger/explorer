@@ -4,7 +4,14 @@ import React, { RefObject, Dispatch, SetStateAction, useEffect, useRef, useLayou
 import * as THREE from "three";
 import { useConfigStore, useTangleStore } from "./store";
 import { useRenderTangle } from "./useRenderTangle";
-import { getTangleDistances, getEmitterPositions, generateRandomPeriods, generateRandomAmplitudes } from "./utils";
+import {
+    getTangleDistances,
+    getEmitterPositions,
+    generateRandomPeriods,
+    generateRandomAmplitudes,
+    generateRandomTiltings,
+    getCurrentTiltValue,
+} from "./utils";
 import { CanvasElement } from "./enums";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from "./constants";
@@ -36,14 +43,19 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
     const randomSinusoidAmplitudes = useConfigStore((state) => state.randomSinusoidAmplitudes);
     const setRandomSinusoidAmplitudes = useConfigStore((state) => state.setRandomSinusoidAmplitudes);
 
+    const randomTilts = useConfigStore((state) => state.randomTilts);
+    const setRandomTilts = useConfigStore((state) => state.setRandomTilts);
+
     const tangleWrapperRef = useRef<THREE.Mesh | null>(null);
 
     useLayoutEffect(() => {
         const { periods, sum: periodsSum } = generateRandomPeriods();
         const amplitudes = generateRandomAmplitudes();
+        const tiltings = generateRandomTiltings();
         setSinusoidRandomPeriods(periods);
         setSinusoidPeriodsSum(periodsSum);
         setRandomSinusoidAmplitudes(amplitudes);
+        setRandomTilts(tiltings);
     }, []);
 
     useEffect(() => {
@@ -68,6 +80,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
      */
     useFrame(() => {
         const currentAnimationTime = getVisualizerTimeDiff();
+        const currentTilt = getCurrentTiltValue(currentAnimationTime, randomTilts);
         const { x, y } = getEmitterPositions({
             currentAnimationTime,
             periods: sinusoidRandomPeriods,
@@ -79,6 +92,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
             if (emitterRef.current) {
                 emitterRef.current.position.x = x;
                 emitterRef.current.position.y = y;
+                emitterRef.current.rotation.z = THREE.MathUtils.degToRad(currentTilt);
             }
 
             if (tangleWrapperRef.current) {
