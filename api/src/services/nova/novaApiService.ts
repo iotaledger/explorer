@@ -17,6 +17,7 @@ import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
+import { ISlotResponse } from "../../models/api/nova/ISlotResponse";
 import { ITransactionDetailsResponse } from "../../models/api/nova/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
@@ -350,6 +351,21 @@ export class NovaApiService {
         const manaRewardsResponse = await this.client.getRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
+    }
+
+    /**
+     * Get the slot commitment.
+     * @param slotIndex The slot index to get the commitment for.
+     * @returns The slot commitment.
+     */
+    public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
+        try {
+            const slot = await this.client.getCommitmentByIndex(slotIndex);
+
+            return { slot };
+        } catch (e) {
+            logger.error(`Failed fetching slot with slot index ${slotIndex}. Cause: ${e}`);
+        }
     }
 
     /**
