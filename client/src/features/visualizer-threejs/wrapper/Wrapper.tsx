@@ -8,7 +8,6 @@ import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useTangleStore } from "~features/visualizer-threejs/store/tangle";
 import { SEARCH_RESULT_COLOR } from "~features/visualizer-threejs/constants";
-import { Color } from "three";
 import { isSearchMatch } from "~features/visualizer-threejs/hooks/useSearch";
 
 export const Wrapper = ({
@@ -55,7 +54,7 @@ export const Wrapper = ({
         if (matchingBlockIds.length > 0) {
             matchingBlockIds.forEach((id) => {
                 const metadata = blockMetadata.get(id);
-                const treeColor = metadata?.treeColor as Color;
+                const treeColor = metadata?.treeColor;
                 if (treeColor) {
                     colorsQueue.push({ id: id, color: treeColor });
                 }

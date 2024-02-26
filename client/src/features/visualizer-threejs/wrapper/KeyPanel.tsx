@@ -1,12 +1,6 @@
 import React, { memo } from "react";
 import { BlockState } from "@iota/sdk-wasm-nova/web";
-import {
-    ACCEPTED_BLOCK_COLOR_HASH,
-    CONFIRMED_BLOCK_COLOR_HASH,
-    FINALIZED_BLOCK_COLOR_HASH,
-    PENDING_BLOCK_COLOR_HASH,
-    SEARCH_RESULT_COLOR_HASH,
-} from "../constants";
+import { ACCEPTED_BLOCK_COLOR, CONFIRMED_BLOCK_COLOR, FINALIZED_BLOCK_COLOR, PENDING_BLOCK_COLOR, SEARCH_RESULT_COLOR } from "../constants";
 import "./KeyPanel.scss";
 import StatsPanel from "~features/visualizer-threejs/wrapper/StatsPanel";
 
@@ -19,22 +13,22 @@ export const KeyPanel = ({ network }: { network: string }) => {
         {
             label: "Pending",
             state: "pending",
-            color: PENDING_BLOCK_COLOR_HASH,
+            color: PENDING_BLOCK_COLOR.getStyle(),
         },
         {
             label: "Accepted",
             state: "accepted",
-            color: ACCEPTED_BLOCK_COLOR_HASH,
+            color: ACCEPTED_BLOCK_COLOR.getStyle(),
         },
         {
             label: "Confirmed",
             state: "confirmed",
-            color: CONFIRMED_BLOCK_COLOR_HASH,
+            color: CONFIRMED_BLOCK_COLOR.getStyle(),
         },
         {
             label: "Finalized",
             state: "finalized",
-            color: FINALIZED_BLOCK_COLOR_HASH,
+            color: FINALIZED_BLOCK_COLOR.getStyle(),
         },
         {
             label: "Rejected",
@@ -49,7 +43,7 @@ export const KeyPanel = ({ network }: { network: string }) => {
         {
             label: "Search result",
             state: "searchResult",
-            color: SEARCH_RESULT_COLOR_HASH,
+            color: SEARCH_RESULT_COLOR.getStyle(),
         },
     ];
 

@@ -2,7 +2,7 @@ import { useThree } from "@react-three/fiber";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { useTangleStore } from "../store";
-import { SEARCH_RESULT_COLOR } from "~features/visualizer-threejs/constants";
+import { HOVERED_BLOCK_COLOR } from "~features/visualizer-threejs/constants";
 
 export const useMouseMove = ({
     tangleMeshRef,
@@ -51,7 +51,7 @@ export const useMouseMove = ({
                     originalColorsRef.current.set(instanceId, currentColor);
 
                     // Set the instance to the hovered color
-                    tangleMeshRef.current.setColorAt(instanceId, SEARCH_RESULT_COLOR);
+                    tangleMeshRef.current.setColorAt(instanceId, HOVERED_BLOCK_COLOR);
                     cb(instanceId);
                 }
             }

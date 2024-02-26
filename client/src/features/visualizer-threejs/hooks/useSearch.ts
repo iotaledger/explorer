@@ -26,7 +26,7 @@ export const useSearch = () => {
 };
 
 export function isSearchMatch(block: IFeedBlockData, searchQuery: string) {
-    return matchLatestFinalizedSlot(block, searchQuery) || matchByBlockId(block, searchQuery); // note: here we can add more checks as separate functions
+    return matchLatestFinalizedSlot(block, searchQuery) || matchByBlockId(block, searchQuery);
 }
 
 export function matchByBlockId(block: IFeedBlockData, searchQuery: string) {
