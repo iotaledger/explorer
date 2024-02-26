@@ -57,4 +57,9 @@ export interface ISearchResponse extends IResponse {
      * Nft details.
      */
     nftDetails?: OutputResponse;
+
+    /**
+     * Transaction included block.
+     */
+    transactionBlock?: Block;
 }
