@@ -2,6 +2,7 @@ import { useThree } from "@react-three/fiber";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import * as THREE from "three";
 import { useTangleStore } from "../store";
+import { HOVERED_BLOCK_COLOR } from "~features/visualizer-threejs/constants";
 
 export const useMouseMove = ({
     tangleMeshRef,
@@ -40,9 +41,8 @@ export const useMouseMove = ({
                 cb(null);
             } else {
                 const { instanceId } = firstIntersect;
-                const color = new THREE.Color(0xff0000); // Red color
 
-                // If we're hovering over a new instance, save the current color and set to red
+                // If we're hovering over a new instance, save the current color and set the hovered color
                 if (hoveredInstanceId !== instanceId) {
                     clearHoveredSpheres();
                     // Save the original color of the new hovered instance
@@ -50,8 +50,8 @@ export const useMouseMove = ({
                     tangleMeshRef.current.getColorAt(instanceId, currentColor);
                     originalColorsRef.current.set(instanceId, currentColor);
 
-                    // Set the new hovered instance color to red
-                    tangleMeshRef.current.setColorAt(instanceId, color);
+                    // Set the instance to the hovered color
+                    tangleMeshRef.current.setColorAt(instanceId, HOVERED_BLOCK_COLOR);
                     cb(instanceId);
                 }
             }

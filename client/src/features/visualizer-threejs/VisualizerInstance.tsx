@@ -30,6 +30,8 @@ import CameraControls from "./CameraControls";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 import { getCurrentTiltValue } from "./utils";
+import useSearchStore from "~features/visualizer-threejs/store/search";
+import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
 import "./Visualizer.scss";
 
 const features = {
@@ -55,6 +57,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         }),
     );
 
+    const { isSearchMatch, highlightSearchBlock } = useSearch();
+
     // Note: to prevent rerender each store update - call methods separate.
     const isEdgeRenderingEnabled = useConfigStore((s) => s.isEdgeRenderingEnabled);
     const setEdgeRenderingEnabled = useConfigStore((s) => s.setEdgeRenderingEnabled);
@@ -67,6 +71,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+    const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
 
     // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
@@ -218,7 +223,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 bpsCounter.start();
             }
 
-            blockMetadata.set(blockData.blockId, blockData);
+            blockMetadata.set(blockData.blockId, { ...blockData, treeColor: PENDING_BLOCK_COLOR });
 
             // edges
             const blockStrongParents = (blockData.block.body as BasicBlockBody).strongParents ?? [];
@@ -229,6 +234,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             if (blockWeakParents.length > 0) {
                 addToEdgeQueue(blockData.blockId, blockWeakParents);
             }
+
+            if (isSearchMatch(blockData)) {
+                highlightSearchBlock(blockData.blockId);
+            }
+
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
@@ -243,7 +253,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
             if (selectedColor) {
-                addToColorQueue(metadataUpdate.blockId, selectedColor);
+                const currentBlockMetadata = blockMetadata.get(metadataUpdate.blockId);
+                if (currentBlockMetadata) {
+                    currentBlockMetadata.treeColor = selectedColor;
+                }
+                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
+                    addToColorQueue(metadataUpdate.blockId, selectedColor);
+                }
             }
 
             const acceptedStates: BlockState[] = ["confirmed", "accepted"];
@@ -274,11 +290,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         <Wrapper
             key={network}
             blocksCount={indexToBlockId.length}
-            filter=""
             isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={() => {}}
             selectNode={() => {}}
             selectedFeedItem={selectedFeedItem}
             setIsPlaying={setIsPlaying}
