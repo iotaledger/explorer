@@ -1,9 +1,9 @@
-import classNames from "classnames";
 import React from "react";
-import Tooltip from "../../Tooltip";
-import { BlockState, u64 } from "@iota/sdk-wasm-nova/web";
-import { BlockFailureReason, BLOCK_FAILURE_REASON_STRINGS } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
 import moment from "moment";
+import { BlockState, u64 } from "@iota/sdk-wasm-nova/web";
+import { BLOCK_FAILURE_REASON_STRINGS, BlockFailureReason } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
+import StatusPill from "~/app/components/nova/StatusPill";
+import { PillStatus } from "~/app/lib/ui/enums";
 import "./BlockTangleState.scss";
 
 export interface BlockTangleStateProps {
@@ -23,38 +23,29 @@ export interface BlockTangleStateProps {
     failureReason?: BlockFailureReason;
 }
 
+const BLOCK_STATE_TO_PILL_STATUS: Record<BlockState, PillStatus> = {
+    pending: PillStatus.Pending,
+    accepted: PillStatus.Success,
+    confirmed: PillStatus.Success,
+    finalized: PillStatus.Success,
+    failed: PillStatus.Error,
+    rejected: PillStatus.Error,
+};
+
 const BlockTangleState: React.FC<BlockTangleStateProps> = ({ status, issuingTime, failureReason }) => {
     const blockIssueMoment = moment(Number(issuingTime) / 1000000);
     const timeReference = blockIssueMoment.fromNow();
     const longTimestamp = blockIssueMoment.format("LLLL");
+
+    const pillStatus: PillStatus = BLOCK_STATE_TO_PILL_STATUS[status];
+    const failureReasonString: string | undefined = failureReason ? BLOCK_FAILURE_REASON_STRINGS[failureReason] : undefined;
 
     return (
         <>
             <div className="blocks-tangle-state">
                 {status && (
                     <React.Fragment>
-                        <div
-                            className={classNames(
-                                "block-tangle-state",
-                                {
-                                    "block-tangle-state__confirmed": status === "confirmed" || "finalized",
-                                },
-                                {
-                                    "block-tangle-state__conflicting": status === "rejected" && "failed",
-                                },
-                                { "block-tangle-state__pending": status === "pending" },
-                            )}
-                        >
-                            {failureReason ? (
-                                <Tooltip tooltipContent={BLOCK_FAILURE_REASON_STRINGS[failureReason]}>
-                                    <span className="capitalize-text" style={{ color: "#ca493d" }}>
-                                        {status}
-                                    </span>
-                                </Tooltip>
-                            ) : (
-                                <span className="capitalize-text">{status}</span>
-                            )}
-                        </div>
+                        <StatusPill status={pillStatus} label={status} tooltip={failureReasonString} />
                         <div className="block-tangle-reference">
                             <span title={longTimestamp} className="time-reference">
                                 {timeReference}

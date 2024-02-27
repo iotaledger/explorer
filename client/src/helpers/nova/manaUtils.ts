@@ -1,4 +1,5 @@
 import { BasicOutput, ManaRewardsResponse, Output, ProtocolParameters, Utils } from "@iota/sdk-wasm-nova/web";
+import { IKeyValueEntries } from "~/app/lib/interfaces";
 
 export interface OutputManaDetails {
     storedMana: string;
@@ -31,5 +32,33 @@ export function buildManaDetailsForOutput(
         potentialMana,
         delegationRewards: delegationRewards !== null ? delegationRewards?.toString() : undefined,
         totalMana: totalMana.toString(),
+    };
+}
+
+export function getManaKeyValueEntries(manaDetails: OutputManaDetails | null): IKeyValueEntries {
+    const showDecayMana = manaDetails?.storedMana && manaDetails?.storedManaDecayed;
+    const decay = showDecayMana ? Number(manaDetails?.storedMana ?? 0) - Number(manaDetails?.storedManaDecayed ?? 0) : undefined;
+
+    return {
+        label: "Mana:",
+        value: manaDetails?.totalMana,
+        entries: [
+            {
+                label: "Stored:",
+                value: manaDetails?.storedMana,
+            },
+            {
+                label: "Decay:",
+                value: decay,
+            },
+            {
+                label: "Potential:",
+                value: manaDetails?.potentialMana,
+            },
+            {
+                label: "Delegation Rewards:",
+                value: manaDetails?.delegationRewards,
+            },
+        ],
     };
 }

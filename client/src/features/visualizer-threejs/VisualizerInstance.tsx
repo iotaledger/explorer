@@ -24,15 +24,15 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex, type BlockId } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
-import "./Visualizer.scss";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
+import { getCurrentTiltValue } from "./utils";
 import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
+import "./Visualizer.scss";
 
 const features = {
     statsEnabled: false,
@@ -46,6 +46,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 }) => {
     const [networkConfig] = useNetworkConfig(network);
     const themeMode = useGetThemeMode();
+    const getCurrentAnimationTime = useVisualizerTimer();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
@@ -77,13 +78,16 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToConfirmedBlocksSlot = useTangleStore((s) => s.addToConfirmedBlocksBySlot);
     const removeConfirmedBlocksSlot = useTangleStore((s) => s.removeConfirmedBlocksSlot);
 
+    const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
+    const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
+    const sinusoidRandomAmplitudes = useConfigStore((s) => s.randomSinusoidAmplitudes);
+    const randomTilts = useConfigStore((state) => state.randomTilts);
+
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
 
     const emitterRef = useRef<THREE.Mesh>(null);
     const [feedService, setFeedService] = React.useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
-
-    const getCurrentAnimationTime = useVisualizerTimer();
 
     /**
      * Pause on tab or window change
@@ -204,8 +208,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (blockData) {
             const currentAnimationTime = getCurrentAnimationTime();
             const bps = bpsCounter.getBPS();
-            const initPosition = getBlockInitPosition(currentAnimationTime);
-            const targetPosition = getBlockTargetPosition(initPosition, bps);
+            const initPosition = getBlockInitPosition({
+                currentAnimationTime,
+                periods: sinusoidRandomPeriods,
+                periodsSum: sinusoidPeriodsSum,
+                sinusoidAmplitudes: sinusoidRandomAmplitudes,
+            });
+            const blockTiltFactor = getCurrentTiltValue(currentAnimationTime, randomTilts);
+            const targetPosition = getBlockTargetPosition(initPosition, bps, blockTiltFactor);
 
             bpsCounter.addBlock();
 
@@ -232,7 +242,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
-                blockAddedTimestamp: getCurrentAnimationTime(),
+                blockAddedTimestamp: currentAnimationTime,
                 targetPosition,
                 initPosition,
             });
