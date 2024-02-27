@@ -5,19 +5,16 @@ import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
-import { Box3 } from "three";
 import {
     FAR_PLANE,
     NEAR_PLANE,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
     VISUALIZER_BACKGROUND,
-    EMITTER_X_POSITION_MULTIPLIER,
     BLOCK_STATE_TO_COLOR,
 } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
-import { getGenerateDynamicYZPosition, randomIntFromInterval } from "./utils";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -27,14 +24,16 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex, type BlockId } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
+import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
+import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
+import { getCurrentTiltValue } from "./utils";
 import "./Visualizer.scss";
 
 const features = {
-    statsEnabled: true,
+    statsEnabled: false,
     cameraControls: true,
 };
 
@@ -44,8 +43,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     },
 }) => {
     const [networkConfig] = useNetworkConfig(network);
-    const generateYZPositions = getGenerateDynamicYZPosition();
     const themeMode = useGetThemeMode();
+    const getCurrentAnimationTime = useVisualizerTimer();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
@@ -73,6 +72,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
     const addToConfirmedBlocksSlot = useTangleStore((s) => s.addToConfirmedBlocksBySlot);
     const removeConfirmedBlocksSlot = useTangleStore((s) => s.removeConfirmedBlocksSlot);
+
+    const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
+    const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
+    const sinusoidRandomAmplitudes = useConfigStore((s) => s.randomSinusoidAmplitudes);
+    const randomTilts = useConfigStore((state) => state.randomTilts);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
@@ -166,6 +170,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (!runListeners) {
             return;
         }
+
         setIsPlaying(true);
 
         return () => {
@@ -195,21 +200,20 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
      * @param blockData The new block data
      */
     const onNewBlock = (blockData: IFeedBlockData) => {
-        const emitterObj = emitterRef.current;
-        if (emitterObj && blockData && isPlaying) {
-            const emitterBox = new Box3().setFromObject(emitterObj);
-
-            const emitterCenter = new THREE.Vector3();
-            emitterBox.getCenter(emitterCenter);
-
-            const { y, z } = generateYZPositions(bpsCounter.getBPS(), emitterCenter);
-            const minX = emitterBox.min.x - (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
-            const maxX = emitterBox.max.x + (emitterBox.max.x - emitterBox.min.x) * EMITTER_X_POSITION_MULTIPLIER;
-
-            const x = randomIntFromInterval(minX, maxX);
-            const targetPosition = { x, y, z };
+        if (blockData) {
+            const currentAnimationTime = getCurrentAnimationTime();
+            const bps = bpsCounter.getBPS();
+            const initPosition = getBlockInitPosition({
+                currentAnimationTime,
+                periods: sinusoidRandomPeriods,
+                periodsSum: sinusoidPeriodsSum,
+                sinusoidAmplitudes: sinusoidRandomAmplitudes,
+            });
+            const blockTiltFactor = getCurrentTiltValue(currentAnimationTime, randomTilts);
+            const targetPosition = getBlockTargetPosition(initPosition, bps, blockTiltFactor);
 
             bpsCounter.addBlock();
+
             if (!bpsCounter.getBPS()) {
                 bpsCounter.start();
             }
@@ -225,16 +229,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             if (blockWeakParents.length > 0) {
                 addToEdgeQueue(blockData.blockId, blockWeakParents);
             }
-
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
+                blockAddedTimestamp: currentAnimationTime,
                 targetPosition,
-                initPosition: {
-                    x: emitterCenter.x,
-                    y: emitterCenter.y,
-                    z: emitterCenter.z,
-                },
+                initPosition,
             });
         }
     };

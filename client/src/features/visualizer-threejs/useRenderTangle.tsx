@@ -1,10 +1,12 @@
 import { useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT, ANIMATION_TIME_SECONDS } from "./constants";
+import { SPRAY_ANIMATION_DURATION, MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
-import { BlockState, IBlockInitPosition, useConfigStore, useTangleStore } from "./store";
+import { IBlockState, IBlockAnimationPosition, useConfigStore, useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
+import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
+import { positionToVector } from "./utils";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
@@ -13,9 +15,10 @@ const INITIAL_SPHERE_SCALE = 0.7;
 
 export const useRenderTangle = () => {
     const tangleMeshRef = useRef(new THREE.InstancedMesh(SPHERE_GEOMETRY, SPHERE_MATERIAL, MAX_BLOCK_INSTANCES));
-    const objectIndexRef = useRef(0);
-    const clearBlocksRef = useRef<() => void>();
+    const [updateAnimationPositionQueue, setUpdateAnimationPositionQueue] = useState<Map<number, THREE.Vector3>>(new Map());
+    const objectIndexRef = useRef(1);
     const { scene } = useThree();
+    const isPlaying = useConfigStore((s) => s.isPlaying);
 
     const blockQueue = useTangleStore((s) => s.blockQueue);
     const removeFromBlockQueue = useTangleStore((s) => s.removeFromBlockQueue);
@@ -25,8 +28,34 @@ export const useRenderTangle = () => {
 
     const blockIdToIndex = useTangleStore((s) => s.blockIdToIndex);
     const updateBlockIdToIndex = useTangleStore((s) => s.updateBlockIdToIndex);
-    const blockIdToPosition = useTangleStore((s) => s.blockIdToPosition);
     const blockIdToAnimationPosition = useTangleStore((s) => s.blockIdToAnimationPosition);
+    const updateBlockIdToAnimationPosition = useTangleStore((s) => s.updateBlockIdToAnimationPosition);
+
+    const getVisualizerTimeDiff = useVisualizerTimer();
+
+    const assignBlockToMesh = (block: IBlockState) => {
+        SPHERE_TEMP_OBJECT.position.copy(positionToVector(block.initPosition));
+        SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
+        SPHERE_TEMP_OBJECT.updateMatrix();
+
+        updateBlockIdToIndex(block.id, objectIndexRef.current);
+
+        tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
+        tangleMeshRef.current.setColorAt(objectIndexRef.current, block.color);
+
+        // Reuses old indexes when MAX_INSTANCES is reached
+        // This also makes it so that old nodes are removed
+        if (objectIndexRef.current < MAX_BLOCK_INSTANCES) {
+            objectIndexRef.current += 1;
+        } else {
+            objectIndexRef.current = 1;
+        }
+
+        return block.id;
+    };
+
+    useRenderEdges();
+    useMouseMove({ tangleMeshRef });
 
     function updateInstancedMeshPosition(
         instancedMesh: THREE.InstancedMesh<THREE.SphereGeometry, THREE.MeshPhongMaterial>,
@@ -44,83 +73,9 @@ export const useRenderTangle = () => {
         instancedMesh.instanceMatrix.needsUpdate = true;
     }
 
-    const assignBlockToMesh = (block: BlockState) => {
-        const initPosition = blockIdToAnimationPosition.get(block.id);
-
-        if (!initPosition) return;
-
-        SPHERE_TEMP_OBJECT.position.set(initPosition.x, initPosition.y, initPosition.z);
-        SPHERE_TEMP_OBJECT.scale.setScalar(INITIAL_SPHERE_SCALE);
-        SPHERE_TEMP_OBJECT.updateMatrix();
-
-        updateBlockIdToIndex(block.id, objectIndexRef.current);
-
-        tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
-        tangleMeshRef.current.setColorAt(objectIndexRef.current, block.color);
-
-        // Reuses old indexes when MAX_INSTANCES is reached
-        // This also makes it so that old nodes are removed
-        if (objectIndexRef.current < MAX_BLOCK_INSTANCES - 1) {
-            objectIndexRef.current += 1;
-        } else {
-            objectIndexRef.current = 0;
-        }
-
-        return block.id;
-    };
-
-    useRenderEdges();
-    useMouseMove({ tangleMeshRef });
-
-    /** Spray animation */
-    useEffect(() => {
-        const PERIOD = 24; // ms
-
-        const int = setInterval(() => {
-            const isPlaying = useConfigStore.getState().isPlaying;
-            if (!isPlaying) {
-                return;
-            }
-            const blockIdToAnimationPosition = useTangleStore.getState().blockIdToAnimationPosition;
-            const updateBlockIdToAnimationPosition = useTangleStore.getState().updateBlockIdToAnimationPosition;
-            const delta = PERIOD / 1000;
-
-            const updatedAnimationPositions: Map<string, IBlockInitPosition> = new Map();
-            blockIdToAnimationPosition.forEach(({ x, y, z, duration: currentTime }, blockId) => {
-                const nextTime = currentTime + delta;
-                const startPositionVector = new THREE.Vector3(x, y, z);
-                const endPositionVector = new THREE.Vector3(...(blockIdToPosition.get(blockId) as [number, number, number]));
-                const interpolationFactor = Math.min(nextTime / ANIMATION_TIME_SECONDS, 1); // set 1 as max value
-
-                const targetPositionVector = new THREE.Vector3();
-                targetPositionVector.lerpVectors(startPositionVector, endPositionVector, interpolationFactor);
-                updatedAnimationPositions.set(blockId, { x, y, z, duration: nextTime });
-                const index = blockIdToIndex.get(blockId);
-                if (index) {
-                    updateInstancedMeshPosition(tangleMeshRef.current, index, targetPositionVector);
-                }
-            });
-            updateBlockIdToAnimationPosition(updatedAnimationPositions);
-        }, PERIOD);
-
-        return () => {
-            clearInterval(int);
-            blockIdToAnimationPosition.clear();
-            blockIdToPosition.clear();
-        };
-    }, []);
-
-    useEffect(() => {
-        const intervalCallback = () => {
-            if (clearBlocksRef.current) {
-                clearBlocksRef.current();
-            }
-        };
-        const timer = setInterval(intervalCallback, 500);
-
-        return () => clearInterval(timer);
-    }, []);
-
+    /**
+     * Setup and add the tangle mesh to the scene
+     */
     useEffect(() => {
         if (tangleMeshRef?.current) {
             tangleMeshRef.current.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -137,6 +92,9 @@ export const useRenderTangle = () => {
         }
     }, [tangleMeshRef]);
 
+    /**
+     * Add blocks to the tangle
+     */
     useEffect(() => {
         if (blockQueue.length === 0) {
             return;
@@ -152,16 +110,21 @@ export const useRenderTangle = () => {
             }
         }
 
-        if (tangleMeshRef.current.instanceColor) {
-            tangleMeshRef.current.instanceColor.needsUpdate = true;
+        if (isPlaying) {
+            if (tangleMeshRef.current.instanceColor) {
+                tangleMeshRef.current.instanceColor.needsUpdate = true;
+            }
+
+            tangleMeshRef.current.instanceMatrix.needsUpdate = true;
+            tangleMeshRef.current.computeBoundingSphere();
         }
 
-        tangleMeshRef.current.instanceMatrix.needsUpdate = true;
-        tangleMeshRef.current.computeBoundingSphere();
-
         removeFromBlockQueue(addedIds);
-    }, [blockQueue, blockIdToAnimationPosition]);
+    }, [blockQueue, blockIdToAnimationPosition, isPlaying]);
 
+    /**
+     * Update block colors
+     */
     useEffect(() => {
         if (colorQueue.length > 0) {
             const removeIds: string[] = [];
@@ -182,4 +145,53 @@ export const useRenderTangle = () => {
             removeFromColorQueue(removeIds);
         }
     }, [colorQueue, blockIdToIndex]);
+
+    /**
+     * Spray animation
+     */
+    useEffect(() => {
+        const updatedAnimationPositions: Map<string, IBlockAnimationPosition> = new Map();
+        const updateAnimationPositionQueue: Map<number, THREE.Vector3> = new Map();
+        const SPRAY_FRAMES_PER_SECOND = 24;
+
+        const interval = setInterval(() => {
+            blockIdToAnimationPosition.forEach((properties, blockId) => {
+                const { initPosition, targetPosition, blockAddedTimestamp } = properties;
+                const currentAnimationTime = getVisualizerTimeDiff();
+                const elapsedTime = currentAnimationTime - blockAddedTimestamp;
+                const animationAlpha = Math.min(elapsedTime / SPRAY_ANIMATION_DURATION, 1);
+                const targetPositionVector = new THREE.Vector3();
+
+                targetPositionVector.lerpVectors(positionToVector(initPosition), positionToVector(targetPosition), animationAlpha);
+                updatedAnimationPositions.set(blockId, { initPosition, elapsedTime, targetPosition, blockAddedTimestamp });
+
+                const index = blockIdToIndex.get(blockId);
+                if (index) {
+                    if (isPlaying) {
+                        updateInstancedMeshPosition(tangleMeshRef.current, index, targetPositionVector);
+                    } else {
+                        updateAnimationPositionQueue.set(index, targetPositionVector);
+                    }
+                }
+            });
+        }, 1000 / SPRAY_FRAMES_PER_SECOND);
+
+        updateBlockIdToAnimationPosition(updatedAnimationPositions);
+        setUpdateAnimationPositionQueue(updateAnimationPositionQueue);
+
+        return () => clearInterval(interval);
+    }, [blockIdToAnimationPosition, isPlaying]);
+
+    /**
+     * Update animation positions after unpausing
+     */
+    useEffect(() => {
+        if (isPlaying) {
+            updateAnimationPositionQueue.forEach((position, index) => {
+                updateInstancedMeshPosition(tangleMeshRef.current, index, position);
+            });
+            updateAnimationPositionQueue.clear();
+            setUpdateAnimationPositionQueue(updateAnimationPositionQueue);
+        }
+    }, [isPlaying, updateAnimationPositionQueue]);
 };

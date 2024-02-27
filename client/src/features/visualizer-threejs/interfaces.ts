@@ -4,3 +4,28 @@ export interface ICameraAngles {
     maxPolarAngle: number;
     maxAzimuthAngle: number;
 }
+
+export interface ITwoDimensionalPosition {
+    x: number;
+    y: number;
+}
+
+export interface IThreeDimensionalPosition {
+    x: number;
+    y: number;
+    z: number;
+}
+
+export interface IThreeDimensionalPositionWithTilt extends IThreeDimensionalPosition {
+    tiltFactor: number;
+}
+
+export interface ITimeBasedPositionParams {
+    currentAnimationTime: number;
+}
+
+export interface ISinusoidalPositionParams extends ITimeBasedPositionParams {
+    periods: number[];
+    periodsSum: number;
+    sinusoidAmplitudes: number[];
+}

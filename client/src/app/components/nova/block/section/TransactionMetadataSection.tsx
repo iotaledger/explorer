@@ -1,11 +1,11 @@
-import classNames from "classnames";
-import { TRANSACTION_FAILURE_REASON_STRINGS, Transaction, TransactionMetadata } from "@iota/sdk-wasm-nova/web";
+import { TRANSACTION_FAILURE_REASON_STRINGS, Transaction, TransactionMetadata, TransactionState, Utils } from "@iota/sdk-wasm-nova/web";
 import React from "react";
-import "./TransactionMetadataSection.scss";
 import Spinner from "../../../Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import ContextInputView from "../../ContextInputView";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { PillStatus } from "~/app/lib/ui/enums";
+import StatusPill from "~/app/components/nova/StatusPill";
 
 interface TransactionMetadataSectionProps {
     readonly transaction?: Transaction;
@@ -13,8 +13,17 @@ interface TransactionMetadataSectionProps {
     readonly metadataError?: string;
 }
 
+const TRANSACTION_STATE_TO_PILL_STATUS: Record<TransactionState, PillStatus> = {
+    pending: PillStatus.Pending,
+    accepted: PillStatus.Success,
+    confirmed: PillStatus.Success,
+    finalized: PillStatus.Success,
+    failed: PillStatus.Error,
+};
+
 const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({ transaction, transactionMetadata, metadataError }) => {
-    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const pillStatus: PillStatus | undefined = TRANSACTION_STATE_TO_PILL_STATUS[transactionMetadata?.transactionState ?? "pending"];
 
     return (
         <div className="section metadata-section">
@@ -28,23 +37,8 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                             <>
                                 <div className="section--data">
                                     <div className="label">Transaction Status</div>
-                                    <div className="value row middle capitalize-text">
-                                        <div
-                                            className={classNames(
-                                                "transaction-tangle-state",
-                                                {
-                                                    "transaction-tangle-state__confirmed":
-                                                        transactionMetadata.transactionState === "accepted" || "confirmed" || "finalized",
-                                                },
-                                                {
-                                                    "transaction-tangle-state__conflicting":
-                                                        transactionMetadata.transactionState === "failed",
-                                                },
-                                                { "transaction-tangle-state__pending": transactionMetadata.transactionState === "pending" },
-                                            )}
-                                        >
-                                            {transactionMetadata.transactionState}
-                                        </div>
+                                    <div className="value row middle">
+                                        <StatusPill status={pillStatus} label={transactionMetadata.transactionState} />
                                     </div>
                                 </div>
                                 {transactionMetadata.transactionFailureReason && (
@@ -73,7 +67,7 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                             <div className="value code highlight margin-b-t" key={idx}>
                                                 <TruncatedId
                                                     id={allotment.accountId}
-                                                    link={`/${network}/account/${allotment.accountId}`}
+                                                    link={`/${network}/addr/${Utils.accountIdToBech32(allotment.accountId, bech32Hrp)}`}
                                                     showCopyButton
                                                 />
                                             </div>

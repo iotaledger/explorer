@@ -11,10 +11,13 @@ import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsRe
 import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
+import { ICongestionResponse } from "../../models/api/nova/ICongestionResponse";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
+import { ISlotResponse } from "../../models/api/nova/ISlotResponse";
+import { ITransactionDetailsResponse } from "../../models/api/nova/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 import { SearchExecutor } from "../../utils/nova/searchExecutor";
@@ -82,6 +85,30 @@ export class NovaApiService {
         } catch (e) {
             logger.error(`Failed fetching block metadata with block id ${blockId}. Cause: ${e}`);
             return { error: "Block metadata fetch failed." };
+        }
+    }
+
+    /**
+     * Get the transaction included block.
+     * @param transactionId The transaction id to get the details.
+     * @returns The item details.
+     */
+    public async transactionIncludedBlock(transactionId: string): Promise<ITransactionDetailsResponse> {
+        transactionId = HexHelper.addPrefix(transactionId);
+        try {
+            const block = await this.client.getIncludedBlock(transactionId);
+
+            if (!block) {
+                return { error: `Couldn't find block from transaction id ${transactionId}` };
+            }
+            if (block && Object.keys(block).length > 0) {
+                return {
+                    block,
+                };
+            }
+        } catch (e) {
+            logger.error(`Failed fetching block with transaction id ${transactionId}. Cause: ${e}`);
+            return { error: "Block fetch failed." };
         }
     }
 
@@ -154,6 +181,25 @@ export class NovaApiService {
             }
         } catch {
             return { message: "Anchor output not found" };
+        }
+    }
+
+    /**
+     * Get the delegation output details.
+     * @param delegationId The delegationId to get the output details for.
+     * @returns The delegation output details.
+     */
+    public async delegationDetails(delegationId: string): Promise<IOutputDetailsResponse | undefined> {
+        try {
+            const delegationOutputId = await this.client.delegationOutputId(delegationId);
+
+            if (delegationOutputId) {
+                const outputResponse = await this.outputDetails(delegationOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { output: outputResponse.output };
+            }
+        } catch {
+            return { message: "Delegation output not found" };
         }
     }
 
@@ -251,6 +297,25 @@ export class NovaApiService {
     }
 
     /**
+     * Get Congestion for Account
+     * @param accountId The account address to get the congestion for.
+     * @returns The Congestion.
+     */
+    public async getAccountCongestion(accountId: string): Promise<ICongestionResponse | undefined> {
+        try {
+            const response = await this.client.getAccountCongestion(accountId);
+
+            if (response) {
+                return {
+                    congestion: response,
+                };
+            }
+        } catch {
+            return { message: "Account congestion not found" };
+        }
+    }
+
+    /**
      * Get the output mana rewards.
      * @param outputId The outputId to get the rewards for.
      * @returns The mana rewards.
@@ -259,6 +324,21 @@ export class NovaApiService {
         const manaRewardsResponse = await this.client.getRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
+    }
+
+    /**
+     * Get the slot commitment.
+     * @param slotIndex The slot index to get the commitment for.
+     * @returns The slot commitment.
+     */
+    public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
+        try {
+            const slot = await this.client.getCommitmentByIndex(slotIndex);
+
+            return { slot };
+        } catch (e) {
+            logger.error(`Failed fetching slot with slot index ${slotIndex}. Cause: ${e}`);
+        }
     }
 
     /**
