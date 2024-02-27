@@ -104,7 +104,8 @@ export function useAddressHistory(
                     // Note: newCursor can be null if there are no more pages, and undefined if there are no results
                     searchMore = false;
                 }
-                if (newCursor === undefined) {
+
+                if (!newCursor && outputs.length === 0 && transactionIdToOutputs.size === 0) {
                     // hide the tab only if there are no results
                     setDisabled?.(true);
                 }

@@ -35,10 +35,15 @@ enum ANCHOR_TABS {
     State = "State",
 }
 
-const buildDefaultTabsOptions = (tokensCount: number, associatedOutputCount: number, isAddressHistoryLoading: boolean) => ({
+const buildDefaultTabsOptions = (
+    tokensCount: number,
+    associatedOutputCount: number,
+    isAddressHistoryLoading: boolean,
+    isAddressHistoryDisabled: boolean,
+) => ({
     [DEFAULT_TABS.Transactions]: {
-        disabled: false,
-        hidden: false,
+        disabled: isAddressHistoryDisabled,
+        hidden: isAddressHistoryDisabled,
         isLoading: isAddressHistoryLoading,
         infoContent: transactionHistoryMessage,
     },
@@ -157,7 +162,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             : null;
 
     let tabEnums = DEFAULT_TABS;
-    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount, isAddressHistoryLoading);
+    const defaultTabsOptions = buildDefaultTabsOptions(tokensCount, outputCount, isAddressHistoryLoading, isAddressHistoryDisabled);
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;
 
@@ -188,8 +193,6 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             break;
         }
         default: {
-            tabOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
-            tabOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             break;
         }
     }
