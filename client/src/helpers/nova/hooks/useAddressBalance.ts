@@ -31,19 +31,22 @@ export function useAddressBalance(
             addressDetails?.type === AddressType.Account ||
             addressDetails?.type === AddressType.Nft ||
             addressDetails?.type === AddressType.Anchor;
-        const canLoad = address && (!needsOutputToProceed || (needsOutputToProceed && output));
+        const canLoad = address && (!needsOutputToProceed || (needsOutputToProceed && output !== null));
+
         if (canLoad) {
             // eslint-disable-next-line no-void
             void (async () => {
                 const response = await apiClient.addressBalanceChronicle({ network, address });
 
-                if (response?.totalBalance !== undefined && isMounted) {
-                    let totalBalance = response.totalBalance;
-                    let availableBalance = response.availableBalance ?? 0;
+                if (isMounted) {
+                    let totalBalance = response?.totalBalance?.amount ?? 0;
+                    let availableBalance = response?.availableBalance?.amount ?? 0;
+
                     if (output) {
                         totalBalance = Number(totalBalance) + Number(output.amount);
                         availableBalance = Number(availableBalance) + Number(output.amount);
                     }
+
                     setTotalBalance(totalBalance);
                     setAvailableBalance(availableBalance > 0 ? availableBalance : null);
                 }

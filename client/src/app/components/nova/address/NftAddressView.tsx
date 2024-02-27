@@ -49,6 +49,8 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             key={addressDetails.bech32}
                             addressState={state}
                             setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                            setTransactionHistoryLoading={(isLoading) => setState({ isAddressHistoryLoading: isLoading })}
+                            setTransactionHistoryDisabled={(val) => setState({ isAddressHistoryDisabled: val })}
                         />
                     </div>
                 )}

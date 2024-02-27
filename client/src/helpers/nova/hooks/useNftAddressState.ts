@@ -8,6 +8,7 @@ import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
+import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 
 export interface INftAddressState {
     addressDetails: IAddressDetails | null;
@@ -15,9 +16,13 @@ export interface INftAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
+    addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
+    isNftOutputsLoading: boolean;
     isNftDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -27,8 +32,12 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     addressBasicOutputs: null,
+    addressNftOutputs: null,
     isBasicOutputsLoading: false,
+    isNftOutputsLoading: false,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**
@@ -50,6 +59,7 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, nftOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -70,9 +80,20 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
             availableBalance,
             isNftDetailsLoading,
             addressBasicOutputs,
+            addressNftOutputs,
             isBasicOutputsLoading,
+            isNftOutputsLoading,
         });
-    }, [nftOutput, totalBalance, availableBalance, isNftDetailsLoading, addressBasicOutputs, isBasicOutputsLoading]);
+    }, [
+        nftOutput,
+        totalBalance,
+        availableBalance,
+        isNftDetailsLoading,
+        addressBasicOutputs,
+        addressNftOutputs,
+        isBasicOutputsLoading,
+        isNftOutputsLoading,
+    ]);
 
     return [state, setState];
 };
