@@ -71,53 +71,62 @@ export const Wrapper = ({
     }, [searchQuery]);
 
     return (
-        <div className="visualizer-nova">
-            <div className="row middle">
-                <div className="row middle heading margin-r-t margin-b-t">
-                    <h1>Visualizer</h1>
-                    <Modal icon="info" data={mainHeader} />
-                </div>
-                <div className="card search-filter fill">
-                    <div className="card--content row middle">
-                        <div className="card--label margin-r-s">Search</div>
-                        <input
-                            className="input form-input-long"
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => {
-                                setSearchQuery(e.target.value);
-                            }}
-                            maxLength={2000}
-                        />
+        <>
+            <div className="visualizer-nova">
+                <div className="row middle">
+                    <div className="row middle heading margin-r-t margin-b-t">
+                        <h1>Visualizer</h1>
+                        <Modal icon="info" data={mainHeader} />
                     </div>
-                </div>
-            </div>
-            <ConfigControls />
-            <div className="graph-border">
-                {children}
-                <div className="action-panel-container">
-                    <div className="card">
-                        <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
-                            {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play_arrow</span>}
-                        </button>
-                    </div>
-                    {isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
-                        <div className="margin-l-t row middle">
-                            <h3>Show edges:</h3>
+                    <div className="card search-filter fill">
+                        <div className="card--content row middle">
+                            <div className="card--label margin-r-s">Search</div>
                             <input
-                                type="checkbox"
-                                className="margin-l-t"
-                                checked={isEdgeRenderingEnabled}
-                                onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
+                                className="input form-input-long"
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                }}
+                                maxLength={2000}
                             />
                         </div>
-                    )}
+                    </div>
                 </div>
+                <div className="graph-border">
+                    {children}
+                    <div className="action-panel-container">
+                        <div className="card">
+                            <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
+                                {isPlaying ? (
+                                    <span className="material-icons">pause</span>
+                                ) : (
+                                    <span className="material-icons">play_arrow</span>
+                                )}
+                            </button>
+                        </div>
+                        {isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
+                            <div className="margin-l-t row middle">
+                                <h3>Show edges:</h3>
+                                <input
+                                    type="checkbox"
+                                    className="margin-l-t"
+                                    checked={isEdgeRenderingEnabled}
+                                    onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {selectedFeedItem && (
+                    <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />
+                )}
+                <KeyPanel network={network} />
             </div>
-
-            {selectedFeedItem && <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />}
-            <KeyPanel network={network} />
-        </div>
+            <div className="padding-t-m padding-b-m padding-r-m padding-l-m">
+                <ConfigControls />
+            </div>
+        </>
     );
 };
 
