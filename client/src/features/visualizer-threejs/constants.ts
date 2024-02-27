@@ -105,4 +105,5 @@ export const features = {
     statsEnabled: false,
     cameraControls: true,
     controlsVisualiserEnabled: true,
+    showEdgeRenderingCheckbox: false,
 };

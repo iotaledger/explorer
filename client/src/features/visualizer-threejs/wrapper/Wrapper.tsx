@@ -8,7 +8,7 @@ import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import ConfigControls from "../ConfigControls";
 import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useTangleStore } from "~features/visualizer-threejs/store/tangle";
-import { SEARCH_RESULT_COLOR } from "~features/visualizer-threejs/constants";
+import { SEARCH_RESULT_COLOR, features } from "~features/visualizer-threejs/constants";
 import { isSearchMatch } from "~features/visualizer-threejs/hooks/useSearch";
 
 export const Wrapper = ({
@@ -105,17 +105,19 @@ export const Wrapper = ({
                                 )}
                             </button>
                         </div>
-                        {isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
-                            <div className="margin-l-t row middle">
-                                <h3>Show edges:</h3>
-                                <input
-                                    type="checkbox"
-                                    className="margin-l-t"
-                                    checked={isEdgeRenderingEnabled}
-                                    onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
-                                />
-                            </div>
-                        )}
+                        {features.showEdgeRenderingCheckbox &&
+                            isEdgeRenderingEnabled !== undefined &&
+                            setEdgeRenderingEnabled !== undefined && (
+                                <div className="margin-l-t row middle">
+                                    <h3>Show edges:</h3>
+                                    <input
+                                        type="checkbox"
+                                        className="margin-l-t"
+                                        checked={isEdgeRenderingEnabled}
+                                        onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
+                                    />
+                                </div>
+                            )}
                     </div>
                 </div>
                 {selectedFeedItem && (
