@@ -9,13 +9,27 @@ import { VISUALIZER_PADDINGS } from "./constants";
 const CAMERA_ANGLES = getCameraAngles();
 
 const CameraControls = () => {
+    const { camera } = useThree();
     const controls = React.useRef<DreiCameraControls>(null);
     const [shouldLockZoom, setShouldLockZoom] = useState<boolean>(false);
 
     const scene = useThree((state) => state.scene);
     const zoom = useTangleStore((state) => state.zoom);
+    const forcedZoom = useTangleStore((state) => state.forcedZoom);
     const mesh = scene.getObjectByName(CanvasElement.TangleWrapperMesh) as THREE.Mesh | undefined;
     const canvasDimensions = useConfigStore((state) => state.dimensions);
+
+    useEffect(() => {
+        if (!forcedZoom) return;
+
+        (async () => {
+            if (camera && controls.current) {
+                controls.current.minZoom = forcedZoom;
+                controls.current.minZoom = forcedZoom;
+                await controls.current.zoomTo(forcedZoom, true);
+            }
+        })();
+    }, [forcedZoom]);
 
     /**
      * Fits the camera to the TangleMesh.

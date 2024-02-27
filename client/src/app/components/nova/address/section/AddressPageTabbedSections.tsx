@@ -9,6 +9,7 @@ import addressNftsMessage from "~assets/modals/stardust/address/nfts-in-wallet.j
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
+import transactionHistoryMessage from "~assets/modals/stardust/address/transaction-history.json";
 import { IAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressState";
 import { INftAddressState } from "~/helpers/nova/hooks/useNftAddressState";
 import { IAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
@@ -17,6 +18,8 @@ import AssetsTable from "./native-tokens/AssetsTable";
 import { IImplicitAccountCreationAddressState } from "~/helpers/nova/hooks/useImplicitAccountCreationAddressState";
 import { AddressType } from "@iota/sdk-wasm-nova/web";
 import AccountFoundriesSection from "./account/AccountFoundriesSection";
+import TransactionHistory from "../../history/TransactionHistoryView";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
 import AnchorStateSection from "./anchor/AnchorStateSection";
 import NftSection from "~/app/components/nova/address/section/nft/NftSection";
@@ -25,6 +28,7 @@ import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 import AccountValidatorSection from "./account/AccountValidatorSection";
 
 enum DEFAULT_TABS {
+    Transactions = "Transactions",
     AssocOutputs = "Outputs",
     NativeTokens = "Native Tokens",
     Nfts = "NFTs",
@@ -50,7 +54,15 @@ const buildDefaultTabsOptions = (
     associatedOutputCount: number,
     isNativeTokensLoading: boolean,
     isNftOutputsLoading: boolean,
+    isAddressHistoryLoading: boolean,
+    isAddressHistoryDisabled: boolean,
 ) => ({
+    [DEFAULT_TABS.Transactions]: {
+        disabled: isAddressHistoryDisabled,
+        hidden: isAddressHistoryDisabled,
+        isLoading: isAddressHistoryLoading,
+        infoContent: transactionHistoryMessage,
+    },
     [DEFAULT_TABS.AssocOutputs]: {
         disabled: associatedOutputCount === 0,
         hidden: associatedOutputCount === 0,
@@ -127,19 +139,35 @@ interface IAddressPageTabbedSectionsProps {
         | IAnchorAddressState
         | IImplicitAccountCreationAddressState;
     readonly setAssociatedOutputsLoading: (isLoading: boolean) => void;
+    readonly setTransactionHistoryLoading: (isLoading: boolean) => void;
+    readonly setTransactionHistoryDisabled: (isDisabled: boolean) => void;
 }
 
-export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps> = ({ addressState, setAssociatedOutputsLoading }) => {
+export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps> = ({
+    addressState,
+    setAssociatedOutputsLoading,
+    setTransactionHistoryLoading,
+    setTransactionHistoryDisabled,
+}) => {
     const [outputCount, setOutputCount] = useState<number>(0);
     const [tokensCount, setTokensCount] = useState<number>(0);
+    const networkInfo = useNetworkInfoNova((s) => s.networkInfo);
 
     if (!addressState.addressDetails) {
         return null;
     }
-    const { addressDetails, addressBasicOutputs } = addressState;
-    const addressBech32 = addressDetails.bech32;
+    const { addressDetails, addressBasicOutputs, isAddressHistoryLoading, isAddressHistoryDisabled } = addressState;
+    const { bech32: addressBech32 } = addressDetails;
+    const { name: network } = networkInfo;
 
     const defaultSections = [
+        <TransactionHistory
+            key={`txs-history-${addressBech32}`}
+            network={network}
+            address={addressBech32}
+            setLoading={setTransactionHistoryLoading}
+            setDisabled={setTransactionHistoryDisabled}
+        />,
         <AssociatedOutputs
             key={`assoc-outputs-${addressBech32}`}
             addressDetails={addressDetails}
@@ -187,6 +215,8 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         outputCount,
         addressState.isBasicOutputsLoading,
         addressState.isNftOutputsLoading,
+        isAddressHistoryLoading,
+        isAddressHistoryDisabled,
     );
     let tabOptions = defaultTabsOptions;
     let tabbedSections = defaultSections;

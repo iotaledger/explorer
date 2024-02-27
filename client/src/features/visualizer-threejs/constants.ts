@@ -25,6 +25,8 @@ export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
 export const ACCEPTED_BLOCK_COLOR = new Color("#0101AB");
 export const CONFIRMED_BLOCK_COLOR = new Color("#0000DB");
 export const FINALIZED_BLOCK_COLOR = new Color("#0101FF");
+export const SEARCH_RESULT_COLOR = new Color("#C026D3");
+export const HOVERED_BLOCK_COLOR = SEARCH_RESULT_COLOR;
 
 export const BLOCK_STATE_TO_COLOR = new Map<BlockState, Color>([
     ["pending", PENDING_BLOCK_COLOR],
@@ -98,3 +100,10 @@ export const NUMBER_OF_RANDOM_TILTINGS = 100;
 export const TILT_DURATION_SECONDS = 4;
 export const MAX_TILT_FACTOR_DEGREES = 16;
 export const MIN_TILT_FACTOR_DEGREES = 1;
+
+export const features = {
+    statsEnabled: false,
+    cameraControls: true,
+    controlsVisualiserEnabled: true,
+    showEdgeRenderingCheckbox: false,
+};

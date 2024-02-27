@@ -21,6 +21,8 @@ export interface IAnchorAddressState {
     isNftOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -34,6 +36,8 @@ const initialState = {
     isNftOutputsLoading: false,
     isAnchorDetailsLoading: true,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**

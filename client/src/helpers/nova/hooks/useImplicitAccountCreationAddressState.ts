@@ -18,6 +18,8 @@ export interface IImplicitAccountCreationAddressState {
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -29,6 +31,8 @@ const initialState = {
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**

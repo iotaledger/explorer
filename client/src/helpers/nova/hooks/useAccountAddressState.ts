@@ -39,6 +39,8 @@ export interface IAccountAddressState {
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isFoundriesLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
     isCongestionLoading: boolean;
     isValidatorDetailsLoading: boolean;
 }
@@ -60,6 +62,8 @@ const initialState = {
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
     isFoundriesLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
     isCongestionLoading: false,
     isValidatorDetailsLoading: false,
 };
