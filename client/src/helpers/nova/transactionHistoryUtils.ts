@@ -50,11 +50,18 @@ export const getTransactionHistoryRecords = (
     network: string,
     tokenInfo: INodeInfoBaseToken,
     isFormattedAmounts: boolean,
+    slotIndexToUnixTimeRange: (slotIndex: number) => { from: number; to: number },
 ): ITransactionHistoryRecord[] => {
     const calculatedTransactions: ITransactionHistoryRecord[] = [];
 
     transactionIdToOutputs.forEach((outputs, transactionId) => {
-        const lastOutputTime = Math.max(...outputs.map((t) => t.slotTimestamp));
+        const lastOutputTime = Math.max(
+            ...outputs.map((t) => {
+                const slotIncluded = t.slotIndex;
+                const slotRange = slotIndexToUnixTimeRange(slotIncluded);
+                return slotRange.to - 1;
+            }),
+        );
         const balanceChange = calculateBalanceChange(outputs);
         const ago = moment(lastOutputTime * 1000).fromNow();
 

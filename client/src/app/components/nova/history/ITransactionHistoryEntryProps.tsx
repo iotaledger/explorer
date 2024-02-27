@@ -5,6 +5,11 @@ export interface ITransactionHistoryEntryProps {
     transactionId: string;
 
     /**
+     * The formatted date of the transaction.
+     */
+    dateFormatted: string;
+
+    /**
      * Is the transaction spent.
      */
     isSpent: boolean;

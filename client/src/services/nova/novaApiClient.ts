@@ -227,7 +227,7 @@ export class NovaApiClient extends ApiClient {
         };
 
         return this.callApi<unknown, ITransactionHistoryResponse>(
-            `stardust/transactionhistory/${request.network}/${request.address}${FetchHelper.urlParams(params)}`,
+            `nova/transactionhistory/${request.network}/${request.address}${FetchHelper.urlParams(params)}`,
             "get",
         );
     }

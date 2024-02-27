@@ -5,6 +5,7 @@ import { ITransactionHistoryEntryProps } from "./ITransactionHistoryEntryProps";
 
 const TransactionHistoryRow: React.FC<ITransactionHistoryEntryProps> = ({
     transactionLink,
+    dateFormatted,
     balanceChangeFormatted,
     transactionId,
     isSpent,
@@ -19,6 +20,7 @@ const TransactionHistoryRow: React.FC<ITransactionHistoryEntryProps> = ({
 
     return (
         <tr>
+            <td className="date">{dateFormatted}</td>
             <td className="transaction-id">
                 <div className="row center">
                     <TruncatedId id={transactionId} link={transactionLink} />

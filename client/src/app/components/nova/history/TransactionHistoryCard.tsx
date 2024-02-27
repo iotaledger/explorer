@@ -5,6 +5,7 @@ import { ITransactionHistoryEntryProps } from "./ITransactionHistoryEntryProps";
 
 const TransactionHistoryCard: React.FC<ITransactionHistoryEntryProps> = ({
     transactionLink,
+    dateFormatted,
     balanceChangeFormatted,
     transactionId,
     isSpent,
@@ -19,6 +20,10 @@ const TransactionHistoryCard: React.FC<ITransactionHistoryEntryProps> = ({
 
     return (
         <div className="card">
+            <div className="field">
+                <div className="card--label">Date</div>
+                <div className="card--value">{dateFormatted}</div>
+            </div>
             <div className="field">
                 <div className="card--label">Transaction Id</div>
                 <div className="row card--value">

@@ -10,11 +10,6 @@ export interface ITransactionHistoryItem {
     slotIndex: number;
 
     /**
-     * The slot timestamp this item is included in.
-     */
-    slotTimestamp: number;
-
-    /**
      * The outputId.
      */
     outputId: string;

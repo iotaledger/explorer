@@ -5,14 +5,9 @@ import { IResponse } from "../../IResponse";
  */
 export interface ITransactionHistoryItem {
     /**
-     * The milestone index this item is included in.
+     * The slot index this item is included in.
      */
-    milestoneIndex: number;
-
-    /**
-     * The milestone timestamp this item is included in.
-     */
-    milestoneTimestamp: number;
+    slotIndex: number;
 
     /**
      * The outputId.

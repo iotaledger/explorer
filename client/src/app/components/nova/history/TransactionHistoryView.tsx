@@ -6,6 +6,7 @@ import TransactionHistoryRow from "./TransactionHistoryRow";
 import TransactionHistoryCard from "./TransactionHistoryCard";
 import { getTransactionHistoryRecords } from "~/helpers/nova/transactionHistoryUtils";
 import "./TransactionHistoryView.scss";
+import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
 
 export interface TransactionHistoryProps {
     readonly network: string;
@@ -16,22 +17,33 @@ export interface TransactionHistoryProps {
 
 const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, address, setLoading, setDisabled }) => {
     const [transactionIdToOutputs, loadMore, isLoading, hasMore] = useAddressHistory(network, address, setDisabled);
+    const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
 
     const [isFormattedAmounts, setIsFormattedAmounts] = useState(true);
     const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+
+    if (slotIndexToUnixTimeRange === null) {
+        return null;
+    }
 
     useEffect(() => {
         setLoading(isLoading);
     }, [isLoading]);
 
     const transactions = useMemo(() => {
-        const transactionsLocal = getTransactionHistoryRecords(transactionIdToOutputs, network, tokenInfo, isFormattedAmounts);
+        const transactionsLocal = getTransactionHistoryRecords(
+            transactionIdToOutputs,
+            network,
+            tokenInfo,
+            isFormattedAmounts,
+            slotIndexToUnixTimeRange,
+        );
         if (hasMore) {
             // remove last transaction, as it's potentially doesn't have all outputs
             transactionsLocal.pop();
         }
         return transactionsLocal;
-    }, [transactionIdToOutputs, tokenInfo, isFormattedAmounts, hasMore]);
+    }, [transactionIdToOutputs, tokenInfo, isFormattedAmounts, hasMore, slotIndexToUnixTimeRange]);
 
     return transactions.length > 0 && address ? (
         <div className="section transaction-history--section">
@@ -63,6 +75,7 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ network, addres
                         <React.Fragment key={idx}>
                             <TransactionHistoryCard
                                 transactionLink={c.transactionLink}
+                                dateFormatted={c.dateFormatted}
                                 balanceChangeFormatted={c.balanceChangeFormatted}
                                 transactionId={c.transactionId}
                                 isSpent={c.isSpent}
