@@ -67,7 +67,8 @@ function controlsExistInLocalStorage(): boolean {
 export const ConfigControls = () => {
     const forcedZoom = useTangleStore((state) => state.forcedZoom);
     const setForcedZoom = useTangleStore((state) => state.setForcedZoom);
-    const [localZoom, setLocalZoom] = useState<number | undefined>(forcedZoom);
+    const forcedZoomInit = forcedZoom !== undefined ? String(forcedZoom) : forcedZoom;
+    const [localZoom, setLocalZoom] = useState<string | undefined>(forcedZoomInit);
 
     const [visualizerConfigValues, setVisualizerConfigValues] = useState<Record<VisualizerConfig, number>>(() => {
         return getVisualizerConfigValues() || DEFAULT_VISUALIZER_CONFIG_VALUES; // Use getFromLocalStorage to retrieve the state
@@ -223,16 +224,16 @@ export const ConfigControls = () => {
                             const numberRegExp = /^-?\d+(\.|\.\d*|\d*)?$/;
                             if (numberRegExp.test(input)) {
                                 if (input.endsWith(".")) {
-                                    setLocalZoom(input as any);
+                                    setLocalZoom(input);
                                 } else {
                                     const value = parseFloat(input);
                                     if (value > 2) {
                                         setErrors((prevErrors) => ({ ...prevErrors, zoom: "Value must be between 0 and 2" }));
 
-                                        setLocalZoom(2);
+                                        setLocalZoom(String(2));
                                         return;
                                     }
-                                    setLocalZoom(value);
+                                    setLocalZoom(input);
                                 }
                             }
                         }}
@@ -242,10 +243,10 @@ export const ConfigControls = () => {
                         <button
                             type={"button"}
                             onClick={() => {
-                                if (localZoom === undefined || `${localZoom}`.endsWith(".")) {
+                                if (localZoom === undefined || localZoom.endsWith(".")) {
                                     return;
                                 }
-                                setForcedZoom(localZoom);
+                                setForcedZoom(parseFloat(localZoom));
                             }}
                         >
                             Apply
