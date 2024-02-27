@@ -29,6 +29,9 @@ import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetail
 import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
 import { IFoundriesResponse } from "~/models/api/nova/foundry/IFoundriesResponse";
 import { IFoundriesRequest } from "~/models/api/nova/foundry/IFoundriesRequest";
+import { ITransactionHistoryRequest } from "~/models/api/nova/ITransactionHistoryRequest";
+import { ITransactionHistoryResponse } from "~/models/api/nova/ITransactionHistoryResponse";
+import { FetchHelper } from "~/helpers/fetchHelper";
 import { ISlotRequest } from "~/models/api/nova/ISlotRequest";
 import { ISlotResponse } from "~/models/api/nova/ISlotResponse";
 import { ITransactionDetailsRequest } from "~/models/api/nova/ITransactionDetailsRequest";
@@ -206,6 +209,25 @@ export class NovaApiClient extends ApiClient {
     public async stats(request: IStatsGetRequest): Promise<IStatsGetResponse> {
         return this.callApi<unknown, IStatsGetResponse>(
             `stats/${request.network}?includeHistory=${request.includeHistory ? "true" : "false"}`,
+            "get",
+        );
+    }
+
+    /**
+     * Get the transaction history of an address (chronicle).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionHistory(request: ITransactionHistoryRequest): Promise<ITransactionHistoryResponse> {
+        const params = {
+            pageSize: request.pageSize,
+            sort: request.sort,
+            startSlotIndex: request.startSlotIndex,
+            cursor: request.cursor,
+        };
+
+        return this.callApi<unknown, ITransactionHistoryResponse>(
+            `nova/transactionhistory/${request.network}/${request.address}${FetchHelper.urlParams(params)}`,
             "get",
         );
     }
