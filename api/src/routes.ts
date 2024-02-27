@@ -230,6 +230,12 @@ export const routes: IRoute[] = [
         func: "get",
     },
     {
+        path: "/nova/address/outputs/nft/:network/:address",
+        method: "get",
+        folder: "nova/address/outputs/nft",
+        func: "get",
+    },
+    {
         path: "/nova/output/associated/:network/:address",
         method: "post",
         folder: "nova/output/associated",
@@ -258,6 +264,12 @@ export const routes: IRoute[] = [
         path: "/nova/account/congestion/:network/:accountId",
         method: "get",
         folder: "nova/account/congestion",
+        func: "get",
+    },
+    {
+        path: "/nova/account/validator/:network/:accountId",
+        method: "get",
+        folder: "nova/account/validator",
         func: "get",
     },
     { path: "/nova/block/:network/:blockId", method: "get", folder: "nova/block", func: "get" },

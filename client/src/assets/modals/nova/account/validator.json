@@ -1,0 +1,11 @@
+{
+    "title": "Validator",
+    "description": "<p>Validators are special nodes that issue validation blocks.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/validators",
+            "isExternal": true
+        }
+    ]
+}
