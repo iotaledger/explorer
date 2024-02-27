@@ -15,7 +15,7 @@ import {
     BLOCK_STATE_TO_COLOR,
 } from "./constants";
 import Emitter from "./Emitter";
-import { useTangleStore, useConfigStore } from "./store";
+import { useTangleStore, useConfigStore, IAddToColorQueueBulkItem } from "./store";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -64,6 +64,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addBlock = useTangleStore((s) => s.addToBlockQueue);
     const addToEdgeQueue = useTangleStore((s) => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
+    const addToColorQueueBulk = useTangleStore((s) => s.addToColorQueueBulk);
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
@@ -253,7 +254,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 if (currentBlockMetadata) {
                     currentBlockMetadata.treeColor = selectedColor;
                 }
-                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
+                const isPlaying = useConfigStore.getState().isPlaying;
+                if (!matchingBlockIds.includes(metadataUpdate.blockId) && isPlaying) {
                     addToColorQueue(metadataUpdate.blockId, selectedColor);
                 }
             }
@@ -271,12 +273,16 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         const blocks = confirmedBlocksBySlot.get(slot);
 
         if (blocks?.length) {
+            const colorQueue: IAddToColorQueueBulkItem[] = [];
             blocks.forEach((blockId) => {
                 const selectedColor = BLOCK_STATE_TO_COLOR.get("finalized");
                 if (selectedColor) {
-                    addToColorQueue(blockId, selectedColor);
+                    colorQueue.push({ id: blockId, color: selectedColor });
                 }
             });
+
+            console.log('--- onSlotFinalized');
+            addToColorQueueBulk(colorQueue);
         }
 
         removeConfirmedBlocksSlot(slot);

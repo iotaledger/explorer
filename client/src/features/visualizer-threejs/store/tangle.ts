@@ -14,6 +14,8 @@ export interface IBlockAnimationPosition {
     elapsedTime: number;
 }
 
+export interface IAddToColorQueueBulkItem { id: string; color: Color }
+
 export interface IBlockState extends Omit<IBlockAnimationPosition, "elapsedTime"> {
     id: string;
     color: Color;
@@ -47,7 +49,7 @@ interface TangleState {
 
     colorQueue: Pick<IBlockState, "id" | "color">[];
     addToColorQueue: (blockId: string, color: Color) => void;
-    addToColorQueueBulk: (list: { id: string; color: Color }[]) => void;
+    addToColorQueueBulk: (list: IAddToColorQueueBulkItem[]) => void;
     removeFromColorQueue: (blockIds: string[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'

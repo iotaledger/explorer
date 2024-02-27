@@ -139,8 +139,8 @@ export const useRenderTangle = () => {
                         tangleMeshRef.current.instanceColor.needsUpdate = true;
                     }
 
-                    removeIds.push(id);
                 }
+                removeIds.push(id);
             }
 
             removeFromColorQueue(removeIds);

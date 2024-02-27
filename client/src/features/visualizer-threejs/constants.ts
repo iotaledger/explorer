@@ -6,7 +6,7 @@ import { ThemeMode } from "./enums";
 export const BLOCK_STEP_PX = 10;
 export const STEP_CAMERA_SHIFT_PX = 100;
 
-export const MAX_BLOCK_INSTANCES = 5000;
+export const MAX_BLOCK_INSTANCES = 300;
 
 // nodes
 export const NODE_SIZE_DEFAULT = 10;
