@@ -9,6 +9,8 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
+import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
@@ -17,7 +19,7 @@ export interface IAnchorAddressState {
     totalBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
-    addressDelegationOutputs: OutputResponse[] | null;
+    addressDelegationOutputs: IRewardsResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isDelegationOutputsLoading: boolean;

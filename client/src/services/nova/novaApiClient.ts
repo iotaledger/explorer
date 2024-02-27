@@ -38,6 +38,7 @@ import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
 import { IAccountValidatorDetailsRequest } from "~/models/api/nova/IAccountValidatorDetailsRequest";
 import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountValidatorDetailsResponse";
 import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
+import { IDelegationDetailsResponse } from "~/models/api/nova/IDelegationDetailsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -165,8 +166,8 @@ export class NovaApiClient extends ApiClient {
      * @param request The Address Delegation outputs request.
      * @returns The Address outputs response
      */
-    public async delegationOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
-        return this.callApi<unknown, IAddressDetailsResponse>(
+    public async delegationOutputsDetails(request: IAddressDetailsRequest): Promise<IDelegationDetailsResponse> {
+        return this.callApi<unknown, IDelegationDetailsResponse>(
             `nova/address/outputs/delegation/${request.network}/${request.address}`,
             "get",
         );

@@ -22,6 +22,7 @@ import { useAccountCongestion } from "./useAccountCongestion";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
 import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
+import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -33,7 +34,7 @@ export interface IAccountAddressState {
     validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
-    addressDelegationOutputs: OutputResponse[] | null;
+    addressDelegationOutputs: IRewardsResponse[] | null;
     foundries: string[] | null;
     congestion: CongestionResponse | null;
     isAccountDetailsLoading: boolean;

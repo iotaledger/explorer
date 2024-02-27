@@ -1,9 +1,9 @@
-import { OutputResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
+import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
 
 /**
  * Fetch Address delegation UTXOs
@@ -11,10 +11,10 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param addressBech32 The address in bech32 format
  * @returns The output responses and loading bool.
  */
-export function useAddressDelegationOutputs(network: string, addressBech32: string | null): [OutputResponse[] | null, boolean] {
+export function useAddressDelegationOutputs(network: string, addressBech32: string | null): [IRewardsResponse[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
+    const [outputs, setOutputs] = useState<IRewardsResponse[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

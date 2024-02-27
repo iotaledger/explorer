@@ -24,7 +24,7 @@ import NftSection from "~/app/components/nova/address/section/nft/NftSection";
 import NftMetadataSection from "~/app/components/nova/address/section/nft/NftMetadataSection";
 import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 import AccountValidatorSection from "./account/AccountValidatorSection";
-import DelegationSection from "./DelegationSection";
+import DelegationSection from "./delegation/DelegationSection";
 
 enum DEFAULT_TABS {
     AssocOutputs = "Outputs",
@@ -160,7 +160,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
         <AssetsTable key={`assets-table-${addressBech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
         <NftSection key={`nft-section-${addressBech32}`} outputs={addressState.addressNftOutputs} />,
-        <DelegationSection key={`delegation-${addressBech32}`} outputs={addressState.addressDelegationOutputs} />,
+        <DelegationSection key={`delegation-${addressBech32}`} delegationDetails={addressState.addressDelegationOutputs} />,
     ];
 
     const accountAddressSections =

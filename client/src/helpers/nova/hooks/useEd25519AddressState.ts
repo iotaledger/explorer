@@ -8,6 +8,7 @@ import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
+import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
 
 export interface IEd25519AddressState {
     addressDetails: IAddressDetails | null;
@@ -15,7 +16,7 @@ export interface IEd25519AddressState {
     availableBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
-    addressDelegationOutputs: OutputResponse[] | null;
+    addressDelegationOutputs: IRewardsResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isDelegationOutputsLoading: boolean;
