@@ -99,17 +99,6 @@ export const Wrapper = ({
                             {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play_arrow</span>}
                         </button>
                     </div>
-                    {isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
-                        <div className="margin-l-t row middle">
-                            <h3>Show edges:</h3>
-                            <input
-                                type="checkbox"
-                                className="margin-l-t"
-                                checked={isEdgeRenderingEnabled}
-                                onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
-                            />
-                        </div>
-                    )}
                 </div>
             </div>
 
