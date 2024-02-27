@@ -25,6 +25,8 @@ export interface IAnchorAddressState {
     isDelegationOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -40,6 +42,8 @@ const initialState = {
     isDelegationOutputsLoading: false,
     isAnchorDetailsLoading: true,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**

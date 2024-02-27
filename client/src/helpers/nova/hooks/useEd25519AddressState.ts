@@ -21,6 +21,8 @@ export interface IEd25519AddressState {
     isNftOutputsLoading: boolean;
     isDelegationOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -34,6 +36,8 @@ const initialState = {
     isNftOutputsLoading: false,
     isDelegationOutputsLoading: false,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**
