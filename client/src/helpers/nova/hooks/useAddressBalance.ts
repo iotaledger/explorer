@@ -37,13 +37,15 @@ export function useAddressBalance(
             void (async () => {
                 const response = await apiClient.addressBalanceChronicle({ network, address });
 
-                if (response?.totalBalance !== undefined && isMounted) {
-                    let totalBalance = response.totalBalance;
-                    let availableBalance = response.availableBalance ?? 0;
+                if (response?.totalBalance?.amount !== undefined && isMounted) {
+                    let totalBalance = response.totalBalance.amount;
+                    let availableBalance = response.availableBalance?.amount ?? 0;
+
                     if (output) {
                         totalBalance = Number(totalBalance) + Number(output.amount);
                         availableBalance = Number(availableBalance) + Number(output.amount);
                     }
+
                     setTotalBalance(totalBalance);
                     setAvailableBalance(availableBalance > 0 ? availableBalance : null);
                 }
