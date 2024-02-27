@@ -37,6 +37,7 @@ import "./Visualizer.scss";
 const features = {
     statsEnabled: false,
     cameraControls: true,
+    showEdges: false,
 };
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
@@ -298,6 +299,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
+            isEdgesFeatureEnabled={features.showEdges}
         >
             <Canvas
                 ref={canvasRef}

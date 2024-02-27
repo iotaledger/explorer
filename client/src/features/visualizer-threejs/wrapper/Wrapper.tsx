@@ -20,6 +20,7 @@ export const Wrapper = ({
     setIsPlaying,
     isEdgeRenderingEnabled,
     setEdgeRenderingEnabled,
+    isEdgesFeatureEnabled,
 }: {
     readonly blocksCount: number;
     readonly children: React.ReactNode;
@@ -31,6 +32,7 @@ export const Wrapper = ({
     readonly setIsPlaying: (isPlaying: boolean) => void;
     readonly isEdgeRenderingEnabled?: boolean;
     readonly setEdgeRenderingEnabled?: (isEnabled: boolean) => void;
+    readonly isEdgesFeatureEnabled: boolean;
 }) => {
     const searchQuery = useSearchStore((state) => state.searchQuery);
     const setSearchQuery = useSearchStore((state) => state.setSearchQuery);
@@ -99,6 +101,17 @@ export const Wrapper = ({
                             {isPlaying ? <span className="material-icons">pause</span> : <span className="material-icons">play_arrow</span>}
                         </button>
                     </div>
+                    {isEdgesFeatureEnabled && isEdgeRenderingEnabled !== undefined && setEdgeRenderingEnabled !== undefined && (
+                        <div className="margin-l-t row middle">
+                            <h3>Show edges:</h3>
+                            <input
+                                type="checkbox"
+                                className="margin-l-t"
+                                checked={isEdgeRenderingEnabled}
+                                onChange={({ target: { checked } }) => setEdgeRenderingEnabled(checked)}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
