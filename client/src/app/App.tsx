@@ -14,6 +14,7 @@ import { isShimmerUiTheme } from "~helpers/networkHelper";
 import { scrollToTop } from "~helpers/pageUtils";
 import { INetwork } from "~models/config/INetwork";
 import { MAINNET } from "~models/config/networkType";
+import { IOTA_UI, IOTA2_UI, SHIMMER_UI } from "~models/config/uiTheme";
 import { NOVA, STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
 import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
@@ -58,10 +59,19 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
     }
 
     const body = document.querySelector("body");
-    if (isShimmer) {
-        body?.classList.add("shimmer");
-    } else {
-        body?.classList.remove("shimmer");
+    switch (networkConfig?.uiTheme) {
+        case SHIMMER_UI:
+            body?.classList.add("shimmer");
+            body?.classList.remove("iota2");
+            break;
+        case IOTA_UI:
+            body?.classList.remove("shimmer");
+            body?.classList.remove("iota2");
+            break;
+        case IOTA2_UI:
+            body?.classList.remove("shimmer");
+            body?.classList.add("iota2");
+            break;
     }
 
     const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", withNetworkContext);
