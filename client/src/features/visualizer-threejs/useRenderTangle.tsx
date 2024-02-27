@@ -1,12 +1,13 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { SPRAY_ANIMATION_DURATION, MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT } from "./constants";
+import { MAX_BLOCK_INSTANCES, NODE_SIZE_DEFAULT, SPRAY_DISTANCE } from "./constants";
 import { useMouseMove } from "./hooks/useMouseMove";
 import { IBlockState, IBlockAnimationPosition, useConfigStore, useTangleStore } from "./store";
 import { useRenderEdges } from "./useRenderEdges";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { positionToVector } from "./utils";
+import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
@@ -155,10 +156,12 @@ export const useRenderTangle = () => {
         const SPRAY_FRAMES_PER_SECOND = 24;
 
         const interval = setInterval(() => {
+            const { emitterSpeedMultiplier } = getVisualizerConfigValues();
             blockIdToAnimationPosition.forEach((properties, blockId) => {
                 const { initPosition, targetPosition, blockAddedTimestamp } = properties;
                 const currentAnimationTime = getVisualizerTimeDiff();
                 const elapsedTime = currentAnimationTime - blockAddedTimestamp;
+                const SPRAY_ANIMATION_DURATION = SPRAY_DISTANCE / emitterSpeedMultiplier;
                 const animationAlpha = Math.min(elapsedTime / SPRAY_ANIMATION_DURATION, 1);
                 const targetPositionVector = new THREE.Vector3();
 

@@ -7,6 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import {
     FAR_PLANE,
+    features,
     NEAR_PLANE,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
@@ -33,12 +34,6 @@ import { getCurrentTiltValue } from "./utils";
 import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
 import "./Visualizer.scss";
-
-const features = {
-    statsEnabled: false,
-    cameraControls: true,
-    showEdges: false,
-};
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
@@ -299,7 +294,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
-            isEdgesFeatureEnabled={features.showEdges}
         >
             <Canvas
                 ref={canvasRef}
