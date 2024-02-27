@@ -29,12 +29,15 @@ import { IAddressDetailsRequest } from "~/models/api/nova/address/IAddressDetail
 import { IAddressDetailsResponse } from "~/models/api/nova/address/IAddressDetailsResponse";
 import { IFoundriesResponse } from "~/models/api/nova/foundry/IFoundriesResponse";
 import { IFoundriesRequest } from "~/models/api/nova/foundry/IFoundriesRequest";
+import { ISlotRequest } from "~/models/api/nova/ISlotRequest";
+import { ISlotResponse } from "~/models/api/nova/ISlotResponse";
 import { ITransactionDetailsRequest } from "~/models/api/nova/ITransactionDetailsRequest";
 import { ITransactionDetailsResponse } from "~/models/api/nova/ITransactionDetailsResponse";
 import { ICongestionRequest } from "~/models/api/nova/ICongestionRequest";
 import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
 import { IAccountValidatorDetailsRequest } from "~/models/api/nova/IAccountValidatorDetailsRequest";
 import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountValidatorDetailsResponse";
+import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -183,6 +186,15 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the latest slot commitments.
+     * @param network The network in context.
+     * @returns The latest slot commitments response.
+     */
+    public async latestSlotCommitments(network: string): Promise<ILatestSlotCommitmentResponse> {
+        return this.callApi<unknown, ILatestSlotCommitmentResponse>(`nova/commitment/latest/${network}`, "get");
+    }
+
+    /**
      * Get the account congestion.
      * @param request The request to send.
      * @returns The response from the request.
@@ -207,6 +219,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getRewards(request: IRewardsRequest): Promise<IRewardsResponse> {
         return this.callApi<unknown, IRewardsResponse>(`nova/output/rewards/${request.network}/${request.outputId}`, "get");
+    }
+
+    /**
+     * Get the slot commitment.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getSlotCommitment(request: ISlotRequest): Promise<ISlotResponse> {
+        return this.callApi<unknown, ISlotResponse>(`nova/slot/${request.network}/${request.slotIndex}`, "get");
     }
 
     /**

@@ -160,7 +160,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         />,
         <AssetsTable key={`assets-table-${addressBech32}`} outputs={addressBasicOutputs} setTokensCount={setTokensCount} />,
         <NftSection key={`nft-section-${addressBech32}`} outputs={addressState.addressNftOutputs} />,
-        <DelegationSection key={`delegation-${addressBech32}`} delegation={addressState.addressDelegationOutputs} />,
+        <DelegationSection key={`delegation-${addressBech32}`} outputs={addressState.addressDelegationOutputs} />,
     ];
 
     const accountAddressSections =

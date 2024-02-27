@@ -17,6 +17,7 @@ import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
+import { ISlotResponse } from "../../models/api/nova/ISlotResponse";
 import { ITransactionDetailsResponse } from "../../models/api/nova/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
@@ -181,6 +182,25 @@ export class NovaApiService {
             }
         } catch {
             return { message: "Anchor output not found" };
+        }
+    }
+
+    /**
+     * Get the delegation output details.
+     * @param delegationId The delegationId to get the output details for.
+     * @returns The delegation output details.
+     */
+    public async delegationDetails(delegationId: string): Promise<IOutputDetailsResponse | undefined> {
+        try {
+            const delegationOutputId = await this.client.delegationOutputId(delegationId);
+
+            if (delegationOutputId) {
+                const outputResponse = await this.outputDetails(delegationOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { output: outputResponse.output };
+            }
+        } catch {
+            return { message: "Delegation output not found" };
         }
     }
 
@@ -377,6 +397,21 @@ export class NovaApiService {
         const manaRewardsResponse = await this.client.getRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
+    }
+
+    /**
+     * Get the slot commitment.
+     * @param slotIndex The slot index to get the commitment for.
+     * @returns The slot commitment.
+     */
+    public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
+        try {
+            const slot = await this.client.getCommitmentByIndex(slotIndex);
+
+            return { slot };
+        } catch (e) {
+            logger.error(`Failed fetching slot with slot index ${slotIndex}. Cause: ${e}`);
+        }
     }
 
     /**
