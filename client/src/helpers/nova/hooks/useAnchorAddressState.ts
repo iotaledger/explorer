@@ -8,6 +8,7 @@ import { useNetworkInfoNova } from "../networkInfo";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
+import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
@@ -15,7 +16,9 @@ export interface IAnchorAddressState {
     availableBalance: number | null;
     totalBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
+    addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
+    isNftOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isAddressHistoryLoading: boolean;
@@ -28,7 +31,9 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     addressBasicOutputs: null,
+    addressNftOutputs: null,
     isBasicOutputsLoading: false,
+    isNftOutputsLoading: false,
     isAnchorDetailsLoading: true,
     isAssociatedOutputsLoading: false,
     isAddressHistoryLoading: true,
@@ -54,6 +59,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     const { anchorOutput, isLoading: isAnchorDetailsLoading } = useAnchorDetails(network, address.anchorId);
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, anchorOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -73,10 +79,21 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             totalBalance,
             availableBalance,
             addressBasicOutputs,
+            addressNftOutputs,
             isBasicOutputsLoading,
+            isNftOutputsLoading,
             isAnchorDetailsLoading,
         });
-    }, [anchorOutput, totalBalance, availableBalance, addressBasicOutputs, isBasicOutputsLoading, isAnchorDetailsLoading]);
+    }, [
+        anchorOutput,
+        totalBalance,
+        availableBalance,
+        addressBasicOutputs,
+        addressNftOutputs,
+        isBasicOutputsLoading,
+        isNftOutputsLoading,
+        isAnchorDetailsLoading,
+    ]);
 
     return [state, setState];
 };
