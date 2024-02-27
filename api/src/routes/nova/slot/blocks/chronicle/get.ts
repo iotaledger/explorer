@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
-import { IAddressBalanceRequest } from "../../../../../models/api/nova/chronicle/IAddressBalanceRequest";
-import { IAddressBalanceResponse } from "../../../../../models/api/nova/chronicle/IAddressBalanceResponse";
+import { IBlockResponse } from "../../../../../models/api/nova/IBlockResponse";
+import { ISlotRequest } from "../../../../../models/api/nova/ISlotRequest";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
@@ -8,15 +8,16 @@ import { ChronicleService } from "../../../../../services/nova/chronicleService"
 import { ValidationHelper } from "../../../../../utils/validationHelper";
 
 /**
- * Fetch the address balance from chronicle nova.
+ * Fetch the slot blocks from chronicle nova.
  * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: IAddressBalanceRequest): Promise<IAddressBalanceResponse> {
+export async function get(_: IConfiguration, request: ISlotRequest): Promise<IBlockResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
+    ValidationHelper.numberFromString(request.slotIndex, "slotIndex");
 
     const networkConfig = networkService.get(request.network);
 
@@ -29,5 +30,5 @@ export async function get(_: IConfiguration, request: IAddressBalanceRequest): P
     }
 
     const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
-    return chronicleService.addressBalance(request.address);
+    return chronicleService.getSlotBlocks(request.slotIndex);
 }

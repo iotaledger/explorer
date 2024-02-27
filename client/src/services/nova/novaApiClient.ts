@@ -199,6 +199,15 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the slot blocks.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getSlotBlocks(request: ISlotRequest): Promise<IBlockResponse> {
+        return this.callApi<unknown, IBlockResponse>(`nova/slot/blocks/chronicle/${request.network}/${request.slotIndex}`, "get");
+    }
+
+    /**
      * Get the stats.
      * @param request The request to send.
      * @returns The response from the request.

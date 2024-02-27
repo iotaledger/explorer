@@ -1,11 +1,12 @@
 import React from "react";
-import useuseSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
+import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
 import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
 import Modal from "~/app/components/Modal";
 import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
 import { RouteComponentProps } from "react-router-dom";
 import "./SlotPage.scss";
+// import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
 
 export default function SlotPage({
     match: {
@@ -15,7 +16,8 @@ export default function SlotPage({
     network: string;
     slotIndex: string;
 }>): React.JSX.Element {
-    const { slotCommitment } = useuseSlotDetails(network, slotIndex);
+    const { slotCommitment } = useSlotDetails(network, slotIndex);
+    // const { blocks } = useSlotBlocks(network, slotIndex);
 
     const parsedSlotIndex = parseSlotIndex(slotIndex);
 

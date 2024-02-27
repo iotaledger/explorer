@@ -22,6 +22,7 @@ import { LegacyStatsService } from "./services/legacy/legacyStatsService";
 import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
+import { ChronicleService as NovaChronicleService } from "./services/nova/chronicleService";
 import { NovaFeed } from "./services/nova/feed/novaFeed";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { NovaApiService } from "./services/nova/novaApiService";
@@ -221,7 +222,7 @@ function initNovaServices(networkConfig: INetwork): void {
         };
         novaClientParams.primaryNodes.push(chronicleNode);
 
-        const chronicleService = new ChronicleService(networkConfig);
+        const chronicleService = new NovaChronicleService(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
 
