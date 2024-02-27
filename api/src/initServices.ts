@@ -22,11 +22,12 @@ import { LegacyStatsService } from "./services/legacy/legacyStatsService";
 import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
+import { ChronicleService as ChronicleServiceNova } from "./services/nova/chronicleService";
 import { NovaFeed } from "./services/nova/feed/novaFeed";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { NovaApiService } from "./services/nova/novaApiService";
 import { NovaStatsService } from "./services/nova/stats/novaStatsService";
-import { ChronicleService } from "./services/stardust/chronicleService";
+import { ChronicleService as ChronicleServiceStardust } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
 import { InfluxDBService } from "./services/stardust/influx/influxDbService";
 import { NodeInfoService as NodeInfoServiceStardust } from "./services/stardust/nodeInfoService";
@@ -170,7 +171,7 @@ function initStardustServices(networkConfig: INetwork): void {
         // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
         stardustClientParams.ignoreNodeHealth = true;
 
-        const chronicleService = new ChronicleService(networkConfig);
+        const chronicleService = new ChronicleServiceStardust(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
 
@@ -221,7 +222,7 @@ function initNovaServices(networkConfig: INetwork): void {
         };
         novaClientParams.primaryNodes.push(chronicleNode);
 
-        const chronicleService = new ChronicleService(networkConfig);
+        const chronicleService = new ChronicleServiceNova(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
 

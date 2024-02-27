@@ -31,6 +31,8 @@ export interface IAccountAddressState {
     isAssociatedOutputsLoading: boolean;
     isBasicOutputsLoading: boolean;
     isFoundriesLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
     isCongestionLoading: boolean;
 }
 
@@ -47,6 +49,8 @@ const initialState = {
     isAssociatedOutputsLoading: false,
     isBasicOutputsLoading: false,
     isFoundriesLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
     isCongestionLoading: false,
 };
 
