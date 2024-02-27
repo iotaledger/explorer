@@ -100,3 +100,9 @@ export const NUMBER_OF_RANDOM_TILTINGS = 100;
 export const TILT_DURATION_SECONDS = 4;
 export const MAX_TILT_FACTOR_DEGREES = 16;
 export const MIN_TILT_FACTOR_DEGREES = 1;
+
+export const features = {
+    statsEnabled: false,
+    cameraControls: true,
+    controlsVisualiserEnabled: true,
+};
