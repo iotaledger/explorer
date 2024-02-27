@@ -15,6 +15,8 @@ export interface IImplicitAccountCreationAddressState {
     addressBasicOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -24,6 +26,8 @@ const initialState = {
     addressBasicOutputs: null,
     isBasicOutputsLoading: false,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**

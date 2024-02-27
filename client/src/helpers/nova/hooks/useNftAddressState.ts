@@ -18,6 +18,8 @@ export interface INftAddressState {
     isBasicOutputsLoading: boolean;
     isNftDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
 }
 
 const initialState = {
@@ -29,6 +31,8 @@ const initialState = {
     addressBasicOutputs: null,
     isBasicOutputsLoading: false,
     isAssociatedOutputsLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
 };
 
 /**
