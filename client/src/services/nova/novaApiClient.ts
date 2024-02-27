@@ -38,6 +38,8 @@ import { ITransactionDetailsRequest } from "~/models/api/nova/ITransactionDetail
 import { ITransactionDetailsResponse } from "~/models/api/nova/ITransactionDetailsResponse";
 import { ICongestionRequest } from "~/models/api/nova/ICongestionRequest";
 import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
+import { IAccountValidatorDetailsRequest } from "~/models/api/nova/IAccountValidatorDetailsRequest";
+import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountValidatorDetailsResponse";
 import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 
 /**
@@ -153,6 +155,15 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the nft outputs details of an address.
+     * @param request The Address outputs request.
+     * @returns The Address outputs response
+     */
+    public async nftOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(`nova/address/outputs/nft/${request.network}/${request.address}`, "get");
+    }
+
+    /**
      * Get the associated outputs.
      * @param request The request to send.
      * @returns The response from the request.
@@ -181,6 +192,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getAccountCongestion(request: ICongestionRequest): Promise<ICongestionResponse> {
         return this.callApi<unknown, ICongestionResponse>(`nova/account/congestion/${request.network}/${request.accountId}`, "get");
+    }
+
+    /**
+     * Get the account validator info.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getAccountValidatorDetails(request: IAccountValidatorDetailsRequest): Promise<IAccountValidatorDetailsResponse> {
+        return this.callApi<unknown, ICongestionResponse>(`nova/account/validator/${request.network}/${request.accountId}`, "get");
     }
 
     /**
