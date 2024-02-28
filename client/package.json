@@ -113,6 +113,7 @@
     ],
     "lint-staged": {
         "src/**/*.{ts,js,tsx,jsx}": "eslint --cache --fix",
-        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write"
+        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write",
+        "src/**/*.scss": "stylelint ./src/**/*.scss --fix"
     }
 }
