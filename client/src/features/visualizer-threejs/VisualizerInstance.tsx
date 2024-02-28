@@ -57,6 +57,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
     const addToColorQueueBulk = useTangleStore((s) => s.addToColorQueueBulk);
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
+    const updateBlockMetadata = useTangleStore((s) => s.updateBlockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
 
@@ -259,13 +260,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 }
 
                 addToColorQueue(metadataUpdate.blockId, selectedColor);
-            }
+                const acceptedStates: BlockState[] = ["confirmed", "accepted"];
 
-            const acceptedStates: BlockState[] = ["confirmed", "accepted"];
-
-            if (acceptedStates.includes(metadataUpdate.blockState)) {
-                const slot = Utils.computeSlotIndex(metadataUpdate.blockId);
-                addToConfirmedBlocksSlot(metadataUpdate.blockId, slot);
+                if (acceptedStates.includes(metadataUpdate.blockState)) {
+                    const slot = Utils.computeSlotIndex(metadataUpdate.blockId);
+                    addToConfirmedBlocksSlot(metadataUpdate.blockId, slot);
+                }
             }
         }
     }
@@ -279,11 +279,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 const selectedColor = getBlockColorByState(themeMode, "finalized");
                 if (selectedColor) {
                     setBlockIdToBlockState(blockId, "finalized");
+                    updateBlockMetadata(blockId, { treeColor: selectedColor });
+
                     colorQueue.push({ id: blockId, color: selectedColor });
                 }
             });
 
-            // TODO update color for blockMetadata here
             addToColorQueueBulk(colorQueue);
         }
 

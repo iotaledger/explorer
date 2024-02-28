@@ -60,6 +60,7 @@ interface TangleState {
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
     blockMetadata: Map<string, IFeedBlockData & { treeColor: Color }>;
+    updateBlockMetadata: (blockId: string, metadata: Partial<IFeedBlockData & { treeColor: Color }>) => void;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
@@ -114,7 +115,7 @@ const INITIAL_STATE = {
 };
 
 export const useTangleStore = create<TangleState>()(
-    devtools((set) => ({
+    devtools((set, get) => ({
         ...INITIAL_STATE,
         resetConfigState: () =>
             // hard cleanup of the store
@@ -319,6 +320,14 @@ export const useTangleStore = create<TangleState>()(
                 ...state,
                 visibleBlockIdsOnPause: blockIds,
             }));
+        },
+        updateBlockMetadata: (blockId, metadata) => {
+            const blockMetadata = get().blockMetadata;
+            const currentMetadata = blockMetadata.get(blockId);
+            if (currentMetadata) {
+                const newMetadata = { ...currentMetadata, ...metadata };
+                blockMetadata.set(blockId, newMetadata);
+            }
         },
     })),
 );

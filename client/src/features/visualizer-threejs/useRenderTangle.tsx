@@ -46,10 +46,7 @@ export const useRenderTangle = () => {
         updateBlockIdToIndex(block.id, objectIndexRef.current);
 
         tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
-        // TODO
-        // console.log('--- assign block to mesh');
         addToColorQueue(block.id, block.color);
-        // tangleMeshRef.current.setColorAt(objectIndexRef.current, block.color);
 
         // Reuses old indexes when MAX_INSTANCES is reached
         // This also makes it so that old nodes are removed
