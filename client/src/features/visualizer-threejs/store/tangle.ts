@@ -82,6 +82,10 @@ interface TangleState {
     confirmedBlocksBySlot: Map<number, string[]>;
     addToConfirmedBlocksBySlot: (blockId: BlockId, slot: SlotIndex) => void;
     removeConfirmedBlocksSlot: (slot: SlotIndex) => void;
+
+    // visible block ids on pause
+    visibleBlockIdsOnPause?: string[];
+    setVisibleBlockIdsOnPause: (blockIds: string[] | undefined) => void;
 }
 
 const INITIAL_STATE = {
@@ -99,6 +103,7 @@ const INITIAL_STATE = {
     bps: 0,
     clickedInstanceId: null,
     confirmedBlocksBySlot: new Map(),
+    visibleBlockIdsOnPause: undefined,
 };
 
 export const useTangleStore = create<TangleState>()(
@@ -269,6 +274,13 @@ export const useTangleStore = create<TangleState>()(
                     confirmedBlocksBySlot: state.confirmedBlocksBySlot,
                 };
             });
+        },
+
+        setVisibleBlockIdsOnPause: (blockIds) => {
+            set((state) => ({
+                ...state,
+                visibleBlockIdsOnPause: blockIds,
+            }));
         },
     })),
 );

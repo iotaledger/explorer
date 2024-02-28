@@ -68,6 +68,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+    // const visibleBlockIdsOnPause = useTangleStore((s) => s.visibleBlockIdsOnPause);
     const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
 
     // Confirmed or accepted blocks by slot
@@ -249,14 +250,19 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
+            const isPlaying = useConfigStore.getState().isPlaying;
+            const visibleBlockIdsOnPause = useTangleStore.getState().visibleBlockIdsOnPause;
             if (selectedColor) {
                 const currentBlockMetadata = blockMetadata.get(metadataUpdate.blockId);
                 if (currentBlockMetadata) {
                     currentBlockMetadata.treeColor = selectedColor;
                 }
-                const isPlaying = useConfigStore.getState().isPlaying;
-                if (!matchingBlockIds.includes(metadataUpdate.blockId) && isPlaying) {
-                    addToColorQueue(metadataUpdate.blockId, selectedColor);
+
+                // don't overwrite search results
+                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
+                    if (isPlaying || (!isPlaying && visibleBlockIdsOnPause?.includes(metadataUpdate.blockId))) {
+                        addToColorQueue(metadataUpdate.blockId, selectedColor);
+                    }
                 }
             }
 
@@ -281,7 +287,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 }
             });
 
-            console.log('--- onSlotFinalized');
             addToColorQueueBulk(colorQueue);
         }
 
