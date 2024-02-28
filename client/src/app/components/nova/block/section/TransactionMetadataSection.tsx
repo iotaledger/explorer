@@ -1,4 +1,11 @@
-import { TRANSACTION_FAILURE_REASON_STRINGS, Transaction, TransactionMetadata, TransactionState, Utils } from "@iota/sdk-wasm-nova/web";
+import {
+    TRANSACTION_FAILURE_REASON_STRINGS,
+    Transaction,
+    TransactionMetadata,
+    TransactionState,
+    Utils,
+    AccountAddress,
+} from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import Spinner from "../../../Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
@@ -63,15 +70,20 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                 {transaction?.allotments && (
                                     <div className="section--data">
                                         <div className="label">Mana Allotment Accounts</div>
-                                        {transaction?.allotments?.map((allotment, idx) => (
-                                            <div className="value code highlight margin-b-t" key={idx}>
-                                                <TruncatedId
-                                                    id={allotment.accountId}
-                                                    link={`/${network}/addr/${Utils.accountIdToBech32(allotment.accountId, bech32Hrp)}`}
-                                                    showCopyButton
-                                                />
-                                            </div>
-                                        ))}
+                                        {transaction?.allotments?.map((allotment, idx) => {
+                                            const accountAddress = new AccountAddress(allotment.accountId);
+                                            const accountBech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
+
+                                            return (
+                                                <div className="value code highlight margin-b-t" key={idx}>
+                                                    <TruncatedId
+                                                        id={allotment.accountId}
+                                                        link={`/${network}/addr/${accountBech32}`}
+                                                        showCopyButton
+                                                    />
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </>

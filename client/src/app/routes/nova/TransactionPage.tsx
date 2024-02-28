@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { BasicBlockBody, SignedTransactionPayload, Utils } from "@iota/sdk-wasm-nova/web";
+import { AccountAddress, BasicBlockBody, SignedTransactionPayload, Utils } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import metadataInfoMessage from "~assets/modals/stardust/block/metadata.json";
@@ -135,7 +135,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                 <div className="value code highlight">
                     <TruncatedId
                         id={block.header.issuerId}
-                        link={`/${network}/addr/${Utils.accountIdToBech32(block.header.issuerId, bech32Hrp)}`}
+                        link={`/${network}/addr/${Utils.addressToBech32(new AccountAddress(block.header.issuerId), bech32Hrp)}`}
                         showCopyButton={true}
                     />
                 </div>

@@ -13,6 +13,8 @@ import {
     SimpleTokenScheme,
     DelegationOutput,
     Utils,
+    AccountAddress,
+    NftAddress,
 } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
@@ -223,11 +225,13 @@ function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: 
         const accountId = HexHelper.toBigInt256(accountIdFromOutput).eq(bigInt.zero)
             ? Utils.computeAccountId(outputId)
             : accountIdFromOutput;
-        bech32 = Utils.accountIdToBech32(accountId, bech32Hrp);
+        const accountAddress = new AccountAddress(accountId);
+        bech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
     } else if (output.type === OutputType.Nft) {
         const nftIdFromOutput = (output as NftOutput).nftId;
         const nftId = HexHelper.toBigInt256(nftIdFromOutput).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftIdFromOutput;
-        bech32 = Utils.nftIdToBech32(nftId, bech32Hrp);
+        const nftAddress = new NftAddress(nftId);
+        bech32 = Utils.addressToBech32(nftAddress, bech32Hrp);
     }
 
     return bech32;

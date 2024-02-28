@@ -86,17 +86,22 @@ export class AddressHelper {
 
     private static computeBech32FromHexAndType(hex: string, addressType: AddressType, hrp: string) {
         let bech32 = "";
+        let address: Address | null = null;
 
         if (addressType === AddressType.Ed25519) {
-            bech32 = Utils.hexToBech32(hex, hrp);
+            address = new Ed25519Address(hex);
         } else if (addressType === AddressType.Account) {
-            bech32 = Utils.accountIdToBech32(hex, hrp);
+            address = new AccountAddress(hex);
         } else if (addressType === AddressType.Nft) {
-            bech32 = Utils.nftIdToBech32(hex, hrp);
+            address = new NftAddress(hex);
         } else if (addressType === AddressType.Anchor) {
-            bech32 = Utils.anchorIdToBech32(hex, hrp);
+            address = new AnchorAddress(hex);
         } else if (addressType === AddressType.ImplicitAccountCreation) {
-            bech32 = Utils.hexToBech32(hex, hrp);
+            address = new ImplicitAccountCreationAddress(hex);
+        }
+
+        if (address !== null) {
+            bech32 = Utils.addressToBech32(address, hrp);
         }
 
         return bech32;
