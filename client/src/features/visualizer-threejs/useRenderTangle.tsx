@@ -8,6 +8,7 @@ import { useRenderEdges } from "./useRenderEdges";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { positionToVector } from "./utils";
 import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
+import useSearchStore from "~features/visualizer-threejs/store/search";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
@@ -131,22 +132,28 @@ export const useRenderTangle = () => {
      * Update block colors
      */
     useEffect(() => {
+        const updateColorOnMesh = (id: string, color: THREE.Color) => {
+            const indexToUpdate = blockIdToIndex.get(id);
+
+            if (indexToUpdate) {
+                tangleMeshRef.current.setColorAt(indexToUpdate, color);
+
+                if (tangleMeshRef.current.instanceColor) {
+                    tangleMeshRef.current.instanceColor.needsUpdate = true;
+                }
+            }
+        };
+
         if (colorQueue.length > 0) {
-            // if (colorQueue.length > 50) {
-                console.log('--- colorQueue', colorQueue);
-            //     debugger;
-            // }
             const removeIds: string[] = [];
+            const isPlaying = useConfigStore.getState().isPlaying;
+            const visibleBlockIdsOnPause = useTangleStore.getState().visibleBlockIdsOnPause;
+            const matchingBlockIds = useSearchStore.getState().matchingBlockIds;
+
             for (const { id, color } of colorQueue) {
-                const indexToUpdate = blockIdToIndex.get(id);
-
-                if (indexToUpdate) {
-                    tangleMeshRef.current.setColorAt(indexToUpdate, color);
-
-                    if (tangleMeshRef.current.instanceColor) {
-                        tangleMeshRef.current.instanceColor.needsUpdate = true;
-                    }
-
+                const shouldUpdateColor = !matchingBlockIds.includes(id) && (isPlaying || visibleBlockIdsOnPause?.includes(id));
+                if (shouldUpdateColor) {
+                    updateColorOnMesh(id, color);
                 }
                 removeIds.push(id);
             }

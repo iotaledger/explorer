@@ -14,7 +14,10 @@ export interface IBlockAnimationPosition {
     elapsedTime: number;
 }
 
-export interface IAddToColorQueueBulkItem { id: string; color: Color }
+export interface IAddToColorQueueBulkItem {
+    id: string;
+    color: Color;
+}
 
 export interface IBlockState extends Omit<IBlockAnimationPosition, "elapsedTime"> {
     id: string;

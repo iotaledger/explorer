@@ -31,7 +31,6 @@ import CameraControls from "./CameraControls";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 import { getCurrentTiltValue } from "./utils";
-import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
 import "./Visualizer.scss";
 
@@ -68,7 +67,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
-    const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
 
     // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
@@ -249,20 +247,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
-            const isPlaying = useConfigStore.getState().isPlaying;
-            const visibleBlockIdsOnPause = useTangleStore.getState().visibleBlockIdsOnPause;
             if (selectedColor) {
                 const currentBlockMetadata = blockMetadata.get(metadataUpdate.blockId);
                 if (currentBlockMetadata) {
                     currentBlockMetadata.treeColor = selectedColor;
                 }
 
-                // don't overwrite search results
-                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
-                    if (isPlaying || (!isPlaying && visibleBlockIdsOnPause?.includes(metadataUpdate.blockId))) {
-                        addToColorQueue(metadataUpdate.blockId, selectedColor);
-                    }
-                }
+                addToColorQueue(metadataUpdate.blockId, selectedColor);
             }
 
             const acceptedStates: BlockState[] = ["confirmed", "accepted"];
@@ -277,7 +268,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     function onSlotFinalized(slot: SlotIndex): void {
         const blocks = confirmedBlocksBySlot.get(slot);
 
-        console.log('--- onSlotFinalized');
         if (blocks?.length) {
             const colorQueue: IAddToColorQueueBulkItem[] = [];
             blocks.forEach((blockId) => {
@@ -287,7 +277,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 }
             });
 
-            // TODO
+            // TODO update color for blockMetadata here
             addToColorQueueBulk(colorQueue);
         }
 

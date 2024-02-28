@@ -14,27 +14,26 @@ const usePlayPause = () => {
             setIsPlaying(false);
             setVisibleBlockIdsOnPause([...visibleBlockIds]);
         } else {
-            // const updateColors = visibleBlockIdsOnPause?.map((id) => {
-            //     const color = blockMetadata.get(id)?.treeColor;
-            //
-            //     if (!color) {
-            //         return;
-            //     }
-            //     return {
-            //         id,
-            //         color: color,
-            //     };
-            // }).filter(i => !!i) || [];
-            //
-            // addToColorQueueBulk(updateColors);
+            const updateColors =
+                visibleBlockIdsOnPause?.reduce<IAddToColorQueueBulkItem[]>((acc, id) => {
+                    const color = blockMetadata.get(id)?.treeColor;
+
+                    if (color) {
+                        acc.push({ id, color });
+                    }
+
+                    return acc;
+                }, []) || [];
+
+            addToColorQueueBulk(updateColors);
             setVisibleBlockIdsOnPause(undefined);
             setIsPlaying(true);
         }
-    }
+    };
 
     return {
-        onToggle
-    }
+        onToggle,
+    };
 };
 
 export default usePlayPause;
