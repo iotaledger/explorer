@@ -1,8 +1,9 @@
 import logger from "../../logger";
 import { IAddressBalanceResponse } from "../../models/api/nova/chronicle/IAddressBalanceResponse";
+import { ISlotBlocksRequest } from "../../models/api/nova/chronicle/ISlotBlocksRequest";
+import { ISlotBlocksResponse } from "../../models/api/nova/chronicle/ISlotBlocksResponse";
 import { ITransactionHistoryRequest } from "../../models/api/nova/chronicle/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/nova/chronicle/ITransactionHistoryResponse";
-import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { FetchHelper } from "../../utils/fetchHelper";
 
@@ -48,20 +49,26 @@ export class ChronicleService {
 
     /**
      * Get the slot blocks for a specific slot index.
-     * @param slotIndex The slot index to fetch the blocks for.
-     * @returns The address balance response.
+     * @param request The slots blocks request.
+     * @returns The slot blocks response.
      */
-    public async getSlotBlocks(slotIndex: string): Promise<IBlockResponse | undefined> {
+    public async getSlotBlocks(request: ISlotBlocksRequest): Promise<ISlotBlocksResponse | undefined> {
         try {
-            const blocks = await FetchHelper.json<never, IBlockResponse>(
+            const params = {
+                cursor: request.cursor,
+            };
+            const blocks = await FetchHelper.json<never, ISlotBlocksResponse>(
                 this.chronicleEndpoint,
-                `${CHRONICLE_ENDPOINTS.slotBlocks}`.replace("{slot-index}", slotIndex),
+                `${CHRONICLE_ENDPOINTS.slotBlocks}${params ? `${FetchHelper.urlParams(params)}` : ""}`.replace(
+                    "{slot-index}",
+                    request.slotIndex,
+                ),
                 "get",
             );
             return blocks;
         } catch (error) {
             const network = this.networkConfig.network;
-            logger.warn(`[ChronicleService (Nova)] Failed fetching slot blocks for ${slotIndex} on ${network}. Cause: ${error}`);
+            logger.warn(`[ChronicleService (Nova)] Failed fetching slot blocks for ${request.slotIndex} on ${network}. Cause: ${error}`);
         }
     }
 

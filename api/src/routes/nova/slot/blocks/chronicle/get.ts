@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
-import { IBlockResponse } from "../../../../../models/api/nova/IBlockResponse";
-import { ISlotRequest } from "../../../../../models/api/nova/ISlotRequest";
+import { ISlotBlocksRequest } from "../../../../../models/api/nova/chronicle/ISlotBlocksRequest";
+import { ISlotBlocksResponse } from "../../../../../models/api/nova/chronicle/ISlotBlocksResponse";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
@@ -13,7 +13,7 @@ import { ValidationHelper } from "../../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: ISlotRequest): Promise<IBlockResponse> {
+export async function get(_: IConfiguration, request: ISlotBlocksRequest): Promise<ISlotBlocksResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -30,5 +30,5 @@ export async function get(_: IConfiguration, request: ISlotRequest): Promise<IBl
     }
 
     const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
-    return chronicleService.getSlotBlocks(request.slotIndex);
+    return chronicleService.getSlotBlocks(request);
 }
