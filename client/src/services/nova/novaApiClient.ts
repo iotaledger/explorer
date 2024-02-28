@@ -48,6 +48,7 @@ import { IEpochCommitteeRequest } from "~/models/api/nova/IEpochCommitteeRequest
 import { IEpochCommitteeResponse } from "~/models/api/nova/IEpochCommitteeResponse";
 import { IInfluxDailyResponse } from "~/models/api/nova/influx/IInfluxDailyResponse";
 import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMetadataResponse";
+import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -274,6 +275,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getEpochCommittee(request: IEpochCommitteeRequest): Promise<IEpochCommitteeResponse> {
         return this.callApi<unknown, IEpochCommitteeResponse>(`nova/epoch/committee/${request.network}/${request.epochIndex}`, "get");
+    }
+
+    /**
+     * Get the current cached validators.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getValidators(request: INetworkBoundGetRequest): Promise<IValidatorsResponse> {
+        return this.callApi<unknown, IValidatorsResponse>(`nova/validators/${request.network}`, "get");
     }
 
     /**
