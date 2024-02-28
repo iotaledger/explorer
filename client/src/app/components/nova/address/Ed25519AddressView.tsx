@@ -49,6 +49,8 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
                             key={addressDetails.bech32}
                             addressState={state}
                             setAssociatedOutputsLoading={(val) => setState({ isAssociatedOutputsLoading: val })}
+                            setTransactionHistoryLoading={(isLoading) => setState({ isAddressHistoryLoading: isLoading })}
+                            setTransactionHistoryDisabled={(val) => setState({ isAddressHistoryDisabled: val })}
                         />
                     </div>
                 )}

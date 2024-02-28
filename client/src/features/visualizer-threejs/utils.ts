@@ -1,27 +1,25 @@
-import { Vector3 } from "three";
+import { Vector3, MathUtils } from "three";
 import {
-    BLOCK_STEP_PX,
     MIN_BLOCKS_PER_SECOND,
     MAX_BLOCKS_PER_SECOND,
     MIN_TANGLE_RADIUS,
     MAX_TANGLE_RADIUS,
-    MIN_BLOCK_NEAR_RADIUS,
-    MAX_PREV_POINTS,
-    MAX_POINT_RETRIES,
     MAX_BLOCK_INSTANCES,
-    EMITTER_SPEED_MULTIPLIER,
     CAMERA_X_AXIS_MOVEMENT,
     CAMERA_Y_AXIS_MOVEMENT,
     CAMERA_X_OFFSET,
     CAMERA_Y_OFFSET,
     NUMBER_OF_RANDOM_PERIODS,
-    MIN_SINUSOID_PERIOD,
-    MAX_SINUSOID_PERIOD,
     NUMBER_OF_RANDOM_AMPLITUDES,
-    MIN_SINUSOID_AMPLITUDE,
-    MAX_SINUSOID_AMPLITUDE,
+    NUMBER_OF_RANDOM_TILTINGS,
+    TILT_DURATION_SECONDS,
+    SPRAY_DISTANCE,
+    MAX_PREV_POINTS,
+    MAX_POINT_RETRIES,
+    MIN_BLOCK_NEAR_RADIUS,
 } from "./constants";
-import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition } from "./interfaces";
+import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition, ITwoDimensionalPosition } from "./interfaces";
+import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 /**
  * Generates a random number within a specified range.
@@ -70,16 +68,6 @@ interface IBlockTanglePosition {
 }
 
 /**
- * Calculates the distance between two points.
- * @returns the distance between two points.
- */
-function distanceBetweenPoints(point1: IBlockTanglePosition, point2: IBlockTanglePosition): number {
-    const { z: z1, y: y1 } = point1;
-    const { z: z2, y: y2 } = point2;
-    return Math.sqrt((y2 - y1) ** 2 + (z2 - z1) ** 2);
-}
-
-/**
  * Calculates the radius of the circle based on the blocks per second.
  * @returns the radius of the circle.
  */
@@ -94,28 +82,8 @@ function getLinearRadius(bps: number): number {
     return radius;
 }
 
-/**
- * Generates a random point on a circle.
- * @returns the random point on a circle.
- */
-function getDynamicRandomYZPoints(
-    bps: number,
-    initialPosition: IThreeDimensionalPosition = {
-        x: 0,
-        y: 0,
-        z: 0,
-    },
-): IBlockTanglePosition {
-    const theta = Math.random() * (2 * Math.PI);
-
-    const maxRadius = getLinearRadius(bps);
-    const randomFactor = Math.random();
-    const radius = randomFactor * maxRadius;
-
-    const y = radius * Math.cos(theta) + initialPosition.y;
-    const z = radius * Math.sin(theta) + initialPosition.z;
-
-    return { y, z };
+function distanceBetweenPoints(point1: IBlockTanglePosition, point2: IBlockTanglePosition): number {
+    return Math.sqrt(Math.pow(point1.y - point2.y, 2) + Math.pow(point1.z - point2.z, 2));
 }
 
 /**
@@ -130,6 +98,20 @@ function pointPassesAllChecks(point: IBlockTanglePosition, prevPoints: IBlockTan
     return prevPoints.some((prevPoint) => distanceBetweenPoints(point, prevPoint) > MIN_BLOCK_NEAR_RADIUS);
 }
 
+export function getBlockPositionGenerator(): (
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    tiltDegress: number,
+) => IThreeDimensionalPosition {
+    const prevPoints: IBlockTanglePosition[] = [];
+
+    return (bps: number, initialPosition: IThreeDimensionalPosition, tiltDegress: number) => {
+        const point = generateAValidRandomPoint(bps, initialPosition, prevPoints, tiltDegress);
+        prevPoints.push({ y: point.y, z: point.z });
+        return point;
+    };
+}
+
 /**
  * Retries to generate a point until it passes all the checks.
  * @returns the point that passes all the checks.
@@ -138,18 +120,20 @@ function generateAValidRandomPoint(
     bps: number,
     initialPosition: IThreeDimensionalPosition,
     prevPoints: IBlockTanglePosition[],
-): IBlockTanglePosition {
-    let trialPoint: IBlockTanglePosition;
+    tiltDegress: number,
+): IThreeDimensionalPosition {
+    let trialPoint: IThreeDimensionalPosition;
     let passAllChecks = false;
     let retries = 0;
 
     do {
-        trialPoint = getDynamicRandomYZPoints(bps, initialPosition);
+        trialPoint = generateRandomXYZPoints(bps, initialPosition, tiltDegress);
         passAllChecks = pointPassesAllChecks(trialPoint, prevPoints);
         retries++;
     } while (!passAllChecks && retries < MAX_POINT_RETRIES);
 
     prevPoints.push(trialPoint);
+
     if (prevPoints.length > MAX_PREV_POINTS) {
         prevPoints.shift();
     }
@@ -158,23 +142,30 @@ function generateAValidRandomPoint(
 }
 
 /**
- * Gets a function to generate a random point on a circle.
- * @returns the function to generate the random point on a circle.
+ * Generates a random point on a circle.
+ * @returns the random point on a circle.
  */
-export function getGenerateDynamicYZPosition(): typeof getDynamicRandomYZPoints {
-    const prevPoints: IBlockTanglePosition[] = [];
-
-    return (bps: number, initialPosition: IThreeDimensionalPosition = { x: 0, y: 0, z: 0 }): IBlockTanglePosition => {
-        const validPoint = generateAValidRandomPoint(bps, initialPosition, prevPoints);
-
-        const randomYNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
-        const randomZNumber = randomNumberFromInterval(0, BLOCK_STEP_PX / 20);
-
-        validPoint.y += randomYNumber;
-        validPoint.z += randomZNumber;
-
-        return validPoint;
+export function generateRandomXYZPoints(
+    bps: number,
+    initialPosition: IThreeDimensionalPosition,
+    tiltDegrees: number,
+): IThreeDimensionalPosition {
+    const tiltRad = MathUtils.degToRad(-tiltDegrees);
+    const opposite = SPRAY_DISTANCE * Math.sin(tiltRad);
+    const adjacent = SPRAY_DISTANCE * Math.cos(tiltRad);
+    const circumferenceCenter: ITwoDimensionalPosition = {
+        x: initialPosition.x - adjacent,
+        y: initialPosition.y + opposite,
     };
+
+    const _radius = getLinearRadius(bps);
+    const randomFactor = Math.random();
+    const radius = _radius * randomFactor;
+
+    const y = circumferenceCenter.y + radius * Math.cos(radius);
+    const z = initialPosition.z + radius * Math.sin(radius);
+
+    return { x: circumferenceCenter.x, y, z };
 }
 
 /**
@@ -185,15 +176,17 @@ export function getTangleDistances(): {
     xTangleDistance: number;
     yTangleDistance: number;
 } {
+    const { maxSinusoidAmplitude, emitterSpeedMultiplier } = getVisualizerConfigValues();
+
     /* We assume MAX BPS to get the max possible Y */
     const MAX_TANGLE_DISTANCE_SECONDS = MAX_BLOCK_INSTANCES / MIN_BLOCKS_PER_SECOND;
 
-    const MAX_BLOCK_DISTANCE = EMITTER_SPEED_MULTIPLIER * MAX_TANGLE_DISTANCE_SECONDS;
+    const MAX_BLOCK_DISTANCE = emitterSpeedMultiplier * MAX_TANGLE_DISTANCE_SECONDS;
 
     const maxXDistance = MAX_BLOCK_DISTANCE;
 
     /* Max Y Distance will be multiplied by 2 to position blocks in the negative and positive Y axis  */
-    const maxYDistance = MAX_TANGLE_RADIUS * 2 + MAX_SINUSOID_AMPLITUDE * 2;
+    const maxYDistance = MAX_TANGLE_RADIUS * 2 + maxSinusoidAmplitude * 2;
 
     /* TODO: add sinusoidal distances */
 
@@ -260,7 +253,8 @@ export function calculateSinusoidalAmplitude({
  * @returns the emitter position
  */
 export function calculateEmitterPositionX(currentAnimationTime: number): number {
-    return currentAnimationTime * EMITTER_SPEED_MULTIPLIER;
+    const { emitterSpeedMultiplier } = getVisualizerConfigValues();
+    return currentAnimationTime * emitterSpeedMultiplier;
 }
 
 /**
@@ -290,7 +284,8 @@ export function positionToVector(position: IThreeDimensionalPosition) {
 export function generateRandomPeriods(): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
-        const period = Number(randomNumberFromInterval(MIN_SINUSOID_PERIOD, MAX_SINUSOID_PERIOD).toFixed(4));
+        const { minSinusoidPeriod, maxSinusoidPeriod } = getVisualizerConfigValues();
+        const period = Number(randomNumberFromInterval(minSinusoidPeriod, maxSinusoidPeriod).toFixed(4));
         sum += period;
         return period;
     });
@@ -320,18 +315,19 @@ function getCurrentPeriodValues(animationTime: number, periods: number[], totalS
 }
 
 function getNextAmplitudeWithVariation(currentAmplitude: number = 0): number {
-    const variation = (2 * MIN_SINUSOID_AMPLITUDE) / 3;
+    const { minSinusoidAmplitude, maxSinusoidAmplitude } = getVisualizerConfigValues();
+    const variation = (2 * minSinusoidAmplitude) / 3;
     const randomAmplitudeVariation = randomNumberFromInterval(-variation, variation);
 
     let newAmplitude = currentAmplitude + randomAmplitudeVariation;
 
-    if (newAmplitude > MAX_SINUSOID_AMPLITUDE) {
+    if (newAmplitude > maxSinusoidAmplitude) {
         newAmplitude = currentAmplitude - Math.abs(randomAmplitudeVariation);
-    } else if (newAmplitude < MIN_SINUSOID_AMPLITUDE) {
+    } else if (newAmplitude < minSinusoidAmplitude) {
         newAmplitude = currentAmplitude + Math.abs(randomAmplitudeVariation);
     }
 
-    newAmplitude = Math.max(MIN_SINUSOID_AMPLITUDE, Math.min(newAmplitude, MAX_SINUSOID_AMPLITUDE));
+    newAmplitude = Math.max(minSinusoidAmplitude, Math.min(newAmplitude, maxSinusoidAmplitude));
 
     return newAmplitude;
 }
@@ -343,5 +339,48 @@ export function generateRandomAmplitudes(): number[] {
         currentAmplitude = getNextAmplitudeWithVariation(currentAmplitude);
         amplitudes.push(currentAmplitude);
     }
+
     return amplitudes;
+}
+
+export function generateRandomTiltings(): number[] {
+    let previousValue: number;
+    const { minTiltDegrees, maxTiltDegrees } = getVisualizerConfigValues();
+
+    const tilts: number[] = Array.from({ length: NUMBER_OF_RANDOM_TILTINGS }, () => {
+        let randomTilt = randomIntFromInterval(minTiltDegrees, maxTiltDegrees);
+
+        if ((previousValue < 0 && randomTilt < 0) || (previousValue > 0 && randomTilt > 0)) {
+            randomTilt *= -1;
+        }
+
+        previousValue = randomTilt;
+
+        return randomTilt;
+    });
+    return tilts;
+}
+
+export function getCurrentTiltValue(animationTime: number, tilts: number[]): number {
+    const tiltAnimationDuration = TILT_DURATION_SECONDS * 2; // Multiplied by 2 so it goes back to the initial position
+    const totalIntervalDuration = tilts.length * tiltAnimationDuration; // The total duration of the random tilts
+
+    const currentTiltAnimationSeconds = animationTime % tiltAnimationDuration;
+    const currentAnimationSecondsInInterval = animationTime % totalIntervalDuration;
+
+    const currentTiltIndex = Math.floor(currentAnimationSecondsInInterval / tiltAnimationDuration);
+    const tilt = tilts[currentTiltIndex];
+
+    // Calculate the proportion of the current animation time within the half-duration
+    const proportionOfHalfDuration = currentTiltAnimationSeconds / (tiltAnimationDuration / 2);
+    let currentTilt;
+
+    if (currentTiltAnimationSeconds <= tiltAnimationDuration / 2) {
+        currentTilt = tilt * proportionOfHalfDuration;
+    } else {
+        // We subtract from 2 to reverse the effect after the peak
+        currentTilt = tilt * (2 - proportionOfHalfDuration);
+    }
+
+    return currentTilt;
 }

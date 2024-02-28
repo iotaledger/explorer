@@ -7,6 +7,7 @@ import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import {
     FAR_PLANE,
+    features,
     NEAR_PLANE,
     DIRECTIONAL_LIGHT_INTENSITY,
     PENDING_BLOCK_COLOR,
@@ -24,18 +25,15 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex, type BlockId } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
-import "./Visualizer.scss";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
-
-const features = {
-    statsEnabled: false,
-    cameraControls: true,
-};
+import { getCurrentTiltValue } from "./utils";
+import useSearchStore from "~features/visualizer-threejs/store/search";
+import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
+import "./Visualizer.scss";
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
@@ -55,6 +53,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         }),
     );
 
+    const { isSearchMatch, highlightSearchBlock } = useSearch();
+
     // Note: to prevent rerender each store update - call methods separate.
     const isEdgeRenderingEnabled = useConfigStore((s) => s.isEdgeRenderingEnabled);
     const setEdgeRenderingEnabled = useConfigStore((s) => s.setEdgeRenderingEnabled);
@@ -67,6 +67,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
+    const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
 
     // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
@@ -76,6 +77,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const sinusoidPeriodsSum = useConfigStore((s) => s.sinusoidPeriodsSum);
     const sinusoidRandomPeriods = useConfigStore((s) => s.sinusoidRandomPeriods);
     const sinusoidRandomAmplitudes = useConfigStore((s) => s.randomSinusoidAmplitudes);
+    const randomTilts = useConfigStore((state) => state.randomTilts);
 
     const selectedFeedItem: TSelectFeedItemNova = clickedInstanceId ? blockMetadata.get(clickedInstanceId) ?? null : null;
     const resetConfigState = useTangleStore((s) => s.resetConfigState);
@@ -208,7 +210,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 periodsSum: sinusoidPeriodsSum,
                 sinusoidAmplitudes: sinusoidRandomAmplitudes,
             });
-            const targetPosition = getBlockTargetPosition(initPosition, bps);
+            const blockTiltFactor = getCurrentTiltValue(currentAnimationTime, randomTilts);
+            const targetPosition = getBlockTargetPosition(initPosition, bps, blockTiltFactor);
 
             bpsCounter.addBlock();
 
@@ -216,7 +219,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 bpsCounter.start();
             }
 
-            blockMetadata.set(blockData.blockId, blockData);
+            blockMetadata.set(blockData.blockId, { ...blockData, treeColor: PENDING_BLOCK_COLOR });
 
             // edges
             const blockStrongParents = (blockData.block.body as BasicBlockBody).strongParents ?? [];
@@ -228,10 +231,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 addToEdgeQueue(blockData.blockId, blockWeakParents);
             }
 
+            if (isSearchMatch(blockData)) {
+                highlightSearchBlock(blockData.blockId);
+            }
+
             addBlock({
                 id: blockData.blockId,
                 color: PENDING_BLOCK_COLOR,
-                blockAddedTimestamp: getCurrentAnimationTime(),
+                blockAddedTimestamp: currentAnimationTime,
                 targetPosition,
                 initPosition,
             });
@@ -242,7 +249,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         if (metadataUpdate?.blockState) {
             const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
             if (selectedColor) {
-                addToColorQueue(metadataUpdate.blockId, selectedColor);
+                const currentBlockMetadata = blockMetadata.get(metadataUpdate.blockId);
+                if (currentBlockMetadata) {
+                    currentBlockMetadata.treeColor = selectedColor;
+                }
+                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
+                    addToColorQueue(metadataUpdate.blockId, selectedColor);
+                }
             }
 
             const acceptedStates: BlockState[] = ["confirmed", "accepted"];
@@ -273,11 +286,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         <Wrapper
             key={network}
             blocksCount={indexToBlockId.length}
-            filter=""
             isPlaying={isPlaying}
             network={network}
             networkConfig={networkConfig}
-            onChangeFilter={() => {}}
             selectNode={() => {}}
             selectedFeedItem={selectedFeedItem}
             setIsPlaying={setIsPlaying}

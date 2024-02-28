@@ -1,45 +1,47 @@
 import { CameraControls as DreiCameraControls } from "@react-three/drei";
-import React, { useEffect } from "react";
+import { getCameraAngles } from "./utils";
+import React, { useEffect, useState } from "react";
 import { useThree } from "@react-three/fiber";
 import { CanvasElement } from "./enums";
-import { useConfigStore } from "./store";
+import { useTangleStore, useConfigStore } from "./store";
 import { VISUALIZER_PADDINGS } from "./constants";
-import { getCameraAngles } from "./utils";
 
 const CAMERA_ANGLES = getCameraAngles();
 
 const CameraControls = () => {
+    const { camera } = useThree();
     const controls = React.useRef<DreiCameraControls>(null);
+    const [shouldLockZoom, setShouldLockZoom] = useState<boolean>(false);
 
     const scene = useThree((state) => state.scene);
+    const zoom = useTangleStore((state) => state.zoom);
+    const forcedZoom = useTangleStore((state) => state.forcedZoom);
     const mesh = scene.getObjectByName(CanvasElement.TangleWrapperMesh) as THREE.Mesh | undefined;
     const canvasDimensions = useConfigStore((state) => state.dimensions);
 
-    /**
-     * Locks the camera zoom to the current zoom value.
-     */
-    function lockCameraZoom(controls: DreiCameraControls) {
-        const zoom = controls.camera.zoom;
-        controls.maxZoom = zoom;
-        controls.minZoom = zoom;
-    }
+    useEffect(() => {
+        if (!forcedZoom) return;
 
-    /**
-     * Unlocks the camera zoom for free movement.
-     */
-    function unlockCameraZoom(controls: DreiCameraControls) {
-        controls.maxZoom = Infinity;
-        controls.minZoom = 0.01;
-    }
+        (async () => {
+            if (camera && controls.current) {
+                controls.current.minZoom = forcedZoom;
+                controls.current.minZoom = forcedZoom;
+                await controls.current.zoomTo(forcedZoom, true);
+            }
+        })();
+    }, [forcedZoom]);
 
     /**
      * Fits the camera to the TangleMesh.
      */
     function fitCameraToTangle(controls: DreiCameraControls | null, mesh?: THREE.Mesh) {
         if (controls && mesh) {
-            unlockCameraZoom(controls);
+            const previousZoom = controls.camera.zoom;
+            controls.minZoom = 0.01;
+            controls.maxZoom = Infinity;
             controls.fitToBox(mesh, false, { ...VISUALIZER_PADDINGS });
-            lockCameraZoom(controls);
+            controls.minZoom = previousZoom;
+            controls.maxZoom = previousZoom;
         }
     }
 
@@ -53,7 +55,9 @@ const CameraControls = () => {
             const camera = controls.current?.camera;
             const renderVerticalScene = canvasDimensions.width < canvasDimensions.height;
             const cameraUp: [number, number, number] = renderVerticalScene ? [1, 0, 0] : [0, 1, 0];
+            setShouldLockZoom(false);
             camera.up.set(...cameraUp);
+            setShouldLockZoom(true);
         }
     }, [canvasDimensions, controls, mesh]);
 
@@ -69,6 +73,16 @@ const CameraControls = () => {
             window.removeEventListener("resize", adjustCamera);
         };
     }, [controls, mesh]);
+
+    /**
+     * Locks the camera zoom to the current zoom value.
+     */
+    useEffect(() => {
+        if (controls.current) {
+            controls.current.maxZoom = shouldLockZoom ? zoom : Infinity;
+            controls.current.minZoom = shouldLockZoom ? zoom : 0.01;
+        }
+    }, [controls.current, shouldLockZoom, zoom]);
 
     return <DreiCameraControls ref={controls} makeDefault {...CAMERA_ANGLES} />;
 };

@@ -6,6 +6,8 @@ import {
     CongestionResponse,
     FeatureType,
     OutputResponse,
+    StakingFeature,
+    ValidatorResponse,
 } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useAccountDetails } from "./useAccountDetails";
@@ -17,6 +19,8 @@ import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 import { useAccountCongestion } from "./useAccountCongestion";
+import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -24,14 +28,21 @@ export interface IAccountAddressState {
     totalBalance: number | null;
     availableBalance: number | null;
     blockIssuerFeature: BlockIssuerFeature | null;
+    stakingFeature: StakingFeature | null;
+    validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputResponse[] | null;
+    addressNftOutputs: OutputResponse[] | null;
     foundries: string[] | null;
     congestion: CongestionResponse | null;
     isAccountDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isBasicOutputsLoading: boolean;
+    isNftOutputsLoading: boolean;
     isFoundriesLoading: boolean;
+    isAddressHistoryLoading: boolean;
+    isAddressHistoryDisabled: boolean;
     isCongestionLoading: boolean;
+    isValidatorDetailsLoading: boolean;
 }
 
 const initialState = {
@@ -40,14 +51,21 @@ const initialState = {
     totalBalance: null,
     availableBalance: null,
     blockIssuerFeature: null,
+    stakingFeature: null,
+    validatorDetails: null,
     addressBasicOutputs: null,
+    addressNftOutputs: null,
     foundries: null,
     congestion: null,
     isAccountDetailsLoading: true,
     isAssociatedOutputsLoading: false,
     isBasicOutputsLoading: false,
+    isNftOutputsLoading: false,
     isFoundriesLoading: false,
+    isAddressHistoryLoading: true,
+    isAddressHistoryDisabled: false,
     isCongestionLoading: false,
+    isValidatorDetailsLoading: false,
 };
 
 /**
@@ -67,10 +85,16 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     );
 
     const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
+
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, accountOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
     const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
+    const { validatorDetails, isLoading: isValidatorDetailsLoading } = useAccountValidatorDetails(
+        network,
+        state.addressDetails?.hex ?? null,
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -92,21 +116,36 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             availableBalance,
             foundries,
             congestion,
+            validatorDetails,
             addressBasicOutputs,
+            addressNftOutputs,
             isBasicOutputsLoading,
+            isNftOutputsLoading,
             isFoundriesLoading,
             isCongestionLoading,
+            isValidatorDetailsLoading,
         };
 
-        if (accountOutput && !state.blockIssuerFeature) {
-            const blockIssuerFeature = accountOutput?.features?.find(
-                (feature) => feature.type === FeatureType.BlockIssuer,
-            ) as BlockIssuerFeature;
-            if (blockIssuerFeature) {
-                updatedState = {
-                    ...updatedState,
-                    blockIssuerFeature,
-                };
+        if (accountOutput) {
+            if (!state.blockIssuerFeature) {
+                const blockIssuerFeature = accountOutput?.features?.find(
+                    (feature) => feature.type === FeatureType.BlockIssuer,
+                ) as BlockIssuerFeature;
+                if (blockIssuerFeature) {
+                    updatedState = {
+                        ...updatedState,
+                        blockIssuerFeature,
+                    };
+                }
+            }
+            if (!state.stakingFeature) {
+                const stakingFeature = accountOutput?.features?.find((feature) => feature.type === FeatureType.Staking) as StakingFeature;
+                if (stakingFeature) {
+                    updatedState = {
+                        ...updatedState,
+                        stakingFeature,
+                    };
+                }
             }
         }
 
@@ -116,10 +155,14 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         totalBalance,
         availableBalance,
         addressBasicOutputs,
+        addressNftOutputs,
         congestion,
+        validatorDetails,
         isAccountDetailsLoading,
         isBasicOutputsLoading,
+        isNftOutputsLoading,
         isCongestionLoading,
+        isValidatorDetailsLoading,
     ]);
 
     return [state, setState];

@@ -1,10 +1,11 @@
 import { Color } from "three";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { ZOOM_DEFAULT, ANIMATION_TIME_SECONDS } from "../constants";
+import { ZOOM_DEFAULT, SPRAY_DISTANCE } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { IThreeDimensionalPosition } from "../interfaces";
 import { BlockId, SlotIndex } from "@iota/sdk-wasm-nova/web";
+import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 export interface IBlockAnimationPosition {
     initPosition: IThreeDimensionalPosition;
@@ -46,19 +47,23 @@ interface TangleState {
 
     colorQueue: Pick<IBlockState, "id" | "color">[];
     addToColorQueue: (blockId: string, color: Color) => void;
+    addToColorQueueBulk: (list: { id: string; color: Color }[]) => void;
     removeFromColorQueue: (blockIds: string[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
     blockIdToIndex: Map<string, number>;
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
-    blockMetadata: Map<string, IFeedBlockData>;
+    blockMetadata: Map<string, IFeedBlockData & { treeColor: Color }>;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
 
     zoom: number;
     setZoom: (zoom: number) => void;
+
+    forcedZoom: number | undefined;
+    setForcedZoom: (zoom: number | undefined) => void;
 
     bps: number;
     setBps: (bps: number) => void;
@@ -88,6 +93,7 @@ const INITIAL_STATE = {
     blockIdToAnimationPosition: new Map(),
     indexToBlockId: [],
     zoom: ZOOM_DEFAULT,
+    forcedZoom: undefined,
     bps: 0,
     clickedInstanceId: null,
     confirmedBlocksBySlot: new Map(),
@@ -103,8 +109,12 @@ export const useTangleStore = create<TangleState>()(
                     state.blockIdToAnimationPosition.set(key, value);
                 });
 
+                const { emitterSpeedMultiplier } = getVisualizerConfigValues();
+
                 for (const [key, value] of state.blockIdToAnimationPosition) {
-                    if (value.elapsedTime > ANIMATION_TIME_SECONDS) {
+                    // const animationTime = SPRAY_DISTANCE / emitterSpeedMultiplier;
+                    const animationTime = SPRAY_DISTANCE / emitterSpeedMultiplier;
+                    if (value.elapsedTime > animationTime) {
                         state.blockIdToAnimationPosition.delete(key);
                     }
                 }
@@ -169,6 +179,12 @@ export const useTangleStore = create<TangleState>()(
                 colorQueue: [...state.colorQueue, { id, color }],
             }));
         },
+        addToColorQueueBulk: (list) => {
+            set((state) => ({
+                ...state,
+                colorQueue: [...state.colorQueue, ...list],
+            }));
+        },
         removeFromColorQueue: (blockIds) => {
             if (blockIds.length > 0) {
                 set((state) => ({
@@ -204,6 +220,12 @@ export const useTangleStore = create<TangleState>()(
             set((state) => ({
                 ...state,
                 zoom,
+            }));
+        },
+        setForcedZoom: (forcedZoom) => {
+            set((state) => ({
+                ...state,
+                forcedZoom,
             }));
         },
         setBps: (bps) => {

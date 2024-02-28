@@ -118,6 +118,8 @@ export class AddressHelper {
             return "NFT";
         } else if (addressType === AddressType.Anchor) {
             return "Anchor";
+        } else if (addressType === AddressType.ImplicitAccountCreation) {
+            return "Implicit";
         }
     }
 }

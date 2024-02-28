@@ -7,6 +7,7 @@ import logger from "../../logger";
 import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
 import { IFoundryResponse } from "../../models/api/nova/foundry/IFoundryResponse";
 import { IAccountDetailsResponse } from "../../models/api/nova/IAccountDetailsResponse";
+import { IAccountValidatorDetailsResponse } from "../../models/api/nova/IAccountValidatorDetailsResponse";
 import { IAddressDetailsResponse } from "../../models/api/nova/IAddressDetailsResponse";
 import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResponse";
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
@@ -16,6 +17,7 @@ import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
+import { ISlotResponse } from "../../models/api/nova/ISlotResponse";
 import { ITransactionDetailsResponse } from "../../models/api/nova/ITransactionDetailsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
@@ -184,6 +186,25 @@ export class NovaApiService {
     }
 
     /**
+     * Get the delegation output details.
+     * @param delegationId The delegationId to get the output details for.
+     * @returns The delegation output details.
+     */
+    public async delegationDetails(delegationId: string): Promise<IOutputDetailsResponse | undefined> {
+        try {
+            const delegationOutputId = await this.client.delegationOutputId(delegationId);
+
+            if (delegationOutputId) {
+                const outputResponse = await this.outputDetails(delegationOutputId);
+
+                return outputResponse.error ? { error: outputResponse.error } : { output: outputResponse.output };
+            }
+        } catch {
+            return { message: "Delegation output not found" };
+        }
+    }
+
+    /**
      * Get controlled Foundry output id by controller Account address
      * @param accountAddress The bech32 account address to get the controlled Foundries for.
      * @returns The foundry outputs.
@@ -277,6 +298,32 @@ export class NovaApiService {
     }
 
     /**
+     * Get the relevant nft output details for an address.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The alias output details.
+     */
+    public async nftOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.nftOutputIds({ address: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching nft output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(outputIds);
+        return {
+            outputs: outputResponses,
+        };
+    }
+
+    /**
      * Get Congestion for Account
      * @param accountId The account address to get the congestion for.
      * @returns The Congestion.
@@ -296,6 +343,25 @@ export class NovaApiService {
     }
 
     /**
+     * Get validator details for Account
+     * @param accountId The account id to get the validator details for.
+     * @returns The Congestion.
+     */
+    public async getAccountValidatorDetails(accountId: string): Promise<IAccountValidatorDetailsResponse | undefined> {
+        try {
+            const response = await this.client.getValidator(accountId);
+
+            if (response) {
+                return {
+                    validatorDetails: response,
+                };
+            }
+        } catch {
+            return { message: "Validator details not found" };
+        }
+    }
+
+    /**
      * Get the output mana rewards.
      * @param outputId The outputId to get the rewards for.
      * @returns The mana rewards.
@@ -304,6 +370,21 @@ export class NovaApiService {
         const manaRewardsResponse = await this.client.getRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
+    }
+
+    /**
+     * Get the slot commitment.
+     * @param slotIndex The slot index to get the commitment for.
+     * @returns The slot commitment.
+     */
+    public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
+        try {
+            const slot = await this.client.getCommitmentByIndex(slotIndex);
+
+            return { slot };
+        } catch (e) {
+            logger.error(`Failed fetching slot with slot index ${slotIndex}. Cause: ${e}`);
+        }
     }
 
     /**
