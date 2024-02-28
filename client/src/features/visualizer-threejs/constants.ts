@@ -21,19 +21,37 @@ export const SECOND = 1000;
 export const DATA_SENDER_TIME_INTERVAL = 500;
 
 // colors
-export const PENDING_BLOCK_COLOR = new Color("#A6C3FC");
-export const ACCEPTED_BLOCK_COLOR = new Color("#0101AB");
-export const CONFIRMED_BLOCK_COLOR = new Color("#0000DB");
-export const FINALIZED_BLOCK_COLOR = new Color("#0101FF");
-export const SEARCH_RESULT_COLOR = new Color("#C026D3");
+export const ACCEPTED_BLOCK_COLORS: Color[] = [new Color("#0101FF"), new Color("#0000DB"), new Color("#0101AB")];
+export const CONFIRMED_BLOCK_COLOR = new Color("#3CE5E1");
+export const FAILED_BLOCK_COLOR = new Color("#C026D3");
+export const REJECTED_BLOCK_COLOR = FAILED_BLOCK_COLOR;
+export const SEARCH_RESULT_COLOR = new Color("#1EC15A");
 export const HOVERED_BLOCK_COLOR = SEARCH_RESULT_COLOR;
 
-export const BLOCK_STATE_TO_COLOR = new Map<BlockState, Color>([
-    ["pending", PENDING_BLOCK_COLOR],
-    ["accepted", ACCEPTED_BLOCK_COLOR],
-    ["confirmed", CONFIRMED_BLOCK_COLOR],
-    ["finalized", FINALIZED_BLOCK_COLOR],
-]);
+// colors by theme
+export const PENDING_BLOCK_COLOR_LIGHTMODE = new Color("#A6C3FC");
+export const PENDING_BLOCK_COLOR_DARKMODE = new Color("#5C84FA");
+export const FINALIZED_BLOCK_COLOR_LIGHTMODE = new Color("#5C84FA");
+export const FINALIZED_BLOCK_COLOR_DARKMODE = new Color("#000081");
+
+export const THEME_BLOCK_COLORS: Record<ThemeMode, Record<BlockState, Color | Color[]>> = {
+    [ThemeMode.Dark]: {
+        accepted: ACCEPTED_BLOCK_COLORS,
+        pending: PENDING_BLOCK_COLOR_DARKMODE,
+        confirmed: CONFIRMED_BLOCK_COLOR,
+        finalized: FINALIZED_BLOCK_COLOR_DARKMODE,
+        rejected: REJECTED_BLOCK_COLOR,
+        failed: FAILED_BLOCK_COLOR,
+    },
+    [ThemeMode.Light]: {
+        accepted: ACCEPTED_BLOCK_COLORS,
+        pending: PENDING_BLOCK_COLOR_LIGHTMODE,
+        confirmed: CONFIRMED_BLOCK_COLOR,
+        finalized: FINALIZED_BLOCK_COLOR_LIGHTMODE,
+        rejected: REJECTED_BLOCK_COLOR,
+        failed: FAILED_BLOCK_COLOR,
+    },
+};
 
 // emitter
 export const EMITTER_SPEED_MULTIPLIER = 150;
@@ -64,7 +82,7 @@ export const DIRECTIONAL_LIGHT_INTENSITY = 0.45;
 
 export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
     [ThemeMode.Dark]: "#000000",
-    [ThemeMode.Light]: "#f2f2f2",
+    [ThemeMode.Light]: "#FFFFFF",
 };
 
 // emitter

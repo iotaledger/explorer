@@ -5,15 +5,7 @@ import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
-import {
-    FAR_PLANE,
-    features,
-    NEAR_PLANE,
-    DIRECTIONAL_LIGHT_INTENSITY,
-    PENDING_BLOCK_COLOR,
-    VISUALIZER_BACKGROUND,
-    BLOCK_STATE_TO_COLOR,
-} from "./constants";
+import { FAR_PLANE, features, NEAR_PLANE, DIRECTIONAL_LIGHT_INTENSITY, VISUALIZER_BACKGROUND } from "./constants";
 import Emitter from "./Emitter";
 import { useTangleStore, useConfigStore } from "./store";
 import { BPSCounter } from "./BPSCounter";
@@ -30,7 +22,7 @@ import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
-import { getCurrentTiltValue } from "./utils";
+import { getBlockColorByState, getCurrentTiltValue } from "./utils";
 import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
 import "./Visualizer.scss";
@@ -68,6 +60,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
     const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
+
+    const blockIdToState = useTangleStore((s) => s.blockIdToState);
+    const setBlockIdToBlockState = useTangleStore((s) => s.setBlockIdToBlockState);
 
     // Confirmed or accepted blocks by slot
     const confirmedBlocksBySlot = useTangleStore((s) => s.confirmedBlocksBySlot);
@@ -219,7 +214,8 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 bpsCounter.start();
             }
 
-            blockMetadata.set(blockData.blockId, { ...blockData, treeColor: PENDING_BLOCK_COLOR });
+            const blockColor = getBlockColorByState(themeMode, "pending");
+            blockMetadata.set(blockData.blockId, { ...blockData, treeColor: blockColor });
 
             // edges
             const blockStrongParents = (blockData.block.body as BasicBlockBody).strongParents ?? [];
@@ -235,9 +231,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 highlightSearchBlock(blockData.blockId);
             }
 
+            setBlockIdToBlockState(blockData.blockId, "pending");
+
             addBlock({
                 id: blockData.blockId,
-                color: PENDING_BLOCK_COLOR,
+                color: blockColor,
                 blockAddedTimestamp: currentAnimationTime,
                 targetPosition,
                 initPosition,
@@ -247,22 +245,29 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
     function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
         if (metadataUpdate?.blockState) {
-            const selectedColor = BLOCK_STATE_TO_COLOR.get(metadataUpdate.blockState);
+            const selectedColor = getBlockColorByState(themeMode, metadataUpdate.blockState);
             if (selectedColor) {
                 const currentBlockMetadata = blockMetadata.get(metadataUpdate.blockId);
                 if (currentBlockMetadata) {
                     currentBlockMetadata.treeColor = selectedColor;
                 }
-                if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
-                    addToColorQueue(metadataUpdate.blockId, selectedColor);
+
+                const previousBlockState = blockIdToState.get(metadataUpdate.blockId);
+                const wasConfirmedBeforeAccepted = previousBlockState === "accepted" && metadataUpdate.blockState === "confirmed";
+
+                if (!wasConfirmedBeforeAccepted) {
+                    setBlockIdToBlockState(metadataUpdate.blockId, metadataUpdate.blockState);
+                    if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
+                        addToColorQueue(metadataUpdate.blockId, selectedColor);
+                    }
                 }
-            }
 
-            const acceptedStates: BlockState[] = ["confirmed", "accepted"];
+                const acceptedStates: BlockState[] = ["confirmed", "accepted"];
 
-            if (acceptedStates.includes(metadataUpdate.blockState)) {
-                const slot = Utils.computeSlotIndex(metadataUpdate.blockId);
-                addToConfirmedBlocksSlot(metadataUpdate.blockId, slot);
+                if (acceptedStates.includes(metadataUpdate.blockState)) {
+                    const slot = Utils.computeSlotIndex(metadataUpdate.blockId);
+                    addToConfirmedBlocksSlot(metadataUpdate.blockId, slot);
+                }
             }
         }
     }
@@ -272,9 +277,10 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
         if (blocks?.length) {
             blocks.forEach((blockId) => {
-                const selectedColor = BLOCK_STATE_TO_COLOR.get("finalized");
+                const selectedColor = getBlockColorByState(themeMode, "finalized");
                 if (selectedColor) {
                     addToColorQueue(blockId, selectedColor);
+                    setBlockIdToBlockState(blockId, "finalized");
                 }
             });
         }
@@ -294,6 +300,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             setIsPlaying={setIsPlaying}
             isEdgeRenderingEnabled={isEdgeRenderingEnabled}
             setEdgeRenderingEnabled={(checked) => setEdgeRenderingEnabled(checked)}
+            themeMode={themeMode}
         >
             <Canvas
                 ref={canvasRef}
