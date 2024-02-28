@@ -43,7 +43,7 @@ import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
 import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
-import NovaVisualizer from "../features/visualizer-threejs/VisualizerInstance";
+import NovaVisualizer from "../features/visualizer-threejs/NovaVisualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
