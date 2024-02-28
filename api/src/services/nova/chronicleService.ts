@@ -1,7 +1,7 @@
 import logger from "../../logger";
 import { IAddressBalanceResponse } from "../../models/api/nova/chronicle/IAddressBalanceResponse";
 import { ISlotBlocksRequest } from "../../models/api/nova/chronicle/ISlotBlocksRequest";
-import { ISlotBlocksResponse } from "../../models/api/nova/chronicle/ISlotBlocksResponse";
+import { ISlotBlock, ISlotBlocksResponse } from "../../models/api/nova/chronicle/ISlotBlocksResponse";
 import { ITransactionHistoryRequest } from "../../models/api/nova/chronicle/ITransactionHistoryRequest";
 import { ITransactionHistoryResponse } from "../../models/api/nova/chronicle/ITransactionHistoryResponse";
 import { INetwork } from "../../models/db/INetwork";
@@ -53,23 +53,42 @@ export class ChronicleService {
      * @returns The slot blocks response.
      */
     public async getSlotBlocks(request: ISlotBlocksRequest): Promise<ISlotBlocksResponse | undefined> {
-        try {
-            const params = {
-                cursor: request.cursor,
-            };
-            const blocks = await FetchHelper.json<never, ISlotBlocksResponse>(
-                this.chronicleEndpoint,
-                `${CHRONICLE_ENDPOINTS.slotBlocks}${params ? `${FetchHelper.urlParams(params)}` : ""}`.replace(
-                    "{slot-index}",
-                    request.slotIndex,
-                ),
-                "get",
-            );
-            return blocks;
-        } catch (error) {
-            const network = this.networkConfig.network;
-            logger.warn(`[ChronicleService (Nova)] Failed fetching slot blocks for ${request.slotIndex} on ${network}. Cause: ${error}`);
-        }
+        let cursor: string | undefined;
+        const slotBlocks: ISlotBlock[] = [];
+
+        do {
+            try {
+                const params = {
+                    cursor: request.cursor,
+                };
+                const response = await FetchHelper.json<never, ISlotBlocksResponse>(
+                    this.chronicleEndpoint,
+                    `${CHRONICLE_ENDPOINTS.slotBlocks}${params ? `${FetchHelper.urlParams(params)}` : ""}`.replace(
+                        "{slot-index}",
+                        request.slotIndex,
+                    ),
+                    "get",
+                );
+                // Hardcoded to null for now because chronicle always returns the same cursor
+                cursor = null;
+                // cursor = response.cursor;
+
+                if (response.blocks) {
+                    slotBlocks.push(...response.blocks);
+                }
+            } catch (error) {
+                const network = this.networkConfig.network;
+                logger.warn(
+                    `[ChronicleService (Nova)] Failed fetching slot blocks for ${request.slotIndex} on ${network}. Cause: ${error}`,
+                );
+            }
+        } while (cursor);
+
+        const sortedBlocks = slotBlocks.sort((a, b) => b.payloadType - a.payloadType);
+
+        return {
+            blocks: sortedBlocks,
+        };
     }
 
     /*
