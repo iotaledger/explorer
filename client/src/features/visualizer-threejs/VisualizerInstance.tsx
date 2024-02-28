@@ -215,6 +215,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             }
 
             const blockColor = getBlockColorByState(themeMode, "pending");
+            const blockMetadata = useTangleStore.getState().blockMetadata;
             blockMetadata.set(blockData.blockId, { ...blockData, treeColor: blockColor });
 
             // edges
