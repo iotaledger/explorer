@@ -68,7 +68,6 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
-    // const visibleBlockIdsOnPause = useTangleStore((s) => s.visibleBlockIdsOnPause);
     const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
 
     // Confirmed or accepted blocks by slot
@@ -278,6 +277,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     function onSlotFinalized(slot: SlotIndex): void {
         const blocks = confirmedBlocksBySlot.get(slot);
 
+        console.log('--- onSlotFinalized');
         if (blocks?.length) {
             const colorQueue: IAddToColorQueueBulkItem[] = [];
             blocks.forEach((blockId) => {
@@ -287,6 +287,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 }
             });
 
+            // TODO
             addToColorQueueBulk(colorQueue);
         }
 
