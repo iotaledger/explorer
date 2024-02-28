@@ -1,10 +1,11 @@
 import { Color } from "three";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { ZOOM_DEFAULT, EMITTER_SPEED_MULTIPLIER, SPRAY_DISTANCE } from "../constants";
+import { ZOOM_DEFAULT, SPRAY_DISTANCE } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { IThreeDimensionalPosition } from "../interfaces";
 import { BlockId, SlotIndex } from "@iota/sdk-wasm-nova/web";
+import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 export interface IBlockAnimationPosition {
     initPosition: IThreeDimensionalPosition;
@@ -61,6 +62,9 @@ interface TangleState {
     zoom: number;
     setZoom: (zoom: number) => void;
 
+    forcedZoom: number | undefined;
+    setForcedZoom: (zoom: number | undefined) => void;
+
     bps: number;
     setBps: (bps: number) => void;
 
@@ -89,6 +93,7 @@ const INITIAL_STATE = {
     blockIdToAnimationPosition: new Map(),
     indexToBlockId: [],
     zoom: ZOOM_DEFAULT,
+    forcedZoom: undefined,
     bps: 0,
     clickedInstanceId: null,
     confirmedBlocksBySlot: new Map(),
@@ -104,8 +109,11 @@ export const useTangleStore = create<TangleState>()(
                     state.blockIdToAnimationPosition.set(key, value);
                 });
 
+                const { emitterSpeedMultiplier } = getVisualizerConfigValues();
+
                 for (const [key, value] of state.blockIdToAnimationPosition) {
-                    const animationTime = SPRAY_DISTANCE / EMITTER_SPEED_MULTIPLIER;
+                    // const animationTime = SPRAY_DISTANCE / emitterSpeedMultiplier;
+                    const animationTime = SPRAY_DISTANCE / emitterSpeedMultiplier;
                     if (value.elapsedTime > animationTime) {
                         state.blockIdToAnimationPosition.delete(key);
                     }
@@ -212,6 +220,12 @@ export const useTangleStore = create<TangleState>()(
             set((state) => ({
                 ...state,
                 zoom,
+            }));
+        },
+        setForcedZoom: (forcedZoom) => {
+            set((state) => ({
+                ...state,
+                forcedZoom,
             }));
         },
         setBps: (bps) => {

@@ -1,0 +1,8 @@
+.nft--section {
+    @include tablet-down {
+        .section--header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+}
