@@ -6,7 +6,8 @@ import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
 import { RouteComponentProps } from "react-router-dom";
 import "./SlotPage.scss";
-// import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
+import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
+import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
 
 export default function SlotPage({
     match: {
@@ -17,8 +18,7 @@ export default function SlotPage({
     slotIndex: string;
 }>): React.JSX.Element {
     const { slotCommitment } = useSlotDetails(network, slotIndex);
-    // const { blocks } = useSlotBlocks(network, slotIndex);
-
+    const { blocks } = useSlotBlocks(network, slotIndex);
     const parsedSlotIndex = parseSlotIndex(slotIndex);
 
     const dataRows: IPageDataRow[] = [
@@ -66,6 +66,8 @@ export default function SlotPage({
                     ) : (
                         <NotFound query={slotIndex} searchTarget="slot" />
                     )}
+
+                    <SlotBlocksSection blocks={blocks} />
                 </div>
             </div>
         </section>
