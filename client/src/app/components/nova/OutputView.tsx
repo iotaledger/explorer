@@ -42,7 +42,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
-    const aliasOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
+    const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
     const manaEntries = getManaKeyValueEntries(manaDetails);
@@ -101,8 +101,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--label">Account address:</div>
                     <div className="card--value">
                         <TruncatedId
-                            id={aliasOrNftBech32}
-                            link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                            id={accountOrNftBech32}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${accountOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
@@ -129,8 +129,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--label">Nft address:</div>
                     <div className="card--value">
                         <TruncatedId
-                            id={aliasOrNftBech32}
-                            link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                            id={accountOrNftBech32}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${accountOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
