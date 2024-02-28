@@ -34,7 +34,7 @@ interface OutputViewProps {
     showCopyAmount: boolean;
     isPreExpanded?: boolean;
     isLinksDisabled?: boolean;
-    manaDetails: OutputManaDetails | null;
+    manaDetails?: OutputManaDetails | null;
 }
 
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
@@ -45,7 +45,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
-    const manaEntries = getManaKeyValueEntries(manaDetails);
+    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails) : undefined;
 
     const header = (
         <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
@@ -164,6 +164,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                 output.type === OutputType.Account ||
                 output.type === OutputType.Anchor ||
                 output.type === OutputType.Nft) &&
+                manaEntries &&
                 manaDetails?.totalMana && <KeyValueEntries isPreExpanded={true} {...manaEntries} />}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
