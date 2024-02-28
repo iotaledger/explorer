@@ -42,7 +42,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
-    const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
+    const aliasOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
     const manaEntries = getManaKeyValueEntries(manaDetails);
@@ -217,7 +217,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     );
 };
 
-function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string): string {
+function buildAddressForAccountOrNft(outputId: string, output: Output, bech32Hrp: string): string {
     let bech32: string = "";
 
     if (output.type === OutputType.Account) {
