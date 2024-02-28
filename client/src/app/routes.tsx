@@ -43,7 +43,7 @@ import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
 import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
-import NovaVisualizerWrapper from "../features/visualizer-threejs/NovaVisualizerWrapper";
+import NovaVisualizer from "../features/visualizer-threejs/NovaVisualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
@@ -176,7 +176,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
     const novaRoutes = [
         <Route exact path="/:network" key={keys.next().value} component={NovaLanding} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={NovaAddressPage} />,
-        <Route path="/:network/visualizer/" key={keys.next().value} component={NovaVisualizerWrapper} />,
+        <Route path="/:network/visualizer/" key={keys.next().value} component={NovaVisualizer} />,
         <Route path="/:network/block/:blockId" key={keys.next().value} component={NovaBlockPage} />,
         <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={NovaSearch} />,
