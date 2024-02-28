@@ -1,0 +1,57 @@
+@import "../../../../../../scss/media-queries";
+
+.nft-metadata {
+    display: flex;
+    flex-direction: row;
+
+    @include tablet-down {
+        flex-direction: column;
+    }
+
+    .nft-metadata__image {
+        width: 398px;
+        height: fit-content;
+        object-fit: contain;
+        margin-top: 16px;
+
+        @include desktop-down {
+            width: 300px;
+            height: 290px;
+        }
+
+        @include tablet-down {
+            align-self: center;
+            width: 100%;
+            max-width: 398px;
+            height: auto;
+        }
+    }
+
+    .nft-metadata__info {
+        margin-left: 40px;
+        @include tablet-down {
+            margin-left: 0;
+            margin-top: 20px;
+        }
+
+        &__description {
+            word-break: break-word !important;
+            text-align: justify;
+        }
+
+        li {
+            align-items: center;
+            justify-content: space-between;
+            span.label {
+                margin-right: 8px;
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .value {
+        font-size: 12px !important;
+        line-height: 18px;
+        font-weight: 500;
+    }
+}

@@ -1,13 +1,23 @@
 import {
+    AccountAddress,
+    AddressType,
     AddressUnlockCondition,
+    AnchorAddress,
     BasicBlockBody,
     Block,
     BlockBodyType,
     CommonOutput,
     DelegationOutput,
+    Ed25519Address,
+    FeatureType,
     GovernorAddressUnlockCondition,
     ImmutableAccountAddressUnlockCondition,
+    ImplicitAccountCreationAddress,
     InputType,
+    IssuerFeature,
+    MetadataFeature,
+    NftAddress,
+    NftOutput,
     OutputType,
     PayloadType,
     SignatureUnlock,
@@ -25,6 +35,7 @@ import { IOutput } from "~/models/api/nova/IOutput";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { Converter } from "../stardust/convertUtils";
 import { AddressHelper } from "./addressHelper";
+import { plainToInstance } from "class-transformer";
 
 interface TransactionInputsAndOutputsResponse {
     inputs: IInput[];
@@ -198,6 +209,64 @@ export class TransactionsHelper {
 
             return Number.parseInt(firstFormattedIndex, 16) - Number.parseInt(secondFormattedIndex, 16);
         });
+    }
+
+    /**
+     * Retrieves the MetadataFeature from the given NftOutput.
+     * @param output The NftOutput to retrieve the MetadataFeature from.
+     * @returns The MetadataFeature if found, otherwise undefined.
+     */
+    public static getNftMetadataFeature(output: NftOutput): MetadataFeature | null {
+        const metadataFeature = output?.immutableFeatures?.find((feature) => feature.type === FeatureType.Metadata) as MetadataFeature;
+
+        return metadataFeature ?? null;
+    }
+
+    /**
+     * Get the issuer ID from the issuer feature.
+     * @param output The nft output to get the issuer ID from.
+     * @returns The issuer ID.
+     */
+    public static getNftIssuerId(output: NftOutput): string | null {
+        const issuerFeature = output?.immutableFeatures?.find((feature) => feature.type === FeatureType.Issuer) as IssuerFeature;
+
+        let issuerId = null;
+        if (issuerFeature) {
+            switch (issuerFeature.address.type) {
+                case AddressType.Ed25519: {
+                    const ed25519Address = issuerFeature.address as Ed25519Address;
+                    issuerId = ed25519Address.pubKeyHash;
+                    break;
+                }
+                case AddressType.Account: {
+                    const accountAddress = issuerFeature.address as AccountAddress;
+                    issuerId = accountAddress.accountId;
+                    break;
+                }
+                case AddressType.Nft: {
+                    const nftAddress = issuerFeature.address as NftAddress;
+                    issuerId = nftAddress.nftId;
+                    break;
+                }
+                case AddressType.Anchor: {
+                    const anchorAddress = issuerFeature.address as AnchorAddress;
+                    issuerId = anchorAddress.anchorId;
+                    break;
+                }
+                case AddressType.ImplicitAccountCreation: {
+                    const implicitAddress = issuerFeature.address as ImplicitAccountCreationAddress;
+                    const implicitAccountCreationAddress = plainToInstance(ImplicitAccountCreationAddress, implicitAddress);
+                    const innerAddress = implicitAccountCreationAddress.address();
+                    issuerId = (innerAddress as Ed25519Address).pubKeyHash;
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+
+        return issuerId;
     }
 
     private static bechAddressFromAddressUnlockCondition(

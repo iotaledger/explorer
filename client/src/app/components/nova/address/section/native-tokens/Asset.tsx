@@ -36,7 +36,7 @@ const Asset: React.FC<AssetProps> = ({ tableFormat, token }) => {
         const validator = new JsonSchemaValidator();
 
         try {
-            const tokenInfo = JSON.parse(hexToUtf8(metadata.data)) as Irc30Metadata;
+            const tokenInfo = JSON.parse(hexToUtf8(metadata.entries[Object.keys(metadata.entries)[0]])) as Irc30Metadata;
             const result = validator.validate(tokenInfo, tokenSchemeIRC30);
 
             if (result.valid) {
