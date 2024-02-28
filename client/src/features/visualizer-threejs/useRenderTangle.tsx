@@ -34,6 +34,8 @@ export const useRenderTangle = () => {
     const blockIdToAnimationPosition = useTangleStore((s) => s.blockIdToAnimationPosition);
     const updateBlockIdToAnimationPosition = useTangleStore((s) => s.updateBlockIdToAnimationPosition);
 
+    const resetTangleStore = useTangleStore((s) => s.resetConfigState);
+
     const getVisualizerTimeDiff = useVisualizerTimer();
 
     const assignBlockToMesh = (block: IBlockState) => {
@@ -212,4 +214,14 @@ export const useRenderTangle = () => {
             setUpdateAnimationPositionQueue(updateAnimationPositionQueue);
         }
     }, [isPlaying, updateAnimationPositionQueue]);
+
+    /**
+     * Cleanup scene
+     */
+    useEffect(() => {
+        return () => {
+            scene.remove(tangleMeshRef.current);
+            resetTangleStore();
+        };
+    }, [scene, tangleMeshRef]);
 };

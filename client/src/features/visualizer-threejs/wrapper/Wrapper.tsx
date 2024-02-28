@@ -11,6 +11,7 @@ import { useTangleStore } from "~features/visualizer-threejs/store/tangle";
 import { SEARCH_RESULT_COLOR, features } from "~features/visualizer-threejs/constants";
 import { isSearchMatch } from "~features/visualizer-threejs/hooks/useSearch";
 import usePlayPause from "~features/visualizer-threejs/hooks/usePlayPause";
+import { ThemeMode } from "../enums";
 
 export const Wrapper = ({
     blocksCount,
@@ -22,6 +23,7 @@ export const Wrapper = ({
     setIsPlaying,
     isEdgeRenderingEnabled,
     setEdgeRenderingEnabled,
+    themeMode,
 }: {
     readonly blocksCount: number;
     readonly children: React.ReactNode;
@@ -33,6 +35,7 @@ export const Wrapper = ({
     readonly setIsPlaying: (isPlaying: boolean) => void;
     readonly isEdgeRenderingEnabled?: boolean;
     readonly setEdgeRenderingEnabled?: (isEnabled: boolean) => void;
+    readonly themeMode: ThemeMode;
 }) => {
     const searchQuery = useSearchStore((state) => state.searchQuery);
     const setSearchQuery = useSearchStore((state) => state.setSearchQuery);
@@ -125,7 +128,7 @@ export const Wrapper = ({
                 {selectedFeedItem && (
                     <SelectedFeedInfo networkConfig={networkConfig} network={network} selectedFeedItem={selectedFeedItem} />
                 )}
-                <KeyPanel network={network} />
+                <KeyPanel network={network} themeMode={themeMode} />
             </div>
             <div className="padding-t-m padding-b-m padding-r-m padding-l-m">
                 <ConfigControls />

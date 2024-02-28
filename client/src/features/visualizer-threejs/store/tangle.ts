@@ -4,7 +4,7 @@ import { devtools } from "zustand/middleware";
 import { ZOOM_DEFAULT, SPRAY_DISTANCE } from "../constants";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 import { IThreeDimensionalPosition } from "../interfaces";
-import { BlockId, SlotIndex } from "@iota/sdk-wasm-nova/web";
+import { BlockId, BlockState, SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
 
 export interface IBlockAnimationPosition {
@@ -86,6 +86,9 @@ interface TangleState {
     addToConfirmedBlocksBySlot: (blockId: BlockId, slot: SlotIndex) => void;
     removeConfirmedBlocksSlot: (slot: SlotIndex) => void;
 
+    blockIdToState: Map<BlockId, BlockState>;
+    setBlockIdToBlockState: (blockId: BlockId, blockState: BlockState) => void;
+
     // visible block ids on pause
     visibleBlockIdsOnPause?: string[];
     setVisibleBlockIdsOnPause: (blockIds: string[] | undefined) => void;
@@ -106,13 +109,33 @@ const INITIAL_STATE = {
     bps: 0,
     clickedInstanceId: null,
     confirmedBlocksBySlot: new Map(),
+    blockIdToState: new Map(),
     visibleBlockIdsOnPause: undefined,
 };
 
 export const useTangleStore = create<TangleState>()(
     devtools((set) => ({
         ...INITIAL_STATE,
-        resetConfigState: () => set(INITIAL_STATE),
+        resetConfigState: () =>
+            // hard cleanup of the store
+            set((state) => {
+                state.blockQueue = [];
+                state.edgeQueue = [];
+                state.colorQueue = [];
+                state.blockIdToEdges = new Map();
+                state.blockIdToIndex = new Map();
+                state.blockIdToPosition = new Map();
+                state.blockMetadata = new Map();
+                state.blockIdToAnimationPosition = new Map();
+                state.indexToBlockId = [];
+                state.zoom = ZOOM_DEFAULT;
+                state.forcedZoom = undefined;
+                state.bps = 0;
+                state.clickedInstanceId = null;
+                state.confirmedBlocksBySlot = new Map();
+                state.blockIdToState = new Map();
+                return state;
+            }),
         updateBlockIdToAnimationPosition: (updatedPositions) => {
             set((state) => {
                 updatedPositions.forEach((value, key) => {
@@ -206,15 +229,18 @@ export const useTangleStore = create<TangleState>()(
         updateBlockIdToIndex: (blockId: string, index: number) => {
             set((state) => {
                 state.blockIdToIndex.set(blockId, index);
-                if (state.indexToBlockId[index]) {
+                const previousBlockId = state.indexToBlockId[index];
+                if (previousBlockId) {
                     // Clean up map from old blockIds
-                    state.blockIdToIndex.delete(state.indexToBlockId[index]);
+                    state.blockIdToIndex.delete(previousBlockId);
                     // Clean up old block edges
-                    state.blockIdToEdges.delete(state.indexToBlockId[index]);
+                    state.blockIdToEdges.delete(previousBlockId);
                     // Clean up old block position
-                    state.blockIdToPosition.delete(state.indexToBlockId[index]);
+                    state.blockIdToPosition.delete(previousBlockId);
                     // Clean up old block metadata
-                    state.blockMetadata.delete(state.indexToBlockId[index]);
+                    state.blockMetadata.delete(previousBlockId);
+                    // Cleanup old block state
+                    state.blockIdToState.delete(previousBlockId);
                 }
 
                 const nextIndexToBlockId = [...state.indexToBlockId];
@@ -275,6 +301,15 @@ export const useTangleStore = create<TangleState>()(
                 return {
                     ...state,
                     confirmedBlocksBySlot: state.confirmedBlocksBySlot,
+                };
+            });
+        },
+        setBlockIdToBlockState(blockId, blockState) {
+            set((state) => {
+                state.blockIdToState.set(blockId, blockState);
+                return {
+                    ...state,
+                    blockIdToState: state.blockIdToState,
                 };
             });
         },
