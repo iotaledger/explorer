@@ -50,9 +50,7 @@ export const KeyPanel = ({ network, themeMode }: { network: string; themeMode: T
                     } else {
                         const targetColor = THEME_BLOCK_COLORS[themeMode][state];
                         if (Array.isArray(targetColor)) {
-                            return targetColor.map((color, index) => (
-                                <ColorPanel key={state + index} label={label} color={color.getStyle()} />
-                            ));
+                            return <ColorPanel key={state} label={label} color={targetColor.map((color) => color.getStyle())} />;
                         }
                         return <ColorPanel key={state} label={label} color={targetColor.getStyle()} />;
                     }

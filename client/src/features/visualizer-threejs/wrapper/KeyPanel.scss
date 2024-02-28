@@ -43,6 +43,14 @@
                 border-radius: 50%;
             }
 
+            .key-panel-item-multi-color {
+                display: flex;
+                flex-direction: row;
+                .key-marker:not(:last-of-type) {
+                    margin-right: 4px;
+                }
+            }
+
             .key-label {
                 @include font-size(14px);
 
