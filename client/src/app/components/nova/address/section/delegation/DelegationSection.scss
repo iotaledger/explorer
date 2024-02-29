@@ -52,45 +52,10 @@
     }
 }
 
-.delegation-cards {
+.cards--delegation {
     display: none;
 
     @include tablet-down {
         display: block;
-
-        .card--delegation {
-            margin-bottom: 48px;
-
-            .field {
-                margin-bottom: 8px;
-
-                .label {
-                    color: $gray-6;
-                    font-family: $inter;
-                    letter-spacing: 0.5px;
-
-                    @include font-size(14px, 21px);
-                }
-
-                .value {
-                    @include font-size(14px, 21px);
-
-                    color: var(--body-color);
-                    font-family: $metropolis;
-                    font-weight: 700;
-
-                    .highlight {
-                        color: var(--link-color);
-                        @include font-size(14px);
-
-                        font-family: $ibm-plex-mono;
-                        font-weight: normal;
-                        letter-spacing: 0.02em;
-                        line-height: 20px;
-                        max-width: 200px;
-                    }
-                }
-            }
-        }
     }
 }

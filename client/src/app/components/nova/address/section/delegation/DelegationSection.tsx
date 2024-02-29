@@ -34,7 +34,7 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
 
     return (
         <div className="section transaction--section">
-            <div className="card card--delegation">
+            <div className="card card--no-border">
                 <div className="field">
                     <div className="card--label margin-b-t">Total amount</div>
                     <div className="card--value">{totalAmount?.toString()}</div>
@@ -56,8 +56,8 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
                 </thead>
                 <tbody>
                     {currentPage.map((delegation, k) => {
-                        const validatorAddress = Utils.accountIdToBech32(
-                            (delegation.output?.output as DelegationOutput).validatorId,
+                        const validatorAddress = Utils.addressToBech32(
+                            (delegation.output?.output as DelegationOutput).validatorAddress,
                             bech32Hrp,
                         );
 
@@ -78,14 +78,15 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
             </table>
 
             {/* Only visible in mobile*/}
-            <div className="delegation-cards">
+            <div className="cards--delegation">
                 {currentPage.map((delegation, k) => {
-                    const validatorAddress = Utils.accountIdToBech32(
-                        (delegation.output?.output as DelegationOutput).validatorId,
+                    const validatorAddress = Utils.addressToBech32(
+                        (delegation.output?.output as DelegationOutput).validatorAddress,
                         bech32Hrp,
                     );
+
                     return (
-                        <div key={`delegation-row-${k}`} className="card card--delegation">
+                        <div className="card" key={`delegation-row-${k}`}>
                             <div className="field">
                                 <div className="label">Output Id</div>
                                 <div className="value">
@@ -93,7 +94,7 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
                                 </div>
                             </div>
                             <div className="field">
-                                <div className="label">Validator Id</div>
+                                <div className="label">Validator Address</div>
                                 <div className="value">
                                     <TruncatedId id={validatorAddress} link={`/${network}/addr/${validatorAddress}`} />
                                 </div>
