@@ -63,11 +63,21 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef, cameraXS
 
     const randomTilts = useConfigStore((state) => state.randomTilts);
     const setRandomTilts = useConfigStore((state) => state.setRandomTilts);
+    const configControls = useConfigStore((state) => state.configControls);
 
     const tangleWrapperRef = useRef<THREE.Mesh | null>(null);
 
+    useEffect(() => {
+        const { minSinusoidPeriod } = configControls;
+        const { periods, sum: periodsSum } = generateRandomPeriods({minSinusoidPeriod});
+        console.log('--- periods', periods);
+        setSinusoidRandomPeriods(periods);
+        setSinusoidPeriodsSum(periodsSum);
+    }, [configControls]);
+
     useLayoutEffect(() => {
-        const { periods, sum: periodsSum } = generateRandomPeriods();
+        const { minSinusoidPeriod } = configControls;
+        const { periods, sum: periodsSum } = generateRandomPeriods({minSinusoidPeriod});
         const amplitudes = generateRandomAmplitudes();
         const tiltings = generateRandomTiltings();
         setSinusoidRandomPeriods(periods);

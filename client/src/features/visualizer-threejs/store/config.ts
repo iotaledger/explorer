@@ -26,9 +26,23 @@ interface ConfigState {
 
     randomTilts: number[];
     setRandomTilts: (randomTilts: number[]) => void;
+
+    configControls: {
+        minSinusoidPeriod: number;
+    };
+    setConfigControls: (configControls: { minSinusoidPeriod: number }) => void;
 }
 
 export const useConfigStore = create<ConfigState>((set) => ({
+    configControls: {
+        minSinusoidPeriod: 5,
+    },
+    setConfigControls: (configControls) => {
+        set((state) => ({
+            ...state,
+            configControls,
+        }));
+    },
     /**
      * Canvas dimensions
      */

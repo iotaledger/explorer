@@ -284,10 +284,10 @@ export function positionToVector(position: IThreeDimensionalPosition) {
     return new Vector3(position.x, position.y, position.z);
 }
 
-export function generateRandomPeriods(): { periods: number[]; sum: number } {
+export function generateRandomPeriods({minSinusoidPeriod}: {minSinusoidPeriod: number}): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
-        const { minSinusoidPeriod, maxSinusoidPeriod } = getVisualizerConfigValues();
+        const { maxSinusoidPeriod } = getVisualizerConfigValues();
         const period = Number(randomNumberFromInterval(minSinusoidPeriod, maxSinusoidPeriod).toFixed(4));
         sum += period;
         return period;

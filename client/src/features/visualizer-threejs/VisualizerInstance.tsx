@@ -36,15 +36,24 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const [networkConfig] = useNetworkConfig(network);
     const themeMode = useGetThemeMode();
     const getCurrentAnimationTime = useVisualizerTimer();
+    const setConfigControls = useConfigStore(s => s.setConfigControls)
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
 
-    const { cameraXShift, azimuthAngle } = useControls("CameraControls", {
+    const { cameraXShift, azimuthAngle, minSinusoidPeriod } = useControls("CameraControls", {
         transform: folder({
-            cameraXShift: { value: 0, min: -10000, max: 10000, step: 20, label: "Shift X" },
-            azimuthAngle: { value: 0, min: -1, max: 1, step: 0.005, label: "Rotate camera X" },
+            cameraXShift: { value: 0, min: -10000, max: 10000, step: 20, label: "X: Shift" },
+            azimuthAngle: { value: 0, min: -1, max: 1, step: 0.005, label: "X: Rotate" },
+            minSinusoidPeriod: {value: 5, min: 1, max: 7, step: 1, label: "Min sinusoid period"}
         }),
     });
+
+    useEffect(() => {
+        setConfigControls({
+            minSinusoidPeriod
+        });
+
+    }, [minSinusoidPeriod]);
 
     const setBps = useTangleStore((s) => s.setBps);
     const [bpsCounter] = React.useState(
