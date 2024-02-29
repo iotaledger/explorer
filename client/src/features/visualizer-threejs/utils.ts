@@ -17,9 +17,12 @@ import {
     MAX_PREV_POINTS,
     MAX_POINT_RETRIES,
     MIN_BLOCK_NEAR_RADIUS,
+    THEME_BLOCK_COLORS,
 } from "./constants";
 import type { ICameraAngles, ISinusoidalPositionParams, IThreeDimensionalPosition, ITwoDimensionalPosition } from "./interfaces";
 import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
+import { BlockState } from "@iota/sdk-wasm-nova/web";
+import { ThemeMode } from "./enums";
 
 /**
  * Generates a random number within a specified range.
@@ -383,4 +386,15 @@ export function getCurrentTiltValue(animationTime: number, tilts: number[]): num
     }
 
     return currentTilt;
+}
+
+export function getBlockColorByState(theme: ThemeMode, blockState: BlockState): THREE.Color {
+    const targetColor = THEME_BLOCK_COLORS[theme][blockState];
+
+    if (Array.isArray(targetColor)) {
+        const index = randomIntFromInterval(0, targetColor.length - 1);
+        return targetColor[index];
+    }
+
+    return targetColor;
 }
