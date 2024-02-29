@@ -6,6 +6,7 @@ import Pagination from "~/app/components/Pagination";
 
 interface NftSectionProps {
     readonly outputs: OutputResponse[] | null;
+    readonly setNftCount?: (count: number) => void;
 }
 
 const PAGE_SIZE = 10;
