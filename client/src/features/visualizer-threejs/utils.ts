@@ -208,7 +208,7 @@ export function getCameraAngles(): ICameraAngles {
     const yAngle = Math.PI * CAMERA_Y_AXIS_MOVEMENT;
 
     const startingXAngle = Math.PI * CAMERA_X_OFFSET;
-    const startingYAngle = Math.PI * CAMERA_Y_OFFSET;
+    const startingYAngle = Math.PI * CAMERA_Y_OFFSET + 0.2;
 
     // Divided by the two directions, positive and negative
     const X_MOVEMENT = xAngle / 2;
