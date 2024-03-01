@@ -271,22 +271,22 @@ export class NovaApiService {
     }
 
     /**
-     * Get the relevant basic output details for an address.
+     * Get the relevant anchor output details for an address.
      * @param addressBech32 The address in bech32 format.
-     * @returns The basic output details.
+     * @returns The anchor output details.
      */
-    public async basicOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
+    public async anchorOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
 
         do {
             try {
-                const outputIdsResponse = await this.client.basicOutputIds({ address: addressBech32, cursor: cursor ?? "" });
+                const outputIdsResponse = await this.client.anchorOutputIds({ stateController: addressBech32, cursor: cursor ?? "" });
 
                 outputIds = outputIds.concat(outputIdsResponse.items);
                 cursor = outputIdsResponse.cursor;
             } catch (e) {
-                logger.error(`Fetching basic output ids failed. Cause: ${e}`);
+                logger.error(`Fetching anchor output ids failed. Cause: ${e}`);
             }
         } while (cursor);
 
