@@ -5,6 +5,7 @@ import {
     BlockIssuerFeature,
     CongestionResponse,
     FeatureType,
+    ManaRewardsResponse,
     OutputResponse,
     StakingFeature,
     ValidatorResponse,
@@ -22,6 +23,7 @@ import { useAccountCongestion } from "./useAccountCongestion";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
+import { useOutputManaRewards } from "./useOutputManaRewards";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -31,6 +33,7 @@ export interface IAccountAddressState {
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
     blockIssuerFeature: BlockIssuerFeature | null;
+    manaRewards: ManaRewardsResponse | null;
     stakingFeature: StakingFeature | null;
     validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputResponse[] | null;
@@ -56,6 +59,7 @@ const initialState = {
     totalManaBalance: null,
     availableManaBalance: null,
     blockIssuerFeature: null,
+    manaRewards: null,
     stakingFeature: null,
     validatorDetails: null,
     addressBasicOutputs: null,
@@ -89,13 +93,14 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         initialState,
     );
 
-    const { accountOutput, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
+    const { accountOutput, accountOutputMetadata, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
 
     const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
         network,
         state.addressDetails,
         accountOutput,
     );
+    const { manaRewards } = useOutputManaRewards(network, accountOutputMetadata?.outputId ?? "");
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
@@ -125,6 +130,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             availableBaseTokenBalance,
             totalManaBalance,
             availableManaBalance,
+            manaRewards,
             foundries,
             congestion,
             validatorDetails,
@@ -168,6 +174,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        manaRewards,
         addressBasicOutputs,
         addressNftOutputs,
         congestion,
