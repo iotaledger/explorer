@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
 import { IAddressDetailsRequest } from "../../../../../models/api/nova/IAddressDetailsRequest";
-import { IAddressDetailsResponse } from "../../../../../models/api/nova/IAddressDetailsResponse";
+import { IDelegationDetailsResponse } from "../../../../../models/api/nova/IDelegationDetailsResponse";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
@@ -13,7 +13,7 @@ import { ValidationHelper } from "../../../../../utils/validationHelper";
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+export async function get(config: IConfiguration, request: IAddressDetailsRequest): Promise<IDelegationDetailsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
