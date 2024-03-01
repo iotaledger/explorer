@@ -24,7 +24,7 @@ interface EmitterProps {
 }
 
 // Create materials
-const uniqueSideMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, transparent: true, opacity: 1 }); // Red color for the unique side
+const uniqueSideMaterial = new THREE.MeshPhongMaterial({ color: 0x808080, transparent: true, opacity: 1 }); // Red color for the unique side
 const defaultMaterial = new THREE.MeshPhongMaterial({ transparent: true, opacity: 1 }); // Green color for the other sides
 
 // Create an array of materials
@@ -63,21 +63,11 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef, cameraXS
 
     const randomTilts = useConfigStore((state) => state.randomTilts);
     const setRandomTilts = useConfigStore((state) => state.setRandomTilts);
-    const configControls = useConfigStore((state) => state.configControls);
 
     const tangleWrapperRef = useRef<THREE.Mesh | null>(null);
 
-    useEffect(() => {
-        const { minSinusoidPeriod } = configControls;
-        const { periods, sum: periodsSum } = generateRandomPeriods({minSinusoidPeriod});
-        console.log('--- periods', periods);
-        setSinusoidRandomPeriods(periods);
-        setSinusoidPeriodsSum(periodsSum);
-    }, [configControls]);
-
     useLayoutEffect(() => {
-        const { minSinusoidPeriod } = configControls;
-        const { periods, sum: periodsSum } = generateRandomPeriods({minSinusoidPeriod});
+        const { periods, sum: periodsSum } = generateRandomPeriods();
         const amplitudes = generateRandomAmplitudes();
         const tiltings = generateRandomTiltings();
         setSinusoidRandomPeriods(periods);

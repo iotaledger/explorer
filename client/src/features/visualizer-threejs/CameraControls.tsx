@@ -90,7 +90,7 @@ const CameraControls = ({ azimuthAngle }: { azimuthAngle: number }) => {
         }
     }, [controls.current, shouldLockZoom, zoom]);
 
-    return <DreiCameraControls ref={controls} makeDefault {...CAMERA_ANGLES} azimuthAngle={0.5} />;
+    return <DreiCameraControls ref={controls} makeDefault {...CAMERA_ANGLES} />;
 };
 
 export default CameraControls;

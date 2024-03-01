@@ -208,7 +208,7 @@ export function getCameraAngles(): ICameraAngles {
     const yAngle = Math.PI * CAMERA_Y_AXIS_MOVEMENT;
 
     const startingXAngle = Math.PI * CAMERA_X_OFFSET;
-    const startingYAngle = Math.PI * CAMERA_Y_OFFSET + 0.2;
+    const startingYAngle = Math.PI * CAMERA_Y_OFFSET;
 
     // Divided by the two directions, positive and negative
     const X_MOVEMENT = xAngle / 2;
@@ -284,10 +284,10 @@ export function positionToVector(position: IThreeDimensionalPosition) {
     return new Vector3(position.x, position.y, position.z);
 }
 
-export function generateRandomPeriods({minSinusoidPeriod}: {minSinusoidPeriod: number}): { periods: number[]; sum: number } {
+export function generateRandomPeriods(): { periods: number[]; sum: number } {
     let sum = 0;
     const periods = Array.from({ length: NUMBER_OF_RANDOM_PERIODS }, () => {
-        const { maxSinusoidPeriod } = getVisualizerConfigValues();
+        const { minSinusoidPeriod, maxSinusoidPeriod } = getVisualizerConfigValues();
         const period = Number(randomNumberFromInterval(minSinusoidPeriod, maxSinusoidPeriod).toFixed(4));
         sum += period;
         return period;
