@@ -1,11 +1,20 @@
 import React from "react";
-import useuseSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
+import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
 import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
 import Modal from "~/app/components/Modal";
 import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
 import { RouteComponentProps } from "react-router-dom";
 import "./SlotPage.scss";
+import { PillStatus } from "~/app/lib/ui/enums";
+import StatusPill from "~/app/components/nova/StatusPill";
+import { SlotStatus } from "~/app/lib/enums";
+
+const SLOT_STATUS_TO_PILL_STATUS: Record<SlotStatus, PillStatus> = {
+    [SlotStatus.Pending]: PillStatus.Pending,
+    [SlotStatus.Confirmed]: PillStatus.Success,
+    [SlotStatus.Finalized]: PillStatus.Success,
+};
 
 export default function SlotPage({
     match: {
@@ -15,8 +24,7 @@ export default function SlotPage({
     network: string;
     slotIndex: string;
 }>): React.JSX.Element {
-    const { slotCommitment } = useuseSlotDetails(network, slotIndex);
-
+    const { slotCommitment } = useSlotDetails(network, slotIndex);
     const parsedSlotIndex = parseSlotIndex(slotIndex);
 
     const dataRows: IPageDataRow[] = [
@@ -29,6 +37,9 @@ export default function SlotPage({
             value: slotCommitment?.referenceManaCost?.toString() ?? "-",
         },
     ];
+
+    const slotStatus: SlotStatus = slotCommitment ? SlotStatus.Finalized : SlotStatus.Pending;
+    const slotStatusPill = SLOT_STATUS_TO_PILL_STATUS[slotStatus];
 
     function parseSlotIndex(slotIndex: string): number | undefined {
         const slotIndexNum = parseInt(slotIndex, 10);
@@ -47,6 +58,7 @@ export default function SlotPage({
                             <h1>Slot</h1>
                             <Modal icon="info" data={mainHeaderMessage} />
                         </div>
+                        <StatusPill label={slotStatus} status={slotStatusPill} />
                     </div>
                     {parsedSlotIndex ? (
                         <div className="section">
