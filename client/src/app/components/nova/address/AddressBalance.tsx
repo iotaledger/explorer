@@ -12,23 +12,27 @@ interface AddressBalanceProps {
     /**
      * The base token totalBalance amount from chronicle (representing trivial + conditional balance).
      */
-    readonly totalBaseTokenBalance: number | null;
+    readonly totalBaseTokenBalance?: number | null;
     /**
      * The trivially unlockable portion of the base token balance (from chronicle).
      */
-    readonly availableBaseTokenBalance: number | null;
+    readonly availableBaseTokenBalance?: number | null;
     /**
      * The mana totalBalance amount from chronicle (representing trivial + conditional balance).
      */
-    readonly totalManaBalance: IManaBalance | null;
+    readonly totalManaBalance?: IManaBalance | null;
     /**
      * The trivially unlockable portion of the mana balance (from chronicle).
      */
-    readonly availableManaBalance: IManaBalance | null;
+    readonly availableManaBalance?: IManaBalance | null;
+    /**
+     * The block issuance credits (for Account addresses).
+     */
+    readonly blockIssuanceCredits?: bigint | null;
     /**
      * The storage rent balance.
      */
-    readonly storageDeposit: number | null;
+    readonly storageDeposit?: number | null;
 }
 
 const CONDITIONAL_BALANCE_INFO =
@@ -39,6 +43,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     availableBaseTokenBalance,
     totalManaBalance,
     availableManaBalance,
+    blockIssuanceCredits,
     storageDeposit,
 }) => {
     const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
@@ -53,7 +58,8 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     const baseTokenBalanceView = buildBaseTokenBalanceView(tokenInfo);
     const manaBalanceView = buildManaBalanceView(tokenInfo);
 
-    const conditionalBaseTokenBalance = availableBaseTokenBalance === null ? undefined : totalBaseTokenBalance - availableBaseTokenBalance;
+    const conditionalBaseTokenBalance =
+        !availableBaseTokenBalance || !totalBaseTokenBalance ? undefined : totalBaseTokenBalance - availableBaseTokenBalance;
     const shouldShowExtendedBalance = conditionalBaseTokenBalance !== undefined && availableBaseTokenBalance !== undefined;
 
     const totalStoredMana = totalManaBalance?.stored ?? null;
@@ -89,8 +95,15 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
                 </div>
 
                 <div className="balance-wrapper__mana">
-                    {(totalStoredMana !== null || totalPotentialMana !== null) &&
-                        manaBalanceView("Available Mana", formatBalanceFull, setFormatBalanceFull, totalStoredMana, totalPotentialMana)}
+                    {(totalStoredMana !== null || totalPotentialMana !== null || blockIssuanceCredits !== null) &&
+                        manaBalanceView(
+                            "Available Mana",
+                            formatBalanceFull,
+                            setFormatBalanceFull,
+                            totalStoredMana,
+                            totalPotentialMana,
+                            blockIssuanceCredits,
+                        )}
                     {conditionalStoredMana !== null ||
                         (conditionalPotentialMana !== null &&
                             manaBalanceView(
@@ -112,32 +125,30 @@ function buildBaseTokenBalanceView(tokenInfo: INodeInfoBaseToken) {
         isFormatFull: boolean,
         setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
         showInfo: boolean,
-        amount: number | null,
+        amount?: number | null,
     ) => (
         <div className="balance">
-            <div>
-                <div className="row middle balance-heading">
-                    <div className="label">{label}</div>
-                    {showInfo && (
-                        <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
-                            <span className="material-icons">info</span>
-                        </Tooltip>
-                    )}
-                </div>
-                <div className="value featured">
-                    {amount !== null && amount > 0 ? (
-                        <div className="balance-value middle">
-                            <div className="row middle">
-                                <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
-                                    {formatAmount(amount, tokenInfo, isFormatFull)}
-                                </span>
-                                <CopyButton copy={String(amount)} />
-                            </div>
+            <div className="row middle balance-heading">
+                <div className="label">{label}</div>
+                {showInfo && (
+                    <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
+                        <span className="material-icons">info</span>
+                    </Tooltip>
+                )}
+            </div>
+            <div className="value featured">
+                {amount && amount > 0 ? (
+                    <div className="balance-value middle">
+                        <div className="row middle">
+                            <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
+                                {formatAmount(amount, tokenInfo, isFormatFull)}
+                            </span>
+                            <CopyButton copy={String(amount)} />
                         </div>
-                    ) : (
-                        <span className="margin-r-5">0</span>
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    <span className="margin-r-5">0</span>
+                )}
             </div>
         </div>
     );
@@ -152,37 +163,55 @@ function buildManaBalanceView(tokenInfo: INodeInfoBaseToken) {
         setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
         storedMana: number | null,
         potentialMana: number | null,
+        blockIssuanceCredits?: bigint | null,
     ) => (
         <div className="balance">
-            <div>
-                <div className="row middle balance-heading">
-                    <div className="label">{label}</div>
-                </div>
-                <div className="balance__mana">
-                    <div className="label">Stored:</div>
-                    <div className="value featured">
-                        {storedMana !== null && storedMana > 0 ? (
-                            <div className="balance-value middle">
-                                <div className="row middle">
-                                    <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
-                                        {formatAmount(storedMana, tokenInfo, isFormatFull)}
-                                    </span>
-                                    <CopyButton copy={String(storedMana)} />
-                                </div>
+            <div className="row middle balance-heading">
+                <div className="label">{label}</div>
+            </div>
+            <div className="balance__mana">
+                <div className="label">Stored:</div>
+                <div className="value featured">
+                    {storedMana !== null && storedMana > 0 ? (
+                        <div className="balance-value middle">
+                            <div className="row middle">
+                                <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
+                                    {formatAmount(storedMana, tokenInfo, isFormatFull)}
+                                </span>
+                                <CopyButton copy={String(storedMana)} />
                             </div>
-                        ) : (
-                            <span className="margin-r-5">0</span>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        <span className="margin-r-5">0</span>
+                    )}
                 </div>
+            </div>
+            <div className="balance__mana">
+                <div className="label">Potential:</div>
+                <div className="value featured">
+                    {potentialMana !== null && potentialMana > 0 ? (
+                        <div className="balance-value middle">
+                            <div className="row middle">
+                                <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
+                                    {formatAmount(potentialMana, tokenInfo, isFormatFull)}
+                                </span>
+                                <CopyButton copy={String(potentialMana)} />
+                            </div>
+                        </div>
+                    ) : (
+                        <span className="margin-r-5">0</span>
+                    )}
+                </div>
+            </div>
+            {blockIssuanceCredits !== null && (
                 <div className="balance__mana">
-                    <div className="label">Potential:</div>
+                    <div className="label">Block issuance credits:</div>
                     <div className="value featured">
-                        {potentialMana !== null && potentialMana > 0 ? (
+                        {blockIssuanceCredits && blockIssuanceCredits > 0 ? (
                             <div className="balance-value middle">
                                 <div className="row middle">
                                     <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
-                                        {formatAmount(potentialMana, tokenInfo, isFormatFull)}
+                                        {formatAmount(Number(blockIssuanceCredits), tokenInfo, isFormatFull)}
                                     </span>
                                     <CopyButton copy={String(potentialMana)} />
                                 </div>
@@ -192,11 +221,20 @@ function buildManaBalanceView(tokenInfo: INodeInfoBaseToken) {
                         )}
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 
     return manaBalanceView;
 }
+
+AddressBalance.defaultProps = {
+    totalBaseTokenBalance: null,
+    availableBaseTokenBalance: null,
+    totalManaBalance: null,
+    availableManaBalance: null,
+    blockIssuanceCredits: null,
+    storageDeposit: null,
+};
 
 export default AddressBalance;

@@ -18,6 +18,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        congestion,
         isAccountDetailsLoading,
         isAssociatedOutputsLoading,
     } = state;
@@ -48,7 +49,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                                         availableBaseTokenBalance={availableBaseTokenBalance}
                                         totalManaBalance={totalManaBalance}
                                         availableManaBalance={availableManaBalance}
-                                        storageDeposit={null}
+                                        blockIssuanceCredits={congestion?.blockIssuanceCredits}
                                     />
                                 </div>
                             </div>
