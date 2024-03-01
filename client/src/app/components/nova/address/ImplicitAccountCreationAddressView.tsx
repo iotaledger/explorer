@@ -12,7 +12,7 @@ interface ImplicitAccountCreationAddressViewProps {
 
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
     const [state, setState] = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
-    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading, storageDeposit } = state;
     const isPageLoading = isAssociatedOutputsLoading;
 
     return (
@@ -39,7 +39,7 @@ const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddres
                                         <AddressBalance
                                             totalBalance={totalBalance}
                                             availableBalance={availableBalance}
-                                            storageDeposit={null}
+                                            storageDeposit={storageDeposit}
                                         />
                                     )}
                                 </div>

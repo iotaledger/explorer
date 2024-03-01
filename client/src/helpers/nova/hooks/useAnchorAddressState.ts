@@ -9,12 +9,14 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { TransactionsHelper } from "../transactionsHelper";
 
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
     anchorOutput: AnchorOutput | null;
     availableBalance: number | null;
     totalBalance: number | null;
+    storageDeposit: number | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
@@ -30,6 +32,7 @@ const initialState = {
     anchorOutput: null,
     totalBalance: null,
     availableBalance: null,
+    storageDeposit: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     isBasicOutputsLoading: false,
@@ -50,7 +53,7 @@ interface IAddressPageLocationProps {
 export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressState, React.Dispatch<Partial<IAnchorAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IAnchorAddressState, Partial<IAnchorAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
@@ -74,7 +77,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     }, []);
 
     useEffect(() => {
-        setState({
+        let updatedState: Partial<IAnchorAddressState> = {
             anchorOutput,
             totalBalance,
             availableBalance,
@@ -83,7 +86,23 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             isBasicOutputsLoading,
             isNftOutputsLoading,
             isAnchorDetailsLoading,
-        });
+        };
+
+        if (anchorOutput) {
+            const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? [])].map(({ output }) => output);
+            if (protocolInfo?.parameters.storageScoreParameters) {
+                const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                    [...addressOutputs, anchorOutput],
+                    protocolInfo?.parameters.storageScoreParameters,
+                );
+                updatedState = {
+                    ...updatedState,
+                    storageDeposit,
+                };
+            }
+        }
+
+        setState(updatedState);
     }, [
         anchorOutput,
         totalBalance,

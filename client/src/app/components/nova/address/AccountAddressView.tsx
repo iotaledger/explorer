@@ -12,7 +12,7 @@ interface AccountAddressViewProps {
 
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
     const [state, setState] = useAccountAddressState(accountAddress);
-    const { addressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading, storageDeposit } = state;
     const isPageLoading = isAccountDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -39,7 +39,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                                         <AddressBalance
                                             totalBalance={totalBalance}
                                             availableBalance={availableBalance}
-                                            storageDeposit={null}
+                                            storageDeposit={storageDeposit}
                                         />
                                     )}
                                 </div>

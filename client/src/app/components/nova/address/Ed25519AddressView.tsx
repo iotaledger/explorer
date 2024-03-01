@@ -12,7 +12,7 @@ interface Ed25519AddressViewProps {
 
 const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address }) => {
     const [state, setState] = useEd25519AddressState(ed25519Address);
-    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading, isBasicOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading, isBasicOutputsLoading, storageDeposit } = state;
     const isPageLoading = isAssociatedOutputsLoading || isBasicOutputsLoading;
 
     return (
@@ -39,7 +39,7 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
                                         <AddressBalance
                                             totalBalance={totalBalance}
                                             availableBalance={availableBalance}
-                                            storageDeposit={null}
+                                            storageDeposit={storageDeposit}
                                         />
                                     )}
                                 </div>

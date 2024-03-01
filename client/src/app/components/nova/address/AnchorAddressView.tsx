@@ -12,7 +12,7 @@ interface AnchorAddressViewProps {
 
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
     const [state, setState] = useAnchorAddressState(anchorAddress);
-    const { addressDetails, totalBalance, availableBalance, isAnchorDetailsLoading, isAssociatedOutputsLoading } = state;
+    const { addressDetails, totalBalance, availableBalance, isAnchorDetailsLoading, isAssociatedOutputsLoading, storageDeposit } = state;
     const isPageLoading = isAnchorDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -39,7 +39,7 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                                         <AddressBalance
                                             totalBalance={totalBalance}
                                             availableBalance={availableBalance}
-                                            storageDeposit={null}
+                                            storageDeposit={storageDeposit}
                                         />
                                     )}
                                 </div>

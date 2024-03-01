@@ -18,11 +18,13 @@ import {
     MetadataFeature,
     NftAddress,
     NftOutput,
+    Output,
     OutputType,
     PayloadType,
     SignatureUnlock,
     SignedTransactionPayload,
     StateControllerAddressUnlockCondition,
+    StorageScoreParameters,
     UnlockCondition,
     UnlockConditionType,
     UnlockType,
@@ -303,5 +305,27 @@ export class TransactionsHelper {
         }
 
         return address;
+    }
+
+    /**
+     * Computes the storage deposit for a given set of outputs based on the rent structure.
+     * @param outputs The outputs to compute the storage deposit for.
+     * @param rentStructure The rent structure parameters.
+     * @returns The computed storage deposit.
+     */
+    public static computeStorageDeposit(outputs: Output[], rentStructure: StorageScoreParameters): number {
+        const outputsWithoutSdruc = outputs.filter((output) => {
+            const hasStorageDepositUnlockCondition = (output as CommonOutput).unlockConditions.some(
+                (uc) => uc.type === UnlockConditionType.StorageDepositReturn,
+            );
+
+            return !hasStorageDepositUnlockCondition;
+        });
+
+        const rentBalance = outputsWithoutSdruc.reduce(
+            (acc, output) => acc + Number(Utils.computeMinimumOutputAmount(output, rentStructure)),
+            0,
+        );
+        return rentBalance;
     }
 }

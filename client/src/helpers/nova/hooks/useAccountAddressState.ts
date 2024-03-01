@@ -21,12 +21,14 @@ import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 import { useAccountCongestion } from "./useAccountCongestion";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
+import { TransactionsHelper } from "../transactionsHelper";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
     accountOutput: AccountOutput | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    storageDeposit: number | null;
     blockIssuerFeature: BlockIssuerFeature | null;
     stakingFeature: StakingFeature | null;
     validatorDetails: ValidatorResponse | null;
@@ -50,6 +52,7 @@ const initialState = {
     accountOutput: null,
     totalBalance: null,
     availableBalance: null,
+    storageDeposit: null,
     blockIssuerFeature: null,
     stakingFeature: null,
     validatorDetails: null,
@@ -78,7 +81,7 @@ interface IAddressPageLocationProps {
 export const useAccountAddressState = (address: AccountAddress): [IAccountAddressState, React.Dispatch<Partial<IAccountAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IAccountAddressState, Partial<IAccountAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
@@ -89,7 +92,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, accountOutput);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
-    const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
+    const [foundries, accountFoundryOutputs, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
     const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
     const { validatorDetails, isLoading: isValidatorDetailsLoading } = useAccountValidatorDetails(
         network,
@@ -127,6 +130,20 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         };
 
         if (accountOutput) {
+            const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? []), ...(accountFoundryOutputs ?? [])].map(
+                ({ output }) => output,
+            );
+            if (protocolInfo?.parameters.storageScoreParameters) {
+                const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                    [...addressOutputs, accountOutput],
+                    protocolInfo?.parameters.storageScoreParameters,
+                );
+                updatedState = {
+                    ...updatedState,
+                    storageDeposit,
+                };
+            }
+
             if (!state.blockIssuerFeature) {
                 const blockIssuerFeature = accountOutput?.features?.find(
                     (feature) => feature.type === FeatureType.BlockIssuer,
@@ -138,6 +155,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
                     };
                 }
             }
+
             if (!state.stakingFeature) {
                 const stakingFeature = accountOutput?.features?.find((feature) => feature.type === FeatureType.Staking) as StakingFeature;
                 if (stakingFeature) {
@@ -156,6 +174,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         availableBalance,
         addressBasicOutputs,
         addressNftOutputs,
+        accountFoundryOutputs,
         congestion,
         validatorDetails,
         isAccountDetailsLoading,

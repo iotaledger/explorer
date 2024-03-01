@@ -8,11 +8,13 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { TransactionsHelper } from "../transactionsHelper";
 
 export interface IImplicitAccountCreationAddressState {
     addressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
+    storageDeposit: number | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
@@ -26,6 +28,7 @@ const initialState = {
     addressDetails: null,
     totalBalance: null,
     availableBalance: null,
+    storageDeposit: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     isBasicOutputsLoading: false,
@@ -47,7 +50,7 @@ export const useImplicitAccountCreationAddressState = (
 ): [IImplicitAccountCreationAddressState, React.Dispatch<Partial<IImplicitAccountCreationAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IImplicitAccountCreationAddressState, Partial<IImplicitAccountCreationAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
@@ -70,14 +73,28 @@ export const useImplicitAccountCreationAddressState = (
     }, []);
 
     useEffect(() => {
-        setState({
+        let updatedState: Partial<IImplicitAccountCreationAddressState> = {
             totalBalance,
             availableBalance,
             addressBasicOutputs,
             addressNftOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
-        });
+        };
+
+        const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? [])].map(({ output }) => output);
+        if (protocolInfo?.parameters.storageScoreParameters) {
+            const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                [...addressOutputs],
+                protocolInfo?.parameters.storageScoreParameters,
+            );
+            updatedState = {
+                ...updatedState,
+                storageDeposit,
+            };
+        }
+
+        setState(updatedState);
     }, [totalBalance, availableBalance, addressBasicOutputs, addressNftOutputs, isBasicOutputsLoading, isBasicOutputsLoading]);
 
     return [state, setState];
