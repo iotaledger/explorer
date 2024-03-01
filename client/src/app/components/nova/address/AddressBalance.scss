@@ -1,63 +1,85 @@
 @import "../../../../scss/media-queries";
 
 .balance-wrapper {
-    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
     .icon {
         margin-right: 16px;
     }
 
-    .balance-wrapper--inner {
+    .balance-wrapper__inner {
         display: flex;
+        flex-direction: column;
 
-        .balance {
+        .balance-wrapper__base-token {
+            margin-bottom: 12px;
+        }
+
+        .balance-wrapper__base-token,
+        .balance-wrapper__mana {
             display: flex;
             flex-direction: row;
-
-            .icon {
-                align-self: center;
-
-                @include tablet-down {
-                    display: none;
-                }
-            }
-
-            &:not(:last-child) {
-                margin-right: 40px;
-
-                @include tablet-down {
-                    margin-right: 0px;
-                }
-            }
-
-            .balance-value {
+            .balance {
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
 
-                @include tablet-down {
-                    flex-direction: row;
-                }
+                .icon {
+                    align-self: center;
 
-                .balance-value--inline {
                     @include tablet-down {
-                        margin-left: 5px;
+                        display: none;
                     }
                 }
-            }
 
-            .balance-base-token,
-            .balance-fiat {
-                color: #b0bfd9;
-                font-size: 18px;
-            }
+                &:not(:last-child) {
+                    margin-right: 40px;
 
-            .balance-heading {
-                height: 20px;
+                    @include tablet-down {
+                        margin-right: 0px;
+                    }
+                }
 
-                .material-icons {
-                    font-size: 18px;
+                .balance-value {
+                    display: flex;
+                    flex-direction: column;
+
+                    @include tablet-down {
+                        flex-direction: row;
+                    }
+
+                    .balance-value--inline {
+                        @include tablet-down {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+
+                .balance-base-token,
+                .balance-fiat {
                     color: #b0bfd9;
-                    padding-left: 5px;
+                    font-size: 18px;
+                }
+
+                .balance-heading {
+                    height: 20px;
+
+                    .material-icons {
+                        font-size: 18px;
+                        color: #b0bfd9;
+                        padding-left: 5px;
+                    }
+                }
+
+                .balance__mana {
+                    display: flex;
+                    align-items: center;
+                    margin-left: 8px;
+
+                    .value {
+                        margin-left: 4px;
+                    }
                 }
             }
         }

@@ -9,12 +9,15 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 
 export interface INftAddressState {
     addressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
-    totalBalance: number | null;
-    availableBalance: number | null;
+    totalBaseTokenBalance: number | null;
+    availableBaseTokenBalance: number | null;
+    totalManaBalance: IManaBalance | null;
+    availableManaBalance: IManaBalance | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
@@ -29,8 +32,10 @@ const initialState = {
     addressDetails: null,
     nftOutput: null,
     isNftDetailsLoading: true,
-    totalBalance: null,
-    availableBalance: null,
+    totalBaseTokenBalance: null,
+    availableBaseTokenBalance: null,
+    totalManaBalance: null,
+    availableManaBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     isBasicOutputsLoading: false,
@@ -57,7 +62,11 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     );
 
     const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, nftOutput);
+    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
+        network,
+        state.addressDetails,
+        nftOutput,
+    );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
 
@@ -76,8 +85,10 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     useEffect(() => {
         setState({
             nftOutput,
-            totalBalance,
-            availableBalance,
+            totalBaseTokenBalance,
+            availableBaseTokenBalance,
+            totalManaBalance,
+            availableManaBalance,
             isNftDetailsLoading,
             addressBasicOutputs,
             addressNftOutputs,
@@ -86,8 +97,10 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
         });
     }, [
         nftOutput,
-        totalBalance,
-        availableBalance,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
         isNftDetailsLoading,
         addressBasicOutputs,
         addressNftOutputs,

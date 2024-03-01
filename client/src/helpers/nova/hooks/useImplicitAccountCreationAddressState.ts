@@ -11,8 +11,8 @@ import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs"
 
 export interface IImplicitAccountCreationAddressState {
     addressDetails: IAddressDetails | null;
-    totalBalance: number | null;
-    availableBalance: number | null;
+    totalBaseTokenBalance: number | null;
+    availableBaseTokenBalance: number | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
@@ -24,8 +24,8 @@ export interface IImplicitAccountCreationAddressState {
 
 const initialState = {
     addressDetails: null,
-    totalBalance: null,
-    availableBalance: null,
+    totalBaseTokenBalance: null,
+    availableBaseTokenBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     isBasicOutputsLoading: false,
@@ -53,7 +53,7 @@ export const useImplicitAccountCreationAddressState = (
         initialState,
     );
 
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, null);
+    const { totalBaseTokenBalance, availableBaseTokenBalance } = useAddressBalance(network, state.addressDetails, null);
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
 
@@ -71,14 +71,21 @@ export const useImplicitAccountCreationAddressState = (
 
     useEffect(() => {
         setState({
-            totalBalance,
-            availableBalance,
+            totalBaseTokenBalance,
+            availableBaseTokenBalance,
             addressBasicOutputs,
             addressNftOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
         });
-    }, [totalBalance, availableBalance, addressBasicOutputs, addressNftOutputs, isBasicOutputsLoading, isBasicOutputsLoading]);
+    }, [
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        addressBasicOutputs,
+        addressNftOutputs,
+        isBasicOutputsLoading,
+        isBasicOutputsLoading,
+    ]);
 
     return [state, setState];
 };
