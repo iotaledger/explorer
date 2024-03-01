@@ -94,13 +94,15 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     );
 
     const { accountOutput, accountOutputMetadata, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
+    const { manaRewards } = useOutputManaRewards(network, accountOutputMetadata?.outputId ?? "");
 
     const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
         network,
         state.addressDetails,
         accountOutput,
+        accountOutputMetadata,
+        manaRewards,
     );
-    const { manaRewards } = useOutputManaRewards(network, accountOutputMetadata?.outputId ?? "");
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);

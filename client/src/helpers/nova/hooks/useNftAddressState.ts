@@ -10,6 +10,7 @@ import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
+import { useOutputManaRewards } from "./useOutputManaRewards";
 
 export interface INftAddressState {
     addressDetails: IAddressDetails | null;
@@ -61,11 +62,14 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
         initialState,
     );
 
-    const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
+    const { nftOutput, nftOutputMetadata, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
+    const { manaRewards } = useOutputManaRewards(network, nftOutputMetadata?.outputId ?? "");
     const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
         network,
         state.addressDetails,
         nftOutput,
+        nftOutputMetadata,
+        manaRewards,
     );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
