@@ -1,4 +1,4 @@
-import { SimpleTokenScheme, TokenScheme, TokenSchemeType } from "@iota/sdk-wasm-nova/web";
+import { SimpleTokenScheme, TokenScheme, TokenSchemeType } from "@iota/sdk-wasm/web";
 import React from "react";
 import { useTokenRegistryNativeTokenCheck } from "~helpers/stardust/hooks/useTokenRegistryNativeTokenCheck";
 import { formatNumberWithCommas } from "~helpers/stardust/valueFormatHelper";

@@ -1,10 +1,11 @@
 import {
-    AddressType,
     AccountAddress,
     FeatureType,
     FoundryOutput,
     MetadataFeature,
     ImmutableAccountAddressUnlockCondition,
+    Utils,
+    Bech32Address,
 } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
@@ -14,7 +15,6 @@ import tokenSchemeIRC30 from "~assets/schemas/token-schema-IRC30.json";
 import { useFoundryDetails } from "~helpers/nova/hooks/useFoundryDetails";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "~helpers/networkHelper";
-import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";
 import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { ITokenMetadata } from "~models/api/stardust/foundry/ITokenMetadata";
@@ -59,15 +59,17 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
     const [foundryDetails, isFoundryDetailsLoading, foundryError] = useFoundryDetails(network, foundryId);
     const [foundryOutput, setFoundryOutput] = useState<FoundryOutput>();
-    const [controllerAccount, setControllerAccount] = useState<string>();
+    const [controllerAccountId, setControllerAccountId] = useState<string>();
+    const [controllerAccountBech32, setControllerAccountBech32] = useState<Bech32Address>();
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>();
     const [tokensCount, setTokensCount] = useState<number>(0);
 
     useEffect(() => {
         if (foundryDetails) {
             const output = foundryDetails?.output as FoundryOutput;
-            const immutableAliasUnlockCondition = output.unlockConditions[0] as ImmutableAccountAddressUnlockCondition;
-            const accountId = (immutableAliasUnlockCondition.address as AccountAddress).accountId;
+            const immutableAccountUnlockCondition = output.unlockConditions[0] as ImmutableAccountAddressUnlockCondition;
+            const accountId = (immutableAccountUnlockCondition.address as AccountAddress).accountId;
+            const bech32 = Utils.addressToBech32(immutableAccountUnlockCondition.address, bech32Hrp);
 
             const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
             const metadataFeature = immutableFeatures?.find((feature) => feature.type === FeatureType.Metadata) as MetadataFeature;
@@ -81,7 +83,8 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
             }
             if (isMounted) {
                 setFoundryOutput(output);
-                setControllerAccount(accountId);
+                setControllerAccountId(accountId);
+                setControllerAccountBech32(bech32);
             }
         }
     }, [foundryDetails]);
@@ -91,10 +94,6 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
         const isMarketed = isMarketedNetwork(network);
         const serialNumber = foundryOutput.serialNumber;
         const balance = Number(foundryOutput.amount);
-
-        const controllerAccountBech32 = controllerAccount
-            ? Bech32AddressHelper.buildAddress(bech32Hrp, controllerAccount, AddressType.Account)
-            : undefined;
 
         foundryContent = (
             <React.Fragment>
@@ -110,15 +109,11 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
                             <span className="margin-r-t">{serialNumber}</span>
                         </div>
                     </div>
-                    {controllerAccount && controllerAccountBech32 && (
+                    {controllerAccountId && controllerAccountBech32 && (
                         <div className="section--data">
-                            <div className="label">Controller Alias</div>
+                            <div className="label">Controller Account</div>
                             <div className="value code highlight">
-                                <TruncatedId
-                                    id={controllerAccount}
-                                    link={`/${network}/addr/${controllerAccountBech32.bech32}`}
-                                    showCopyButton
-                                />
+                                <TruncatedId id={controllerAccountId} link={`/${network}/addr/${controllerAccountBech32}`} showCopyButton />
                             </div>
                         </div>
                     )}
