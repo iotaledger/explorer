@@ -1,7 +1,7 @@
 import {
     TRANSACTION_FAILURE_REASON_STRINGS,
     Transaction,
-    TransactionMetadata,
+    TransactionMetadataResponse as TransactionMetadata,
     TransactionState,
     Utils,
     AccountAddress,

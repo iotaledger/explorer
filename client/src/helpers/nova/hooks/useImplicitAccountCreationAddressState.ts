@@ -1,4 +1,4 @@
-import { ImplicitAccountCreationAddress, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { ImplicitAccountCreationAddress, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { Reducer, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { AddressRouteProps } from "~/app/routes/AddressRouteProps";
@@ -13,8 +13,8 @@ export interface IImplicitAccountCreationAddressState {
     addressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
-    addressBasicOutputs: OutputResponse[] | null;
-    addressNftOutputs: OutputResponse[] | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;

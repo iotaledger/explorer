@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Client, OutputResponse } from "@iota/sdk-nova";
+import { Client, OutputWithMetadataResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
@@ -120,7 +120,7 @@ export class NovaApiService {
      */
     public async outputDetails(outputId: string): Promise<IOutputDetailsResponse> {
         try {
-            const outputResponse = await this.client.getOutput(outputId);
+            const outputResponse = await this.client.getOutputWithMetadata(outputId);
             return { output: outputResponse };
         } catch (e) {
             logger.error(`Failed fetching output with output id ${outputId}. Cause: ${e}`);
@@ -247,9 +247,9 @@ export class NovaApiService {
      * @param outputIds The output ids to get the details.
      * @returns The item details.
      */
-    public async outputsDetails(outputIds: string[]): Promise<OutputResponse[]> {
+    public async outputsDetails(outputIds: string[]): Promise<OutputWithMetadataResponse[]> {
         const promises: Promise<IOutputDetailsResponse>[] = [];
-        const outputResponses: OutputResponse[] = [];
+        const outputResponses: OutputWithMetadataResponse[] = [];
 
         for (const outputId of outputIds) {
             const promise = this.outputDetails(outputId);
@@ -379,7 +379,7 @@ export class NovaApiService {
      */
     public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
         try {
-            const slot = await this.client.getCommitmentByIndex(slotIndex);
+            const slot = await this.client.getCommitmentBySlot(slotIndex);
 
             return { slot };
         } catch (e) {

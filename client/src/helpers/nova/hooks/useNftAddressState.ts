@@ -1,5 +1,5 @@
 import { Reducer, useEffect, useReducer } from "react";
-import { NftAddress, NftOutput, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { NftAddress, NftOutput, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useNftDetails } from "./useNftDetails";
 import { useLocation, useParams } from "react-router-dom";
@@ -15,8 +15,8 @@ export interface INftAddressState {
     nftOutput: NftOutput | null;
     totalBalance: number | null;
     availableBalance: number | null;
-    addressBasicOutputs: OutputResponse[] | null;
-    addressNftOutputs: OutputResponse[] | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isNftDetailsLoading: boolean;

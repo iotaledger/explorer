@@ -1,4 +1,4 @@
-import { Ed25519Address, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { Ed25519Address, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { Reducer, useEffect, useReducer } from "react";
 import { useLocation } from "react-router-dom";
 import { useNetworkInfoNova } from "../networkInfo";
@@ -12,8 +12,8 @@ export interface IEd25519AddressState {
     addressDetails: IAddressDetails | null;
     totalBalance: number | null;
     availableBalance: number | null;
-    addressBasicOutputs: OutputResponse[] | null;
-    addressNftOutputs: OutputResponse[] | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;

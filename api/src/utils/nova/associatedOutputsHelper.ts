@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
     Client,
-    IOutputsResponse,
+    OutputsResponse,
     AddressType,
     BasicOutputQueryParameters,
     AccountOutputQueryParameters,
@@ -260,7 +260,7 @@ export class AssociatedOutputsHelper {
      * @param association The association we are looking for.
      */
     private async fetchAssociatedOutputIds<T>(
-        fetch: (req: T) => Promise<IOutputsResponse | string>,
+        fetch: (req: T) => Promise<OutputsResponse | string>,
         args: T,
         association: AssociationType,
     ): Promise<void> {

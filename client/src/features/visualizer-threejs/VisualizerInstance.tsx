@@ -17,7 +17,7 @@ import { Wrapper } from "./wrapper/Wrapper";
 import { CanvasElement } from "./enums";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
-import { BasicBlockBody, Utils, type IBlockMetadata, type BlockState, type SlotIndex } from "@iota/sdk-wasm-nova/web";
+import { BasicBlockBody, Utils, type BlockMetadataResponse, type BlockState, type SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import CameraControls from "./CameraControls";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
@@ -243,7 +243,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         }
     };
 
-    function onBlockMetadataUpdate(metadataUpdate: IBlockMetadata): void {
+    function onBlockMetadataUpdate(metadataUpdate: BlockMetadataResponse): void {
         if (metadataUpdate?.blockState) {
             const selectedColor = getBlockColorByState(themeMode, metadataUpdate.blockState);
             if (selectedColor) {
