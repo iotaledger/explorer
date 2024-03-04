@@ -1,20 +1,15 @@
 import React from "react";
-import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
 import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
 import Modal from "~/app/components/Modal";
 import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
 import { RouteComponentProps } from "react-router-dom";
-import "./SlotPage.scss";
-import { PillStatus } from "~/app/lib/ui/enums";
 import StatusPill from "~/app/components/nova/StatusPill";
-import { SlotStatus } from "~/app/lib/enums";
-
-const SLOT_STATUS_TO_PILL_STATUS: Record<SlotStatus, PillStatus> = {
-    [SlotStatus.Pending]: PillStatus.Pending,
-    [SlotStatus.Confirmed]: PillStatus.Success,
-    [SlotStatus.Finalized]: PillStatus.Success,
-};
+import useSlotsFeed from "~/helpers/nova/hooks/useSlotsFeed";
+import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
+import { getSlotStatusFromLatestSlotCommitments, parseSlotIndexFromParams } from "~/app/lib/utils/slot.utils";
+import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
+import "./SlotPage.scss";
 
 export default function SlotPage({
     match: {
@@ -24,8 +19,12 @@ export default function SlotPage({
     network: string;
     slotIndex: string;
 }>): React.JSX.Element {
-    const { slotCommitment } = useSlotDetails(network, slotIndex);
-    const parsedSlotIndex = parseSlotIndex(slotIndex);
+    const { latestSlotCommitments = [] } = useSlotsFeed();
+    const { slotCommitment: slotCommitmentDetails } = useSlotDetails(network, slotIndex);
+
+    const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
+    const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
+    const slotFromSlotCommitments = latestSlotCommitments.find((slot) => slot.slotCommitment.slot === parsedSlotIndex);
 
     const dataRows: IPageDataRow[] = [
         {
@@ -34,20 +33,12 @@ export default function SlotPage({
         },
         {
             label: "RMC",
-            value: slotCommitment?.referenceManaCost?.toString() ?? "-",
+            value:
+                slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
+                slotCommitmentDetails?.referenceManaCost?.toString() ??
+                "-",
         },
     ];
-
-    const slotStatus: SlotStatus = slotCommitment ? SlotStatus.Finalized : SlotStatus.Pending;
-    const slotStatusPill = SLOT_STATUS_TO_PILL_STATUS[slotStatus];
-
-    function parseSlotIndex(slotIndex: string): number | undefined {
-        const slotIndexNum = parseInt(slotIndex, 10);
-        if (isNaN(slotIndexNum)) {
-            return;
-        }
-        return slotIndexNum;
-    }
 
     return (
         <section className="slot-page">
@@ -58,7 +49,7 @@ export default function SlotPage({
                             <h1>Slot</h1>
                             <Modal icon="info" data={mainHeaderMessage} />
                         </div>
-                        <StatusPill label={slotStatus} status={slotStatusPill} />
+                        {parsedSlotIndex && <StatusPill label={slotStatus} status={SLOT_STATUS_TO_PILL_STATUS[slotStatus]} />}
                     </div>
                     {parsedSlotIndex ? (
                         <div className="section">

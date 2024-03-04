@@ -1,5 +1,5 @@
 export enum SlotStatus {
     Pending = "pending",
-    Confirmed = "confirmed",
+    Committed = "committed",
     Finalized = "finalized",
 }
