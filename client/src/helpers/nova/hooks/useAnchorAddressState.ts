@@ -10,7 +10,6 @@ import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
-import { useOutputManaRewards } from "./useOutputManaRewards";
 
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
@@ -63,13 +62,11 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     );
 
     const { anchorOutput, anchorOutputMetadata, isLoading: isAnchorDetailsLoading } = useAnchorDetails(network, address.anchorId);
-    const { manaRewards } = useOutputManaRewards(network, anchorOutputMetadata?.outputId ?? "");
     const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
         network,
         state.addressDetails,
         anchorOutput,
         anchorOutputMetadata,
-        manaRewards,
     );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
