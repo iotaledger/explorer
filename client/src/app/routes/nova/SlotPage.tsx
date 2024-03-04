@@ -1,14 +1,16 @@
 import React from "react";
+import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
+import useSlotsFeed from "~/helpers/nova/hooks/useSlotsFeed";
 import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
 import Modal from "~/app/components/Modal";
 import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
 import { RouteComponentProps } from "react-router-dom";
 import StatusPill from "~/app/components/nova/StatusPill";
-import useSlotsFeed from "~/helpers/nova/hooks/useSlotsFeed";
-import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
 import { getSlotStatusFromLatestSlotCommitments, parseSlotIndexFromParams } from "~/app/lib/utils/slot.utils";
 import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
+import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
+import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
 import "./SlotPage.scss";
 
 export default function SlotPage({
@@ -25,6 +27,7 @@ export default function SlotPage({
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
     const slotFromSlotCommitments = latestSlotCommitments.find((slot) => slot.slotCommitment.slot === parsedSlotIndex);
+    const { blocks } = useSlotBlocks(network, slotIndex);
 
     const dataRows: IPageDataRow[] = [
         {
@@ -67,6 +70,8 @@ export default function SlotPage({
                     ) : (
                         <NotFound query={slotIndex} searchTarget="slot" />
                     )}
+
+                    <SlotBlocksSection blocks={blocks} />
                 </div>
             </div>
         </section>
