@@ -7,11 +7,14 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 
 export interface IEd25519AddressState {
     addressDetails: IAddressDetails | null;
-    totalBalance: number | null;
-    availableBalance: number | null;
+    totalBaseTokenBalance: number | null;
+    availableBaseTokenBalance: number | null;
+    totalManaBalance: IManaBalance | null;
+    availableManaBalance: IManaBalance | null;
     addressBasicOutputs: OutputResponse[] | null;
     addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
@@ -23,8 +26,10 @@ export interface IEd25519AddressState {
 
 const initialState = {
     addressDetails: null,
-    totalBalance: null,
-    availableBalance: null,
+    totalBaseTokenBalance: null,
+    availableBaseTokenBalance: null,
+    totalManaBalance: null,
+    availableManaBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     isBasicOutputsLoading: false,
@@ -49,7 +54,11 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
         initialState,
     );
 
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, null);
+    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
+        network,
+        state.addressDetails,
+        null,
+    );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
 
@@ -66,14 +75,25 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
 
     useEffect(() => {
         setState({
-            totalBalance,
-            availableBalance,
+            totalBaseTokenBalance,
+            availableBaseTokenBalance,
+            totalManaBalance,
+            availableManaBalance,
             addressBasicOutputs,
             addressNftOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
         });
-    }, [totalBalance, availableBalance, addressBasicOutputs, addressNftOutputs, isBasicOutputsLoading, isNftOutputsLoading]);
+    }, [
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
+        addressBasicOutputs,
+        addressNftOutputs,
+        isBasicOutputsLoading,
+        isNftOutputsLoading,
+    ]);
 
     return [state, setState];
 };
