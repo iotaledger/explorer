@@ -1,6 +1,6 @@
 #!/bin/bash
 SDK_DIR="iota-sdk"
-TARGET_COMMIT="e04e40bb1e4362a50adc4cfb1a12aa2413b663d4"
+TARGET_COMMIT="5e1bd797f85b47f3a9afa0462d78edd90d8e2bfd"
 
 if [ ! -d "$SDK_DIR" ]; then
   git clone -b 2.0 git@github.com:boxfish-studio/iota-sdk.git
