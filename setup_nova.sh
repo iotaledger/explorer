@@ -1,9 +1,9 @@
 #!/bin/bash
 SDK_DIR="iota-sdk"
-TARGET_COMMIT="5e1bd797f85b47f3a9afa0462d78edd90d8e2bfd"
+TARGET_COMMIT="9578e0e98bc7293e9781c75cc45c8d01d326da32"
 
 if [ ! -d "$SDK_DIR" ]; then
-  git clone -b 2.0 git@github.com:boxfish-studio/iota-sdk.git
+  git clone -b 2.0 git@github.com:iotaledger/iota-sdk.git
   cd "./$SDK_DIR"
 else
   echo "Pulling nova-sdk..."
