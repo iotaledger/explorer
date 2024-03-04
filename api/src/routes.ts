@@ -216,6 +216,12 @@ export const routes: IRoute[] = [
         folder: "nova/address/balance/chronicle",
         func: "get",
     },
+    {
+        path: "/nova/slot/blocks/chronicle/:network/:slotIndex",
+        method: "get",
+        folder: "nova/slot/blocks/chronicle",
+        func: "get",
+    },
     { path: "/nova/search/:network/:query", method: "get", folder: "nova", func: "search" },
     { path: "/nova/output/:network/:outputId", method: "get", folder: "nova/output", func: "get" },
     { path: "/nova/output/rewards/:network/:outputId", method: "get", folder: "nova/output/rewards", func: "get" },

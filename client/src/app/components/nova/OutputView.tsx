@@ -13,6 +13,8 @@ import {
     SimpleTokenScheme,
     DelegationOutput,
     Utils,
+    AccountAddress,
+    NftAddress,
 } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
@@ -32,7 +34,7 @@ interface OutputViewProps {
     showCopyAmount: boolean;
     isPreExpanded?: boolean;
     isLinksDisabled?: boolean;
-    manaDetails: OutputManaDetails | null;
+    manaDetails?: OutputManaDetails | null;
 }
 
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
@@ -40,10 +42,10 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
-    const aliasOrNftBech32 = buildAddressForAliasOrNft(outputId, output, bech32Hrp);
+    const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
-    const manaEntries = getManaKeyValueEntries(manaDetails);
+    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails) : undefined;
 
     const header = (
         <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
@@ -99,8 +101,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--label">Account address:</div>
                     <div className="card--value">
                         <TruncatedId
-                            id={aliasOrNftBech32}
-                            link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                            id={accountOrNftBech32}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${accountOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
@@ -127,8 +129,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--label">Nft address:</div>
                     <div className="card--value">
                         <TruncatedId
-                            id={aliasOrNftBech32}
-                            link={isLinksDisabled ? undefined : `/${network}/addr/${aliasOrNftBech32}`}
+                            id={accountOrNftBech32}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${accountOrNftBech32}`}
                             showCopyButton
                         />
                     </div>
@@ -162,6 +164,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                 output.type === OutputType.Account ||
                 output.type === OutputType.Anchor ||
                 output.type === OutputType.Nft) &&
+                manaEntries &&
                 manaDetails?.totalMana && <KeyValueEntries isPreExpanded={true} {...manaEntries} />}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
@@ -215,7 +218,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     );
 };
 
-function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: string): string {
+function buildAddressForAccountOrNft(outputId: string, output: Output, bech32Hrp: string): string {
     let bech32: string = "";
 
     if (output.type === OutputType.Account) {
@@ -223,11 +226,13 @@ function buildAddressForAliasOrNft(outputId: string, output: Output, bech32Hrp: 
         const accountId = HexHelper.toBigInt256(accountIdFromOutput).eq(bigInt.zero)
             ? Utils.computeAccountId(outputId)
             : accountIdFromOutput;
-        bech32 = Utils.accountIdToBech32(accountId, bech32Hrp);
+        const accountAddress = new AccountAddress(accountId);
+        bech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
     } else if (output.type === OutputType.Nft) {
         const nftIdFromOutput = (output as NftOutput).nftId;
         const nftId = HexHelper.toBigInt256(nftIdFromOutput).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftIdFromOutput;
-        bech32 = Utils.nftIdToBech32(nftId, bech32Hrp);
+        const nftAddress = new NftAddress(nftId);
+        bech32 = Utils.addressToBech32(nftAddress, bech32Hrp);
     }
 
     return bech32;

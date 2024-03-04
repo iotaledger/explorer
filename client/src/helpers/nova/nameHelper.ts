@@ -1,4 +1,4 @@
-import { UnlockType } from "@iota/sdk-wasm-nova/web";
+import { PayloadType, UnlockType } from "@iota/sdk-wasm-nova/web";
 
 export class NameHelper {
     /**
@@ -30,5 +30,34 @@ export class NameHelper {
                 return "Unknown Unlock";
             }
         }
+    }
+
+    /**
+     * Compute a payload type string from block.
+     * @param block The block data.
+     * @returns The payload type string.
+     */
+    public static getPayloadType(type: number): string {
+        let payloadType = "-";
+
+        switch (type) {
+            case PayloadType.TaggedData: {
+                payloadType = "Data";
+                break;
+            }
+            case PayloadType.SignedTransaction: {
+                payloadType = "Transaction";
+                break;
+            }
+            case PayloadType.CandidacyAnnouncement: {
+                payloadType = "Candidacy Announcement";
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return payloadType;
     }
 }

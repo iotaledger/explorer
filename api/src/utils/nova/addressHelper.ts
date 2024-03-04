@@ -12,6 +12,7 @@ import {
     ImplicitAccountCreationAddress,
 } from "@iota/sdk-nova";
 import { plainToInstance } from "class-transformer";
+import logger from "../../logger";
 import { IAddressDetails } from "../../models/api/nova/IAddressDetails";
 import { HexHelper } from "../hexHelper";
 
@@ -31,6 +32,7 @@ export class AddressHelper {
         let bech32: string;
         let hex: string;
         let type: AddressType;
+
         if (Utils.isAddressValid(addressString)) {
             try {
                 const address: Address = Utils.parseBech32Address(addressString);
@@ -41,27 +43,28 @@ export class AddressHelper {
                     hex = Utils.bech32ToHex(addressString);
                 }
             } catch (e) {
-                console.error(e);
+                logger.debug(`Failed parsing Address. Cause: ${e}`);
             }
         }
 
         if (!bech32) {
             // We assume this is hex
             hex = addressString;
+
             if (typeHint) {
-                bech32 = this.computeBech32FromHexAndType(hex, type, hrp);
+                bech32 = this.computeBech32FromHexAndType(hex, typeHint, hrp);
             }
         }
 
         return {
             bech32,
             hex: hex ? HexHelper.addPrefix(hex) : hex,
-            type,
+            type: type ?? typeHint,
             label: AddressHelper.typeLabel(type),
         };
     }
 
-    private static buildAddressFromTypes(address: Address, hrp: string, capabilities?: number[]): IAddressDetails {
+    private static buildAddressFromTypes(address: Address, hrp: string): IAddressDetails {
         let hex: string = "";
         let bech32: string = "";
 
@@ -79,31 +82,34 @@ export class AddressHelper {
             hex = innerAddress.pubKeyHash;
         }
 
-        bech32 = this.computeBech32FromHexAndType(hex, address.type, hrp);
+        bech32 = Utils.addressToBech32(address, hrp);
 
         return {
             bech32,
             hex,
             type: address.type,
             label: AddressHelper.typeLabel(address.type),
-            capabilities,
         };
     }
 
     private static computeBech32FromHexAndType(hex: string, addressType: AddressType, hrp: string) {
         let bech32 = "";
+        let address: Address | null = null;
 
         if (addressType === AddressType.Ed25519) {
-            bech32 = Utils.hexToBech32(hex, hrp);
+            address = new Ed25519Address(hex);
         } else if (addressType === AddressType.Account) {
-            bech32 = Utils.accountIdToBech32(hex, hrp);
+            address = new AccountAddress(hex);
         } else if (addressType === AddressType.Nft) {
-            bech32 = Utils.nftIdToBech32(hex, hrp);
+            address = new NftAddress(hex);
         } else if (addressType === AddressType.Anchor) {
-            // Update to Utils.anchorIdToBech32 when it gets implemented
-            bech32 = Utils.accountIdToBech32(hex, hrp);
+            address = new AnchorAddress(hex);
         } else if (addressType === AddressType.ImplicitAccountCreation) {
-            bech32 = Utils.hexToBech32(hex, hrp);
+            address = new ImplicitAccountCreationAddress(hex);
+        }
+
+        if (address !== null) {
+            bech32 = Utils.addressToBech32(address, hrp);
         }
 
         return bech32;
@@ -123,6 +129,10 @@ export class AddressHelper {
             return "NFT";
         } else if (addressType === AddressType.Anchor) {
             return "Anchor";
+        } else if (addressType === AddressType.ImplicitAccountCreation) {
+            return "Implicit Account Creation";
         }
+
+        return "Unknown";
     }
 }
