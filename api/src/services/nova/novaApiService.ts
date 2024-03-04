@@ -367,7 +367,7 @@ export class NovaApiService {
      * @returns The mana rewards.
      */
     public async getRewards(outputId: string): Promise<IRewardsResponse> {
-        const manaRewardsResponse = await this.client.getRewards(outputId);
+        const manaRewardsResponse = await this.client.getOutputManaRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
     }
