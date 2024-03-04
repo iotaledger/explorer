@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { Block, OutputResponse } from "@iota/sdk-nova";
+import { Block, OutputWithMetadataResponse } from "@iota/sdk-nova";
 import { IAddressDetails } from "./IAddressDetails";
 import { IResponse } from "../IResponse";
 
@@ -18,7 +18,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Output if it was found (block will also be populated).
      */
-    output?: OutputResponse;
+    output?: OutputWithMetadataResponse;
 
     /**
      * Account id if it was found.

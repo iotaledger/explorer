@@ -1,4 +1,4 @@
-import { ProtocolInfo } from "@iota/sdk-wasm-nova/web";
+import { ProtocolParametersResponse } from "@iota/sdk-wasm-nova/web";
 import {
     unixTimestampToSlotIndexConverter,
     slotIndexToUnixTimeRangeConverter,
@@ -9,22 +9,21 @@ import {
     getRegistrationSlotFromEpochIndex,
 } from "./novaTimeUtils";
 
-const mockProtocolInfo: ProtocolInfo = {
-    // @ts-expect-error Irrelevant fields omitted
+const mockProtocolInfo: ProtocolParametersResponse = {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     parameters: {
         type: 0,
         version: 3,
         networkName: "test",
         bech32Hrp: "rms",
-        tokenSupply: 1813620509061365n,
-
+        tokenSupply: "1813620509061365",
         // <properties used in slot/epoch calculations>
         genesisSlot: 5,
-        genesisUnixTimestamp: 1707321857n, // 7 February 2024 16:04:17
+        genesisUnixTimestamp: "1707321857",
         slotDurationInSeconds: 10,
         slotsPerEpochExponent: 13,
         // </properties used in slot/epoch calculations>
-
         stakingUnbondingPeriod: 10,
         validationBlocksPerSlot: 10,
         punishmentEpochs: 10,

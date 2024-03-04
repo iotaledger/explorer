@@ -5,8 +5,8 @@ import {
     BlockIssuerFeature,
     CongestionResponse,
     FeatureType,
+    OutputWithMetadataResponse,
     ManaRewardsResponse,
-    OutputResponse,
     StakingFeature,
     ValidatorResponse,
 } from "@iota/sdk-wasm-nova/web";
@@ -36,8 +36,8 @@ export interface IAccountAddressState {
     manaRewards: ManaRewardsResponse | null;
     stakingFeature: StakingFeature | null;
     validatorDetails: ValidatorResponse | null;
-    addressBasicOutputs: OutputResponse[] | null;
-    addressNftOutputs: OutputResponse[] | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
     foundries: string[] | null;
     congestion: CongestionResponse | null;
     isAccountDetailsLoading: boolean;

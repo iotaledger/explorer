@@ -1,4 +1,4 @@
-import { AccountOutput, IOutputMetadataResponse } from "@iota/sdk-wasm-nova/web";
+import { AccountOutput, OutputMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
@@ -15,11 +15,11 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
 export function useAccountDetails(
     network: string,
     accountId: string | null,
-): { accountOutput: AccountOutput | null; accountOutputMetadata: IOutputMetadataResponse | null; isLoading: boolean } {
+): { accountOutput: AccountOutput | null; accountOutputMetadata: OutputMetadataResponse | null; isLoading: boolean } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [accountOutput, setAccountOutput] = useState<AccountOutput | null>(null);
-    const [accountOutputMetadata, setAccountOutputMetadata] = useState<IOutputMetadataResponse | null>(null);
+    const [accountOutputMetadata, setAccountOutputMetadata] = useState<OutputMetadataResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

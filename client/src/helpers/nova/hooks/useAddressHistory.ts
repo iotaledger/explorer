@@ -5,7 +5,7 @@ import { ITransactionHistoryRequest } from "~models/api/nova/ITransactionHistory
 import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/api/nova/ITransactionHistoryResponse";
 import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~services/nova/novaApiClient";
-import { OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { groupOutputsByTransactionId } from "../transactionHistoryUtils";
 
 const OUTPUT_PAGE_SIZE = 10;
@@ -20,7 +20,7 @@ interface IHistoryState {
     cursor: string | undefined;
 }
 
-export type OutputWithDetails = ITransactionHistoryItem & { details: OutputResponse | null; amount?: string };
+export type OutputWithDetails = ITransactionHistoryItem & { details: OutputWithMetadataResponse | null; amount?: string };
 
 /**
  * Fetch Address history
@@ -71,7 +71,7 @@ export function useAddressHistory(
         };
     };
 
-    const requestOutputDetails = async (outputId: string): Promise<OutputResponse | null> => {
+    const requestOutputDetails = async (outputId: string): Promise<OutputWithMetadataResponse | null> => {
         if (!outputId) return null;
 
         try {

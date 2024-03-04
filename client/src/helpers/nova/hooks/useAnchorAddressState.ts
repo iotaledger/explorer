@@ -1,5 +1,5 @@
 import { Reducer, useEffect, useReducer } from "react";
-import { AnchorAddress, AnchorOutput, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { AnchorAddress, AnchorOutput, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useAnchorDetails } from "./useAnchorDetails";
 import { useLocation, useParams } from "react-router-dom";
@@ -14,12 +14,12 @@ import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse"
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
     anchorOutput: AnchorOutput | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
-    addressBasicOutputs: OutputResponse[] | null;
-    addressNftOutputs: OutputResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
