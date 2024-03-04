@@ -1,4 +1,4 @@
-import { OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
@@ -7,7 +7,7 @@ import { NovaApiClient } from "~services/nova/novaApiClient";
 import { HexHelper } from "~helpers/stardust/hexHelper";
 
 interface IOutputDetails {
-    outputDetails: OutputResponse;
+    outputDetails: OutputWithMetadataResponse;
     outputId: string;
 }
 
@@ -42,6 +42,7 @@ export function useOutputsDetails(network: string, outputIds: string[] | null): 
                             const fetchedOutputDetails = {
                                 output: details.output,
                                 metadata: details.metadata,
+                                outputIdProof: details.outputIdProof,
                             };
                             const item: IOutputDetails = {
                                 outputDetails: fetchedOutputDetails,
