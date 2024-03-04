@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm-nova/web";
+import { BaseTokenResponse } from "@iota/sdk-wasm-nova/web";
 import React, { useState } from "react";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
@@ -109,7 +109,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     );
 };
 
-function buildBaseTokenBalanceView(tokenInfo: INodeInfoBaseToken) {
+function buildBaseTokenBalanceView(tokenInfo: BaseTokenResponse) {
     const baseTokenBalanceView = (
         label: string,
         isFormatFull: boolean,
