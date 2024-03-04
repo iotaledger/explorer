@@ -1,4 +1,4 @@
-import { AccountOutput } from "@iota/sdk-wasm-nova/web";
+import { AccountOutput, IOutputMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
@@ -12,10 +12,14 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param accountID The account id
  * @returns The output response and loading bool.
  */
-export function useAccountDetails(network: string, accountId: string | null): { accountOutput: AccountOutput | null; isLoading: boolean } {
+export function useAccountDetails(
+    network: string,
+    accountId: string | null,
+): { accountOutput: AccountOutput | null; accountOutputMetadata: IOutputMetadataResponse | null; isLoading: boolean } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [accountOutput, setAccountOutput] = useState<AccountOutput | null>(null);
+    const [accountOutputMetadata, setAccountOutputMetadata] = useState<IOutputMetadataResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -31,8 +35,10 @@ export function useAccountDetails(network: string, accountId: string | null): { 
                     .then((response) => {
                         if (!response?.error && isMounted) {
                             const output = response.accountOutputDetails?.output as AccountOutput;
+                            const metadata = response.accountOutputDetails?.metadata ?? null;
 
                             setAccountOutput(output);
+                            setAccountOutputMetadata(metadata);
                         }
                     })
                     .finally(() => {
@@ -44,5 +50,5 @@ export function useAccountDetails(network: string, accountId: string | null): { 
         }
     }, [network, accountId]);
 
-    return { accountOutput, isLoading };
+    return { accountOutput, accountOutputMetadata, isLoading };
 }

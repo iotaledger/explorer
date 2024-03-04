@@ -12,7 +12,15 @@ interface NftAddressViewProps {
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
     const [state, setState] = useNftAddressState(nftAddress);
-    const { addressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading } = state;
+    const {
+        addressDetails,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
+        isNftDetailsLoading,
+        isAssociatedOutputsLoading,
+    } = state;
     const isPageLoading = isNftDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -35,13 +43,13 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={addressDetails} advancedMode={true} />
-                                    {totalBalance !== null && (
-                                        <AddressBalance
-                                            totalBalance={totalBalance}
-                                            availableBalance={availableBalance}
-                                            storageDeposit={null}
-                                        />
-                                    )}
+                                    <AddressBalance
+                                        totalBaseTokenBalance={totalBaseTokenBalance}
+                                        availableBaseTokenBalance={availableBaseTokenBalance}
+                                        totalManaBalance={totalManaBalance}
+                                        availableManaBalance={availableManaBalance}
+                                        storageDeposit={null}
+                                    />
                                 </div>
                             </div>
                         </div>
