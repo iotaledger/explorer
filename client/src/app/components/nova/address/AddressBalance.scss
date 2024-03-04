@@ -83,15 +83,16 @@
                 }
             }
         }
-    }
 
-    @include tablet-down {
-        .balance-wrapper--inner {
-            flex-direction: column;
+        @include tablet-down {
+            .balance-wrapper__base-token,
+            .balance-wrapper__mana {
+                flex-direction: column;
 
-            .balance {
-                &:not(:first-child) {
-                    margin-top: 26px;
+                .balance {
+                    &:not(:first-child) {
+                        margin-top: 8px;
+                    }
                 }
             }
         }
