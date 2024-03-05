@@ -1,11 +1,11 @@
 import moment from "moment";
 import React from "react";
-import { useCurrentEpochProgress } from "~/helpers/nova/hooks/useCurrentEpochProgress";
+import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
 import ProgressBar from "./ProgressBar";
 import "./LandingEpochSection.scss";
 
 const LandingEpochSection: React.FC = () => {
-    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useCurrentEpochProgress();
+    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
 
     if (epochIndex === null || epochProgressPercent === null) {
         return null;
