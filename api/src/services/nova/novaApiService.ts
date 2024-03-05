@@ -13,6 +13,7 @@ import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResp
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { ICongestionResponse } from "../../models/api/nova/ICongestionResponse";
+import { IEpochCommitteeResponse } from "../../models/api/nova/IEpochCommitteeResponse";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
@@ -384,6 +385,25 @@ export class NovaApiService {
             return { slot };
         } catch (e) {
             logger.error(`Failed fetching slot with slot index ${slotIndex}. Cause: ${e}`);
+        }
+    }
+
+    /**
+     * Get the epoch committee.
+     * @param epochIndex The epoch index to get the committee for.
+     * @returns The epoch committee.
+     */
+    public async getEpochCommittee(epochIndex: number): Promise<IEpochCommitteeResponse> {
+        try {
+            const response = await this.client.getCommittee(epochIndex);
+
+            if (response) {
+                return {
+                    committeeResponse: response,
+                };
+            }
+        } catch (e) {
+            logger.error(`Failed fetching committee for epoch index ${epochIndex}. Cause: ${e}`);
         }
     }
 

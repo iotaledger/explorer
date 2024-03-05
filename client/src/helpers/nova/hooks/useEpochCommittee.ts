@@ -11,7 +11,7 @@ interface IUseEpochCommittee {
     isLoading: boolean;
 }
 
-export default function useEpochCommittee(network: string, epochIndex: string): IUseEpochCommittee {
+export default function useEpochCommittee(network: string, epochIndex?: string): IUseEpochCommittee {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [epochCommittee, setEpochCommittee] = useState<CommitteeResponse | null>(null);
@@ -27,7 +27,7 @@ export default function useEpochCommittee(network: string, epochIndex: string): 
                 apiClient
                     .getEpochCommittee({
                         network,
-                        epochIndex,
+                        epochIndex: epochIndex.toString(),
                     })
                     .then((response) => {
                         if (isMounted) {

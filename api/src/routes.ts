@@ -287,4 +287,5 @@ export const routes: IRoute[] = [
         func: "get",
     },
     { path: "/nova/slot/:network/:slotIndex", method: "get", folder: "nova/slot", func: "get" },
+    { path: "/nova/epoch/committee/:network/:epochIndex", method: "get", folder: "nova/epoch/committee", func: "get" },
 ];
