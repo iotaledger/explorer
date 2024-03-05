@@ -27,7 +27,7 @@ export default function useEpochCommittee(network: string, epochIndex?: string):
                 apiClient
                     .getEpochCommittee({
                         network,
-                        epochIndex: epochIndex.toString(),
+                        epochIndex,
                     })
                     .then((response) => {
                         if (isMounted) {
