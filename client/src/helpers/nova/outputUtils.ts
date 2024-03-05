@@ -1,4 +1,10 @@
-import { CommonOutput, ExpirationUnlockCondition, ProtocolParametersResponse, UnlockConditionType } from "@iota/sdk-wasm-nova/web";
+import {
+    CommonOutput,
+    ExpirationUnlockCondition,
+    ProtocolParametersResponse,
+    TimelockUnlockCondition,
+    UnlockConditionType,
+} from "@iota/sdk-wasm-nova/web";
 import moment from "moment";
 import { unixTimestampToSlotIndexConverter } from "./novaTimeUtils";
 
@@ -19,17 +25,17 @@ export function hasSpecialCondition(commonOutput: CommonOutput): boolean {
     return specialUnlockConditionExists;
 }
 
-export function isOutputExpired(output: CommonOutput, nodeProtocolParameters: ProtocolParametersResponse | null): boolean | null {
+export function isOutputExpired(output: CommonOutput, protocolParameters: ProtocolParametersResponse | null): boolean | null {
     const expirationUnlockCondition = output.unlockConditions.find(
         (unlockCondition) => unlockCondition.type === UnlockConditionType.Expiration,
     ) as ExpirationUnlockCondition;
     const outputSlotIndex = expirationUnlockCondition?.slotIndex;
-    const maxCommittableAge = nodeProtocolParameters?.parameters?.maxCommittableAge ?? null;
-    const minCommittableAge = nodeProtocolParameters?.parameters?.minCommittableAge ?? null;
+    const maxCommittableAge = protocolParameters?.parameters?.maxCommittableAge ?? null;
+    const minCommittableAge = protocolParameters?.parameters?.minCommittableAge ?? null;
 
-    if (!nodeProtocolParameters || !outputSlotIndex || maxCommittableAge === null || minCommittableAge === null) return null;
+    if (!protocolParameters || !outputSlotIndex || maxCommittableAge === null || minCommittableAge === null) return null;
 
-    const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(nodeProtocolParameters);
+    const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(protocolParameters);
     const currentSlotIndex = unixTimestampToSlotIndex(moment().unix());
 
     if (outputSlotIndex > currentSlotIndex + maxCommittableAge) {
@@ -39,5 +45,20 @@ export function isOutputExpired(output: CommonOutput, nodeProtocolParameters: Pr
     } else {
         // The expiration is in the deadzone where it can't be unlocked
         return null;
+    }
+}
+
+export function isOutputTimeLocked(output: CommonOutput, protocolParameters: ProtocolParametersResponse | null): boolean {
+    const timelockUnlockCondition = output.unlockConditions.find(
+        (unlockCondition) => unlockCondition.type === UnlockConditionType.Timelock,
+    ) as TimelockUnlockCondition;
+    const minCommittableAge = protocolParameters?.parameters?.minCommittableAge ?? null;
+
+    if (!protocolParameters || !timelockUnlockCondition || minCommittableAge === null) {
+        return false;
+    } else {
+        const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(protocolParameters);
+        const currentSlotIndex = unixTimestampToSlotIndex(moment().unix());
+        return currentSlotIndex + minCommittableAge < timelockUnlockCondition.slotIndex;
     }
 }

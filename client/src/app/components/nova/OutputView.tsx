@@ -31,7 +31,7 @@ import { HexHelper } from "~/helpers/stardust/hexHelper";
 import bigInt from "big-integer";
 import { OutputManaDetails, getManaKeyValueEntries } from "~/helpers/nova/manaUtils";
 import KeyValueEntries from "./KeyValueEntries";
-import { hasSpecialCondition, isOutputExpired } from "~/helpers/nova/outputUtils";
+import { hasSpecialCondition, isOutputExpired, isOutputTimeLocked } from "~/helpers/nova/outputUtils";
 import Tooltip from "../Tooltip";
 import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
 import { DateHelper } from "~/helpers/dateHelper";
@@ -63,9 +63,11 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
         (output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
             const isExpired =
                 unlockCondition.type === UnlockConditionType.Expiration && (isOutputExpired(output as CommonOutput, protocolInfo) ?? false);
+            const isTimeLocked =
+                unlockCondition.type === UnlockConditionType.Timelock && isOutputTimeLocked(output as CommonOutput, protocolInfo);
             return (
                 <Tooltip key={idx} tooltipContent={getSpecialUnlockConditionContent(unlockCondition, slotIndexToUnixTimeRange, isExpired)}>
-                    <span className={classNames("material-icons unlock-condition-icon", { expired: isExpired })}>
+                    <span className={classNames("material-icons unlock-condition-icon", { expired: isExpired || isTimeLocked })}>
                         {unlockCondition.type === UnlockConditionType.StorageDepositReturn && "arrow_back"}
                         {unlockCondition.type === UnlockConditionType.Expiration && "hourglass_bottom"}
                         {unlockCondition.type === UnlockConditionType.Timelock && "schedule"}
@@ -296,7 +298,7 @@ function getSpecialUnlockConditionContent(
               to: number;
           })
         | null,
-    isExpired: boolean,
+    isExpiredOrTimeLocked: boolean,
 ): React.ReactNode {
     if (unlockCondition.type === UnlockConditionType.StorageDepositReturn) {
         const storageDepositReturnUC = unlockCondition as StorageDepositReturnUnlockCondition;
@@ -312,7 +314,7 @@ function getSpecialUnlockConditionContent(
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
         return (
             <React.Fragment>
-                <span>Expiration Unlock Condition{isExpired ? " (Expired)" : ""}</span> <br />
+                <span>Expiration Unlock Condition{isExpiredOrTimeLocked ? " (Expired)" : ""}</span> <br />
                 {time ? <span>Time: {time} </span> : <span>Slot: {expirationUnlockCondition.slotIndex}</span>}
             </React.Fragment>
         );
@@ -322,7 +324,7 @@ function getSpecialUnlockConditionContent(
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
         return (
             <React.Fragment>
-                <span>Timelock Unlock Condition</span> <br />
+                <span>Timelock Unlock Condition{isExpiredOrTimeLocked ? " (TimeLocked)" : ""}</span> <br />
                 {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slotIndex}</span>}
             </React.Fragment>
         );
