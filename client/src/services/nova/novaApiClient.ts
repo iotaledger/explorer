@@ -43,6 +43,8 @@ import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountVali
 import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import { ISlotBlocksRequest } from "~/models/api/nova/ISlotBlocksRequest";
 import { ISlotBlocksResponse } from "~/models/api/nova/ISlotBlocksResponse";
+import { IEpochCommitteeRequest } from "~/models/api/nova/IEpochCommitteeRequest";
+import { IEpochCommitteeResponse } from "~/models/api/nova/IEpochCommitteeResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -236,6 +238,15 @@ export class NovaApiClient extends ApiClient {
             `nova/slot/blocks/chronicle/${request.network}/${request.slotIndex}${FetchHelper.urlParams(params)}`,
             "get",
         );
+    }
+
+    /**
+     * Get the epoch committee.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getEpochCommittee(request: IEpochCommitteeRequest): Promise<IEpochCommitteeResponse> {
+        return this.callApi<unknown, IEpochCommitteeResponse>(`nova/epoch/committee/${request.network}/${request.epochIndex}`, "get");
     }
 
     /**
