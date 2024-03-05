@@ -42,6 +42,8 @@ import { IAccountValidatorDetailsRequest } from "~/models/api/nova/IAccountValid
 import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountValidatorDetailsResponse";
 import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import { IDelegationDetailsResponse } from "~/models/api/nova/IDelegationDetailsResponse";
+import { ISlotBlocksRequest } from "~/models/api/nova/ISlotBlocksRequest";
+import { ISlotBlocksResponse } from "~/models/api/nova/ISlotBlocksResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -232,6 +234,21 @@ export class NovaApiClient extends ApiClient {
      */
     public async getSlotCommitment(request: ISlotRequest): Promise<ISlotResponse> {
         return this.callApi<unknown, ISlotResponse>(`nova/slot/${request.network}/${request.slotIndex}`, "get");
+    }
+
+    /**
+     * Get the slot blocks.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getSlotBlocks(request: ISlotBlocksRequest): Promise<ISlotBlocksResponse> {
+        const params = {
+            cursor: request.cursor,
+        };
+        return this.callApi<unknown, ISlotBlocksResponse>(
+            `nova/slot/blocks/chronicle/${request.network}/${request.slotIndex}${FetchHelper.urlParams(params)}`,
+            "get",
+        );
     }
 
     /**

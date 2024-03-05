@@ -3,7 +3,7 @@ import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
-import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
+import { IDelegationWithDetails } from "~models/api/nova/IDelegationWithDetails";
 
 /**
  * Fetch Address delegation UTXOs
@@ -11,10 +11,10 @@ import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
  * @param addressBech32 The address in bech32 format
  * @returns The output responses and loading bool.
  */
-export function useAddressDelegationOutputs(network: string, addressBech32: string | null): [IRewardsResponse[] | null, boolean] {
+export function useAddressDelegationOutputs(network: string, addressBech32: string | null): [IDelegationWithDetails[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [outputs, setOutputs] = useState<IRewardsResponse[] | null>(null);
+    const [outputs, setOutputs] = useState<IDelegationWithDetails[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

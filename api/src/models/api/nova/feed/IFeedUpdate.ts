@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-import { Block, IBlockMetadata, SlotIndex } from "@iota/sdk-nova";
+import { Block, BlockMetadataResponse, SlotIndex } from "@iota/sdk-nova";
 
 interface IFeedBlockUpdate {
     blockId: string;
@@ -10,6 +10,6 @@ interface IFeedBlockUpdate {
 export interface IFeedUpdate {
     subscriptionId: string;
     blockUpdate?: IFeedBlockUpdate;
-    blockMetadataUpdate?: IBlockMetadata;
+    blockMetadataUpdate?: BlockMetadataResponse;
     slotFinalized?: SlotIndex;
 }

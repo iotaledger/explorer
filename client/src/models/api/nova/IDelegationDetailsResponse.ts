@@ -1,9 +1,9 @@
 import { IResponse } from "./IResponse";
-import { IRewardsResponse } from "./IRewardsResponse";
+import { IDelegationWithDetails } from "./IDelegationWithDetails";
 
 export interface IDelegationDetailsResponse extends IResponse {
     /**
      * The outputs data.
      */
-    outputs?: IRewardsResponse[];
+    outputs?: IDelegationWithDetails[];
 }

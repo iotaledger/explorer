@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import Pagination from "~/app/components/Pagination";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
-import { IRewardsResponse } from "~/models/api/nova/IRewardsResponse";
 import "./DelegationSection.scss";
+import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
 
 interface DelegationSectionProps {
-    readonly delegationDetails: IRewardsResponse[] | null;
+    readonly delegationDetails: IDelegationWithDetails[] | null;
 }
 
 const PAGE_SIZE: number = 10;
@@ -15,10 +15,13 @@ const PAGE_SIZE: number = 10;
 const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails }) => {
     const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const [pageNumber, setPageNumber] = useState(1);
-    const [currentPage, setCurrentPage] = useState<IRewardsResponse[]>([]);
+    const [currentPage, setCurrentPage] = useState<IDelegationWithDetails[]>([]);
 
     const totalAmount = delegationDetails?.reduce((acc, delegation) => acc + BigInt(delegation.output?.output?.amount ?? 0), BigInt(0));
-    const totalRewards = delegationDetails?.reduce((acc, delegation) => acc + BigInt(delegation.manaRewards?.rewards ?? 0), BigInt(0));
+    const totalRewards = delegationDetails?.reduce(
+        (acc, delegation) => acc + BigInt(delegation.rewards?.manaRewards?.rewards ?? 0),
+        BigInt(0),
+    );
 
     useEffect(() => {
         const from = (pageNumber - 1) * PAGE_SIZE;
@@ -56,6 +59,7 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
                 </thead>
                 <tbody>
                     {currentPage.map((delegation, k) => {
+                        const outputId = delegation.output.metadata.outputId;
                         const validatorAddress = Utils.addressToBech32(
                             (delegation.output?.output as DelegationOutput).validatorAddress,
                             bech32Hrp,
@@ -64,13 +68,13 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
                         return (
                             <tr key={`delegation-row-${k}`}>
                                 <td className="highlight">
-                                    <TruncatedId id={delegation.outputId} link={`/${network}/output/${delegation.outputId}`} />
+                                    <TruncatedId id={outputId} link={`/${network}/output/${outputId}`} />
                                 </td>
                                 <td className="highlight">
                                     <TruncatedId id={validatorAddress} link={`/${network}/addr/${validatorAddress}`} />
                                 </td>
                                 <td>{delegation.output?.output.amount.toString() ?? "-"}</td>
-                                <td>{delegation.manaRewards?.rewards.toString() ?? "-"}</td>
+                                <td>{delegation.rewards?.manaRewards?.rewards.toString() ?? "-"}</td>
                             </tr>
                         );
                     })}
@@ -80,32 +84,33 @@ const DelegationSection: React.FC<DelegationSectionProps> = ({ delegationDetails
             {/* Only visible in mobile*/}
             <div className="cards--delegation">
                 {currentPage.map((delegation, k) => {
+                    const outputId = delegation.output.metadata.outputId;
                     const validatorAddress = Utils.addressToBech32(
                         (delegation.output?.output as DelegationOutput).validatorAddress,
                         bech32Hrp,
                     );
 
                     return (
-                        <div className="card" key={`delegation-row-${k}`}>
+                        <div className="card card--delegation" key={`delegation-row-${k}`}>
                             <div className="field">
-                                <div className="label">Output Id</div>
-                                <div className="value">
-                                    <TruncatedId id={delegation.outputId} link={`/${network}/output/${delegation.outputId}`} />
+                                <div className="card--label">Output Id</div>
+                                <div className="card--value">
+                                    <TruncatedId id={outputId} link={`/${network}/output/${outputId}`} />
                                 </div>
                             </div>
                             <div className="field">
-                                <div className="label">Validator Address</div>
-                                <div className="value">
+                                <div className="card--label">Validator Address</div>
+                                <div className="card--value">
                                     <TruncatedId id={validatorAddress} link={`/${network}/addr/${validatorAddress}`} />
                                 </div>
                             </div>
                             <div className="field">
-                                <div className="label">Amount</div>
-                                <div className="value">{delegation.output?.output.amount.toString() ?? "-"}</div>
+                                <div className="card--label">Amount</div>
+                                <div className="card--value">{delegation.output?.output.amount.toString() ?? "-"}</div>
                             </div>
                             <div className="field">
-                                <div className="label">Rewards</div>
-                                <div className="value">{delegation.manaRewards?.rewards.toString() ?? "-"}</div>
+                                <div className="card--label">Rewards</div>
+                                <div className="card--value">{delegation.rewards?.manaRewards?.rewards.toString() ?? "-"}</div>
                             </div>
                         </div>
                     );

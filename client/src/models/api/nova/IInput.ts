@@ -1,4 +1,4 @@
-import { HexEncodedString, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { HexEncodedString, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "./IAddressDetails";
 
 export interface IInput {
@@ -17,7 +17,7 @@ export interface IInput {
     /**
      * The output used as input.
      */
-    output?: OutputResponse;
+    output?: OutputWithMetadataResponse;
     /**
      * The transaction address details.
      */

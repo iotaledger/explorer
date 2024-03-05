@@ -1,7 +1,6 @@
-import React from "react";
+import { BLOCK_FAILURE_REASON_STRINGS, BlockFailureReason, BlockState, u64 } from "@iota/sdk-wasm-nova/web";
 import moment from "moment";
-import { BlockState, u64 } from "@iota/sdk-wasm-nova/web";
-import { BLOCK_FAILURE_REASON_STRINGS, BlockFailureReason } from "@iota/sdk-wasm-nova/web/lib/types/models/block-failure-reason";
+import React from "react";
 import StatusPill from "~/app/components/nova/StatusPill";
 import { PillStatus } from "~/app/lib/ui/enums";
 import "./BlockTangleState.scss";

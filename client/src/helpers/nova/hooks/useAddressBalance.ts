@@ -1,10 +1,13 @@
-import { AddressType, NftOutput, AccountOutput, AnchorOutput } from "@iota/sdk-wasm-nova/web";
+import { AddressType, NftOutput, AccountOutput, AnchorOutput, OutputMetadataResponse, ManaRewardsResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
+import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { NOVA } from "~models/config/protocolVersion";
+import { buildManaDetailsForOutput } from "../manaUtils";
 
 /**
  * Fetch the address balance from chronicle nova.
@@ -17,11 +20,22 @@ export function useAddressBalance(
     network: string,
     addressDetails: IAddressDetails | null,
     output: AccountOutput | NftOutput | AnchorOutput | null,
-): { totalBalance: number | null; availableBalance: number | null; isLoading: boolean } {
+    outputMetadata?: OutputMetadataResponse | null,
+    outputManaRewards?: ManaRewardsResponse | null,
+): {
+    totalBaseTokenBalance: number | null;
+    availableBaseTokenBalance: number | null;
+    totalManaBalance: IManaBalance | null;
+    availableManaBalance: IManaBalance | null;
+    isLoading: boolean;
+} {
     const isMounted = useIsMounted();
+    const { protocolInfo, latestConfirmedSlot } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [totalBalance, setTotalBalance] = useState<number | null>(null);
-    const [availableBalance, setAvailableBalance] = useState<number | null>(null);
+    const [totalBaseTokenBalance, setTotalBaseTokenBalance] = useState<number | null>(null);
+    const [availableBaseTokenBalance, setAvailableBaseTokenBalance] = useState<number | null>(null);
+    const [totalManaBalance, setTotalManaBalance] = useState<IManaBalance | null>(null);
+    const [availableManaBalance, setAvailableManaBalance] = useState<IManaBalance | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -31,7 +45,7 @@ export function useAddressBalance(
             addressDetails?.type === AddressType.Account ||
             addressDetails?.type === AddressType.Nft ||
             addressDetails?.type === AddressType.Anchor;
-        const canLoad = address && (!needsOutputToProceed || (needsOutputToProceed && output !== null));
+        const canLoad = address && (!needsOutputToProceed || (needsOutputToProceed && output !== null && outputMetadata));
 
         if (canLoad) {
             // eslint-disable-next-line no-void
@@ -41,14 +55,46 @@ export function useAddressBalance(
                 if (isMounted) {
                     let totalBalance = response?.totalBalance?.amount ?? 0;
                     let availableBalance = response?.availableBalance?.amount ?? 0;
+                    let totalManaBalance = response?.totalBalance?.mana ?? null;
+                    let availableManaBalance = response?.availableBalance?.mana ?? null;
 
                     if (output) {
                         totalBalance = Number(totalBalance) + Number(output.amount);
                         availableBalance = Number(availableBalance) + Number(output.amount);
+
+                        // Output mana
+                        const { included, spent } = outputMetadata ?? {};
+                        const createdSlotIndex = (included?.slot as number) ?? null;
+                        const spentSlotIndex = (spent?.slot as number) ?? null;
+
+                        if (output && createdSlotIndex && protocolInfo) {
+                            const untilSlotIndex = spentSlotIndex ? spentSlotIndex : latestConfirmedSlot > 0 ? latestConfirmedSlot : null;
+                            const outputManaDetails = untilSlotIndex
+                                ? buildManaDetailsForOutput(
+                                      output,
+                                      createdSlotIndex,
+                                      untilSlotIndex,
+                                      protocolInfo.parameters,
+                                      outputManaRewards ?? null,
+                                  )
+                                : null;
+
+                            totalManaBalance = {
+                                stored: (totalManaBalance?.stored ?? 0) + Number(outputManaDetails?.storedMana ?? 0),
+                                potential: (totalManaBalance?.potential ?? 0) + Number(outputManaDetails?.potentialMana ?? 0),
+                            };
+
+                            availableManaBalance = {
+                                stored: (availableManaBalance?.stored ?? 0) + Number(outputManaDetails?.storedMana ?? 0),
+                                potential: (availableManaBalance?.potential ?? 0) + Number(outputManaDetails?.potentialMana ?? 0),
+                            };
+                        }
                     }
 
-                    setTotalBalance(totalBalance);
-                    setAvailableBalance(availableBalance > 0 ? availableBalance : null);
+                    setTotalBaseTokenBalance(totalBalance);
+                    setAvailableBaseTokenBalance(availableBalance > 0 ? availableBalance : null);
+                    setTotalManaBalance(totalManaBalance);
+                    setAvailableManaBalance(availableManaBalance);
                 }
             })();
         } else {
@@ -56,5 +102,5 @@ export function useAddressBalance(
         }
     }, [network, addressDetails, output]);
 
-    return { totalBalance, availableBalance, isLoading };
+    return { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance, isLoading };
 }

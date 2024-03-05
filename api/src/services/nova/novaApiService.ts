@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Client, OutputResponse } from "@iota/sdk-nova";
+import { Client, OutputWithMetadataResponse } from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
@@ -14,6 +14,7 @@ import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsRespon
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { ICongestionResponse } from "../../models/api/nova/ICongestionResponse";
 import { IDelegationDetailsResponse } from "../../models/api/nova/IDelegationDetailsResponse";
+import { IDelegationWithDetails } from "../../models/api/nova/IDelegationWithDetails";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
@@ -121,7 +122,7 @@ export class NovaApiService {
      */
     public async outputDetails(outputId: string): Promise<IOutputDetailsResponse> {
         try {
-            const outputResponse = await this.client.getOutput(outputId);
+            const outputResponse = await this.client.getOutputWithMetadata(outputId);
             return { output: outputResponse };
         } catch (e) {
             logger.error(`Failed fetching output with output id ${outputId}. Cause: ${e}`);
@@ -248,9 +249,9 @@ export class NovaApiService {
      * @param outputIds The output ids to get the details.
      * @returns The item details.
      */
-    public async outputsDetails(outputIds: string[]): Promise<OutputResponse[]> {
+    public async outputsDetails(outputIds: string[]): Promise<OutputWithMetadataResponse[]> {
         const promises: Promise<IOutputDetailsResponse>[] = [];
-        const outputResponses: OutputResponse[] = [];
+        const outputResponses: OutputWithMetadataResponse[] = [];
 
         for (const outputId of outputIds) {
             const promise = this.outputDetails(outputId);
@@ -351,7 +352,7 @@ export class NovaApiService {
     public async delegationOutputDetailsByAddress(addressBech32: string): Promise<IDelegationDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
-        const delegationResponse: { output: OutputResponse & IRewardsResponse }[] = [];
+        const delegationResponse: IDelegationWithDetails[] = [];
 
         do {
             try {
@@ -368,10 +369,8 @@ export class NovaApiService {
         const outputResponses = await this.outputsDetails(outputIds);
 
         for (const outputResponse of outputResponses) {
-            const matchingReward = outputRewards.find((outputReward) => outputReward.outputId === outputResponse.metadata.outputId);
-            if (matchingReward) {
-                delegationResponse.push({ ...matchingReward, output: outputResponse });
-            }
+            const matchingReward = outputRewards?.find((outputReward) => outputReward.outputId === outputResponse.metadata.outputId);
+            delegationResponse.push({ rewards: matchingReward, output: outputResponse });
         }
 
         return {
@@ -423,7 +422,7 @@ export class NovaApiService {
      * @returns The mana rewards.
      */
     public async getRewards(outputId: string): Promise<IRewardsResponse> {
-        const manaRewardsResponse = await this.client.getRewards(outputId);
+        const manaRewardsResponse = await this.client.getOutputManaRewards(outputId);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
     }
@@ -435,7 +434,7 @@ export class NovaApiService {
      */
     public async getSlotCommitment(slotIndex: number): Promise<ISlotResponse> {
         try {
-            const slot = await this.client.getCommitmentByIndex(slotIndex);
+            const slot = await this.client.getCommitmentBySlot(slotIndex);
 
             return { slot };
         } catch (e) {

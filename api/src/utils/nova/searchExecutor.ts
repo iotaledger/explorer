@@ -127,6 +127,21 @@ export class SearchExecutor {
             );
         }
 
+        if (searchQuery.foundryId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.foundryDetails(searchQuery.foundryId),
+                    (response) => {
+                        promisesResult = {
+                            foundryId: response.foundryDetails ? searchQuery.foundryId : undefined,
+                            error: response.error || response.message,
+                        };
+                    },
+                    "Foundry details fetch failed",
+                ),
+            );
+        }
+
         await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {
