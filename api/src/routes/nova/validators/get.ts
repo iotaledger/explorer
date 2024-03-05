@@ -8,7 +8,7 @@ import { ValidatorService } from "../../../services/nova/validatorService";
 import { ValidationHelper } from "../../../utils/validationHelper";
 
 /**
- * Fetch the currect validators (cached).
+ * Fetch the current validators (cached).
  * @param _ The configuration.
  * @param request The request.
  * @returns The response.

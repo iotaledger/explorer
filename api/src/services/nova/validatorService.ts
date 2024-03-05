@@ -1,4 +1,4 @@
-import { Client, ValidatorResponse } from "@iota/sdk-nova";
+import { Client, ValidatorResponse, CommitteeResponse } from "@iota/sdk-nova";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
@@ -15,6 +15,11 @@ export class ValidatorService {
      * The current validators cache state.
      */
     protected _validatorsCache: ValidatorResponse[] = [];
+
+    /**
+     * The current committee cache state.
+     */
+    protected _committeeCache: CommitteeResponse | null = null;
 
     /**
      * The network in context for this client.
@@ -39,17 +44,25 @@ export class ValidatorService {
         return this._validatorsCache;
     }
 
+    public get committee(): CommitteeResponse | null {
+        return this._committeeCache;
+    }
+
     public setupValidatorsCollection() {
         const network = this._network.network;
         logger.verbose(`[ValidatorService] Setting up validator collection for (${network})]`);
 
         // eslint-disable-next-line no-void
         void this.updateValidatorsCache();
+        // eslint-disable-next-line no-void
+        void this.updateCommitteeCache();
 
         cron.schedule(COLLECT_VALIDATORS_CRON, async () => {
             logger.verbose(`[ValidatorService] Collecting validators for "${this._network.network}"`);
             // eslint-disable-next-line no-void
             void this.updateValidatorsCache();
+            // eslint-disable-next-line no-void
+            void this.updateCommitteeCache();
         });
     }
 
@@ -71,5 +84,13 @@ export class ValidatorService {
         } while (cursor);
 
         this._validatorsCache = validators;
+    }
+
+    private async updateCommitteeCache() {
+        try {
+            this._committeeCache = await this.client.getCommittee();
+        } catch (e) {
+            logger.error(`Fetching committee failed. Cause: ${e}`);
+        }
     }
 }
