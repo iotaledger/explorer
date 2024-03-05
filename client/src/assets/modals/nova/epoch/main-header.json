@@ -1,0 +1,11 @@
+{
+    "title": "Epoch",
+    "description": "<p>An epoch is a time period divided into sequential slots, facilitating block and transaction validation by a fixed subset of validators, ensuring consensus within the IOTA protocol.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/consensus/preliminaries/#epoch-committee",
+            "isExternal": true
+        }
+    ]
+}

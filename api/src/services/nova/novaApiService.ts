@@ -13,6 +13,8 @@ import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResp
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { ICongestionResponse } from "../../models/api/nova/ICongestionResponse";
+import { IDelegationDetailsResponse } from "../../models/api/nova/IDelegationDetailsResponse";
+import { IDelegationWithDetails } from "../../models/api/nova/IDelegationWithDetails";
 import { INftDetailsResponse } from "../../models/api/nova/INftDetailsResponse";
 import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResponse";
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
@@ -271,6 +273,25 @@ export class NovaApiService {
     }
 
     /**
+     * Get the outputs mana rewards.
+     * @param outputIds The output ids to get the mana rewards for.
+     * @returns The rewards details.
+     */
+    public async outputsRewardsDetails(outputIds: string[]): Promise<IRewardsResponse[]> {
+        const promises: Promise<IRewardsResponse>[] = [];
+
+        for (const outputId of outputIds) {
+            const promise = this.getRewards(outputId);
+            promises.push(promise);
+        }
+        try {
+            return await Promise.all(promises);
+        } catch (e) {
+            logger.error(`Fetching outputs rewards failed. Cause: ${e}`);
+        }
+    }
+
+    /**
      * Get the relevant basic output details for an address.
      * @param addressBech32 The address in bech32 format.
      * @returns The basic output details.
@@ -320,6 +341,40 @@ export class NovaApiService {
         const outputResponses = await this.outputsDetails(outputIds);
         return {
             outputs: outputResponses,
+        };
+    }
+
+    /**
+     * Get the relevant basic output details for an address.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The basic output details.
+     */
+    public async delegationOutputDetailsByAddress(addressBech32: string): Promise<IDelegationDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+        const delegationResponse: IDelegationWithDetails[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.delegationOutputIds({ address: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching delegation output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputRewards = await this.outputsRewardsDetails(outputIds);
+        const outputResponses = await this.outputsDetails(outputIds);
+
+        for (const outputResponse of outputResponses) {
+            const matchingReward = outputRewards?.find((outputReward) => outputReward.outputId === outputResponse.metadata.outputId);
+            delegationResponse.push({ rewards: matchingReward, output: outputResponse });
+        }
+
+        return {
+            outputs: delegationResponse,
         };
     }
 

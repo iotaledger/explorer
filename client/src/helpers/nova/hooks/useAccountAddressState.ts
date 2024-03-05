@@ -22,8 +22,10 @@ import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 import { useAccountCongestion } from "./useAccountCongestion";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
+import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { useOutputManaRewards } from "./useOutputManaRewards";
+import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
 
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
@@ -38,12 +40,14 @@ export interface IAccountAddressState {
     validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputWithMetadataResponse[] | null;
     addressNftOutputs: OutputWithMetadataResponse[] | null;
+    addressDelegationOutputs: IDelegationWithDetails[] | null;
     foundries: string[] | null;
     congestion: CongestionResponse | null;
     isAccountDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
+    isDelegationOutputsLoading: boolean;
     isFoundriesLoading: boolean;
     isAddressHistoryLoading: boolean;
     isAddressHistoryDisabled: boolean;
@@ -64,12 +68,14 @@ const initialState = {
     validatorDetails: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
+    addressDelegationOutputs: null,
     foundries: null,
     congestion: null,
     isAccountDetailsLoading: true,
     isAssociatedOutputsLoading: false,
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
+    isDelegationOutputsLoading: false,
     isFoundriesLoading: false,
     isAddressHistoryLoading: true,
     isAddressHistoryDisabled: false,
@@ -105,6 +111,10 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
+        network,
+        state.addressDetails?.bech32 ?? null,
+    );
     const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
     const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
     const { validatorDetails, isLoading: isValidatorDetailsLoading } = useAccountValidatorDetails(
@@ -138,8 +148,10 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             validatorDetails,
             addressBasicOutputs,
             addressNftOutputs,
+            addressDelegationOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
+            isDelegationOutputsLoading,
             isFoundriesLoading,
             isCongestionLoading,
             isValidatorDetailsLoading,
@@ -179,11 +191,13 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         manaRewards,
         addressBasicOutputs,
         addressNftOutputs,
+        addressDelegationOutputs,
         congestion,
         validatorDetails,
         isAccountDetailsLoading,
         isBasicOutputsLoading,
         isNftOutputsLoading,
+        isDelegationOutputsLoading,
         isCongestionLoading,
         isValidatorDetailsLoading,
     ]);
