@@ -1,6 +1,6 @@
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../models/api/INetworkBoundGetRequest";
-import { IValidatorsResponse } from "../../../models/api/nova/IValidatorsResponse";
+import { IValidator, IValidatorsResponse } from "../../../models/api/nova/IValidatorsResponse";
 import { IConfiguration } from "../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../models/db/protocolVersion";
 import { NetworkService } from "../../../services/networkService";
@@ -26,5 +26,11 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
 
     const validatorService = ServiceFactory.get<ValidatorService>(`validator-service-${networkConfig.network}`);
 
-    return { validators: validatorService.validators };
+    const committeeAddresses = validatorService.committee?.committee.map((member) => member.address) ?? [];
+    const validators: IValidator[] = validatorService?.validators.map((validator) => ({
+        validator,
+        inCommittee: committeeAddresses.includes(validator.address),
+    }));
+
+    return { validators };
 }
