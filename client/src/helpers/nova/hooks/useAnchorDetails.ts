@@ -1,4 +1,4 @@
-import { AnchorOutput, IOutputMetadataResponse } from "@iota/sdk-wasm-nova/web";
+import { AnchorOutput, OutputMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
@@ -15,11 +15,11 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
 export function useAnchorDetails(
     network: string,
     anchorId: string | null,
-): { anchorOutput: AnchorOutput | null; anchorOutputMetadata: IOutputMetadataResponse | null; isLoading: boolean } {
+): { anchorOutput: AnchorOutput | null; anchorOutputMetadata: OutputMetadataResponse | null; isLoading: boolean } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [anchorOutput, setAnchorOutput] = useState<AnchorOutput | null>(null);
-    const [anchorOutputMetadata, setAnchorOutputMetadata] = useState<IOutputMetadataResponse | null>(null);
+    const [anchorOutputMetadata, setAnchorOutputMetadata] = useState<OutputMetadataResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {

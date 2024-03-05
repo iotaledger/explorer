@@ -1,4 +1,4 @@
-import { AddressType, NftOutput, AccountOutput, AnchorOutput, IOutputMetadataResponse, ManaRewardsResponse } from "@iota/sdk-wasm-nova/web";
+import { AddressType, NftOutput, AccountOutput, AnchorOutput, OutputMetadataResponse, ManaRewardsResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
@@ -20,7 +20,7 @@ export function useAddressBalance(
     network: string,
     addressDetails: IAddressDetails | null,
     output: AccountOutput | NftOutput | AnchorOutput | null,
-    outputMetadata?: IOutputMetadataResponse | null,
+    outputMetadata?: OutputMetadataResponse | null,
     outputManaRewards?: ManaRewardsResponse | null,
 ): {
     totalBaseTokenBalance: number | null;

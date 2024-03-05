@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Block, Client, IBlockMetadata, SlotCommitment } from "@iota/sdk-nova";
+import { Block, Client, BlockMetadataResponse, SlotCommitment } from "@iota/sdk-nova";
 import { ClassConstructor, plainToInstance } from "class-transformer";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
@@ -117,7 +117,7 @@ export class NovaFeed {
         void this._mqttClient.listenMqtt(["block-metadata/accepted", "block-metadata/confirmed"], async (_, message) => {
             try {
                 const deserializedMessage: { topic: string; payload: string } = JSON.parse(message);
-                const blockMetadataUpdate: IBlockMetadata = JSON.parse(deserializedMessage.payload);
+                const blockMetadataUpdate: BlockMetadataResponse = JSON.parse(deserializedMessage.payload);
 
                 const update: Partial<IFeedUpdate> = {
                     blockMetadataUpdate,
