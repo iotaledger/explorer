@@ -9,19 +9,23 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
+import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
 
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
     anchorOutput: AnchorOutput | null;
-    addressBasicOutputs: OutputWithMetadataResponse[] | null;
-    addressNftOutputs: OutputWithMetadataResponse[] | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
+    addressDelegationOutputs: IDelegationWithDetails[] | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
+    isDelegationOutputsLoading: boolean;
     isAnchorDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isAddressHistoryLoading: boolean;
@@ -37,8 +41,10 @@ const initialState = {
     availableManaBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
+    addressDelegationOutputs: null,
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
+    isDelegationOutputsLoading: false,
     isAnchorDetailsLoading: true,
     isAssociatedOutputsLoading: false,
     isAddressHistoryLoading: true,
@@ -70,6 +76,10 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
+        network,
+        state.addressDetails?.bech32 ?? null,
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -92,8 +102,10 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             availableManaBalance,
             addressBasicOutputs,
             addressNftOutputs,
+            addressDelegationOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
+            isDelegationOutputsLoading,
             isAnchorDetailsLoading,
         });
     }, [
@@ -104,8 +116,10 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
         availableManaBalance,
         addressBasicOutputs,
         addressNftOutputs,
+        addressDelegationOutputs,
         isBasicOutputsLoading,
         isNftOutputsLoading,
+        isDelegationOutputsLoading,
         isAnchorDetailsLoading,
     ]);
 
