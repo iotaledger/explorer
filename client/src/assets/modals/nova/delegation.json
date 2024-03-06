@@ -1,0 +1,11 @@
+{
+    "title": "Delegation",
+    "description": "<p>Delegators are token holders that contribute to consensus by delegating their voting power to validators of their choice.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#delegation",
+            "isExternal": true
+        }
+    ]
+}

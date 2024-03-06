@@ -125,6 +125,7 @@ export class TransactionsHelper {
                         outputDetails = {
                             output: details.output,
                             metadata: details.metadata,
+                            outputIdProof: details.outputIdProof,
                         };
                         amount = Number(details.output.amount);
                     }

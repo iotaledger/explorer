@@ -9,6 +9,7 @@ import { ServiceFactory } from "~/factories/serviceFactory";
 import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { NavigationRoute } from "./lib/interfaces";
+import { InfoResponse } from "@iota/sdk-wasm-nova/web";
 
 export const networkContextWrapper = (currentNetwork: string | undefined, nodeInfo: IStardustNodeInfo | null, uiTheme: Theme | undefined) =>
     function withNetworkContext(wrappedComponent: ReactNode) {
@@ -152,7 +153,7 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
 export const populateNetworkInfoNova = (networkName: string) => {
     const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
     if (nodeService) {
-        const nodeInfo = nodeService.get(networkName);
+        const nodeInfo: InfoResponse = nodeService.get(networkName);
         const protocolInfo =
             nodeInfo?.protocolParameters.reduce((params, cur) => {
                 return params.startEpoch > cur.startEpoch ? params : cur;

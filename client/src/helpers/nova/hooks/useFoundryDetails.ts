@@ -1,4 +1,4 @@
-import { OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
@@ -12,10 +12,10 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param foundryId The foundry id
  * @returns The output response, loading bool and an error message.
  */
-export function useFoundryDetails(network: string, foundryId: string | null): [OutputResponse | null, boolean, string?] {
+export function useFoundryDetails(network: string, foundryId: string | null): [OutputWithMetadataResponse | null, boolean, string?] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [foundryDetails, setFoundryDetails] = useState<OutputResponse | null>(null);
+    const [foundryDetails, setFoundryDetails] = useState<OutputWithMetadataResponse | null>(null);
     const [error, setError] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 

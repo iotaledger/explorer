@@ -1,4 +1,4 @@
-import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm-nova/web";
+import { CommonOutput, BaseTokenResponse } from "@iota/sdk-wasm-nova/web";
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
@@ -48,7 +48,7 @@ export const groupOutputsByTransactionId = (outputsWithDetails: OutputWithDetail
 export const getTransactionHistoryRecords = (
     transactionIdToOutputs: Map<string, OutputWithDetails[]>,
     network: string,
-    tokenInfo: INodeInfoBaseToken,
+    tokenInfo: BaseTokenResponse,
     isFormattedAmounts: boolean,
     slotIndexToUnixTimeRange: (slotIndex: number) => { from: number; to: number },
 ): ITransactionHistoryRecord[] => {

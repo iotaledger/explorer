@@ -12,7 +12,7 @@ interface ImplicitAccountCreationAddressViewProps {
 
 const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddressViewProps> = ({ implicitAccountCreationAddress }) => {
     const [state, setState] = useImplicitAccountCreationAddressState(implicitAccountCreationAddress);
-    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading, storageDeposit } = state;
+    const { addressDetails, storageDeposit, totalBaseTokenBalance, availableBaseTokenBalance, isAssociatedOutputsLoading } = state;
     const isPageLoading = isAssociatedOutputsLoading;
 
     return (
@@ -35,13 +35,13 @@ const ImplicitAccountCreationAddressView: React.FC<ImplicitAccountCreationAddres
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={addressDetails} advancedMode={true} />
-                                    {totalBalance !== null && (
-                                        <AddressBalance
-                                            totalBalance={totalBalance}
-                                            availableBalance={availableBalance}
-                                            storageDeposit={storageDeposit}
-                                        />
-                                    )}
+                                    <AddressBalance
+                                        totalBaseTokenBalance={totalBaseTokenBalance}
+                                        availableBaseTokenBalance={availableBaseTokenBalance}
+                                        totalManaBalance={null}
+                                        availableManaBalance={null}
+                                        storageDeposit={storageDeposit}
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -1,4 +1,11 @@
-import { OutputType, OutputResponse, CommonOutput, NativeToken, FeatureType, NativeTokenFeature } from "@iota/sdk-wasm-nova/web";
+import {
+    OutputType,
+    OutputWithMetadataResponse,
+    CommonOutput,
+    NativeToken,
+    FeatureType,
+    NativeTokenFeature,
+} from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
 import Pagination from "~/app/components/Pagination";
@@ -6,7 +13,7 @@ import { plainToInstance } from "class-transformer";
 import "./AssetsTable.scss";
 
 interface AssetsTableProps {
-    readonly outputs: OutputResponse[] | null;
+    readonly outputs: OutputWithMetadataResponse[] | null;
     readonly setTokensCount?: (count: number) => void;
 }
 

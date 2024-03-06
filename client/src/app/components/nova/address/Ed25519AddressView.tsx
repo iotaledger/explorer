@@ -12,7 +12,16 @@ interface Ed25519AddressViewProps {
 
 const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address }) => {
     const [state, setState] = useEd25519AddressState(ed25519Address);
-    const { addressDetails, totalBalance, availableBalance, isAssociatedOutputsLoading, isBasicOutputsLoading, storageDeposit } = state;
+    const {
+        addressDetails,
+        storageDeposit,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
+        isAssociatedOutputsLoading,
+        isBasicOutputsLoading,
+    } = state;
     const isPageLoading = isAssociatedOutputsLoading || isBasicOutputsLoading;
 
     return (
@@ -35,13 +44,13 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={addressDetails} advancedMode={true} />
-                                    {totalBalance !== null && (
-                                        <AddressBalance
-                                            totalBalance={totalBalance}
-                                            availableBalance={availableBalance}
-                                            storageDeposit={storageDeposit}
-                                        />
-                                    )}
+                                    <AddressBalance
+                                        totalBaseTokenBalance={totalBaseTokenBalance}
+                                        availableBaseTokenBalance={availableBaseTokenBalance}
+                                        totalManaBalance={totalManaBalance}
+                                        availableManaBalance={availableManaBalance}
+                                        storageDeposit={storageDeposit}
+                                    />
                                 </div>
                             </div>
                         </div>

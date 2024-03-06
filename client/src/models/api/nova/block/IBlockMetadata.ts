@@ -1,10 +1,10 @@
-import { IBlockMetadata as BlockMetadata } from "@iota/sdk-wasm-nova/web";
+import { BlockMetadataResponse } from "@iota/sdk-wasm-nova/web";
 
 export interface IBlockMetadata {
     /**
      * Metadata.
      */
-    metadata?: BlockMetadata;
+    metadata?: BlockMetadataResponse;
 
     /**
      * The metadata failed.

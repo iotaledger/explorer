@@ -1,11 +1,11 @@
-import { INodeInfoBaseToken, ProtocolInfo } from "@iota/sdk-wasm-nova/web";
+import { BaseTokenResponse, ProtocolParametersResponse } from "@iota/sdk-wasm-nova/web";
 import { create } from "zustand";
 
 interface INetworkInfo {
     name: string;
-    tokenInfo: INodeInfoBaseToken;
+    tokenInfo: BaseTokenResponse;
     protocolVersion: number;
-    protocolInfo: ProtocolInfo | null;
+    protocolInfo: ProtocolParametersResponse | null;
     latestConfirmedSlot: number;
     bech32Hrp: string;
 }

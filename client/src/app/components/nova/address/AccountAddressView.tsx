@@ -12,7 +12,18 @@ interface AccountAddressViewProps {
 
 const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress }) => {
     const [state, setState] = useAccountAddressState(accountAddress);
-    const { addressDetails, totalBalance, availableBalance, isAccountDetailsLoading, isAssociatedOutputsLoading, storageDeposit } = state;
+    const {
+        addressDetails,
+        storageDeposit,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
+        congestion,
+        manaRewards,
+        isAccountDetailsLoading,
+        isAssociatedOutputsLoading,
+    } = state;
     const isPageLoading = isAccountDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -35,13 +46,15 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={addressDetails} advancedMode={true} />
-                                    {totalBalance !== null && (
-                                        <AddressBalance
-                                            totalBalance={totalBalance}
-                                            availableBalance={availableBalance}
-                                            storageDeposit={storageDeposit}
-                                        />
-                                    )}
+                                    <AddressBalance
+                                        totalBaseTokenBalance={totalBaseTokenBalance}
+                                        availableBaseTokenBalance={availableBaseTokenBalance}
+                                        totalManaBalance={totalManaBalance}
+                                        availableManaBalance={availableManaBalance}
+                                        blockIssuanceCredits={congestion?.blockIssuanceCredits}
+                                        manaRewards={manaRewards?.rewards}
+                                        storageDeposit={storageDeposit}
+                                    />
                                 </div>
                             </div>
                         </div>

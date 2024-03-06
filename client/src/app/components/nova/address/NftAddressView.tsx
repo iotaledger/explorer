@@ -12,7 +12,16 @@ interface NftAddressViewProps {
 
 const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
     const [state, setState] = useNftAddressState(nftAddress);
-    const { addressDetails, totalBalance, availableBalance, isNftDetailsLoading, isAssociatedOutputsLoading, storageDeposit } = state;
+    const {
+        addressDetails,
+        storageDeposit,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
+        isNftDetailsLoading,
+        isAssociatedOutputsLoading,
+    } = state;
     const isPageLoading = isNftDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -35,13 +44,13 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={addressDetails} advancedMode={true} />
-                                    {totalBalance !== null && (
-                                        <AddressBalance
-                                            totalBalance={totalBalance}
-                                            availableBalance={availableBalance}
-                                            storageDeposit={storageDeposit}
-                                        />
-                                    )}
+                                    <AddressBalance
+                                        totalBaseTokenBalance={totalBaseTokenBalance}
+                                        availableBaseTokenBalance={availableBaseTokenBalance}
+                                        totalManaBalance={totalManaBalance}
+                                        availableManaBalance={availableManaBalance}
+                                        storageDeposit={storageDeposit}
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -12,7 +12,16 @@ interface AnchorAddressViewProps {
 
 const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) => {
     const [state, setState] = useAnchorAddressState(anchorAddress);
-    const { addressDetails, totalBalance, availableBalance, isAnchorDetailsLoading, isAssociatedOutputsLoading, storageDeposit } = state;
+    const {
+        addressDetails,
+        storageDeposit,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
+        isAnchorDetailsLoading,
+        isAssociatedOutputsLoading,
+    } = state;
     const isPageLoading = isAnchorDetailsLoading || isAssociatedOutputsLoading;
 
     return (
@@ -35,13 +44,13 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                             <div className="general-content">
                                 <div className="section--data">
                                     <Bech32Address addressDetails={addressDetails} advancedMode={true} />
-                                    {totalBalance !== null && (
-                                        <AddressBalance
-                                            totalBalance={totalBalance}
-                                            availableBalance={availableBalance}
-                                            storageDeposit={storageDeposit}
-                                        />
-                                    )}
+                                    <AddressBalance
+                                        totalBaseTokenBalance={totalBaseTokenBalance}
+                                        availableBaseTokenBalance={availableBaseTokenBalance}
+                                        totalManaBalance={totalManaBalance}
+                                        availableManaBalance={availableManaBalance}
+                                        storageDeposit={storageDeposit}
+                                    />
                                 </div>
                             </div>
                         </div>
