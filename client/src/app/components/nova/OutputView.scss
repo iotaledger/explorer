@@ -62,6 +62,23 @@
         }
     }
 
+    .unlock-condition-icon {
+        color: #fec900;
+        font-size: 18px;
+
+        &.expired {
+            color: #ff4800;
+        }
+
+        @media (min-width: #{768px}) and (max-width: #{820px}) {
+            display: none;
+        }
+
+        @include phone-down {
+            display: none;
+        }
+    }
+
     .left-border {
         border-left: 1px solid var(--border-color);
     }

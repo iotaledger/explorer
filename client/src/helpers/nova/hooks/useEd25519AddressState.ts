@@ -7,18 +7,22 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
+import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
 
 export interface IEd25519AddressState {
     addressDetails: IAddressDetails | null;
-    addressBasicOutputs: OutputWithMetadataResponse[] | null;
-    addressNftOutputs: OutputWithMetadataResponse[] | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
+    addressDelegationOutputs: IDelegationWithDetails[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
+    isDelegationOutputsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isAddressHistoryLoading: boolean;
     isAddressHistoryDisabled: boolean;
@@ -32,8 +36,10 @@ const initialState = {
     availableManaBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
+    addressDelegationOutputs: null,
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
+    isDelegationOutputsLoading: false,
     isAssociatedOutputsLoading: false,
     isAddressHistoryLoading: true,
     isAddressHistoryDisabled: false,
@@ -61,6 +67,10 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
     );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
+        network,
+        state.addressDetails?.bech32 ?? null,
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -81,18 +91,22 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
             availableManaBalance,
             addressBasicOutputs,
             addressNftOutputs,
+            addressDelegationOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
+            isDelegationOutputsLoading,
         });
     }, [
-        totalBaseTokenBalance,
-        availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
         addressBasicOutputs,
         addressNftOutputs,
+        addressDelegationOutputs,
         isBasicOutputsLoading,
         isNftOutputsLoading,
+        isDelegationOutputsLoading,
     ]);
 
     return [state, setState];
