@@ -64,3 +64,31 @@ test("formatAmount should honour precision 0", () => {
 test("formatAmount should format big values properly", () => {
     expect(formatAmount(1450896407249092, tokenInfo)).toBe("1450896407.24 IOTA");
 });
+
+test("formatAmount should format bigint values properly", () => {
+    expect(formatAmount(BigInt(1450896407249092), tokenInfo)).toBe("1450896407.24 IOTA");
+});
+
+test("formatAmount should format bigint subunit values properly", () => {
+    expect(formatAmount(BigInt(123), tokenInfo)).toBe("0.000123 IOTA");
+});
+
+test("formatAmount should format string values properly", () => {
+    expect(formatAmount("1450896407249092", tokenInfo)).toBe("1450896407.24 IOTA");
+});
+
+test("formatAmount should format string subunit values properly", () => {
+    expect(formatAmount("1", tokenInfo)).toBe("0.000001 IOTA");
+});
+
+test("formatAmount should honour format full (number)", () => {
+    expect(formatAmount(1, tokenInfo, true)).toBe("1 micro");
+});
+
+test("formatAmount should honour format full (bigint)", () => {
+    expect(formatAmount(1n, tokenInfo, true)).toBe("1 micro");
+});
+
+test("formatAmount should honour format full (string)", () => {
+    expect(formatAmount("1", tokenInfo, true)).toBe("1 micro");
+});
