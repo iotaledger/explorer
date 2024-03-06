@@ -33,35 +33,26 @@ export function useAddressBalance(
             // eslint-disable-next-line no-void
             void (async () => {
                 const response = await apiClient.addressBalanceChronicle({ network, address });
-
-                if (response?.totalBalance !== undefined && isMounted) {
-                    let totalBalance = response.totalBalance;
-                    let availableBalance = response.availableBalance ?? 0;
-                    if (output) {
-                        totalBalance = Number(totalBalance) + Number(output.amount);
-                        availableBalance = Number(availableBalance) + Number(output.amount);
-                    }
-                    setBalance(totalBalance);
-                    setAvailableBalance(availableBalance > 0 ? availableBalance : null);
-                } else if (isMounted) {
-                    // Fallback balance from iotajs (node)
-                    const addressDetailsWithBalance = await apiClient.addressBalance({ network, address });
-
-                    if (addressDetailsWithBalance && isMounted) {
-                        let totalBalance = Number(addressDetailsWithBalance.balance);
-                        if (output) {
-                            totalBalance = Number(totalBalance) + Number(output.amount);
+                if (isMounted) {
+                    let totalBalance = 0;
+                    let availableBalance = null;
+                    if (response?.totalBalance !== undefined) {
+                        totalBalance = response.totalBalance;
+                        availableBalance = response.availableBalance ?? 0;
+                    } else {
+                        // Fallback balance from iotajs (node)
+                        const addressDetailsWithBalance = await apiClient.addressBalance({ network, address });
+                        if (addressDetailsWithBalance && isMounted) {
+                            totalBalance = Number(addressDetailsWithBalance.balance);
                         }
-                        setBalance(totalBalance);
-                        setAvailableBalance(null);
                     }
-                } else {
-                    // fallback if there is no balance response but its an output address, set the output amount as balance
                     if (output) {
                         const outputBalance = Number(output.amount);
-                        setBalance(outputBalance);
-                        setAvailableBalance(outputBalance);
+                        totalBalance = Number(totalBalance ?? 0) + outputBalance;
+                        availableBalance = Number(availableBalance ?? 0) + outputBalance;
                     }
+                    setBalance(totalBalance);
+                    setAvailableBalance(availableBalance);
                 }
             })();
         } else {
