@@ -217,7 +217,9 @@ function buildManaBalanceView(manaInfo: BaseTokenResponse) {
                         {blockIssuanceCredits && blockIssuanceCredits > 0 ? (
                             <div className="balance-value middle">
                                 <div className="row middle">
-                                    <span className="balance-base-token pointer margin-r-5">{blockIssuanceCredits.toString()}</span>
+                                    <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
+                                        {formatAmount(blockIssuanceCredits.toString(), manaInfo, isFormatFull)}
+                                    </span>
                                     <CopyButton copy={blockIssuanceCredits.toString()} />
                                 </div>
                             </div>
@@ -234,7 +236,9 @@ function buildManaBalanceView(manaInfo: BaseTokenResponse) {
                         {manaRewards && manaRewards > 0 ? (
                             <div className="balance-value middle">
                                 <div className="row middle">
-                                    <span className="balance-base-token pointer margin-r-5">{manaRewards.toString()}</span>
+                                    <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
+                                        {formatAmount(manaRewards.toString(), manaInfo, isFormatFull)}
+                                    </span>
                                     <CopyButton copy={manaRewards.toString()} />
                                 </div>
                             </div>
