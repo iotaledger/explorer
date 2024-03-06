@@ -41,6 +41,7 @@ import { ICongestionResponse } from "~/models/api/nova/ICongestionResponse";
 import { IAccountValidatorDetailsRequest } from "~/models/api/nova/IAccountValidatorDetailsRequest";
 import { IAccountValidatorDetailsResponse } from "~/models/api/nova/IAccountValidatorDetailsResponse";
 import { ILatestSlotCommitmentResponse } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
+import { IDelegationDetailsResponse } from "~/models/api/nova/IDelegationDetailsResponse";
 import { ISlotBlocksRequest } from "~/models/api/nova/ISlotBlocksRequest";
 import { ISlotBlocksResponse } from "~/models/api/nova/ISlotBlocksResponse";
 import { IEpochCommitteeRequest } from "~/models/api/nova/IEpochCommitteeRequest";
@@ -165,6 +166,18 @@ export class NovaApiClient extends ApiClient {
      */
     public async nftOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
         return this.callApi<unknown, IAddressDetailsResponse>(`nova/address/outputs/nft/${request.network}/${request.address}`, "get");
+    }
+
+    /**
+     * Get the delegation outputs details of an address.
+     * @param request The Address Delegation outputs request.
+     * @returns The Address outputs response
+     */
+    public async delegationOutputsDetails(request: IAddressDetailsRequest): Promise<IDelegationDetailsResponse> {
+        return this.callApi<unknown, IDelegationDetailsResponse>(
+            `nova/address/outputs/delegation/${request.network}/${request.address}`,
+            "get",
+        );
     }
 
     /**
