@@ -1,0 +1,57 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
+@import "../../../../scss/fonts";
+@import "../../../../scss/themes";
+
+.statistics-page {
+    .statistics-row {
+        gap: 15px 40px;
+
+        @include tablet-down {
+            gap: 8px 30px;
+            flex-direction: column;
+        }
+
+        .chart-wrapper:first-child {
+            @include tablet-down {
+                margin-bottom: 20px;
+            }
+        }
+    }
+
+    .info-panel {
+        column-gap: 24px;
+        margin-bottom: 32px;
+
+        @include tablet-down {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        @include phone-down {
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 100%;
+            background-color: var(--light-bg);
+            border: none;
+
+            @include phone-down {
+                margin-bottom: 24px;
+            }
+
+            .card--content {
+                padding: 15px 25px;
+
+                .card--label {
+                    white-space: normal;
+                }
+                .card--value {
+                    word-break: normal;
+                }
+            }
+        }
+    }
+}

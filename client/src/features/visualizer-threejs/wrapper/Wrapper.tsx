@@ -10,6 +10,7 @@ import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useTangleStore } from "~features/visualizer-threejs/store/tangle";
 import { SEARCH_RESULT_COLOR, features } from "~features/visualizer-threejs/constants";
 import { isSearchMatch } from "~features/visualizer-threejs/hooks/useSearch";
+import usePlayPause from "~features/visualizer-threejs/hooks/usePlayPause";
 import { ThemeMode } from "../enums";
 
 export const Wrapper = ({
@@ -42,6 +43,7 @@ export const Wrapper = ({
     const setMatchingBlockIds = useSearchStore((state) => state.setMatchingBlockIds);
     const blockMetadata = useTangleStore((state) => state.blockMetadata);
     const addToColorQueueBulk = useTangleStore((s) => s.addToColorQueueBulk);
+    const { onToggle } = usePlayPause();
 
     React.useEffect(() => {
         const colorsQueue = [];
@@ -100,7 +102,7 @@ export const Wrapper = ({
                     {children}
                     <div className="action-panel-container">
                         <div className="card">
-                            <button className="pause-button" type="button" onClick={() => setIsPlaying(!isPlaying)}>
+                            <button className="pause-button" type="button" onClick={onToggle}>
                                 {isPlaying ? (
                                     <span className="material-icons">pause</span>
                                 ) : (

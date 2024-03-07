@@ -19,11 +19,29 @@ import { EMITTER_DEPTH, EMITTER_HEIGHT, EMITTER_WIDTH } from "./constants";
 interface EmitterProps {
     readonly setRunListeners: Dispatch<SetStateAction<boolean>>;
     readonly emitterRef: RefObject<THREE.Mesh>;
+    readonly cameraXShift: number;
+    readonly azimuthAngle: number;
 }
+
+// Create materials
+const uniqueSideMaterial = new THREE.MeshPhongMaterial({ color: 0x808080, transparent: true, opacity: 1 }); // Red color for the unique side
+const defaultMaterial = new THREE.MeshPhongMaterial({ transparent: true, opacity: 1 }); // Green color for the other sides
+
+// Create an array of materials
+const materials = [
+    defaultMaterial, // right side
+    uniqueSideMaterial, // left side
+    defaultMaterial, // top side
+    defaultMaterial, // bottom side
+    defaultMaterial, // front side
+    defaultMaterial, // back side
+];
+
+const geometry = new THREE.BoxGeometry(EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH);
 
 const { xTangleDistance, yTangleDistance } = getTangleDistances();
 
-const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: EmitterProps) => {
+const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef, cameraXShift, azimuthAngle }: EmitterProps) => {
     const getVisualizerTimeDiff = useVisualizerTimer();
 
     const setZoom = useTangleStore((s) => s.setZoom);
@@ -101,7 +119,9 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
         }
 
         if (tangleWrapperRef.current && camera) {
-            camera.position.x = tangleWrapperRef.current.position.x + xTangleDistance / 2;
+            const shiftByAzimuth = azimuthAngle * 10000; // 10000 is a magic number to make "orbit" effect
+
+            camera.position.x = shiftByAzimuth + cameraXShift + tangleWrapperRef.current.position.x + xTangleDistance / 2;
         }
     });
 
@@ -118,8 +138,7 @@ const Emitter: React.FC<EmitterProps> = ({ setRunListeners, emitterRef }: Emitte
 
             {/* Emitter Mesh */}
             <mesh ref={emitterRef} name={CanvasElement.EmitterMesh} position={[0, 0, 0]}>
-                <boxGeometry args={[EMITTER_WIDTH, EMITTER_HEIGHT, EMITTER_DEPTH]} />
-                <meshPhongMaterial transparent opacity={1} />
+                <primitive object={new THREE.Mesh(geometry, materials)} />
             </mesh>
         </>
     );

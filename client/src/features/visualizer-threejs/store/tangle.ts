@@ -14,6 +14,11 @@ export interface IBlockAnimationPosition {
     elapsedTime: number;
 }
 
+export interface IAddToColorQueueBulkItem {
+    id: string;
+    color: Color;
+}
+
 export interface IBlockState extends Omit<IBlockAnimationPosition, "elapsedTime"> {
     id: string;
     color: Color;
@@ -47,7 +52,7 @@ interface TangleState {
 
     colorQueue: Pick<IBlockState, "id" | "color">[];
     addToColorQueue: (blockId: string, color: Color) => void;
-    addToColorQueueBulk: (list: { id: string; color: Color }[]) => void;
+    addToColorQueueBulk: (list: IAddToColorQueueBulkItem[]) => void;
     removeFromColorQueue: (blockIds: string[]) => void;
 
     // Map of blockId to index in Tangle 'InstancedMesh'
@@ -55,6 +60,7 @@ interface TangleState {
     blockIdToEdges: Map<string, EdgeEntry>;
     blockIdToPosition: Map<string, [x: number, y: number, z: number]>;
     blockMetadata: Map<string, IFeedBlockData & { treeColor: Color }>;
+    updateBlockMetadata: (blockId: string, metadata: Partial<IFeedBlockData & { treeColor: Color }>) => void;
 
     indexToBlockId: string[];
     updateBlockIdToIndex: (blockId: string, index: number) => void;
@@ -83,6 +89,10 @@ interface TangleState {
 
     blockIdToState: Map<BlockId, BlockState>;
     setBlockIdToBlockState: (blockId: BlockId, blockState: BlockState) => void;
+
+    // visible block ids on pause
+    visibleBlockIdsOnPause?: string[];
+    setVisibleBlockIdsOnPause: (blockIds: string[] | undefined) => void;
 }
 
 const INITIAL_STATE = {
@@ -101,10 +111,11 @@ const INITIAL_STATE = {
     clickedInstanceId: null,
     confirmedBlocksBySlot: new Map(),
     blockIdToState: new Map(),
+    visibleBlockIdsOnPause: undefined,
 };
 
 export const useTangleStore = create<TangleState>()(
-    devtools((set) => ({
+    devtools((set, get) => ({
         ...INITIAL_STATE,
         resetConfigState: () =>
             // hard cleanup of the store
@@ -302,6 +313,21 @@ export const useTangleStore = create<TangleState>()(
                     blockIdToState: state.blockIdToState,
                 };
             });
+        },
+
+        setVisibleBlockIdsOnPause: (blockIds) => {
+            set((state) => ({
+                ...state,
+                visibleBlockIdsOnPause: blockIds,
+            }));
+        },
+        updateBlockMetadata: (blockId, metadata) => {
+            const blockMetadata = get().blockMetadata;
+            const currentMetadata = blockMetadata.get(blockId);
+            if (currentMetadata) {
+                const newMetadata = { ...currentMetadata, ...metadata };
+                blockMetadata.set(blockId, newMetadata);
+            }
         },
     })),
 );
