@@ -23,6 +23,10 @@ export function formatAmount(
     decimalPlaces: number = 2,
     trailingDecimals?: boolean,
 ): string {
+    if (!value || value === "null" || value === "undefined") {
+        return "";
+    }
+
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
