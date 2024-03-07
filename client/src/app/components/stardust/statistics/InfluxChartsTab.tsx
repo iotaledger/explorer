@@ -35,8 +35,9 @@ export const InfluxChartsTab: React.FC = () => {
         analyticStats,
     ] = useChartsState();
 
-    const lockedStorageDepositValue =
-        formatAmount(Number(analyticStats?.lockedStorageDeposit), tokenInfo).replace(COMMAS_REGEX, ",") ?? "-";
+    const lockedStorageDepositValue = analyticStats?.lockedStorageDeposit
+        ? formatAmount(analyticStats.lockedStorageDeposit, tokenInfo).replace(COMMAS_REGEX, ",")
+        : "-";
 
     const ids = idGenerator();
 
