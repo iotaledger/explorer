@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 import { Center } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { useControls, folder } from "leva";
 import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
@@ -36,6 +37,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const getCurrentAnimationTime = useVisualizerTimer();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
+
+    const { cameraXShift, azimuthAngle } = useControls("CameraControls", {
+        transform: folder({
+            cameraXShift: { value: 0, min: -10000, max: 10000, step: 20, label: "X: Shift" },
+            azimuthAngle: { value: 0, min: -1, max: 1, step: 0.005, label: "X: Rotate" },
+        }),
+    });
 
     const setBps = useTangleStore((s) => s.setBps);
     const [bpsCounter] = React.useState(
@@ -320,9 +328,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <ambientLight />
                 <directionalLight position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
                 <Center>
-                    <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
+                    <Emitter
+                        emitterRef={emitterRef}
+                        setRunListeners={setRunListeners}
+                        cameraXShift={cameraXShift}
+                        azimuthAngle={azimuthAngle}
+                    />
                 </Center>
-                {features.cameraControls && <CameraControls />}
+                {features.cameraControls && <CameraControls azimuthAngle={azimuthAngle} />}
                 {features.statsEnabled && <Perf />}
             </Canvas>
         </Wrapper>
