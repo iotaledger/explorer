@@ -15,16 +15,7 @@ import {
     IUnclaimedTokensDailyInflux,
     IUnlockConditionsPerTypeDailyInflux,
 } from "./IInfluxTimedEntries";
-
-/**
- * The key is a date in string format "DD-MM-YYYY"
- */
-export type DayKey = string;
-
-/**
- * The format used for moment.format(...)
- */
-export const DAY_KEY_FORMAT = "DD-MM-YYYY";
+import { DayKey } from "../types";
 
 /**
  * The cache for influx graphs (daily).
