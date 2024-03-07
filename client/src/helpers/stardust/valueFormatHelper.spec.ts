@@ -195,4 +195,22 @@ describe("formatAmount", () => {
             expect(formatAmount("1", tokenInfo, true)).toBe("1 micro");
         });
     });
+
+    describe("with undefined values", () => {
+        test("should not break with Number undefined", () => {
+            expect(formatAmount(Number(undefined), tokenInfo)).toBe("");
+        });
+
+        test("should not break with Number null", () => {
+            expect(formatAmount(Number(null), tokenInfo)).toBe("");
+        });
+
+        test("should not break with String undefined", () => {
+            expect(formatAmount(String(undefined), tokenInfo)).toBe("");
+        });
+
+        test("should not break with String null", () => {
+            expect(formatAmount(String(null), tokenInfo)).toBe("");
+        });
+    });
 });
