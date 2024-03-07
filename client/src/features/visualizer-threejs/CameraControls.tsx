@@ -8,7 +8,7 @@ import { VISUALIZER_PADDINGS } from "./constants";
 
 const CAMERA_ANGLES = getCameraAngles();
 
-const CameraControls = () => {
+const CameraControls = ({ azimuthAngle }: { azimuthAngle: number }) => {
     const { camera } = useThree();
     const controls = React.useRef<DreiCameraControls>(null);
     const [shouldLockZoom, setShouldLockZoom] = useState<boolean>(false);
@@ -18,6 +18,12 @@ const CameraControls = () => {
     const forcedZoom = useTangleStore((state) => state.forcedZoom);
     const mesh = scene.getObjectByName(CanvasElement.TangleWrapperMesh) as THREE.Mesh | undefined;
     const canvasDimensions = useConfigStore((state) => state.dimensions);
+
+    useEffect(() => {
+        if (controls.current) {
+            controls.current.azimuthAngle = azimuthAngle;
+        }
+    }, [azimuthAngle]);
 
     useEffect(() => {
         if (!forcedZoom) return;
