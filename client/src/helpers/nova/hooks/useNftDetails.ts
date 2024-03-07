@@ -1,4 +1,4 @@
-import { NftOutput } from "@iota/sdk-wasm-nova/web";
+import { OutputMetadataResponse, NftOutput } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
@@ -12,10 +12,14 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param nftID The nft id
  * @returns The output response and loading bool.
  */
-export function useNftDetails(network: string, nftId: string | null): { nftOutput: NftOutput | null; isLoading: boolean } {
+export function useNftDetails(
+    network: string,
+    nftId: string | null,
+): { nftOutput: NftOutput | null; nftOutputMetadata: OutputMetadataResponse | null; isLoading: boolean } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [nftOutput, setNftOutput] = useState<NftOutput | null>(null);
+    const [nftOutputMetadata, setNftOutputMetadata] = useState<OutputMetadataResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -31,8 +35,10 @@ export function useNftDetails(network: string, nftId: string | null): { nftOutpu
                     .then((response) => {
                         if (!response?.error && isMounted) {
                             const output = response.nftOutputDetails?.output as NftOutput;
+                            const metadata = response.nftOutputDetails?.metadata ?? null;
 
                             setNftOutput(output);
+                            setNftOutputMetadata(metadata);
                         }
                     })
                     .finally(() => {
@@ -44,5 +50,5 @@ export function useNftDetails(network: string, nftId: string | null): { nftOutpu
         }
     }, [network, nftId]);
 
-    return { nftOutput, isLoading };
+    return { nftOutput, nftOutputMetadata, isLoading };
 }

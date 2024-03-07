@@ -2,7 +2,12 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNovaTimeConvert } from "./useNovaTimeConvert";
 
-export function useCurrentEpochProgress(): {
+/**
+ * Returns the epoch progress information for the provided index or the current epoch if no index is provided.
+ * @param index - The index of the epoch. If not provided, the current epoch will be used.
+ * @returns An object containing the epoch progress information.
+ */
+export function useEpochProgress(index?: number): {
     epochIndex: number | null;
     epochUnixTimeRange: { from: number; to: number } | null;
     epochProgressPercent: number | null;
@@ -18,10 +23,10 @@ export function useCurrentEpochProgress(): {
 
     useEffect(() => {
         if (intervalTimerHandle === null) {
-            checkCurrentEpochIndex();
+            checkEpochIndex();
 
             const intervalTimerHandle = setInterval(() => {
-                checkCurrentEpochIndex();
+                checkEpochIndex();
             }, 1000);
 
             setIntervalTimerHandle(intervalTimerHandle);
@@ -36,14 +41,20 @@ export function useCurrentEpochProgress(): {
         };
     }, []);
 
-    const checkCurrentEpochIndex = () => {
+    const checkEpochIndex = () => {
         if (unixTimestampToEpochIndex && epochIndexToUnixTimeRange) {
             const now = moment().unix();
-            const currentEpochIndex = unixTimestampToEpochIndex(now);
+            let currentEpochIndex = index ?? null;
+            if (!currentEpochIndex) {
+                currentEpochIndex = unixTimestampToEpochIndex(now);
+            }
 
             const epochTimeRange = epochIndexToUnixTimeRange(currentEpochIndex);
 
-            const epochProgressPercent = Math.trunc(((now - epochTimeRange.from) / (epochTimeRange.to - 1 - epochTimeRange.from)) * 100);
+            const epochProgressPercent =
+                epochTimeRange.to < now
+                    ? 100
+                    : Math.trunc(((now - epochTimeRange.from) / (epochTimeRange.to - 1 - epochTimeRange.from)) * 100);
 
             setEpochIndex(currentEpochIndex);
             setEpochUnixTimeRange(epochTimeRange);

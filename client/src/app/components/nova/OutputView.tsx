@@ -15,6 +15,11 @@ import {
     Utils,
     AccountAddress,
     NftAddress,
+    UnlockCondition,
+    UnlockConditionType,
+    StorageDepositReturnUnlockCondition,
+    ExpirationUnlockCondition,
+    TimelockUnlockCondition,
 } from "@iota/sdk-wasm-nova/web";
 import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
@@ -26,6 +31,10 @@ import { HexHelper } from "~/helpers/stardust/hexHelper";
 import bigInt from "big-integer";
 import { OutputManaDetails, getManaKeyValueEntries } from "~/helpers/nova/manaUtils";
 import KeyValueEntries from "./KeyValueEntries";
+import { hasSpecialCondition, isOutputExpired, isOutputTimeLocked } from "~/helpers/nova/outputUtils";
+import Tooltip from "../Tooltip";
+import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
+import { DateHelper } from "~/helpers/dateHelper";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -40,12 +49,32 @@ interface OutputViewProps {
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
     const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, name: network, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
 
     const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
     const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails) : undefined;
+    const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
+
+    const specialUnlockCondition =
+        isSpecialCondition &&
+        (output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
+            const isExpired =
+                unlockCondition.type === UnlockConditionType.Expiration && (isOutputExpired(output as CommonOutput, protocolInfo) ?? false);
+            const isTimeLocked =
+                unlockCondition.type === UnlockConditionType.Timelock && isOutputTimeLocked(output as CommonOutput, protocolInfo);
+            return (
+                <Tooltip key={idx} tooltipContent={getSpecialUnlockConditionContent(unlockCondition, slotIndexToUnixTimeRange, isExpired)}>
+                    <span className={classNames("material-icons unlock-condition-icon", { expired: isExpired || isTimeLocked })}>
+                        {unlockCondition.type === UnlockConditionType.StorageDepositReturn && "arrow_back"}
+                        {unlockCondition.type === UnlockConditionType.Expiration && "hourglass_bottom"}
+                        {unlockCondition.type === UnlockConditionType.Timelock && "schedule"}
+                    </span>
+                </Tooltip>
+            );
+        });
 
     const header = (
         <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
@@ -76,6 +105,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     )
                     <CopyButton copy={String(outputId)} />
                 </div>
+                {specialUnlockCondition}
             </div>
             {showCopyAmount && (
                 <div className="card--value pointer amount-size row end">
@@ -172,8 +202,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--value row">{Number((output as DelegationOutput).delegatedAmount)}</div>
                     <div className="card--label">Delegation Id:</div>
                     <div className="card--value row">{(output as DelegationOutput).delegationId}</div>
-                    <div className="card--label">Validator Id:</div>
-                    <div className="card--value row">{(output as DelegationOutput).validatorId}</div>
+                    <div className="card--label">Validator Address:</div>
+                    <div className="card--value row">{Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp)}</div>
                     <div className="card--label">Start epoch:</div>
                     <div className="card--value row">{(output as DelegationOutput).startEpoch}</div>
                     <div className="card--label">End epoch:</div>
@@ -252,6 +282,52 @@ function getOutputTypeName(type: OutputType): string {
             return "Nft";
         case OutputType.Delegation:
             return "Delegation";
+    }
+}
+
+/**
+ * Get tooltip content for special condition i.e SDRUC, EUC and TUC.
+ * @param unlockCondition Unlock condition of output.
+ * @returns The tooltip content.
+ */
+function getSpecialUnlockConditionContent(
+    unlockCondition: UnlockCondition,
+    slotIndexToUnixTimeRange:
+        | ((slotIndex: number) => {
+              from: number;
+              to: number;
+          })
+        | null,
+    isExpiredOrTimeLocked: boolean,
+): React.ReactNode {
+    if (unlockCondition.type === UnlockConditionType.StorageDepositReturn) {
+        const storageDepositReturnUC = unlockCondition as StorageDepositReturnUnlockCondition;
+        return (
+            <React.Fragment>
+                <span>Storage Deposit Return Unlock Condition</span> <br />
+                <span>Return Amount: {storageDepositReturnUC.amount} glow</span>
+            </React.Fragment>
+        );
+    } else if (unlockCondition.type === UnlockConditionType.Expiration) {
+        const expirationUnlockCondition = unlockCondition as ExpirationUnlockCondition;
+        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(expirationUnlockCondition.slotIndex) : null;
+        const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
+        return (
+            <React.Fragment>
+                <span>Expiration Unlock Condition{isExpiredOrTimeLocked ? " (Expired)" : ""}</span> <br />
+                {time ? <span>Time: {time} </span> : <span>Slot: {expirationUnlockCondition.slotIndex}</span>}
+            </React.Fragment>
+        );
+    } else if (unlockCondition.type === UnlockConditionType.Timelock) {
+        const timelockUnlockCondition = unlockCondition as TimelockUnlockCondition;
+        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slotIndex) : null;
+        const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
+        return (
+            <React.Fragment>
+                <span>Timelock Unlock Condition{isExpiredOrTimeLocked ? " (TimeLocked)" : ""}</span> <br />
+                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slotIndex}</span>}
+            </React.Fragment>
+        );
     }
 }
 
