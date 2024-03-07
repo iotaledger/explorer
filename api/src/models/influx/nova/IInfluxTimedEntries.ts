@@ -5,5 +5,4 @@ export type IBlocksDailyInflux = ITimedEntry & {
     taggedData: number | null;
     validation: number | null;
     candidacy: number | null;
-    noPayload: number | null;
 };

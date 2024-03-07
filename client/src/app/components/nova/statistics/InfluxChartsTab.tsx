@@ -22,9 +22,9 @@ export const InfluxChartsTab: React.FC = () => {
                         chartId={ids.next().value}
                         title="Daily Blocks"
                         info={graphMessages.dailyBlocks}
-                        subgroups={["transaction", "validation", "taggedData", "candidacy", "noPayload"]}
-                        groupLabels={["Transaction", "Validation", "Tagged Data", "Candidacy announcement", "No payload"]}
-                        colors={["#4140DF", "#14CABF", "#36A1AC", "#99BEE1", "#186575"]}
+                        subgroups={["transaction", "validation", "taggedData", "candidacy"]}
+                        groupLabels={["Transaction", "Validation", "Tagged Data", "Candidacy announcement"]}
+                        colors={["#4140DF", "#14CABF", "#36A1AC", "#99BEE1"]}
                         data={dailyBlocks}
                     />
                 </div>

@@ -6,7 +6,6 @@ interface IBlocksDailyInflux {
     taggedData: number | null;
     validation: number | null;
     candidacy: number | null;
-    noPayload: number | null;
 }
 
 export interface IInfluxDailyResponse extends IResponse {

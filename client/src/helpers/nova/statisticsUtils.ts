@@ -24,7 +24,6 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
                 taggedData: day.taggedData ?? 0,
                 validation: day.validation ?? 0,
                 candidacy: day.candidacy ?? 0,
-                noPayload: day.noPayload ?? 0,
             })) ?? [],
     };
 }
