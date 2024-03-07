@@ -39,7 +39,6 @@ export function formatAmount(
     const baseTokenValue = valueBigDecimal.divide(Math.pow(10, tokenInfo.decimals).toString());
     const formattedAmount = toFixedNoRound(baseTokenValue.toString(), decimalPlaces, trailingDecimals);
 
-    // useMetricPrefix is broken cause it passes a float value to formatBest
     return `${formattedAmount} ${tokenInfo.unit}`;
 }
 
