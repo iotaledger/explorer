@@ -14,10 +14,10 @@ export class NovaStatsService extends BaseStatsService {
     protected async updateStatistics(): Promise<void> {
         try {
             const client = ServiceFactory.get<Client>(`client-${this._networkConfiguration.network}`);
-            const response = await client.getInfo();
+            const response = await client.getNodeInfo();
 
             if (response) {
-                const metrics = response.nodeInfo.metrics;
+                const metrics = response.info.metrics;
                 this._statistics.push({
                     itemsPerSecond: Number(metrics.blocksPerSecond),
                     confirmedItemsPerSecond: Number(metrics.confirmedBlocksPerSecond),

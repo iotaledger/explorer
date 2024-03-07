@@ -1,4 +1,4 @@
-import { Block, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { Block, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { IResponse } from "./IResponse";
 import { IAddressDetails } from "./IAddressDetails";
 
@@ -11,7 +11,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Output if it was found (block will also be populated).
      */
-    output?: OutputResponse;
+    output?: OutputWithMetadataResponse;
 
     /**
      * Address details.
@@ -31,7 +31,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Account details.
      */
-    accountDetails?: OutputResponse;
+    accountDetails?: OutputWithMetadataResponse;
 
     /**
      * Anchor id if it was found.
@@ -46,7 +46,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Foundry details.
      */
-    foundryDetails?: OutputResponse;
+    foundryDetails?: OutputWithMetadataResponse;
 
     /**
      * Nft id if it was found.
@@ -56,7 +56,7 @@ export interface ISearchResponse extends IResponse {
     /**
      * Nft details.
      */
-    nftDetails?: OutputResponse;
+    nftDetails?: OutputWithMetadataResponse;
 
     /**
      * Transaction included block.

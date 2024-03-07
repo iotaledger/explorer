@@ -1,0 +1,67 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.epoch-page {
+    .validators-page__header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .header__title {
+            margin-bottom: 8px;
+        }
+    }
+
+    .all-validators__section {
+        font-family: $metropolis;
+        margin-top: 40px;
+        background-color: $gray-1;
+        border-radius: 8px;
+
+        .all-validators__header {
+            width: fit-content;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .all-validators__wrapper {
+            margin: 0 20px 20px;
+
+            .validator-item {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+                margin: 0px 12px;
+                align-items: center;
+                line-height: 32px;
+                justify-content: center;
+                background-color: $gray-3;
+                border-radius: 4px;
+
+                &.table-header {
+                    background-color: $gray-5;
+                }
+
+                &:not(:last-child) {
+                    margin-bottom: 12px;
+                }
+
+                .validator-item__address,
+                .validator-item__state,
+                .validator-item__fixed-cost,
+                .validator-item__pool-stake,
+                .validator-item__validator-stake,
+                .validator-item__delegator-stake {
+                    display: flex;
+                    margin: 0 auto;
+                    justify-content: center;
+                }
+
+                .validator-item__address {
+                    width: 140px;
+                }
+            }
+        }
+    }
+}

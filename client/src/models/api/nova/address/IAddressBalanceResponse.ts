@@ -1,6 +1,6 @@
 import { IResponse } from "../../IResponse";
 
-interface IManaBalance {
+export interface IManaBalance {
     stored: number;
     potential: number;
 }

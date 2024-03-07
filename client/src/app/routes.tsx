@@ -37,7 +37,9 @@ import StardustOutputPage from "./routes/stardust/OutputPage";
 import NovaBlockPage from "./routes/nova/Block";
 import NovaTransactionPage from "./routes/nova/TransactionPage";
 import NovaOutputPage from "./routes/nova/OutputPage";
+import NovaFoundryPage from "./routes/nova/FoundryPage";
 import NovaSearch from "./routes/nova/Search";
+import NovaEpochPage from "./routes/nova/EpochPage";
 import NovaSlotPage from "./routes/nova/SlotPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
@@ -181,7 +183,9 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={NovaSearch} />,
         <Route path="/:network/slot/:slotIndex" key={keys.next().value} component={NovaSlotPage} />,
+        <Route path="/:network/epoch/:epochIndex" key={keys.next().value} component={NovaEpochPage} />,
         <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={NovaTransactionPage} />,
+        <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={NovaFoundryPage} />,
     ];
 
     return (

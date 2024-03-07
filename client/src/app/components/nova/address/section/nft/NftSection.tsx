@@ -1,18 +1,19 @@
-import { NftOutput, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { NftOutput, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import Nft from "./Nft";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import Pagination from "~/app/components/Pagination";
 
 interface NftSectionProps {
-    readonly outputs: OutputResponse[] | null;
+    readonly outputs: OutputWithMetadataResponse[] | null;
+    readonly setNftCount?: (count: number) => void;
 }
 
 const PAGE_SIZE = 10;
 
 const NftSection: React.FC<NftSectionProps> = ({ outputs }) => {
     const isMounted = useIsMounted();
-    const [page, setPage] = useState<OutputResponse[]>([]);
+    const [page, setPage] = useState<OutputWithMetadataResponse[]>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
 
     // On page change handler

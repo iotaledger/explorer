@@ -1,5 +1,5 @@
 import { Reducer, useEffect, useReducer } from "react";
-import { NftAddress, NftOutput, OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { NftAddress, NftOutput, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import { useNftDetails } from "./useNftDetails";
 import { useLocation, useParams } from "react-router-dom";
@@ -9,16 +9,23 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
+import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
+import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
 
 export interface INftAddressState {
     addressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
-    totalBalance: number | null;
-    availableBalance: number | null;
-    addressBasicOutputs: OutputResponse[] | null;
-    addressNftOutputs: OutputResponse[] | null;
+    totalBaseTokenBalance: number | null;
+    availableBaseTokenBalance: number | null;
+    totalManaBalance: IManaBalance | null;
+    availableManaBalance: IManaBalance | null;
+    addressBasicOutputs: OutputWithMetadataResponse[] | null;
+    addressNftOutputs: OutputWithMetadataResponse[] | null;
+    addressDelegationOutputs: IDelegationWithDetails[] | null;
     isBasicOutputsLoading: boolean;
     isNftOutputsLoading: boolean;
+    isDelegationOutputsLoading: boolean;
     isNftDetailsLoading: boolean;
     isAssociatedOutputsLoading: boolean;
     isAddressHistoryLoading: boolean;
@@ -29,12 +36,16 @@ const initialState = {
     addressDetails: null,
     nftOutput: null,
     isNftDetailsLoading: true,
-    totalBalance: null,
-    availableBalance: null,
+    totalBaseTokenBalance: null,
+    availableBaseTokenBalance: null,
+    totalManaBalance: null,
+    availableManaBalance: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
+    addressDelegationOutputs: null,
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
+    isDelegationOutputsLoading: false,
     isAssociatedOutputsLoading: false,
     isAddressHistoryLoading: true,
     isAddressHistoryDisabled: false,
@@ -56,10 +67,19 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
         initialState,
     );
 
-    const { nftOutput, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
-    const { totalBalance, availableBalance } = useAddressBalance(network, state.addressDetails, nftOutput);
+    const { nftOutput, nftOutputMetadata, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
+    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
+        network,
+        state.addressDetails,
+        nftOutput,
+        nftOutputMetadata,
+    );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
+        network,
+        state.addressDetails?.bech32 ?? null,
+    );
 
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
@@ -76,23 +96,31 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     useEffect(() => {
         setState({
             nftOutput,
-            totalBalance,
-            availableBalance,
+            totalBaseTokenBalance,
+            availableBaseTokenBalance,
+            totalManaBalance,
+            availableManaBalance,
             isNftDetailsLoading,
             addressBasicOutputs,
             addressNftOutputs,
+            addressDelegationOutputs,
             isBasicOutputsLoading,
             isNftOutputsLoading,
+            isDelegationOutputsLoading,
         });
     }, [
         nftOutput,
-        totalBalance,
-        availableBalance,
+        totalBaseTokenBalance,
+        availableBaseTokenBalance,
+        totalManaBalance,
+        availableManaBalance,
         isNftDetailsLoading,
         addressBasicOutputs,
         addressNftOutputs,
+        addressDelegationOutputs,
         isBasicOutputsLoading,
         isNftOutputsLoading,
+        isDelegationOutputsLoading,
     ]);
 
     return [state, setState];

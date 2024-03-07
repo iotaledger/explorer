@@ -1,4 +1,4 @@
-import { IOutputMetadataResponse, Output } from "@iota/sdk-wasm-nova/web";
+import { OutputMetadataResponse, Output } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
@@ -17,14 +17,14 @@ export function useOutputDetails(
     outputId: string | null,
 ): {
     output: Output | null;
-    outputMetadataResponse: IOutputMetadataResponse | null;
+    outputMetadataResponse: OutputMetadataResponse | null;
     isLoading: boolean;
     error: string | null;
 } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [output, setOutput] = useState<Output | null>(null);
-    const [metadata, setMetadata] = useState<IOutputMetadataResponse | null>(null);
+    const [metadata, setMetadata] = useState<OutputMetadataResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 

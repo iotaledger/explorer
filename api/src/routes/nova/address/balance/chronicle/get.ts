@@ -29,6 +29,5 @@ export async function get(_: IConfiguration, request: IAddressBalanceRequest): P
     }
 
     const chronicleService = ServiceFactory.get<ChronicleService>(`chronicle-${networkConfig.network}`);
-
     return chronicleService.addressBalance(request.address);
 }

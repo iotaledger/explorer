@@ -1,4 +1,4 @@
-import { OutputResponse } from "@iota/sdk-wasm-nova/web";
+import { OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
@@ -11,10 +11,10 @@ import { NovaApiClient } from "~/services/nova/novaApiClient";
  * @param addressBech32 The address in bech32 format
  * @returns The output responses and loading bool.
  */
-export function useAddressNftOutputs(network: string, addressBech32: string | null): [OutputResponse[] | null, boolean] {
+export function useAddressNftOutputs(network: string, addressBech32: string | null): [OutputWithMetadataResponse[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
+    const [outputs, setOutputs] = useState<OutputWithMetadataResponse[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
