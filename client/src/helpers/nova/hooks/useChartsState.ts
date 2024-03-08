@@ -13,12 +13,14 @@ export function useChartsState(): {
     dailyBlocks: DataPoint[];
     dailyTransactions: DataPoint[];
     dailyOutputs: DataPoint[];
+    tokensHeld: DataPoint[];
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [dailyBlocks, setDailyBlocks] = useState<DataPoint[]>([]);
     const [dailyTransactions, setDailyTransactions] = useState<DataPoint[]>([]);
     const [dailyOutputs, setDailyOutputs] = useState<DataPoint[]>([]);
+    const [tokensHeld, setTokensHeld] = useState<DataPoint[]>([]);
 
     useEffect(() => {
         apiClient
@@ -30,6 +32,7 @@ export function useChartsState(): {
                     setDailyBlocks(graphsData.blocksDaily);
                     setDailyTransactions(graphsData.transactionsDaily);
                     setDailyOutputs(graphsData.outputsDaily);
+                    setTokensHeld(graphsData.tokensHeldDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
                 }
@@ -37,5 +40,5 @@ export function useChartsState(): {
             .catch((e) => console.error("Influx analytics fetch failed", e));
     }, [network]);
 
-    return { dailyBlocks, dailyTransactions, dailyOutputs };
+    return { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld };
 }

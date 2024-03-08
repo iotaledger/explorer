@@ -20,3 +20,12 @@ export type IOutputsDailyInflux = ITimedEntry & {
     anchor: number | null;
     delegation: number | null;
 };
+
+export type ITokensHeldPerOutputDailyInflux = ITimedEntry & {
+    basic: number | null;
+    account: number | null;
+    foundry: number | null;
+    nft: number | null;
+    anchor: number | null;
+    delegation: number | null;
+};

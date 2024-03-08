@@ -66,3 +66,30 @@ export const OUTPUTS_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("basic_amount") / 1000000 AS "basic",
+            last("account_amount") / 1000000 AS "account",
+            last("foundry_amount") / 1000000 AS "foundy",
+            last("nft_amount") / 1000000 AS "nft",
+            last("anchor_amount") / 1000000 AS "anchor",
+            last("delegation_amount") / 1000000 AS "delegation"
+        FROM "iota_ledger_outputs"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("basic_amount") / 1000000 AS "basic",
+            last("account_amount") / 1000000 AS "account",
+            last("foundry_amount") / 1000000 AS "foundy",
+            last("nft_amount") / 1000000 AS "nft",
+            last("anchor_amount") / 1000000 AS "anchor",
+            last("delegation_amount") / 1000000 AS "delegation"
+        FROM "iota_ledger_outputs"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

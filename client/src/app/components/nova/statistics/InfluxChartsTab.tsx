@@ -6,7 +6,7 @@ import Modal from "../../Modal";
 import StackedLineChart from "../../stardust/statistics/charts/StackedLineChart";
 
 export const InfluxChartsTab: React.FC = () => {
-    const { dailyBlocks, dailyTransactions, dailyOutputs } = useChartsState();
+    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld } = useChartsState();
 
     const ids = idGenerator();
 
@@ -52,6 +52,15 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Basic", "Account", "Foundry", "Nft", "Anchor", "Delegation"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1", "#00E0CA"]}
                         data={dailyOutputs}
+                    />
+                    <StackedLineChart
+                        chartId={ids.next().value}
+                        title="Total Tokens by Output Type"
+                        info={graphMessages.totalTokens}
+                        subgroups={["basic", "account", "foundry", "nft", "anchor", "delegation"]}
+                        groupLabels={["Basic", "Account", "Foundry", "Nft", "Anchor", "Delegation"]}
+                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1", "#00E0CA"]}
+                        data={tokensHeld}
                     />
                 </div>
             </div>
