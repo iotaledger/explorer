@@ -48,3 +48,9 @@ export type IAnchorActivityDailyInflux = ITimedEntry & {
     stateChanged: number | null;
     destroyed: number | null;
 };
+
+export type INftActivityDailyInflux = ITimedEntry & {
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+};

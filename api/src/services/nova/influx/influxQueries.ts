@@ -167,3 +167,24 @@ export const ANCHOR_ACTIVITY_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const NFT_ACTIVITY_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("nft_created_count") AS "created",
+            sum("nft_transferred_count") AS "transferred",
+            sum("nft_destroyed_count") AS "destroyed"
+        FROM "iota_output_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("nft_created_count") AS "created",
+            sum("nft_transferred_count") AS "transferred",
+            sum("nft_destroyed_count") AS "destroyed"
+        FROM "iota_output_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

@@ -7,6 +7,7 @@ import {
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
+    INftActivityDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
@@ -29,6 +30,7 @@ export interface IDailyAnalyticsResponse {
     activeAddressesDaily?: IActiveAddressesDailyInflux[];
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
     anchorActivityDaily?: IAnchorActivityDailyInflux[];
+    nftActivityDaily?: INftActivityDailyInflux[];
 }
 
 /**
@@ -59,6 +61,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               activeAddressesDaily: influxService.activeAddressesDaily,
               tokensTransferredDaily: influxService.tokensTransferredDaily,
               anchorActivityDaily: influxService.anchorActivityDaily,
+              nftActivityDaily: influxService.nftActivityDaily,
           }
         : {
               error: "Influx service not found for this network.",

@@ -18,6 +18,7 @@ export const InfluxChartsTab: React.FC = () => {
         activeAddressesDaily,
         tokensTransferredDaily,
         anchorActivityDaily,
+        nftActivityDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -124,6 +125,15 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
                         data={anchorActivityDaily}
+                    />
+                    <StackedBarChart
+                        chartId={ids.next().value}
+                        title="Daily NFT Activity"
+                        info={graphMessages.dailyNftActivity}
+                        subgroups={["created", "transferred", "destroyed"]}
+                        groupLabels={["Created", "Transferred", "Destroyed"]}
+                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                        data={nftActivityDaily}
                     />
                 </div>
             </div>

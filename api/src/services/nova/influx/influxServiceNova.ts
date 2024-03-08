@@ -3,6 +3,7 @@ import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
+    NFT_ACTIVITY_DAILY_QUERY,
     OUTPUTS_DAILY_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
     TOKENS_TRANSFERRED_DAILY_QUERY,
@@ -17,6 +18,7 @@ import {
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
+    INftActivityDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
@@ -73,8 +75,12 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.tokensTransferredDaily);
     }
 
-    public get aliasActivityDaily() {
+    public get anchorActivityDaily() {
         return this.mapToSortedValuesArray(this._dailyCache.anchorActivityDaily);
+    }
+
+    public get nftActivityDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.nftActivityDaily);
     }
 
     protected setupDataCollection() {
@@ -119,5 +125,6 @@ export class InfluxServiceNova extends InfluxDbClient {
             this._dailyCache.anchorActivityDaily,
             "Anchor activity Daily",
         );
+        this.updateCacheEntry<INftActivityDailyInflux>(NFT_ACTIVITY_DAILY_QUERY, this._dailyCache.nftActivityDaily, "Nft activity Daily");
     }
 }
