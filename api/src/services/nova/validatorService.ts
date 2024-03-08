@@ -72,7 +72,7 @@ export class ValidatorService {
 
         do {
             try {
-                const validatorsResponse = await this.client.getValidators(20, cursor);
+                const validatorsResponse = await this.client.getValidators(undefined, cursor);
 
                 validators = validators.concat(validatorsResponse.validators);
                 cursor = validatorsResponse.cursor;

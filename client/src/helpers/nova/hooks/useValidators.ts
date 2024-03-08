@@ -1,26 +1,33 @@
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { useIsMounted } from "~/helpers/hooks/useIsMounted";
-import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
+import { IValidator } from "~/models/api/nova/IValidatorsResponse";
 import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { useNetworkInfoNova } from "../networkInfo";
 
-export function useValidators(): { validators: IValidatorsResponse | null } {
+export function useValidators(): { validators: IValidator[] | null; error: string | null } {
     const isMounted = useIsMounted();
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [validators, setValidators] = useState<IValidatorsResponse | null>(null);
+    const [validators, setValidators] = useState<IValidator[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         (async () => {
-            const validators = await apiClient.getValidators({ network });
+            const validatorsResponse = await apiClient.getValidators({ network });
 
-            if (isMounted && (validators.validators ?? []).length > 0) {
-                setValidators(validators);
+            if (isMounted) {
+                if ((validatorsResponse.validators ?? []).length > 0) {
+                    setValidators(validatorsResponse.validators ?? null);
+                }
+
+                if (validatorsResponse.error) {
+                    setError(validatorsResponse.error);
+                }
             }
         })();
     }, [network]);
 
-    return { validators };
+    return { validators, error };
 }
