@@ -37,3 +37,7 @@ export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
 export type IActiveAddressesDailyInflux = ITimedEntry & {
     activeAddresses: number | null;
 };
+
+export type ITokensTransferredDailyInflux = ITimedEntry & {
+    tokens: number | null;
+};

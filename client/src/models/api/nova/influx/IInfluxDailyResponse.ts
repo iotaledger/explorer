@@ -44,6 +44,11 @@ interface IActiveAddressesDailyInflux {
     activeAddresses: number | null;
 }
 
+interface ITokensTransferredDailyInflux {
+    time: Date;
+    tokens: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
@@ -51,4 +56,5 @@ export interface IInfluxDailyResponse extends IResponse {
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
     activeAddressesDaily?: IActiveAddressesDailyInflux[];
+    tokensTransferredDaily?: ITokensTransferredDailyInflux[];
 }

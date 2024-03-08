@@ -1,5 +1,13 @@
 import { InfluxDB } from "influx";
-import { BLOCK_DAILY_QUERY, OUTPUTS_DAILY_QUERY, TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY, TRANSACTION_DAILY_QUERY } from "./influxQueries";
+import {
+    ADDRESSES_WITH_BALANCE_DAILY_QUERY,
+    BLOCK_DAILY_QUERY,
+    OUTPUTS_DAILY_QUERY,
+    TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
+    TOKENS_TRANSFERRED_DAILY_QUERY,
+    TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
+    TRANSACTION_DAILY_QUERY,
+} from "./influxQueries";
 import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
 import { IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
@@ -9,10 +17,10 @@ import {
     IBlocksDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
+    ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { InfluxDbClient } from "../../influx/influxClient";
-import { ADDRESSES_WITH_BALANCE_DAILY_QUERY, TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY } from "../../stardust/influx/influxQueries";
 
 export class InfluxServiceNova extends InfluxDbClient {
     /**
@@ -90,6 +98,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
             this._dailyCache.activeAddressesDaily,
             "Number of Daily Active Addresses",
+        );
+        this.updateCacheEntry<ITokensTransferredDailyInflux>(
+            TOKENS_TRANSFERRED_DAILY_QUERY,
+            this._dailyCache.tokensTransferredDaily,
+            "Tokens transferred Daily",
         );
     }
 }

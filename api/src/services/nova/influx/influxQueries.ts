@@ -110,3 +110,37 @@ export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("count") AS activeAddresses
+        FROM "iota_daily_active_addresses"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("count") AS activeAddresses
+        FROM "iota_daily_active_addresses"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
+
+export const TOKENS_TRANSFERRED_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("transferred_amount") / 1000000 AS "tokens"
+        FROM "iota_base_token_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("transferred_amount") / 1000000 AS "tokens"
+        FROM "iota_base_token_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

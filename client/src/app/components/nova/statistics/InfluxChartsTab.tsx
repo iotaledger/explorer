@@ -5,9 +5,11 @@ import { idGenerator } from "~helpers/stardust/statisticsUtils";
 import Modal from "../../Modal";
 import StackedLineChart from "../../stardust/statistics/charts/StackedLineChart";
 import LineChart from "../../stardust/statistics/charts/LineChart";
+import BarChart from "../../stardust/statistics/charts/BarChart";
 
 export const InfluxChartsTab: React.FC = () => {
-    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld, addressesWithBalance, activeAddressesDaily } = useChartsState();
+    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld, addressesWithBalance, activeAddressesDaily, tokensTransferredDaily } =
+        useChartsState();
 
     const ids = idGenerator();
 
@@ -86,6 +88,16 @@ export const InfluxChartsTab: React.FC = () => {
                         label="Addresses"
                         color="#00F5DD"
                         data={activeAddressesDaily}
+                    />
+                </div>
+                <div className="row statistics-row">
+                    <BarChart
+                        chartId={ids.next().value}
+                        title="Daily Sent Tokens"
+                        info={graphMessages.dailySentTokens}
+                        color="#00E0CA"
+                        label="Tokens"
+                        data={tokensTransferredDaily}
                     />
                 </div>
             </div>

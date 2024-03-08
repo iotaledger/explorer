@@ -8,6 +8,7 @@ import {
     IBlocksDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
+    ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
 } from "../../../../../models/influx/nova/IInfluxTimedEntries";
 import { NetworkService } from "../../../../../services/networkService";
@@ -25,6 +26,7 @@ export interface IDailyAnalyticsResponse {
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
     activeAddressesDaily?: IActiveAddressesDailyInflux[];
+    tokensTransferredDaily?: ITokensTransferredDailyInflux[];
 }
 
 /**
@@ -53,6 +55,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               tokensHeldDaily: influxService.tokensHeldDaily,
               addressesWithBalanceDaily: influxService.addressesWithBalanceDaily,
               activeAddressesDaily: influxService.activeAddressesDaily,
+              tokensTransferredDaily: influxService.tokensTransferredDaily,
           }
         : {
               error: "Influx service not found for this network.",
