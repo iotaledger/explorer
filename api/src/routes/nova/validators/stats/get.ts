@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../../models/api/INetworkBoundGetRequest";
 import { IValidatorStatsResponse } from "../../../../models/api/nova/IValidatorStatsResponse";
