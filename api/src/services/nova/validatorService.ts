@@ -74,9 +74,7 @@ export class ValidatorService {
             try {
                 const validatorsResponse = await this.client.getValidators(undefined, cursor);
 
-                // @ts-expect-error REMOVE THESE COMMENTS AND FIX THE FIELD when the field is fixed in the node (stakers -> validators)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                validators = validators.concat(validatorsResponse.stakers);
+                validators = validators.concat(validatorsResponse.validators);
                 cursor = validatorsResponse.cursor;
             } catch (e) {
                 logger.error(`Fetching validators failed. Cause: ${e}`);
