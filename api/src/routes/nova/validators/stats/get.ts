@@ -29,11 +29,11 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
     const validators = validatorService.validators;
     const committee = validatorService.committee;
 
-    const totalPoolStake = validators.reduce((acc, cur) => acc + cur.poolStake, BigInt(0));
+    const totalPoolStake = validators.reduce((acc, cur) => BigInt(cur.poolStake) + acc, BigInt(0));
     const totalValidatorStake = committee ? BigInt(committee.totalValidatorStake) : undefined;
 
     return {
-        totalPoolStake,
-        totalValidatorStake,
+        totalPoolStake: totalPoolStake.toString(),
+        totalValidatorStake: totalValidatorStake.toString(),
     };
 }

@@ -3,6 +3,12 @@
 import { IResponse } from "./IResponse";
 
 export interface IValidatorStatsResponse extends IResponse {
-    totalPoolStake?: bigint;
-    totalValidatorStake?: bigint;
+    /**
+     * totalPoolStake (BigInt)
+     */
+    totalPoolStake?: string;
+    /**
+     * totalValidatorStake (BigInt)
+     */
+    totalValidatorStake?: string;
 }
