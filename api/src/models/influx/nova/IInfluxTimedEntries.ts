@@ -60,3 +60,9 @@ export type IAccountActivityDailyInflux = ITimedEntry & {
     transferred: number | null;
     destroyed: number | null;
 };
+
+export type IFoundryActivityDailyInflux = ITimedEntry & {
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+};

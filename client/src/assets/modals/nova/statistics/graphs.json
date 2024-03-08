@@ -154,8 +154,19 @@
         ]
     },
     "dailyAccountActivity": {
-        "title": "Daily  Activity",
+        "title": "Daily Account Activity",
         "description": "<p>The daily activity over all Account outputs. It counts the network changes that involve Account outputs and group them by their nature: how many Account outputs were created and destroyed, and how many times had they change hands.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyFoundryActivity": {
+        "title": "Daily Foundry Activity",
+        "description": "<p>The daily activity over all Foundry outputs. It counts the network changes that involve Foundry outputs and group them by their nature: how many Founrdy outputs were created and destroyed, and how many times had they change hands.</p>",
         "links": [
             {
                 "label": "Read more",

@@ -20,6 +20,7 @@ export const InfluxChartsTab: React.FC = () => {
         anchorActivityDaily,
         nftActivityDaily,
         accountActivityDaily,
+        foundryActivityDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -117,7 +118,7 @@ export const InfluxChartsTab: React.FC = () => {
                     <h2>Special Outputs Activity</h2>
                     <Modal icon="info" data={graphMessages.specialOutputsActivity} />
                 </div>
-                <div className="row statistics-row">
+                <div className="row statistics-row ">
                     <StackedBarChart
                         chartId={ids.next().value}
                         title="Daily Account Activity"
@@ -136,6 +137,8 @@ export const InfluxChartsTab: React.FC = () => {
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
                         data={anchorActivityDaily}
                     />
+                </div>
+                <div className="row statistics-row">
                     <StackedBarChart
                         chartId={ids.next().value}
                         title="Daily NFT Activity"
@@ -144,6 +147,15 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Created", "Transferred", "Destroyed"]}
                         colors={["#4140DF", "#00F5DD", "#36A1AC"]}
                         data={nftActivityDaily}
+                    />
+                    <StackedBarChart
+                        chartId={ids.next().value}
+                        title="Daily Foundry Activity"
+                        info={graphMessages.dailyFoundryActivity}
+                        subgroups={["created", "transferred", "destroyed"]}
+                        groupLabels={["Created", "Transferred", "Destroyed"]}
+                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                        data={foundryActivityDaily}
                     />
                 </div>
             </div>
