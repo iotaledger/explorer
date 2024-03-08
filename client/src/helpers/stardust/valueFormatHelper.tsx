@@ -1,7 +1,7 @@
-import { UnitsHelper } from "@iota/iota.js";
 import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
 import React from "react";
 import Tooltip from "~app/components/Tooltip";
+import BigDecimal from "../bigDecimal";
 
 /**
  * The id of the Genesis block.
@@ -17,22 +17,29 @@ const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000
  * @returns The formatted string.
  */
 export function formatAmount(
-    value: number,
+    value: number | bigint | string,
     tokenInfo: INodeInfoBaseToken,
     formatFull: boolean = false,
     decimalPlaces: number = 2,
     trailingDecimals?: boolean,
 ): string {
+    if (!value || value === "null" || value === "undefined") {
+        return "";
+    }
+
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
 
-    const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces, trailingDecimals);
+    const valueBigDecimal =
+        typeof value === "string"
+            ? new BigDecimal(value, tokenInfo.decimals, false)
+            : new BigDecimal(value.toString(), tokenInfo.decimals, false);
 
-    // useMetricPrefix is broken cause it passes a float value to formatBest
-    const amount = tokenInfo.useMetricPrefix ? UnitsHelper.formatBest(baseTokenValue) : `${formattedAmount} `;
-    return `${amount}${tokenInfo.unit}`;
+    const baseTokenValue = valueBigDecimal.divide(Math.pow(10, tokenInfo.decimals).toString());
+    const formattedAmount = toFixedNoRound(baseTokenValue.toString(), decimalPlaces, trailingDecimals);
+
+    return `${formattedAmount} ${tokenInfo.unit}`;
 }
 
 /**
@@ -50,7 +57,7 @@ export function formatNumberWithCommas(value: bigint): string {
  * @param precision The decimal places to show.
  * @returns The formatted amount.
  */
-function toFixedNoRound(value: number, precision: number = 2, trailingDecimals?: boolean): string {
+function toFixedNoRound(value: number | string, precision: number = 2, trailingDecimals?: boolean): string {
     const defaultDecimals = "0".repeat(precision);
     const valueString = `${value}`;
     const [integer, fraction = defaultDecimals] = valueString.split(".");

@@ -6,7 +6,7 @@ import { IConfiguration } from "../../../../../models/configuration/IConfigurati
 import { STARDUST } from "../../../../../models/db/protocolVersion";
 import { IShimmerClaimedResponse } from "../../../../../models/services/stardust/IShimmerClaimedResponse";
 import { NetworkService } from "../../../../../services/networkService";
-import { InfluxDBService } from "../../../../../services/stardust/influx/influxDbService";
+import { InfluxServiceStardust } from "../../../../../services/stardust/influx/influxServiceStardust";
 import { ValidationHelper } from "../../../../../utils/validationHelper";
 
 /**
@@ -30,7 +30,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
         return {};
     }
 
-    const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
+    const influxService = ServiceFactory.get<InfluxServiceStardust>(`influxdb-${request.network}`);
 
     return influxService
         ? {

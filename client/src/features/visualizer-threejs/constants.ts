@@ -23,8 +23,8 @@ export const DATA_SENDER_TIME_INTERVAL = 500;
 // colors
 export const ACCEPTED_BLOCK_COLORS: Color[] = [new Color("#0101FF"), new Color("#0000DB"), new Color("#0101AB")];
 export const CONFIRMED_BLOCK_COLOR = new Color("#3CE5E1");
-export const FAILED_BLOCK_COLOR = new Color("#C026D3");
-export const REJECTED_BLOCK_COLOR = FAILED_BLOCK_COLOR;
+export const ORPHANED_BLOCK_COLOR = new Color("#C026D3");
+export const DROPPED_BLOCK_COLOR = ORPHANED_BLOCK_COLOR;
 export const SEARCH_RESULT_COLOR = new Color("#1EC15A");
 export const HOVERED_BLOCK_COLOR = SEARCH_RESULT_COLOR;
 
@@ -40,16 +40,16 @@ export const THEME_BLOCK_COLORS: Record<ThemeMode, Record<BlockState, Color | Co
         pending: PENDING_BLOCK_COLOR_DARKMODE,
         confirmed: CONFIRMED_BLOCK_COLOR,
         finalized: FINALIZED_BLOCK_COLOR_DARKMODE,
-        rejected: REJECTED_BLOCK_COLOR,
-        failed: FAILED_BLOCK_COLOR,
+        dropped: DROPPED_BLOCK_COLOR,
+        orphaned: ORPHANED_BLOCK_COLOR,
     },
     [ThemeMode.Light]: {
         accepted: ACCEPTED_BLOCK_COLORS,
         pending: PENDING_BLOCK_COLOR_LIGHTMODE,
         confirmed: CONFIRMED_BLOCK_COLOR,
         finalized: FINALIZED_BLOCK_COLOR_LIGHTMODE,
-        rejected: REJECTED_BLOCK_COLOR,
-        failed: FAILED_BLOCK_COLOR,
+        dropped: DROPPED_BLOCK_COLOR,
+        orphaned: ORPHANED_BLOCK_COLOR,
     },
 };
 
