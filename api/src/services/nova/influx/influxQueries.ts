@@ -39,3 +39,30 @@ export const TRANSACTION_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const OUTPUTS_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("basic_count") AS "basic",
+            last("account_count") AS "account",
+            last("foundry_count") AS "foundry",
+            last("nft_count") AS "nft"
+            last("anchor_count") AS "anchor"
+            last("delegation_count") AS "delegation"
+        FROM "iota_ledger_outputs"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("basic_count") AS "basic",
+            last("account_count") AS "account",
+            last("foundry_count") AS "foundry",
+            last("nft_count") AS "nft"
+            last("anchor_count") AS "anchor"
+            last("delegation_count") AS "delegation"
+        FROM "iota_ledger_outputs"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
