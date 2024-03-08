@@ -49,6 +49,14 @@ interface ITokensTransferredDailyInflux {
     tokens: number | null;
 }
 
+interface IAnchorActivityDailyInflux {
+    time: Date;
+    created: number | null;
+    governorChanged: number | null;
+    stateChanged: number | null;
+    destroyed: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
@@ -57,4 +65,5 @@ export interface IInfluxDailyResponse extends IResponse {
     addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
     activeAddressesDaily?: IActiveAddressesDailyInflux[];
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
+    anchorActivityDaily?: IAnchorActivityDailyInflux[];
 }

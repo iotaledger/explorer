@@ -9,6 +9,7 @@ export interface IStatisticsGraphsData {
     addressesWithBalanceDaily: DataPoint[];
     activeAddressesDaily: DataPoint[];
     tokensTransferredDaily: DataPoint[];
+    anchorActivityDaily: DataPoint[];
 }
 
 export interface DataPoint {
@@ -71,6 +72,14 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
             data.tokensTransferredDaily?.map((day) => ({
                 time: moment(day.time).add(1, "minute").unix(),
                 n: day.tokens ?? 0,
+            })) ?? [],
+        anchorActivityDaily:
+            data.anchorActivityDaily?.map((day) => ({
+                time: moment(day.time).add(1, "minute").unix(),
+                created: day.created ?? 0,
+                governorChanged: day.governorChanged ?? 0,
+                stateChanged: day.stateChanged ?? 0,
+                destroyed: day.destroyed ?? 0,
             })) ?? [],
     };
 }

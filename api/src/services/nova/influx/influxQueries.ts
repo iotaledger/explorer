@@ -144,3 +144,26 @@ export const TOKENS_TRANSFERRED_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const ANCHOR_ACTIVITY_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("anchor_created_count") AS "created",
+            sum("anchor_governor_changed_count") AS "governorChanged",
+            sum("anchor_state_changed_count") AS "stateChanged",
+            sum("anchor_destroyed_count") AS "destroyed"
+        FROM "iota_output_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("anchor_created_count") AS "created",
+            sum("anchor_governor_changed_count") AS "governorChanged",
+            sum("anchor_state_changed_count") AS "stateChanged",
+            sum("anchor_destroyed_count") AS "destroyed"
+        FROM "iota_output_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

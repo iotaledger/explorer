@@ -41,3 +41,10 @@ export type IActiveAddressesDailyInflux = ITimedEntry & {
 export type ITokensTransferredDailyInflux = ITimedEntry & {
     tokens: number | null;
 };
+
+export type IAnchorActivityDailyInflux = ITimedEntry & {
+    created: number | null;
+    governorChanged: number | null;
+    stateChanged: number | null;
+    destroyed: number | null;
+};

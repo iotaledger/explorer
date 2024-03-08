@@ -1,6 +1,7 @@
 import { InfluxDB } from "influx";
 import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
+    ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
     OUTPUTS_DAILY_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
@@ -14,6 +15,7 @@ import { IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/in
 import {
     IActiveAddressesDailyInflux,
     IAddressesWithBalanceDailyInflux,
+    IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
@@ -67,6 +69,14 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.activeAddressesDaily);
     }
 
+    public get tokensTransferredDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.tokensTransferredDaily);
+    }
+
+    public get aliasActivityDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.anchorActivityDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -103,6 +113,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             TOKENS_TRANSFERRED_DAILY_QUERY,
             this._dailyCache.tokensTransferredDaily,
             "Tokens transferred Daily",
+        );
+        this.updateCacheEntry<IAnchorActivityDailyInflux>(
+            ANCHOR_ACTIVITY_DAILY_QUERY,
+            this._dailyCache.anchorActivityDaily,
+            "Anchor activity Daily",
         );
     }
 }

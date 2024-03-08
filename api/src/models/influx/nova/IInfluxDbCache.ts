@@ -1,6 +1,7 @@
 import {
     IActiveAddressesDailyInflux,
     IAddressesWithBalanceDailyInflux,
+    IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
@@ -20,6 +21,7 @@ export interface IInfluxDailyCache {
     addressesWithBalanceDaily: Map<DayKey, IAddressesWithBalanceDailyInflux>;
     activeAddressesDaily: Map<DayKey, IActiveAddressesDailyInflux>;
     tokensTransferredDaily: Map<DayKey, ITokensTransferredDailyInflux>;
+    anchorActivityDaily: Map<DayKey, IAnchorActivityDailyInflux>;
 }
 
 /**
@@ -34,4 +36,5 @@ export const initializeEmptyDailyCache = () => ({
     addressesWithBalanceDaily: new Map(),
     activeAddressesDaily: new Map(),
     tokensTransferredDaily: new Map(),
+    anchorActivityDaily: new Map(),
 });

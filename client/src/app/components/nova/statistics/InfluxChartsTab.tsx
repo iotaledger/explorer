@@ -6,10 +6,19 @@ import Modal from "../../Modal";
 import StackedLineChart from "../../stardust/statistics/charts/StackedLineChart";
 import LineChart from "../../stardust/statistics/charts/LineChart";
 import BarChart from "../../stardust/statistics/charts/BarChart";
+import StackedBarChart from "../../stardust/statistics/charts/StackedBarChart";
 
 export const InfluxChartsTab: React.FC = () => {
-    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld, addressesWithBalance, activeAddressesDaily, tokensTransferredDaily } =
-        useChartsState();
+    const {
+        dailyBlocks,
+        dailyTransactions,
+        dailyOutputs,
+        tokensHeld,
+        addressesWithBalance,
+        activeAddressesDaily,
+        tokensTransferredDaily,
+        anchorActivityDaily,
+    } = useChartsState();
 
     const ids = idGenerator();
 
@@ -98,6 +107,23 @@ export const InfluxChartsTab: React.FC = () => {
                         color="#00E0CA"
                         label="Tokens"
                         data={tokensTransferredDaily}
+                    />
+                </div>
+            </div>
+            <div className="section">
+                <div className="section--header">
+                    <h2>Special Outputs Activity</h2>
+                    <Modal icon="info" data={graphMessages.specialOutputsActivity} />
+                </div>
+                <div className="row statistics-row">
+                    <StackedBarChart
+                        chartId={ids.next().value}
+                        title="Daily Anchor Activity"
+                        info={graphMessages.dailyAliasActivity}
+                        subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
+                        groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
+                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}
+                        data={anchorActivityDaily}
                     />
                 </div>
             </div>
