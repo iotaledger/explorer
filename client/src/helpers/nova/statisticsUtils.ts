@@ -3,6 +3,7 @@ import { IInfluxDailyResponse } from "~models/api/nova/influx/IInfluxDailyRespon
 
 export interface IStatisticsGraphsData {
     blocksDaily: DataPoint[];
+    transactionsDaily: DataPoint[];
 }
 
 export interface DataPoint {
@@ -24,6 +25,12 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
                 taggedData: day.taggedData ?? 0,
                 validation: day.validation ?? 0,
                 candidacy: day.candidacy ?? 0,
+            })) ?? [],
+        transactionsDaily:
+            data.transactionsDaily?.map((t) => ({
+                time: moment(t.time).add(1, "minute").unix(),
+                finalized: t.finalized ?? 0,
+                failed: t.failed ?? 0,
             })) ?? [],
     };
 }

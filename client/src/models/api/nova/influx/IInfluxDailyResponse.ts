@@ -8,6 +8,13 @@ interface IBlocksDailyInflux {
     candidacy: number | null;
 }
 
+interface ITransactionsDailyInflux {
+    time: Date;
+    finalized: number | null;
+    failed: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
+    transactionsDaily?: ITransactionsDailyInflux[];
 }

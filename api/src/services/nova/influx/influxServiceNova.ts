@@ -1,9 +1,9 @@
 import { InfluxDB } from "influx";
-import { BLOCK_DAILY_QUERY } from "./influxQueries";
+import { BLOCK_DAILY_QUERY, TRANSACTION_DAILY_QUERY } from "./influxQueries";
 import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
 import { IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
-import { IBlocksDailyInflux } from "../../../models/influx/nova/IInfluxTimedEntries";
+import { IBlocksDailyInflux, ITransactionsDailyInflux } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { InfluxDbClient } from "../../influx/influxClient";
 
 export class InfluxServiceNova extends InfluxDbClient {
@@ -31,6 +31,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.blocksDaily);
     }
 
+    public get transactionsDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.transactionsDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -46,5 +50,6 @@ export class InfluxServiceNova extends InfluxDbClient {
     private async collectGraphsDaily() {
         logger.verbose(`[InfluxNova] Collecting daily stats for "${this._network.network}"`);
         this.updateCacheEntry<IBlocksDailyInflux>(BLOCK_DAILY_QUERY, this._dailyCache.blocksDaily, "Blocks Daily", true);
+        this.updateCacheEntry<ITransactionsDailyInflux>(TRANSACTION_DAILY_QUERY, this._dailyCache.transactionsDaily, "Transactions Daily");
     }
 }

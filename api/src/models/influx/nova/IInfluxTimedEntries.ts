@@ -6,3 +6,8 @@ export type IBlocksDailyInflux = ITimedEntry & {
     validation: number | null;
     candidacy: number | null;
 };
+
+export type ITransactionsDailyInflux = ITimedEntry & {
+    finalized: number | null;
+    failed: number | null;
+};
