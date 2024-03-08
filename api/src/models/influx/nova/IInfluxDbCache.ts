@@ -1,4 +1,4 @@
-import { IBlocksDailyInflux } from "./IInfluxTimedEntries";
+import { IBlocksDailyInflux, ITransactionsDailyInflux } from "./IInfluxTimedEntries";
 import { DayKey } from "../types";
 
 /**
@@ -6,6 +6,7 @@ import { DayKey } from "../types";
  */
 export interface IInfluxDailyCache {
     blocksDaily: Map<DayKey, IBlocksDailyInflux>;
+    transactionsDaily: Map<DayKey, ITransactionsDailyInflux>;
 }
 
 /**
@@ -14,4 +15,5 @@ export interface IInfluxDailyCache {
  */
 export const initializeEmptyDailyCache = () => ({
     blocksDaily: new Map(),
+    transactionsDaily: new Map(),
 });

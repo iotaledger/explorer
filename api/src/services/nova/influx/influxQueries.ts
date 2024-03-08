@@ -20,3 +20,22 @@ export const BLOCK_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const TRANSACTION_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("finalized_count") AS "finalized",
+            sum("failed_count") AS "failed"
+        FROM "iota_block_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("finalized_count") AS "finalized",
+            sum("failed_count") AS "failed"
+        FROM "iota_block_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

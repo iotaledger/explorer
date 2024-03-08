@@ -9,10 +9,14 @@ import { DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData } from "../
  * State holder for Statistics page chart section.
  * @returns The charts state.
  */
-export function useChartsState(): { dailyBlocks: DataPoint[] } {
+export function useChartsState(): {
+    dailyBlocks: DataPoint[];
+    dailyTransactions: DataPoint[];
+} {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [dailyBlocks, setDailyBlocks] = useState<DataPoint[]>([]);
+    const [dailyTransactions, setDailyTransactions] = useState<DataPoint[]>([]);
 
     useEffect(() => {
         apiClient
@@ -22,6 +26,7 @@ export function useChartsState(): { dailyBlocks: DataPoint[] } {
                     const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(influxStats);
 
                     setDailyBlocks(graphsData.blocksDaily);
+                    setDailyTransactions(graphsData.transactionsDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
                 }
@@ -29,5 +34,5 @@ export function useChartsState(): { dailyBlocks: DataPoint[] } {
             .catch((e) => console.error("Influx analytics fetch failed", e));
     }, [network]);
 
-    return { dailyBlocks };
+    return { dailyBlocks, dailyTransactions };
 }
