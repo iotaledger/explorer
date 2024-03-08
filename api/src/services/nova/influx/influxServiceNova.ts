@@ -1,5 +1,6 @@
 import { InfluxDB } from "influx";
 import {
+    ACCOUNT_ACTIVITY_DAILY_QUERY,
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
@@ -14,6 +15,7 @@ import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
 import { IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
 import {
+    IAccountActivityDailyInflux,
     IActiveAddressesDailyInflux,
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
@@ -83,6 +85,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.nftActivityDaily);
     }
 
+    public get accountActivityDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.accountActivityDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -126,5 +132,10 @@ export class InfluxServiceNova extends InfluxDbClient {
             "Anchor activity Daily",
         );
         this.updateCacheEntry<INftActivityDailyInflux>(NFT_ACTIVITY_DAILY_QUERY, this._dailyCache.nftActivityDaily, "Nft activity Daily");
+        this.updateCacheEntry<IAccountActivityDailyInflux>(
+            ACCOUNT_ACTIVITY_DAILY_QUERY,
+            this._dailyCache.accountActivityDaily,
+            "Account activity Daily",
+        );
     }
 }

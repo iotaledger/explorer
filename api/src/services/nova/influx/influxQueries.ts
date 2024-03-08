@@ -188,3 +188,24 @@ export const NFT_ACTIVITY_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const ACCOUNT_ACTIVITY_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("account_created_count") AS "created",
+            sum("account_transferred_count") AS "transferred",
+            sum("account_destroyed_count") AS "destroyed"
+        FROM "iota_output_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("account_created_count") AS "created",
+            sum("account_transferred_count") AS "transferred",
+            sum("account_destroyed_count") AS "destroyed"
+        FROM "iota_output_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

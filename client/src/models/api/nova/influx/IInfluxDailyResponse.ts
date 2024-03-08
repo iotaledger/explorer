@@ -64,6 +64,13 @@ interface INftActivityDailyInflux {
     destroyed: number | null;
 }
 
+interface IAccountActivityDailyInflux {
+    time: Date;
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
@@ -74,4 +81,5 @@ export interface IInfluxDailyResponse extends IResponse {
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
     anchorActivityDaily?: IAnchorActivityDailyInflux[];
     nftActivityDaily?: INftActivityDailyInflux[];
+    accountActivityDaily?: IAccountActivityDailyInflux[];
 }

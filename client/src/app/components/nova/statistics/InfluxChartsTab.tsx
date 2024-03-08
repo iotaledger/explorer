@@ -1,5 +1,5 @@
 import React from "react";
-import graphMessages from "~assets/modals/stardust/statistics/graphs.json";
+import graphMessages from "~assets/modals/nova/statistics/graphs.json";
 import { useChartsState } from "~helpers/nova/hooks/useChartsState";
 import { idGenerator } from "~helpers/stardust/statisticsUtils";
 import Modal from "../../Modal";
@@ -19,6 +19,7 @@ export const InfluxChartsTab: React.FC = () => {
         tokensTransferredDaily,
         anchorActivityDaily,
         nftActivityDaily,
+        accountActivityDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -119,8 +120,17 @@ export const InfluxChartsTab: React.FC = () => {
                 <div className="row statistics-row">
                     <StackedBarChart
                         chartId={ids.next().value}
+                        title="Daily Account Activity"
+                        info={graphMessages.dailyAccountActivity}
+                        subgroups={["created", "transferred", "destroyed"]}
+                        groupLabels={["Created", "Transferred", "Destroyed"]}
+                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                        data={accountActivityDaily}
+                    />
+                    <StackedBarChart
+                        chartId={ids.next().value}
                         title="Daily Anchor Activity"
-                        info={graphMessages.dailyAliasActivity}
+                        info={graphMessages.dailyAnchorActivity}
                         subgroups={["created", "governorChanged", "stateChanged", "destroyed"]}
                         groupLabels={["Created", "Governor changed", "State changed", "Destroyed"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575"]}

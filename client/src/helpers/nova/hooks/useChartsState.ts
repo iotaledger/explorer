@@ -19,6 +19,7 @@ export function useChartsState(): {
     tokensTransferredDaily: DataPoint[];
     anchorActivityDaily: DataPoint[];
     nftActivityDaily: DataPoint[];
+    accountActivityDaily: DataPoint[];
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
@@ -31,6 +32,7 @@ export function useChartsState(): {
     const [tokensTransferredDaily, setTokensTransferredDaily] = useState<DataPoint[]>([]);
     const [anchorActivityDaily, setAnchorActivityDaily] = useState<DataPoint[]>([]);
     const [nftActivityDaily, setNftActivityDaily] = useState<DataPoint[]>([]);
+    const [accountActivityDaily, setAccountActivityDaily] = useState<DataPoint[]>([]);
 
     useEffect(() => {
         apiClient
@@ -48,6 +50,7 @@ export function useChartsState(): {
                     setTokensTransferredDaily(graphsData.tokensTransferredDaily);
                     setAnchorActivityDaily(graphsData.anchorActivityDaily);
                     setNftActivityDaily(graphsData.nftActivityDaily);
+                    setAccountActivityDaily(graphsData.accountActivityDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
                 }
@@ -65,5 +68,6 @@ export function useChartsState(): {
         tokensTransferredDaily,
         anchorActivityDaily,
         nftActivityDaily,
+        accountActivityDaily,
     };
 }

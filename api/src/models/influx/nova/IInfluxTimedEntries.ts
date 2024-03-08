@@ -54,3 +54,9 @@ export type INftActivityDailyInflux = ITimedEntry & {
     transferred: number | null;
     destroyed: number | null;
 };
+
+export type IAccountActivityDailyInflux = ITimedEntry & {
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+};

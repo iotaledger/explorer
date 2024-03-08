@@ -3,6 +3,7 @@ import { INetworkBoundGetRequest } from "../../../../../models/api/INetworkBound
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../../models/db/protocolVersion";
 import {
+    IAccountActivityDailyInflux,
     IActiveAddressesDailyInflux,
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
@@ -31,6 +32,7 @@ export interface IDailyAnalyticsResponse {
     tokensTransferredDaily?: ITokensTransferredDailyInflux[];
     anchorActivityDaily?: IAnchorActivityDailyInflux[];
     nftActivityDaily?: INftActivityDailyInflux[];
+    accountActivityDaily?: IAccountActivityDailyInflux[];
 }
 
 /**
@@ -62,6 +64,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               tokensTransferredDaily: influxService.tokensTransferredDaily,
               anchorActivityDaily: influxService.anchorActivityDaily,
               nftActivityDaily: influxService.nftActivityDaily,
+              accountActivityDaily: influxService.accountActivityDaily,
           }
         : {
               error: "Influx service not found for this network.",
