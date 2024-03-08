@@ -23,7 +23,7 @@ interface TransactionMetadataSectionProps {
 const TRANSACTION_STATE_TO_PILL_STATUS: Record<TransactionState, PillStatus> = {
     pending: PillStatus.Pending,
     accepted: PillStatus.Success,
-    confirmed: PillStatus.Success,
+    committed: PillStatus.Success,
     finalized: PillStatus.Success,
     failed: PillStatus.Error,
 };

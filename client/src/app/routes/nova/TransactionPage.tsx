@@ -19,6 +19,7 @@ import BlockTangleState from "~/app/components/nova/block/BlockTangleState";
 import BlockPayloadSection from "~/app/components/nova/block/section/BlockPayloadSection";
 import TransactionMetadataSection from "~/app/components/nova/block/section/TransactionMetadataSection";
 import "./TransactionPage.scss";
+import { useTransactionMetadata } from "~/helpers/nova/hooks/useTransactionMetadata";
 
 export interface TransactionPageProps {
     /**
@@ -48,6 +49,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     const [inputs, outputs, transferTotal, isInputsAndOutputsLoading] = useInputsAndOutputs(network, block);
     const [blockId, setBlockId] = useState<string | null>(null);
     const [blockMetadata] = useBlockMetadata(network, blockId);
+    const { transactionMetadata } = useTransactionMetadata(network, transactionId);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
 
     useEffect(() => {
@@ -70,12 +72,12 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         );
     }
 
-    if (blockMetadata.metadata?.transactionMetadata) {
+    if (transactionMetadata) {
         tabbedSections.push(
             <TransactionMetadataSection
                 key={++idx}
                 transaction={((block?.body as BasicBlockBody)?.payload as SignedTransactionPayload)?.transaction}
-                transactionMetadata={blockMetadata.metadata?.transactionMetadata}
+                transactionMetadata={transactionMetadata}
             />,
         );
     }
@@ -180,11 +182,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                                 {isIncludedBlockLoading && <Spinner />}
                             </div>
                             {blockMetadata.metadata && block?.header && (
-                                <BlockTangleState
-                                    status={blockMetadata.metadata?.blockState}
-                                    issuingTime={block?.header.issuingTime}
-                                    failureReason={blockMetadata.metadata?.blockFailureReason}
-                                />
+                                <BlockTangleState status={blockMetadata.metadata?.blockState} issuingTime={block?.header.issuingTime} />
                             )}
                         </div>
                     </div>
