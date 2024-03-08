@@ -29,7 +29,11 @@ export type ITokensHeldPerOutputDailyInflux = ITimedEntry & {
     anchor: number | null;
     delegation: number | null;
 };
-
+// add missing fields for each address type
 export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
     addressesWithBalance: number | null;
+};
+// add missing fields for each address type
+export type IActiveAddressesDailyInflux = ITimedEntry & {
+    activeAddresses: number | null;
 };

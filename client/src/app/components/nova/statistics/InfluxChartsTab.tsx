@@ -7,7 +7,7 @@ import StackedLineChart from "../../stardust/statistics/charts/StackedLineChart"
 import LineChart from "../../stardust/statistics/charts/LineChart";
 
 export const InfluxChartsTab: React.FC = () => {
-    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld, addressesWithBalance } = useChartsState();
+    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld, addressesWithBalance, activeAddressesDaily } = useChartsState();
 
     const ids = idGenerator();
 
@@ -78,6 +78,14 @@ export const InfluxChartsTab: React.FC = () => {
                         label="Addresses"
                         color="#00F5DD"
                         data={addressesWithBalance}
+                    />
+                    <LineChart
+                        chartId={ids.next().value}
+                        title="Daily Active Addresses"
+                        info={graphMessages.dailyActiveAddresses}
+                        label="Addresses"
+                        color="#00F5DD"
+                        data={activeAddressesDaily}
                     />
                 </div>
             </div>
