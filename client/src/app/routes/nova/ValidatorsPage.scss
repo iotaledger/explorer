@@ -62,7 +62,7 @@
 
                     .validator-item {
                         display: grid;
-                        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+                        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
                         margin: 0px 12px;
                         align-items: center;
                         line-height: 32px;
@@ -79,19 +79,25 @@
                         }
 
                         .validator-item__address,
-                        .validator-item__state,
+                        .validator-item__is-candidate,
+                        .validator-item__is-elected,
                         .validator-item__fixed-cost,
-                        .validator-item__pool-stake,
-                        .validator-item__validator-stake,
+                        .validator-item__stake,
+                        .validator-item__cumulative-stake,
                         .validator-item__delegators,
-                        .validator-item__staking-end-epoch {
+                        .validator-item__rank {
                             display: flex;
                             margin: 0 auto;
                             justify-content: center;
                         }
 
+                        .validator-item__stake {
+                            text-align: center;
+                            line-height: 20px;
+                        }
+
                         .validator-item__address {
-                            width: 140px;
+                            width: 120px;
                         }
                     }
                 }

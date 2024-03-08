@@ -6,6 +6,13 @@ import "./ValidatorsPage.scss";
 const ValidatorsPage: React.FC = () => {
     const { validators, error } = useValidators();
 
+    // Build rank by stake map
+    const addressToRankByStake = new Map<string, number>();
+    const validatorsSortedByPoolStake = [...(validators ?? [])].sort((a, b) => (a.validator.poolStake > b.validator.poolStake ? -1 : 1));
+    for (let i = 0; i < validatorsSortedByPoolStake.length; i++) {
+        addressToRankByStake.set(validatorsSortedByPoolStake[i].validator.address, i + 1);
+    }
+
     return (
         <section className="validators-page">
             <div className="wrapper">
@@ -22,26 +29,33 @@ const ValidatorsPage: React.FC = () => {
                             <div className="all-validators__wrapper">
                                 <div className="validator-item table-header">
                                     <div className="validator-item__address">Address</div>
-                                    <div className="validator-item__state">Active?</div>
-                                    <div className="validator-item__fixed-cost">Cost</div>
-                                    <div className="validator-item__pool-stake">Pool stake</div>
-                                    <div className="validator-item__validator-stake">Validator stake</div>
+                                    <div className="validator-item__is-candidate">Candidate?</div>
+                                    <div className="validator-item__is-elected">Elected?</div>
+                                    <div className="validator-item__fixed-cost">Fixed cost</div>
+                                    <div className="validator-item__stake">Stake (Own/Delegated)</div>
+                                    <div className="validator-item__cumulative-stake">Cumulative stake</div>
                                     <div className="validator-item__delegators">Delegators</div>
-                                    <div className="validator-item__staking-end-epoch">End epoch</div>
+                                    <div className="validator-item__rank">Rank by stake</div>
                                 </div>
                                 {validators.map((validatorResponse, idx) => {
                                     const validator = validatorResponse.validator;
+                                    const inCommittee = validatorResponse.inCommittee;
+                                    const delegatedStake = validator.poolStake - validator.validatorStake;
+
                                     return (
                                         <div className="validator-item" key={`validator-${idx}`}>
                                             <div className="validator-item__address">
                                                 <TruncatedId id={validator.address} />
                                             </div>
-                                            <div className="validator-item__state">{validator.active.toString()}</div>
+                                            <div className="validator-item__is-candidate">{(!inCommittee).toString()}</div>
+                                            <div className="validator-item__is-elected">{inCommittee.toString()}</div>
                                             <div className="validator-item__fixed-cost">{validator.fixedCost.toString()}</div>
-                                            <div className="validator-item__pool-stake">{validator.poolStake.toString()}</div>
-                                            <div className="validator-item__validator-stake">{validator.validatorStake.toString()}</div>
-                                            <div className="validator-item__delegators">123</div>
-                                            <div className="validator-item__staking-end-epoch">{validator.stakingEndEpoch}</div>
+                                            <div className="validator-item__stake">
+                                                {`${validator.validatorStake.toString()} / ${delegatedStake}`}
+                                            </div>
+                                            <div className="validator-item__cumulative-stake">{validator.poolStake.toString()}</div>
+                                            <div className="validator-item__delegators">???</div>
+                                            <div className="validator-item__rank">{addressToRankByStake.get(validator.address)}</div>
                                         </div>
                                     );
                                 })}
