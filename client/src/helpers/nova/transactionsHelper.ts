@@ -91,12 +91,7 @@ export class TransactionsHelper {
                     } while (!signatureUnlock);
                 }
                 if (signatureUnlock) {
-                    unlockAddresses.push(
-                        AddressHelper.buildAddress(
-                            _bechHrp,
-                            Utils.hexPublicKeyToBech32Address(signatureUnlock.signature.publicKey, _bechHrp),
-                        ),
-                    );
+                    unlockAddresses.push(AddressHelper.buildAddress(_bechHrp, Utils.publicKeyHash(signatureUnlock.signature.publicKey)));
                 }
             }
 
