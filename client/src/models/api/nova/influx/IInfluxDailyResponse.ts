@@ -33,9 +33,16 @@ interface ITokensHeldPerOutputDailyInflux {
     anchor: number | null;
     delegation: number | null;
 }
+
+interface IAddressesWithBalanceDailyInflux {
+    time: Date;
+    addressesWithBalance: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
+    addressesWithBalanceDaily?: IAddressesWithBalanceDailyInflux[];
 }

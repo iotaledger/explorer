@@ -4,9 +4,10 @@ import { useChartsState } from "~helpers/nova/hooks/useChartsState";
 import { idGenerator } from "~helpers/stardust/statisticsUtils";
 import Modal from "../../Modal";
 import StackedLineChart from "../../stardust/statistics/charts/StackedLineChart";
+import LineChart from "../../stardust/statistics/charts/LineChart";
 
 export const InfluxChartsTab: React.FC = () => {
-    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld } = useChartsState();
+    const { dailyBlocks, dailyTransactions, dailyOutputs, tokensHeld, addressesWithBalance } = useChartsState();
 
     const ids = idGenerator();
 
@@ -61,6 +62,22 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Basic", "Account", "Foundry", "Nft", "Anchor", "Delegation"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1", "#00E0CA"]}
                         data={tokensHeld}
+                    />
+                </div>
+            </div>
+            <div className="section">
+                <div className="section--header">
+                    <h2>Addresses and Tokens</h2>
+                    <Modal icon="info" data={graphMessages.addressesAndTokens} />
+                </div>
+                <div className="row statistics-row margin-b-s">
+                    <LineChart
+                        chartId={ids.next().value}
+                        title="Total Addresses with Tokens"
+                        info={graphMessages.totalAddressesWithTokens}
+                        label="Addresses"
+                        color="#00F5DD"
+                        data={addressesWithBalance}
                     />
                 </div>
             </div>

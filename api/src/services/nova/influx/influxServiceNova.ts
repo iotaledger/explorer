@@ -4,12 +4,14 @@ import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
 import { IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
 import {
+    IAddressesWithBalanceDailyInflux,
     IBlocksDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITransactionsDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { InfluxDbClient } from "../../influx/influxClient";
+import { ADDRESSES_WITH_BALANCE_DAILY_QUERY } from "../../stardust/influx/influxQueries";
 
 export class InfluxServiceNova extends InfluxDbClient {
     /**
@@ -48,6 +50,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.tokensHeldDaily);
     }
 
+    public get addressesWithBalanceDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.addressesWithBalanceDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -69,6 +75,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
             this._dailyCache.tokensHeldDaily,
             "Tokens Held Daily",
+        );
+        this.updateCacheEntry<IAddressesWithBalanceDailyInflux>(
+            ADDRESSES_WITH_BALANCE_DAILY_QUERY,
+            this._dailyCache.addressesWithBalanceDaily,
+            "Addresses with balance Daily",
         );
     }
 }

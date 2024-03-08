@@ -29,3 +29,7 @@ export type ITokensHeldPerOutputDailyInflux = ITimedEntry & {
     anchor: number | null;
     delegation: number | null;
 };
+
+export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
+    addressesWithBalance: number | null;
+};

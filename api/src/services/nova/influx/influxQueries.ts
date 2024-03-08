@@ -93,3 +93,20 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("address_with_balance_count") AS "addressesWithBalance"
+        FROM "iota_addresses"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("address_with_balance_count") AS "addressesWithBalance"
+        FROM "iota_addresses"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
