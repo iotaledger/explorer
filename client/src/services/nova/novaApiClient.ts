@@ -47,6 +47,7 @@ import { ISlotBlocksResponse } from "~/models/api/nova/ISlotBlocksResponse";
 import { IEpochCommitteeRequest } from "~/models/api/nova/IEpochCommitteeRequest";
 import { IEpochCommitteeResponse } from "~/models/api/nova/IEpochCommitteeResponse";
 import { IInfluxDailyResponse } from "~/models/api/nova/influx/IInfluxDailyResponse";
+import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMetadataResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -95,6 +96,18 @@ export class NovaApiClient extends ApiClient {
      */
     public async transactionIncludedBlockDetails(request: ITransactionDetailsRequest): Promise<ITransactionDetailsResponse> {
         return this.callApi<unknown, ITransactionDetailsResponse>(`nova/transaction/${request.network}/${request.transactionId}`, "get");
+    }
+
+    /**
+     * Get the transaction metadata.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionMetadata(request: ITransactionDetailsRequest): Promise<ITransactionMetadataResponse> {
+        return this.callApi<unknown, ITransactionMetadataResponse>(
+            `nova/transaction/metadata/${request.network}/${request.transactionId}`,
+            "get",
+        );
     }
 
     /**
