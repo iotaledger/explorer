@@ -2,7 +2,7 @@ import { ServiceFactory } from "../../../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../../../models/api/INetworkBoundGetRequest";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../../models/db/protocolVersion";
-import { IBlocksDailyInflux, ITransactionsDailyInflux } from "../../../../../models/influx/nova/IInfluxTimedEntries";
+import { IBlocksDailyInflux, IOutputsDailyInflux, ITransactionsDailyInflux } from "../../../../../models/influx/nova/IInfluxTimedEntries";
 import { NetworkService } from "../../../../../services/networkService";
 import { InfluxServiceNova } from "../../../../../services/nova/influx/influxServiceNova";
 import { ValidationHelper } from "../../../../../utils/validationHelper";
@@ -14,6 +14,7 @@ export interface IDailyAnalyticsResponse {
     error?: string;
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
+    outputsDaily?: IOutputsDailyInflux[];
 }
 
 /**
@@ -38,6 +39,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
         ? {
               blocksDaily: influxService.blocksDaily,
               transactionsDaily: influxService.transactionsDaily,
+              outputsDaily: influxService.outputsDaily,
           }
         : {
               error: "Influx service not found for this network.",

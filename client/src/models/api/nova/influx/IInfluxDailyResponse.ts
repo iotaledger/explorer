@@ -14,7 +14,18 @@ interface ITransactionsDailyInflux {
     failed: number | null;
 }
 
+interface IOutputsDailyInflux {
+    time: Date;
+    basic: number | null;
+    account: number | null;
+    foundry: number | null;
+    nft: number | null;
+    anchor: number | null;
+    delegation: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
+    outputsDaily?: IOutputsDailyInflux[];
 }
