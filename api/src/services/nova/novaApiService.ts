@@ -22,6 +22,7 @@ import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
 import { ISlotResponse } from "../../models/api/nova/ISlotResponse";
 import { ITransactionDetailsResponse } from "../../models/api/nova/ITransactionDetailsResponse";
+import { ITransactionMetadataResponse } from "../../models/api/nova/ITransactionMetadataResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 import { SearchExecutor } from "../../utils/nova/searchExecutor";
@@ -88,6 +89,27 @@ export class NovaApiService {
             }
         } catch (e) {
             logger.error(`Failed fetching block metadata with block id ${blockId}. Cause: ${e}`);
+            return { error: "Block metadata fetch failed." };
+        }
+    }
+
+    /**
+     * Get the transaction metadata.
+     * @param transactionId The transaction id to get the metadata of.
+     * @returns The item details.
+     */
+    public async transactionMetadata(transactionId: string): Promise<ITransactionMetadataResponse> {
+        try {
+            transactionId = HexHelper.addPrefix(transactionId);
+            const metadata = await this.client.getTransactionMetadata(transactionId);
+
+            if (metadata) {
+                return {
+                    metadata,
+                };
+            }
+        } catch (e) {
+            logger.error(`Failed fetching transaction metadata with transaction id ${transactionId}. Cause: ${e}`);
             return { error: "Block metadata fetch failed." };
         }
     }
