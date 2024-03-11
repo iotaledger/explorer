@@ -8,9 +8,11 @@ import {
     IDelegationsActivityDailyInflux,
     IDelegatorsActivityDailyInflux,
     IFoundryActivityDailyInflux,
+    ILedgerSizeDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
+    IStorageDepositDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux,
@@ -42,6 +44,8 @@ export interface IInfluxDailyCache {
     stakingActivityDaily: Map<DayKey, IStakingActivityDailyInflux>;
     unlockConditionsPerTypeDaily: Map<DayKey, IUnlockConditionsPerTypeDailyInflux>;
     tokensHeldWithUnlockConditionDaily: Map<DayKey, ITokensHeldWithUnlockConditionDailyInflux>;
+    ledgerSizeDaily: Map<DayKey, ILedgerSizeDailyInflux>;
+    storageDepositDaily: Map<DayKey, IStorageDepositDailyInflux>;
 }
 
 /**
@@ -67,4 +71,6 @@ export const initializeEmptyDailyCache = () => ({
     stakingActivityDaily: new Map(),
     unlockConditionsPerTypeDaily: new Map(),
     tokensHeldWithUnlockConditionDaily: new Map(),
+    ledgerSizeDaily: new Map(),
+    storageDepositDaily: new Map(),
 });

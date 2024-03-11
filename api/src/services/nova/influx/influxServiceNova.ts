@@ -8,9 +8,11 @@ import {
     DELEGATION_ACTIVITY_DAILY_QUERY,
     DELEGATORS_ACTIVITY_DAILY_QUERY,
     FOUNDRY_ACTIVITY_DAILY_QUERY,
+    LEDGER_SIZE_DAILY_QUERY,
     NFT_ACTIVITY_DAILY_QUERY,
     OUTPUTS_DAILY_QUERY,
     STAKING_ACTIVITY_DAILY_QUERY,
+    STORAGE_DEPOSIT_DAILY_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
     TOKENS_HELD_WITH_UC_DAILY_QUERY,
     TOKENS_TRANSFERRED_DAILY_QUERY,
@@ -32,9 +34,11 @@ import {
     IDelegationsActivityDailyInflux,
     IDelegatorsActivityDailyInflux,
     IFoundryActivityDailyInflux,
+    ILedgerSizeDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
+    IStorageDepositDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux,
@@ -137,6 +141,14 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.tokensHeldWithUnlockConditionDaily);
     }
 
+    public get ledgerSizeDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.ledgerSizeDaily);
+    }
+
+    public get storageDepositDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.storageDepositDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -224,6 +236,12 @@ export class InfluxServiceNova extends InfluxDbClient {
             TOKENS_HELD_WITH_UC_DAILY_QUERY,
             this._dailyCache.tokensHeldWithUnlockConditionDaily,
             "Tokens held with Unlock condition Daily",
+        );
+        this.updateCacheEntry<ILedgerSizeDailyInflux>(LEDGER_SIZE_DAILY_QUERY, this._dailyCache.ledgerSizeDaily, "Ledger size Daily");
+        this.updateCacheEntry<IStorageDepositDailyInflux>(
+            STORAGE_DEPOSIT_DAILY_QUERY,
+            this._dailyCache.storageDepositDaily,
+            "Storage Deposit Daily",
         );
     }
 }

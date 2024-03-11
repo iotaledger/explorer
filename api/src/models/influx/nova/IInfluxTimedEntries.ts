@@ -101,3 +101,12 @@ export type ITokensHeldWithUnlockConditionDailyInflux = ITimedEntry & {
     storageDepositReturn: number | null;
     expiration: number | null;
 };
+
+export type ILedgerSizeDailyInflux = ITimedEntry & {
+    keyBytes: number | null;
+    dataBytes: number | null;
+};
+
+export type IStorageDepositDailyInflux = ITimedEntry & {
+    storageDeposit: number | null;
+};

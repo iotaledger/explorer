@@ -116,6 +116,17 @@ interface ITokensHeldWithUnlockConditionDailyInflux {
     expiration: number | null;
 }
 
+interface ILedgerSizeDailyInflux {
+    time: Date;
+    keyBytes: number | null;
+    dataBytes: number | null;
+}
+
+interface IStorageDepositDailyInflux {
+    time: Date;
+    storageDeposit: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
@@ -135,4 +146,6 @@ export interface IInfluxDailyResponse extends IResponse {
     stakingActivityDaily?: IStakingActivityDailyInflux[];
     unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];
     tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
+    ledgerSizeDaily?: ILedgerSizeDailyInflux[];
+    storageDepositDaily?: IStorageDepositDailyInflux[];
 }

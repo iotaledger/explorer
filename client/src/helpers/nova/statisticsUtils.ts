@@ -20,6 +20,8 @@ export interface IStatisticsGraphsData {
     stakingActivityDaily: DataPoint[];
     unlockConditionsPerTypeDaily: DataPoint[];
     tokensHeldWithUnlockConditionDaily: DataPoint[];
+    ledgerSizeDaily: DataPoint[];
+    storageDepositDaily: DataPoint[];
 }
 
 export interface DataPoint {
@@ -153,6 +155,17 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
                 timelock: day.timelock ?? 0,
                 storageDepositReturn: day.storageDepositReturn ?? 0,
                 expiration: day.expiration ?? 0,
+            })) ?? [],
+        ledgerSizeDaily:
+            data.ledgerSizeDaily?.map((day) => ({
+                time: moment(day.time).add(1, "minute").unix(),
+                keyBytes: day.keyBytes ?? 0,
+                dataBytes: day.dataBytes ?? 0,
+            })) ?? [],
+        storageDepositDaily:
+            data.storageDepositDaily?.map((day) => ({
+                time: moment(day.time).add(1, "minute").unix(),
+                n: day.storageDeposit ?? 0,
             })) ?? [],
     };
 }

@@ -28,6 +28,8 @@ export const InfluxChartsTab: React.FC = () => {
         stakingActivityDaily,
         unlockConditionsPerTypeDaily,
         tokensHeldWithUnlockConditionDaily,
+        ledgerSize,
+        storageDeposit,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -248,6 +250,31 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Total"]}
                         colors={["#4140DF"]}
                         data={stakingActivityDaily}
+                    />
+                </div>
+            </div>
+            <div className="section">
+                <div className="section--header">
+                    <h2>Data Storage</h2>
+                    <Modal icon="info" data={graphMessages.dataStorage} />
+                </div>
+                <div className="row statistics-row">
+                    <StackedLineChart
+                        chartId={ids.next().value}
+                        title="Total Ledger Size"
+                        info={graphMessages.totalLedgerSize}
+                        subgroups={["keyBytes", "dataBytes"]}
+                        groupLabels={["Key bytes", "Data bytes"]}
+                        colors={["#00E0CA", "#36A1AC"]}
+                        data={ledgerSize}
+                    />
+                    <LineChart
+                        chartId={ids.next().value}
+                        title="Total Storage Deposit"
+                        info={graphMessages.totalStorageDeposit}
+                        label="Storage Deposit"
+                        color="#00F5DD"
+                        data={storageDeposit}
                     />
                 </div>
             </div>

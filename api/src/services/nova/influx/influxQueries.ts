@@ -363,3 +363,39 @@ export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const LEDGER_SIZE_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("total_key_bytes") AS "keyBytes",
+            last("total_data_bytes") AS "dataBytes"
+        FROM "iota_ledger_size"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("total_key_bytes") AS "keyBytes",
+            last("total_data_bytes") AS "dataBytes"
+        FROM "iota_ledger_size"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
+
+export const STORAGE_DEPOSIT_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("total_storage_deposit_amount") / 1000000 AS "storageDeposit"
+        FROM "iota_ledger_size"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("total_storage_deposit_amount") / 1000000 AS "storageDeposit"
+        FROM "iota_ledger_size"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

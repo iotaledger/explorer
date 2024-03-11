@@ -12,9 +12,11 @@ import {
     IDelegationsActivityDailyInflux,
     IDelegatorsActivityDailyInflux,
     IFoundryActivityDailyInflux,
+    ILedgerSizeDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
+    IStorageDepositDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux,
@@ -49,6 +51,8 @@ export interface IDailyAnalyticsResponse {
     stakingActivityDaily?: IStakingActivityDailyInflux[];
     unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];
     tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
+    ledgerSizeDaily?: ILedgerSizeDailyInflux[];
+    storageDepositDaily?: IStorageDepositDailyInflux[];
 }
 
 /**
@@ -89,6 +93,8 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               stakingActivityDaily: influxService.stakingActivityDaily,
               unlockConditionsPerTypeDaily: influxService.unlockConditionsPerTypeDaily,
               tokensHeldWithUnlockConditionDaily: influxService.tokensHeldWithUnlockConditionDaily,
+              ledgerSizeDaily: influxService.ledgerSizeDaily,
+              storageDepositDaily: influxService.storageDepositDaily,
           }
         : {
               error: "Influx service not found for this network.",
