@@ -4,6 +4,7 @@ import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
+    DELEGATION_ACTIVITY_DAILY_QUERY,
     FOUNDRY_ACTIVITY_DAILY_QUERY,
     NFT_ACTIVITY_DAILY_QUERY,
     OUTPUTS_DAILY_QUERY,
@@ -21,6 +22,7 @@ import {
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
+    IDelegationActivityDailyInflux,
     IFoundryActivityDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
@@ -95,6 +97,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.foundryActivityDaily);
     }
 
+    public get delegationActivityDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.delegationActivityDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -147,6 +153,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             FOUNDRY_ACTIVITY_DAILY_QUERY,
             this._dailyCache.foundryActivityDaily,
             "Foundry activity Daily",
+        );
+        this.updateCacheEntry<IDelegationActivityDailyInflux>(
+            DELEGATION_ACTIVITY_DAILY_QUERY,
+            this._dailyCache.delegationActivityDaily,
+            "Delegation activity Daily",
         );
     }
 }

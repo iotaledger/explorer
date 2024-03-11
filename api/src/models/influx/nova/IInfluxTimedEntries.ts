@@ -66,3 +66,9 @@ export type IFoundryActivityDailyInflux = ITimedEntry & {
     transferred: number | null;
     destroyed: number | null;
 };
+
+export type IDelegationActivityDailyInflux = ITimedEntry & {
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+};

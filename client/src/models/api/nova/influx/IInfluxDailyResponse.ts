@@ -77,6 +77,12 @@ interface IFoundryActivityDailyInflux {
     transferred: number | null;
     destroyed: number | null;
 }
+interface IDelegationActivityDailyInflux {
+    time: Date;
+    created: number | null;
+    transferred: number | null;
+    destroyed: number | null;
+}
 
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
@@ -90,4 +96,5 @@ export interface IInfluxDailyResponse extends IResponse {
     nftActivityDaily?: INftActivityDailyInflux[];
     accountActivityDaily?: IAccountActivityDailyInflux[];
     foundryActivityDaily?: IFoundryActivityDailyInflux[];
+    delegationActivityDaily?: IDelegationActivityDailyInflux[];
 }

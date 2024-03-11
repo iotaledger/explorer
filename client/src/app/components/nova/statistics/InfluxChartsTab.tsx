@@ -21,6 +21,7 @@ export const InfluxChartsTab: React.FC = () => {
         nftActivityDaily,
         accountActivityDaily,
         foundryActivityDaily,
+        delegationActivityDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -156,6 +157,17 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Created", "Transferred", "Destroyed"]}
                         colors={["#4140DF", "#00F5DD", "#36A1AC"]}
                         data={foundryActivityDaily}
+                    />
+                </div>
+                <div className="row statistics-row">
+                    <StackedBarChart
+                        chartId={ids.next().value}
+                        title="Daily Delegation Activity"
+                        info={graphMessages.dailyDelegationActivity}
+                        subgroups={["created", "transferred", "destroyed"]}
+                        groupLabels={["Created", "Transferred", "Destroyed"]}
+                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                        data={delegationActivityDaily}
                     />
                 </div>
             </div>

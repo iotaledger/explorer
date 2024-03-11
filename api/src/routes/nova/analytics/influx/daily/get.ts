@@ -35,6 +35,7 @@ export interface IDailyAnalyticsResponse {
     nftActivityDaily?: INftActivityDailyInflux[];
     accountActivityDaily?: IAccountActivityDailyInflux[];
     foundryActivityDaily?: IFoundryActivityDailyInflux[];
+    delegationActivityDaily?: IFoundryActivityDailyInflux[];
 }
 
 /**
@@ -68,6 +69,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               nftActivityDaily: influxService.nftActivityDaily,
               accountActivityDaily: influxService.accountActivityDaily,
               foundryActivityDaily: influxService.foundryActivityDaily,
+              delegationActivityDaily: influxService.delegationActivityDaily,
           }
         : {
               error: "Influx service not found for this network.",

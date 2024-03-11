@@ -159,7 +159,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#accounts",
                 "isExternal": true
             }
         ]
@@ -171,6 +171,17 @@
             {
                 "label": "Read more",
                 "href": "https://wiki.iota.org/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyDelegationActivity": {
+        "title": "Daily Delegation Activity",
+        "description": "<p>The daily activity over all Delegation outputs. It counts the network changes that involve Delegation outputs and group them by their nature: how many Delegation outputs were created and destroyed, and how many times had they change hands.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#delegation",
                 "isExternal": true
             }
         ]

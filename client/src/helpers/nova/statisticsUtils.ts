@@ -13,6 +13,7 @@ export interface IStatisticsGraphsData {
     nftActivityDaily: DataPoint[];
     accountActivityDaily: DataPoint[];
     foundryActivityDaily: DataPoint[];
+    delegationActivityDaily: DataPoint[];
 }
 
 export interface DataPoint {
@@ -100,6 +101,13 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
             })) ?? [],
         foundryActivityDaily:
             data.foundryActivityDaily?.map((day) => ({
+                time: moment(day.time).add(1, "minute").unix(),
+                created: day.created ?? 0,
+                transferred: day.transferred ?? 0,
+                destroyed: day.destroyed ?? 0,
+            })) ?? [],
+        delegationActivityDaily:
+            data.delegationActivityDaily?.map((day) => ({
                 time: moment(day.time).add(1, "minute").unix(),
                 created: day.created ?? 0,
                 transferred: day.transferred ?? 0,
