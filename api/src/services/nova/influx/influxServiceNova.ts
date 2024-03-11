@@ -12,6 +12,7 @@ import {
     TOKENS_TRANSFERRED_DAILY_QUERY,
     TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
     TRANSACTION_DAILY_QUERY,
+    VALIDATORS_ACTIVITY_DAILY_QUERY,
 } from "./influxQueries";
 import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
@@ -29,6 +30,7 @@ import {
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
+    IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { InfluxDbClient } from "../../influx/influxClient";
 
@@ -101,6 +103,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.delegationActivityDaily);
     }
 
+    public get validatorsActivityDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.validatorsActivityDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -158,6 +164,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             DELEGATION_ACTIVITY_DAILY_QUERY,
             this._dailyCache.delegationActivityDaily,
             "Delegation activity Daily",
+        );
+        this.updateCacheEntry<IValidatorsActivityDailyInflux>(
+            VALIDATORS_ACTIVITY_DAILY_QUERY,
+            this._dailyCache.validatorsActivityDaily,
+            "Validators activity Daily",
         );
     }
 }

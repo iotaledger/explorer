@@ -11,6 +11,7 @@ import {
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
+    IValidatorsActivityDailyInflux,
 } from "./IInfluxTimedEntries";
 import { DayKey } from "../types";
 
@@ -30,6 +31,7 @@ export interface IInfluxDailyCache {
     accountActivityDaily: Map<DayKey, IAccountActivityDailyInflux>;
     foundryActivityDaily: Map<DayKey, IFoundryActivityDailyInflux>;
     delegationActivityDaily: Map<DayKey, IDelegationActivityDailyInflux>;
+    validatorsActivityDaily: Map<DayKey, IValidatorsActivityDailyInflux>;
 }
 
 /**
@@ -49,4 +51,5 @@ export const initializeEmptyDailyCache = () => ({
     accountActivityDaily: new Map(),
     foundryActivityDaily: new Map(),
     delegationActivityDaily: new Map(),
+    validatorsActivityDaily: new Map(),
 });

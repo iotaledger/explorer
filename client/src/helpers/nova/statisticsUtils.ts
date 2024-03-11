@@ -14,6 +14,7 @@ export interface IStatisticsGraphsData {
     accountActivityDaily: DataPoint[];
     foundryActivityDaily: DataPoint[];
     delegationActivityDaily: DataPoint[];
+    validatorsActivityDaily: DataPoint[];
 }
 
 export interface DataPoint {
@@ -112,6 +113,12 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
                 created: day.created ?? 0,
                 transferred: day.transferred ?? 0,
                 destroyed: day.destroyed ?? 0,
+            })) ?? [],
+        validatorsActivityDaily:
+            data.validatorsActivityDaily?.map((day) => ({
+                time: moment(day.time).add(1, "minute").unix(),
+                candidates: day.candidates ?? 0,
+                total: day.total ?? 0,
             })) ?? [],
     };
 }

@@ -83,6 +83,11 @@ interface IDelegationActivityDailyInflux {
     transferred: number | null;
     destroyed: number | null;
 }
+interface IValidatorsActivityDailyInflux {
+    time: Date;
+    candidates: number | null;
+    total: number | null;
+}
 
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
@@ -97,4 +102,5 @@ export interface IInfluxDailyResponse extends IResponse {
     accountActivityDaily?: IAccountActivityDailyInflux[];
     foundryActivityDaily?: IFoundryActivityDailyInflux[];
     delegationActivityDaily?: IDelegationActivityDailyInflux[];
+    validatorsActivityDaily?: IValidatorsActivityDailyInflux[];
 }

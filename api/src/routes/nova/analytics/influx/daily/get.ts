@@ -8,12 +8,14 @@ import {
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
+    IDelegationActivityDailyInflux,
     IFoundryActivityDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
+    IValidatorsActivityDailyInflux,
 } from "../../../../../models/influx/nova/IInfluxTimedEntries";
 import { NetworkService } from "../../../../../services/networkService";
 import { InfluxServiceNova } from "../../../../../services/nova/influx/influxServiceNova";
@@ -35,7 +37,8 @@ export interface IDailyAnalyticsResponse {
     nftActivityDaily?: INftActivityDailyInflux[];
     accountActivityDaily?: IAccountActivityDailyInflux[];
     foundryActivityDaily?: IFoundryActivityDailyInflux[];
-    delegationActivityDaily?: IFoundryActivityDailyInflux[];
+    delegationActivityDaily?: IDelegationActivityDailyInflux[];
+    validatorsActivityDaily?: IValidatorsActivityDailyInflux[];
 }
 
 /**
@@ -70,6 +73,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               accountActivityDaily: influxService.accountActivityDaily,
               foundryActivityDaily: influxService.foundryActivityDaily,
               delegationActivityDaily: influxService.delegationActivityDaily,
+              validatorsActivityDaily: influxService.validatorsActivityDaily,
           }
         : {
               error: "Influx service not found for this network.",

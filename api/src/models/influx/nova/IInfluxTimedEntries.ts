@@ -72,3 +72,8 @@ export type IDelegationActivityDailyInflux = ITimedEntry & {
     transferred: number | null;
     destroyed: number | null;
 };
+
+export type IValidatorsActivityDailyInflux = ITimedEntry & {
+    candidates: number | null;
+    total: number | null;
+};

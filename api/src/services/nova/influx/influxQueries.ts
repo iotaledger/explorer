@@ -251,3 +251,22 @@ export const DELEGATION_ACTIVITY_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const VALIDATORS_ACTIVITY_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("validators_candidates_count") AS "candidates",
+            sum("validators_total_count") AS "total",
+        FROM "iota_output_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("validators_candidates_count") AS "candidates",
+            sum("validators_total_count") AS "total",
+        FROM "iota_output_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
