@@ -53,6 +53,16 @@ export interface IInfluxDailyCache {
 }
 
 /**
+ * The cache for influx analytics.
+ */
+export interface IInfluxAnalyticsCache {
+    addressesWithBalance?: string;
+    nativeTokensCount?: string;
+    nftsCount?: string;
+    lockedStorageDeposit?: string;
+}
+
+/**
  * The helper to initialize empty maps
  * @returns The initial cache object
  */

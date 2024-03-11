@@ -48,6 +48,7 @@ import { IEpochCommitteeRequest } from "~/models/api/nova/IEpochCommitteeRequest
 import { IEpochCommitteeResponse } from "~/models/api/nova/IEpochCommitteeResponse";
 import { IInfluxDailyResponse } from "~/models/api/nova/influx/IInfluxDailyResponse";
 import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMetadataResponse";
+import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 
 /**
  * Class to handle api communications on nova.
@@ -324,5 +325,14 @@ export class NovaApiClient extends ApiClient {
      */
     public async influxAnalytics(request: { network: string }): Promise<IInfluxDailyResponse> {
         return this.callApi<unknown, IInfluxDailyResponse>(`nova/analytics/daily/${request.network}`, "get");
+    }
+
+    /**
+     * Get the chronicle analytic stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async chronicleAnalytics(request: INetworkBoundGetRequest): Promise<IAnalyticStats> {
+        return this.callApi<unknown, IAnalyticStats>(`nova/analytics/${request.network}`, "get");
     }
 }

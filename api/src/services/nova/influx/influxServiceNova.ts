@@ -2,6 +2,7 @@ import { InfluxDB } from "influx";
 import {
     ACCOUNT_ACTIVITY_DAILY_QUERY,
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
+    ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
     BLOCK_ISSUERS_DAILY_QUERY,
@@ -11,10 +12,13 @@ import {
     FOUNDRY_ACTIVITY_DAILY_QUERY,
     LEDGER_SIZE_DAILY_QUERY,
     MANA_BURN_DAILY_QUERY,
+    NATIVE_TOKENS_STAT_TOTAL_QUERY,
     NFT_ACTIVITY_DAILY_QUERY,
+    NFT_STAT_TOTAL_QUERY,
     OUTPUTS_DAILY_QUERY,
     STAKING_ACTIVITY_DAILY_QUERY,
     STORAGE_DEPOSIT_DAILY_QUERY,
+    STORAGE_DEPOSIT_TOTAL_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
     TOKENS_HELD_WITH_UC_DAILY_QUERY,
     TOKENS_TRANSFERRED_DAILY_QUERY,
@@ -25,7 +29,7 @@ import {
 } from "./influxQueries";
 import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
-import { IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
+import { IInfluxAnalyticsCache, IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
 import {
     IAccountActivityDailyInflux,
     IActiveAddressesDailyInflux,
@@ -50,6 +54,7 @@ import {
     IUnlockConditionsPerTypeDailyInflux,
     IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
+import { ITimedEntry } from "../../../models/influx/types";
 import { InfluxDbClient } from "../../influx/influxClient";
 
 export class InfluxServiceNova extends InfluxDbClient {
@@ -64,6 +69,11 @@ export class InfluxServiceNova extends InfluxDbClient {
     protected readonly _dailyCache: IInfluxDailyCache;
 
     /**
+     * The current influx analytics cache instance.
+     */
+    protected readonly _analyticsCache: IInfluxAnalyticsCache;
+
+    /**
      * The network in context for this client.
      */
     protected readonly _network: INetwork;
@@ -71,6 +81,7 @@ export class InfluxServiceNova extends InfluxDbClient {
     constructor(network: INetwork) {
         super(network);
         this._dailyCache = initializeEmptyDailyCache();
+        this._analyticsCache = {};
     }
 
     public get blocksDaily() {
@@ -161,12 +172,30 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.manaBurnedDaily);
     }
 
+    public get addressesWithBalance() {
+        return this._analyticsCache.addressesWithBalance;
+    }
+
+    public get nativeTokensCount() {
+        return this._analyticsCache.nativeTokensCount;
+    }
+
+    public get nftsCount() {
+        return this._analyticsCache.nftsCount;
+    }
+
+    public get lockedStorageDeposit() {
+        return this._analyticsCache.lockedStorageDeposit;
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
 
         // eslint-disable-next-line no-void
         void this.collectGraphsDaily();
+        // eslint-disable-next-line no-void
+        void this.collectAnalytics();
     }
 
     /**
@@ -261,5 +290,48 @@ export class InfluxServiceNova extends InfluxDbClient {
             "Storage Deposit Daily",
         );
         this.updateCacheEntry<IManaBurnedDailyInflux>(MANA_BURN_DAILY_QUERY, this._dailyCache.manaBurnedDaily, "Mana Burned Daily");
+    }
+
+    /**
+     * Performs the InfluxDb analytics data collection.
+     * Populates the analyticsCache.
+     */
+    private async collectAnalytics() {
+        logger.verbose(`[InfluxNova] Collecting analytic stats for "${this._network.network}"`);
+        try {
+            for (const update of await this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
+                ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
+                null,
+                this.getToNanoDate(),
+            )) {
+                this._analyticsCache.addressesWithBalance = update.addressesWithBalance;
+            }
+
+            for (const update of await this.queryInflux<ITimedEntry & { nativeTokensCount: string }>(
+                NATIVE_TOKENS_STAT_TOTAL_QUERY,
+                null,
+                this.getToNanoDate(),
+            )) {
+                this._analyticsCache.nativeTokensCount = update.nativeTokensCount;
+            }
+
+            for (const update of await this.queryInflux<ITimedEntry & { nftsCount: string }>(
+                NFT_STAT_TOTAL_QUERY,
+                null,
+                this.getToNanoDate(),
+            )) {
+                this._analyticsCache.nftsCount = update.nftsCount;
+            }
+
+            for (const update of await this.queryInflux<ITimedEntry & { lockedStorageDeposit: string }>(
+                STORAGE_DEPOSIT_TOTAL_QUERY,
+                null,
+                this.getToNanoDate(),
+            )) {
+                this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
+            }
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing analytics for "${this._network.network}"! Cause: ${err}`);
+        }
     }
 }
