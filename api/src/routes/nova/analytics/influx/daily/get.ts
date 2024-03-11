@@ -9,6 +9,7 @@ import {
     IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
     IDelegationActivityDailyInflux,
+    IDelegationsActivityDailyInflux,
     IDelegatorsActivityDailyInflux,
     IFoundryActivityDailyInflux,
     INftActivityDailyInflux,
@@ -41,6 +42,7 @@ export interface IDailyAnalyticsResponse {
     delegationActivityDaily?: IDelegationActivityDailyInflux[];
     validatorsActivityDaily?: IValidatorsActivityDailyInflux[];
     delegatorsActivityDaily?: IDelegatorsActivityDailyInflux[];
+    delegationsActivityDaily?: IDelegationsActivityDailyInflux[];
 }
 
 /**
@@ -77,6 +79,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               delegationActivityDaily: influxService.delegationActivityDaily,
               validatorsActivityDaily: influxService.validatorsActivityDaily,
               delegatorsActivityDaily: influxService.delegatorsActivityDaily,
+              delegationsActivityDaily: influxService.delegationsActivityDaily,
           }
         : {
               error: "Influx service not found for this network.",

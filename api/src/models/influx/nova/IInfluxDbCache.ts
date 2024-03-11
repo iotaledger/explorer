@@ -5,6 +5,7 @@ import {
     IAnchorActivityDailyInflux,
     IBlocksDailyInflux,
     IDelegationActivityDailyInflux,
+    IDelegationsActivityDailyInflux,
     IDelegatorsActivityDailyInflux,
     IFoundryActivityDailyInflux,
     INftActivityDailyInflux,
@@ -34,6 +35,7 @@ export interface IInfluxDailyCache {
     delegationActivityDaily: Map<DayKey, IDelegationActivityDailyInflux>;
     validatorsActivityDaily: Map<DayKey, IValidatorsActivityDailyInflux>;
     delegatorsActivityDaily: Map<DayKey, IDelegatorsActivityDailyInflux>;
+    delegationsActivityDaily: Map<DayKey, IDelegationsActivityDailyInflux>;
 }
 
 /**
@@ -55,4 +57,5 @@ export const initializeEmptyDailyCache = () => ({
     delegationActivityDaily: new Map(),
     validatorsActivityDaily: new Map(),
     delegatorsActivityDaily: new Map(),
+    delegationsActivityDaily: new Map(),
 });

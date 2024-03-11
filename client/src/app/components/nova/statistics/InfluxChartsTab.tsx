@@ -24,6 +24,7 @@ export const InfluxChartsTab: React.FC = () => {
         delegationActivityDaily,
         validatorsActivityDaily,
         delegatorsActivityDaily,
+        delegationsActivityDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -171,15 +172,6 @@ export const InfluxChartsTab: React.FC = () => {
                         colors={["#4140DF", "#00F5DD", "#36A1AC"]}
                         data={delegationActivityDaily}
                     />
-                    <StackedBarChart
-                        chartId={ids.next().value}
-                        title="Daily Validators Activity"
-                        info={graphMessages.dailyValidatorsActivity}
-                        subgroups={["candidates", "total"]}
-                        groupLabels={["Candidates", "Total"]}
-                        colors={["#4140DF", "#00F5DD"]}
-                        data={validatorsActivityDaily}
-                    />
                 </div>
             </div>
             <div className="section">
@@ -205,6 +197,17 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Total"]}
                         colors={["#4140DF"]}
                         data={delegatorsActivityDaily}
+                    />
+                </div>
+                <div className="row statistics-row">
+                    <StackedBarChart
+                        chartId={ids.next().value}
+                        title="Daily Delegations Activity"
+                        info={graphMessages.dailyDelegationActivity}
+                        subgroups={["total"]}
+                        groupLabels={["Total"]}
+                        colors={["#4140DF", "#00F5DD"]}
+                        data={delegationsActivityDaily}
                     />
                 </div>
             </div>
