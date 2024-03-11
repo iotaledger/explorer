@@ -31,6 +31,7 @@ export const InfluxChartsTab: React.FC = () => {
         tokensHeldWithUnlockConditionDaily,
         ledgerSize,
         storageDeposit,
+        manaBurnedDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -287,6 +288,23 @@ export const InfluxChartsTab: React.FC = () => {
                         label="Storage Deposit"
                         color="#00F5DD"
                         data={storageDeposit}
+                    />
+                </div>
+            </div>
+            <div className="section">
+                <div className="section--header">
+                    <h2>Mana</h2>
+                    <Modal icon="info" data={graphMessages.dataStorage} />
+                </div>
+                <div className="row statistics-row">
+                    <StackedLineChart
+                        chartId={ids.next().value}
+                        title="Mana Burned Daily"
+                        info={graphMessages.manaBurned}
+                        subgroups={["blockCost", "manual"]}
+                        groupLabels={["Block Cost", "Manual"]}
+                        colors={["#00E0CA", "#36A1AC"]}
+                        data={manaBurnedDaily}
                     />
                 </div>
             </div>

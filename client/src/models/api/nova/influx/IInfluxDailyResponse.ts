@@ -133,6 +133,12 @@ interface IStorageDepositDailyInflux {
     storageDeposit: number | null;
 }
 
+interface IManaBurnedDailyInflux {
+    time: Date;
+    blockCost: number | null;
+    manual: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     blockIssuersDaily?: IBlockIssuersDailyInflux[];
@@ -155,4 +161,5 @@ export interface IInfluxDailyResponse extends IResponse {
     tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
     ledgerSizeDaily?: ILedgerSizeDailyInflux[];
     storageDepositDaily?: IStorageDepositDailyInflux[];
+    manaBurnedDaily?: IManaBurnedDailyInflux[];
 }

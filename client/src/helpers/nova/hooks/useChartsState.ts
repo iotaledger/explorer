@@ -31,6 +31,7 @@ export function useChartsState(): {
     tokensHeldWithUnlockConditionDaily: DataPoint[];
     ledgerSize: DataPoint[];
     storageDeposit: DataPoint[];
+    manaBurnedDaily: DataPoint[];
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
@@ -55,6 +56,7 @@ export function useChartsState(): {
     const [tokensHeldWithUnlockConditionDaily, setTokensHeldWithUnlockConditionDaily] = useState<DataPoint[]>([]);
     const [ledgerSize, setLedgerSize] = useState<DataPoint[]>([]);
     const [storageDeposit, setStorageDeposit] = useState<DataPoint[]>([]);
+    const [manaBurnedDaily, setManaBurnedDaily] = useState<DataPoint[]>([]);
 
     useEffect(() => {
         apiClient
@@ -84,6 +86,7 @@ export function useChartsState(): {
                     setTokensHeldWithUnlockConditionDaily(graphsData.tokensHeldWithUnlockConditionDaily);
                     setLedgerSize(graphsData.ledgerSizeDaily);
                     setStorageDeposit(graphsData.storageDepositDaily);
+                    setManaBurnedDaily(graphsData.manaBurnedDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
                 }
@@ -113,5 +116,6 @@ export function useChartsState(): {
         tokensHeldWithUnlockConditionDaily,
         ledgerSize,
         storageDeposit,
+        manaBurnedDaily,
     };
 }

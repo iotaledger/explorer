@@ -115,3 +115,8 @@ export type ILedgerSizeDailyInflux = ITimedEntry & {
 export type IStorageDepositDailyInflux = ITimedEntry & {
     storageDeposit: number | null;
 };
+
+export type IManaBurnedDailyInflux = ITimedEntry & {
+    blockCost: number | null;
+    manual: number | null;
+};

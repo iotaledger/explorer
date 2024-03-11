@@ -418,3 +418,22 @@ export const STORAGE_DEPOSIT_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const MANA_BURN_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("block_cost") AS "blockCost",
+            last("manual") AS "manual"
+        FROM "iota_mana_ledger"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("block_cost") AS "blockCost",
+            last("manual") AS "manual"
+        FROM "iota_mana_ledger"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

@@ -263,39 +263,6 @@
             }
         ]
     },
-    "genesis": {
-        "title": "Genesis",
-        "description": "<p>Genesis was the initial distribution of the tokens on the Shimmer network. It includes the rewards from the staking on the IOTA network which happened before the Shimmer launch.</p>",
-        "links": [
-            {
-                "label": "Read more",
-                "href": "https://blog.shimmer.network/shimmer-network-and-token-launch",
-                "isExternal": true
-            }
-        ]
-    },
-    "totalUnclaimedTokens": {
-        "title": "Total Unclaimed Tokens",
-        "description": "<p>The total amount of tokens that are locked behind the unclaimed outputs that were created by the Genesis transaction. Once a token owner issues a transaction that consumes one of these outputs, we count these tokens as claimed.</p>",
-        "links": [
-            {
-                "label": "Read more",
-                "href": "https://blog.shimmer.network/how-to-claim-smr-firefly",
-                "isExternal": true
-            }
-        ]
-    },
-    "totalUnclaimedOutputs": {
-        "title": "Total Unclaimed Outputs",
-        "description": "<p>The total amount of unclaimed outputs that were created by the Genesis transaction. Once a token owner issues a transaction that consumes one of these outputs, we count that output as claimed.</p>",
-        "links": [
-            {
-                "label": "Read more",
-                "href": "https://blog.shimmer.network/how-to-claim-smr-firefly",
-                "isExternal": true
-            }
-        ]
-    },
     "dataStorage": {
         "title": "Data Storage",
         "description": "<p>The statistics about the data storage on the network. The total storage is limited, but the more base tokens an output has, the more information it can store. This is called the storage deposit.</p>",
@@ -318,6 +285,17 @@
             {
                 "label": "Read more",
                 "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "isExternal": true
+            }
+        ]
+    },
+    "manaBurned": {
+        "title": "Mana Burned",
+        "description": "<p>The total amount of base tokens that are locked as the storage deposit.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#mana",
                 "isExternal": true
             }
         ]

@@ -10,6 +10,7 @@ import {
     DELEGATORS_ACTIVITY_DAILY_QUERY,
     FOUNDRY_ACTIVITY_DAILY_QUERY,
     LEDGER_SIZE_DAILY_QUERY,
+    MANA_BURN_DAILY_QUERY,
     NFT_ACTIVITY_DAILY_QUERY,
     OUTPUTS_DAILY_QUERY,
     STAKING_ACTIVITY_DAILY_QUERY,
@@ -37,6 +38,7 @@ import {
     IDelegatorsActivityDailyInflux,
     IFoundryActivityDailyInflux,
     ILedgerSizeDailyInflux,
+    IManaBurnedDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
@@ -155,6 +157,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.storageDepositDaily);
     }
 
+    public get manaBurnedDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.manaBurnedDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -254,5 +260,6 @@ export class InfluxServiceNova extends InfluxDbClient {
             this._dailyCache.storageDepositDaily,
             "Storage Deposit Daily",
         );
+        this.updateCacheEntry<IManaBurnedDailyInflux>(MANA_BURN_DAILY_QUERY, this._dailyCache.manaBurnedDaily, "Mana Burned Daily");
     }
 }
