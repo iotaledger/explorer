@@ -234,18 +234,18 @@ export const FOUNDRY_ACTIVITY_DAILY_QUERY = {
 export const DELEGATION_ACTIVITY_DAILY_QUERY = {
     full: `
         SELECT
-            sum("foundry_created_count") AS "created",
-            sum("foundry_transferred_count") AS "transferred",
-            sum("foundry_destroyed_count") AS "destroyed"
+            sum("delegation_created_count") AS "created",
+            sum("delegation_transferred_count") AS "transferred",
+            sum("delegation_destroyed_count") AS "destroyed"
         FROM "iota_output_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            sum("foundry_created_count") AS "created",
-            sum("foundry_transferred_count") AS "transferred",
-            sum("foundry_destroyed_count") AS "destroyed"
+            sum("delegation_created_count") AS "created",
+            sum("delegation_transferred_count") AS "transferred",
+            sum("delegation_destroyed_count") AS "destroyed"
         FROM "iota_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
