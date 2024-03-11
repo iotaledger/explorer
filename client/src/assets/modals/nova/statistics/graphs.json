@@ -192,7 +192,18 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/learn/smart-contracts/validators/",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/validators/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyDelegatorsActivity": {
+        "title": "Daily Delegators Activity",
+        "description": "<p>The daily activity over all Delegators. It counts the total number of delegators.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#staking-and-delegation-1",
                 "isExternal": true
             }
         ]

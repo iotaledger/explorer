@@ -23,6 +23,7 @@ export function useChartsState(): {
     foundryActivityDaily: DataPoint[];
     delegationActivityDaily: DataPoint[];
     validatorsActivityDaily: DataPoint[];
+    delegatorsActivityDaily: DataPoint[];
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
@@ -39,6 +40,7 @@ export function useChartsState(): {
     const [foundryActivityDaily, setFoundryActivityDaily] = useState<DataPoint[]>([]);
     const [delegationActivityDaily, setDelegationActivityDaily] = useState<DataPoint[]>([]);
     const [validatorsActivityDaily, setValidatorsActivityDaily] = useState<DataPoint[]>([]);
+    const [delegatorsActivityDaily, setDelegatorsActivityDaily] = useState<DataPoint[]>([]);
 
     useEffect(() => {
         apiClient
@@ -60,6 +62,7 @@ export function useChartsState(): {
                     setFoundryActivityDaily(graphsData.foundryActivityDaily);
                     setDelegationActivityDaily(graphsData.delegationActivityDaily);
                     setValidatorsActivityDaily(graphsData.validatorsActivityDaily);
+                    setDelegatorsActivityDaily(graphsData.delegatorsActivityDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
                 }
@@ -81,5 +84,6 @@ export function useChartsState(): {
         foundryActivityDaily,
         delegationActivityDaily,
         validatorsActivityDaily,
+        delegatorsActivityDaily,
     };
 }

@@ -77,3 +77,7 @@ export type IValidatorsActivityDailyInflux = ITimedEntry & {
     candidates: number | null;
     total: number | null;
 };
+
+export type IDelegatorsActivityDailyInflux = ITimedEntry & {
+    total: number | null;
+};
