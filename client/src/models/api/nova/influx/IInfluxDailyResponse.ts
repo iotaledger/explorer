@@ -102,6 +102,13 @@ interface IStakingActivityDailyInflux {
     total: number | null;
 }
 
+interface ITokensHeldWithUnlockConditionDailyInflux {
+    time: Date;
+    timelock: number | null;
+    storageDepositReturn: number | null;
+    expiration: number | null;
+}
+
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
@@ -119,4 +126,5 @@ export interface IInfluxDailyResponse extends IResponse {
     delegatorsActivityDaily?: IDelegatorsActivityDailyInflux[];
     delegationsActivityDaily?: IDelegationsActivityDailyInflux[];
     stakingActivityDaily?: IStakingActivityDailyInflux[];
+    tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
 }

@@ -26,6 +26,7 @@ export function useChartsState(): {
     delegatorsActivityDaily: DataPoint[];
     delegationsActivityDaily: DataPoint[];
     stakingActivityDaily: DataPoint[];
+    tokensHeldWithUnlockConditionDaily: DataPoint[];
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
@@ -45,6 +46,7 @@ export function useChartsState(): {
     const [delegatorsActivityDaily, setDelegatorsActivityDaily] = useState<DataPoint[]>([]);
     const [delegationsActivityDaily, setDelegationsActivityDaily] = useState<DataPoint[]>([]);
     const [stakingActivityDaily, setStakingActivityDaily] = useState<DataPoint[]>([]);
+    const [tokensHeldWithUnlockConditionDaily, setTokensHeldWithUnlockConditionDaily] = useState<DataPoint[]>([]);
 
     useEffect(() => {
         apiClient
@@ -69,6 +71,7 @@ export function useChartsState(): {
                     setDelegatorsActivityDaily(graphsData.delegatorsActivityDaily);
                     setDelegationsActivityDaily(graphsData.delegationsActivityDaily);
                     setStakingActivityDaily(graphsData.stakingActivityDaily);
+                    setTokensHeldWithUnlockConditionDaily(graphsData.tokensHeldWithUnlockConditionDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
                 }
@@ -93,5 +96,6 @@ export function useChartsState(): {
         delegatorsActivityDaily,
         delegationsActivityDaily,
         stakingActivityDaily,
+        tokensHeldWithUnlockConditionDaily,
     };
 }
