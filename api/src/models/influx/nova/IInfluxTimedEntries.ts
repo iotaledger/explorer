@@ -85,3 +85,7 @@ export type IDelegatorsActivityDailyInflux = ITimedEntry & {
 export type IDelegationsActivityDailyInflux = ITimedEntry & {
     total: number | null;
 };
+
+export type IStakingActivityDailyInflux = ITimedEntry & {
+    total: number | null;
+};

@@ -14,6 +14,7 @@ import {
     IFoundryActivityDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
+    IStakingActivityDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
@@ -43,6 +44,7 @@ export interface IDailyAnalyticsResponse {
     validatorsActivityDaily?: IValidatorsActivityDailyInflux[];
     delegatorsActivityDaily?: IDelegatorsActivityDailyInflux[];
     delegationsActivityDaily?: IDelegationsActivityDailyInflux[];
+    stakingActivityDaily?: IStakingActivityDailyInflux[];
 }
 
 /**
@@ -80,6 +82,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               validatorsActivityDaily: influxService.validatorsActivityDaily,
               delegatorsActivityDaily: influxService.delegatorsActivityDaily,
               delegationsActivityDaily: influxService.delegationsActivityDaily,
+              stakingActivityDaily: influxService.stakingActivityDaily,
           }
         : {
               error: "Influx service not found for this network.",

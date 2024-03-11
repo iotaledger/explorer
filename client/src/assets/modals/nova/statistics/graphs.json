@@ -208,6 +208,17 @@
             }
         ]
     },
+    "dailyStakingActivity": {
+        "title": "Daily Staking Activity",
+        "description": "<p>The daily total Staked amount.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#staking-and-delegation-1",
+                "isExternal": true
+            }
+        ]
+    },
     "unlockConditions": {
         "title": "Unlock Conditions",
         "description": "<p>Outputs can limit access to their associated tokens through unlock conditions. They are commonly used to relieve the old storage deposit with the tokens of the new owner, or to limit the output by the time when it is should be claimed.</p>",

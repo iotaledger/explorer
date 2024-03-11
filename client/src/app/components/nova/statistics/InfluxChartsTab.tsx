@@ -25,6 +25,7 @@ export const InfluxChartsTab: React.FC = () => {
         validatorsActivityDaily,
         delegatorsActivityDaily,
         delegationsActivityDaily,
+        stakingActivityDaily,
     } = useChartsState();
 
     const ids = idGenerator();
@@ -206,8 +207,17 @@ export const InfluxChartsTab: React.FC = () => {
                         info={graphMessages.dailyDelegationActivity}
                         subgroups={["total"]}
                         groupLabels={["Total"]}
-                        colors={["#4140DF", "#00F5DD"]}
+                        colors={["#4140DF"]}
                         data={delegationsActivityDaily}
+                    />
+                    <StackedBarChart
+                        chartId={ids.next().value}
+                        title="Daily Staking Activity"
+                        info={graphMessages.dailyStakingActivity}
+                        subgroups={["total"]}
+                        groupLabels={["Total"]}
+                        colors={["#4140DF"]}
+                        data={stakingActivityDaily}
                     />
                 </div>
             </div>

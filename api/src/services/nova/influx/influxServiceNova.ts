@@ -10,6 +10,7 @@ import {
     FOUNDRY_ACTIVITY_DAILY_QUERY,
     NFT_ACTIVITY_DAILY_QUERY,
     OUTPUTS_DAILY_QUERY,
+    STAKING_ACTIVITY_DAILY_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
     TOKENS_TRANSFERRED_DAILY_QUERY,
     TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
@@ -31,6 +32,7 @@ import {
     IFoundryActivityDailyInflux,
     INftActivityDailyInflux,
     IOutputsDailyInflux,
+    IStakingActivityDailyInflux,
     ITokensHeldPerOutputDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
@@ -119,6 +121,10 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.delegationsActivityDaily);
     }
 
+    public get stakingActivityDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.stakingActivityDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -191,6 +197,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             DELEGATIONS_ACTIVITY_DAILY_QUERY,
             this._dailyCache.delegationsActivityDaily,
             "Delegations activity Daily",
+        );
+        this.updateCacheEntry<IStakingActivityDailyInflux>(
+            STAKING_ACTIVITY_DAILY_QUERY,
+            this._dailyCache.stakingActivityDaily,
+            "Staking activity Daily",
         );
     }
 }
