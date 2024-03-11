@@ -12,9 +12,11 @@ import {
     OUTPUTS_DAILY_QUERY,
     STAKING_ACTIVITY_DAILY_QUERY,
     TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY,
+    TOKENS_HELD_WITH_UC_DAILY_QUERY,
     TOKENS_TRANSFERRED_DAILY_QUERY,
     TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY,
     TRANSACTION_DAILY_QUERY,
+    UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
     VALIDATORS_ACTIVITY_DAILY_QUERY,
 } from "./influxQueries";
 import logger from "../../../logger";
@@ -34,8 +36,10 @@ import {
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
     ITokensHeldPerOutputDailyInflux,
+    ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
+    IUnlockConditionsPerTypeDailyInflux,
     IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { InfluxDbClient } from "../../influx/influxClient";
@@ -125,6 +129,14 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.stakingActivityDaily);
     }
 
+    public get unlockConditionsPerTypeDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.unlockConditionsPerTypeDaily);
+    }
+
+    public get tokensHeldWithUnlockConditionDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.tokensHeldWithUnlockConditionDaily);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -202,6 +214,16 @@ export class InfluxServiceNova extends InfluxDbClient {
             STAKING_ACTIVITY_DAILY_QUERY,
             this._dailyCache.stakingActivityDaily,
             "Staking activity Daily",
+        );
+        this.updateCacheEntry<IUnlockConditionsPerTypeDailyInflux>(
+            UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
+            this._dailyCache.unlockConditionsPerTypeDaily,
+            "Unlock conditions per type Daily",
+        );
+        this.updateCacheEntry<ITokensHeldWithUnlockConditionDailyInflux>(
+            TOKENS_HELD_WITH_UC_DAILY_QUERY,
+            this._dailyCache.tokensHeldWithUnlockConditionDaily,
+            "Tokens held with Unlock condition Daily",
         );
     }
 }

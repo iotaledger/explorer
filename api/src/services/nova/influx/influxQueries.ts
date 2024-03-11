@@ -321,3 +321,45 @@ export const STAKING_ACTIVITY_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("timelock_count") AS "timelock",
+            last("storage_deposit_return_count") AS "storageDepositReturn",
+            last("expiration_count") AS "expiration"
+        FROM "iota_unlock_conditions"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("timelock_count") AS "timelock",
+            last("storage_deposit_return_count") AS "storageDepositReturn",
+            last("expiration_count") AS "expiration"
+        FROM "iota_unlock_conditions"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
+
+export const TOKENS_HELD_WITH_UC_DAILY_QUERY = {
+    full: `
+        SELECT
+            last("timelock_amount") / 1000000 AS "timelock",
+            last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
+            last("expiration_amount") / 1000000 AS "expiration"
+        FROM "iota_unlock_conditions"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            last("timelock_amount") / 1000000 AS "timelock",
+            last("storage_deposit_return_amount") / 1000000 AS "storageDepositReturn",
+            last("expiration_amount") / 1000000 AS "expiration"
+        FROM "iota_unlock_conditions"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};

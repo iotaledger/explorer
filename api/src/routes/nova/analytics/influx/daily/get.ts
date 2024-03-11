@@ -16,8 +16,10 @@ import {
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
     ITokensHeldPerOutputDailyInflux,
+    ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
+    IUnlockConditionsPerTypeDailyInflux,
     IValidatorsActivityDailyInflux,
 } from "../../../../../models/influx/nova/IInfluxTimedEntries";
 import { NetworkService } from "../../../../../services/networkService";
@@ -45,6 +47,8 @@ export interface IDailyAnalyticsResponse {
     delegatorsActivityDaily?: IDelegatorsActivityDailyInflux[];
     delegationsActivityDaily?: IDelegationsActivityDailyInflux[];
     stakingActivityDaily?: IStakingActivityDailyInflux[];
+    unlockConditionsPerTypeDaily?: IUnlockConditionsPerTypeDailyInflux[];
+    tokensHeldWithUnlockConditionDaily?: ITokensHeldWithUnlockConditionDailyInflux[];
 }
 
 /**
@@ -83,6 +87,8 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               delegatorsActivityDaily: influxService.delegatorsActivityDaily,
               delegationsActivityDaily: influxService.delegationsActivityDaily,
               stakingActivityDaily: influxService.stakingActivityDaily,
+              unlockConditionsPerTypeDaily: influxService.unlockConditionsPerTypeDaily,
+              tokensHeldWithUnlockConditionDaily: influxService.tokensHeldWithUnlockConditionDaily,
           }
         : {
               error: "Influx service not found for this network.",

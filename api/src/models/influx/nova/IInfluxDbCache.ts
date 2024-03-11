@@ -12,8 +12,10 @@ import {
     IOutputsDailyInflux,
     IStakingActivityDailyInflux,
     ITokensHeldPerOutputDailyInflux,
+    ITokensHeldWithUnlockConditionDailyInflux,
     ITokensTransferredDailyInflux,
     ITransactionsDailyInflux,
+    IUnlockConditionsPerTypeDailyInflux,
     IValidatorsActivityDailyInflux,
 } from "./IInfluxTimedEntries";
 import { DayKey } from "../types";
@@ -38,6 +40,8 @@ export interface IInfluxDailyCache {
     delegatorsActivityDaily: Map<DayKey, IDelegatorsActivityDailyInflux>;
     delegationsActivityDaily: Map<DayKey, IDelegationsActivityDailyInflux>;
     stakingActivityDaily: Map<DayKey, IStakingActivityDailyInflux>;
+    unlockConditionsPerTypeDaily: Map<DayKey, IUnlockConditionsPerTypeDailyInflux>;
+    tokensHeldWithUnlockConditionDaily: Map<DayKey, ITokensHeldWithUnlockConditionDailyInflux>;
 }
 
 /**
@@ -61,4 +65,6 @@ export const initializeEmptyDailyCache = () => ({
     delegatorsActivityDaily: new Map(),
     delegationsActivityDaily: new Map(),
     stakingActivityDaily: new Map(),
+    unlockConditionsPerTypeDaily: new Map(),
+    tokensHeldWithUnlockConditionDaily: new Map(),
 });

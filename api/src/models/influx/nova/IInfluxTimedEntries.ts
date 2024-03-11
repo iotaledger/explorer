@@ -89,3 +89,15 @@ export type IDelegationsActivityDailyInflux = ITimedEntry & {
 export type IStakingActivityDailyInflux = ITimedEntry & {
     total: number | null;
 };
+
+export type IUnlockConditionsPerTypeDailyInflux = ITimedEntry & {
+    timelock: number | null;
+    storageDepositReturn: number | null;
+    expiration: number | null;
+};
+
+export type ITokensHeldWithUnlockConditionDailyInflux = ITimedEntry & {
+    timelock: number | null;
+    storageDepositReturn: number | null;
+    expiration: number | null;
+};
