@@ -26,6 +26,7 @@ export const InfluxChartsTab: React.FC = () => {
         delegatorsActivityDaily,
         delegationsActivityDaily,
         stakingActivityDaily,
+        unlockConditionsPerTypeDaily,
         tokensHeldWithUnlockConditionDaily,
     } = useChartsState();
 
@@ -180,6 +181,17 @@ export const InfluxChartsTab: React.FC = () => {
                 <div className="section--header">
                     <h2>Unlock Conditions</h2>
                     <Modal icon="info" data={graphMessages.unlockConditions} />
+                </div>
+                <div className="row statistics-row margin-b-s">
+                    <StackedLineChart
+                        chartId={ids.next().value}
+                        title="Total Outputs with Special Unlock Conditions"
+                        info={graphMessages.totalUnlockConditions}
+                        subgroups={["timelock", "storageDepositReturn", "expiration"]}
+                        groupLabels={["Timelock", "Storage deposit return", "Expiration"]}
+                        colors={["#4140DF", "#00F5DD", "#36A1AC"]}
+                        data={unlockConditionsPerTypeDaily}
+                    />
                 </div>
                 <div className="row statistics-row">
                     <StackedLineChart

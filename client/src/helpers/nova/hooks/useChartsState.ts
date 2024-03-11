@@ -26,6 +26,7 @@ export function useChartsState(): {
     delegatorsActivityDaily: DataPoint[];
     delegationsActivityDaily: DataPoint[];
     stakingActivityDaily: DataPoint[];
+    unlockConditionsPerTypeDaily: DataPoint[];
     tokensHeldWithUnlockConditionDaily: DataPoint[];
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
@@ -46,6 +47,7 @@ export function useChartsState(): {
     const [delegatorsActivityDaily, setDelegatorsActivityDaily] = useState<DataPoint[]>([]);
     const [delegationsActivityDaily, setDelegationsActivityDaily] = useState<DataPoint[]>([]);
     const [stakingActivityDaily, setStakingActivityDaily] = useState<DataPoint[]>([]);
+    const [unlockConditionsPerTypeDaily, setUnlockConditionsPerTypeDaily] = useState<DataPoint[]>([]);
     const [tokensHeldWithUnlockConditionDaily, setTokensHeldWithUnlockConditionDaily] = useState<DataPoint[]>([]);
 
     useEffect(() => {
@@ -71,6 +73,7 @@ export function useChartsState(): {
                     setDelegatorsActivityDaily(graphsData.delegatorsActivityDaily);
                     setDelegationsActivityDaily(graphsData.delegationsActivityDaily);
                     setStakingActivityDaily(graphsData.stakingActivityDaily);
+                    setUnlockConditionsPerTypeDaily(graphsData.unlockConditionsPerTypeDaily);
                     setTokensHeldWithUnlockConditionDaily(graphsData.tokensHeldWithUnlockConditionDaily);
                 } else {
                     console.error("Fetching influx stats failed", influxStats.error);
@@ -96,6 +99,7 @@ export function useChartsState(): {
         delegatorsActivityDaily,
         delegationsActivityDaily,
         stakingActivityDaily,
+        unlockConditionsPerTypeDaily,
         tokensHeldWithUnlockConditionDaily,
     };
 }
