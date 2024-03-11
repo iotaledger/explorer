@@ -6,13 +6,6 @@ import "./ValidatorsPage.scss";
 const ValidatorsPage: React.FC = () => {
     const { validators, error } = useValidators();
 
-    // Build rank by stake map
-    const addressToRankByStake = new Map<string, number>();
-    const validatorsSortedByPoolStake = [...(validators ?? [])].sort((a, b) => (a.validator.poolStake > b.validator.poolStake ? -1 : 1));
-    for (let i = 0; i < validatorsSortedByPoolStake.length; i++) {
-        addressToRankByStake.set(validatorsSortedByPoolStake[i].validator.address, i + 1);
-    }
-
     return (
         <section className="validators-page">
             <div className="wrapper">
@@ -55,7 +48,7 @@ const ValidatorsPage: React.FC = () => {
                                             </div>
                                             <div className="validator-item__cumulative-stake">{validator.poolStake.toString()}</div>
                                             <div className="validator-item__delegators">???</div>
-                                            <div className="validator-item__rank">{addressToRankByStake.get(validator.address)}</div>
+                                            <div className="validator-item__rank">{idx + 1}</div>
                                         </div>
                                     );
                                 })}
