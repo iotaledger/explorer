@@ -21,6 +21,25 @@ export const BLOCK_DAILY_QUERY = {
     `,
 };
 
+export const BLOCK_ISSUERS_DAILY_QUERY = {
+    full: `
+        SELECT
+            sum("active_count") AS "active",
+            sum("registered_count") AS "registered"
+        FROM "iota_block_activity"
+        WHERE time < $to
+        GROUP BY time(1d) fill(null)
+    `,
+    partial: `
+        SELECT
+            sum("active_count") AS "active",
+            sum("registered_count") AS "registered"
+        FROM "iota_block_activity"
+        WHERE time >= $from and time <= $to
+        GROUP BY time(1d) fill(null)
+    `,
+};
+
 export const TRANSACTION_DAILY_QUERY = {
     full: `
         SELECT
@@ -46,8 +65,8 @@ export const OUTPUTS_DAILY_QUERY = {
             last("basic_count") AS "basic",
             last("account_count") AS "account",
             last("foundry_count") AS "foundry",
-            last("nft_count") AS "nft"
-            last("anchor_count") AS "anchor"
+            last("nft_count") AS "nft",
+            last("anchor_count") AS "anchor",
             last("delegation_count") AS "delegation"
         FROM "iota_ledger_outputs"
         WHERE time < $to
@@ -58,8 +77,8 @@ export const OUTPUTS_DAILY_QUERY = {
             last("basic_count") AS "basic",
             last("account_count") AS "account",
             last("foundry_count") AS "foundry",
-            last("nft_count") AS "nft"
-            last("anchor_count") AS "anchor"
+            last("nft_count") AS "nft",
+            last("anchor_count") AS "anchor",
             last("delegation_count") AS "delegation"
         FROM "iota_ledger_outputs"
         WHERE time >= $from and time <= $to
@@ -256,7 +275,7 @@ export const VALIDATORS_ACTIVITY_DAILY_QUERY = {
     full: `
         SELECT
             sum("validators_candidates_count") AS "candidates",
-            sum("validators_total_count") AS "total",
+            sum("validators_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
@@ -264,7 +283,7 @@ export const VALIDATORS_ACTIVITY_DAILY_QUERY = {
     partial: `
         SELECT
             sum("validators_candidates_count") AS "candidates",
-            sum("validators_total_count") AS "total",
+            sum("validators_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -274,14 +293,14 @@ export const VALIDATORS_ACTIVITY_DAILY_QUERY = {
 export const DELEGATORS_ACTIVITY_DAILY_QUERY = {
     full: `
         SELECT
-            sum("delegators_total_count") AS "total",
+            sum("delegators_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            sum("delegators_total_count") AS "total",
+            sum("delegators_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -291,14 +310,14 @@ export const DELEGATORS_ACTIVITY_DAILY_QUERY = {
 export const DELEGATIONS_ACTIVITY_DAILY_QUERY = {
     full: `
         SELECT
-            sum("delegations_total_count") AS "total",
+            sum("delegations_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            sum("delegations_total_count") AS "total",
+            sum("delegations_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -308,14 +327,14 @@ export const DELEGATIONS_ACTIVITY_DAILY_QUERY = {
 export const STAKING_ACTIVITY_DAILY_QUERY = {
     full: `
         SELECT
-            sum("staking_total_count") AS "total",
+            sum("staking_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            sum("staking_total_count") AS "total",
+            sum("staking_total_count") AS "total"
         FROM "iota_output_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)

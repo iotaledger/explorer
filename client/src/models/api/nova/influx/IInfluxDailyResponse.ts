@@ -8,6 +8,12 @@ interface IBlocksDailyInflux {
     candidacy: number | null;
 }
 
+interface IBlockIssuersDailyInflux {
+    time: Date;
+    active: number | null;
+    registered: number | null;
+}
+
 interface ITransactionsDailyInflux {
     time: Date;
     finalized: number | null;
@@ -129,6 +135,7 @@ interface IStorageDepositDailyInflux {
 
 export interface IInfluxDailyResponse extends IResponse {
     blocksDaily?: IBlocksDailyInflux[];
+    blockIssuersDaily?: IBlockIssuersDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];

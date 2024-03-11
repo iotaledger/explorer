@@ -10,11 +10,12 @@ import { DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData } from "../
  * @returns The charts state.
  */
 export function useChartsState(): {
-    dailyBlocks: DataPoint[];
-    dailyTransactions: DataPoint[];
-    dailyOutputs: DataPoint[];
-    tokensHeld: DataPoint[];
-    addressesWithBalance: DataPoint[];
+    blocksDaily: DataPoint[];
+    blockIssuersDaily: DataPoint[];
+    transactionsDaily: DataPoint[];
+    outputsDaily: DataPoint[];
+    tokensHeldDaily: DataPoint[];
+    addressesWithBalanceDaily: DataPoint[];
     activeAddressesDaily: DataPoint[];
     tokensTransferredDaily: DataPoint[];
     anchorActivityDaily: DataPoint[];
@@ -33,11 +34,12 @@ export function useChartsState(): {
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [dailyBlocks, setDailyBlocks] = useState<DataPoint[]>([]);
-    const [dailyTransactions, setDailyTransactions] = useState<DataPoint[]>([]);
-    const [dailyOutputs, setDailyOutputs] = useState<DataPoint[]>([]);
-    const [tokensHeld, setTokensHeld] = useState<DataPoint[]>([]);
-    const [addressesWithBalance, setAddressesWithBalance] = useState<DataPoint[]>([]);
+    const [blocksDaily, setBlocksDaily] = useState<DataPoint[]>([]);
+    const [blockIssuersDaily, setBlockIssuersDaily] = useState<DataPoint[]>([]);
+    const [transactionsDaily, setTransactionsDaily] = useState<DataPoint[]>([]);
+    const [outputsDaily, setOutputsDaily] = useState<DataPoint[]>([]);
+    const [tokensHeldDaily, setTokensHeldDaily] = useState<DataPoint[]>([]);
+    const [addressesWithBalanceDaily, setAddressesWithBalanceDaily] = useState<DataPoint[]>([]);
     const [activeAddressesDaily, setActiveAddressesDaily] = useState<DataPoint[]>([]);
     const [tokensTransferredDaily, setTokensTransferredDaily] = useState<DataPoint[]>([]);
     const [anchorActivityDaily, setAnchorActivityDaily] = useState<DataPoint[]>([]);
@@ -61,11 +63,12 @@ export function useChartsState(): {
                 if (!influxStats.error && influxStats) {
                     const graphsData: IStatisticsGraphsData = mapDailyStatsToGraphsData(influxStats);
 
-                    setDailyBlocks(graphsData.blocksDaily);
-                    setDailyTransactions(graphsData.transactionsDaily);
-                    setDailyOutputs(graphsData.outputsDaily);
-                    setTokensHeld(graphsData.tokensHeldDaily);
-                    setAddressesWithBalance(graphsData.addressesWithBalanceDaily);
+                    setBlocksDaily(graphsData.blocksDaily);
+                    setBlockIssuersDaily(graphsData.blockIssuersDaily);
+                    setTransactionsDaily(graphsData.transactionsDaily);
+                    setOutputsDaily(graphsData.outputsDaily);
+                    setTokensHeldDaily(graphsData.tokensHeldDaily);
+                    setAddressesWithBalanceDaily(graphsData.addressesWithBalanceDaily);
                     setActiveAddressesDaily(graphsData.activeAddressesDaily);
                     setTokensTransferredDaily(graphsData.tokensTransferredDaily);
                     setAnchorActivityDaily(graphsData.anchorActivityDaily);
@@ -89,11 +92,12 @@ export function useChartsState(): {
     }, [network]);
 
     return {
-        dailyBlocks,
-        dailyTransactions,
-        dailyOutputs,
-        tokensHeld,
-        addressesWithBalance,
+        blocksDaily,
+        blockIssuersDaily,
+        transactionsDaily,
+        outputsDaily,
+        tokensHeldDaily,
+        addressesWithBalanceDaily,
         activeAddressesDaily,
         tokensTransferredDaily,
         anchorActivityDaily,

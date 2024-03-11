@@ -4,6 +4,7 @@ import {
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
+    BLOCK_ISSUERS_DAILY_QUERY,
     DELEGATIONS_ACTIVITY_DAILY_QUERY,
     DELEGATION_ACTIVITY_DAILY_QUERY,
     DELEGATORS_ACTIVITY_DAILY_QUERY,
@@ -29,6 +30,7 @@ import {
     IActiveAddressesDailyInflux,
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
+    IBlockIssuerDailyInflux,
     IBlocksDailyInflux,
     IDelegationActivityDailyInflux,
     IDelegationsActivityDailyInflux,
@@ -71,6 +73,10 @@ export class InfluxServiceNova extends InfluxDbClient {
 
     public get blocksDaily() {
         return this.mapToSortedValuesArray(this._dailyCache.blocksDaily);
+    }
+
+    public get blockIssuersDaily() {
+        return this.mapToSortedValuesArray(this._dailyCache.blockIssuersDaily);
     }
 
     public get transactionsDaily() {
@@ -163,7 +169,12 @@ export class InfluxServiceNova extends InfluxDbClient {
      */
     private async collectGraphsDaily() {
         logger.verbose(`[InfluxNova] Collecting daily stats for "${this._network.network}"`);
-        this.updateCacheEntry<IBlocksDailyInflux>(BLOCK_DAILY_QUERY, this._dailyCache.blocksDaily, "Blocks Daily", true);
+        this.updateCacheEntry<IBlocksDailyInflux>(BLOCK_DAILY_QUERY, this._dailyCache.blocksDaily, "Blocks Daily");
+        this.updateCacheEntry<IBlockIssuerDailyInflux>(
+            BLOCK_ISSUERS_DAILY_QUERY,
+            this._dailyCache.blockIssuersDaily,
+            "Block Issuers Daily",
+        );
         this.updateCacheEntry<ITransactionsDailyInflux>(TRANSACTION_DAILY_QUERY, this._dailyCache.transactionsDaily, "Transactions Daily");
         this.updateCacheEntry<IOutputsDailyInflux>(OUTPUTS_DAILY_QUERY, this._dailyCache.outputsDaily, "Outputs Daily");
         this.updateCacheEntry<ITokensHeldPerOutputDailyInflux>(

@@ -10,11 +10,12 @@ import StackedBarChart from "../../stardust/statistics/charts/StackedBarChart";
 
 export const InfluxChartsTab: React.FC = () => {
     const {
-        dailyBlocks,
-        dailyTransactions,
-        dailyOutputs,
-        tokensHeld,
-        addressesWithBalance,
+        blocksDaily,
+        blockIssuersDaily,
+        transactionsDaily,
+        outputsDaily,
+        tokensHeldDaily,
+        addressesWithBalanceDaily,
         activeAddressesDaily,
         tokensTransferredDaily,
         anchorActivityDaily,
@@ -49,7 +50,7 @@ export const InfluxChartsTab: React.FC = () => {
                         subgroups={["transaction", "validation", "taggedData", "candidacy"]}
                         groupLabels={["Transaction", "Validation", "Tagged Data", "Candidacy announcement"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#99BEE1"]}
-                        data={dailyBlocks}
+                        data={blocksDaily}
                     />
                     <StackedLineChart
                         chartId={ids.next().value}
@@ -58,7 +59,18 @@ export const InfluxChartsTab: React.FC = () => {
                         subgroups={["finalized", "failed"]}
                         groupLabels={["Finalized", "Failed"]}
                         colors={["#00E0CA", "#36A1AC"]}
-                        data={dailyTransactions}
+                        data={transactionsDaily}
+                    />
+                </div>
+                <div className="row statistics-row">
+                    <StackedLineChart
+                        chartId={ids.next().value}
+                        title="Daily Block Issuers"
+                        info={graphMessages.dailyBlockIssuer}
+                        subgroups={["active", "registered"]}
+                        groupLabels={["Active", "Registered"]}
+                        colors={["#4140DF", "#14CABF"]}
+                        data={blockIssuersDaily}
                     />
                 </div>
             </div>
@@ -75,7 +87,7 @@ export const InfluxChartsTab: React.FC = () => {
                         subgroups={["basic", "account", "foundry", "nft", "anchor", "delegation"]}
                         groupLabels={["Basic", "Account", "Foundry", "Nft", "Anchor", "Delegation"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1", "#00E0CA"]}
-                        data={dailyOutputs}
+                        data={outputsDaily}
                     />
                     <StackedLineChart
                         chartId={ids.next().value}
@@ -84,7 +96,7 @@ export const InfluxChartsTab: React.FC = () => {
                         subgroups={["basic", "account", "foundry", "nft", "anchor", "delegation"]}
                         groupLabels={["Basic", "Account", "Foundry", "Nft", "Anchor", "Delegation"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1", "#00E0CA"]}
-                        data={tokensHeld}
+                        data={tokensHeldDaily}
                     />
                 </div>
             </div>
@@ -100,7 +112,7 @@ export const InfluxChartsTab: React.FC = () => {
                         info={graphMessages.totalAddressesWithTokens}
                         label="Addresses"
                         color="#00F5DD"
-                        data={addressesWithBalance}
+                        data={addressesWithBalanceDaily}
                     />
                     <LineChart
                         chartId={ids.next().value}

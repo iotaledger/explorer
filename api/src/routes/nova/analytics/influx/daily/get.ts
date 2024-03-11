@@ -7,6 +7,7 @@ import {
     IActiveAddressesDailyInflux,
     IAddressesWithBalanceDailyInflux,
     IAnchorActivityDailyInflux,
+    IBlockIssuerDailyInflux,
     IBlocksDailyInflux,
     IDelegationActivityDailyInflux,
     IDelegationsActivityDailyInflux,
@@ -34,6 +35,7 @@ import { ValidationHelper } from "../../../../../utils/validationHelper";
 export interface IDailyAnalyticsResponse {
     error?: string;
     blocksDaily?: IBlocksDailyInflux[];
+    blockIssuersDaily?: IBlockIssuerDailyInflux[];
     transactionsDaily?: ITransactionsDailyInflux[];
     outputsDaily?: IOutputsDailyInflux[];
     tokensHeldDaily?: ITokensHeldPerOutputDailyInflux[];
@@ -76,6 +78,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
     return influxService
         ? {
               blocksDaily: influxService.blocksDaily,
+              blockIssuersDaily: influxService.blockIssuersDaily,
               transactionsDaily: influxService.transactionsDaily,
               outputsDaily: influxService.outputsDaily,
               tokensHeldDaily: influxService.tokensHeldDaily,

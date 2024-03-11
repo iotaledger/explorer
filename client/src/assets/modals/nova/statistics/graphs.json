@@ -21,6 +21,17 @@
             }
         ]
     },
+    "dailyBlockIssuer": {
+        "title": "Daily Block Issuers",
+        "description": "<p>Tracks the number of registered and active Block Issuers in the network on a daily basis.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/communication-layer/#block-creation",
+                "isExternal": true
+            }
+        ]
+    },
     "dailyTransactions": {
         "title": "Daily Transactions",
         "description": "<p>How many transactions the network has processed in a day. The values are separated between confirmed transactions and conflicting transactions (these were rejected).</p>",
