@@ -1,13 +1,14 @@
 /* eslint-disable react/no-unknown-property */
 import { Center } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { useControls, folder } from "leva";
 import { Perf } from "r3f-perf";
 import React, { useEffect, useRef } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import * as THREE from "three";
 import { FAR_PLANE, features, NEAR_PLANE, DIRECTIONAL_LIGHT_INTENSITY, VISUALIZER_BACKGROUND } from "./constants";
 import Emitter from "./Emitter";
-import { useTangleStore, useConfigStore } from "./store";
+import { useTangleStore, useConfigStore, IAddToColorQueueBulkItem } from "./store";
 import { BPSCounter } from "./BPSCounter";
 import { VisualizerRouteProps } from "../../app/routes/VisualizerRouteProps";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -23,7 +24,6 @@ import CameraControls from "./CameraControls";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { getBlockInitPosition, getBlockTargetPosition } from "./blockPositions";
 import { getBlockColorByState, getCurrentTiltValue } from "./utils";
-import useSearchStore from "~features/visualizer-threejs/store/search";
 import { useSearch } from "~features/visualizer-threejs/hooks/useSearch";
 import "./Visualizer.scss";
 
@@ -37,6 +37,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const getCurrentAnimationTime = useVisualizerTimer();
 
     const [runListeners, setRunListeners] = React.useState<boolean>(false);
+
+    const { cameraXShift, azimuthAngle } = useControls("CameraControls", {
+        transform: folder({
+            cameraXShift: { value: 0, min: -10000, max: 10000, step: 20, label: "X: Shift" },
+            azimuthAngle: { value: 0, min: -1, max: 1, step: 0.005, label: "X: Rotate" },
+        }),
+    });
 
     const setBps = useTangleStore((s) => s.setBps);
     const [bpsCounter] = React.useState(
@@ -56,10 +63,11 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const addBlock = useTangleStore((s) => s.addToBlockQueue);
     const addToEdgeQueue = useTangleStore((s) => s.addToEdgeQueue);
     const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
+    const addToColorQueueBulk = useTangleStore((s) => s.addToColorQueueBulk);
     const blockMetadata = useTangleStore((s) => s.blockMetadata);
+    const updateBlockMetadata = useTangleStore((s) => s.updateBlockMetadata);
     const indexToBlockId = useTangleStore((s) => s.indexToBlockId);
     const clickedInstanceId = useTangleStore((s) => s.clickedInstanceId);
-    const matchingBlockIds = useSearchStore((state) => state.matchingBlockIds);
 
     const blockIdToState = useTangleStore((s) => s.blockIdToState);
     const setBlockIdToBlockState = useTangleStore((s) => s.setBlockIdToBlockState);
@@ -215,6 +223,7 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
             }
 
             const blockColor = getBlockColorByState(themeMode, "pending");
+            const blockMetadata = useTangleStore.getState().blockMetadata;
             blockMetadata.set(blockData.blockId, { ...blockData, treeColor: blockColor });
 
             // edges
@@ -257,11 +266,9 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
 
                 if (!wasConfirmedBeforeAccepted) {
                     setBlockIdToBlockState(metadataUpdate.blockId, metadataUpdate.blockState);
-                    if (!matchingBlockIds.includes(metadataUpdate.blockId)) {
-                        addToColorQueue(metadataUpdate.blockId, selectedColor);
-                    }
                 }
 
+                addToColorQueue(metadataUpdate.blockId, selectedColor);
                 const acceptedStates: BlockState[] = ["confirmed", "accepted"];
 
                 if (acceptedStates.includes(metadataUpdate.blockState)) {
@@ -276,13 +283,18 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         const blocks = confirmedBlocksBySlot.get(slot);
 
         if (blocks?.length) {
+            const colorQueue: IAddToColorQueueBulkItem[] = [];
             blocks.forEach((blockId) => {
                 const selectedColor = getBlockColorByState(themeMode, "finalized");
                 if (selectedColor) {
-                    addToColorQueue(blockId, selectedColor);
                     setBlockIdToBlockState(blockId, "finalized");
+                    updateBlockMetadata(blockId, { treeColor: selectedColor });
+
+                    colorQueue.push({ id: blockId, color: selectedColor });
                 }
             });
+
+            addToColorQueueBulk(colorQueue);
         }
 
         removeConfirmedBlocksSlot(slot);
@@ -316,9 +328,14 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
                 <ambientLight />
                 <directionalLight position={[400, 700, 920]} intensity={DIRECTIONAL_LIGHT_INTENSITY} />
                 <Center>
-                    <Emitter emitterRef={emitterRef} setRunListeners={setRunListeners} />
+                    <Emitter
+                        emitterRef={emitterRef}
+                        setRunListeners={setRunListeners}
+                        cameraXShift={cameraXShift}
+                        azimuthAngle={azimuthAngle}
+                    />
                 </Center>
-                {features.cameraControls && <CameraControls />}
+                {features.cameraControls && <CameraControls azimuthAngle={azimuthAngle} />}
                 {features.statsEnabled && <Perf />}
             </Canvas>
         </Wrapper>

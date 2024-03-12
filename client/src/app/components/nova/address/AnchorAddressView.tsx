@@ -19,6 +19,7 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        manaRewards,
         isAnchorDetailsLoading,
         isAssociatedOutputsLoading,
     } = state;
@@ -50,6 +51,7 @@ const AnchorAddressView: React.FC<AnchorAddressViewProps> = ({ anchorAddress }) 
                                         totalManaBalance={totalManaBalance}
                                         availableManaBalance={availableManaBalance}
                                         storageDeposit={storageDeposit}
+                                        manaRewards={manaRewards}
                                     />
                                 </div>
                             </div>

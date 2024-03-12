@@ -278,6 +278,7 @@ export const routes: IRoute[] = [
         folder: "nova/transaction",
         func: "get",
     },
+    { path: "/nova/transaction/metadata/:network/:transactionId", method: "get", folder: "nova/transaction/metadata", func: "get" },
     {
         path: "/nova/account/congestion/:network/:accountId",
         method: "get",
@@ -292,6 +293,8 @@ export const routes: IRoute[] = [
     },
     { path: "/nova/block/:network/:blockId", method: "get", folder: "nova/block", func: "get" },
     { path: "/nova/block/metadata/:network/:blockId", method: "get", folder: "nova/block/metadata", func: "get" },
+    { path: "/nova/validators/:network", method: "get", folder: "nova/validators", func: "get" },
+    { path: "/nova/validators/stats/:network", method: "get", folder: "nova/validators/stats", func: "get" },
     {
         path: "/nova/commitment/latest/:network",
         method: "get",
@@ -300,4 +303,11 @@ export const routes: IRoute[] = [
     },
     { path: "/nova/slot/:network/:slotIndex", method: "get", folder: "nova/slot", func: "get" },
     { path: "/nova/epoch/committee/:network/:epochIndex", method: "get", folder: "nova/epoch/committee", func: "get" },
+    {
+        path: "/nova/analytics/daily/:network",
+        method: "get",
+        folder: "nova/analytics/influx/daily",
+        func: "get",
+        sign: true,
+    },
 ];

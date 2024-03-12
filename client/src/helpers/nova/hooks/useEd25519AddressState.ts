@@ -19,6 +19,7 @@ export interface IEd25519AddressState {
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
+    manaRewards: bigint | null;
     addressBasicOutputs: OutputWithMetadataResponse[] | null;
     addressNftOutputs: OutputWithMetadataResponse[] | null;
     addressDelegationOutputs: IDelegationWithDetails[] | null;
@@ -37,6 +38,7 @@ const initialState = {
     availableBaseTokenBalance: null,
     totalManaBalance: null,
     availableManaBalance: null,
+    manaRewards: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     addressDelegationOutputs: null,
@@ -63,16 +65,25 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
         initialState,
     );
 
-    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
-        network,
-        state.addressDetails,
-        null,
-    );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
         network,
         state.addressDetails?.bech32 ?? null,
+    );
+
+    const delegationRewards = addressDelegationOutputs?.map((output) => output.rewards?.manaRewards) ?? [];
+    const manaRewards =
+        delegationRewards.length > 0
+            ? delegationRewards.reduce((total, rewardsResponse) => total + BigInt(rewardsResponse?.rewards ?? 0), BigInt(0))
+            : null;
+
+    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
+        network,
+        state.addressDetails,
+        null,
+        null,
+        manaRewards,
     );
 
     useEffect(() => {
@@ -82,9 +93,10 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
             : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
+            ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.pubKeyHash]);
 
     useEffect(() => {
         let updatedState: Partial<IEd25519AddressState> = {
@@ -92,6 +104,7 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
             availableBaseTokenBalance,
             totalManaBalance,
             availableManaBalance,
+            manaRewards,
             addressBasicOutputs,
             addressNftOutputs,
             addressDelegationOutputs,
@@ -118,6 +131,7 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
         availableManaBalance,
         totalBaseTokenBalance,
         availableBaseTokenBalance,
+        manaRewards,
         addressBasicOutputs,
         addressNftOutputs,
         addressDelegationOutputs,

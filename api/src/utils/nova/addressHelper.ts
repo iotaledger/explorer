@@ -38,9 +38,11 @@ export class AddressHelper {
                 const address: Address = Utils.parseBech32Address(addressString);
 
                 if (address) {
-                    bech32 = addressString;
-                    type = address.type;
-                    hex = Utils.bech32ToHex(addressString);
+                    const addressDetails = this.buildAddressFromTypes(address, hrp);
+
+                    bech32 = addressDetails.bech32;
+                    type = addressDetails.type;
+                    hex = addressDetails.hex;
                 }
             } catch (e) {
                 logger.debug(`Failed parsing Address. Cause: ${e}`);

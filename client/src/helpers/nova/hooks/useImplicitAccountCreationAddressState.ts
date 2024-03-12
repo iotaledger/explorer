@@ -80,7 +80,7 @@ export const useImplicitAccountCreationAddressState = (
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.address().pubKeyHash]);
 
     useEffect(() => {
         let updatedState: Partial<IImplicitAccountCreationAddressState> = {

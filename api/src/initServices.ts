@@ -24,12 +24,14 @@ import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
 import { ChronicleService as ChronicleServiceNova } from "./services/nova/chronicleService";
 import { NovaFeed } from "./services/nova/feed/novaFeed";
+import { InfluxServiceNova } from "./services/nova/influx/influxServiceNova";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { NovaApiService } from "./services/nova/novaApiService";
 import { NovaStatsService } from "./services/nova/stats/novaStatsService";
+import { ValidatorService } from "./services/nova/validatorService";
 import { ChronicleService as ChronicleServiceStardust } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
-import { InfluxDBService } from "./services/stardust/influx/influxDbService";
+import { InfluxServiceStardust } from "./services/stardust/influx/influxServiceStardust";
 import { NodeInfoService as NodeInfoServiceStardust } from "./services/stardust/nodeInfoService";
 import { StardustApiService } from "./services/stardust/stardustApiService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
@@ -192,7 +194,7 @@ function initStardustServices(networkConfig: INetwork): void {
     const stardustStatsService = new StardustStatsService(networkConfig);
     ServiceFactory.register(`stats-${networkConfig.network}`, () => stardustStatsService);
 
-    const influxDBService = new InfluxDBService(networkConfig);
+    const influxDBService = new InfluxServiceStardust(networkConfig);
     influxDBService
         .buildClient()
         .then((hasClient) => {
@@ -243,7 +245,22 @@ function initNovaServices(networkConfig: INetwork): void {
             const novaFeed = new NovaFeed(networkConfig);
             ServiceFactory.register(`feed-${networkConfig.network}`, () => novaFeed);
         });
+
+        const validatorService = new ValidatorService(networkConfig);
+        validatorService.setupValidatorsCollection();
+        ServiceFactory.register(`validator-service-${networkConfig.network}`, () => validatorService);
     });
+
+    const influxDBService = new InfluxServiceNova(networkConfig);
+    influxDBService
+        .buildClient()
+        .then((hasClient) => {
+            logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
+            if (hasClient) {
+                ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
+            }
+        })
+        .catch((e) => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
 }
 
 /**

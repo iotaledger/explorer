@@ -22,6 +22,7 @@ export interface IAnchorAddressState {
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
+    manaRewards: bigint | null;
     addressDelegationOutputs: IDelegationWithDetails[] | null;
     addressBasicOutputs: OutputWithMetadataResponse[] | null;
     addressNftOutputs: OutputWithMetadataResponse[] | null;
@@ -42,6 +43,7 @@ const initialState = {
     availableBaseTokenBalance: null,
     totalManaBalance: null,
     availableManaBalance: null,
+    manaRewards: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     addressDelegationOutputs: null,
@@ -71,12 +73,6 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     );
 
     const { anchorOutput, anchorOutputMetadata, isLoading: isAnchorDetailsLoading } = useAnchorDetails(network, address.anchorId);
-    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
-        network,
-        state.addressDetails,
-        anchorOutput,
-        anchorOutputMetadata,
-    );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
@@ -84,6 +80,19 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
         state.addressDetails?.bech32 ?? null,
     );
 
+    const delegationRewards = addressDelegationOutputs?.map((output) => output.rewards?.manaRewards) ?? [];
+    const manaRewards =
+        delegationRewards.length > 0
+            ? delegationRewards.reduce((total, rewardsResponse) => total + BigInt(rewardsResponse?.rewards ?? 0), BigInt(0))
+            : null;
+
+    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
+        network,
+        state.addressDetails,
+        anchorOutput,
+        anchorOutputMetadata,
+        manaRewards,
+    );
     useEffect(() => {
         const locationState = location.state as IAddressPageLocationProps;
         const { addressDetails } = locationState?.addressDetails
@@ -94,7 +103,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.anchorId]);
 
     useEffect(() => {
         let updatedState: Partial<IAnchorAddressState> = {
@@ -103,6 +112,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             availableBaseTokenBalance,
             totalManaBalance,
             availableManaBalance,
+            manaRewards,
             addressBasicOutputs,
             addressNftOutputs,
             addressDelegationOutputs,
@@ -133,6 +143,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        manaRewards,
         addressBasicOutputs,
         addressNftOutputs,
         addressDelegationOutputs,

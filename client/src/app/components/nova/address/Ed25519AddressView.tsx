@@ -19,6 +19,7 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        manaRewards,
         isAssociatedOutputsLoading,
         isBasicOutputsLoading,
     } = state;
@@ -50,6 +51,7 @@ const Ed25519AddressView: React.FC<Ed25519AddressViewProps> = ({ ed25519Address 
                                         totalManaBalance={totalManaBalance}
                                         availableManaBalance={availableManaBalance}
                                         storageDeposit={storageDeposit}
+                                        manaRewards={manaRewards}
                                     />
                                 </div>
                             </div>

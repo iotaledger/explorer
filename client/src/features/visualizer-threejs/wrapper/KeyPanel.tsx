@@ -28,12 +28,12 @@ export const KeyPanel = ({ network, themeMode }: { network: string; themeMode: T
             state: "finalized",
         },
         {
-            label: "Rejected",
-            state: "rejected",
+            label: "Dropped",
+            state: "dropped",
         },
         {
-            label: "Failed",
-            state: "failed",
+            label: "Orphaned",
+            state: "orphaned",
         },
         {
             label: "Search result",
