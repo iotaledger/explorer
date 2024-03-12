@@ -9,7 +9,6 @@ import {
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
 import Pagination from "~/app/components/Pagination";
-import { plainToInstance } from "class-transformer";
 import "./AssetsTable.scss";
 
 interface AssetsTableProps {
@@ -34,21 +33,18 @@ const AssetsTable: React.FC<AssetsTableProps> = ({ outputs, setTokensCount }) =>
             for (const outputResponse of outputs) {
                 const output = outputResponse.output as CommonOutput;
                 if (output.type === OutputType.Basic || output.type === OutputType.Foundry) {
-                    let nativeTokenFeature = output.features?.find((feature) => feature.type === FeatureType.NativeToken);
-                    nativeTokenFeature = plainToInstance(
-                        NativeTokenFeature,
-                        nativeTokenFeature as NativeTokenFeature,
-                    ) as unknown as NativeTokenFeature;
+                    const nativeTokenFeature = output.features?.find(
+                        (feature) => feature.type === FeatureType.NativeToken,
+                    ) as NativeTokenFeature;
 
                     if (nativeTokenFeature) {
-                        const token = nativeTokenFeature as NativeTokenFeature;
-                        const existingToken = theTokens.find((t) => t.id === token.asNativeToken().id);
+                        const existingToken = theTokens.find((t) => t.id === nativeTokenFeature.id);
                         // Convert to BigInt again in case the amount is hex
-                        const amount = BigInt(token.amount);
+                        const amount = BigInt(nativeTokenFeature.amount);
                         if (existingToken) {
                             existingToken.amount += amount;
                         } else {
-                            theTokens.push({ id: token.id, amount });
+                            theTokens.push({ id: nativeTokenFeature.id, amount });
                         }
                     }
                 }
