@@ -242,6 +242,12 @@ export const routes: IRoute[] = [
         func: "get",
     },
     {
+        path: "/nova/address/outputs/anchor/:network/:address",
+        method: "get",
+        folder: "nova/address/outputs/anchor",
+        func: "get",
+    },
+    {
         path: "/nova/address/outputs/delegation/:network/:address",
         method: "get",
         folder: "nova/address/outputs/delegation",

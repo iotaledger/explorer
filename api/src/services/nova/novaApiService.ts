@@ -315,6 +315,33 @@ export class NovaApiService {
     }
 
     /**
+     * Get the relevant anchor output details for an address.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The anchor output details.
+     */
+    public async anchorOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.anchorOutputIds({ stateController: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching anchor output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(outputIds);
+
+        return {
+            outputs: outputResponses,
+        };
+    }
+
+    /**
      * Get the relevant basic output details for an address.
      * @param addressBech32 The address in bech32 format.
      * @returns The basic output details.
@@ -368,9 +395,9 @@ export class NovaApiService {
     }
 
     /**
-     * Get the relevant basic output details for an address.
+     * Get the relevant delegation output details for an address.
      * @param addressBech32 The address in bech32 format.
-     * @returns The basic output details.
+     * @returns The delegation output details.
      */
     public async delegationOutputDetailsByAddress(addressBech32: string): Promise<IDelegationDetailsResponse> {
         let cursor: string | undefined;
