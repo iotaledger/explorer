@@ -91,7 +91,7 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.nftId]);
 
     useEffect(() => {
         setState({
