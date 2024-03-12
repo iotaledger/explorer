@@ -60,11 +60,10 @@ const buildDefaultTabsOptions = (
     isNftOutputsLoading: boolean,
     isDelegationOutputsLoading: boolean,
     isAddressHistoryLoading: boolean,
-    isAddressHistoryDisabled: boolean,
 ) => ({
     [DEFAULT_TABS.Transactions]: {
-        disabled: isAddressHistoryDisabled,
-        hidden: isAddressHistoryDisabled,
+        disabled: false,
+        hidden: false,
         isLoading: isAddressHistoryLoading,
         infoContent: transactionHistoryMessage,
     },
@@ -105,17 +104,17 @@ const buildAccountAddressTabsOptions = (
     isAccountFoundriesLoading: boolean,
     isValidatorDetailsLoading: boolean,
 ) => ({
-    [ACCOUNT_TABS.Foundries]: {
-        disabled: foundriesCount === 0,
-        hidden: foundriesCount === 0,
-        isLoading: isAccountFoundriesLoading,
-        infoContent: foundriesMessage,
-    },
     [ACCOUNT_TABS.BlockIssuance]: {
         disabled: !isBlockIssuer,
         hidden: !isBlockIssuer,
         isLoading: isCongestionLoading,
         infoContent: bicMessage,
+    },
+    [ACCOUNT_TABS.Foundries]: {
+        disabled: foundriesCount === 0,
+        hidden: foundriesCount === 0,
+        isLoading: isAccountFoundriesLoading,
+        infoContent: foundriesMessage,
     },
     [ACCOUNT_TABS.Validation]: {
         disabled: !hasStakingFeature,
@@ -228,7 +227,6 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             ? [<NftMetadataSection key={`nft-meta-${addressBech32}`} nftOutput={(addressState as INftAddressState).nftOutput} />]
             : null;
 
-    let tabEnums = DEFAULT_TABS;
     const nftsCount = addressState.addressNftOutputs?.length ?? 0;
     const delegationCount = addressState.addressDelegationOutputs?.length ?? 0;
     const defaultTabsOptions = buildDefaultTabsOptions(
@@ -240,10 +238,11 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
         isNftOutputsLoading,
         isDelegationOutputsLoading,
         isAddressHistoryLoading,
-        isAddressHistoryDisabled,
     );
-    let tabOptions = defaultTabsOptions;
-    let tabbedSections = defaultSections;
+
+    let tabOptions = null;
+    let tabEnums = null;
+    let tabbedSections = null;
 
     switch (addressDetails.type) {
         case AddressType.Account: {
@@ -264,27 +263,34 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             break;
         }
         case AddressType.Nft: {
+            defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            defaultTabsOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             const nftAddressState = addressState as INftAddressState;
             const nftMetadata = nftAddressState.nftOutput ? TransactionsHelper.getNftMetadataFeature(nftAddressState.nftOutput) : null;
-            tabEnums = { ...DEFAULT_TABS, ...NFT_TABS };
+            tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
             tabOptions = {
-                ...tabOptions,
                 ...buildNftAddressTabsOptions(!nftMetadata, nftAddressState.isNftDetailsLoading),
+                ...defaultTabsOptions,
             };
-            tabbedSections = [...defaultSections, ...(nftAddressSections ?? [])];
+            tabbedSections = [...(nftAddressSections ?? []), ...defaultSections];
             break;
         }
         case AddressType.Anchor: {
+            defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
+            defaultTabsOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             const anchorAddressState = addressState as IAnchorAddressState;
-            tabEnums = { ...DEFAULT_TABS, ...ANCHOR_TABS };
+            tabEnums = { ...ANCHOR_TABS, ...DEFAULT_TABS };
             tabOptions = {
-                ...defaultTabsOptions,
                 ...buildAnchorAddressTabsOptions(anchorAddressState.anchorOutput === null, anchorAddressState.isAnchorDetailsLoading),
+                ...defaultTabsOptions,
             };
-            tabbedSections = [...defaultSections, ...(anchorAddressSections ?? [])];
+            tabbedSections = [...(anchorAddressSections ?? []), ...defaultSections];
             break;
         }
         default: {
+            tabEnums = DEFAULT_TABS;
+            tabOptions = defaultTabsOptions;
+            tabbedSections = defaultSections;
             break;
         }
     }
