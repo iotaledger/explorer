@@ -138,7 +138,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.accountId]);
 
     useEffect(() => {
         let updatedState: Partial<IAccountAddressState> = {

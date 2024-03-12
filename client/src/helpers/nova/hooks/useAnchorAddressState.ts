@@ -100,7 +100,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.anchorId]);
 
     useEffect(() => {
         setState({

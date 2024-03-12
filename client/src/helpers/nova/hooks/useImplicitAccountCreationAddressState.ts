@@ -77,7 +77,7 @@ export const useImplicitAccountCreationAddressState = (
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.address().pubKeyHash]);
 
     useEffect(() => {
         setState({

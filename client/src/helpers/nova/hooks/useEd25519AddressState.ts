@@ -90,9 +90,10 @@ export const useEd25519AddressState = (address: Ed25519Address): [IEd25519Addres
             : { addressDetails: AddressHelper.buildAddress(bech32Hrp, address) };
 
         setState({
+            ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.pubKeyHash]);
 
     useEffect(() => {
         setState({
