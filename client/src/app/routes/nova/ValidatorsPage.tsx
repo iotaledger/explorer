@@ -26,7 +26,7 @@ const ValidatorsPage: React.FC = () => {
                                     <div className="validator-item__is-elected">Elected?</div>
                                     <div className="validator-item__fixed-cost">Fixed cost</div>
                                     <div className="validator-item__stake">Stake (Own/Delegated)</div>
-                                    <div className="validator-item__cumulative-stake">Cumulative stake</div>
+                                    <div className="validator-item__cumulative-stake">Pool stake</div>
                                     <div className="validator-item__delegators">Delegators</div>
                                     <div className="validator-item__rank">Rank by stake</div>
                                 </div>
