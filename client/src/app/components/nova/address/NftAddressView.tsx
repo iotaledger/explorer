@@ -14,10 +14,12 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
     const [state, setState] = useNftAddressState(nftAddress);
     const {
         addressDetails,
+        storageDeposit,
         totalBaseTokenBalance,
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        manaRewards,
         isNftDetailsLoading,
         isAssociatedOutputsLoading,
     } = state;
@@ -48,7 +50,8 @@ const NftAddressView: React.FC<NftAddressViewProps> = ({ nftAddress }) => {
                                         availableBaseTokenBalance={availableBaseTokenBalance}
                                         totalManaBalance={totalManaBalance}
                                         availableManaBalance={availableManaBalance}
-                                        storageDeposit={null}
+                                        storageDeposit={storageDeposit}
+                                        manaRewards={manaRewards}
                                     />
                                 </div>
                             </div>

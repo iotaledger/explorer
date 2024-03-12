@@ -6,7 +6,6 @@ import {
     CongestionResponse,
     FeatureType,
     OutputWithMetadataResponse,
-    ManaRewardsResponse,
     StakingFeature,
     ValidatorResponse,
 } from "@iota/sdk-wasm-nova/web";
@@ -22,6 +21,7 @@ import { useAccountControlledFoundries } from "./useAccountControlledFoundries";
 import { useAccountCongestion } from "./useAccountCongestion";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
 import { useAccountValidatorDetails } from "./useAccountValidatorDetails";
+import { TransactionsHelper } from "../transactionsHelper";
 import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { useOutputManaRewards } from "./useOutputManaRewards";
@@ -30,12 +30,13 @@ import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails
 export interface IAccountAddressState {
     addressDetails: IAddressDetails | null;
     accountOutput: AccountOutput | null;
+    storageDeposit: number | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
     blockIssuerFeature: BlockIssuerFeature | null;
-    manaRewards: ManaRewardsResponse | null;
+    manaRewards: bigint | null;
     stakingFeature: StakingFeature | null;
     validatorDetails: ValidatorResponse | null;
     addressBasicOutputs: OutputWithMetadataResponse[] | null;
@@ -58,6 +59,7 @@ export interface IAccountAddressState {
 const initialState = {
     addressDetails: null,
     accountOutput: null,
+    storageDeposit: null,
     totalBaseTokenBalance: null,
     availableBaseTokenBalance: null,
     totalManaBalance: null,
@@ -93,33 +95,40 @@ interface IAddressPageLocationProps {
 export const useAccountAddressState = (address: AccountAddress): [IAccountAddressState, React.Dispatch<Partial<IAccountAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IAccountAddressState, Partial<IAccountAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
     );
 
     const { accountOutput, accountOutputMetadata, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
-    const { manaRewards } = useOutputManaRewards(network, accountOutputMetadata?.outputId ?? "");
+    const { manaRewards: outputManaRewards } = useOutputManaRewards(network, accountOutputMetadata?.outputId ?? "");
 
+    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
+    const [foundries, accountFoundryOutputs, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
+    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
+        network,
+        state.addressDetails?.bech32 ?? null,
+    );
+    const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
+    const { validatorDetails, isLoading: isValidatorDetailsLoading } = useAccountValidatorDetails(
+        network,
+        state.addressDetails?.hex ?? null,
+    );
+
+    const delegationRewards = addressDelegationOutputs?.map((output) => output.rewards?.manaRewards) ?? [];
+    const allManaRewards = [outputManaRewards, ...delegationRewards].filter(Boolean) ?? [];
+    const manaRewards =
+        allManaRewards && allManaRewards.length > 0
+            ? allManaRewards.reduce((total, rewardsResponse) => total + BigInt(rewardsResponse?.rewards ?? 0), BigInt(0))
+            : null;
     const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
         network,
         state.addressDetails,
         accountOutput,
         accountOutputMetadata,
         manaRewards,
-    );
-    const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
-    const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
-    const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
-        network,
-        state.addressDetails?.bech32 ?? null,
-    );
-    const [foundries, isFoundriesLoading] = useAccountControlledFoundries(network, state.addressDetails);
-    const { congestion, isLoading: isCongestionLoading } = useAccountCongestion(network, state.addressDetails?.hex ?? null);
-    const { validatorDetails, isLoading: isValidatorDetailsLoading } = useAccountValidatorDetails(
-        network,
-        state.addressDetails?.hex ?? null,
     );
 
     useEffect(() => {
@@ -132,7 +141,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
             ...initialState,
             addressDetails,
         });
-    }, []);
+    }, [address.accountId]);
 
     useEffect(() => {
         let updatedState: Partial<IAccountAddressState> = {
@@ -158,6 +167,20 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         };
 
         if (accountOutput) {
+            const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? []), ...(accountFoundryOutputs ?? [])].map(
+                ({ output }) => output,
+            );
+            if (protocolInfo?.parameters.storageScoreParameters) {
+                const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                    [...addressOutputs, accountOutput],
+                    protocolInfo?.parameters.storageScoreParameters,
+                );
+                updatedState = {
+                    ...updatedState,
+                    storageDeposit,
+                };
+            }
+
             if (!state.blockIssuerFeature) {
                 const blockIssuerFeature = accountOutput?.features?.find(
                     (feature) => feature.type === FeatureType.BlockIssuer,
@@ -191,6 +214,7 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
         manaRewards,
         addressBasicOutputs,
         addressNftOutputs,
+        accountFoundryOutputs,
         addressDelegationOutputs,
         congestion,
         validatorDetails,

@@ -50,6 +50,7 @@ import Visualizer from "./routes/nova/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
+import ValidatorsPage from "./routes/nova/ValidatorsPage";
 import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 
 /**
@@ -188,6 +189,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={NovaTransactionPage} />,
         <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={NovaFoundryPage} />,
         <Route path="/:network/statistics" key={keys.next().value} component={NovaStatisticsPage} />,
+        <Route path="/:network/validators" key={keys.next().value} component={ValidatorsPage} />,
     ];
 
     return (
