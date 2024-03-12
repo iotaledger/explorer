@@ -9,6 +9,7 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { TransactionsHelper } from "../transactionsHelper";
 import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
@@ -16,6 +17,7 @@ import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails
 export interface INftAddressState {
     addressDetails: IAddressDetails | null;
     nftOutput: NftOutput | null;
+    storageDeposit: number | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
@@ -36,7 +38,7 @@ export interface INftAddressState {
 const initialState = {
     addressDetails: null,
     nftOutput: null,
-    isNftDetailsLoading: true,
+    storageDeposit: null,
     totalBaseTokenBalance: null,
     availableBaseTokenBalance: null,
     totalManaBalance: null,
@@ -45,6 +47,7 @@ const initialState = {
     addressBasicOutputs: null,
     addressNftOutputs: null,
     addressDelegationOutputs: null,
+    isNftDetailsLoading: true,
     isBasicOutputsLoading: false,
     isNftOutputsLoading: false,
     isDelegationOutputsLoading: false,
@@ -63,7 +66,7 @@ interface IAddressPageLocationProps {
 export const useNftAddressState = (address: NftAddress): [INftAddressState, React.Dispatch<Partial<INftAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<INftAddressState, Partial<INftAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
@@ -104,7 +107,7 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     }, [address.nftId]);
 
     useEffect(() => {
-        setState({
+        let updatedState: Partial<INftAddressState> = {
             nftOutput,
             totalBaseTokenBalance,
             availableBaseTokenBalance,
@@ -118,7 +121,23 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
             isBasicOutputsLoading,
             isNftOutputsLoading,
             isDelegationOutputsLoading,
-        });
+        };
+
+        if (nftOutput) {
+            const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? [])].map(({ output }) => output);
+            if (protocolInfo?.parameters.storageScoreParameters) {
+                const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                    [...addressOutputs, nftOutput],
+                    protocolInfo?.parameters.storageScoreParameters,
+                );
+                updatedState = {
+                    ...updatedState,
+                    storageDeposit,
+                };
+            }
+        }
+
+        setState(updatedState);
     }, [
         nftOutput,
         totalBaseTokenBalance,

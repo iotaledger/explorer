@@ -9,6 +9,7 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { TransactionsHelper } from "../transactionsHelper";
 import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
@@ -16,6 +17,7 @@ import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails
 export interface IAnchorAddressState {
     addressDetails: IAddressDetails | null;
     anchorOutput: AnchorOutput | null;
+    storageDeposit: number | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
@@ -36,6 +38,7 @@ export interface IAnchorAddressState {
 const initialState = {
     addressDetails: null,
     anchorOutput: null,
+    storageDeposit: null,
     totalBaseTokenBalance: null,
     availableBaseTokenBalance: null,
     totalManaBalance: null,
@@ -63,7 +66,7 @@ interface IAddressPageLocationProps {
 export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressState, React.Dispatch<Partial<IAnchorAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IAnchorAddressState, Partial<IAnchorAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
@@ -103,7 +106,7 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
     }, [address.anchorId]);
 
     useEffect(() => {
-        setState({
+        let updatedState: Partial<IAnchorAddressState> = {
             anchorOutput,
             totalBaseTokenBalance,
             availableBaseTokenBalance,
@@ -117,7 +120,23 @@ export const useAnchorAddressState = (address: AnchorAddress): [IAnchorAddressSt
             isNftOutputsLoading,
             isDelegationOutputsLoading,
             isAnchorDetailsLoading,
-        });
+        };
+
+        if (anchorOutput) {
+            const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? [])].map(({ output }) => output);
+            if (protocolInfo?.parameters.storageScoreParameters) {
+                const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                    [...addressOutputs, anchorOutput],
+                    protocolInfo?.parameters.storageScoreParameters,
+                );
+                updatedState = {
+                    ...updatedState,
+                    storageDeposit,
+                };
+            }
+        }
+
+        setState(updatedState);
     }, [
         anchorOutput,
         totalBaseTokenBalance,

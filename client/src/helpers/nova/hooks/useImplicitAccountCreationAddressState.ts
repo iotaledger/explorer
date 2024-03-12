@@ -8,11 +8,13 @@ import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { useAddressBalance } from "./useAddressBalance";
 import { useAddressBasicOutputs } from "~/helpers/nova/hooks/useAddressBasicOutputs";
 import { useAddressNftOutputs } from "~/helpers/nova/hooks/useAddressNftOutputs";
+import { TransactionsHelper } from "../transactionsHelper";
 import { useAddressDelegationOutputs } from "./useAddressDelegationOutputs";
 import { IDelegationWithDetails } from "~/models/api/nova/IDelegationWithDetails";
 
 export interface IImplicitAccountCreationAddressState {
     addressDetails: IAddressDetails | null;
+    storageDeposit: number | null;
     totalBaseTokenBalance: number | null;
     availableBaseTokenBalance: number | null;
     addressBasicOutputs: OutputWithMetadataResponse[] | null;
@@ -30,6 +32,7 @@ const initialState = {
     addressDetails: null,
     totalBaseTokenBalance: null,
     availableBaseTokenBalance: null,
+    storageDeposit: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     addressDelegationOutputs: null,
@@ -53,7 +56,7 @@ export const useImplicitAccountCreationAddressState = (
 ): [IImplicitAccountCreationAddressState, React.Dispatch<Partial<IImplicitAccountCreationAddressState>>] => {
     const location = useLocation();
     const { network } = useParams<AddressRouteProps>();
-    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [state, setState] = useReducer<Reducer<IImplicitAccountCreationAddressState, Partial<IImplicitAccountCreationAddressState>>>(
         (currentState, newState) => ({ ...currentState, ...newState }),
         initialState,
@@ -80,7 +83,7 @@ export const useImplicitAccountCreationAddressState = (
     }, [address.address().pubKeyHash]);
 
     useEffect(() => {
-        setState({
+        let updatedState: Partial<IImplicitAccountCreationAddressState> = {
             totalBaseTokenBalance,
             availableBaseTokenBalance,
             addressBasicOutputs,
@@ -89,7 +92,21 @@ export const useImplicitAccountCreationAddressState = (
             isBasicOutputsLoading,
             isNftOutputsLoading,
             isDelegationOutputsLoading,
-        });
+        };
+
+        const addressOutputs = [...(addressBasicOutputs ?? []), ...(addressNftOutputs ?? [])].map(({ output }) => output);
+        if (protocolInfo?.parameters.storageScoreParameters) {
+            const storageDeposit = TransactionsHelper.computeStorageDeposit(
+                [...addressOutputs],
+                protocolInfo?.parameters.storageScoreParameters,
+            );
+            updatedState = {
+                ...updatedState,
+                storageDeposit,
+            };
+        }
+
+        setState(updatedState);
     }, [
         totalBaseTokenBalance,
         availableBaseTokenBalance,

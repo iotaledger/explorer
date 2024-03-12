@@ -184,6 +184,15 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the anchor outputs details of an address.
+     * @param request The Address Anchor outputs request.
+     * @returns The Address outputs response
+     */
+    public async anchorOutputsDetails(request: IAddressDetailsRequest): Promise<IAddressDetailsResponse> {
+        return this.callApi<unknown, IAddressDetailsResponse>(`nova/address/outputs/anchor/${request.network}/${request.address}`, "get");
+    }
+
+    /**
      * Get the delegation outputs details of an address.
      * @param request The Address Delegation outputs request.
      * @returns The Address outputs response
