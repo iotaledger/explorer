@@ -5,6 +5,8 @@ import Viva from "vivagraphjs";
 import { INodeData } from "~models/graph/stardust/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "~helpers/nodeShader";
+import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
+import { getBlockParents } from "~features/visualizer-vivagraph/lib/helpers";
 
 export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
@@ -16,6 +18,10 @@ export const useFeed = (network: string) => {
     const existingIds = useRef<string[]>([]);
     const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
     const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
+    const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
+    const getExistingBlockIds = useTangleStore((state) => state.getExistingBlockIds);
+    const updateBlockIdToMetadata = useTangleStore((state) => state.updateBlockIdToMetadata);
+    const createBlockIdToMetadata = useTangleStore((state) => state.createBlockIdToMetadata);
 
     const [itemCount, setItemCount] = useState<number>(0);
 
@@ -36,36 +42,21 @@ export const useFeed = (network: string) => {
             lastUpdateTime.current = now;
 
             const blockId = newBlock.blockId;
-            const existingNode = graph.current.getNode(blockId);
+            const blockMetadata = getBlockIdToMetadata(blockId);
 
-            if (!existingNode) {
+            if (!blockMetadata) {
+                createBlockIdToMetadata(blockId, newBlock);
                 graph.current.addNode(blockId, {
                     feedItem: newBlock,
                     added: now,
                 });
 
-                existingIds.current.push(blockId);
+                const parentIds = getBlockParents(newBlock);
+                const existingBlockIds = getExistingBlockIds();
 
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                const parents = newBlock.block?.body?.strongParents?.length
-                    ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                      // @ts-ignore
-                      newBlock.block?.body?.strongParents
-                    : [];
-                if (parents) {
-                    const addedParents: string[] = [];
-                    for (let i = 0; i < parents; i++) {
-                        const parentId = parents[i];
-                        if (!addedParents.includes(parentId)) {
-                            addedParents.push(parentId);
-                            if (!graph.current.getNode(parentId)) {
-                                // graph.current.addNode(parentId);
-                                existingIds.current.push(parentId);
-                            }
-
-                            // graph.current.addLink(parentId, blockId);
-                        }
+                for (const parentId of parentIds) {
+                    if (existingBlockIds.includes(parentId)) {
+                        graph.current.addLink(parentId, blockId);
                     }
                 }
 
