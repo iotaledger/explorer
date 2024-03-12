@@ -65,7 +65,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         }
 
         if (title) {
-            setPageTitle(`${title} ${pageTitle}`);
+            setPageTitle(`${title} Block`);
         }
     }
     useEffect(() => {
@@ -78,9 +78,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 const tsxId = Utils.transactionId(body.payload as SignedTransactionPayload);
                 setTransactionId(tsxId);
             }
-        } else {
+        }
+        if (block?.isValidation()) {
             setBlockBody(block?.body.asValidation());
-            setPageTitle(`Validation ${pageTitle}`);
+            setPageTitle(`Validation Block`);
         }
     }, [block]);
 
