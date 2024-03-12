@@ -1,4 +1,4 @@
-import { BasicOutput, ManaRewardsResponse, Output, ProtocolParameters, Utils } from "@iota/sdk-wasm-nova/web";
+import { BasicOutput, Output, ProtocolParameters, Utils } from "@iota/sdk-wasm-nova/web";
 import { IKeyValueEntries } from "~/app/lib/interfaces";
 
 export interface OutputManaDetails {
@@ -6,7 +6,7 @@ export interface OutputManaDetails {
     storedManaDecayed: string;
     potentialMana: string;
     totalMana: string;
-    delegationRewards?: string | null;
+    manaRewards?: string | null;
 }
 
 export function buildManaDetailsForOutput(
@@ -14,23 +14,22 @@ export function buildManaDetailsForOutput(
     createdSlotIndex: number,
     spentOrLatestSlotIndex: number,
     protocolParameters: ProtocolParameters,
-    outputManaRewards: ManaRewardsResponse | null,
+    manaRewards: bigint | null,
 ): OutputManaDetails {
     const decayedMana = Utils.outputManaWithDecay(output, createdSlotIndex, spentOrLatestSlotIndex, protocolParameters);
     const storedManaDecayed = BigInt(decayedMana.stored).toString();
     const potentialMana = BigInt(decayedMana.potential).toString();
-    const delegationRewards = outputManaRewards && BigInt(outputManaRewards?.rewards) > 0 ? BigInt(outputManaRewards?.rewards) : null;
     let totalMana = BigInt(decayedMana.stored) + BigInt(decayedMana.potential);
 
-    if (delegationRewards !== null) {
-        totalMana += delegationRewards;
+    if (manaRewards !== null) {
+        totalMana += manaRewards;
     }
 
     return {
         storedMana: (output as BasicOutput).mana?.toString(),
         storedManaDecayed,
         potentialMana,
-        delegationRewards: delegationRewards !== null ? delegationRewards?.toString() : undefined,
+        manaRewards: manaRewards?.toString() ?? undefined,
         totalMana: totalMana.toString(),
     };
 }
@@ -56,8 +55,8 @@ export function getManaKeyValueEntries(manaDetails: OutputManaDetails | null): I
                 value: manaDetails?.potentialMana,
             },
             {
-                label: "Delegation Rewards:",
-                value: manaDetails?.delegationRewards,
+                label: "Mana Rewards:",
+                value: manaDetails?.manaRewards,
             },
         ],
     };

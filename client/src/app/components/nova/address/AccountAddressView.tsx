@@ -51,7 +51,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                                         totalManaBalance={totalManaBalance}
                                         availableManaBalance={availableManaBalance}
                                         blockIssuanceCredits={congestion?.blockIssuanceCredits}
-                                        manaRewards={manaRewards?.rewards}
+                                        manaRewards={manaRewards}
                                     />
                                 </div>
                             </div>

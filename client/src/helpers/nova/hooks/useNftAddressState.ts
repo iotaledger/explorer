@@ -20,6 +20,7 @@ export interface INftAddressState {
     availableBaseTokenBalance: number | null;
     totalManaBalance: IManaBalance | null;
     availableManaBalance: IManaBalance | null;
+    manaRewards: bigint | null;
     addressBasicOutputs: OutputWithMetadataResponse[] | null;
     addressNftOutputs: OutputWithMetadataResponse[] | null;
     addressDelegationOutputs: IDelegationWithDetails[] | null;
@@ -40,6 +41,7 @@ const initialState = {
     availableBaseTokenBalance: null,
     totalManaBalance: null,
     availableManaBalance: null,
+    manaRewards: null,
     addressBasicOutputs: null,
     addressNftOutputs: null,
     addressDelegationOutputs: null,
@@ -68,17 +70,25 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
     );
 
     const { nftOutput, nftOutputMetadata, isLoading: isNftDetailsLoading } = useNftDetails(network, address.nftId);
-    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
-        network,
-        state.addressDetails,
-        nftOutput,
-        nftOutputMetadata,
-    );
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressDelegationOutputs, isDelegationOutputsLoading] = useAddressDelegationOutputs(
         network,
         state.addressDetails?.bech32 ?? null,
+    );
+
+    const delegationRewards = addressDelegationOutputs?.map((output) => output.rewards?.manaRewards) ?? [];
+    const manaRewards =
+        delegationRewards.length > 0
+            ? delegationRewards.reduce((total, rewardsResponse) => total + BigInt(rewardsResponse?.rewards ?? 0), BigInt(0))
+            : null;
+
+    const { totalBaseTokenBalance, availableBaseTokenBalance, totalManaBalance, availableManaBalance } = useAddressBalance(
+        network,
+        state.addressDetails,
+        nftOutput,
+        nftOutputMetadata,
+        manaRewards,
     );
 
     useEffect(() => {
@@ -100,6 +110,7 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
             availableBaseTokenBalance,
             totalManaBalance,
             availableManaBalance,
+            manaRewards,
             isNftDetailsLoading,
             addressBasicOutputs,
             addressNftOutputs,
@@ -114,6 +125,7 @@ export const useNftAddressState = (address: NftAddress): [INftAddressState, Reac
         availableBaseTokenBalance,
         totalManaBalance,
         availableManaBalance,
+        manaRewards,
         isNftDetailsLoading,
         addressBasicOutputs,
         addressNftOutputs,
