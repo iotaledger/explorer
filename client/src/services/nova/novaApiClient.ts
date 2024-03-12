@@ -46,6 +46,9 @@ import { ISlotBlocksRequest } from "~/models/api/nova/ISlotBlocksRequest";
 import { ISlotBlocksResponse } from "~/models/api/nova/ISlotBlocksResponse";
 import { IEpochCommitteeRequest } from "~/models/api/nova/IEpochCommitteeRequest";
 import { IEpochCommitteeResponse } from "~/models/api/nova/IEpochCommitteeResponse";
+import { IInfluxDailyResponse } from "~/models/api/nova/influx/IInfluxDailyResponse";
+import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMetadataResponse";
+import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -94,6 +97,18 @@ export class NovaApiClient extends ApiClient {
      */
     public async transactionIncludedBlockDetails(request: ITransactionDetailsRequest): Promise<ITransactionDetailsResponse> {
         return this.callApi<unknown, ITransactionDetailsResponse>(`nova/transaction/${request.network}/${request.transactionId}`, "get");
+    }
+
+    /**
+     * Get the transaction metadata.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async transactionMetadata(request: ITransactionDetailsRequest): Promise<ITransactionMetadataResponse> {
+        return this.callApi<unknown, ITransactionMetadataResponse>(
+            `nova/transaction/metadata/${request.network}/${request.transactionId}`,
+            "get",
+        );
     }
 
     /**
@@ -263,6 +278,15 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the current cached validators.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getValidators(request: INetworkBoundGetRequest): Promise<IValidatorsResponse> {
+        return this.callApi<unknown, IValidatorsResponse>(`nova/validators/${request.network}`, "get");
+    }
+
+    /**
      * Get the stats.
      * @param request The request to send.
      * @returns The response from the request.
@@ -300,5 +324,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async search(request: ISearchRequest): Promise<ISearchResponse> {
         return this.callApi<unknown, ISearchResponse>(`nova/search/${request.network}/${request.query}`, "get");
+    }
+
+    /**
+     * Get the influx analytics stats.
+     * @param request The request to send.
+     * @param request.network The network to fetch for.
+     * @returns The response from the request.
+     */
+    public async influxAnalytics(request: { network: string }): Promise<IInfluxDailyResponse> {
+        return this.callApi<unknown, IInfluxDailyResponse>(`nova/analytics/daily/${request.network}`, "get");
     }
 }

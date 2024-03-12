@@ -7,7 +7,7 @@ import { IOTA_UI, Theme } from "~models/config/uiTheme";
 import { IStardustNodeInfo } from "~services/stardust/nodeInfoService";
 import { ServiceFactory } from "~/factories/serviceFactory";
 import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoService";
-import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { MANA_INFO_DEFAULT, useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { NavigationRoute } from "./lib/interfaces";
 import { InfoResponse } from "@iota/sdk-wasm-nova/web";
 
@@ -167,6 +167,7 @@ export const populateNetworkInfoNova = (networkName: string) => {
             setNetworkInfoNova({
                 name: networkName,
                 tokenInfo: nodeInfo?.baseToken ?? {},
+                manaInfo: MANA_INFO_DEFAULT,
                 protocolVersion: protocolInfo?.parameters.version ?? -1,
                 protocolInfo,
                 latestConfirmedSlot: nodeInfo?.status?.latestConfirmedBlockSlot ?? -1,

@@ -35,6 +35,7 @@ import { hasSpecialCondition, isOutputExpired, isOutputTimeLocked } from "~/help
 import Tooltip from "../Tooltip";
 import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
 import { DateHelper } from "~/helpers/dateHelper";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./OutputView.scss";
 
 interface OutputViewProps {
@@ -49,7 +50,7 @@ interface OutputViewProps {
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
     const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const { bech32Hrp, name: network, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, name: network, protocolInfo, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
 
     const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
@@ -116,7 +117,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                             e.stopPropagation();
                         }}
                     >
-                        {output.amount}
+                        {formatAmount(output.amount, tokenInfo, !isFormattedBalance)}
                     </span>
                 </div>
             )}

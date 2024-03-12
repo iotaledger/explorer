@@ -1,8 +1,4 @@
-import { INanoDate } from "influx";
-
-export interface ITimedEntry {
-    time: INanoDate;
-}
+import { ITimedEntry } from "../types";
 
 export type IBlocksDailyInflux = ITimedEntry & {
     transaction: number | null;

@@ -14,14 +14,13 @@ export class NovaStatsService extends BaseStatsService {
     protected async updateStatistics(): Promise<void> {
         try {
             const client = ServiceFactory.get<Client>(`client-${this._networkConfiguration.network}`);
-            const response = await client.getNodeInfo();
+            const metricsResponse = await client.getNetworkMetrics();
 
-            if (response) {
-                const metrics = response.info.metrics;
+            if (metricsResponse) {
                 this._statistics.push({
-                    itemsPerSecond: Number(metrics.blocksPerSecond),
-                    confirmedItemsPerSecond: Number(metrics.confirmedBlocksPerSecond),
-                    confirmationRate: Number(metrics.confirmationRate),
+                    itemsPerSecond: Number(metricsResponse.blocksPerSecond),
+                    confirmedItemsPerSecond: Number(metricsResponse.confirmedBlocksPerSecond),
+                    confirmationRate: Number(metricsResponse.confirmationRate),
                 });
 
                 logger.debug(`[NovaStatsService] Updating network statistics for ${this._networkConfiguration.network}`);

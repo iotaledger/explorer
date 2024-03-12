@@ -8,6 +8,7 @@ import { useRenderEdges } from "./useRenderEdges";
 import useVisualizerTimer from "~/helpers/nova/hooks/useVisualizerTimer";
 import { positionToVector } from "./utils";
 import { getVisualizerConfigValues } from "~features/visualizer-threejs/ConfigControls";
+import useSearchStore from "~features/visualizer-threejs/store/search";
 
 const SPHERE_GEOMETRY = new THREE.SphereGeometry(NODE_SIZE_DEFAULT, 32, 16);
 const SPHERE_MATERIAL = new THREE.MeshPhongMaterial();
@@ -25,6 +26,7 @@ export const useRenderTangle = () => {
     const removeFromBlockQueue = useTangleStore((s) => s.removeFromBlockQueue);
 
     const colorQueue = useTangleStore((s) => s.colorQueue);
+    const addToColorQueue = useTangleStore((s) => s.addToColorQueue);
     const removeFromColorQueue = useTangleStore((s) => s.removeFromColorQueue);
 
     const blockIdToIndex = useTangleStore((s) => s.blockIdToIndex);
@@ -44,7 +46,7 @@ export const useRenderTangle = () => {
         updateBlockIdToIndex(block.id, objectIndexRef.current);
 
         tangleMeshRef.current.setMatrixAt(objectIndexRef.current, SPHERE_TEMP_OBJECT.matrix);
-        tangleMeshRef.current.setColorAt(objectIndexRef.current, block.color);
+        addToColorQueue(block.id, block.color);
 
         // Reuses old indexes when MAX_INSTANCES is reached
         // This also makes it so that old nodes are removed
@@ -129,20 +131,30 @@ export const useRenderTangle = () => {
      * Update block colors
      */
     useEffect(() => {
+        const updateColorOnMesh = (id: string, color: THREE.Color) => {
+            const indexToUpdate = blockIdToIndex.get(id);
+
+            if (indexToUpdate) {
+                tangleMeshRef.current.setColorAt(indexToUpdate, color);
+
+                if (tangleMeshRef.current.instanceColor) {
+                    tangleMeshRef.current.instanceColor.needsUpdate = true;
+                }
+            }
+        };
+
         if (colorQueue.length > 0) {
             const removeIds: string[] = [];
+            const isPlaying = useConfigStore.getState().isPlaying;
+            const visibleBlockIdsOnPause = useTangleStore.getState().visibleBlockIdsOnPause;
+            const matchingBlockIds = useSearchStore.getState().matchingBlockIds;
+
             for (const { id, color } of colorQueue) {
-                const indexToUpdate = blockIdToIndex.get(id);
-
-                if (indexToUpdate) {
-                    tangleMeshRef.current.setColorAt(indexToUpdate, color);
-
-                    if (tangleMeshRef.current.instanceColor) {
-                        tangleMeshRef.current.instanceColor.needsUpdate = true;
-                    }
-
-                    removeIds.push(id);
+                const shouldUpdateColor = !matchingBlockIds.includes(id) && (isPlaying || visibleBlockIdsOnPause?.includes(id));
+                if (shouldUpdateColor) {
+                    updateColorOnMesh(id, color);
                 }
+                removeIds.push(id);
             }
 
             removeFromColorQueue(removeIds);
