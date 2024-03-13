@@ -1,9 +1,11 @@
+import { BasicBlockBody, Parents } from "@iota/sdk-wasm-nova/web";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 
-export const getBlockParents = (block: IFeedBlockData): string[] => {
-
-    // @ts-ignore
-    const parents = block.block?.body?.strongParents;
+export const getBlockParents = (blockData: IFeedBlockData): string[] => {
+    const parents: Parents = [];
+    const blockStrongParents = (blockData?.block?.body as BasicBlockBody).strongParents ?? [];
+    const blockWeakParents = (blockData?.block?.body as BasicBlockBody).weakParents ?? [];
+    parents.push(...blockStrongParents, ...blockWeakParents);
 
     if (parents && parents.length) {
         return parents;
@@ -19,4 +21,4 @@ export const getBlockParents = (block: IFeedBlockData): string[] => {
     // }
 
     return [];
-}
+};

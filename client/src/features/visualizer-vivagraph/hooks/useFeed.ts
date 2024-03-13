@@ -7,6 +7,7 @@ import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "~helpers/nodeShader";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
 import { getBlockParents } from "~features/visualizer-vivagraph/lib/helpers";
+import { MAX_VISIBLE_BLOCKS } from "~features/visualizer-vivagraph/definitions/constants";
 
 export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
@@ -15,19 +16,18 @@ export const useFeed = (network: string) => {
     const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
     const resetCounter = useRef<number>(0);
     const lastUpdateTime = useRef<number>(0);
-    const existingIds = useRef<string[]>([]);
     const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
     const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
     const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
     const getExistingBlockIds = useTangleStore((state) => state.getExistingBlockIds);
-    const updateBlockIdToMetadata = useTangleStore((state) => state.updateBlockIdToMetadata);
     const createBlockIdToMetadata = useTangleStore((state) => state.createBlockIdToMetadata);
-
-    const [itemCount, setItemCount] = useState<number>(0);
+    const getVisibleBlocks = useTangleStore((state) => state.getVisibleBlocks);
+    const setVisibleBlocks = useTangleStore((state) => state.setVisibleBlocks);
+    const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
 
     useEffect(() => {
         // eslint-disable-next-line no-void
-        void (async () => {
+        void (() => {
             if (!feedService) {
                 return;
             }
@@ -35,6 +35,27 @@ export const useFeed = (network: string) => {
             feedSubscriptionStart();
         })();
     }, [feedService, graph.current, graphElement.current]);
+
+    const createBlock = (blockId: string, newBlock: IFeedBlockData, addedTime: number) => {
+        createBlockIdToMetadata(blockId, newBlock);
+
+        graph.current?.addNode(blockId, {
+            feedItem: newBlock,
+            added: addedTime,
+        });
+        const visibleBlocks = getVisibleBlocks();
+        const updatedVisibleBlocks = [...visibleBlocks, blockId];
+
+        if (updatedVisibleBlocks.length >= MAX_VISIBLE_BLOCKS) {
+            const firstBlockId = updatedVisibleBlocks[0];
+            updatedVisibleBlocks.shift();
+            deleteBlockIdToMetadata(firstBlockId);
+            graph.current?.removeNode(firstBlockId);
+            // graph.current?.removeLink(); // TODO investigate if we need to remove it manually
+        }
+
+        setVisibleBlocks(updatedVisibleBlocks);
+    };
 
     const onNewBlock = (newBlock: IFeedBlockData) => {
         if (graph.current) {
@@ -45,11 +66,7 @@ export const useFeed = (network: string) => {
             const blockMetadata = getBlockIdToMetadata(blockId);
 
             if (!blockMetadata) {
-                createBlockIdToMetadata(blockId, newBlock);
-                graph.current.addNode(blockId, {
-                    feedItem: newBlock,
-                    added: now,
-                });
+                createBlock(blockId, newBlock, now);
 
                 const parentIds = getBlockParents(newBlock);
                 const existingBlockIds = getExistingBlockIds();
@@ -59,8 +76,6 @@ export const useFeed = (network: string) => {
                         graph.current.addLink(parentId, blockId);
                     }
                 }
-
-                setItemCount(existingIds.current.length);
             }
         }
     };
@@ -120,6 +135,5 @@ export const useFeed = (network: string) => {
     return {
         graphElement,
         resetCounter,
-        itemCount,
     };
 };

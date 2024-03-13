@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import { BlockState } from "@iota/sdk-wasm-nova/web";
 import StatsPanel from "~features/visualizer-threejs/wrapper/StatsPanel";
-
 import { SEARCH_RESULT_COLOR, THEME_BLOCK_COLORS } from "../definitions/constants";
 import { ThemeMode } from "../definitions/enums";
 import ColorPanel from "./ColorPanel";

@@ -2,6 +2,8 @@ import { BlockState } from "@iota/sdk-wasm-nova/web";
 import { Color } from "three";
 import { ThemeMode } from "./enums";
 
+export const MAX_VISIBLE_BLOCKS = 2500;
+
 // colors
 export const ACCEPTED_BLOCK_COLORS: Color[] = [new Color("#0101FF"), new Color("#0000DB"), new Color("#0101AB")];
 export const CONFIRMED_BLOCK_COLOR = new Color("#3CE5E1");

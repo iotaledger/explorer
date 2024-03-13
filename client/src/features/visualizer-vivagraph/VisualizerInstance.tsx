@@ -1,7 +1,4 @@
-import React, {
-    // useEffect,
-    useRef,
-} from "react";
+import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { VisualizerRouteProps } from "~app/routes/VisualizerRouteProps";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
@@ -15,27 +12,12 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         params: { network },
     },
 }) => {
-
     const [networkConfig] = useNetworkConfig(network);
     const themeMode = useGetThemeMode();
-    const { graphElement, itemCount } = useFeed(network);
+    const { graphElement } = useFeed(network);
 
     return (
-        <Wrapper
-            key={network}
-            blocksCount={itemCount}
-            network={network}
-            networkConfig={networkConfig}
-            selectNode={() => {}}
-            selectedFeedItem={null}
-            themeMode={themeMode}
-            searchValue={""}
-            onChangeSearch={(value) => {}}
-            isEdgeRenderingEnabled={false}
-            setEdgeRenderingEnabled={(checked) => {}}
-            isPlaying={false}
-            setIsPlaying={() => {}}
-        >
+        <Wrapper key={network} network={network} networkConfig={networkConfig} themeMode={themeMode} isPlaying selectedFeedItem={null}>
             <div className="viva" onClick={() => {}} ref={graphElement} />
         </Wrapper>
     );

@@ -19,9 +19,7 @@ export const SelectedFeedInfo = ({
 }) => {
     const [selectedBlockMetadata, isMetadataLoading] = useBlockMetadata(network, selectedFeedItem.blockId);
 
-    const onClose = useCallback(() => {
-        // pass
-    }, []);
+    const onClose = useCallback(() => {}, []);
 
     return (
         <div className="info-panel card padding-m">

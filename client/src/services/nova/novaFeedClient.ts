@@ -81,7 +81,6 @@ export class NovaFeedClient {
                 });
 
                 this.socket.on("block", async (update: IFeedUpdate) => {
-                    // TODO
                     if (update.subscriptionId === this.blockSubscriptionId) {
                         if (update.blockUpdate) {
                             onBlockDataCallback?.(update.blockUpdate);
