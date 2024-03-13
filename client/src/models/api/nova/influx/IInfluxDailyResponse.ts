@@ -42,12 +42,20 @@ interface ITokensHeldPerOutputDailyInflux {
 
 interface IAddressesWithBalanceDailyInflux {
     time: Date;
-    addressesWithBalance: number | null;
+    ed25519: number | null;
+    account: number | null;
+    implicit: number | null;
+    nft: number | null;
+    anchor: number | null;
 }
 
 interface IActiveAddressesDailyInflux {
     time: Date;
-    activeAddresses: number | null;
+    ed25519: number | null;
+    account: number | null;
+    implicit: number | null;
+    nft: number | null;
+    anchor: number | null;
 }
 
 interface ITokensTransferredDailyInflux {
@@ -135,8 +143,8 @@ interface IStorageDepositDailyInflux {
 
 interface IManaBurnedDailyInflux {
     time: Date;
-    blockCost: number | null;
-    manual: number | null;
+    manaBurned: number | null;
+    bicBurned: number | null;
 }
 
 export interface IInfluxDailyResponse extends IResponse {

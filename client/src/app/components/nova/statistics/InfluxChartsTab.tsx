@@ -122,20 +122,22 @@ export const InfluxChartsTab: React.FC = () => {
                     <ChartInfoPanel label="Locked storage deposit" value={lockedStorageDepositValue} />
                 </div>
                 <div className="row statistics-row margin-b-s">
-                    <LineChart
+                    <StackedLineChart
                         chartId={ids.next().value}
                         title="Total Addresses with Tokens"
                         info={graphMessages.totalAddressesWithTokens}
-                        label="Addresses"
-                        color="#00F5DD"
+                        subgroups={["ed25519", "account", "nft", "anchor", "implicit"]}
+                        groupLabels={["Ed25519", "Account", "Nft", "Anchor", "Implicit"]}
+                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1"]}
                         data={addressesWithBalanceDaily}
                     />
-                    <LineChart
+                    <StackedLineChart
                         chartId={ids.next().value}
                         title="Daily Active Addresses"
                         info={graphMessages.dailyActiveAddresses}
-                        label="Addresses"
-                        color="#00F5DD"
+                        subgroups={["ed25519", "account", "nft", "anchor", "implicit"]}
+                        groupLabels={["Ed25519", "Account", "Nft", "Anchor", "Implicit"]}
+                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1"]}
                         data={activeAddressesDaily}
                     />
                 </div>
@@ -316,8 +318,8 @@ export const InfluxChartsTab: React.FC = () => {
                         chartId={ids.next().value}
                         title="Mana Burned Daily"
                         info={graphMessages.manaBurned}
-                        subgroups={["blockCost", "manual"]}
-                        groupLabels={["Block Cost", "Manual"]}
+                        subgroups={["manaBurned", "bicBurned"]}
+                        groupLabels={["Mana Burned", "Bic Burned"]}
                         colors={["#00E0CA", "#36A1AC"]}
                         data={manaBurnedDaily}
                     />

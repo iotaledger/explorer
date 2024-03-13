@@ -1,40 +1,33 @@
-import { Block, parseBlock } from "@iota/sdk-wasm-nova/web";
+import { OutputResponse } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
-import { HexHelper } from "~/helpers/stardust/hexHelper";
 
 /**
- * Fetch the block
+ * Fetch Address anchor UTXOs
  * @param network The Network in context
- * @param blockId The block id
- * @returns The block, loading bool and an error message.
+ * @param addressBech32 The address in bech32 format
+ * @returns The output responses and loading bool.
  */
-export function useBlock(network: string, blockId: string | null): [Block | null, boolean, string?] {
+export function useAddressAnchorOutputs(network: string, addressBech32: string | null): [OutputResponse[] | null, boolean] {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
-    const [block, setBlock] = useState<Block | null>(null);
-    const [error, setError] = useState<string | undefined>();
+    const [outputs, setOutputs] = useState<OutputResponse[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         setIsLoading(true);
-        setBlock(null);
-        if (blockId) {
+        setOutputs(null);
+        if (addressBech32) {
             // eslint-disable-next-line no-void
             void (async () => {
                 apiClient
-                    .block({
-                        network,
-                        blockId: HexHelper.addPrefix(blockId),
-                    })
+                    .basicOutputsDetails({ network, address: addressBech32 })
                     .then((response) => {
-                        if (isMounted) {
-                            const block = parseBlock(response.block);
-                            setBlock(block ?? null);
-                            setError(response.error);
+                        if (!response?.error && response.outputs && isMounted) {
+                            setOutputs(response.outputs);
                         }
                     })
                     .finally(() => {
@@ -44,7 +37,7 @@ export function useBlock(network: string, blockId: string | null): [Block | null
         } else {
             setIsLoading(false);
         }
-    }, [network, blockId]);
+    }, [network, addressBech32]);
 
-    return [block, isLoading, error];
+    return [outputs, isLoading];
 }
