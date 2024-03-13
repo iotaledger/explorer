@@ -14,6 +14,7 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
     const [state, setState] = useAccountAddressState(accountAddress);
     const {
         addressDetails,
+        storageDeposit,
         totalBaseTokenBalance,
         availableBaseTokenBalance,
         totalManaBalance,
@@ -51,7 +52,8 @@ const AccountAddressView: React.FC<AccountAddressViewProps> = ({ accountAddress 
                                         totalManaBalance={totalManaBalance}
                                         availableManaBalance={availableManaBalance}
                                         blockIssuanceCredits={congestion?.blockIssuanceCredits}
-                                        manaRewards={manaRewards?.rewards}
+                                        storageDeposit={storageDeposit}
+                                        manaRewards={manaRewards}
                                     />
                                 </div>
                             </div>
