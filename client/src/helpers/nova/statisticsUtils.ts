@@ -81,12 +81,20 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
         addressesWithBalanceDaily:
             data.addressesWithBalanceDaily?.map((entry) => ({
                 time: moment(entry.time).add(1, "minute").unix(),
-                n: entry.addressesWithBalance ?? 0,
+                ed25519: entry.ed25519 ?? 0,
+                account: entry.account ?? 0,
+                implicit: entry.implicit ?? 0,
+                nft: entry.nft ?? 0,
+                anchor: entry.anchor ?? 0,
             })) ?? [],
         activeAddressesDaily:
             data.activeAddressesDaily?.map((day) => ({
                 time: moment(day.time).add(1, "minute").unix(),
-                n: day.activeAddresses ?? 0,
+                ed25519: day.ed25519 ?? 0,
+                account: day.account ?? 0,
+                implicit: day.implicit ?? 0,
+                nft: day.nft ?? 0,
+                anchor: day.anchor ?? 0,
             })) ?? [],
         tokensTransferredDaily:
             data.tokensTransferredDaily?.map((day) => ({
@@ -178,8 +186,8 @@ export function mapDailyStatsToGraphsData(data: IInfluxDailyResponse): IStatisti
         manaBurnedDaily:
             data.manaBurnedDaily?.map((day) => ({
                 time: moment(day.time).add(1, "minute").unix(),
-                blockCost: day.blockCost ?? 0,
-                manual: day.manual ?? 0,
+                manaBurned: day.manaBurned ?? 0,
+                bicBurned: day.bicBurned ?? 0,
             })) ?? [],
     };
 }

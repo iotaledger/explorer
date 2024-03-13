@@ -43,16 +43,16 @@ export const BLOCK_ISSUERS_DAILY_QUERY = {
 export const TRANSACTION_DAILY_QUERY = {
     full: `
         SELECT
-            sum("finalized_count") AS "finalized",
-            sum("failed_count") AS "failed"
+            sum("txn_finalized_count") AS "finalized",
+            sum("txn_failed_count") AS "failed"
         FROM "iota_block_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            sum("finalized_count") AS "finalized",
-            sum("failed_count") AS "failed"
+            sum("txn_finalized_count") AS "finalized",
+            sum("txn_failed_count") AS "failed"
         FROM "iota_block_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -116,14 +116,22 @@ export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
 export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
     full: `
         SELECT
-            last("address_with_balance_count") AS "addressesWithBalance"
+            last("ed25519_address_with_balance_count") AS "ed25519",
+            last("account_address_with_balance_count") AS "account",
+            last("nft_address_with_balance_count") AS "nft",
+            last("anchor_address_with_balance_count") AS "anchor",
+            last("implicit_account_address_with_balance_count") AS "implicit"
         FROM "iota_addresses"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            last("address_with_balance_count") AS "addressesWithBalance"
+            last("ed25519_address_with_balance_count") AS "ed25519",
+            last("account_address_with_balance_count") AS "account",
+            last("nft_address_with_balance_count") AS "nft",
+            last("anchor_address_with_balance_count") AS "anchor",
+            last("implicit_account_address_with_balance_count") AS "implicit"
         FROM "iota_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -133,14 +141,22 @@ export const ADDRESSES_WITH_BALANCE_DAILY_QUERY = {
 export const TOTAL_ACTIVE_ADDRESSES_DAILY_QUERY = {
     full: `
         SELECT
-            last("count") AS activeAddresses
+            last("ed25519_address_with_balance_count") AS "ed25519",
+            last("account_address_with_balance_count") AS "account",
+            last("nft_address_with_balance_count") AS "nft",
+            last("anchor_address_with_balance_count") AS "anchor",
+            last("implicit_account_address_with_balance_count") AS "implicit"
         FROM "iota_daily_active_addresses"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            last("count") AS activeAddresses
+            last("ed25519_address_with_balance_count") AS "ed25519",
+            last("account_address_with_balance_count") AS "account",
+            last("nft_address_with_balance_count") AS "nft",
+            last("anchor_address_with_balance_count") AS "anchor",
+            last("implicit_account_address_with_balance_count") AS "implicit"
         FROM "iota_daily_active_addresses"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -405,14 +421,14 @@ export const LEDGER_SIZE_DAILY_QUERY = {
 export const STORAGE_DEPOSIT_DAILY_QUERY = {
     full: `
         SELECT
-            last("total_storage_deposit_amount") / 1000000 AS "storageDeposit"
+            last("total_storage_score") / 1000000 AS "storageDeposit"
         FROM "iota_ledger_size"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            last("total_storage_deposit_amount") / 1000000 AS "storageDeposit"
+            last("total_storage_score") / 1000000 AS "storageDeposit"
         FROM "iota_ledger_size"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
@@ -422,17 +438,17 @@ export const STORAGE_DEPOSIT_DAILY_QUERY = {
 export const MANA_BURN_DAILY_QUERY = {
     full: `
         SELECT
-            last("block_cost") AS "blockCost",
-            last("manual") AS "manual"
-        FROM "iota_mana_ledger"
+            last("mana_burned") AS "manaBurned",
+            last("bic_burned") AS "bicBurned"
+        FROM "iota_mana_activity"
         WHERE time < $to
         GROUP BY time(1d) fill(null)
     `,
     partial: `
         SELECT
-            last("block_cost") AS "blockCost",
-            last("manual") AS "manual"
-        FROM "iota_mana_ledger"
+            last("mana_burned") AS "manaBurned",
+            last("bic_burned") AS "bicBurned"
+        FROM "iota_mana_activity"
         WHERE time >= $from and time <= $to
         GROUP BY time(1d) fill(null)
     `,

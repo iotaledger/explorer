@@ -34,13 +34,21 @@ export type ITokensHeldPerOutputDailyInflux = ITimedEntry & {
     anchor: number | null;
     delegation: number | null;
 };
-// add missing fields for each address type
+
 export type IAddressesWithBalanceDailyInflux = ITimedEntry & {
-    addressesWithBalance: number | null;
+    ed25519: number | null;
+    account: number | null;
+    implicit: number | null;
+    nft: number | null;
+    anchor: number | null;
 };
-// add missing fields for each address type
+
 export type IActiveAddressesDailyInflux = ITimedEntry & {
-    activeAddresses: number | null;
+    ed25519: number | null;
+    account: number | null;
+    implicit: number | null;
+    nft: number | null;
+    anchor: number | null;
 };
 
 export type ITokensTransferredDailyInflux = ITimedEntry & {
@@ -117,6 +125,6 @@ export type IStorageDepositDailyInflux = ITimedEntry & {
 };
 
 export type IManaBurnedDailyInflux = ITimedEntry & {
-    blockCost: number | null;
-    manual: number | null;
+    manaBurned: number | null;
+    bicBurned: number | null;
 };
