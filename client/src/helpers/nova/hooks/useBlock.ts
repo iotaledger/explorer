@@ -1,11 +1,10 @@
-import { Block } from "@iota/sdk-wasm-nova/web";
+import { Block, parseBlock } from "@iota/sdk-wasm-nova/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { HexHelper } from "~/helpers/stardust/hexHelper";
-import { plainToInstance } from "class-transformer";
 
 /**
  * Fetch the block
@@ -33,7 +32,7 @@ export function useBlock(network: string, blockId: string | null): [Block | null
                     })
                     .then((response) => {
                         if (isMounted) {
-                            const block = plainToInstance(Block, response.block) as unknown as Block;
+                            const block = parseBlock(response.block);
                             setBlock(block ?? null);
                             setError(response.error);
                         }
