@@ -8,6 +8,7 @@ import moment from "moment";
 import useEpochCommittee from "~/helpers/nova/hooks/useEpochCommittee";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import "./EpochPage.scss";
+import { useEpochStats } from "~/helpers/nova/hooks/useEpochStats";
 
 export interface EpochPageProps {
     /**
@@ -28,6 +29,7 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
 }) => {
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
+    const [epochStats] = useEpochStats(network, epochIndex);
 
     if (epochIndex === null || !epochUnixTimeRange || moment().unix() < epochUnixTimeRange.from) {
         return <NotFound query={epochIndex} searchTarget="epoch" />;
@@ -97,6 +99,14 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                         <div className="section--data">
                             <div className="label">Total delegated stake:</div>
                             <div className="value">{Number(epochCommittee?.totalStake) - Number(epochCommittee?.totalValidatorStake)}</div>
+                        </div>
+                        <div className="section--data">
+                            <div className="label">Blocks:</div>
+                            <div className="value">{epochStats?.blockCount}</div>
+                        </div>
+                        <div className="section--data">
+                            <div className="label">Transactions:</div>
+                            <div className="value">{epochStats?.perPayloadType?.transaction}</div>
                         </div>
                     </div>
 

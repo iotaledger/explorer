@@ -10,6 +10,22 @@ export interface IInfluxDailyCache {
     outputsDaily: Map<DayKey, IOutputsDailyInflux>;
 }
 
+interface IEpochAnalyticStats {
+    epochIndex: number;
+    blockCount: number;
+    perPayloadType: {
+        transaction: number;
+        taggedData: number;
+        candidacy: number;
+        noPayload: number;
+    };
+}
+
+/**
+ * The epoch stats cache. Map epoch index to stats.
+ */
+export type IInfluxEpochAnalyticsCache = Map<number, IEpochAnalyticStats>;
+
 /**
  * The helper to initialize empty maps
  * @returns The initial cache object

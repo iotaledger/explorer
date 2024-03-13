@@ -66,3 +66,23 @@ export const OUTPUTS_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+export const EPOCH_STATS_QUERY = `
+    SELECT
+        last("epoch_index") AS "epochIndex",
+        last("tagged_data_count") AS "taggedData",
+        last("transaction_count") AS "transaction",
+        last("candidacy_announcement_count") AS "candidacy",
+        last("no_payload_count") AS "noPayload"
+    FROM "iota_block_activity"
+`;
+export const EPOCH_STATS_QUERY_BY_INDEX = `
+    SELECT
+        epoch_index AS "epochIndex",
+        tagged_data_count AS "taggedData",
+        transaction_count AS "transaction",
+        candidacy_announcement_count AS "candidacy",
+        no_payload_count AS "noPayload"
+    FROM "iota_block_activity"
+    WHERE "epoch_index" = $epochIndex
+`;
