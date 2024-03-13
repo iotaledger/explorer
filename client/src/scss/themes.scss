@@ -124,12 +124,18 @@
         --header-bg: #f2f6f9;
         --navbar-bg: rgb(255 255 255 / 20%);
         --amount-color: #{$mint-green-7};
+
+        --text-color: #1d1d1d;
+        --text-secondary-color: #{$iota2-gray-600};
     }
 
     body.shimmer.darkmode {
         --body-background: #00121f;
         --header-bg: #00121f;
         --navbar-bg: #00121f;
+
+        --text-color: #{$white};
+        --text-secondary-color: rgba(255, 255, 255, 0.8);
     }
 
     body.iota2 {
