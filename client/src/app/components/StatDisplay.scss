@@ -3,7 +3,7 @@
 .stat {
     .stat-title {
         font-family: $inter;
-        color: var(--text-color);
+        color: var(--iota2-primary-text-color);
         margin-bottom: 12px;
         font-weight: 500;
 
@@ -19,7 +19,7 @@
 
     .stat-subtitle {
         font-size: 16px;
-        color: var(--text-secondary-color);
+        color: var(--iota2-secondary-text-color);
         font-family: $inter;
     }
 }
