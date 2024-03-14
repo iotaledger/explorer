@@ -4,6 +4,11 @@
 @import "../../../scss/variables";
 
 .epoch-page {
+    .epoch-page--header {
+        display: flex;
+        justify-content: space-between;
+    }
+
     .validators-page__header {
         display: flex;
         flex-direction: column;

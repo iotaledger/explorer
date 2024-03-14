@@ -8,6 +8,7 @@ import moment from "moment";
 import useEpochCommittee from "~/helpers/nova/hooks/useEpochCommittee";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import "./EpochPage.scss";
+import EpochControls from "~/app/components/nova/epoch/EpochControls";
 
 export interface EpochPageProps {
     /**
@@ -28,6 +29,13 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
 }) => {
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
+
+    // const isCurrentEpoch = moment().isBetween(moment.unix(epochUnixTimeRange.from), moment.unix(epochUnixTimeRange.to - 1));
+    // const isPreviousEpoch = moment().isBefore(moment.unix(epochUnixTimeRange.from));
+    // const epochLength = epochUnixTimeRange.to - epochUnixTimeRange.from;
+    // const isFutureEpoch = moment().isAfter(moment.unix(epochUnixTimeRange.to - 1));
+    // const isNextEpoch = moment().isBefore(moment.unix(epochUnixTimeRange.to + epochLength));
+    // const isTwoEpochsFuture = moment().isBefore(moment.unix(epochUnixTimeRange.to + epochLength * 2));
 
     if (epochIndex === null || !epochUnixTimeRange || moment().unix() < epochUnixTimeRange.from) {
         return <NotFound query={epochIndex} searchTarget="epoch" />;
@@ -54,11 +62,12 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         <section className="epoch-page">
             <div className="wrapper">
                 <div className="inner">
-                    <div className="slot-page--header">
+                    <div className="epoch-page--header space-between">
                         <div className="header--title row middle">
                             <h1>Epoch {epochIndex}</h1>
                             <Modal icon="info" data={mainHeaderMessage} />
                         </div>
+                        <EpochControls epochIndex={Number(epochIndex)} />
                     </div>
                     <div className="section">
                         <div className="section--header row row--tablet-responsive middle space-between">
