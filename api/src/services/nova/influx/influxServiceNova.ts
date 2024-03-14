@@ -1,4 +1,5 @@
 import { InfluxDB } from "influx";
+import cron from "node-cron";
 import {
     ACCOUNT_ACTIVITY_DAILY_QUERY,
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
@@ -56,6 +57,12 @@ import {
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { ITimedEntry } from "../../../models/influx/types";
 import { InfluxDbClient } from "../../influx/influxClient";
+
+/**
+ * The collect graph data interval cron expression.
+ * Every hour at 59 min 55 sec
+ */
+const COLLECT_GRAPHS_DATA_CRON = "55 59 * * * *";
 
 export class InfluxServiceNova extends InfluxDbClient {
     /**
@@ -196,6 +203,13 @@ export class InfluxServiceNova extends InfluxDbClient {
         void this.collectGraphsDaily();
         // eslint-disable-next-line no-void
         void this.collectAnalytics();
+
+        if (this._client) {
+            cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectGraphsDaily();
+            });
+        }
     }
 
     /**
