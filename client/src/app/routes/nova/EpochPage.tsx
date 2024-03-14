@@ -28,14 +28,12 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     },
 }) => {
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
+    const { epochUnixTimeRange: currentEpochUnixTimeRange } = useEpochProgress();
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
 
-    // const isCurrentEpoch = moment().isBetween(moment.unix(epochUnixTimeRange.from), moment.unix(epochUnixTimeRange.to - 1));
-    // const isPreviousEpoch = moment().isBefore(moment.unix(epochUnixTimeRange.from));
-    // const epochLength = epochUnixTimeRange.to - epochUnixTimeRange.from;
-    // const isFutureEpoch = moment().isAfter(moment.unix(epochUnixTimeRange.to - 1));
-    // const isNextEpoch = moment().isBefore(moment.unix(epochUnixTimeRange.to + epochLength));
-    // const isTwoEpochsFuture = moment().isBefore(moment.unix(epochUnixTimeRange.to + epochLength * 2));
+    if (currentEpochUnixTimeRange && epochUnixTimeRange && epochUnixTimeRange.from > currentEpochUnixTimeRange.to) {
+        return <NotFound query={epochIndex} searchTarget="epoch" />;
+    }
 
     if (epochIndex === null || !epochUnixTimeRange || moment().unix() < epochUnixTimeRange.from) {
         return <NotFound query={epochIndex} searchTarget="epoch" />;
