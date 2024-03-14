@@ -15,7 +15,6 @@ export const InfluxChartsTab: React.FC = () => {
         outputsDaily,
         tokensHeldDaily,
         addressesWithBalanceDaily,
-        activeAddressesDaily,
         tokensTransferredDaily,
         anchorActivityDaily,
         nftActivityDaily,
@@ -98,15 +97,6 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Ed25519", "Account", "Nft", "Anchor", "Implicit"]}
                         colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1"]}
                         data={addressesWithBalanceDaily}
-                    />
-                    <StackedLineChart
-                        chartId={ids.next().value}
-                        title="Daily Active Addresses"
-                        info={graphMessages.dailyActiveAddresses}
-                        subgroups={["ed25519", "account", "nft", "anchor", "implicit"]}
-                        groupLabels={["Ed25519", "Account", "Nft", "Anchor", "Implicit"]}
-                        colors={["#4140DF", "#14CABF", "#36A1AC", "#186575", "#99BEE1"]}
-                        data={activeAddressesDaily}
                     />
                 </div>
                 <div className="row statistics-row">
