@@ -1,18 +1,20 @@
 import React from "react";
 import "./ProgressBar.scss";
+import classNames from "classnames";
 
+enum ProgressBarSize {
+    Small = "small",
+    Large = "large",
+}
 interface ProgressBarProps {
     progress: number;
-    showLabel: boolean;
-    children?: React.ReactNode | React.ReactElement;
+    size?: ProgressBarSize;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ progress, showLabel, children }) => (
+const ProgressBar: React.FC<ProgressBarProps> = ({ progress, size = ProgressBarSize.Large }) => (
     <div className="progress-bar__wrapper">
-        <div className="progress-bar">
-            <div className="progress-bar__fill" style={{ transform: `translateX(-${100 - progress}%)` }} />
-            {showLabel && <div className="progress-bar__label">{progress}%</div>}
-            {children && <div className="progress-bar__children">{children}</div>}
+        <div className={classNames("progress-bar", size)}>
+            <div className="progress-bar__fill" style={{ width: `${progress}%` }} />
         </div>
     </div>
 );

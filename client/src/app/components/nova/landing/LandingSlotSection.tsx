@@ -1,6 +1,5 @@
 import React from "react";
 import useSlotsFeed from "~/helpers/nova/hooks/useSlotsFeed";
-import ProgressBar from "./ProgressBar";
 import { Utils } from "@iota/sdk-wasm-nova/web";
 import Spinner from "../../Spinner";
 import TruncatedId from "../../stardust/TruncatedId";
@@ -17,11 +16,6 @@ const LandingSlotSection: React.FC = () => {
         <div className="slots-section">
             <h2 className="slots-section__header">Latest Slots</h2>
             <div className="slots-feed__wrapper">
-                <ProgressBar progress={currentSlotProgressPercent} showLabel={false}>
-                    <div className="slots-feed__item transparent basic">
-                        <div className="slot__index">{currentSlotIndex}</div>
-                    </div>
-                </ProgressBar>
                 {latestSlotIndexes?.map((slot) => {
                     const commitmentWrapper = latestSlotCommitments?.find((commitment) => commitment.slotCommitment.slot === slot) ?? null;
                     const commitmentId = !commitmentWrapper ? (

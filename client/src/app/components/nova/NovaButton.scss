@@ -1,0 +1,54 @@
+@import "../../../scss/variables.scss";
+
+.nova-button {
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    padding: 8px 24px;
+    border-radius: 2px;
+    line-height: 22px;
+    transition: background-color 0.15s ease;
+
+    &.nova-button--primary {
+        background-color: #{$iota2-blue-700};
+        color: #{$white};
+        border: 1px solid #{$iota2-blue-700};
+        box-shadow: none;
+        &:hover {
+            background-color: #{$iota2-blue-800};
+        }
+
+        &:active {
+            background-color: #{$iota2-blue-900};
+        }
+
+        &:focus {
+            outline: 2px solid #{$iota2-blue-500};
+            outline-offset: 2px;
+        }
+    }
+    &.nova-button {
+        &--secondary,
+        &--icon {
+            background-color: transparent;
+            box-shadow: none;
+            &:hover {
+                background-color: var(--transparent-button-bg-hover);
+            }
+
+            &:active {
+                background-color: var(--transparent-button-bg-active);
+            }
+        }
+
+        &--secondary {
+            color: var(--text-color);
+            border: 1px solid #{$iota2-blue-400};
+        }
+        &--icon {
+            padding: 10px;
+            border-radius: 100%;
+            border: 1px solid var(--icon-button-border);
+        }
+    }
+}

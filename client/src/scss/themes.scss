@@ -127,6 +127,12 @@
         --text-color: #1d1d1d;
         --text-secondary-color: #{$iota2-gray-600};
         --hero-background-color: #{$white};
+        --box-bg-color: #{$iota2-gray-100};
+        --box-bg-secondary-color: #{$iota2-blue-700}14;
+        --icon-fill-color: #{$iota2-blue-700};
+        --transparent-button-bg-hover: #{$iota2-blue-700}14;
+        --transparent-button-bg-active: #{$iota2-blue-700}29;
+        --icon-button-border: rgb(0 0 0 / 16%);
     }
 
     body.shimmer.darkmode {
@@ -136,6 +142,12 @@
         --text-color: #{$white};
         --text-secondary-color: rgb(255 255 255 / 80%);
         --hero-background-color: #000000;
+        --box-bg-color: #000000;
+        --box-bg-secondary-color: #ffffff14;
+        --icon-fill-color: #{$white};
+        --transparent-button-bg-hover: #{$white}14;
+        --transparent-button-bg-active: #{$white}29;
+        --icon-button-border: rgb(255 255 255 / 16%);
     }
 
     body.iota2 {
