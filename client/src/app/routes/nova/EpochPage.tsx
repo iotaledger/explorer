@@ -31,11 +31,12 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     const { epochUnixTimeRange: currentEpochUnixTimeRange } = useEpochProgress();
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
 
-    if (currentEpochUnixTimeRange && epochUnixTimeRange && epochUnixTimeRange.from > currentEpochUnixTimeRange.to) {
-        return <NotFound query={epochIndex} searchTarget="epoch" />;
-    }
-
-    if (epochIndex === null || !epochUnixTimeRange || moment().unix() < epochUnixTimeRange.from) {
+    if (
+        epochIndex === null ||
+        !epochUnixTimeRange ||
+        !currentEpochUnixTimeRange ||
+        epochUnixTimeRange.from >= currentEpochUnixTimeRange.to + (epochUnixTimeRange.to - epochUnixTimeRange.from)
+    ) {
         return <NotFound query={epochIndex} searchTarget="epoch" />;
     }
 
