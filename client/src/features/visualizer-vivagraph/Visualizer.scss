@@ -1,10 +1,10 @@
-@import "../../../scss/fonts";
-@import "../../../scss/mixins";
-@import "../../../scss/media-queries";
-@import "../../../scss/variables";
-@import "../../../scss/themes";
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+@import "../../scss/themes";
 
-.visualizer-stardust {
+.visualizer-nova {
     position: relative;
     margin: 16px 40px;
 
@@ -72,17 +72,6 @@
             top: 20px;
             right: 20px;
 
-            outline: none;
-
-            &:hover {
-                background-color: transparent;
-            }
-
-            &:focus {
-                box-shadow: none;
-                outline: none;
-            }
-
             .pause-button {
                 padding: 6px;
                 color: var(--header-icon-color);
@@ -94,78 +83,13 @@
         }
     }
 
-    .stats-panel-container {
-        display: flex;
-        position: absolute;
-        z-index: 1;
-        top: 0;
-        right: 30px;
-        bottom: 0;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-
-        .stats-panel {
-            background: var(--body-background);
-
-            .card--value,
-            .card--label {
-                text-align: right;
-            }
-            .card--label {
-                justify-content: flex-end;
-            }
-            .card--content {
-                padding: 20px 30px;
-            }
-        }
-
-        @include tablet-down {
-            top: 60px;
-            left: 20px;
-            bottom: auto;
-            justify-content: left;
-
-            .stats-panel {
-                .card--value,
-                .card--label {
-                    text-align: left;
-                }
-                .card--label {
-                    justify-content: flex-start;
-                }
-                .card--content {
-                    padding: 0;
-                }
-                .stats-panel__info {
-                    padding: 0 10px;
-                    display: inline-block;
-                }
-            }
-        }
-
-        @include phone-down {
-            left: 10px;
-            .stats-panel {
-                .card--value,
-                .card--label {
-                    font-size: 12px;
-                }
-                .stats-panel__info:last-of-type {
-                    display: block;
-                }
-            }
-        }
-    }
-
     .info-panel {
         background: var(--body-background);
-        position: relative;
         display: flex;
         position: absolute;
         z-index: 2;
-        top: 100px;
-        left: 20px;
+        top: 150px;
+        right: 20px;
         width: 320px;
         overflow: visible;
 
@@ -249,76 +173,6 @@
 
                 &.info-panel__reattachments--opened {
                     display: block;
-                }
-            }
-        }
-    }
-
-    .key-panel-container {
-        display: flex;
-        position: absolute;
-        z-index: 1;
-        right: 30px;
-        bottom: 10px;
-        left: 30px;
-        justify-content: center;
-        pointer-events: none;
-
-        .key-panel {
-            background: var(--body-background);
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            padding: 16px;
-
-            .key-panel-item {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                margin: 0 16px;
-
-                @include desktop-down {
-                    width: 110px;
-                    margin: 0;
-                }
-
-                .key-marker {
-                    width: 12px;
-                    height: 12px;
-                    margin-right: 10px;
-                    border-radius: 3px;
-
-                    &.vertex-state--pending {
-                        background-color: #bbbbbb;
-                    }
-
-                    &.vertex-state--included {
-                        background-color: #4caaff;
-                    }
-
-                    &.vertex-state--referenced {
-                        background-color: #61e884;
-                    }
-
-                    &.vertex-state--conflicting {
-                        background-color: #ff8b5c;
-                    }
-
-                    &.vertex-state--milestone {
-                        background-color: #666af6;
-                    }
-
-                    &.vertex-state--search-result {
-                        background-color: #c061e8;
-                    }
-                }
-
-                .key-label {
-                    @include font-size(14px);
-
-                    color: var(--body-color);
-                    font-family: $metropolis;
-                    font-weight: 500;
                 }
             }
         }

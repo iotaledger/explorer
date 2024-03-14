@@ -10,7 +10,7 @@
     padding: 48px 48px 72px;
 
     .epoch-section__header {
-        color: var(--text-color);
+        color: var(--iota2-primary-text-color);
         font-size: 36px;
         line-height: 120%;
         margin-bottom: 32px;
@@ -38,7 +38,7 @@
         align-items: center;
 
         p {
-            color: var(--text-color);
+            color: var(--iota2-primary-text-color);
             font-size: 20px;
             line-height: 28px;
             font-weight: 500;
@@ -58,7 +58,7 @@
         align-items: end;
 
         p {
-            color: var(--text-secondary-color);
+            color: var(--iota2-secondary-text-color);
             font-size: 16px;
         }
 
@@ -66,7 +66,7 @@
             margin-top: 12px;
             font-size: 20px;
             line-height: 28px;
-            color: var(--text-color);
+            color: var(--iota2-primary-text-color);
             font-weight: 600;
         }
 

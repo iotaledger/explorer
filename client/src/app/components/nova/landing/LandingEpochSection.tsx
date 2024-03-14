@@ -1,13 +1,12 @@
 import moment from "moment";
 import React from "react";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
-import { NovaButtonVariant, ProgressBarSize } from "~/app/lib/ui/enums";
+import { ProgressBarSize } from "~/app/lib/ui/enums";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import RightHalfArrow from "~assets/right-half-arrow.svg?react";
 import ArrowUp from "~assets/arrow_up.svg?react";
 import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
-import NovaButton from "../NovaButton";
 import "./LandingEpochSection.scss";
 
 const EPOCH_TIME_FORMAT = "DD MMM YYYY";
@@ -81,22 +80,21 @@ const LandingEpochSection: React.FC = () => {
             </div>
 
             <div className="epoch-section__controls">
-                <NovaButton variant={NovaButtonVariant.Icon}>
+                <button className="icon-button">
                     <span className="epoch-section__previous">
                         <ArrowUp width={20} height={20} />
                     </span>
-                </NovaButton>
+                </button>
 
                 <div className="epoch-section__center-buttons">
-                    <NovaButton variant={NovaButtonVariant.Primary}>Current Epoch</NovaButton>
-                    <NovaButton variant={NovaButtonVariant.Secondary}>All Epochs</NovaButton>
+                    <button className="nova">Current Epoch</button>
                 </div>
 
-                <NovaButton variant={NovaButtonVariant.Icon}>
+                <button className="icon-button">
                     <span className="epoch-section__next">
                         <ArrowUp width={20} height={20} fill="red" />
                     </span>
-                </NovaButton>
+                </button>
             </div>
         </div>
     );

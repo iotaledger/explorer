@@ -9,7 +9,6 @@
     z-index: 0;
 
     .bg-container {
-        background-color: var(--hero-background-color);
         position: absolute;
         top: 0;
         left: 0;
@@ -48,7 +47,7 @@
             font-size: 72px;
             font-weight: 500;
             line-height: 120%;
-            color: var(--text-color);
+            color: var(--iota2-primary-text-color);
             text-transform: capitalize;
             margin-bottom: auto;
             font-family: $inter;
@@ -56,7 +55,7 @@
 
         .overline,
         .subtitle {
-            color: var(--text-secondary-color);
+            color: var(--iota2-secondary-text-color);
             font-family: $inter;
         }
         .overline {

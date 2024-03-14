@@ -1,21 +1,17 @@
 @import "../../../../scss/variables";
 
 .progress-bar__wrapper {
-    --height-large: 32px;
-    --height-small: 8px;
-
     .progress-bar {
         position: relative;
         background-color: #{$iota2-blue-300};
-        height: var(--progress-bar-height);
         border-radius: 4px;
         overflow: hidden;
 
         &.large {
-            height: var(--height-large);
+            height: 32px;
         }
         &.small {
-            height: var(--height-small);
+            height: 8px;
         }
 
         .progress-bar__fill {
