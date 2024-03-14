@@ -43,10 +43,3 @@ export const VISUALIZER_BACKGROUND: Record<ThemeMode, string> = {
     [ThemeMode.Dark]: "#000000",
     [ThemeMode.Light]: "#FFFFFF",
 };
-
-export const features = {
-    statsEnabled: false,
-    cameraControls: true,
-    controlsVisualiserEnabled: true,
-    showEdgeRenderingCheckbox: false,
-};
