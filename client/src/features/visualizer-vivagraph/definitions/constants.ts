@@ -1,24 +1,23 @@
 import { BlockState } from "@iota/sdk-wasm-nova/web";
-import { Color } from "three";
 import { ThemeMode } from "./enums";
 
 export const MAX_VISIBLE_BLOCKS = 2500;
 
 // colors
-export const ACCEPTED_BLOCK_COLORS: Color[] = [new Color("#0101FF"), new Color("#0000DB"), new Color("#0101AB")];
-export const CONFIRMED_BLOCK_COLOR = new Color("#3CE5E1");
-export const ORPHANED_BLOCK_COLOR = new Color("#C026D3");
+export const ACCEPTED_BLOCK_COLORS: string[] = ["#0101FF", "#0000DB", "#0101AB"];
+export const CONFIRMED_BLOCK_COLOR = "#3CE5E1";
+export const ORPHANED_BLOCK_COLOR = "#C026D3";
 export const DROPPED_BLOCK_COLOR = ORPHANED_BLOCK_COLOR;
-export const SEARCH_RESULT_COLOR = new Color("#1EC15A");
+export const SEARCH_RESULT_COLOR = "#1EC15A";
 export const HOVERED_BLOCK_COLOR = SEARCH_RESULT_COLOR;
 
 // colors by theme
-export const PENDING_BLOCK_COLOR_LIGHTMODE = new Color("#A6C3FC");
-export const PENDING_BLOCK_COLOR_DARKMODE = new Color("#5C84FA");
-export const FINALIZED_BLOCK_COLOR_LIGHTMODE = new Color("#5C84FA");
-export const FINALIZED_BLOCK_COLOR_DARKMODE = new Color("#000081");
+export const PENDING_BLOCK_COLOR_LIGHTMODE = "#A6C3FC";
+export const PENDING_BLOCK_COLOR_DARKMODE = "#5C84FA";
+export const FINALIZED_BLOCK_COLOR_LIGHTMODE = "#5C84FA";
+export const FINALIZED_BLOCK_COLOR_DARKMODE = "#000081";
 
-export const THEME_BLOCK_COLORS: Record<ThemeMode, Record<BlockState, Color | Color[]>> = {
+export const THEME_BLOCK_COLORS: Record<ThemeMode, Record<BlockState, string | string[]>> = {
     [ThemeMode.Dark]: {
         accepted: ACCEPTED_BLOCK_COLORS,
         pending: PENDING_BLOCK_COLOR_DARKMODE,

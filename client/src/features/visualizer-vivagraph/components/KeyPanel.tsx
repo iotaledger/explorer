@@ -46,13 +46,13 @@ export const KeyPanel = ({ network, themeMode }: { network: string; themeMode: T
             <div className="card key-panel-list">
                 {statuses.map(({ label, state }) => {
                     if (state === "searchResult") {
-                        return <ColorPanel key={state} label={label} color={SEARCH_RESULT_COLOR.getStyle()} />;
+                        return <ColorPanel key={state} label={label} color={SEARCH_RESULT_COLOR} />;
                     } else {
                         const targetColor = THEME_BLOCK_COLORS[themeMode][state];
                         if (Array.isArray(targetColor)) {
-                            return <ColorPanel key={state} label={label} color={targetColor.map((color) => color.getStyle())} />;
+                            return <ColorPanel key={state} label={label} color={targetColor.map((color) => color)} />;
                         }
-                        return <ColorPanel key={state} label={label} color={targetColor.getStyle()} />;
+                        return <ColorPanel key={state} label={label} color={targetColor} />;
                     }
                 })}
             </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { type BlockMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import Viva from "vivagraphjs";
@@ -6,8 +7,10 @@ import { INodeData } from "~models/graph/stardust/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "~helpers/nodeShader";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
-import { getBlockParents } from "~features/visualizer-vivagraph/lib/helpers";
+import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagraph/lib/helpers";
 import { MAX_VISIBLE_BLOCKS } from "~features/visualizer-vivagraph/definitions/constants";
+import { getBlockColorByState } from "../lib/helpers";
+import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
 
 export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
@@ -24,6 +27,7 @@ export const useFeed = (network: string) => {
     const getVisibleBlocks = useTangleStore((state) => state.getVisibleBlocks);
     const setVisibleBlocks = useTangleStore((state) => state.setVisibleBlocks);
     const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
+    const themeMode = useGetThemeMode();
 
     useEffect(() => {
         // eslint-disable-next-line no-void
@@ -35,6 +39,13 @@ export const useFeed = (network: string) => {
             feedSubscriptionStart();
         })();
     }, [feedService, graph.current, graphElement.current]);
+
+    const updateBlockColor = (blockId: string, color: string) => {
+        const nodeUI = graphics?.current?.getNodeUI(blockId);
+        if (nodeUI) {
+            nodeUI.color = hexToDecimalColor(color);
+        }
+    };
 
     const createBlock = (blockId: string, newBlock: IFeedBlockData, addedTime: number) => {
         createBlockIdToMetadata(blockId, newBlock);
@@ -80,16 +91,19 @@ export const useFeed = (network: string) => {
         }
     };
 
+    function onBlockMetadataUpdate(metadataUpdate: BlockMetadataResponse): void {
+        if (metadataUpdate?.blockState) {
+            const selectedColor = getBlockColorByState(themeMode, metadataUpdate.blockState);
+            updateBlockColor(metadataUpdate.blockId, selectedColor);
+        }
+    }
+
     const feedSubscriptionStart = () => {
         if (!feedService) {
             return;
         }
 
-        feedService.subscribeBlocks(
-            onNewBlock,
-            () => {},
-            () => {},
-        );
+        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate, () => {});
     };
 
     function setupGraph(): void {
