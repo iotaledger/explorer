@@ -11,7 +11,6 @@ import StackedBarChart from "../../stardust/statistics/charts/StackedBarChart";
 export const InfluxChartsTab: React.FC = () => {
     const {
         blocksDaily,
-        blockIssuersDaily,
         transactionsDaily,
         outputsDaily,
         tokensHeldDaily,
@@ -23,13 +22,8 @@ export const InfluxChartsTab: React.FC = () => {
         accountActivityDaily,
         foundryActivityDaily,
         delegationActivityDaily,
-        validatorsActivityDaily,
-        delegatorsActivityDaily,
-        delegationsActivityDaily,
-        stakingActivityDaily,
         unlockConditionsPerTypeDaily,
         tokensHeldWithUnlockConditionDaily,
-        ledgerSize,
         storageDeposit,
         manaBurnedDaily,
     } = useChartsState();
@@ -61,17 +55,6 @@ export const InfluxChartsTab: React.FC = () => {
                         groupLabels={["Finalized", "Failed"]}
                         colors={["#00E0CA", "#36A1AC"]}
                         data={transactionsDaily}
-                    />
-                </div>
-                <div className="row statistics-row">
-                    <StackedLineChart
-                        chartId={ids.next().value}
-                        title="Daily Block Issuers"
-                        info={graphMessages.dailyBlockIssuer}
-                        subgroups={["active", "registered"]}
-                        groupLabels={["Active", "Registered"]}
-                        colors={["#4140DF", "#14CABF"]}
-                        data={blockIssuersDaily}
                     />
                 </div>
             </div>
@@ -224,65 +207,10 @@ export const InfluxChartsTab: React.FC = () => {
             </div>
             <div className="section">
                 <div className="section--header">
-                    <h2>Validators & Delegators</h2>
-                    <Modal icon="info" data={graphMessages.dailyValidatorsActivity} />
-                </div>
-                <div className="row statistics-row">
-                    <StackedBarChart
-                        chartId={ids.next().value}
-                        title="Daily Validators Activity"
-                        info={graphMessages.dailyValidatorsActivity}
-                        subgroups={["candidates", "total"]}
-                        groupLabels={["Candidates", "Total"]}
-                        colors={["#4140DF", "#00F5DD"]}
-                        data={validatorsActivityDaily}
-                    />
-                    <StackedBarChart
-                        chartId={ids.next().value}
-                        title="Daily Delegators Activity"
-                        info={graphMessages.dailyDelegationActivity}
-                        subgroups={["total"]}
-                        groupLabels={["Total"]}
-                        colors={["#4140DF"]}
-                        data={delegatorsActivityDaily}
-                    />
-                </div>
-                <div className="row statistics-row">
-                    <StackedBarChart
-                        chartId={ids.next().value}
-                        title="Daily Delegations Activity"
-                        info={graphMessages.dailyDelegationActivity}
-                        subgroups={["total"]}
-                        groupLabels={["Total"]}
-                        colors={["#4140DF"]}
-                        data={delegationsActivityDaily}
-                    />
-                    <StackedBarChart
-                        chartId={ids.next().value}
-                        title="Daily Staking Activity"
-                        info={graphMessages.dailyStakingActivity}
-                        subgroups={["total"]}
-                        groupLabels={["Total"]}
-                        colors={["#4140DF"]}
-                        data={stakingActivityDaily}
-                    />
-                </div>
-            </div>
-            <div className="section">
-                <div className="section--header">
                     <h2>Data Storage</h2>
                     <Modal icon="info" data={graphMessages.dataStorage} />
                 </div>
                 <div className="row statistics-row">
-                    <StackedLineChart
-                        chartId={ids.next().value}
-                        title="Total Ledger Size"
-                        info={graphMessages.totalLedgerSize}
-                        subgroups={["keyBytes", "dataBytes"]}
-                        groupLabels={["Key bytes", "Data bytes"]}
-                        colors={["#00E0CA", "#36A1AC"]}
-                        data={ledgerSize}
-                    />
                     <LineChart
                         chartId={ids.next().value}
                         title="Total Storage Deposit"
