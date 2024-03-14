@@ -5,7 +5,7 @@ import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import Viva from "vivagraphjs";
 import { INodeData } from "~models/graph/stardust/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
-import { buildNodeShader } from "~helpers/nodeShader";
+import { buildNodeShader } from "../lib/buildNodeShader";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
 import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagraph/lib/helpers";
 import { MAX_VISIBLE_BLOCKS } from "~features/visualizer-vivagraph/definitions/constants";
