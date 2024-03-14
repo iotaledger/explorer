@@ -1,3 +1,3 @@
 export * from "./routes.interfaces";
-export * from "./key-value.interfaces";
-export * from "./stat-display.interfaces";
+export * from "./keyValue.interfaces";
+export * from "./statDisplay.interfaces";
