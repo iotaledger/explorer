@@ -64,6 +64,12 @@ import { InfluxDbClient } from "../../influx/influxClient";
  */
 const COLLECT_GRAPHS_DATA_CRON = "55 59 * * * *";
 
+/**
+ * The collect analyitics data interval cron expression.
+ * Every hour at 58 min 55 sec
+ */
+const COLLECT_ANALYTICS_DATA_CRON = "55 58 * * * *";
+
 export class InfluxServiceNova extends InfluxDbClient {
     /**
      * The InfluxDb Client.
@@ -208,6 +214,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
                 // eslint-disable-next-line no-void
                 void this.collectGraphsDaily();
+            });
+
+            cron.schedule(COLLECT_ANALYTICS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectAnalytics();
             });
         }
     }
