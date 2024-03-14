@@ -1,6 +1,6 @@
 import { ISlotCommitmentWrapper, SlotCommitmentStatus } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import { SlotStatus } from "../enums";
-import { SLOT_COMMITMENT_STATUS_TO_SLOT_STATUS } from "../constants/Slot.constants";
+import { SLOT_COMMITMENT_STATUS_TO_SLOT_STATUS } from "../constants/slot.constants";
 
 export function parseSlotIndexFromParams(slotIndex: string): number | undefined {
     const slotIndexNum = parseInt(slotIndex, 10);
