@@ -1,1 +1,1 @@
-export * from "./pillStatus.enum";
+export * from "./PillStatus.enum";

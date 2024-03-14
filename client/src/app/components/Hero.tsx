@@ -1,7 +1,7 @@
 import React from "react";
 import { IStatDisplay } from "../lib/interfaces";
 import StatDisplay from "./StatDisplay";
-import { HERO_BACKGROUNDS } from "../lib/constants/backgrounds.constants";
+import { HERO_BACKGROUNDS } from "../lib/constants/Backgrounds.constants";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import "./Hero.scss";
 
