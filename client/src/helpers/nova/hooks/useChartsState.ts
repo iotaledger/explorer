@@ -4,6 +4,7 @@ import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { useNetworkInfoNova } from "../networkInfo";
 import { DataPoint, IStatisticsGraphsData, mapDailyStatsToGraphsData } from "../../nova/statisticsUtils";
+import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 
 /**
  * State holder for Statistics page chart section.
@@ -32,6 +33,7 @@ export function useChartsState(): {
     ledgerSize: DataPoint[];
     storageDeposit: DataPoint[];
     manaBurnedDaily: DataPoint[];
+    analyticStats: IAnalyticStats | null;
 } {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
@@ -57,6 +59,8 @@ export function useChartsState(): {
     const [ledgerSize, setLedgerSize] = useState<DataPoint[]>([]);
     const [storageDeposit, setStorageDeposit] = useState<DataPoint[]>([]);
     const [manaBurnedDaily, setManaBurnedDaily] = useState<DataPoint[]>([]);
+
+    const [analyticStats, setAnalyticStats] = useState<IAnalyticStats | null>(null);
 
     useEffect(() => {
         apiClient
@@ -92,6 +96,17 @@ export function useChartsState(): {
                 }
             })
             .catch((e) => console.error("Influx analytics fetch failed", e));
+
+        apiClient
+            .chronicleAnalytics({ network })
+            .then((analytics) => {
+                if (!analytics.error && analytics) {
+                    setAnalyticStats(analytics);
+                } else {
+                    console.error("Fetching chronicle stats failed", analytics.error);
+                }
+            })
+            .catch((e) => console.error("Chronicle analytics fetch failed", e));
     }, [network]);
 
     return {
@@ -117,5 +132,6 @@ export function useChartsState(): {
         ledgerSize,
         storageDeposit,
         manaBurnedDaily,
+        analyticStats,
     };
 }

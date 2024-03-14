@@ -7,8 +7,13 @@ import StackedLineChart from "../../stardust/statistics/charts/StackedLineChart"
 import LineChart from "../../stardust/statistics/charts/LineChart";
 import BarChart from "../../stardust/statistics/charts/BarChart";
 import StackedBarChart from "../../stardust/statistics/charts/StackedBarChart";
+import ChartInfoPanel from "~/app/components/stardust/statistics/ChartInfoPanel";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 export const InfluxChartsTab: React.FC = () => {
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+
     const {
         blocksDaily,
         transactionsDaily,
@@ -25,7 +30,12 @@ export const InfluxChartsTab: React.FC = () => {
         tokensHeldWithUnlockConditionDaily,
         storageDeposit,
         manaBurnedDaily,
+        analyticStats,
     } = useChartsState();
+
+    const lockedStorageDepositValue = analyticStats?.lockedStorageDeposit
+        ? formatAmount(analyticStats.lockedStorageDeposit, tokenInfo)
+        : "-";
 
     const ids = idGenerator();
 
@@ -87,6 +97,11 @@ export const InfluxChartsTab: React.FC = () => {
                 <div className="section--header">
                     <h2>Addresses and Tokens</h2>
                     <Modal icon="info" data={graphMessages.addressesAndTokens} />
+                </div>
+                <div className="row info-panel">
+                    <ChartInfoPanel label="Native tokens minted" value={analyticStats?.nativeTokens ?? "-"} />
+                    <ChartInfoPanel label="NFTs minted" value={analyticStats?.nfts ?? "-"} />
+                    <ChartInfoPanel label="Locked storage deposit" value={lockedStorageDepositValue} />
                 </div>
                 <div className="row statistics-row margin-b-s">
                     <StackedLineChart
