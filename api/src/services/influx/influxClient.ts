@@ -162,7 +162,7 @@ export abstract class InfluxDbClient {
      * @returns Current datetime as INanoDate.
      */
     protected getToNanoDate(): INanoDate {
-        return toNanoDate((moment().valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+        return toNanoDate((moment().startOf("day").valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
     }
 
     /**
