@@ -31,11 +31,18 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
     const validators = validatorService.validators;
     const committee = validatorService.committee;
 
+    const validatorsSize = validators.length;
     const totalPoolStake = validators.reduce((acc, cur) => BigInt(cur.poolStake) + acc, BigInt(0));
-    const totalValidatorStake = committee ? BigInt(committee.totalValidatorStake) : undefined;
+    const totalValidatorStake = validators.reduce((acc, cur) => BigInt(cur.validatorStake) + acc, BigInt(0));
+
+    const totalActivePoolStake = committee ? BigInt(committee.totalStake) : undefined;
+    const totalActiveValidatorStake = committee ? BigInt(committee.totalValidatorStake) : undefined;
 
     return {
+        validatorsSize,
         totalPoolStake: totalPoolStake.toString(),
         totalValidatorStake: totalValidatorStake.toString(),
+        totalActivePoolStake: totalActivePoolStake?.toString(),
+        totalActiveValidatorStake: totalActiveValidatorStake?.toString(),
     };
 }

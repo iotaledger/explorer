@@ -1,5 +1,6 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
+import LandingStatsSection from "~/app/components/nova/landing/LandingStatsSection";
 import LandingEpochSection from "~/app/components/nova/landing/LandingEpochSection";
 import LandingSlotSection from "~/app/components/nova/landing/LandingSlotSection";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
@@ -29,6 +30,7 @@ const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
             </div>
             <div className="wrapper">
                 <div className="inner">
+                    <LandingStatsSection />
                     <LandingEpochSection />
                     <LandingSlotSection />
                 </div>
