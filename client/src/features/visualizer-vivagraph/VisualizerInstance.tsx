@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { VisualizerRouteProps } from "~app/routes/VisualizerRouteProps";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
@@ -7,6 +7,7 @@ import { Wrapper } from "./components/Wrapper";
 import "./Visualizer.scss";
 import { useFeed } from "~features/visualizer-vivagraph/hooks/useFeed";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
+import { GraphContext, GraphProvider } from "./GraphContext";
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
     match: {
@@ -16,12 +17,29 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const selectedFeedItem = useTangleStore((state) => state.selectedNode);
     const [networkConfig] = useNetworkConfig(network);
     const themeMode = useGetThemeMode();
-    const { graphElement } = useFeed(network);
 
     return (
-        <Wrapper key={network} network={network} networkConfig={networkConfig} themeMode={themeMode} isPlaying selectedFeedItem={selectedFeedItem}>
-            <div className="viva" onClick={() => {}} ref={graphElement} />
-        </Wrapper>
+        <GraphProvider>
+            <Wrapper key={network} network={network} networkConfig={networkConfig} themeMode={themeMode} isPlaying selectedFeedItem={selectedFeedItem}>
+                <Vivagraph />
+            </Wrapper>
+        </GraphProvider>
+    );
+};
+
+const Vivagraph = () => {
+    const graphContext = useContext(GraphContext);
+    console.log('--- graphContext', graphContext);
+    if (!graphContext) {
+        return null;
+    }
+
+    const { graphElement } = graphContext;
+    console.log('--- ', );
+
+    return (
+        <div className="viva" ref={graphElement} />
+
     );
 };
 
