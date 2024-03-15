@@ -5,35 +5,34 @@ import StatusPill from "../StatusPill";
 import TruncatedId from "../../stardust/TruncatedId";
 import classNames from "classnames";
 
-export enum SlotTableData {
+export enum SlotTableCellType {
     StatusPill = "status-pill",
     Link = "link",
     Text = "text",
-    TextHighlight = "text-highlight",
     TruncatedId = "truncated-id",
     Empty = "empty",
 }
 
-export type TSlotTableCell = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IEmptyCell;
+export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IEmptyCell;
 
-export default function SlotTableCellWrapper(cellData: TSlotTableCell): React.JSX.Element {
+export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JSX.Element {
     let Component: React.JSX.Element;
 
     switch (cellData.type) {
-        case SlotTableData.StatusPill:
-            Component = <PillStatusCell data={cellData.data} />;
+        case SlotTableCellType.StatusPill:
+            Component = <PillStatusCell {...cellData} />;
             break;
-        case SlotTableData.Link:
-            Component = <LinkCell data={cellData.data} href={cellData.href} />;
+        case SlotTableCellType.Link:
+            Component = <LinkCell {...cellData} />;
             break;
-        case SlotTableData.TruncatedId:
-            Component = <TruncatedIdCell data={cellData.data} href={cellData.href} />;
+        case SlotTableCellType.TruncatedId:
+            Component = <TruncatedIdCell {...cellData} />;
             break;
-        case SlotTableData.Empty:
-            Component = <EmptyCell />;
+        case SlotTableCellType.Empty:
+            Component = <EmptyCell {...cellData} />;
             break;
         default: {
-            Component = <TextCell data={cellData.data} type={cellData.type} />;
+            Component = <TextCell {...cellData} />;
             break;
         }
     }
@@ -43,10 +42,10 @@ export default function SlotTableCellWrapper(cellData: TSlotTableCell): React.JS
 
 interface IPillStatusCell {
     data: string;
-    type: SlotTableData.StatusPill;
+    type: SlotTableCellType.StatusPill;
 }
 
-function PillStatusCell({ data }: { data: string }): React.JSX.Element {
+function PillStatusCell({ data }: IPillStatusCell): React.JSX.Element {
     let status: PillStatus = PillStatus.Pending;
 
     if (data === SlotStatus.Committed || data === SlotStatus.Finalized) {
@@ -62,31 +61,31 @@ function PillStatusCell({ data }: { data: string }): React.JSX.Element {
 
 interface ILinkCell {
     data: string;
-    type: SlotTableData.Link;
+    type: SlotTableCellType.Link;
     href: string;
 }
 
-function LinkCell({ data, href }: { data: string; href: string }): React.JSX.Element {
+function LinkCell({ data, href }: ILinkCell): React.JSX.Element {
     return <a href={href}>{data}</a>;
 }
 
 interface ITextCell {
     data: string;
-    type: SlotTableData.Text | SlotTableData.TextHighlight;
+    type: SlotTableCellType.Text;
+    highlight?: boolean;
 }
 
-function TextCell({ data, type }: { data: string; type: SlotTableData.Text | SlotTableData.TextHighlight }): React.JSX.Element {
-    const isHighlighted = type === SlotTableData.TextHighlight;
-    return <span className={classNames({ highligh: isHighlighted })}>{data}</span>;
+function TextCell({ data, highlight }: ITextCell): React.JSX.Element {
+    return <span className={classNames({ highlight })}>{data}</span>;
 }
 
 interface ITruncatedIdCell {
     data: string;
-    type: SlotTableData.TruncatedId;
+    type: SlotTableCellType.TruncatedId;
     href: string;
 }
 
-function TruncatedIdCell({ data, href }: { data: string; href: string }): React.JSX.Element {
+function TruncatedIdCell({ data, href }: ITruncatedIdCell): React.JSX.Element {
     return (
         <div className="slot-id">
             <TruncatedId id={data} link={href} />
@@ -95,9 +94,9 @@ function TruncatedIdCell({ data, href }: { data: string; href: string }): React.
 }
 
 interface IEmptyCell {
-    type: SlotTableData.Empty;
+    type: SlotTableCellType.Empty;
 }
 
-function EmptyCell(): React.JSX.Element {
+function EmptyCell({ type }: IEmptyCell): React.JSX.Element {
     return <div></div>;
 }

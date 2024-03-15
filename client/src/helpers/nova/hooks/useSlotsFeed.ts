@@ -57,7 +57,16 @@ export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
         if (apiClient) {
             const latestSlotCommitments = await apiClient.latestSlotCommitments(network);
             if (isMounted && latestSlotCommitments.slotCommitments && latestSlotCommitments.slotCommitments.length > 0) {
-                setLatestSlotCommitments(latestSlotCommitments.slotCommitments.slice(0, MAX_LATEST_SLOT_COMMITMENTS));
+                let latestSlotCommitmentArray = latestSlotCommitments.slotCommitments.slice(0, MAX_LATEST_SLOT_COMMITMENTS);
+
+                if (unixTimestampToSlotIndex && slotIndexToUnixTimeRange) {
+                    latestSlotCommitmentArray = latestSlotCommitmentArray.map((slotCommitment) => {
+                        const slotTimeRange = slotIndexToUnixTimeRange(slotCommitment.slotCommitment.slot);
+                        return { ...slotCommitment, slotTimeRange };
+                    });
+                }
+
+                setLatestSlotCommitments(latestSlotCommitmentArray);
             }
         }
     }, [network]);

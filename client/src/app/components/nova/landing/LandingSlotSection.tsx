@@ -1,25 +1,19 @@
 import React from "react";
-import useSlotsFeed from "~/helpers/nova/hooks/useSlotsFeed";
 import Table, { ITableRow } from "../../Table";
-import SlotTableCell, { TSlotTableCell } from "./SlotTableCell";
-import { getTableRows } from "~/app/lib/utils/slot-table.utils";
+import SlotTableCell, { TSlotTableData } from "./SlotTableCell";
+import { useGenerateSlotsTable } from "~/helpers/nova/hooks/useGenerateSlotsTable";
+import { SlotTableHeadings } from "~/app/lib/ui/enums";
 import "./LandingSlotSection.scss";
 
-const LandingSlotSection = ({ network }: { network: string }): React.JSX.Element | null => {
-    const { currentSlotIndex, currentSlotProgressPercent, latestSlotIndexes, latestSlotCommitments } = useSlotsFeed();
-
-    if (currentSlotIndex === null || currentSlotProgressPercent === null) {
-        return null;
-    }
-
-    const TABLE_HEADINGS = ["Index", "ID", "RMC", "Blocks", "Txs", "Burned mana", "Status", "From/To"];
-    const tableData: ITableRow<TSlotTableCell>[] = getTableRows(currentSlotIndex, latestSlotIndexes, latestSlotCommitments, network);
+const LandingSlotSection = (): React.JSX.Element | null => {
+    const tableData: ITableRow<TSlotTableData>[] = useGenerateSlotsTable();
+    const tableHeadings = Object.values(SlotTableHeadings);
 
     return (
         <div className="slots-section">
             <h2 className="slots-section__header">Latest Slots</h2>
             <div className="slots-section__table">
-                <Table headings={TABLE_HEADINGS} data={tableData} CellComponent={SlotTableCell} />
+                <Table headings={tableHeadings} data={tableData} TableDataComponent={SlotTableCell} />
             </div>
         </div>
     );

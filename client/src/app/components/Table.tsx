@@ -24,10 +24,10 @@ interface ITable<T, K extends ITableRow<T>[]> {
     /**
      * The function to render the table data
      */
-    CellComponent: (props: T) => React.JSX.Element;
+    TableDataComponent: (props: T) => React.JSX.Element;
 }
 
-export default function Table<T, K extends ITableRow<T>[]>({ headings, data, CellComponent }: ITable<T, K>): React.JSX.Element {
+export default function Table<T, K extends ITableRow<T>[]>({ headings, data, TableDataComponent }: ITable<T, K>): React.JSX.Element {
     return (
         <div className="table-container">
             <table>
@@ -41,8 +41,8 @@ export default function Table<T, K extends ITableRow<T>[]>({ headings, data, Cel
                 <tbody>
                     {data.map((row) => (
                         <tr key={row.id}>
-                            {row.data.map((cell, columnIndex) => (
-                                <td key={`${row.id} ${columnIndex}`}>{CellComponent(cell)}</td>
+                            {row.data.map((td, columnIndex) => (
+                                <td key={`${row.id} ${columnIndex}`}>{TableDataComponent(td)}</td>
                             ))}
                         </tr>
                     ))}
