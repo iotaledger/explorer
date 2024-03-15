@@ -304,6 +304,13 @@ export const routes: IRoute[] = [
     { path: "/nova/slot/:network/:slotIndex", method: "get", folder: "nova/slot", func: "get" },
     { path: "/nova/epoch/committee/:network/:epochIndex", method: "get", folder: "nova/epoch/committee", func: "get" },
     {
+        path: "/nova/analytics/:network",
+        method: "get",
+        folder: "nova/analytics/influx/stats",
+        func: "get",
+        sign: true,
+    },
+    {
         path: "/nova/analytics/daily/:network",
         method: "get",
         folder: "nova/analytics/influx/daily",
