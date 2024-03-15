@@ -3,12 +3,12 @@ import { type BlockMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import Viva from "vivagraphjs";
-import { INodeData } from "~models/graph/stardust/INodeData";
+import { INodeData } from "~models/graph/nova/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "../lib/buildNodeShader";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
 import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagraph/lib/helpers";
-import { MAX_VISIBLE_BLOCKS } from "~features/visualizer-vivagraph/definitions/constants";
+import { MAX_VISIBLE_BLOCKS, EDGE_COLOR_CONFIRMING, EDGE_COLOR_CONFIRMED_BY } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
 
@@ -27,6 +27,8 @@ export const useFeed = (network: string) => {
     const getVisibleBlocks = useTangleStore((state) => state.getVisibleBlocks);
     const setVisibleBlocks = useTangleStore((state) => state.setVisibleBlocks);
     const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
+    const selectedNode = useTangleStore((state) => state.selectedNode);
+    const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
     const themeMode = useGetThemeMode();
 
     useEffect(() => {
@@ -39,6 +41,35 @@ export const useFeed = (network: string) => {
             feedSubscriptionStart();
         })();
     }, [feedService, graph.current, graphElement.current]);
+
+    useEffect(() => {
+        if (!graph.current) {
+            return;
+        }
+        if (selectedNode) {
+            const nodeUI = graphics?.current?.getNodeUI(selectedNode.blockId);
+            if (nodeUI) {
+                nodeUI.color = hexToDecimalColor("#ff0000");
+            }
+            graph.current?.forEachLinkedNode(selectedNode.blockId, (node, link) => {
+
+                const nodeUI = graphics?.current?.getNodeUI(node.id);
+                if (nodeUI) {
+                    nodeUI.color = hexToDecimalColor("#ff0000");
+                }
+
+                const lineColor = link['fromId'] === node ? EDGE_COLOR_CONFIRMING : EDGE_COLOR_CONFIRMED_BY;
+                if (link.id) {
+                    const linkUI = graphics?.current?.getLinkUI(link.id);
+                    if (linkUI) {
+                        linkUI.color = lineColor;
+                    }
+                }
+            });
+        } else {
+            // clear here
+        }
+    }, [graph.current, selectedNode]);
 
     const updateBlockColor = (blockId: string, color: string) => {
         const nodeUI = graphics?.current?.getNodeUI(blockId);
@@ -69,6 +100,12 @@ export const useFeed = (network: string) => {
     };
 
     const onNewBlock = (newBlock: IFeedBlockData) => {
+
+        // @ts-ignore
+        if (window._stop) {
+            return;
+        }
+
         if (graph.current) {
             const now = Date.now();
             lastUpdateTime.current = now;
@@ -125,6 +162,7 @@ export const useFeed = (network: string) => {
 
             const events = Viva.Graph.webglInputEvents(graphics.current, graph.current);
 
+            events.click((node) => selectNode(node));
             events.dblClick((node) => {
                 window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
             });
@@ -143,6 +181,16 @@ export const useFeed = (network: string) => {
             for (let i = 0; i < 12; i++) {
                 renderer.current.zoomOut();
             }
+        }
+    }
+
+    /**
+     * Select the clicked node.
+     * @param node The node to select.
+     */
+    function selectNode(node?: Viva.Graph.INode<INodeData, unknown>): void {
+        if (node?.data?.feedItem) {
+            setSelectedNode(node.data.feedItem);
         }
     }
 

@@ -6,6 +6,7 @@ import KeyPanel from "./KeyPanel";
 import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import { ThemeMode } from "../definitions/enums";
+import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
 
 export const Wrapper = ({
     children,

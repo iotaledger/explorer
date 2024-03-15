@@ -13,17 +13,28 @@ interface TangleState {
     visibleBlocks: string[];
     setVisibleBlocks: (blockIds: string[]) => void;
     getVisibleBlocks: () => string[];
+
+    selectedNode: IFeedBlockData | null;
+    setSelectedNode: (block: IFeedBlockData | null) => void;
 }
 
 const INITIAL_STATE = {
     blockIdToMetadata: new Map(),
     visibleBlocks: [],
+    selectedNode: null,
 };
 
 export const useTangleStore = create<TangleState>()(
     devtools((set, get) => ({
         ...INITIAL_STATE,
 
+        setSelectedNode: (block) => {
+            set(() => {
+                return {
+                    selectedNode: block,
+                };
+            });
+        },
         setVisibleBlocks: (blockIds) => {
             set(() => {
                 return {
