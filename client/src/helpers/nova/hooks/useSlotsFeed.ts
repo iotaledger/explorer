@@ -17,6 +17,7 @@ const CHECK_SLOT_COMMITMENTS_INTERVAL = 3500;
 export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
     currentSlotIndex: number | null;
     currentSlotProgressPercent: number | null;
+    currentSlotTimeRange: { from: number; to: number } | null;
     latestSlotIndexes: number[] | null;
     latestSlotCommitments: ISlotCommitmentWrapper[];
 } {
@@ -30,6 +31,7 @@ export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
     const [latestSlotCommitments, setLatestSlotCommitments] = useState<ISlotCommitmentWrapper[]>([]);
 
     const [currentSlotProgressPercent, setCurrentSlotProgressPercent] = useState<number | null>(null);
+    const [currentSlotTimeRange, setCurrentSlotTimeRange] = useState<{ from: number; to: number } | null>(null);
 
     const [slotIndexCheckerHandle, setSlotIndexCheckerHandle] = useState<NodeJS.Timeout | null>(null);
     const [slotCommitmentsCheckerHandle, setSlotCommitmentsCheckerHandle] = useState<NodeJS.Timeout | null>(null);
@@ -46,6 +48,7 @@ export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
                 setCurrentSlotIndex(currentSlotIndex);
                 setCurrentSlotProgressPercent(slotProgressPercent);
                 setLatestSlotIndexes(Array.from({ length: slotsLimit - 1 }, (_, i) => currentSlotIndex - 1 - i));
+                setCurrentSlotTimeRange(slotTimeRange);
             }
         }
     };
@@ -94,5 +97,5 @@ export default function useSlotsFeed(slotsLimit: number = DEFAULT_SLOT_LIMIT): {
         };
     }, []);
 
-    return { currentSlotIndex, currentSlotProgressPercent, latestSlotIndexes, latestSlotCommitments };
+    return { currentSlotIndex, currentSlotProgressPercent, latestSlotIndexes, latestSlotCommitments, currentSlotTimeRange };
 }

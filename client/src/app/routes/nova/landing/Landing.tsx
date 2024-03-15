@@ -54,7 +54,7 @@ const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
                         <IconContent Icon={Parallelism} title="55.93%" subtitle="Incursion rate" />
                     </div>
                     <LandingEpochSection />
-                    <LandingSlotSection />
+                    <LandingSlotSection network={network} />
                 </div>
             </div>
         </div>
