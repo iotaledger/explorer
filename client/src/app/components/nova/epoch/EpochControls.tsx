@@ -5,9 +5,10 @@ import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 interface EpochControlProps {
     readonly epochIndex: number;
+    readonly isFutureEpoch?: boolean;
 }
 
-const EpochControls: React.FC<EpochControlProps> = ({ epochIndex }) => {
+const EpochControls: React.FC<EpochControlProps> = ({ epochIndex, isFutureEpoch = false }) => {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const history = useHistory();
     const [previousEpochIndex, setPreviousEpochIndex] = useState<number | null>(null);
@@ -38,7 +39,7 @@ const EpochControls: React.FC<EpochControlProps> = ({ epochIndex }) => {
                     <button
                         className="milestone-controls__action margin-r-t"
                         type="button"
-                        disabled={nextEpochIndex === null}
+                        disabled={nextEpochIndex === null || isFutureEpoch}
                         onClick={() => history?.push(`/${network}/epoch/${nextEpochIndex}`)}
                     >
                         <span>Next</span>
