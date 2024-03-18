@@ -49,7 +49,7 @@
             font-size: 72px;
             font-weight: 500;
             line-height: 120%;
-            color: var(--iota2-primary-text-color);
+            color: var(--body-color);
             text-transform: capitalize;
             margin-bottom: auto;
             font-family: $inter;
@@ -57,7 +57,7 @@
 
         .overline,
         .subtitle {
-            color: var(--iota2-secondary-text-color);
+            color: var(--header-color);
             font-family: $inter;
         }
         .overline {
