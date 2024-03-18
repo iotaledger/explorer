@@ -6,38 +6,61 @@ button {
     @include font-size(16px);
 
     display: flex;
-    padding: 6px 10px;
-    border: 1px solid $dark-green;
-    border-radius: 6px;
-    outline: none;
-    background: $dark-green;
-    color: $white;
     font-family: $metropolis;
     font-weight: bold;
     cursor: pointer;
+    padding: 8px 24px;
+    border-radius: 2px;
+    line-height: 22px;
+    transition: background-color 0.15s ease;
+    background-color: #{$iota2-blue-700};
+    border: 1px solid #{$iota2-blue-700};
+    color: #{$white};
+
+    &:hover {
+        background-color: #{$iota2-blue-800};
+    }
+
+    &:active {
+        background-color: #{$iota2-blue-900};
+    }
+
+    &:focus {
+        outline: 2px solid #{$iota2-blue-500};
+        outline-offset: 2px;
+    }
 
     &:disabled {
         opacity: 0.5;
         pointer-events: none;
     }
 
-    &:focus {
-        box-shadow: 0 0 3px 0 var(--link-highlight);
-    }
-
-    &:-moz-focusring {
-        text-shadow: 0 0 0 $gray-10;
-    }
-
-    &.button--danger {
-        border-color: $danger;
-        background-color: $danger;
-        color: $white;
-    }
-
     &.button--unstyled {
         border: 0;
         background-color: transparent;
+        outline: none;
+
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
+    }
+
+    &.icon-button {
+        background-color: transparent;
+        box-shadow: none;
+        padding: 10px;
+        border-radius: 100%;
+        border: 1px solid var(--icon-button-border);
+        outline: none;
+
+        &:hover {
+            background-color: var(--transparent-button-bg-hover);
+        }
+
+        &:active {
+            background-color: var(--transparent-button-bg-active);
+        }
 
         &:focus {
             box-shadow: none;

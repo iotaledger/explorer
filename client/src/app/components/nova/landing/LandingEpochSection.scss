@@ -1,50 +1,130 @@
 @import "../../../../scss/variables";
 @import "../../../../scss/fonts";
+@import "../../../../scss/media-queries";
 
-.epoch-section {
+.current-epoch-wrapper {
     font-family: $metropolis;
-    margin-top: 40px;
-    background-color: $gray-1;
+    margin-top: 80px;
+    background-color: var(--box-bg-color);
     border-radius: 8px;
+    padding: 48px 48px 72px;
 
     .epoch-section__header {
-        width: fit-content;
-        margin: 0 auto;
-        padding: 20px;
+        color: var(--body-color);
+        font-size: 36px;
+        line-height: 120%;
+        margin-bottom: 32px;
+
+        @include tablet-down {
+            text-align: center;
+        }
     }
 
-    .epoch-progress__wrapper {
-        display: flow-root;
-        background-color: $gray-3;
-        margin: 0 20px 20px;
-        border-radius: 8px;
+    .epoch-progress {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
 
-        .epoch-progress__stats-wrapper {
-            display: flex;
-            padding: 12px;
-            flex-direction: row;
-            justify-content: space-evenly;
+        @include tablet-down {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
 
-            .epoch-progress__stat {
-                width: 160px;
-                background-color: $gray-4;
-                padding: 10px 20px;
-                border-radius: 8px;
-                text-align: center;
+    .epoch-duration {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        p {
+            color: var(--body-color);
+            font-size: 20px;
+            line-height: 28px;
+            font-weight: 500;
+        }
+
+        svg#to-arrow {
+            margin: 0 16px;
+            path {
+                fill: var(--icon-fill-color);
             }
         }
     }
 
-    .epoch-section__controls {
+    .time-remaining {
         display: flex;
-        margin: 20px;
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: end;
 
-        .epoch-section__button {
-            background-color: $gray-4;
-            padding: 10px 20px;
-            border-radius: 8px;
+        p {
+            color: var(--header-color);
+            font-size: 16px;
+        }
+
+        .time {
+            margin-top: 12px;
+            font-size: 20px;
+            line-height: 28px;
+            color: var(--body-color);
+            font-weight: 600;
+        }
+
+        @include tablet-down {
+            align-items: center;
+            margin-top: 24px;
+        }
+    }
+
+    .epoch-progress__wrapper {
+        background-color: $gray-3;
+        margin: 64px 0;
+        border-radius: 8px;
+    }
+
+    .epoch-progress__stats-wrapper {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        align-items: start;
+        column-gap: 24px;
+
+        @include tablet-down {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            row-gap: 40px;
+        }
+    }
+}
+
+.epoch-section__controls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 32px;
+
+    span {
+        display: flex;
+        path {
+            fill: var(--icon-fill-color);
+        }
+    }
+
+    .epoch-section__previous {
+        transform: rotate(-90deg);
+    }
+
+    .epoch-section__next {
+        transform: rotate(90deg);
+    }
+
+    .epoch-section__center-buttons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+        * + * {
+            margin-left: 16px;
         }
     }
 }
