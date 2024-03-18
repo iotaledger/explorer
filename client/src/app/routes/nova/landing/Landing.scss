@@ -85,6 +85,12 @@
         }
     }
 
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 24px;
+    }
+
     .wrapper {
         display: flex;
         justify-content: center;

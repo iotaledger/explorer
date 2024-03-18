@@ -63,6 +63,7 @@
 
                 &:focus {
                     box-shadow: none;
+                    outline: none;
                 }
 
                 @include phone-down {

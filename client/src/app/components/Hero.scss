@@ -1,0 +1,86 @@
+@import "../../scss/fonts";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+
+#hero {
+    position: relative;
+    padding-top: 80px;
+    margin-top: -80px;
+    z-index: 0;
+
+    .bg-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+
+        .bg-image {
+            width: auto;
+            max-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .inner {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        @include desktop-down {
+            flex-direction: column;
+        }
+    }
+
+    .title-cont {
+        display: flex;
+        flex-direction: column;
+        margin-right: 137px;
+
+        @include desktop-down {
+            margin-right: 0;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 72px;
+            font-weight: 500;
+            line-height: 120%;
+            color: var(--body-color);
+            text-transform: capitalize;
+            margin-bottom: auto;
+            font-family: $inter;
+        }
+
+        .overline,
+        .subtitle {
+            color: var(--header-color);
+            font-family: $inter;
+        }
+        .overline {
+            margin-bottom: 24px;
+        }
+
+        .subtitle {
+            margin-top: 133px;
+        }
+    }
+
+    .stats-wrapper {
+        display: grid;
+        row-gap: 64px;
+        column-gap: 64px;
+        align-items: start;
+        width: auto;
+        padding-top: 20px;
+
+        @for $i from 1 through 4 {
+            &[data-columns="#{$i}"] {
+                grid-template-columns: repeat(#{$i}, minmax(0, 1fr));
+            }
+        }
+    }
+}

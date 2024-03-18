@@ -59,6 +59,12 @@
     --statistics-select-border: #{$gray-1};
     --calendar-bg: #{$white};
     --calendar-hover: #{$gray-1};
+    --box-bg-color: #{$iota2-gray-100};
+    --box-bg-secondary-color: #{$iota2-blue-700}14;
+    --icon-fill-color: #{$iota2-blue-700};
+    --transparent-button-bg-hover: #{$iota2-blue-700}14;
+    --transparent-button-bg-active: #{$iota2-blue-700}29;
+    --icon-button-border: rgb(0 0 0 / 16%);
 
     body.darkmode {
         --body-background: #091326;
@@ -112,6 +118,12 @@
         --statistics-select-border: #{$gray-8};
         --calendar-bg: #{$gray-9};
         --calendar-hover: #{$gray-7};
+        --box-bg-color: #000000;
+        --box-bg-secondary-color: #ffffff14;
+        --icon-fill-color: #{$white};
+        --transparent-button-bg-hover: #{$white}14;
+        --transparent-button-bg-active: #{$white}29;
+        --icon-button-border: rgb(255 255 255 / 16%);
     }
 
     body.shimmer {
@@ -142,15 +154,19 @@
         --header-bg: #f2f6f9;
         --navbar-bg: rgb(255 255 255 / 20%);
         --amount-color: #{$iota2-blue-700};
+        --body-color: #1d1d1d;
+        --header-color: #{$iota2-gray-600};
     }
 
     body.iota2.darkmode {
-        --body-background: #000000;
+        --body-background: #0d1117;
         --header-bg: #000000;
         --navbar-bg: #000000;
         --link-color: #{$iota2-blue-600};
         --link-highlight: #{$iota2-blue-600};
         --tabbed-section-tab-active: #{$iota2-blue-600};
         --amount-color: #{$iota2-blue-600};
+        --body-color: #{$white};
+        --header-color: rgb(255 255 255 / 80%);
     }
 }
