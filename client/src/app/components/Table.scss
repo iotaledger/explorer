@@ -2,7 +2,7 @@
 
 .table-container {
     table {
-        color: var(--iota2-primary-text-color);
+        color: var(--body-color);
         width: 100%;
 
         thead {
@@ -28,7 +28,7 @@
 
         a {
             text-decoration: none;
-            color: var(--iota2-link-secondary);
+            color: var(--link-color);
         }
     }
 }
