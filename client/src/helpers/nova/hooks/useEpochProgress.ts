@@ -15,31 +15,25 @@ export function useEpochProgress(index?: number): {
 } {
     const { slotIndexToUnixTimeRange, unixTimestampToEpochIndex, epochIndexToUnixTimeRange, getRegistrationSlotFromEpochIndex } =
         useNovaTimeConvert();
-    const [intervalTimerHandle, setIntervalTimerHandle] = useState<NodeJS.Timeout | null>(null);
     const [epochIndex, setEpochIndex] = useState<number | null>(null);
     const [epochProgressPercent, setEpochProgressPercent] = useState<number | null>(null);
     const [registrationTime, setRegistrationTime] = useState<number | null>(null);
     const [epochUnixTimeRange, setEpochUnixTimeRange] = useState<{ from: number; to: number } | null>(null);
 
     useEffect(() => {
-        if (intervalTimerHandle === null) {
+        checkEpochIndex();
+
+        const intervalTimerHandle = setInterval(() => {
             checkEpochIndex();
-
-            const intervalTimerHandle = setInterval(() => {
-                checkEpochIndex();
-            }, 1000);
-
-            setIntervalTimerHandle(intervalTimerHandle);
-        }
+        }, 1000);
 
         return () => {
             if (intervalTimerHandle) {
                 clearInterval(intervalTimerHandle);
             }
-            setIntervalTimerHandle(null);
             setEpochIndex(null);
         };
-    }, []);
+    }, [index]);
 
     const checkEpochIndex = () => {
         if (unixTimestampToEpochIndex && epochIndexToUnixTimeRange) {
