@@ -453,3 +453,29 @@ export const MANA_BURN_DAILY_QUERY = {
         GROUP BY time(1d) fill(null)
     `,
 };
+
+/* ANALYTIC QUERIES */
+
+export const ADDRESSES_WITH_BALANCE_TOTAL_QUERY = `
+    SELECT
+        last("address_with_balance_count") AS "addressesWithBalance"
+    FROM "iota_addresses";
+`;
+
+export const NATIVE_TOKENS_STAT_TOTAL_QUERY = `
+    SELECT
+        last("foundry_count") AS "nativeTokensCount"
+    FROM "iota_ledger_outputs";
+`;
+
+export const NFT_STAT_TOTAL_QUERY = `
+    SELECT
+        last("nft_count") AS "nftsCount"
+    FROM "iota_ledger_outputs";
+`;
+
+export const STORAGE_DEPOSIT_TOTAL_QUERY = `
+    SELECT
+        last("total_storage_deposit_amount") AS "lockedStorageDeposit"
+    FROM "iota_ledger_size";
+`;

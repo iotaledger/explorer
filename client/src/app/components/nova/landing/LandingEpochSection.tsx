@@ -39,7 +39,7 @@ const LandingEpochSection: React.FC = () => {
         },
         {
             title: "500k",
-            subtitle: "Stacked in active set",
+            subtitle: "Staked in active set",
         },
         {
             title: "200k",
