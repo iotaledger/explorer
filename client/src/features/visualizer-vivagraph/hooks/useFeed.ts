@@ -11,9 +11,11 @@ import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagra
 import { MAX_VISIBLE_BLOCKS, EDGE_COLOR_CONFIRMING, EDGE_COLOR_CONFIRMED_BY } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
+import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 // import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 
 export const useFeed = (network: string) => {
+
     const [feedService] = useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
     // const { graphElement, graph } = useContext(GraphContext);
     const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
@@ -31,6 +33,11 @@ export const useFeed = (network: string) => {
     const selectedNode = useTangleStore((state) => state.selectedNode);
     const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
     const themeMode = useGetThemeMode();
+    const graphContext = useContext(GraphContext);
+    console.log('--- graphContext', graphContext);
+    // let graph = graphContext.graph.current;
+    // const { graphElement, graphics } = graphContext;
+
 
     useEffect(() => {
         // eslint-disable-next-line no-void
@@ -38,7 +45,7 @@ export const useFeed = (network: string) => {
             if (!feedService) {
                 return;
             }
-            setupGraph();
+            // setupGraph();
             feedSubscriptionStart();
         })();
     }, [feedService, graph.current, graphElement.current]);
@@ -146,8 +153,15 @@ export const useFeed = (network: string) => {
         feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate, () => {});
     };
 
+    useEffect(() => {
+        if (graphContext.isVivaReady) {
+            setupGraph();
+        }
+    }, [graphContext.isVivaReady, graphContext.graph, graphContext.graphElement]);
+
     function setupGraph(): void {
-        if (graphElement.current && !graph.current) {
+        if (!graph.current) {
+            console.log('--- setup in process', graphContext);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             graph.current = Viva.Graph.graph<INodeData, unknown>();
