@@ -59,8 +59,7 @@ export function useChronicleAnalytics(): { chronicleAnalyticStats: IAnalyticStat
                 setChronicleAnalyticStats({
                     nativeTokens: analyticStats?.nativeTokens,
                     nfts: analyticStats?.nfts,
-                    totalAddresses: analyticStats?.totalAddresses,
-                    dailyAddresses: analyticStats?.dailyAddresses,
+                    accountAddressesWithBalance: analyticStats?.accountAddressesWithBalance,
                     lockedStorageDeposit: analyticStats?.lockedStorageDeposit,
                 });
             } else {

@@ -7,7 +7,6 @@ import { IResponse } from "../IResponse";
 export interface IAnalyticStats extends IResponse {
     nativeTokens?: string;
     nfts?: string;
-    totalAddresses?: string;
-    dailyAddresses?: string;
+    accountAddressesWithBalance?: string;
     lockedStorageDeposit?: string;
 }

@@ -56,7 +56,7 @@ export interface IInfluxDailyCache {
  * The cache for influx analytics.
  */
 export interface IInfluxAnalyticsCache {
-    addressesWithBalance?: string;
+    accountAddressesWithBalance?: string;
     nativeTokensCount?: string;
     nftsCount?: string;
     lockedStorageDeposit?: string;

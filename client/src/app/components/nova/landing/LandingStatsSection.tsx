@@ -11,8 +11,7 @@ const LandingStatsSection: React.FC = () => {
     const { validatorStats } = useValidatorStats();
     const { validatorsSize, totalPoolStake, totalValidatorStake, totalActiveValidatorStake } = validatorStats ?? {};
 
-    // TODO IS this is? probably not (accounts)
-    const accountsSize = chronicleAnalyticStats?.totalAddresses ?? null;
+    const accountsCount = chronicleAnalyticStats?.accountAddressesWithBalance ?? null;
 
     const totalSupply = protocolInfo?.parameters.tokenSupply ?? null;
     const totalDelegatedStake = totalPoolStake && totalValidatorStake ? BigInt(totalPoolStake) - BigInt(totalValidatorStake) : null;
@@ -33,7 +32,7 @@ const LandingStatsSection: React.FC = () => {
             <div className="stats-section__wrapper">
                 <div className="stat-entry">
                     <div className="stat-entry__label"># Accounts:</div>
-                    <div className="stat-entry__value">{accountsSize ?? "-"}</div>
+                    <div className="stat-entry__value">{accountsCount ?? "-"}</div>
                 </div>
                 <div className="stat-entry">
                     <div className="stat-entry__label"># Validators:</div>
