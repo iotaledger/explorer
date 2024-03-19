@@ -31,20 +31,20 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
     const validators = validatorService.validators;
     const committeeResponse = validatorService.committee;
 
-    const validatorsSize = validators.length;
-    const activeValidatorsSize = committeeResponse.committee.length;
+    const totalValidators = validators.length;
+    const committeeValidators = committeeResponse.committee.length;
     const totalPoolStake = validators.reduce((acc, cur) => BigInt(cur.poolStake) + acc, BigInt(0));
-    const totalValidatorStake = validators.reduce((acc, cur) => BigInt(cur.validatorStake) + acc, BigInt(0));
+    const totalValidatorsStake = validators.reduce((acc, cur) => BigInt(cur.validatorStake) + acc, BigInt(0));
 
-    const totalActivePoolStake = committeeResponse ? BigInt(committeeResponse.totalStake) : undefined;
-    const totalActiveValidatorStake = committeeResponse ? BigInt(committeeResponse.totalValidatorStake) : undefined;
+    const committeeValidatorsPoolStake = committeeResponse ? BigInt(committeeResponse.totalStake) : undefined;
+    const totalCommitteeStake = committeeResponse ? BigInt(committeeResponse.totalValidatorStake) : undefined;
 
     return {
-        validatorsSize,
-        activeValidatorsSize,
-        totalPoolStake: totalPoolStake.toString(),
-        totalValidatorStake: totalValidatorStake.toString(),
-        totalActivePoolStake: totalActivePoolStake?.toString(),
-        totalActiveValidatorStake: totalActiveValidatorStake?.toString(),
+        totalValidators,
+        committeeValidators,
+        totalValidatorsPoolStake: totalPoolStake.toString(),
+        totalValidatorsStake: totalValidatorsStake.toString(),
+        committeeValidatorsPoolStake: committeeValidatorsPoolStake?.toString(),
+        totalCommitteeStake: totalCommitteeStake?.toString(),
     };
 }

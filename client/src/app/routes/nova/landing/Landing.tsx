@@ -16,12 +16,13 @@ const Landing: React.FC = () => {
     const { chronicleAnalyticStats } = useChronicleAnalytics();
     const { validatorStats } = useValidatorStats();
     const { blocksPerSecond, confirmationRate } = useNetworkStats(network);
-    const { validatorsSize, totalPoolStake, totalValidatorStake } = validatorStats ?? {};
+    const { totalValidators, totalValidatorsPoolStake, totalValidatorsStake } = validatorStats ?? {};
 
     const accountsCount = chronicleAnalyticStats?.accountAddressesWithBalance ?? null;
     const delegatorsCount = chronicleAnalyticStats?.delegatorsCount ?? null;
 
-    const totalDelegatedStake = totalPoolStake && totalValidatorStake ? BigInt(totalPoolStake) - BigInt(totalValidatorStake) : null;
+    const totalDelegatedStake =
+        totalValidatorsPoolStake && totalValidatorsStake ? BigInt(totalValidatorsPoolStake) - BigInt(totalValidatorsStake) : null;
 
     const networkStats: IStatDisplay[] = [
         {
@@ -41,7 +42,7 @@ const Landing: React.FC = () => {
             size: StatDisplaySize.Small,
         },
         {
-            title: validatorsSize !== undefined ? validatorsSize.toString() : "--",
+            title: totalValidators !== undefined ? totalValidators.toString() : "--",
             subtitle: "Validators",
             size: StatDisplaySize.Small,
         },
@@ -51,7 +52,7 @@ const Landing: React.FC = () => {
             size: StatDisplaySize.Small,
         },
         {
-            title: `${totalValidatorStake !== undefined ? formatAmount(totalValidatorStake, tokenInfo) : "--"}`,
+            title: `${totalValidatorsStake !== undefined ? formatAmount(totalValidatorsStake, tokenInfo) : "--"}`,
             subtitle: "Total Staked",
             size: StatDisplaySize.Small,
         },

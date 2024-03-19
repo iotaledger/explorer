@@ -18,12 +18,12 @@ const LandingEpochSection: React.FC = () => {
     const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
     const { validatorStats } = useValidatorStats();
-    const { activeValidatorsSize, totalActivePoolStake, totalActiveValidatorStake } = validatorStats ?? {};
+    const { committeeValidators, committeeValidatorsPoolStake, totalCommitteeStake } = validatorStats ?? {};
 
-    const totalActiveDelegatorStake =
-        totalActivePoolStake === undefined || totalActiveValidatorStake === undefined
+    const commiiteeDelegatorStake =
+        committeeValidatorsPoolStake === undefined || totalCommitteeStake === undefined
             ? "0"
-            : (BigInt(totalActivePoolStake) - BigInt(totalActiveValidatorStake)).toString();
+            : (BigInt(committeeValidatorsPoolStake) - BigInt(totalCommitteeStake)).toString();
 
     if (epochIndex === null || epochProgressPercent === null) {
         return null;
@@ -45,16 +45,16 @@ const LandingEpochSection: React.FC = () => {
 
     const stats: IStatDisplay[] = [
         {
-            title: `${activeValidatorsSize ?? "--"}`,
+            title: `${committeeValidators ?? "--"}`,
             subtitle: "Validators",
         },
         {
-            title: `${totalActiveValidatorStake !== undefined ? formatAmount(totalActiveValidatorStake, tokenInfo) : "--"}`,
-            subtitle: "Staked in active set",
+            title: `${totalCommitteeStake !== undefined ? formatAmount(totalCommitteeStake, tokenInfo) : "--"}`,
+            subtitle: "Staked in committee",
         },
         {
-            title: `${totalActiveDelegatorStake !== undefined ? formatAmount(totalActiveDelegatorStake, tokenInfo) : "--"}`,
-            subtitle: "Delegated in active set",
+            title: `${commiiteeDelegatorStake !== undefined ? formatAmount(commiiteeDelegatorStake, tokenInfo) : "--"}`,
+            subtitle: "Delegated in committee",
         },
         {
             title: epochProgressPercent + "%",

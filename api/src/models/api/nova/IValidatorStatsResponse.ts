@@ -4,27 +4,27 @@ import { IResponse } from "./IResponse";
 
 export interface IValidatorStatsResponse extends IResponse {
     /**
-     * The number of validators (total)
+     * The total number of validators.
      */
-    validatorsSize?: number;
+    totalValidators?: number;
     /**
-     * The number of active validators (committee).
+     * The number of validators in the committee.
      */
-    activeValidatorsSize?: number;
+    committeeValidators?: number;
     /**
-     * The total amount staked and delegated validators (BigInt).
+     * The total amount staked and delegated in validators (BigInt).
      */
-    totalPoolStake?: string;
+    totalValidatorsPoolStake?: string;
     /**
      * The total amount staked by validators (BigInt).
      */
-    totalValidatorStake?: string;
+    totalValidatorsStake?: string;
     /**
-     * The total amount staked and delegated by active validator set (committee) (BigInt).
+     * The total amount staked and delegated in committee (BigInt).
      */
-    totalActivePoolStake?: string;
+    committeeValidatorsPoolStake?: string;
     /**
-     * The total amount staked by active validator set (committee) (BigInt).
+     * The total amount staked by committee (BigInt).
      */
-    totalActiveValidatorStake?: string;
+    totalCommitteeStake?: string;
 }
