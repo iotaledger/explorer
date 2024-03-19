@@ -1,1 +1,2 @@
-export * from "./slot-status.enum";
+export * from "./SlotStatus.enum";
+export * from "./StatDisplaySize.enum";

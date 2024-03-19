@@ -8,6 +8,8 @@ import moment from "moment";
 import useEpochCommittee from "~/helpers/nova/hooks/useEpochCommittee";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import "./EpochPage.scss";
+import EpochControls from "~/app/components/nova/epoch/EpochControls";
+import { useValidators } from "~/helpers/nova/hooks/useValidators";
 
 export interface EpochPageProps {
     /**
@@ -27,9 +29,16 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     },
 }) => {
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
+    const { epochUnixTimeRange: currentEpochUnixTimeRange } = useEpochProgress();
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
+    const { validators: candidates } = useValidators();
 
-    if (epochIndex === null || !epochUnixTimeRange || moment().unix() < epochUnixTimeRange.from) {
+    if (
+        epochIndex === null ||
+        !epochUnixTimeRange ||
+        !currentEpochUnixTimeRange ||
+        epochUnixTimeRange.from >= currentEpochUnixTimeRange.to + (epochUnixTimeRange.to - epochUnixTimeRange.from)
+    ) {
         return <NotFound query={epochIndex} searchTarget="epoch" />;
     }
 
@@ -37,6 +46,12 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     let epochTimeRemaining = "???";
     let epochFrom = "???";
     let epochTo = "???";
+    let futureEpochStartsIn = "???";
+
+    const isFutureEpoch = epochUnixTimeRange.to > currentEpochUnixTimeRange.to;
+    const validators = isFutureEpoch
+        ? candidates?.map((candidate) => candidate.validator).filter((validator) => validator.active)
+        : epochCommittee?.committee;
 
     if (registrationTime) {
         const epochStartTime = moment.unix(epochUnixTimeRange.from);
@@ -50,15 +65,21 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         registrationTimeRemaining = moment.unix(registrationTime).fromNow();
     }
 
+    if (isFutureEpoch) {
+        const diffToEpochStart = moment.unix(epochUnixTimeRange.from).diff(moment());
+        futureEpochStartsIn = moment(diffToEpochStart).format("H:mm:ss");
+    }
+
     return (
         <section className="epoch-page">
             <div className="wrapper">
                 <div className="inner">
-                    <div className="slot-page--header">
+                    <div className="epoch-page--header space-between">
                         <div className="header--title row middle">
                             <h1>Epoch {epochIndex}</h1>
                             <Modal icon="info" data={mainHeaderMessage} />
                         </div>
+                        <EpochControls epochIndex={Number(epochIndex)} isFutureEpoch={isFutureEpoch} />
                     </div>
                     <div className="section">
                         <div className="section--header row row--tablet-responsive middle space-between">
@@ -74,34 +95,48 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             <div className="label">To:</div>
                             <div className="value">{epochTo}</div>
                         </div>
-                        <div className="section--data">
-                            <div className="label">Time remaining:</div>
-                            <div className="value">{epochTimeRemaining}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Progress:</div>
-                            <div className="value">{epochProgressPercent}%</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Registration end:</div>
-                            <div className="value">{registrationTimeRemaining}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Total pool stake:</div>
-                            <div className="value">{epochCommittee?.totalStake}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Total validator stake:</div>
-                            <div className="value">{epochCommittee?.totalValidatorStake}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Total delegated stake:</div>
-                            <div className="value">{Number(epochCommittee?.totalStake) - Number(epochCommittee?.totalValidatorStake)}</div>
-                        </div>
+                        {!isFutureEpoch && (
+                            <>
+                                <div className="section--data">
+                                    <div className="label">Time remaining:</div>
+                                    <div className="value">{epochTimeRemaining}</div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">Progress:</div>
+                                    <div className="value">{epochProgressPercent}%</div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">Registration end:</div>
+                                    <div className="value">{registrationTimeRemaining}</div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">Total pool stake:</div>
+                                    <div className="value">{epochCommittee?.totalStake}</div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">Total validator stake:</div>
+                                    <div className="value">{epochCommittee?.totalValidatorStake}</div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">Total delegated stake:</div>
+                                    <div className="value">
+                                        {Number(epochCommittee?.totalStake) - Number(epochCommittee?.totalValidatorStake)}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                        {isFutureEpoch && (
+                            <>
+                                <div className="section--data">
+                                    <div className="label">Starts in:</div>
+                                    <div className="value">{futureEpochStartsIn}</div>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className="section all-validators__section">
-                        <h2 className="all-validators__header">Committee</h2>
+                        <h2 className="all-validators__header">{isFutureEpoch ? "Candidates" : "Committee"}</h2>
                         <div className="all-validators__wrapper">
                             <div className="validator-item table-header">
                                 <div className="validator-item__address">Address</div>
@@ -110,16 +145,16 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                                 <div className="validator-item__validator-stake">Validator stake</div>
                                 <div className="validator-item__delegator-stake">Delegated stake</div>
                             </div>
-                            {epochCommittee?.committee.map((validator, idx) => {
+                            {validators?.map((validator, idx) => {
                                 const delegatorStake = Number(validator.poolStake) - Number(validator.validatorStake);
                                 return (
                                     <div className="validator-item" key={`validator-${idx}`}>
                                         <div className="validator-item__address">
                                             <TruncatedId id={validator.address} />
                                         </div>
-                                        <div className="validator-item__fixed-cost">{validator.fixedCost}</div>
-                                        <div className="validator-item__pool-stake">{validator.poolStake}</div>
-                                        <div className="validator-item__validator-stake">{validator.validatorStake}</div>
+                                        <div className="validator-item__fixed-cost">{validator.fixedCost.toString()}</div>
+                                        <div className="validator-item__pool-stake">{validator.poolStake.toString()}</div>
+                                        <div className="validator-item__validator-stake">{validator.validatorStake.toString()}</div>
                                         <div className="validator-item__delegator-stake">{delegatorStake}</div>
                                     </div>
                                 );
