@@ -86,24 +86,14 @@ export const OUTPUTS_DAILY_QUERY = {
     `,
 };
 
-export const EPOCH_STATS_QUERY = `
+export const EPOCH_STATS_QUERY_BY_EPOCH_INDEX = `
     SELECT
-        last("epoch_index") AS "epochIndex",
-        last("tagged_data_count") AS "taggedData",
-        last("transaction_count") AS "transaction",
-        last("candidacy_announcement_count") AS "candidacy",
-        last("no_payload_count") AS "noPayload"
+        sum("transaction_count") AS "transaction",
+        sum("tagged_data_count") AS "taggedData",
+        sum("candidacy_announcement_count") AS "candidacy",
+        sum("no_payload_count") AS "noPayload"
     FROM "iota_block_activity"
-`;
-export const EPOCH_STATS_QUERY_BY_INDEX = `
-    SELECT
-        epoch_index AS "epochIndex",
-        tagged_data_count AS "taggedData",
-        transaction_count AS "transaction",
-        candidacy_announcement_count AS "candidacy",
-        no_payload_count AS "noPayload"
-    FROM "iota_block_activity"
-    WHERE "epoch_index" = $epochIndex
+    WHERE time >= $from and time <= $to
 `;
 
 export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {

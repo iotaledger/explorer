@@ -7,7 +7,7 @@ import { DayKey, DAY_KEY_FORMAT, ITimedEntry } from "../../models/influx/types";
 /**
  * N of nanoseconds in a millsecond.
  */
-const NANOSECONDS_IN_MILLISECOND = 1000000;
+export const NANOSECONDS_IN_MILLISECOND = 1000000;
 
 /**
  * The InfluxDb Client wrapper.

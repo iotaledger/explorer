@@ -5,6 +5,7 @@ import { IConfiguration } from "../../../../models/configuration/IConfiguration"
 import { NOVA } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { InfluxServiceNova } from "../../../../services/nova/influx/influxServiceNova";
+import { NodeInfoService } from "../../../../services/nova/nodeInfoService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -26,16 +27,17 @@ export async function get(_: IConfiguration, request: IEpochStatsRequest): Promi
     }
 
     const influxService = ServiceFactory.get<InfluxServiceNova>(`influxdb-${request.network}`);
+    const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
+    const nodeInfo = nodeService.getNodeInfo();
 
-    if (!influxService) {
+    if (!influxService || !nodeInfo) {
         return { error: "Influx service not found for this network." };
     }
 
     const epochIndex = Number.parseInt(request.epochIndex, 10);
     let maybeEpochStats = await influxService.fetchAnalyticsForEpochWithRetries(epochIndex);
-
     if (!maybeEpochStats) {
-        maybeEpochStats = await influxService.fetchAnalyticsForEpoch(epochIndex);
+        maybeEpochStats = await influxService.fetchAnalyticsForEpoch(epochIndex, nodeInfo.protocolParameters[0]);
     }
 
     return maybeEpochStats

@@ -1,9 +1,9 @@
-import { InfluxDB } from "influx";
+import { ProtocolParametersResponse } from "@iota/sdk-nova";
+import { InfluxDB, toNanoDate } from "influx";
+import moment from "moment";
 import cron from "node-cron";
 import {
     BLOCK_DAILY_QUERY,
-    EPOCH_STATS_QUERY,
-    EPOCH_STATS_QUERY_BY_INDEX,
     OUTPUTS_DAILY_QUERY,
     ACCOUNT_ACTIVITY_DAILY_QUERY,
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
@@ -29,7 +29,9 @@ import {
     TRANSACTION_DAILY_QUERY,
     UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
     VALIDATORS_ACTIVITY_DAILY_QUERY,
+    EPOCH_STATS_QUERY_BY_EPOCH_INDEX,
 } from "./influxQueries";
+import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IEpochAnalyticStats } from "../../../models/api/nova/stats/epoch/IEpochAnalyticStats";
 import { INetwork } from "../../../models/db/INetwork";
@@ -64,7 +66,9 @@ import {
     IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { ITimedEntry } from "../../../models/influx/types";
-import { InfluxDbClient } from "../../influx/influxClient";
+import { epochIndexToUnixTimeRangeConverter, unixTimestampToEpochIndexConverter } from "../../../utils/nova/novaTimeUtils";
+import { InfluxDbClient, NANOSECONDS_IN_MILLISECOND } from "../../influx/influxClient";
+import { NodeInfoService } from "../nodeInfoService";
 
 type EpochUpdate = ITimedEntry & {
     epochIndex: number;
@@ -227,8 +231,8 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._analyticsCache.lockedStorageDeposit;
     }
 
-    public async fetchAnalyticsForEpoch(epochIndex: number) {
-        await this.collectEpochStatsByIndex(epochIndex);
+    public async fetchAnalyticsForEpoch(epochIndex: number, protocolInfo: ProtocolParametersResponse) {
+        await this.collectEpochStatsByIndex(epochIndex, protocolInfo);
         return this._epochCache.get(epochIndex);
     }
 
@@ -419,14 +423,27 @@ export class InfluxServiceNova extends InfluxDbClient {
     /**
      * Get the epoch analytics by index and set it in the cache.
      * @param epochIndex - The epoch index.
+     * @param protocolInfo - The protocol information.
      */
-    private async collectEpochStatsByIndex(epochIndex: number) {
+    private async collectEpochStatsByIndex(epochIndex: number, protocolInfo: ProtocolParametersResponse) {
         try {
-            for (const update of await this._client.query<EpochUpdate>(EPOCH_STATS_QUERY_BY_INDEX, {
-                placeholders: { epochIndex },
-            })) {
-                this.updateEpochCache(update);
-            }
+            const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(protocolInfo);
+            const { from, to } = epochIndexToUnixTimeRange(epochIndex);
+            const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+            const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+
+            this.queryInflux<EpochUpdate>(EPOCH_STATS_QUERY_BY_EPOCH_INDEX, fromNano, toNano)
+                .then((results) => {
+                    for (const update of results) {
+                        update.epochIndex = epochIndex;
+                        this.updateEpochCache(update);
+                    }
+                })
+                .catch((e) => {
+                    logger.warn(
+                        `[InfluxClient] Query ${EPOCH_STATS_QUERY_BY_EPOCH_INDEX} failed for (${this._network.network}). Cause ${e}`,
+                    );
+                });
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
         }
@@ -436,11 +453,14 @@ export class InfluxServiceNova extends InfluxDbClient {
      * Get the epoch analytics and set it in the cache.
      */
     private async collectEpochStats() {
-        logger.debug(`[InfluxNova] Collecting epoch stats for "${this._network.network}"`);
         try {
-            for (const update of await this.queryInflux<EpochUpdate>(EPOCH_STATS_QUERY, null, this.getToNanoDate())) {
-                this.updateEpochCache(update);
-            }
+            logger.debug(`[InfluxNova] Collecting epoch stats for "${this._network.network}"`);
+            const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${this._network.network}`);
+            const nodeInfo = nodeService.getNodeInfo();
+            const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(nodeInfo.protocolParameters[0]);
+            const epochIndex = unixTimestampToEpochIndex(moment().unix());
+            // eslint-disable-next-line no-void
+            void this.collectEpochStatsByIndex(epochIndex, nodeInfo.protocolParameters[0]);
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
         }
