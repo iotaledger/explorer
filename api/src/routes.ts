@@ -317,4 +317,10 @@ export const routes: IRoute[] = [
         func: "get",
         sign: true,
     },
+    {
+        path: "/nova/output/tagged/:network/:tag/:outputType",
+        method: "get",
+        folder: "nova/output/tagged",
+        func: "get",
+    },
 ];

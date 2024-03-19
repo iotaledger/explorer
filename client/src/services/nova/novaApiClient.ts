@@ -50,6 +50,8 @@ import { IInfluxDailyResponse } from "~/models/api/nova/influx/IInfluxDailyRespo
 import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMetadataResponse";
 import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
+import { ITaggedOutputsRequest } from "~/models/api/nova/ITaggedOutputsRequest";
+import { OutputsResponse } from "@iota/sdk-wasm-nova/web";
 
 /**
  * Class to handle api communications on nova.
@@ -215,6 +217,20 @@ export class NovaApiClient extends ApiClient {
             `nova/output/associated/${request.network}/${request.addressDetails.bech32}`,
             "post",
             { addressDetails: request.addressDetails },
+        );
+    }
+
+    /**
+     * Get the output ids by tag feature (basic or nft).
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async outputsByTag(request: ITaggedOutputsRequest): Promise<{ error?: string; outputs?: OutputsResponse }> {
+        const params = FetchHelper.urlParams({ cursor: request.cursor });
+
+        return this.callApi<unknown, { error?: string; outputs?: OutputsResponse }>(
+            `nova/output/tagged/${request.network}/${request.tag}/${request.outputType}${params}`,
+            "get",
         );
     }
 

@@ -37,6 +37,7 @@ import StardustOutputPage from "./routes/stardust/OutputPage";
 import NovaBlockPage from "./routes/nova/Block";
 import NovaTransactionPage from "./routes/nova/TransactionPage";
 import NovaOutputPage from "./routes/nova/OutputPage";
+import NovaOutputList from "./routes/nova/OutputList";
 import NovaFoundryPage from "./routes/nova/FoundryPage";
 import NovaSearch from "./routes/nova/Search";
 import NovaEpochPage from "./routes/nova/EpochPage";
@@ -190,6 +191,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={NovaFoundryPage} />,
         <Route path="/:network/statistics" key={keys.next().value} component={NovaStatisticsPage} />,
         <Route path="/:network/validators" key={keys.next().value} component={ValidatorsPage} />,
+        <Route path="/:network/outputs" key={keys.next().value} component={NovaOutputList} />,
     ];
 
     return (
