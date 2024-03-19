@@ -1,10 +1,7 @@
-/** Chronicle analytics [nova] */
-import { IResponse } from "../IResponse";
-
 /**
- * The chronicle analytics.
+ * The influx analytics (Nova).
  */
-export interface IAnalyticStats extends IResponse {
+export interface IAnalyticStats {
     nativeTokens?: string;
     nfts?: string;
     accountAddressesWithBalance?: string;

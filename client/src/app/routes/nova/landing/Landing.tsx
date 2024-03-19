@@ -1,45 +1,63 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
 import LandingEpochSection from "~/app/components/nova/landing/LandingEpochSection";
 import LandingSlotSection from "~/app/components/nova/landing/LandingSlotSection";
-import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
-import { LandingRouteProps } from "../../LandingRouteProps";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { useChronicleAnalytics } from "~/helpers/nova/hooks/useChronicleAnalytics";
+import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
+import { useNetworkStats } from "~/helpers/nova/hooks/useNetworkStats";
 import Hero from "~/app/components/Hero";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import { StatDisplaySize } from "~/app/lib/enums";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./Landing.scss";
 
-const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
-    match: {
-        params: { network },
-    },
-}) => {
-    const [networkConfig] = useNetworkConfig(network);
+const Landing: React.FC = () => {
+    const { name: network, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { chronicleAnalyticStats } = useChronicleAnalytics();
+    const { validatorStats } = useValidatorStats();
+    const { blocksPerSecond, confirmationRate } = useNetworkStats(network);
+    const { totalValidators, totalValidatorsPoolStake, totalValidatorsStake } = validatorStats ?? {};
+
+    const accountsCount = chronicleAnalyticStats?.accountAddressesWithBalance ?? null;
+    const delegatorsCount = chronicleAnalyticStats?.delegatorsCount ?? null;
+
+    const totalDelegatedStake =
+        totalValidatorsPoolStake && totalValidatorsStake ? BigInt(totalValidatorsPoolStake) - BigInt(totalValidatorsStake) : null;
 
     const networkStats: IStatDisplay[] = [
         {
-            title: "20.2",
+            title: blocksPerSecond ?? "--",
             subtitle: "Blocks per sec",
         },
         {
-            title: "32.04%",
-            subtitle: "Incursion rate",
+            title: confirmationRate ? `${confirmationRate}%` : "--",
+            subtitle: "Confirmation rate",
         },
     ];
 
     const assetsStats: IStatDisplay[] = [
         {
-            title: "11.2k",
+            title: accountsCount ?? "-",
             subtitle: "Accounts",
             size: StatDisplaySize.Small,
         },
         {
-            title: "39%",
+            title: totalValidators !== undefined ? totalValidators.toString() : "--",
+            subtitle: "Validators",
+            size: StatDisplaySize.Small,
+        },
+        {
+            title: delegatorsCount ?? "-",
+            subtitle: "Delegators",
+            size: StatDisplaySize.Small,
+        },
+        {
+            title: `${totalValidatorsStake !== undefined ? formatAmount(totalValidatorsStake, tokenInfo) : "--"}`,
             subtitle: "Total Staked",
             size: StatDisplaySize.Small,
         },
         {
-            title: "39%",
+            title: `${totalDelegatedStake !== null ? formatAmount(totalDelegatedStake, tokenInfo) : "--"}`,
             subtitle: "Total Delegated",
             size: StatDisplaySize.Small,
         },
@@ -47,7 +65,7 @@ const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
 
     return (
         <div className="landing-nova">
-            <Hero network={networkConfig.network} overline="Explore network" networkStats={networkStats} assetStats={assetsStats} />
+            <Hero network={network} overline="Explore network" networkStats={networkStats} assetStats={assetsStats} />
             <div className="wrapper">
                 <div className="inner">
                     <LandingEpochSection />

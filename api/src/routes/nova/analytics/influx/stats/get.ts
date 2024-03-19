@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../../../../models/api/INetworkBoundGetRequest";
 import { IResponse } from "../../../../../models/api/nova/IResponse";
-import { IAnalyticStats } from "../../../../../models/api/stats/IAnalyticStats";
+import { IAnalyticStats } from "../../../../../models/api/nova/stats/IAnalyticStats";
 import { IConfiguration } from "../../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../../services/networkService";
@@ -35,9 +35,9 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
         ? {
               nativeTokens: influxService.nativeTokensCount,
               nfts: influxService.nftsCount,
-              totalAddresses: influxService.addressesWithBalance,
-              dailyAddresses: "",
+              accountAddressesWithBalance: influxService.accountAddressesWithBalance,
               lockedStorageDeposit: influxService.lockedStorageDeposit,
+              delegatorsCount: influxService.delegatorsCount,
           }
         : {
               error: `Influx service not found for this network: ${request.network}`,

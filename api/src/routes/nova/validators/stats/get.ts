@@ -29,13 +29,22 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
     const validatorService = ServiceFactory.get<ValidatorService>(`validator-service-${networkConfig.network}`);
 
     const validators = validatorService.validators;
-    const committee = validatorService.committee;
+    const committeeResponse = validatorService.committee;
 
+    const totalValidators = validators.length;
+    const committeeValidators = committeeResponse.committee.length;
     const totalPoolStake = validators.reduce((acc, cur) => BigInt(cur.poolStake) + acc, BigInt(0));
-    const totalValidatorStake = committee ? BigInt(committee.totalValidatorStake) : undefined;
+    const totalValidatorsStake = validators.reduce((acc, cur) => BigInt(cur.validatorStake) + acc, BigInt(0));
+
+    const committeeValidatorsPoolStake = committeeResponse ? BigInt(committeeResponse.totalStake) : undefined;
+    const totalCommitteeStake = committeeResponse ? BigInt(committeeResponse.totalValidatorStake) : undefined;
 
     return {
-        totalPoolStake: totalPoolStake.toString(),
-        totalValidatorStake: totalValidatorStake.toString(),
+        totalValidators,
+        committeeValidators,
+        totalValidatorsPoolStake: totalPoolStake.toString(),
+        totalValidatorsStake: totalValidatorsStake.toString(),
+        committeeValidatorsPoolStake: committeeValidatorsPoolStake?.toString(),
+        totalCommitteeStake: totalCommitteeStake?.toString(),
     };
 }
