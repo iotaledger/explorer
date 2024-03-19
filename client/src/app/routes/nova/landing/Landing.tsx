@@ -7,12 +7,11 @@ import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
 import { useNetworkStats } from "~/helpers/nova/hooks/useNetworkStats";
 import Hero from "~/app/components/Hero";
 import { IStatDisplay } from "~/app/lib/interfaces";
-import { StatDisplaySize } from "~/app/lib/enums";
-import BigDecimal from "~/helpers/bigDecimal";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./Landing.scss";
 
 const Landing: React.FC = () => {
-    const { name: network, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { chronicleAnalyticStats } = useChronicleAnalytics();
     const { validatorStats } = useValidatorStats();
     const { blocksPerSecond, confirmationRate } = useNetworkStats(network);
@@ -21,35 +20,16 @@ const Landing: React.FC = () => {
     const accountsCount = chronicleAnalyticStats?.accountAddressesWithBalance ?? null;
     const delegatorsCount = chronicleAnalyticStats?.delegatorsCount ?? null;
 
-    const totalSupply = protocolInfo?.parameters.tokenSupply ?? null;
     const totalDelegatedStake = totalPoolStake && totalValidatorStake ? BigInt(totalPoolStake) - BigInt(totalValidatorStake) : null;
-
-    let percentStaked = "-";
-    let percentDelegated = "-";
-    if (totalSupply !== null && totalDelegatedStake !== null && totalValidatorStake) {
-        const totalStakedDecimal = new BigDecimal(totalValidatorStake);
-        const totalDelegatedDecimal = BigDecimal.fromBigInt(totalDelegatedStake);
-
-        percentStaked = new BigDecimal("100", 10).multiply(totalStakedDecimal.toString()).divide(totalSupply).toString();
-        percentDelegated = new BigDecimal("100", 10).multiply(totalDelegatedDecimal.toString()).divide(totalSupply).toString();
-    }
 
     const networkStats: IStatDisplay[] = [
         {
-            title: blocksPerSecond ?? "-",
+            title: blocksPerSecond ?? "--",
             subtitle: "Blocks per sec",
         },
         {
-            title: confirmationRate ? `${confirmationRate}%` : "-",
+            title: confirmationRate ? `${confirmationRate}%` : "--",
             subtitle: "Confirmation rate",
-        },
-        {
-            title: delegatorsCount ?? "-",
-            subtitle: "Delegators",
-        },
-        {
-            title: validatorsSize !== undefined ? validatorsSize.toString() : "-",
-            subtitle: "Validators",
         },
     ];
 
@@ -57,17 +37,22 @@ const Landing: React.FC = () => {
         {
             title: accountsCount ?? "-",
             subtitle: "Accounts",
-            size: StatDisplaySize.Small,
         },
         {
-            title: `${percentStaked}%`,
+            title: validatorsSize !== undefined ? validatorsSize.toString() : "--",
+            subtitle: "Validators",
+        },
+        {
+            title: delegatorsCount ?? "-",
+            subtitle: "Delegators",
+        },
+        {
+            title: `${totalValidatorStake !== undefined ? formatAmount(totalValidatorStake, tokenInfo) : "--"}`,
             subtitle: "Total Staked",
-            size: StatDisplaySize.Small,
         },
         {
-            title: `${percentDelegated}%`,
+            title: `${totalDelegatedStake !== null ? formatAmount(totalDelegatedStake, tokenInfo) : "--"}`,
             subtitle: "Total Delegated",
-            size: StatDisplaySize.Small,
         },
     ];
 

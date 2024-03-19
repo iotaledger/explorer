@@ -2,17 +2,20 @@ import moment from "moment";
 import React from "react";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
 import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { ProgressBarSize } from "~/app/lib/ui/enums";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import RightHalfArrow from "~assets/right-half-arrow.svg?react";
 import ArrowUp from "~assets/arrow_up.svg?react";
 import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./LandingEpochSection.scss";
 
 const EPOCH_TIME_FORMAT = "DD MMM YYYY";
 
 const LandingEpochSection: React.FC = () => {
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
     const { validatorStats } = useValidatorStats();
     const { validatorsSize, totalActivePoolStake, totalActiveValidatorStake } = validatorStats ?? {};
@@ -42,15 +45,15 @@ const LandingEpochSection: React.FC = () => {
 
     const stats: IStatDisplay[] = [
         {
-            title: `${validatorsSize ?? "-"}`,
+            title: `${validatorsSize ?? "--"}`,
             subtitle: "Validators",
         },
         {
-            title: `${totalActiveValidatorStake ?? "-"}`,
+            title: `${totalActiveValidatorStake !== undefined ? formatAmount(totalActiveValidatorStake, tokenInfo) : "--"}`,
             subtitle: "Staked in active set",
         },
         {
-            title: `${totalActiveDelegatorStake ?? "-"}`,
+            title: `${totalActiveDelegatorStake !== undefined ? formatAmount(totalActiveDelegatorStake, tokenInfo) : "--"}`,
             subtitle: "Delegated in active set",
         },
         {
