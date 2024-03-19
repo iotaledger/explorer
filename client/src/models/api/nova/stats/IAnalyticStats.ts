@@ -9,4 +9,5 @@ export interface IAnalyticStats extends IResponse {
     nfts?: string;
     accountAddressesWithBalance?: string;
     lockedStorageDeposit?: string;
+    delegatorsCount?: string;
 }

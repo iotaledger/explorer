@@ -37,6 +37,7 @@ export async function get(_: IConfiguration, request: INetworkBoundGetRequest): 
               nfts: influxService.nftsCount,
               accountAddressesWithBalance: influxService.accountAddressesWithBalance,
               lockedStorageDeposit: influxService.lockedStorageDeposit,
+              delegatorsCount: influxService.delegatorsCount,
           }
         : {
               error: `Influx service not found for this network: ${request.network}`,

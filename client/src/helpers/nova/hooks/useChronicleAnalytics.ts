@@ -61,6 +61,7 @@ export function useChronicleAnalytics(): { chronicleAnalyticStats: IAnalyticStat
                     nfts: analyticStats?.nfts,
                     accountAddressesWithBalance: analyticStats?.accountAddressesWithBalance,
                     lockedStorageDeposit: analyticStats?.lockedStorageDeposit,
+                    delegatorsCount: analyticStats?.delegatorsCount,
                 });
             } else {
                 console.error("[Nova] Chronicle analytics stats refresh failed.");

@@ -6,4 +6,5 @@ export interface IAnalyticStats {
     nfts?: string;
     accountAddressesWithBalance?: string;
     lockedStorageDeposit?: string;
+    delegatorsCount?: string;
 }

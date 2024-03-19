@@ -60,6 +60,7 @@ export interface IInfluxAnalyticsCache {
     nativeTokensCount?: string;
     nftsCount?: string;
     lockedStorageDeposit?: string;
+    delegatorsCount?: string;
 }
 
 /**

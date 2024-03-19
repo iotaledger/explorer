@@ -479,3 +479,9 @@ export const STORAGE_DEPOSIT_TOTAL_QUERY = `
         last("total_storage_deposit_amount") AS "lockedStorageDeposit"
     FROM "iota_ledger_size";
 `;
+
+export const DELEGATORS_TOTAL_QUERY = `
+    SELECT
+        last("delegation_count") AS "delegatorsCount"
+    FROM "iota_ledger_outputs";
+`;
