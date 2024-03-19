@@ -11,16 +11,16 @@ import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagra
 import { MAX_VISIBLE_BLOCKS, EDGE_COLOR_CONFIRMING, EDGE_COLOR_CONFIRMED_BY } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
-import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
+// import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 
 export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
-    const { graphElement, graph } = useContext(GraphContext);
-    // const graphElement = useRef<HTMLDivElement | null>(null);
-    // const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
+    // const { graphElement, graph } = useContext(GraphContext);
+    const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
+    const graphElement = useRef<HTMLDivElement | null>(null);
+    const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
     const resetCounter = useRef<number>(0);
     const lastUpdateTime = useRef<number>(0);
-    const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
     const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
     const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
     const getExistingBlockIds = useTangleStore((state) => state.getExistingBlockIds);
@@ -101,7 +101,7 @@ export const useFeed = (network: string) => {
     };
 
     const onNewBlock = (newBlock: IFeedBlockData) => {
-
+        console.log('--- new block');
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         if (window._stop) {
