@@ -1,6 +1,7 @@
+import { IResponse } from "./IResponse";
 import { IOutputsResponse } from "./outputs/IOutputsResponse";
 
-export interface ITaggedOutputsResponse {
+export interface ITaggedOutputsResponse extends IResponse {
     /**
      * The basic outputs data.
      */

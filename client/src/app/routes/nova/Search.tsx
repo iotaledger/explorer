@@ -110,6 +110,12 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.foundryId) {
                         route = "foundry";
                         routeParam = response.foundryId;
+                    } else if (response.taggedOutputs) {
+                        route = "outputs";
+                        redirectState = {
+                            outputIds: response.taggedOutputs,
+                            tag: query,
+                        };
                     }
 
                     const getEncodedSearch = () => {
