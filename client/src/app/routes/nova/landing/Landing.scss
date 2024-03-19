@@ -7,6 +7,7 @@
 .landing-nova {
     display: flex;
     flex-direction: column;
+    margin-bottom: 80px;
 
     .header-wrapper {
         position: relative;
@@ -94,13 +95,15 @@
     .wrapper {
         display: flex;
         justify-content: center;
-        padding: 0 $inner-padding 44px;
+        width: 100%;
 
         .inner {
             display: flex;
             flex: 1;
             flex-direction: column;
-            max-width: 960px;
+            max-width: min(100%, 960px);
+            margin: 0;
+            padding: 0 20px;
         }
     }
 }

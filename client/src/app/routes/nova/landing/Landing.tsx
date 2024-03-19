@@ -7,9 +7,6 @@ import { LandingRouteProps } from "../../LandingRouteProps";
 import Hero from "~/app/components/Hero";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import { StatDisplaySize } from "~/app/lib/enums";
-import IconContent from "~/app/components/IconContent";
-import VolumeVelocity from "~/assets/volume_velocity_icon.svg?react";
-import Parallelism from "~/assets/parallelism_icon.svg?react";
 import "./Landing.scss";
 
 const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
@@ -19,18 +16,22 @@ const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
 }) => {
     const [networkConfig] = useNetworkConfig(network);
 
-    const stats: IStatDisplay[] = [
+    const networkStats: IStatDisplay[] = [
         {
-            title: "72.8k",
-            subtitle: "Validators",
+            title: "20.2",
+            subtitle: "Blocks per sec",
         },
         {
-            title: "52.1k",
-            subtitle: "Delegators",
+            title: "32.04%",
+            subtitle: "Incursion rate",
         },
+    ];
+
+    const assetsStats: IStatDisplay[] = [
         {
             title: "11.2k",
             subtitle: "Accounts",
+            size: StatDisplaySize.Small,
         },
         {
             title: "39%",
@@ -46,13 +47,9 @@ const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
 
     return (
         <div className="landing-nova">
-            <Hero network={networkConfig.network} overline="Explore network" stats={stats} />
+            <Hero network={networkConfig.network} overline="Explore network" networkStats={networkStats} assetStats={assetsStats} />
             <div className="wrapper">
                 <div className="inner">
-                    <div className="stats-grid">
-                        <IconContent Icon={VolumeVelocity} title="11.8" subtitle="Blocks per sec" />
-                        <IconContent Icon={Parallelism} title="55.93%" subtitle="Incursion rate" />
-                    </div>
                     <LandingEpochSection />
                     <LandingSlotSection />
                 </div>
