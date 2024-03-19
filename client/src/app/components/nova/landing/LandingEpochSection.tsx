@@ -1,6 +1,7 @@
 import moment from "moment";
 import React from "react";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
+import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
 import { ProgressBarSize } from "~/app/lib/ui/enums";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import RightHalfArrow from "~assets/right-half-arrow.svg?react";
@@ -13,6 +14,13 @@ const EPOCH_TIME_FORMAT = "DD MMM YYYY";
 
 const LandingEpochSection: React.FC = () => {
     const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
+    const { validatorStats } = useValidatorStats();
+    const { validatorsSize, totalActivePoolStake, totalActiveValidatorStake } = validatorStats ?? {};
+
+    const totalActiveDelegatorStake =
+        totalActivePoolStake === undefined || totalActiveValidatorStake === undefined
+            ? "0"
+            : (BigInt(totalActivePoolStake) - BigInt(totalActiveValidatorStake)).toString();
 
     if (epochIndex === null || epochProgressPercent === null) {
         return null;
@@ -34,15 +42,15 @@ const LandingEpochSection: React.FC = () => {
 
     const stats: IStatDisplay[] = [
         {
-            title: "32",
+            title: `${validatorsSize ?? "-"}`,
             subtitle: "Validators",
         },
         {
-            title: "500k",
+            title: `${totalActiveValidatorStake ?? "-"}`,
             subtitle: "Staked in active set",
         },
         {
-            title: "200k",
+            title: `${totalActiveDelegatorStake ?? "-"}`,
             subtitle: "Delegated in active set",
         },
         {
