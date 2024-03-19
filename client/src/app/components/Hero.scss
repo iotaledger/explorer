@@ -7,6 +7,11 @@
     padding-top: 80px;
     margin-top: -80px;
     z-index: 0;
+    margin-bottom: 80px;
+
+    @include tablet-down {
+        margin-bottom: 40px;
+    }
 
     .bg-container {
         position: absolute;
@@ -27,10 +32,21 @@
 
     .inner {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: space-between;
+        align-items: center;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
 
-        @include desktop-down {
+    .title-cont-wrapper {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+
+        @include tablet-down {
             flex-direction: column;
         }
     }
@@ -39,10 +55,15 @@
         display: flex;
         flex-direction: column;
         margin-right: 137px;
+        padding: 98px 0 178px;
 
         @include desktop-down {
+            margin-right: 60px;
+            padding: 60px 0;
+        }
+
+        @include tablet-down {
             margin-right: 0;
-            margin-bottom: 40px;
         }
 
         .title {
@@ -62,6 +83,8 @@
         }
         .overline {
             margin-bottom: 24px;
+            font-weight: 500;
+            font-size: 24px;
         }
 
         .subtitle {
@@ -69,18 +92,22 @@
         }
     }
 
-    .stats-wrapper {
+    .network-stats-wrapper {
         display: grid;
         row-gap: 64px;
         column-gap: 64px;
-        align-items: start;
+        align-items: center;
         width: auto;
-        padding-top: 20px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-        @for $i from 1 through 4 {
-            &[data-columns="#{$i}"] {
-                grid-template-columns: repeat(#{$i}, minmax(0, 1fr));
-            }
-        }
+    .asset-stats-wrapper {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-gap: 16px;
+        margin-top: 120px;
+        row-gap: 32px;
+        padding-bottom: 48px;
     }
 }

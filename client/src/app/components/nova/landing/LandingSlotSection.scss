@@ -1,18 +1,28 @@
 @import "../../../../scss/variables";
 @import "../../../../scss/fonts";
 @import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
 
 .slots-section {
     font-family: $metropolis;
-    margin-top: 92px;
+    margin-top: 80px;
 
     .slots-section__header {
         @include font-size(36px);
         line-height: 120%;
-        margin-bottom: 60px;
+        margin-bottom: 48px;
     }
 
     .slots-section__table {
+        table {
+            @include tablet-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+        }
+
         .slot-id {
             max-width: 165px;
         }
