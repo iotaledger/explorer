@@ -7,6 +7,7 @@ import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
 import { useNetworkStats } from "~/helpers/nova/hooks/useNetworkStats";
 import Hero from "~/app/components/Hero";
 import { IStatDisplay } from "~/app/lib/interfaces";
+import { StatDisplaySize } from "~/app/lib/enums";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./Landing.scss";
 
@@ -37,22 +38,27 @@ const Landing: React.FC = () => {
         {
             title: accountsCount ?? "-",
             subtitle: "Accounts",
+            size: StatDisplaySize.Small,
         },
         {
             title: validatorsSize !== undefined ? validatorsSize.toString() : "--",
             subtitle: "Validators",
+            size: StatDisplaySize.Small,
         },
         {
             title: delegatorsCount ?? "-",
             subtitle: "Delegators",
+            size: StatDisplaySize.Small,
         },
         {
             title: `${totalValidatorStake !== undefined ? formatAmount(totalValidatorStake, tokenInfo) : "--"}`,
             subtitle: "Total Staked",
+            size: StatDisplaySize.Small,
         },
         {
             title: `${totalDelegatedStake !== null ? formatAmount(totalDelegatedStake, tokenInfo) : "--"}`,
             subtitle: "Total Delegated",
+            size: StatDisplaySize.Small,
         },
     ];
 

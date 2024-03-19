@@ -6,6 +6,10 @@ export interface IValidatorStatsResponse extends IResponse {
      */
     validatorsSize?: number;
     /**
+     * The number of active validators (committee).
+     */
+    activeValidatorsSize?: number;
+    /**
      * The total amount staked and delegated validators (BigInt).
      */
     totalPoolStake?: string;

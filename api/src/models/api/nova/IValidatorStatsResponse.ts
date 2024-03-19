@@ -4,9 +4,13 @@ import { IResponse } from "./IResponse";
 
 export interface IValidatorStatsResponse extends IResponse {
     /**
-     * The number of validators
+     * The number of validators (total)
      */
     validatorsSize?: number;
+    /**
+     * The number of active validators (committee).
+     */
+    activeValidatorsSize?: number;
     /**
      * The total amount staked and delegated validators (BigInt).
      */

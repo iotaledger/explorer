@@ -18,7 +18,7 @@ const LandingEpochSection: React.FC = () => {
     const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
     const { validatorStats } = useValidatorStats();
-    const { validatorsSize, totalActivePoolStake, totalActiveValidatorStake } = validatorStats ?? {};
+    const { activeValidatorsSize, totalActivePoolStake, totalActiveValidatorStake } = validatorStats ?? {};
 
     const totalActiveDelegatorStake =
         totalActivePoolStake === undefined || totalActiveValidatorStake === undefined
@@ -45,7 +45,7 @@ const LandingEpochSection: React.FC = () => {
 
     const stats: IStatDisplay[] = [
         {
-            title: `${validatorsSize ?? "--"}`,
+            title: `${activeValidatorsSize ?? "--"}`,
             subtitle: "Validators",
         },
         {
