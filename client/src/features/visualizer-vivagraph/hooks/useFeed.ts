@@ -8,22 +8,19 @@ import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "../lib/buildNodeShader";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
 import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagraph/lib/helpers";
-import { MAX_VISIBLE_BLOCKS, EDGE_COLOR_CONFIRMING, EDGE_COLOR_CONFIRMED_BY } from "~features/visualizer-vivagraph/definitions/constants";
+import { MAX_VISIBLE_BLOCKS } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
 import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 // import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 
 export const useFeed = (network: string) => {
-
-    const [feedService] = useState<NovaFeedClient | null>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
-    // const { graphElement, graph } = useContext(GraphContext);
-    const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
-    const graphElement = useRef<HTMLDivElement | null>(null);
-    const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
+    const [feedService] = useState<NovaFeedClient>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
+    // const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
+    // const graphElement = useRef<HTMLDivElement | null>(null);
+    // const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
     const resetCounter = useRef<number>(0);
     const lastUpdateTime = useRef<number>(0);
-    const renderer = useRef<Viva.Graph.View.IRenderer | null>(null);
     const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
     const getExistingBlockIds = useTangleStore((state) => state.getExistingBlockIds);
     const createBlockIdToMetadata = useTangleStore((state) => state.createBlockIdToMetadata);
@@ -33,35 +30,29 @@ export const useFeed = (network: string) => {
     const selectedNode = useTangleStore((state) => state.selectedNode);
     const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
     const themeMode = useGetThemeMode();
-    const graphContext = useContext(GraphContext);
-    console.log('--- graphContext', graphContext);
-    // let graph = graphContext.graph.current;
-    // const { graphElement, graphics } = graphContext;
 
+    // eslint-disable-next-line prefer-const
+    let graphContext = useContext(GraphContext);
 
     useEffect(() => {
-        // eslint-disable-next-line no-void
-        void (() => {
-            if (!feedService) {
-                return;
-            }
-            // setupGraph();
-            feedSubscriptionStart();
-        })();
-    }, [feedService, graph.current, graphElement.current]);
+        if (!graphContext.isVivaReady) {
+            return;
+        }
+
+        feedSubscriptionStart();
+    }, [feedService, graphContext]);
 
     useEffect(() => {
-        if (!graph.current) {
+        if (!graphContext.isVivaReady) {
             return;
         }
         if (selectedNode) {
-            const nodeUI = graphics?.current?.getNodeUI(selectedNode.blockId);
+            const nodeUI = graphContext.graphics.current?.getNodeUI(selectedNode.blockId);
             if (nodeUI) {
                 nodeUI.color = hexToDecimalColor("#ff0000");
             }
-            graph.current?.forEachLinkedNode(selectedNode.blockId, (node, link) => {
-
-                const nodeUI = graphics?.current?.getNodeUI(node.id);
+            graphContext.graph.current?.forEachLinkedNode(selectedNode.blockId, (node, link) => {
+                const nodeUI = graphContext.graphics.current?.getNodeUI(node.id);
                 if (nodeUI) {
                     nodeUI.color = hexToDecimalColor("#ff0000");
                 }
@@ -77,19 +68,22 @@ export const useFeed = (network: string) => {
         } else {
             // clear here
         }
-    }, [graph.current, selectedNode]);
+    }, [graphContext.isVivaReady, selectedNode]);
 
     const updateBlockColor = (blockId: string, color: string) => {
-        const nodeUI = graphics?.current?.getNodeUI(blockId);
+        const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
         if (nodeUI) {
             nodeUI.color = hexToDecimalColor(color);
         }
     };
 
     const createBlock = (blockId: string, newBlock: IFeedBlockData, addedTime: number) => {
+        if (!graphContext.graph.current) {
+            return;
+        }
         createBlockIdToMetadata(blockId, newBlock);
 
-        graph.current?.addNode(blockId, {
+        graphContext.graph.current?.addNode(blockId, {
             feedItem: newBlock,
             added: addedTime,
         });
@@ -100,22 +94,22 @@ export const useFeed = (network: string) => {
             const firstBlockId = updatedVisibleBlocks[0];
             updatedVisibleBlocks.shift();
             deleteBlockIdToMetadata(firstBlockId);
-            graph.current?.removeNode(firstBlockId);
-            // graph.current?.removeLink(); // TODO investigate if we need to remove it manually
+            graphContext.graph.current?.removeNode(firstBlockId);
+            // graph?.removeLink(); // TODO investigate if we need to remove it manually
         }
 
         setVisibleBlocks(updatedVisibleBlocks);
     };
 
     const onNewBlock = (newBlock: IFeedBlockData) => {
-        console.log('--- new block');
+        // console.log('--- new block');
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         if (window._stop) {
             return;
         }
 
-        if (graph.current) {
+        if (graphContext.graph.current) {
             const now = Date.now();
             lastUpdateTime.current = now;
 
@@ -131,7 +125,7 @@ export const useFeed = (network: string) => {
                 for (const parentId of parentIds) {
                     if (existingBlockIds.includes(parentId)) {
                         // const link =
-                        graph.current.addLink(parentId, blockId);
+                        graphContext.graph.current?.addLink(parentId, blockId);
                     }
                 }
             }
@@ -154,20 +148,16 @@ export const useFeed = (network: string) => {
     };
 
     useEffect(() => {
-        if (graphContext.isVivaReady) {
+        if (graphContext.graphElement.current && !graphContext.isVivaReady) {
             setupGraph();
         }
-    }, [graphContext.isVivaReady, graphContext.graph, graphContext.graphElement]);
+    }, [graphContext, graphContext.graphElement.current]);
 
     function setupGraph(): void {
-        if (!graph.current) {
-            console.log('--- setup in process', graphContext);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            graph.current = Viva.Graph.graph<INodeData, unknown>();
-            graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
-
-            const layout = Viva.Graph.Layout.forceDirected(graph.current, {
+        if (!graphContext.graph.current && graphContext.graphElement.current) {
+            graphContext.graph.current = Viva.Graph.graph<INodeData, unknown>();
+            graphContext.graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
+            const layout = Viva.Graph.Layout.forceDirected(graphContext.graph.current, {
                 springLength: 10,
                 springCoeff: 0.0001,
                 stableThreshold: 0.15,
@@ -177,29 +167,33 @@ export const useFeed = (network: string) => {
                 theta: 0.8,
             });
 
-            graphics.current.setNodeProgram(buildNodeShader());
-
-            const events = Viva.Graph.webglInputEvents(graphics.current, graph.current);
+            graphContext.graphics.current.setNodeProgram(buildNodeShader());
+            const events = Viva.Graph.webglInputEvents(graphContext.graphics.current, graphContext.graph.current);
 
             events.click((node) => selectNode(node));
             events.dblClick((node) => {
                 window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
             });
 
-            renderer.current = Viva.Graph.View.renderer<INodeData, unknown>(graph.current, {
-                container: graphElement.current,
-                graphics: graphics.current,
+            graphContext.renderer.current = Viva.Graph.View.renderer<INodeData, unknown>(graphContext.graph.current, {
+                container: graphContext.graphElement.current,
+                graphics: graphContext.graphics.current,
                 layout,
                 renderLinks: true,
             });
 
-            renderer.current.run();
+            graphContext.renderer.current.run();
 
-            graphics.current.scale(1, { x: graphElement.current.clientWidth / 2, y: graphElement.current.clientHeight / 2 });
+            graphContext.graphics.current.scale(1, {
+                x: graphContext.graphElement.current.clientWidth / 2,
+                y: graphContext.graphElement.current.clientHeight / 2,
+            });
 
             for (let i = 0; i < 12; i++) {
-                renderer.current.zoomOut();
+                graphContext.renderer.current.zoomOut();
             }
+
+            graphContext.setIsVivaReady(true);
         }
     }
 
@@ -214,7 +208,6 @@ export const useFeed = (network: string) => {
     }
 
     return {
-        graphElement,
         resetCounter,
     };
 };
