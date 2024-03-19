@@ -3,7 +3,7 @@ import cron from "node-cron";
 import {
     ACCOUNT_ACTIVITY_DAILY_QUERY,
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
-    ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
+    ACCOUNT_ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
     BLOCK_DAILY_QUERY,
     BLOCK_ISSUERS_DAILY_QUERY,
@@ -27,6 +27,7 @@ import {
     TRANSACTION_DAILY_QUERY,
     UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
     VALIDATORS_ACTIVITY_DAILY_QUERY,
+    DELEGATORS_TOTAL_QUERY,
 } from "./influxQueries";
 import logger from "../../../logger";
 import { INetwork } from "../../../models/db/INetwork";
@@ -185,8 +186,8 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this.mapToSortedValuesArray(this._dailyCache.manaBurnedDaily);
     }
 
-    public get addressesWithBalance() {
-        return this._analyticsCache.addressesWithBalance;
+    public get accountAddressesWithBalance() {
+        return this._analyticsCache.accountAddressesWithBalance;
     }
 
     public get nativeTokensCount() {
@@ -199,6 +200,10 @@ export class InfluxServiceNova extends InfluxDbClient {
 
     public get lockedStorageDeposit() {
         return this._analyticsCache.lockedStorageDeposit;
+    }
+
+    public get delegatorsCount() {
+        return this._analyticsCache.delegatorsCount;
     }
 
     protected setupDataCollection() {
@@ -324,12 +329,12 @@ export class InfluxServiceNova extends InfluxDbClient {
     private async collectAnalytics() {
         logger.verbose(`[InfluxNova] Collecting analytic stats for "${this._network.network}"`);
         try {
-            for (const update of await this.queryInflux<ITimedEntry & { addressesWithBalance: string }>(
-                ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
+            for (const update of await this.queryInflux<ITimedEntry & { accountAddressesWithBalance: string }>(
+                ACCOUNT_ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
                 null,
                 this.getToNanoDate(),
             )) {
-                this._analyticsCache.addressesWithBalance = update.addressesWithBalance;
+                this._analyticsCache.accountAddressesWithBalance = update.accountAddressesWithBalance;
             }
 
             for (const update of await this.queryInflux<ITimedEntry & { nativeTokensCount: string }>(
@@ -354,6 +359,14 @@ export class InfluxServiceNova extends InfluxDbClient {
                 this.getToNanoDate(),
             )) {
                 this._analyticsCache.lockedStorageDeposit = update.lockedStorageDeposit;
+            }
+
+            for (const update of await this.queryInflux<ITimedEntry & { delegatorsCount: string }>(
+                DELEGATORS_TOTAL_QUERY,
+                null,
+                this.getToNanoDate(),
+            )) {
+                this._analyticsCache.delegatorsCount = update.delegatorsCount;
             }
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing analytics for "${this._network.network}"! Cause: ${err}`);

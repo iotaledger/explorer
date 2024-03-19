@@ -9,11 +9,12 @@ import { NovaApiClient } from "~services/nova/novaApiClient";
  * @param network The network in context.
  * @returns The network stats.
  */
-export function useNetworkStats(network: string): [string] {
+export function useNetworkStats(network: string): { blocksPerSecond: string; confirmationRate: string } {
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [updateTimerId, setUpdateTimerId] = useState<NodeJS.Timer | null>(null);
     const [blocksPerSecond, setBlocksPerSecond] = useState<string>("--");
+    const [confirmationRate, setConfirmationRate] = useState<string>("--");
 
     useEffect(() => {
         if (network) {
@@ -38,6 +39,7 @@ export function useNetworkStats(network: string): [string] {
                 .then((ips) => {
                     const itemsPerSecond = ips.itemsPerSecond ?? 0;
                     setBlocksPerSecond(itemsPerSecond >= 0 ? itemsPerSecond.toFixed(2) : "--");
+                    setConfirmationRate(ips.confirmationRate !== undefined ? ips.confirmationRate.toFixed(2) : "--");
                 })
                 .catch((err) => {
                     console.error(err);
@@ -48,5 +50,5 @@ export function useNetworkStats(network: string): [string] {
         }
     };
 
-    return [blocksPerSecond];
+    return { blocksPerSecond, confirmationRate };
 }
