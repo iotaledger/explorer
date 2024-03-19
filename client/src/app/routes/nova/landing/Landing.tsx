@@ -1,5 +1,4 @@
 import React from "react";
-import LandingStatsSection from "~/app/components/nova/landing/LandingStatsSection";
 import LandingEpochSection from "~/app/components/nova/landing/LandingEpochSection";
 import LandingSlotSection from "~/app/components/nova/landing/LandingSlotSection";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
@@ -77,7 +76,6 @@ const Landing: React.FC = () => {
             <Hero network={network} overline="Explore network" networkStats={networkStats} assetStats={assetsStats} />
             <div className="wrapper">
                 <div className="inner">
-                    <LandingStatsSection />
                     <LandingEpochSection />
                     <LandingSlotSection />
                 </div>
