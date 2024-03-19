@@ -5,6 +5,12 @@ import { THEME_BLOCK_COLORS } from "../definitions/constants";
 
 export const getBlockParents = (blockData: IFeedBlockData): string[] => {
     const parents: Parents = [];
+
+    // @ts-ignore
+    const shallowLikeParents = blockData?.block?.body?.shallowLikeParents;
+    if (shallowLikeParents) {
+        console.log('--- ', shallowLikeParents);
+    }
     const blockStrongParents = (blockData?.block?.body as BasicBlockBody).strongParents ?? [];
     const blockWeakParents = (blockData?.block?.body as BasicBlockBody).weakParents ?? [];
     parents.push(...blockStrongParents, ...blockWeakParents);
@@ -25,7 +31,7 @@ export const getBlockParents = (blockData: IFeedBlockData): string[] => {
     return [];
 };
 
-export function hexToDecimalColor(hex: string) {
+export function hexToGraphicsColor<T>(hex: string, isForEdge: boolean = false): T {
     if (hex.startsWith("#")) {
         hex = hex.slice(1);
     }
@@ -34,7 +40,11 @@ export function hexToDecimalColor(hex: string) {
     const g = parseInt(hex.slice(2, 4), 16);
     const b = parseInt(hex.slice(4, 6), 16);
 
-    return String(r * 65536 + g * 256 + b);
+    if (!isForEdge) {
+        return String(r * 65536 + g * 256 + b) as T;
+    }
+
+    return Number(r * 65536 + g * 256 + b) as T;
 }
 
 export const randomIntFromInterval = (min: number, max: number) => {

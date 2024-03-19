@@ -7,18 +7,14 @@ import { INodeData } from "~models/graph/nova/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "../lib/buildNodeShader";
 import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
-import { getBlockParents, hexToDecimalColor } from "~features/visualizer-vivagraph/lib/helpers";
-import { MAX_VISIBLE_BLOCKS } from "~features/visualizer-vivagraph/definitions/constants";
+import { getBlockParents, hexToGraphicsColor } from "~features/visualizer-vivagraph/lib/helpers";
+import { MAX_VISIBLE_BLOCKS, EDGE_COLOR_CONFIRMING } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
 import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
-// import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 
 export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
-    // const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
-    // const graphElement = useRef<HTMLDivElement | null>(null);
-    // const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);
     const resetCounter = useRef<number>(0);
     const lastUpdateTime = useRef<number>(0);
     const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
@@ -30,9 +26,7 @@ export const useFeed = (network: string) => {
     const selectedNode = useTangleStore((state) => state.selectedNode);
     const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
     const themeMode = useGetThemeMode();
-
-    // eslint-disable-next-line prefer-const
-    let graphContext = useContext(GraphContext);
+    const graphContext = useContext(GraphContext);
 
     useEffect(() => {
         if (!graphContext.isVivaReady) {
@@ -40,22 +34,32 @@ export const useFeed = (network: string) => {
         }
 
         feedSubscriptionStart();
-    }, [feedService, graphContext]);
+    }, [graphContext]);
 
     useEffect(() => {
         if (!graphContext.isVivaReady) {
             return;
         }
         if (selectedNode) {
-            const nodeUI = graphContext.graphics.current?.getNodeUI(selectedNode.blockId);
-            if (nodeUI) {
-                nodeUI.color = hexToDecimalColor("#ff0000");
-            }
-            graphContext.graph.current?.forEachLinkedNode(selectedNode.blockId, (node, link) => {
-                const nodeUI = graphContext.graphics.current?.getNodeUI(node.id);
-                if (nodeUI) {
-                    nodeUI.color = hexToDecimalColor("#ff0000");
-                }
+            const {
+                highlightedNodesAfter,
+                highlightedNodesBefore,
+                highlightedLinksAfter,
+                highlightedLinksBefore,
+            } = getNodeConnections(selectedNode.blockId);
+
+            highlightNodes([selectedNode.blockId], "#ff0000", [], "");
+            // @ts-ignore
+            highlightNodes(highlightedNodesAfter, "#00ff00", highlightedLinksAfter, EDGE_COLOR_CONFIRMING);
+            // const nodeUI = graphContext.graphics.current?.getNodeUI(selectedNode.blockId);
+            // if (nodeUI) {
+            //     nodeUI.color = hexToGraphicsColor("#ff0000");
+            // }
+            // graphContext.graph.current?.forEachLinkedNode(selectedNode.blockId, (node, link) => {
+            //     const nodeUI = graphContext.graphics.current?.getNodeUI(node.id);
+            //     if (nodeUI) {
+            //         nodeUI.color = hexToGraphicsColor("#ff0000");
+            //     }
 
                 // const lineColor = link['fromId'] === node ? EDGE_COLOR_CONFIRMING : EDGE_COLOR_CONFIRMED_BY;
                 // if (link.id) {
@@ -64,18 +68,85 @@ export const useFeed = (network: string) => {
                 //         linkUI.color = lineColor;
                 //     }
                 // }
-            });
+            // });
         } else {
             // clear here
         }
     }, [graphContext.isVivaReady, selectedNode]);
 
+    function resetHighlight() {
+
+    }
+
+    function highlightNodes(nodeIds: string[], nodeColor: string, linkIds: string[], linkColor: string) {
+        for (const nodeId of nodeIds) {
+            updateBlockColor(nodeId, nodeColor);
+        }
+        for (const linkId of linkIds) {
+            updateLineColor(linkId, linkColor);
+        }
+
+    }
+
+    function getNodeConnections(nodeId: string):
+        {
+            highlightedNodesAfter: string[];
+            highlightedNodesBefore: string[];
+            highlightedLinksAfter: string[];
+            highlightedLinksBefore: string[];
+        }
+        {
+        const highlightedNodesAfter: string[] = [];
+        const highlightedNodesBefore: string[] = [];
+        const highlightedLinksAfter: string[] = [];
+        const highlightedLinksBefore: string[] = [];
+        const usedNodes: string[] = [nodeId];
+        const nodesToProcess = [nodeId];
+
+        while (nodesToProcess.length > 0) {
+            const currentNodeId = nodesToProcess.shift();
+            console.log('--- currentNodeId', currentNodeId);
+            if (currentNodeId) {
+                graphContext.graph.current?.forEachLinkedNode(currentNodeId, (connectedNode, link) => {
+                    if (!usedNodes.includes(connectedNode.id)) {
+                        usedNodes.push(connectedNode.id); // Add this line
+                        if (link.toId === currentNodeId) {
+                            highlightedNodesBefore.push(connectedNode.id);
+                            highlightedLinksBefore.push(link.id);
+                        } else {
+                            highlightedNodesAfter.push(connectedNode.id);
+                            highlightedLinksAfter.push(link.id);
+                        }
+                        nodesToProcess.push(connectedNode.id);
+                    }
+                });
+            }
+        }
+
+        return {
+            highlightedNodesAfter,
+            highlightedNodesBefore,
+            highlightedLinksAfter,
+            highlightedLinksBefore,
+        };
+    }
+
     const updateBlockColor = (blockId: string, color: string) => {
         const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
         if (nodeUI) {
-            nodeUI.color = hexToDecimalColor(color);
+            nodeUI.color = hexToGraphicsColor<string>(color, false);
         }
     };
+
+    function updateLineColor(lineId: string, color: string) {
+        if (graphContext.graphics.current) {
+            const linkUI = graphContext.graphics.current.getLinkUI(lineId);
+            if (linkUI) {
+                // linkUI.color = hexToGraphicsColor<number>(color, true);
+                linkUI.color = color;
+            }
+        }
+    }
 
     const createBlock = (blockId: string, newBlock: IFeedBlockData, addedTime: number) => {
         if (!graphContext.graph.current) {
@@ -102,7 +173,6 @@ export const useFeed = (network: string) => {
     };
 
     const onNewBlock = (newBlock: IFeedBlockData) => {
-        // console.log('--- new block');
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         if (window._stop) {
@@ -140,10 +210,6 @@ export const useFeed = (network: string) => {
     }
 
     const feedSubscriptionStart = () => {
-        if (!feedService) {
-            return;
-        }
-
         feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate, () => {});
     };
 
