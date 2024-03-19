@@ -61,7 +61,7 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                         {transaction && (
                             <>
                                 <div className="section--data">
-                                    <div className="label">Creation slot</div>
+                                    <div className="label">Transaction creation slot</div>
                                     <div className="value code">{transaction.creationSlot}</div>
                                 </div>
                                 {transaction?.contextInputs?.map((contextInput, idx) => (

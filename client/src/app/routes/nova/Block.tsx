@@ -4,7 +4,7 @@ import mainHeaderMessage from "~assets/modals/stardust/block/main-header.json";
 import metadataInfo from "~assets/modals/stardust/block/metadata.json";
 import { useBlock } from "~helpers/nova/hooks/useBlock";
 import NotFound from "../../components/NotFound";
-import { BasicBlockBody, PayloadType, SignedTransactionPayload, Utils, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
+import { AccountAddress, BasicBlockBody, PayloadType, SignedTransactionPayload, Utils, ValidationBlockBody } from "@iota/sdk-wasm-nova/web";
 import Modal from "~/app/components/Modal";
 import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
@@ -40,7 +40,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         params: { network, blockId },
     },
 }) => {
-    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { tokenInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
@@ -109,6 +109,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         );
     }
 
+    const slotIndex = block?.header.slotCommitmentId ? Utils.computeSlotIndex(block.header.slotCommitmentId) : null;
+    const issuerAddress = block?.header.issuerId ? Utils.addressToBech32(new AccountAddress(block.header.issuerId), bech32Hrp) : null;
+
     const blockContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
@@ -136,8 +139,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             </div>
             <div className="section--data">
                 <div className="label">Slot commitment</div>
-                <div className="value code">
-                    <TruncatedId id={block.header.slotCommitmentId} />
+                <div className="value code highlight">
+                    <TruncatedId id={block.header.slotCommitmentId} link={`/${network}/slot/${slotIndex}`} />
                 </div>
             </div>
             <div className="section--data">
@@ -147,7 +150,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             <div className="section--data">
                 <div className="label">Issuer</div>
                 <div className="value code highlight">
-                    <TruncatedId id={block.header.issuerId} link={`/${network}/account/${block.header.issuerId}`} showCopyButton={true} />
+                    <TruncatedId id={block.header.issuerId} link={`/${network}/addr/${issuerAddress}`} showCopyButton={true} />
                 </div>
             </div>
             <div className="section--data row row--tablet-responsive">
@@ -185,7 +188,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             {blockBody?.isValidation() && (
                 <div className="section--data">
                     <div className="label">Highest supported protocol version</div>
-                    <div className="value code highlight">{blockBody.asValidation().highestSupportedVersion}</div>
+                    <div className="value code">{blockBody.asValidation().highestSupportedVersion}</div>
                 </div>
             )}
             {blockBody?.isBasic() && (
