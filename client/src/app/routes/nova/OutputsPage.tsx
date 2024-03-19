@@ -4,9 +4,9 @@ import { useTaggedOutputs } from "~helpers/nova/hooks/useTaggedOutputs";
 import TabbedSection from "~/app/components/hoc/TabbedSection";
 import Pagination from "~/app/components/Pagination";
 import OutputView from "~/app/components/nova/OutputView";
-import "./OutputList.scss";
+import "./OutputsPage.scss";
 
-interface OutputListProps {
+interface OutputsPageProps {
     /**
      * The network to lookup.
      */
@@ -15,12 +15,12 @@ interface OutputListProps {
 
 const OUTPUTS_OVER_LIMIT_MESSAGE = "There are more than 100 outputs with this tag, only the first 100 are shown.";
 
-export enum OUTPUT_LIST_TABS {
+export enum OUTPUTS_PAGE_TABS {
     Basic = "Basic outputs",
     Nft = "Nft outputs",
 }
 
-const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
+const OutputsPage: React.FC<RouteComponentProps<OutputsPageProps>> = ({
     match: {
         params: { network },
     },
@@ -55,13 +55,13 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
                         </div>
                     </div>
                     <TabbedSection
-                        tabsEnum={OUTPUT_LIST_TABS}
+                        tabsEnum={OUTPUTS_PAGE_TABS}
                         tabOptions={{
-                            [OUTPUT_LIST_TABS.Basic]: {
+                            [OUTPUTS_PAGE_TABS.Basic]: {
                                 disabled: isBasicLoading || totalBasicItems === 0,
                                 isLoading: isBasicLoading,
                             },
-                            [OUTPUT_LIST_TABS.Nft]: {
+                            [OUTPUTS_PAGE_TABS.Nft]: {
                                 disabled: isNftLoading || totalNftItems === 0,
                                 isLoading: isNftLoading,
                             },
@@ -132,4 +132,4 @@ const OutputList: React.FC<RouteComponentProps<OutputListProps>> = ({
     );
 };
 
-export default OutputList;
+export default OutputsPage;
