@@ -1,40 +1,26 @@
 @import "../../../../scss/variables";
 
 .progress-bar__wrapper {
-    $bar-height: 32px;
-
     .progress-bar {
         position: relative;
-        background-color: $gray-5;
-        margin: 20px 12px;
-        height: $bar-height;
+        background-color: #{$iota2-blue-300};
         border-radius: 4px;
-        text-align: center;
         overflow: hidden;
 
-        .progress-bar__label {
-            position: absolute;
-            left: 0;
-            right: 0;
-            line-height: $bar-height;
-            margin: 0 auto;
-            font-weight: 600;
+        &.large {
+            height: 32px;
         }
-
-        .progress-bar__children {
-            position: absolute;
-            left: 0;
-            right: 0;
-            line-height: $bar-height;
-            margin: 0 auto;
+        &.small {
+            height: 8px;
         }
 
         .progress-bar__fill {
             position: absolute;
-            width: 100%;
+            left: 0;
+            top: 0;
             height: 100%;
-            background-color: #36c636;
-            transform: translateX(-100%);
+            background-color: #{$iota2-blue-700};
+            transition: width 0.3s ease;
         }
     }
 }

@@ -1,55 +1,35 @@
 @import "../../../../scss/variables";
 @import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
 
 .slots-section {
     font-family: $metropolis;
-    margin-top: 40px;
-    background-color: $gray-1;
-    border-radius: 8px;
+    margin-top: 80px;
 
     .slots-section__header {
-        width: fit-content;
-        margin: 0 auto;
-        padding: 20px;
+        @include font-size(36px);
+        line-height: 120%;
+        margin-bottom: 48px;
     }
 
-    .slots-feed__wrapper {
-        margin: 0 20px 20px;
-
-        .slots-feed__item {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1fr 1fr;
-            margin: 0px 12px;
-            align-items: center;
-            line-height: 32px;
-            justify-content: center;
-            background-color: $gray-5;
-            border-radius: 4px;
-
-            &.basic {
-                grid-template-columns: none;
+    .slots-section__table {
+        table {
+            @include tablet-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
             }
+        }
 
-            &.transparent {
-                background-color: transparent;
-            }
+        .slot-id {
+            max-width: 165px;
+        }
 
-            &:not(:last-child) {
-                margin-bottom: 20px;
-            }
-
-            .slot__index,
-            .slot__commitment-id,
-            .slot__rmc,
-            .slot__status {
-                display: flex;
-                margin: 0 auto;
-                justify-content: center;
-            }
-
-            .slot__commitment-id {
-                width: 220px;
-            }
+        .flex .status-pill {
+            margin-right: 0px;
+            text-align: center;
         }
     }
 }

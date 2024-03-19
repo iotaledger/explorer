@@ -40,10 +40,6 @@
             color: var(--link-highlight);
         }
 
-        &:focus {
-            outline: none;
-        }
-
         &:disabled {
             opacity: 0.3;
             pointer-events: none;
