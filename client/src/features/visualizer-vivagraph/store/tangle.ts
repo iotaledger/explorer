@@ -12,8 +12,8 @@ interface TangleState {
     getBlockIdToMetadata: (blockId: string) => (IFeedBlockData & VivagraphParams) | undefined;
     updateBlockIdToMetadata: (blockId: string, metadata: Partial<IFeedBlockData & VivagraphParams>) => void;
     deleteBlockIdToMetadata: (blockId: string) => void;
-    getExistingBlockIds: () => string[];
-    getExistingBlocksMetadata: () => IFeedBlockData[];
+    getBlockMetadataKeys: () => string[];
+    getBlockMetadataValues: () => (IFeedBlockData & VivagraphParams)[];
 
     visibleBlocks: string[];
     setVisibleBlocks: (blockIds: string[]) => void;
@@ -68,11 +68,11 @@ export const useTangleStore = create<TangleState>()(
             const blockMetadata = get().blockIdToMetadata;
             blockMetadata.delete(blockId);
         },
-        getExistingBlockIds: () => {
+        getBlockMetadataKeys: () => {
             return Array.from(get().blockIdToMetadata.keys());
         },
-        getExistingBlocksMetadata: () => {
+        getBlockMetadataValues: () => {
             return Array.from(get().blockIdToMetadata.values());
-        }
+        },
     })),
 );

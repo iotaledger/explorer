@@ -11,7 +11,10 @@ import { getBlockParents, hexToGraphicsColor } from "~features/visualizer-vivagr
 import {
     MAX_VISIBLE_BLOCKS,
     EDGE_COLOR_CONFIRMING,
-    EDGE_COLOR_CONFIRMING_HEX
+    EDGE_COLOR_DARK,
+    EDGE_COLOR_LIGHT,
+    SEARCH_RESULT_COLOR,
+    EDGE_COLOR_CONFIRMED_BY,
 } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
@@ -21,16 +24,18 @@ export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
     const resetCounter = useRef<number>(0);
     const lastUpdateTime = useRef<number>(0);
-    const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
-    const getExistingBlockIds = useTangleStore((state) => state.getExistingBlockIds);
-    const createBlockIdToMetadata = useTangleStore((state) => state.createBlockIdToMetadata);
     const getVisibleBlocks = useTangleStore((state) => state.getVisibleBlocks);
     const setVisibleBlocks = useTangleStore((state) => state.setVisibleBlocks);
-    const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
     const selectedNode = useTangleStore((state) => state.selectedNode);
     const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
-    const getExistingBlocksMetadata = useTangleStore((state) => state.getExistingBlocksMetadata);
+    const getBlockMetadataValues = useTangleStore((state) => state.getBlockMetadataValues);
+    const getBlockMetadataKeys = useTangleStore((state) => state.getBlockMetadataKeys);
+    const createBlockIdToMetadata = useTangleStore((state) => state.createBlockIdToMetadata);
+    const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
+    const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
+    const updateBlockIdToMetadata = useTangleStore((state) => state.updateBlockIdToMetadata);
     const themeMode = useGetThemeMode();
+
     const graphContext = useContext(GraphContext);
 
     useEffect(() => {
@@ -46,48 +51,49 @@ export const useFeed = (network: string) => {
             return;
         }
         if (selectedNode) {
-            const {
-                highlightedNodesAfter,
-                highlightedNodesBefore,
-                highlightedLinksAfter,
-                highlightedLinksBefore,
-            } = getNodeConnections(selectedNode.blockId);
+            resetHighlight();
+            const { highlightedNodesAfter, highlightedNodesBefore, highlightedLinksAfter, highlightedLinksBefore } = getNodeConnections(
+                selectedNode.blockId,
+            );
 
-            highlightNodes([selectedNode.blockId], "#ff0000", [], "");
-            highlightNodes(highlightedNodesAfter, "#00ff00", highlightedLinksAfter, EDGE_COLOR_CONFIRMING_HEX);
-
+            highlightNodes([selectedNode.blockId], SEARCH_RESULT_COLOR, [], 0);
+            highlightNodes(highlightedNodesAfter, SEARCH_RESULT_COLOR, highlightedLinksAfter, EDGE_COLOR_CONFIRMING);
+            highlightNodes(highlightedNodesBefore, SEARCH_RESULT_COLOR, highlightedLinksBefore, EDGE_COLOR_CONFIRMED_BY);
         } else {
-            // clear here
+            resetHighlight();
         }
     }, [graphContext.isVivaReady, selectedNode]);
 
+    function getEdgeDefaultColor(): number {
+        return themeMode === "dark" ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT;
+    }
 
+    function resetHighlight() {
+        const blocksMetadata = getBlockMetadataValues();
+        for (const metadata of blocksMetadata) {
+            updateBlockColor(metadata.blockId, metadata.color);
+        }
+        graphContext.graph.current?.forEachLink((link) => {
+            const edgeColor = getEdgeDefaultColor();
+            updateLineColor(link.id, edgeColor);
+        });
+    }
 
-    // function resetHighlight() {
-        // const blocksMetadata = getExistingBlocksMetadata();
-        // for (const blockId of blocksMetadata) {
-        //     updateBlockColor(blockId, "#0000ff");
-        // }
-    // }
-
-    function highlightNodes(nodeIds: string[], nodeColor: string, linkIds: string[], linkColor: string) {
+    function highlightNodes(nodeIds: string[], nodeColor: string, linkIds: string[], linkColor: number) {
         for (const nodeId of nodeIds) {
             updateBlockColor(nodeId, nodeColor);
         }
         for (const linkId of linkIds) {
             updateLineColor(linkId, linkColor);
         }
-
     }
 
-    function getNodeConnections(nodeId: string):
-        {
-            highlightedNodesAfter: string[];
-            highlightedNodesBefore: string[];
-            highlightedLinksAfter: string[];
-            highlightedLinksBefore: string[];
-        }
-        {
+    function getNodeConnections(nodeId: string): {
+        highlightedNodesAfter: string[];
+        highlightedNodesBefore: string[];
+        highlightedLinksAfter: string[];
+        highlightedLinksBefore: string[];
+    } {
         const highlightedNodesAfter: string[] = [];
         const highlightedNodesBefore: string[] = [];
         const highlightedLinksAfter: string[] = [];
@@ -126,16 +132,15 @@ export const useFeed = (network: string) => {
     function updateBlockColor(blockId: string, color: string) {
         const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
         if (nodeUI) {
-            nodeUI.color = hexToGraphicsColor<string>(color, 'node');
+            nodeUI.color = hexToGraphicsColor<string>(color, "node");
         }
     }
 
-    function updateLineColor(lineId: string, color: string) {
+    function updateLineColor(lineId: string, color: number) {
         if (graphContext.graphics.current) {
             const linkUI = graphContext.graphics.current.getLinkUI(lineId);
             if (linkUI) {
-                linkUI.color = hexToGraphicsColor<number>(color, 'edge');
-                // linkUI.color = color;
+                linkUI.color = color;
             }
         }
     }
@@ -180,16 +185,22 @@ export const useFeed = (network: string) => {
             const blockMetadata = getBlockIdToMetadata(blockId);
 
             if (!blockMetadata) {
-                const color = getBlockColorByState(themeMode, "pending")
+                const color = getBlockColorByState(themeMode, "pending");
                 createBlock(blockId, { ...newBlock, color: color }, now);
 
                 const parentIds = getBlockParents(newBlock);
-                const existingBlockIds = getExistingBlockIds();
+                const existingBlockIds = getBlockMetadataKeys();
 
                 for (const parentId of parentIds) {
                     if (existingBlockIds.includes(parentId)) {
-                        // const link =
-                        graphContext.graph.current?.addLink(parentId, blockId);
+                        const link = graphContext.graph.current?.addLink(parentId, blockId);
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        if (link) {
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            updateLineColor(link.id, getEdgeDefaultColor());
+                        }
                     }
                 }
             }
@@ -199,7 +210,8 @@ export const useFeed = (network: string) => {
     function onBlockMetadataUpdate(metadataUpdate: BlockMetadataResponse): void {
         if (metadataUpdate?.blockState) {
             const selectedColor = getBlockColorByState(themeMode, metadataUpdate.blockState);
-            // console.log('--- selectedColor', metadataUpdate.blockState, selectedColor);
+
+            updateBlockIdToMetadata(metadataUpdate.blockId, { color: selectedColor });
             updateBlockColor(metadataUpdate.blockId, selectedColor);
         }
     }
