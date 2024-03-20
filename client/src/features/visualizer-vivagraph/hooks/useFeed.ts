@@ -7,7 +7,7 @@ import { INodeData } from "~models/graph/nova/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "../lib/buildNodeShader";
 import { useTangleStore, VivagraphParams } from "~features/visualizer-vivagraph/store/tangle";
-import { getBlockParents, hexToGraphicsColor } from "~features/visualizer-vivagraph/lib/helpers";
+import { getBlockParents, hexToNodeColor } from "~features/visualizer-vivagraph/lib/helpers";
 import {
     MAX_VISIBLE_BLOCKS,
     EDGE_COLOR_CONFIRMING,
@@ -34,6 +34,7 @@ export const useFeed = (network: string) => {
     const getBlockIdToMetadata = useTangleStore((state) => state.getBlockIdToMetadata);
     const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
     const updateBlockIdToMetadata = useTangleStore((state) => state.updateBlockIdToMetadata);
+    const search = useTangleStore((state) => state.search);
     const themeMode = useGetThemeMode();
 
     const graphContext = useContext(GraphContext);
@@ -50,8 +51,13 @@ export const useFeed = (network: string) => {
         if (!graphContext.isVivaReady) {
             return;
         }
+        resetHighlight();
+
+        const nodeIds = getSearchResultNodeIds(search);
+
+        highlightNodes(nodeIds, SEARCH_RESULT_COLOR, [], 0);
+
         if (selectedNode) {
-            resetHighlight();
             const { highlightedNodesAfter, highlightedNodesBefore, highlightedLinksAfter, highlightedLinksBefore } = getNodeConnections(
                 selectedNode.blockId,
             );
@@ -59,10 +65,8 @@ export const useFeed = (network: string) => {
             highlightNodes([selectedNode.blockId], SEARCH_RESULT_COLOR, [], 0);
             highlightNodes(highlightedNodesAfter, SEARCH_RESULT_COLOR, highlightedLinksAfter, EDGE_COLOR_CONFIRMING);
             highlightNodes(highlightedNodesBefore, SEARCH_RESULT_COLOR, highlightedLinksBefore, EDGE_COLOR_CONFIRMED_BY);
-        } else {
-            resetHighlight();
         }
-    }, [graphContext.isVivaReady, selectedNode]);
+    }, [graphContext.isVivaReady, selectedNode, search]);
 
     function getEdgeDefaultColor(): number {
         return themeMode === "dark" ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT;
@@ -86,6 +90,23 @@ export const useFeed = (network: string) => {
         for (const linkId of linkIds) {
             updateLineColor(linkId, linkColor);
         }
+    }
+
+    function getSearchResultNodeIds(search: string) {
+        const trimmedSearch = search.trim();
+        if (trimmedSearch.length > 0) {
+            const regExp = new RegExp(trimmedSearch);
+            const nodeIds: string[] = [];
+
+            graphContext.graph.current?.forEachNode((node) => {
+                if (regExp.test(node.id)) {
+                    nodeIds.push(node.id);
+                }
+            });
+            return nodeIds;
+        }
+
+        return [];
     }
 
     function getNodeConnections(nodeId: string): {
@@ -132,7 +153,7 @@ export const useFeed = (network: string) => {
     function updateBlockColor(blockId: string, color: string) {
         const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
         if (nodeUI) {
-            nodeUI.color = hexToGraphicsColor<string>(color, "node");
+            nodeUI.color = hexToNodeColor(color);
         }
     }
 

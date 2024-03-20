@@ -21,18 +21,29 @@ interface TangleState {
 
     selectedNode: IFeedBlockData | null;
     setSelectedNode: (block: IFeedBlockData | null) => void;
+
+    search: string;
+    setSearch: (search: string) => void;
 }
 
 const INITIAL_STATE = {
     blockIdToMetadata: new Map(),
     visibleBlocks: [],
     selectedNode: null,
+    search: "",
 };
 
 export const useTangleStore = create<TangleState>()(
     devtools((set, get) => ({
         ...INITIAL_STATE,
 
+        setSearch: (search) => {
+            set(() => {
+                return {
+                    search,
+                };
+            });
+        },
         setSelectedNode: (block) => {
             set(() => {
                 return {

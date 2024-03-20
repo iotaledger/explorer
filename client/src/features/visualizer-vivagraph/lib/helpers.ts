@@ -5,33 +5,19 @@ import { THEME_BLOCK_COLORS } from "../definitions/constants";
 
 export const getBlockParents = (blockData: IFeedBlockData): string[] => {
     const parents: Parents = [];
-
-    // @ts-ignore
-    const shallowLikeParents = blockData?.block?.body?.shallowLikeParents;
-    if (shallowLikeParents) {
-        console.log('--- ', shallowLikeParents);
-    }
     const blockStrongParents = (blockData?.block?.body as BasicBlockBody).strongParents ?? [];
     const blockWeakParents = (blockData?.block?.body as BasicBlockBody).weakParents ?? [];
-    parents.push(...blockStrongParents, ...blockWeakParents);
+    const blockShallowLikeParents = (blockData?.block?.body as BasicBlockBody).shallowLikeParents ?? [];
+    parents.push(...blockStrongParents, ...blockWeakParents, ...blockShallowLikeParents);
 
     if (parents && parents.length) {
         return parents;
     }
 
-    // TODO confusing, because in interface method isBasic() exists, but in the implementation it does not
-    // if (block.block?.body?.isBasic()) {
-    //     return block.block?.body?.asBasic().strongParents;
-    // }
-
-    // if (block.block?.body?.isValidation()) {
-    //     return block.block?.body?.asValidation().strongParents;
-    // }
-
     return [];
 };
 
-export function hexToGraphicsColor<T>(hex: string, format: 'edge' | 'node' = "node"): T {
+export function hexToNodeColor(hex: string): string {
     if (hex.startsWith("#")) {
         hex = hex.slice(1);
     }
@@ -40,11 +26,7 @@ export function hexToGraphicsColor<T>(hex: string, format: 'edge' | 'node' = "no
     const g = parseInt(hex.slice(2, 4), 16);
     const b = parseInt(hex.slice(4, 6), 16);
 
-    if (format === 'edge') {
-        return "0xff" + hex as T;
-    }
-
-    return String(r * 65536 + g * 256 + b) as T;
+    return String(r * 65536 + g * 256 + b);
 }
 
 export const randomIntFromInterval = (min: number, max: number) => {
