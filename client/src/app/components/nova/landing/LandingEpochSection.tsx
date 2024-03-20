@@ -1,18 +1,29 @@
 import moment from "moment";
 import React from "react";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
+import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { ProgressBarSize } from "~/app/lib/ui/enums";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import RightHalfArrow from "~assets/right-half-arrow.svg?react";
 import ArrowUp from "~assets/arrow_up.svg?react";
 import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./LandingEpochSection.scss";
 
 const EPOCH_TIME_FORMAT = "DD MMM YYYY";
 
 const LandingEpochSection: React.FC = () => {
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
+    const { validatorStats } = useValidatorStats();
+    const { committeeValidators, committeeValidatorsPoolStake, totalCommitteeStake } = validatorStats ?? {};
+
+    const commiiteeDelegatorStake =
+        committeeValidatorsPoolStake === undefined || totalCommitteeStake === undefined
+            ? "0"
+            : (BigInt(committeeValidatorsPoolStake) - BigInt(totalCommitteeStake)).toString();
 
     if (epochIndex === null || epochProgressPercent === null) {
         return null;
@@ -34,16 +45,16 @@ const LandingEpochSection: React.FC = () => {
 
     const stats: IStatDisplay[] = [
         {
-            title: "32",
+            title: `${committeeValidators ?? "--"}`,
             subtitle: "Validators",
         },
         {
-            title: "500k",
-            subtitle: "Staked in active set",
+            title: `${totalCommitteeStake !== undefined ? formatAmount(totalCommitteeStake, tokenInfo) : "--"}`,
+            subtitle: "Staked in committee",
         },
         {
-            title: "200k",
-            subtitle: "Delegated in active set",
+            title: `${commiiteeDelegatorStake !== undefined ? formatAmount(commiiteeDelegatorStake, tokenInfo) : "--"}`,
+            subtitle: "Delegated in committee",
         },
         {
             title: epochProgressPercent + "%",

@@ -46,6 +46,9 @@
       ],
       "~hooks/*": [
         "src/helpers/hooks/*"
+      ],
+      "~background/*": [
+        "src/assets/background/*"
       ]
     }
   },

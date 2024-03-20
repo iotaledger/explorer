@@ -52,6 +52,7 @@ import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
 import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats";
 import { IEpochStatsRequest } from "~/models/api/nova/stats/IEpochStatsRequest";
+import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -305,6 +306,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getValidators(request: INetworkBoundGetRequest): Promise<IValidatorsResponse> {
         return this.callApi<unknown, IValidatorsResponse>(`nova/validators/${request.network}`, "get");
+    }
+
+    /**
+     * Get validator stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getValidatorStats(request: INetworkBoundGetRequest): Promise<IValidatorStatsResponse> {
+        return this.callApi<unknown, IValidatorStatsResponse>(`nova/validators/stats/${request.network}`, "get");
     }
 
     /**

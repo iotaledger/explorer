@@ -466,9 +466,9 @@ export const MANA_BURN_DAILY_QUERY = {
 
 /* ANALYTIC QUERIES */
 
-export const ADDRESSES_WITH_BALANCE_TOTAL_QUERY = `
+export const ACCOUNT_ADDRESSES_WITH_BALANCE_TOTAL_QUERY = `
     SELECT
-        last("address_with_balance_count") AS "addressesWithBalance"
+        last("account_address_with_balance_count") AS "accountAddressesWithBalance"
     FROM "iota_addresses";
 `;
 
@@ -488,4 +488,10 @@ export const STORAGE_DEPOSIT_TOTAL_QUERY = `
     SELECT
         last("total_storage_deposit_amount") AS "lockedStorageDeposit"
     FROM "iota_ledger_size";
+`;
+
+export const DELEGATORS_TOTAL_QUERY = `
+    SELECT
+        last("delegation_count") AS "delegatorsCount"
+    FROM "iota_ledger_outputs";
 `;
