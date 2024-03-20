@@ -1,6 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
+import { IResponse } from "../../../../models/api/nova/IResponse";
 import { IEpochAnalyticStats } from "../../../../models/api/nova/stats/epoch/IEpochAnalyticStats";
-import { IEpochStatsRequest } from "../../../../models/api/nova/stats/epoch/IEpochStatsRequest";
+import { IEpochAnalyticStatsRequest } from "../../../../models/api/nova/stats/epoch/IEpochAnalyticStatsRequest";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -9,12 +10,17 @@ import { NodeInfoService } from "../../../../services/nova/nodeInfoService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
+ * The response with the current cached data.
+ */
+type IEpochAnalyticStatsReponse = IEpochAnalyticStats & IResponse;
+
+/**
  * Find the object from the network.
  * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(_: IConfiguration, request: IEpochStatsRequest): Promise<IEpochAnalyticStats> {
+export async function get(_: IConfiguration, request: IEpochAnalyticStatsRequest): Promise<IEpochAnalyticStatsReponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -35,7 +41,7 @@ export async function get(_: IConfiguration, request: IEpochStatsRequest): Promi
     }
 
     const epochIndex = Number.parseInt(request.epochIndex, 10);
-    let maybeEpochStats = await influxService.fetchAnalyticsForEpochWithRetries(epochIndex);
+    let maybeEpochStats = influxService.getEpochAnalyticStats(epochIndex);
     if (!maybeEpochStats) {
         maybeEpochStats = await influxService.fetchAnalyticsForEpoch(epochIndex, nodeInfo.protocolParameters[0]);
     }

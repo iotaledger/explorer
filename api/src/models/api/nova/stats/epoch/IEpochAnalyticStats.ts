@@ -1,6 +1,4 @@
-import { IResponse } from "../../IResponse";
-
-export interface IEpochAnalyticStats extends IResponse {
+export interface IEpochAnalyticStats {
     epochIndex?: number;
     blockCount?: number;
     perPayloadType?: {

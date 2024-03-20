@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import { ProtocolParametersResponse } from "@iota/sdk-nova";
 import { InfluxDB, toNanoDate } from "influx";
 import moment from "moment";
@@ -236,27 +237,13 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._analyticsCache.delegatorsCount;
     }
 
-    public async fetchAnalyticsForEpoch(epochIndex: number, protocolInfo: ProtocolParametersResponse) {
-        await this.collectEpochStatsByIndex(epochIndex, protocolInfo);
+    public getEpochAnalyticStats(epochIndex: number): IEpochAnalyticStats | undefined {
         return this._epochCache.get(epochIndex);
     }
 
-    public async fetchAnalyticsForEpochWithRetries(epochIndex: number): Promise<IEpochAnalyticStats | undefined> {
-        const MAX_RETRY = 30;
-        const RETRY_TIMEOUT = 350;
-
-        let retries = 0;
-        let maybeEpochStats = this._epochCache.get(epochIndex);
-
-        while (!maybeEpochStats && retries < MAX_RETRY) {
-            retries += 1;
-            logger.debug(`[InfluxNova] Try ${retries} of fetching epoch stats for ${epochIndex}`);
-            maybeEpochStats = this._epochCache.get(epochIndex);
-
-            await new Promise((f) => setTimeout(f, RETRY_TIMEOUT));
-        }
-
-        return maybeEpochStats;
+    public async fetchAnalyticsForEpoch(epochIndex: number, protocolInfo: ProtocolParametersResponse) {
+        await this.collectEpochStatsByIndex(epochIndex, protocolInfo);
+        return this._epochCache.get(epochIndex);
     }
 
     protected setupDataCollection() {

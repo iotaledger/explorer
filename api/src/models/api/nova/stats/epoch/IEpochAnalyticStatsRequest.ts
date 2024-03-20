@@ -1,4 +1,4 @@
-export interface IEpochStatsRequest {
+export interface IEpochAnalyticStatsRequest {
     /**
      * The network to search on.
      */
