@@ -2,13 +2,18 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
 
+export interface VivagraphParams {
+    color: string;
+}
+
 interface TangleState {
-    blockIdToMetadata: Map<string, IFeedBlockData>;
-    createBlockIdToMetadata: (blockId: string, metadata: IFeedBlockData) => void;
-    getBlockIdToMetadata: (blockId: string) => IFeedBlockData | undefined;
-    updateBlockIdToMetadata: (blockId: string, metadata: Partial<IFeedBlockData>) => void;
+    blockIdToMetadata: Map<string, IFeedBlockData & VivagraphParams>;
+    createBlockIdToMetadata: (blockId: string, metadata: IFeedBlockData & VivagraphParams) => void;
+    getBlockIdToMetadata: (blockId: string) => (IFeedBlockData & VivagraphParams) | undefined;
+    updateBlockIdToMetadata: (blockId: string, metadata: Partial<IFeedBlockData & VivagraphParams>) => void;
     deleteBlockIdToMetadata: (blockId: string) => void;
     getExistingBlockIds: () => string[];
+    getExistingBlocksMetadata: () => IFeedBlockData[];
 
     visibleBlocks: string[];
     setVisibleBlocks: (blockIds: string[]) => void;
@@ -66,5 +71,8 @@ export const useTangleStore = create<TangleState>()(
         getExistingBlockIds: () => {
             return Array.from(get().blockIdToMetadata.keys());
         },
+        getExistingBlocksMetadata: () => {
+            return Array.from(get().blockIdToMetadata.values());
+        }
     })),
 );

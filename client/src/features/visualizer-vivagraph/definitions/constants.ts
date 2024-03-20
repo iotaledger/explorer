@@ -10,6 +10,7 @@ export const ORPHANED_BLOCK_COLOR = "#C026D3";
 export const DROPPED_BLOCK_COLOR = ORPHANED_BLOCK_COLOR;
 export const SEARCH_RESULT_COLOR = "#1EC15A";
 export const HOVERED_BLOCK_COLOR = SEARCH_RESULT_COLOR;
+export const EDGE_COLOR_CONFIRMING_HEX: number = '#5aaaff';
 export const EDGE_COLOR_CONFIRMING: number = 0xff5aaaff;
 export const EDGE_COLOR_CONFIRMED_BY: number = 0x0000ffff;
 

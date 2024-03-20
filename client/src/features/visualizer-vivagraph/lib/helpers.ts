@@ -31,7 +31,7 @@ export const getBlockParents = (blockData: IFeedBlockData): string[] => {
     return [];
 };
 
-export function hexToGraphicsColor<T>(hex: string, isForEdge: boolean = false): T {
+export function hexToGraphicsColor<T>(hex: string, format: 'edge' | 'node' = "node"): T {
     if (hex.startsWith("#")) {
         hex = hex.slice(1);
     }
@@ -40,11 +40,11 @@ export function hexToGraphicsColor<T>(hex: string, isForEdge: boolean = false): 
     const g = parseInt(hex.slice(2, 4), 16);
     const b = parseInt(hex.slice(4, 6), 16);
 
-    if (!isForEdge) {
-        return String(r * 65536 + g * 256 + b) as T;
+    if (format === 'edge') {
+        return "0xff" + hex as T;
     }
 
-    return Number(r * 65536 + g * 256 + b) as T;
+    return String(r * 65536 + g * 256 + b) as T;
 }
 
 export const randomIntFromInterval = (min: number, max: number) => {

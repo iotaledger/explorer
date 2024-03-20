@@ -6,9 +6,13 @@ import Viva from "vivagraphjs";
 import { INodeData } from "~models/graph/nova/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "../lib/buildNodeShader";
-import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
+import { useTangleStore, VivagraphParams } from "~features/visualizer-vivagraph/store/tangle";
 import { getBlockParents, hexToGraphicsColor } from "~features/visualizer-vivagraph/lib/helpers";
-import { MAX_VISIBLE_BLOCKS, EDGE_COLOR_CONFIRMING } from "~features/visualizer-vivagraph/definitions/constants";
+import {
+    MAX_VISIBLE_BLOCKS,
+    EDGE_COLOR_CONFIRMING,
+    EDGE_COLOR_CONFIRMING_HEX
+} from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
 import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
@@ -25,6 +29,7 @@ export const useFeed = (network: string) => {
     const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
     const selectedNode = useTangleStore((state) => state.selectedNode);
     const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
+    const getExistingBlocksMetadata = useTangleStore((state) => state.getExistingBlocksMetadata);
     const themeMode = useGetThemeMode();
     const graphContext = useContext(GraphContext);
 
@@ -49,34 +54,21 @@ export const useFeed = (network: string) => {
             } = getNodeConnections(selectedNode.blockId);
 
             highlightNodes([selectedNode.blockId], "#ff0000", [], "");
-            // @ts-ignore
-            highlightNodes(highlightedNodesAfter, "#00ff00", highlightedLinksAfter, EDGE_COLOR_CONFIRMING);
-            // const nodeUI = graphContext.graphics.current?.getNodeUI(selectedNode.blockId);
-            // if (nodeUI) {
-            //     nodeUI.color = hexToGraphicsColor("#ff0000");
-            // }
-            // graphContext.graph.current?.forEachLinkedNode(selectedNode.blockId, (node, link) => {
-            //     const nodeUI = graphContext.graphics.current?.getNodeUI(node.id);
-            //     if (nodeUI) {
-            //         nodeUI.color = hexToGraphicsColor("#ff0000");
-            //     }
+            highlightNodes(highlightedNodesAfter, "#00ff00", highlightedLinksAfter, EDGE_COLOR_CONFIRMING_HEX);
 
-                // const lineColor = link['fromId'] === node ? EDGE_COLOR_CONFIRMING : EDGE_COLOR_CONFIRMED_BY;
-                // if (link.id) {
-                //     const linkUI = graphics?.current?.getLinkUI(link.id);
-                //     if (linkUI) {
-                //         linkUI.color = lineColor;
-                //     }
-                // }
-            // });
         } else {
             // clear here
         }
     }, [graphContext.isVivaReady, selectedNode]);
 
-    function resetHighlight() {
 
-    }
+
+    // function resetHighlight() {
+        // const blocksMetadata = getExistingBlocksMetadata();
+        // for (const blockId of blocksMetadata) {
+        //     updateBlockColor(blockId, "#0000ff");
+        // }
+    // }
 
     function highlightNodes(nodeIds: string[], nodeColor: string, linkIds: string[], linkColor: string) {
         for (const nodeId of nodeIds) {
@@ -105,7 +97,7 @@ export const useFeed = (network: string) => {
 
         while (nodesToProcess.length > 0) {
             const currentNodeId = nodesToProcess.shift();
-            console.log('--- currentNodeId', currentNodeId);
+
             if (currentNodeId) {
                 graphContext.graph.current?.forEachLinkedNode(currentNodeId, (connectedNode, link) => {
                     if (!usedNodes.includes(connectedNode.id)) {
@@ -131,24 +123,24 @@ export const useFeed = (network: string) => {
         };
     }
 
-    const updateBlockColor = (blockId: string, color: string) => {
+    function updateBlockColor(blockId: string, color: string) {
         const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
         if (nodeUI) {
-            nodeUI.color = hexToGraphicsColor<string>(color, false);
+            nodeUI.color = hexToGraphicsColor<string>(color, 'node');
         }
-    };
+    }
 
     function updateLineColor(lineId: string, color: string) {
         if (graphContext.graphics.current) {
             const linkUI = graphContext.graphics.current.getLinkUI(lineId);
             if (linkUI) {
-                // linkUI.color = hexToGraphicsColor<number>(color, true);
-                linkUI.color = color;
+                linkUI.color = hexToGraphicsColor<number>(color, 'edge');
+                // linkUI.color = color;
             }
         }
     }
 
-    const createBlock = (blockId: string, newBlock: IFeedBlockData, addedTime: number) => {
+    const createBlock = (blockId: string, newBlock: IFeedBlockData & VivagraphParams, addedTime: number) => {
         if (!graphContext.graph.current) {
             return;
         }
@@ -158,6 +150,7 @@ export const useFeed = (network: string) => {
             feedItem: newBlock,
             added: addedTime,
         });
+        updateBlockColor(blockId, newBlock.color);
         const visibleBlocks = getVisibleBlocks();
         const updatedVisibleBlocks = [...visibleBlocks, blockId];
 
@@ -187,7 +180,8 @@ export const useFeed = (network: string) => {
             const blockMetadata = getBlockIdToMetadata(blockId);
 
             if (!blockMetadata) {
-                createBlock(blockId, newBlock, now);
+                const color = getBlockColorByState(themeMode, "pending")
+                createBlock(blockId, { ...newBlock, color: color }, now);
 
                 const parentIds = getBlockParents(newBlock);
                 const existingBlockIds = getExistingBlockIds();
@@ -205,6 +199,7 @@ export const useFeed = (network: string) => {
     function onBlockMetadataUpdate(metadataUpdate: BlockMetadataResponse): void {
         if (metadataUpdate?.blockState) {
             const selectedColor = getBlockColorByState(themeMode, metadataUpdate.blockState);
+            // console.log('--- selectedColor', metadataUpdate.blockState, selectedColor);
             updateBlockColor(metadataUpdate.blockId, selectedColor);
         }
     }
