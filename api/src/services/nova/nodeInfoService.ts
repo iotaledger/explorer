@@ -1,4 +1,5 @@
 /* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Client, InfoResponse, ProtocolParameters } from "@iota/sdk-nova";
 import { NodeInfoError } from "../../errors/nodeInfoError";
 import { ServiceFactory } from "../../factories/serviceFactory";
