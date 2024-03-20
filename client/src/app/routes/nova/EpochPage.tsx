@@ -145,32 +145,34 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                         )}
                     </div>
 
-                    <div className="section all-validators__section">
-                        <h2 className="all-validators__header">{isFutureEpoch ? "Candidates" : "Committee"}</h2>
-                        <div className="all-validators__wrapper">
-                            <div className="validator-item table-header">
-                                <div className="validator-item__address">Address</div>
-                                <div className="validator-item__fixed-cost">Cost</div>
-                                <div className="validator-item__pool-stake">Pool stake</div>
-                                <div className="validator-item__validator-stake">Validator stake</div>
-                                <div className="validator-item__delegator-stake">Delegated stake</div>
-                            </div>
-                            {validators?.map((validator, idx) => {
-                                const delegatorStake = Number(validator.poolStake) - Number(validator.validatorStake);
-                                return (
-                                    <div className="validator-item" key={`validator-${idx}`}>
-                                        <div className="validator-item__address">
-                                            <TruncatedId id={validator.address} />
+                    {(validators ?? []).length > 0 && (
+                        <div className="section all-validators__section">
+                            <h2 className="all-validators__header">{isFutureEpoch ? "Candidates" : "Committee"}</h2>
+                            <div className="all-validators__wrapper">
+                                <div className="validator-item table-header">
+                                    <div className="validator-item__address">Address</div>
+                                    <div className="validator-item__fixed-cost">Cost</div>
+                                    <div className="validator-item__pool-stake">Pool stake</div>
+                                    <div className="validator-item__validator-stake">Validator stake</div>
+                                    <div className="validator-item__delegator-stake">Delegated stake</div>
+                                </div>
+                                {validators?.map((validator, idx) => {
+                                    const delegatorStake = Number(validator.poolStake) - Number(validator.validatorStake);
+                                    return (
+                                        <div className="validator-item" key={`validator-${idx}`}>
+                                            <div className="validator-item__address">
+                                                <TruncatedId id={validator.address} />
+                                            </div>
+                                            <div className="validator-item__fixed-cost">{validator.fixedCost.toString()}</div>
+                                            <div className="validator-item__pool-stake">{validator.poolStake.toString()}</div>
+                                            <div className="validator-item__validator-stake">{validator.validatorStake.toString()}</div>
+                                            <div className="validator-item__delegator-stake">{delegatorStake}</div>
                                         </div>
-                                        <div className="validator-item__fixed-cost">{validator.fixedCost.toString()}</div>
-                                        <div className="validator-item__pool-stake">{validator.poolStake.toString()}</div>
-                                        <div className="validator-item__validator-stake">{validator.validatorStake.toString()}</div>
-                                        <div className="validator-item__delegator-stake">{delegatorStake}</div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </section>
