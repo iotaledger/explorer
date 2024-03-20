@@ -34,16 +34,16 @@ export async function get(_: IConfiguration, request: IEpochAnalyticStatsRequest
 
     const influxService = ServiceFactory.get<InfluxServiceNova>(`influxdb-${request.network}`);
     const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
-    const nodeInfo = nodeService.getNodeInfo();
+    const protocolParameters = await nodeService.getProtocolParameters();
 
-    if (!influxService || !nodeInfo) {
+    if (!influxService || !protocolParameters) {
         return { error: "Influx service not found for this network." };
     }
 
     const epochIndex = Number.parseInt(request.epochIndex, 10);
     let maybeEpochStats = influxService.getEpochAnalyticStats(epochIndex);
     if (!maybeEpochStats) {
-        maybeEpochStats = await influxService.fetchAnalyticsForEpoch(epochIndex, nodeInfo.protocolParameters[0]);
+        maybeEpochStats = await influxService.fetchAnalyticsForEpoch(epochIndex, protocolParameters);
     }
 
     return maybeEpochStats

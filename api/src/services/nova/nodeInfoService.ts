@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { Client, InfoResponse } from "@iota/sdk-nova";
+import { Client, InfoResponse, ProtocolParameters } from "@iota/sdk-nova";
 import { NodeInfoError } from "../../errors/nodeInfoError";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetwork } from "../../models/db/INetwork";
@@ -19,13 +19,20 @@ export class NodeInfoService {
     protected _nodeInfo: InfoResponse;
 
     /**
+     * The client to use for requests.
+     */
+    private readonly _client: Client;
+
+    /**
      * Create a new instance of NodeInfoService.
      * @param network The network config.
      * @param nodeInfo The fetched node info
+     * @param client The fetched node info
      */
-    private constructor(network: INetwork, nodeInfo: InfoResponse) {
+    private constructor(network: INetwork, nodeInfo: InfoResponse, client?: Client) {
         this._network = network;
         this._nodeInfo = nodeInfo;
+        this._client = client;
     }
 
     public static async build(network: INetwork): Promise<NodeInfoService> {
@@ -33,7 +40,7 @@ export class NodeInfoService {
 
         try {
             const response = await apiClient.getNodeInfo();
-            return new NodeInfoService(network, response.info);
+            return new NodeInfoService(network, response.info, apiClient);
         } catch (err) {
             throw new NodeInfoError(`Failed to fetch node info for "${network.network}" with error:\n${err}`);
         }
@@ -41,5 +48,9 @@ export class NodeInfoService {
 
     public getNodeInfo(): InfoResponse {
         return this._nodeInfo;
+    }
+
+    public async getProtocolParameters(): Promise<ProtocolParameters> {
+        return this._client.getProtocolParameters();
     }
 }

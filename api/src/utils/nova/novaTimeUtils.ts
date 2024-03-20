@@ -1,20 +1,19 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable import/no-unresolved */
-import { ProtocolParametersResponse } from "@iota/sdk-nova";
+import { ProtocolParameters } from "@iota/sdk-nova";
 
 // Note: genesisUnixTimestamp is the first second that falls into genesisSlot + 1
 
 /**
  * Convert a UNIX timestamp to a slot index.
- * @param protocolInfo The protocol information.
- * @param unixTimestampSeconds The UNIX timestamp in seconds.
+ * @param parameters The protocol parameters information.
  * @returns The slot index.
  */
-export function unixTimestampToSlotIndexConverter(protocolInfo: ProtocolParametersResponse): (unixTimestampSeconds: number) => number {
+export function unixTimestampToSlotIndexConverter(parameters: ProtocolParameters): (unixTimestampSeconds: number) => number {
     return (unixTimestampSeconds: number) => {
-        const genesisSlot = protocolInfo.parameters.genesisSlot;
-        const genesisUnixTimestamp = protocolInfo.parameters.genesisUnixTimestamp;
-        const slotDurationInSeconds = protocolInfo.parameters.slotDurationInSeconds;
+        const genesisSlot = parameters.genesisSlot;
+        const genesisUnixTimestamp = parameters.genesisUnixTimestamp;
+        const slotDurationInSeconds = parameters.slotDurationInSeconds;
 
         const elapsedTime = unixTimestampSeconds - Number(genesisUnixTimestamp);
 
@@ -28,17 +27,16 @@ export function unixTimestampToSlotIndexConverter(protocolInfo: ProtocolParamete
 
 /**
  * Convert a slot index to a UNIX time range, in seconds.
- * @param protocolInfo The protocol information.
- * @param targetSlotIndex The target slot index.
+ * @param parameters The protocol parameters information.
  * @returns The UNIX time range in seconds: from (inclusive) and to (exclusive).
  */
 export function slotIndexToUnixTimeRangeConverter(
-    protocolInfo: ProtocolParametersResponse,
+    parameters: ProtocolParameters,
 ): (targetSlotIndex: number) => { from: number; to: number } {
     return (targetSlotIndex: number) => {
-        const genesisSlot = protocolInfo.parameters.genesisSlot;
-        const genesisUnixTimestamp = Number(protocolInfo.parameters.genesisUnixTimestamp);
-        const slotDurationInSeconds = protocolInfo.parameters.slotDurationInSeconds;
+        const genesisSlot = parameters.genesisSlot;
+        const genesisUnixTimestamp = Number(parameters.genesisUnixTimestamp);
+        const slotDurationInSeconds = parameters.slotDurationInSeconds;
 
         if (targetSlotIndex <= genesisSlot) {
             return {
@@ -60,14 +58,13 @@ export function slotIndexToUnixTimeRangeConverter(
 
 /**
  * Convert a slot index to an epoch index.
- * @param protocolInfo The protocol information.
- * @param targetSlotIndex The target slot index.
+ * @param parameters The protocol parameters information.
  * @returns The epoch index.
  */
-export function slotIndexToEpochIndexConverter(protocolInfo: ProtocolParametersResponse): (targetSlotIndex: number) => number {
+export function slotIndexToEpochIndexConverter(parameters: ProtocolParameters): (targetSlotIndex: number) => number {
     return (targetSlotIndex: number) => {
-        const genesisSlot = protocolInfo.parameters.genesisSlot;
-        const slotsPerEpochExponent = protocolInfo.parameters.slotsPerEpochExponent;
+        const genesisSlot = parameters.genesisSlot;
+        const slotsPerEpochExponent = parameters.slotsPerEpochExponent;
 
         if (targetSlotIndex < genesisSlot) {
             return 0;
@@ -79,14 +76,13 @@ export function slotIndexToEpochIndexConverter(protocolInfo: ProtocolParametersR
 
 /**
  * Convert a UNIX timestamp to an epoch index.
- * @param protocolInfo The protocol information.
- * @param unixTimestampSeconds The UNIX timestamp in seconds.
+ * @param parameters The protocol parameters information.
  * @returns The epoch index.
  */
-export function unixTimestampToEpochIndexConverter(protocolInfo: ProtocolParametersResponse): (unixTimestampSeconds: number) => number {
+export function unixTimestampToEpochIndexConverter(parameters: ProtocolParameters): (unixTimestampSeconds: number) => number {
     return (unixTimestampSeconds: number) => {
-        const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(protocolInfo);
-        const slotIndexToEpochIndex = slotIndexToEpochIndexConverter(protocolInfo);
+        const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(parameters);
+        const slotIndexToEpochIndex = slotIndexToEpochIndexConverter(parameters);
 
         const targetSlotIndex = unixTimestampToSlotIndex(unixTimestampSeconds);
 
@@ -96,16 +92,15 @@ export function unixTimestampToEpochIndexConverter(protocolInfo: ProtocolParamet
 
 /**
  * Convert an epoch index to a slot index range.
- * @param protocolInfo The protocol information.
- * @param targetEpochIndex The target epoch index.
+ * @param parameters The protocol parameters information.
  * @returns The slot index range in seconds: from (inclusive) and to (exclusive).
  */
 export function epochIndexToSlotIndexRangeConverter(
-    protocolInfo: ProtocolParametersResponse,
+    parameters: ProtocolParameters,
 ): (targetEpochIndex: number) => { from: number; to: number } {
     return (targetEpochIndex: number) => {
-        const slotsPerEpochExponent = protocolInfo.parameters.slotsPerEpochExponent;
-        const genesisSlot = protocolInfo.parameters.genesisSlot;
+        const slotsPerEpochExponent = parameters.slotsPerEpochExponent;
+        const genesisSlot = parameters.genesisSlot;
 
         return {
             from: genesisSlot + (targetEpochIndex << slotsPerEpochExponent),
@@ -116,16 +111,15 @@ export function epochIndexToSlotIndexRangeConverter(
 
 /**
  * Convert an epoch index to a UNIX time range, in seconds.
- * @param protocolInfo The protocol information.
- * @param targetEpochIndex The target epoch index.
+ * @param parameters The protocol parameters information.
  * @returns The UNIX time range in seconds: from (inclusive) and to (exclusive).
  */
 export function epochIndexToUnixTimeRangeConverter(
-    protocolInfo: ProtocolParametersResponse,
+    parameters: ProtocolParameters,
 ): (targetEpochIndex: number) => { from: number; to: number } {
     return (targetEpochIndex: number) => {
-        const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(protocolInfo);
-        const slotIndexToUnixTimeRange = slotIndexToUnixTimeRangeConverter(protocolInfo);
+        const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(parameters);
+        const slotIndexToUnixTimeRange = slotIndexToUnixTimeRangeConverter(parameters);
 
         const targetEpochSlotIndexRange = epochIndexToSlotIndexRange(targetEpochIndex);
 
@@ -138,14 +132,13 @@ export function epochIndexToUnixTimeRangeConverter(
 
 /**
  * Get the registration slot from an epoch index.
- * @param protocolInfo The protocol information.
- * @param targetEpochIndex The target epoch index.
+ * @param parameters The protocol parameters information.
  * @returns The registration slot index.
  */
-export function getRegistrationSlotFromEpochIndex(protocolInfo: ProtocolParametersResponse): (targetEpochIndex: number) => number {
+export function getRegistrationSlotFromEpochIndex(parameters: ProtocolParameters): (targetEpochIndex: number) => number {
     return (targetEpochIndex: number) => {
-        const epochNearingThreshold = protocolInfo.parameters.epochNearingThreshold;
-        const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(protocolInfo);
+        const epochNearingThreshold = parameters.epochNearingThreshold;
+        const epochIndexToSlotIndexRange = epochIndexToSlotIndexRangeConverter(parameters);
 
         const nextEpochSlotIndexRange = epochIndexToSlotIndexRange(targetEpochIndex + 1);
 

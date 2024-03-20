@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { ProtocolParametersResponse } from "@iota/sdk-nova";
+import { ProtocolParameters } from "@iota/sdk-nova";
 import { InfluxDB, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";
@@ -95,6 +95,12 @@ const COLLECT_GRAPHS_DATA_CRON = "55 59 * * * *";
  * Every hour at 58 min 55 sec
  */
 const COLLECT_ANALYTICS_DATA_CRON = "55 58 * * * *";
+
+/*
+ * The collect analytics data interval cron expression.
+ * Every 10 minutes
+ */
+const COLLECT_EPOCH_ANALYTICS_DATA_CRON = "*/10 * * * *";
 
 export class InfluxServiceNova extends InfluxDbClient {
     /**
@@ -241,8 +247,8 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._epochCache.get(epochIndex);
     }
 
-    public async fetchAnalyticsForEpoch(epochIndex: number, protocolInfo: ProtocolParametersResponse) {
-        await this.collectEpochStatsByIndex(epochIndex, protocolInfo);
+    public async fetchAnalyticsForEpoch(epochIndex: number, parameters: ProtocolParameters) {
+        await this.collectEpochStatsByIndex(epochIndex, parameters);
         return this._epochCache.get(epochIndex);
     }
 
@@ -268,7 +274,7 @@ export class InfluxServiceNova extends InfluxDbClient {
                 void this.collectAnalytics();
             });
 
-            cron.schedule("*/4 * * * * *", async () => {
+            cron.schedule(COLLECT_EPOCH_ANALYTICS_DATA_CRON, async () => {
                 // eslint-disable-next-line no-void
                 void this.collectEpochStats();
             });
@@ -423,11 +429,11 @@ export class InfluxServiceNova extends InfluxDbClient {
     /**
      * Get the epoch analytics by index and set it in the cache.
      * @param epochIndex - The epoch index.
-     * @param protocolInfo - The protocol information.
+     * @param parameters - The protocol parameters information.
      */
-    private async collectEpochStatsByIndex(epochIndex: number, protocolInfo: ProtocolParametersResponse) {
+    private async collectEpochStatsByIndex(epochIndex: number, parameters: ProtocolParameters) {
         try {
-            const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(protocolInfo);
+            const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(parameters);
             const { from, to } = epochIndexToUnixTimeRange(epochIndex);
             const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
             const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
@@ -456,11 +462,11 @@ export class InfluxServiceNova extends InfluxDbClient {
         try {
             logger.debug(`[InfluxNova] Collecting epoch stats for "${this._network.network}"`);
             const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${this._network.network}`);
-            const nodeInfo = nodeService.getNodeInfo();
-            const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(nodeInfo.protocolParameters[0]);
+            const parameters = await nodeService.getProtocolParameters();
+            const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(parameters);
             const epochIndex = unixTimestampToEpochIndex(moment().unix());
             // eslint-disable-next-line no-void
-            void this.collectEpochStatsByIndex(epochIndex, nodeInfo.protocolParameters[0]);
+            void this.collectEpochStatsByIndex(epochIndex, parameters);
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
         }
