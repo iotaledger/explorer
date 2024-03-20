@@ -1,3 +1,4 @@
+import { OutputsResponse } from "@iota/sdk-wasm-nova/web";
 import { INetworkBoundGetRequest } from "~/models/api/INetworkBoundGetRequest";
 import { IAddressBalanceRequest } from "~/models/api/nova/address/IAddressBalanceRequest";
 import { IAddressBalanceResponse } from "~/models/api/nova/address/IAddressBalanceResponse";
@@ -51,7 +52,7 @@ import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMeta
 import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
 import { ITaggedOutputsRequest } from "~/models/api/nova/ITaggedOutputsRequest";
-import { OutputsResponse } from "@iota/sdk-wasm-nova/web";
+import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -310,6 +311,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getValidators(request: INetworkBoundGetRequest): Promise<IValidatorsResponse> {
         return this.callApi<unknown, IValidatorsResponse>(`nova/validators/${request.network}`, "get");
+    }
+
+    /**
+     * Get validator stats.
+     * @param request The request to send.
+     * @returns The response from the request.
+     */
+    public async getValidatorStats(request: INetworkBoundGetRequest): Promise<IValidatorStatsResponse> {
+        return this.callApi<unknown, IValidatorStatsResponse>(`nova/validators/stats/${request.network}`, "get");
     }
 
     /**
