@@ -113,25 +113,25 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Total pool stake:</div>
-                                    <div className="value">{epochCommittee?.totalStake}</div>
+                                    <div className="value">{epochCommittee?.totalStake ?? 0}</div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Total validator stake:</div>
-                                    <div className="value">{epochCommittee?.totalValidatorStake}</div>
+                                    <div className="value">{epochCommittee?.totalValidatorStake ?? 0}</div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Total delegated stake:</div>
                                     <div className="value">
-                                        {Number(epochCommittee?.totalStake) - Number(epochCommittee?.totalValidatorStake)}
+                                        {Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0)}
                                     </div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Blocks:</div>
-                                    <div className="value">{epochStats?.blockCount}</div>
+                                    <div className="value">{epochStats?.blockCount ?? 0}</div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Transactions:</div>
-                                    <div className="value">{epochStats?.perPayloadType?.transaction}</div>
+                                    <div className="value">{epochStats?.perPayloadType?.transaction ?? 0}</div>
                                 </div>
                             </>
                         )}

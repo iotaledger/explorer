@@ -432,7 +432,7 @@ export class InfluxServiceNova extends InfluxDbClient {
             const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
             const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
 
-            this.queryInflux<EpochUpdate>(EPOCH_STATS_QUERY_BY_EPOCH_INDEX, fromNano, toNano)
+            await this.queryInflux<EpochUpdate>(EPOCH_STATS_QUERY_BY_EPOCH_INDEX, fromNano, toNano)
                 .then((results) => {
                     for (const update of results) {
                         update.epochIndex = epochIndex;

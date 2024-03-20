@@ -51,7 +51,7 @@ import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMeta
 import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
 import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats";
-import { IEpochStatsRequest } from "~/models/api/nova/stats/IEpochStatsRequest";
+import { IEpochAnalyticStatsRequest } from "~/models/api/nova/stats/IEpochAnalyticStatsRequest";
 import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsResponse";
 
 /**
@@ -295,7 +295,7 @@ export class NovaApiClient extends ApiClient {
      * @param request The epoch analytic stats get request.
      * @returns The epoch stats response.
      */
-    public async epochStats(request: IEpochStatsRequest): Promise<IEpochAnalyticStats> {
+    public async epochStats(request: IEpochAnalyticStatsRequest): Promise<IEpochAnalyticStats> {
         return this.callApi<unknown, IEpochAnalyticStats>(`nova/epoch/stats/${request.network}/${request.epochIndex}`, "get");
     }
 
