@@ -62,7 +62,7 @@ export const useFeed = (network: string) => {
                 selectedNode.blockId,
             );
 
-            highlightNodes([selectedNode.blockId], []);
+            highlightNodes([selectedNode.blockId], [], SEARCH_RESULT_COLOR);
             highlightNodes(highlightedNodesAfter, highlightedLinksAfter, undefined, EDGE_COLOR_CONFIRMING);
             highlightNodes(highlightedNodesBefore, highlightedLinksBefore, undefined, EDGE_COLOR_CONFIRMED_BY);
         }
