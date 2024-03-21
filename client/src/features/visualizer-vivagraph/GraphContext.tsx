@@ -8,11 +8,7 @@ interface GraphContextType {
     graphics: React.MutableRefObject<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>;
     renderer: React.MutableRefObject<Viva.Graph.View.IRenderer | null>;
     isVivaReady: boolean;
-    setIsVivaReady: Dispatch<boolean>;
-}
-
-interface GraphProviderProps {
-    children: React.ReactNode;
+    setIsVivaReady: Dispatch<boolean> | null;
 }
 
 export const GraphContext = createContext<GraphContextType>({
@@ -21,10 +17,10 @@ export const GraphContext = createContext<GraphContextType>({
     graphics: { current: null },
     renderer: { current: null },
     isVivaReady: false,
-    setIsVivaReady: null as unknown as Dispatch<boolean>,
+    setIsVivaReady: null,
 });
 
-export const GraphProvider: React.FC<GraphProviderProps> = ({ children }) => {
+export const GraphProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     const graph = useRef<Viva.Graph.IGraph<INodeData, unknown> | null>(null);
     const graphElement = useRef<HTMLDivElement | null>(null);
     const graphics = useRef<Viva.Graph.View.IWebGLGraphics<INodeData, unknown> | null>(null);

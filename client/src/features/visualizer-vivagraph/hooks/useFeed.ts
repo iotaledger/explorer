@@ -51,22 +51,27 @@ export const useFeed = (network: string) => {
         if (!graphContext.isVivaReady) {
             return;
         }
+        handleHighlight(selectedNode?.blockId, search);
+    }, [graphContext.isVivaReady, selectedNode, search]);
+
+    function handleHighlight(selectedNodeId?: string, search?: string) {
         resetHighlight();
 
-        const nodeIds = getSearchResultNodeIds(search);
+        const forcedGotSearch = useTangleStore.getState().search;
+        if (search || forcedGotSearch) {
+            const nodeIds = getSearchResultNodeIds(search || forcedGotSearch);
+            highlightNodes(nodeIds, [], SEARCH_RESULT_COLOR, 0);
+        }
 
-        highlightNodes(nodeIds, [], SEARCH_RESULT_COLOR, 0);
+        if (selectedNodeId) {
+            const { highlightedNodesAfter, highlightedNodesBefore, highlightedLinksAfter, highlightedLinksBefore } =
+                getNodeConnections(selectedNodeId);
 
-        if (selectedNode) {
-            const { highlightedNodesAfter, highlightedNodesBefore, highlightedLinksAfter, highlightedLinksBefore } = getNodeConnections(
-                selectedNode.blockId,
-            );
-
-            highlightNodes([selectedNode.blockId], [], SEARCH_RESULT_COLOR);
+            highlightNodes([selectedNodeId], [], SEARCH_RESULT_COLOR);
             highlightNodes(highlightedNodesAfter, highlightedLinksAfter, undefined, EDGE_COLOR_CONFIRMING);
             highlightNodes(highlightedNodesBefore, highlightedLinksBefore, undefined, EDGE_COLOR_CONFIRMED_BY);
         }
-    }, [graphContext.isVivaReady, selectedNode, search]);
+    }
 
     function getEdgeDefaultColor(): number {
         return themeMode === "dark" ? EDGE_COLOR_DARK : EDGE_COLOR_LIGHT;
@@ -196,12 +201,6 @@ export const useFeed = (network: string) => {
     };
 
     const onNewBlock = (newBlock: IFeedBlockData) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (window._stop) {
-            return;
-        }
-
         if (graphContext.graph.current) {
             const now = Date.now();
             lastUpdateTime.current = now;
@@ -272,6 +271,20 @@ export const useFeed = (network: string) => {
             events.dblClick((node) => {
                 window.open(`${window.location.origin}/${network}/block/${node.id}`, "_blank");
             });
+            events.mouseEnter((node) => {
+                const forcedGotSelectedNode = useTangleStore.getState().selectedNode;
+                if (!forcedGotSelectedNode) {
+                    handleHighlight(node.id, search);
+                }
+            });
+
+            events.mouseLeave((_node) => {
+                const forcedGotSelectedNode = useTangleStore.getState().selectedNode;
+
+                if (!forcedGotSelectedNode) {
+                    resetHighlight();
+                }
+            });
 
             graphContext.renderer.current = Viva.Graph.View.renderer<INodeData, unknown>(graphContext.graph.current, {
                 container: graphContext.graphElement.current,
@@ -291,7 +304,7 @@ export const useFeed = (network: string) => {
                 graphContext.renderer.current.zoomOut();
             }
 
-            graphContext.setIsVivaReady(true);
+            graphContext.setIsVivaReady?.(true);
         }
     }
 
