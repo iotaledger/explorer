@@ -24,6 +24,8 @@ interface TangleState {
 
     search: string;
     setSearch: (search: string) => void;
+
+    resetTangleStore: () => void;
 }
 
 const INITIAL_STATE = {
@@ -37,6 +39,13 @@ export const useTangleStore = create<TangleState>()(
     devtools((set, get) => ({
         ...INITIAL_STATE,
 
+        resetTangleStore: () => {
+            set(() => {
+                return {
+                    ...INITIAL_STATE,
+                };
+            });
+        },
         setSearch: (search) => {
             set(() => {
                 return {

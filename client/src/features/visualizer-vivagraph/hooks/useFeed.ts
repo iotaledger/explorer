@@ -35,6 +35,7 @@ export const useFeed = (network: string) => {
     const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
     const updateBlockIdToMetadata = useTangleStore((state) => state.updateBlockIdToMetadata);
     const search = useTangleStore((state) => state.search);
+    const resetTangleStore = useTangleStore((state) => state.resetTangleStore);
     const themeMode = useGetThemeMode();
 
     const graphContext = useContext(GraphContext);
@@ -53,6 +54,13 @@ export const useFeed = (network: string) => {
         }
         handleHighlight(selectedNode?.blockId, search);
     }, [graphContext.isVivaReady, selectedNode, search]);
+
+    useEffect(() => {
+        return () => {
+            resetTangleStore();
+            feedService.unsubscribeBlocks();
+        };
+    }, []);
 
     function handleHighlight(selectedNodeId?: string, search?: string) {
         resetHighlight();
