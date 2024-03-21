@@ -127,7 +127,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             </div>
             {transactionId && (
                 <div className="section--data">
-                    <div className="label">Transaction Id</div>
+                    <div className="label">Transaction ID</div>
                     <div className="value value__secondary row middle highlight">
                         <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} showCopyButton />
                     </div>
@@ -138,13 +138,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
             <div className="section--data">
-                <div className="label">Slot commitment</div>
+                <div className="label">Slot Commitment</div>
                 <div className="value code highlight">
                     <TruncatedId id={block.header.slotCommitmentId} link={`/${network}/slot/${slotIndex}`} />
                 </div>
             </div>
             <div className="section--data">
-                <div className="label">Latest finalized slot</div>
+                <div className="label">Latest Finalized Slot</div>
                 <div className="value code">{block.header.latestFinalizedSlot}</div>
             </div>
             <div className="section--data">
@@ -187,19 +187,19 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             </div>
             {blockBody?.isValidation() && (
                 <div className="section--data">
-                    <div className="label">Highest supported protocol version</div>
+                    <div className="label">Highest Supported Protocol Version</div>
                     <div className="value code">{blockBody.asValidation().highestSupportedVersion}</div>
                 </div>
             )}
             {blockBody?.isBasic() && (
                 <div>
                     <div className="section--data">
-                        <div className="label">Max burned mana</div>
+                        <div className="label">Max Burned Mana</div>
                         <div className="value code">{Number(blockBody.asBasic().maxBurnedMana)}</div>
                     </div>
                     {blockBody.asBasic().payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
-                            <div className="label">Amount transacted</div>
+                            <div className="label">Amount Transacted</div>
                             <div className="amount-transacted value row middle">
                                 <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
                                     {formatAmount(transferTotal, tokenInfo, !isFormattedBalance)}
