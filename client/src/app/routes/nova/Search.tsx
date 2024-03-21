@@ -110,6 +110,9 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.foundryId) {
                         route = "foundry";
                         routeParam = response.foundryId;
+                    } else if (response.slotIndex) {
+                        route = "slot";
+                        routeParam = response.slotIndex.toString();
                     }
 
                     const getEncodedSearch = () => {

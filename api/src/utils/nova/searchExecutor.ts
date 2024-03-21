@@ -142,6 +142,12 @@ export class SearchExecutor {
             );
         }
 
+        if (searchQuery.slotIndex) {
+            promisesResult = {
+                slotIndex: String(searchQuery.slotIndex),
+            };
+        }
+
         await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {

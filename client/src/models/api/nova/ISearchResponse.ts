@@ -62,4 +62,9 @@ export interface ISearchResponse extends IResponse {
      * Transaction included block.
      */
     transactionBlock?: Block;
+
+    /**
+     * A slot index.
+     */
+    slotIndex?: string;
 }
