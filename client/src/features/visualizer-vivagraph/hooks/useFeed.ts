@@ -149,5 +149,6 @@ export const useFeed = (network: string) => {
     return {
         graphElement,
         resetCounter,
+        renderer,
     };
 };

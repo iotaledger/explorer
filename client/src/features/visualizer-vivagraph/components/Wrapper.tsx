@@ -6,25 +6,36 @@ import KeyPanel from "./KeyPanel";
 import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import { ThemeMode } from "../definitions/enums";
+import type Viva from "vivagraphjs";
 
 export const Wrapper = ({
     children,
     network,
     networkConfig,
     themeMode,
-
     isPlaying,
-
+    setIsPlaying,
     selectedFeedItem,
+    renderer,
 }: {
     readonly children: React.ReactNode;
     readonly network: string;
     readonly networkConfig: INetwork;
     readonly themeMode: ThemeMode;
     readonly isPlaying: boolean;
+    readonly setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
     readonly selectedFeedItem: TSelectFeedItemNova;
+    readonly renderer: React.MutableRefObject<Viva.Graph.View.IRenderer | null>;
 }) => {
-    const onToggle = useCallback(() => {}, []);
+    const onToggle = useCallback(() => {
+        if (isPlaying) {
+            renderer.current?.pause();
+        } else {
+            renderer.current?.resume();
+        }
+
+        setIsPlaying(!isPlaying);
+    }, [renderer, isPlaying]);
 
     return (
         <>
