@@ -27,6 +27,7 @@ import { NovaFeed } from "./services/nova/feed/novaFeed";
 import { InfluxServiceNova } from "./services/nova/influx/influxServiceNova";
 import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
 import { NovaApiService } from "./services/nova/novaApiService";
+import { NovaTimeService } from "./services/nova/novaTimeService";
 import { NovaStatsService } from "./services/nova/stats/novaStatsService";
 import { ValidatorService } from "./services/nova/validatorService";
 import { ChronicleService as ChronicleServiceStardust } from "./services/stardust/chronicleService";
@@ -246,21 +247,29 @@ function initNovaServices(networkConfig: INetwork): void {
             ServiceFactory.register(`feed-${networkConfig.network}`, () => novaFeed);
         });
 
+        NovaTimeService.build(novaClient)
+            .then((novaTimeService) => {
+                ServiceFactory.register(`nova-time-${networkConfig.network}`, () => novaTimeService);
+            })
+            .catch((err) => {
+                logger.error(`Failed building [novaTimeService]. Cause: ${err}`);
+            });
+
         const validatorService = new ValidatorService(networkConfig);
         validatorService.setupValidatorsCollection();
         ServiceFactory.register(`validator-service-${networkConfig.network}`, () => validatorService);
-    });
 
-    const influxDBService = new InfluxServiceNova(networkConfig);
-    influxDBService
-        .buildClient()
-        .then((hasClient) => {
-            logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
-            if (hasClient) {
-                ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
-            }
-        })
-        .catch((e) => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
+        const influxDBService = new InfluxServiceNova(networkConfig);
+        influxDBService
+            .buildClient()
+            .then((hasClient) => {
+                logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
+                if (hasClient) {
+                    ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
+                }
+            })
+            .catch((e) => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
+    });
 }
 
 /**
