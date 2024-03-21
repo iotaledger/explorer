@@ -7,12 +7,14 @@ import {
 } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { IInput } from "~models/api/nova/IInput";
+import { IOutput } from "~models/api/nova/IOutput";
 import TaggedDataPayload from "../payload/TaggedDataPayload";
 import SignedTransactionPayload from "../payload/SignedTransactionPayload";
 
 interface BlockPayloadSectionProps {
     readonly block: Block;
     readonly inputs?: IInput[];
+    readonly outputs?: IOutput[];
     readonly transferTotal?: number;
 }
 

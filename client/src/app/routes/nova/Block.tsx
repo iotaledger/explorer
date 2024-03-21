@@ -44,7 +44,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
-    const [inputs, , transferTotal] = useInputsAndOutputs(network, block);
+    const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
     const [blockBody, setBlockBody] = useState<BasicBlockBody | ValidationBlockBody>();
     const [transactionId, setTransactionId] = useState<string | null>(null);
     const { transactionMetadata } = useTransactionMetadata(network, transactionId);
@@ -89,7 +89,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     let idx = 0;
     if (block) {
         tabbedSections.push(
-            <BlockPayloadSection key={++idx} block={block} inputs={inputs ?? undefined} transferTotal={transferTotal ?? undefined} />,
+            <BlockPayloadSection
+                key={++idx}
+                block={block}
+                inputs={inputs ?? undefined}
+                outputs={outputs ?? undefined}
+                transferTotal={transferTotal ?? undefined}
+            />,
         );
     }
 
