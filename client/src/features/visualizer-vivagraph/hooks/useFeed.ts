@@ -218,11 +218,7 @@ export const useFeed = (network: string) => {
                 for (const parentId of parentIds) {
                     if (existingBlockIds.includes(parentId)) {
                         const link = graphContext.graph.current?.addLink(parentId, blockId);
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
                         if (link) {
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
                             updateLineColor(link.id, getEdgeDefaultColor());
                         }
                     }
@@ -278,7 +274,7 @@ export const useFeed = (network: string) => {
                 }
             });
 
-            events.mouseLeave((_node) => {
+            events.mouseLeave(() => {
                 const forcedGotSelectedNode = useTangleStore.getState().selectedNode;
 
                 if (!forcedGotSelectedNode) {
