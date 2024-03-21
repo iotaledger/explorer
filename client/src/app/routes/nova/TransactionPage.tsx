@@ -110,7 +110,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             </div>
             {blockId && (
                 <div className="section--data">
-                    <div className="label">Included in block</div>
+                    <div className="label">Included In Block</div>
                     <div className="value code highlight">
                         <TruncatedId id={blockId} link={`/${network}/block/${blockId}`} showCopyButton />
                     </div>
@@ -121,7 +121,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                 <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
             <div className="section--data">
-                <div className="label">Slot commitment</div>
+                <div className="label">Slot Commitment</div>
                 <div className="value code">
                     <TruncatedId id={block.header.slotCommitmentId} />
                 </div>
@@ -138,7 +138,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             </div>
             {transferTotal !== null && (
                 <div className="section--data">
-                    <div className="label">Amount transacted</div>
+                    <div className="label">Amount Transacted</div>
                     <div className="amount-transacted value row middle">
                         <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
                             {formatAmount(transferTotal, tokenInfo, !isFormattedBalance)}
