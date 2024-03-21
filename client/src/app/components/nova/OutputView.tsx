@@ -59,6 +59,8 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const outputIdIndexPart = outputId.slice(-4);
     const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails, manaInfo) : undefined;
     const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
+    const validatorAddress =
+        output.type === OutputType.Delegation ? Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp) : "";
 
     const specialUnlockCondition =
         isSpecialCondition &&
@@ -205,7 +207,13 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--label">Delegation Id:</div>
                     <div className="card--value row">{(output as DelegationOutput).delegationId}</div>
                     <div className="card--label">Validator Address:</div>
-                    <div className="card--value row">{Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp)}</div>
+                    <div className="card--value row">
+                        <TruncatedId
+                            id={validatorAddress}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${validatorAddress}`}
+                            showCopyButton
+                        />
+                    </div>
                     <div className="card--label">Start epoch:</div>
                     <div className="card--value row">{(output as DelegationOutput).startEpoch}</div>
                     <div className="card--label">End epoch:</div>
