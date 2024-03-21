@@ -55,16 +55,16 @@ export const useFeed = (network: string) => {
 
         const nodeIds = getSearchResultNodeIds(search);
 
-        highlightNodes(nodeIds, SEARCH_RESULT_COLOR, [], 0);
+        highlightNodes(nodeIds, [], SEARCH_RESULT_COLOR, 0);
 
         if (selectedNode) {
             const { highlightedNodesAfter, highlightedNodesBefore, highlightedLinksAfter, highlightedLinksBefore } = getNodeConnections(
                 selectedNode.blockId,
             );
 
-            highlightNodes([selectedNode.blockId], SEARCH_RESULT_COLOR, [], 0);
-            highlightNodes(highlightedNodesAfter, SEARCH_RESULT_COLOR, highlightedLinksAfter, EDGE_COLOR_CONFIRMING);
-            highlightNodes(highlightedNodesBefore, SEARCH_RESULT_COLOR, highlightedLinksBefore, EDGE_COLOR_CONFIRMED_BY);
+            highlightNodes([selectedNode.blockId], []);
+            highlightNodes(highlightedNodesAfter, highlightedLinksAfter, undefined, EDGE_COLOR_CONFIRMING);
+            highlightNodes(highlightedNodesBefore, highlightedLinksBefore, undefined, EDGE_COLOR_CONFIRMED_BY);
         }
     }, [graphContext.isVivaReady, selectedNode, search]);
 
@@ -83,12 +83,16 @@ export const useFeed = (network: string) => {
         });
     }
 
-    function highlightNodes(nodeIds: string[], nodeColor: string, linkIds: string[], linkColor: number) {
-        for (const nodeId of nodeIds) {
-            updateBlockColor(nodeId, nodeColor);
+    function highlightNodes(nodeIds: string[], linkIds: string[], nodeColor?: string, linkColor?: number) {
+        if (nodeColor) {
+            for (const nodeId of nodeIds) {
+                updateBlockColor(nodeId, nodeColor);
+            }
         }
-        for (const linkId of linkIds) {
-            updateLineColor(linkId, linkColor);
+        if (linkColor) {
+            for (const linkId of linkIds) {
+                updateLineColor(linkId, linkColor);
+            }
         }
     }
 
