@@ -12,6 +12,7 @@ import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
 import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
 import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
 import "./SlotPage.scss";
+import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
 
 export default function SlotPage({
     match: {
@@ -23,6 +24,7 @@ export default function SlotPage({
 }>): React.JSX.Element {
     const { latestSlotCommitments = [] } = useSlotsFeed();
     const { slotCommitment: slotCommitmentDetails } = useSlotDetails(network, slotIndex);
+    const { slotManaBurned } = useSlotManaBurned(slotIndex);
 
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
@@ -41,6 +43,7 @@ export default function SlotPage({
                 slotCommitmentDetails?.referenceManaCost?.toString() ??
                 "-",
         },
+        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-" },
     ];
 
     return (

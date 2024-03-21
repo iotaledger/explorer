@@ -77,6 +77,11 @@ type EpochUpdate = ITimedEntry & {
     noPayload: number;
 };
 
+type ManaBurnedInSlot = ITimedEntry & {
+    slotIndex: number;
+    manaBurned: number;
+};
+
 /**
  * Epoch analyitics cache MAX size.
  */
@@ -252,6 +257,32 @@ export class InfluxServiceNova extends InfluxDbClient {
         }
 
         return this._epochCache.get(epochIndex);
+    }
+
+    /**
+     * Get the manaBurned stats by slot index.
+     * @param slotIndex - The slot index.
+     */
+    public async getManaBurnedBySlotIndex(slotIndex: number): Promise<ManaBurnedInSlot | null> {
+        const { from, to } = this._novatimeService.getSlotIndexToUnixTimeRange(slotIndex);
+        const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+        const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+
+        let manaBurnedResult: ManaBurnedInSlot | null = null;
+
+        await this.queryInflux<ManaBurnedInSlot>(MANA_BURN_DAILY_QUERY.partial, fromNano, toNano)
+            .then((results) => {
+                for (const update of results) {
+                    update.slotIndex = slotIndex;
+
+                    manaBurnedResult = update;
+                }
+            })
+            .catch((e) => {
+                logger.warn(`[InfluxClient] Query 'mana burned in slot' failed for (${this._network.network}). Cause ${e}`);
+            });
+
+        return manaBurnedResult;
     }
 
     protected setupDataCollection() {

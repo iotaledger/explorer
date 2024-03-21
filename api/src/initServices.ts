@@ -250,6 +250,17 @@ function initNovaServices(networkConfig: INetwork): void {
         NovaTimeService.build(novaClient)
             .then((novaTimeService) => {
                 ServiceFactory.register(`nova-time-${networkConfig.network}`, () => novaTimeService);
+
+                const influxDBService = new InfluxServiceNova(networkConfig);
+                influxDBService
+                    .buildClient()
+                    .then((hasClient) => {
+                        logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
+                        if (hasClient) {
+                            ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
+                        }
+                    })
+                    .catch((e) => logger.error(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
             })
             .catch((err) => {
                 logger.error(`Failed building [novaTimeService]. Cause: ${err}`);
@@ -258,17 +269,6 @@ function initNovaServices(networkConfig: INetwork): void {
         const validatorService = new ValidatorService(networkConfig);
         validatorService.setupValidatorsCollection();
         ServiceFactory.register(`validator-service-${networkConfig.network}`, () => validatorService);
-
-        const influxDBService = new InfluxServiceNova(networkConfig);
-        influxDBService
-            .buildClient()
-            .then((hasClient) => {
-                logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
-                if (hasClient) {
-                    ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
-                }
-            })
-            .catch((e) => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
     });
 }
 
