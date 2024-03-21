@@ -48,6 +48,7 @@ interface OutputViewProps {
 }
 
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
+    const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network, protocolInfo, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
@@ -56,7 +57,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
-    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails) : undefined;
+    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails, manaInfo) : undefined;
     const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
 
     const specialUnlockCondition =

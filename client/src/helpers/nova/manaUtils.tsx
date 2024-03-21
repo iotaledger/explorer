@@ -1,5 +1,7 @@
-import { BasicOutput, Output, ProtocolParameters, Utils } from "@iota/sdk-wasm-nova/web";
+import { BaseTokenResponse, BasicOutput, Output, ProtocolParameters, Utils } from "@iota/sdk-wasm-nova/web";
 import { IKeyValueEntries } from "~/app/lib/interfaces";
+import { formatAmount } from "../stardust/valueFormatHelper";
+import React from "react";
 
 export interface OutputManaDetails {
     storedMana: string;
@@ -34,9 +36,17 @@ export function buildManaDetailsForOutput(
     };
 }
 
-export function getManaKeyValueEntries(manaDetails: OutputManaDetails | null): IKeyValueEntries {
+export function getManaKeyValueEntries(manaDetails: OutputManaDetails | null, manaInfo: BaseTokenResponse): IKeyValueEntries {
     const showDecayMana = manaDetails?.storedMana && manaDetails?.storedManaDecayed;
     const decay = showDecayMana ? Number(manaDetails?.storedMana ?? 0) - Number(manaDetails?.storedManaDecayed ?? 0) : undefined;
+    const renderStoredMana = (mana?: string | number | null): React.ReactNode => {
+        const [isFormatFull, setIsFormatFull] = React.useState(false);
+        return (
+            <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
+                {formatAmount(mana ?? "0", manaInfo, isFormatFull)}
+            </span>
+        );
+    };
 
     return {
         label: "Mana:",
@@ -44,19 +54,19 @@ export function getManaKeyValueEntries(manaDetails: OutputManaDetails | null): I
         entries: [
             {
                 label: "Stored:",
-                value: manaDetails?.storedMana,
+                value: renderStoredMana(manaDetails?.storedMana),
             },
             {
                 label: "Decay:",
-                value: decay,
+                value: renderStoredMana(String(decay)),
             },
             {
                 label: "Potential:",
-                value: manaDetails?.potentialMana,
+                value: renderStoredMana(manaDetails?.potentialMana),
             },
             {
                 label: "Mana Rewards:",
-                value: manaDetails?.manaRewards,
+                value: renderStoredMana(manaDetails?.manaRewards),
             },
         ],
     };
