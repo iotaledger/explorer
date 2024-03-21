@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IInput } from "~models/api/nova/IInput";
 import { IOutput } from "~models/api/nova/IOutput";
-import { STARDUST } from "~models/config/protocolVersion";
+import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~services/nova/novaApiClient";
 import { TransactionsHelper } from "../transactionsHelper";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
@@ -15,7 +15,7 @@ import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
  * @returns The inputs, unlocks, outputs, transfer total an a loading bool.
  */
 export function useInputsAndOutputs(network: string, block: Block | null): [IInput[] | null, IOutput[] | null, number | null, boolean] {
-    const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${STARDUST}`));
+    const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const { networkInfo } = useNetworkInfoNova();
     const [tsxInputs, setInputs] = useState<IInput[] | null>(null);
     const [tsxOutputs, setOutputs] = useState<IOutput[] | null>(null);
