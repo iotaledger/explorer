@@ -62,13 +62,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
     let idx = 0;
     if (block) {
         tabbedSections.push(
-            <BlockPayloadSection
-                key={++idx}
-                block={block}
-                inputs={inputs ?? undefined}
-                outputs={outputs ?? undefined}
-                transferTotal={transferTotal ?? undefined}
-            />,
+            <BlockPayloadSection key={++idx} block={block} inputs={inputs ?? undefined} transferTotal={transferTotal ?? undefined} />,
         );
     }
 
