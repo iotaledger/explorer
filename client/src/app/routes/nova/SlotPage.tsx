@@ -9,7 +9,6 @@ import { RouteComponentProps } from "react-router-dom";
 import StatusPill from "~/app/components/nova/StatusPill";
 import { getSlotStatusFromLatestSlotCommitments, parseSlotIndexFromParams } from "~/app/lib/utils/slot.utils";
 import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
-import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
 import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
 import "./SlotPage.scss";
 
@@ -27,7 +26,6 @@ export default function SlotPage({
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
     const slotFromSlotCommitments = latestSlotCommitments.find((slot) => slot.slotCommitment.slot === parsedSlotIndex);
-    const { blocks } = useSlotBlocks(network, slotIndex);
 
     const dataRows: IPageDataRow[] = [
         {
@@ -71,7 +69,7 @@ export default function SlotPage({
                         <NotFound query={slotIndex} searchTarget="slot" />
                     )}
 
-                    <SlotBlocksSection blocks={blocks} />
+                    <SlotBlocksSection slotIndex={slotIndex} />
                 </div>
             </div>
         </section>
