@@ -14,7 +14,12 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import AddressView from "./address/AddressView";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
-import DataToggle from "../DataToggle";
+import DataToggle from "~/app/components/DataToggle";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
+import Tooltip from "~/app/components/Tooltip";
+import { EPOCH_HINT } from "./OutputView";
 
 interface FeatureViewProps {
     /**
@@ -34,6 +39,7 @@ interface FeatureViewProps {
 }
 
 const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreExpanded }) => {
+    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState<boolean>(isPreExpanded ?? false);
 
     return (
@@ -89,13 +95,42 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                     {feature.type === FeatureType.Staking && (
                         <div className="padding-l-t left-border">
                             <div className="card--label">Staked amount:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).stakedAmount)}</div>
+                            <div className="card--value row">
+                                {formatAmount((feature as StakingFeature).stakedAmount, tokenInfo, false)}
+                            </div>
                             <div className="card--label">Fixed cost:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).fixedCost)}</div>
+                            <div className="card--value row">{formatAmount((feature as StakingFeature).fixedCost, manaInfo, false)}</div>
                             <div className="card--label">Start epoch:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).startEpoch)}</div>
+                            <div className="card--value row">
+                                <TruncatedId
+                                    id={String((feature as StakingFeature).startEpoch)}
+                                    link={
+                                        (feature as StakingFeature).startEpoch === 0
+                                            ? undefined
+                                            : `/${network}/epoch/${(feature as StakingFeature).startEpoch}`
+                                    }
+                                    showCopyButton={false}
+                                />
+                            </div>
                             <div className="card--label">End epoch:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).endEpoch)}</div>
+                            <div className="card--value row">
+                                <TruncatedId
+                                    id={String((feature as StakingFeature).endEpoch)}
+                                    link={
+                                        (feature as StakingFeature).endEpoch === 0
+                                            ? undefined
+                                            : `/${network}/epoch/${(feature as StakingFeature).endEpoch}`
+                                    }
+                                    showCopyButton={false}
+                                />
+                                {(feature as StakingFeature).endEpoch === 0 && (
+                                    <Tooltip tooltipContent={EPOCH_HINT}>
+                                        <div className="modal--icon margin-t-2">
+                                            <span className="material-icons">info</span>
+                                        </div>
+                                    </Tooltip>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

@@ -1,5 +1,7 @@
 import React from "react";
 import { ValidatorResponse } from "@iota/sdk-wasm-nova/web";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 interface AccountValidatorSectionProps {
     readonly validatorDetails: ValidatorResponse | null;
@@ -9,7 +11,7 @@ const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ valid
     if (!validatorDetails) {
         return null;
     }
-
+    const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const delegatedStake = BigInt(validatorDetails.poolStake) - BigInt(validatorDetails.validatorStake);
 
     return (
@@ -25,19 +27,19 @@ const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ valid
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Pool Stake</div>
-                    <div className="card--value">{String(validatorDetails.poolStake)}</div>
+                    <div className="card--value">{formatAmount(validatorDetails.poolStake, tokenInfo, false)}</div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Validator Stake</div>
-                    <div className="card--value">{String(validatorDetails.validatorStake)}</div>
+                    <div className="card--value">{formatAmount(validatorDetails.validatorStake, tokenInfo, false)}</div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Delegated Stake</div>
-                    <div className="card--value">{String(delegatedStake)}</div>
+                    <div className="card--value">{formatAmount(delegatedStake, tokenInfo, false)}</div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Fixed Cost</div>
-                    <div className="card--value">{Number(validatorDetails?.fixedCost)}</div>
+                    <div className="card--value">{formatAmount(validatorDetails?.fixedCost, manaInfo, false)}</div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Latest Supported Protocol Version</div>

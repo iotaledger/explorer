@@ -25,7 +25,7 @@ import UnlockConditionView from "./UnlockConditionView";
 import CopyButton from "../CopyButton";
 import { Link } from "react-router-dom";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
-import FeatureView from "./FeaturesView";
+import FeatureView from "./FeatureView";
 import TruncatedId from "../stardust/TruncatedId";
 import { HexHelper } from "~/helpers/stardust/hexHelper";
 import bigInt from "big-integer";
@@ -47,7 +47,8 @@ interface OutputViewProps {
     manaDetails?: OutputManaDetails | null;
 }
 
-const EPOCH_HINT = "When the end epoch is set to 0, it indicates that no specific end epoch has been defined for this delegation output.";
+export const EPOCH_HINT =
+    "When the end epoch is set to 0, it indicates that no specific end epoch has been defined for this delegation output.";
 
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
     const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);

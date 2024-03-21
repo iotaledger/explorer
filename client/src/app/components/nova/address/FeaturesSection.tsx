@@ -1,7 +1,7 @@
 import { AccountOutput, FoundryOutput, NftOutput } from "@iota/sdk-wasm-nova/web";
 import { optional } from "@ruffy/ts-optional";
 import React from "react";
-import FeatureView from "../FeaturesView";
+import FeatureView from "../FeatureView";
 
 interface FeaturesSectionProps {
     /**
