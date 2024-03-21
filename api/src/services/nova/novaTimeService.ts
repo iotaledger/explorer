@@ -1,3 +1,5 @@
+/* eslint-disable import/no-unresolved */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Client, ProtocolParameters } from "@iota/sdk-nova";
 import {
     epochIndexToSlotIndexRangeConverter,
