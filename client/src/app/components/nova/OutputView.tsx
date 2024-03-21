@@ -47,6 +47,8 @@ interface OutputViewProps {
     manaDetails?: OutputManaDetails | null;
 }
 
+const EPOCH_HINT = "When the end epoch is set to 0, it indicates that no specific end epoch has been defined for this delegation output.";
+
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
     const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
@@ -215,9 +217,36 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                         />
                     </div>
                     <div className="card--label">Start epoch:</div>
-                    <div className="card--value row">{(output as DelegationOutput).startEpoch}</div>
+                    <div className="card--value row">
+                        <TruncatedId
+                            id={(output as DelegationOutput).startEpoch.toString()}
+                            link={
+                                isLinksDisabled || (output as DelegationOutput).startEpoch === 0
+                                    ? undefined
+                                    : `/${network}/epoch/${(output as DelegationOutput).startEpoch}`
+                            }
+                            showCopyButton={false}
+                        />
+                    </div>
                     <div className="card--label">End epoch:</div>
-                    <div className="card--value row">{(output as DelegationOutput).endEpoch}</div>
+                    <div className="card--value row">
+                        <TruncatedId
+                            id={(output as DelegationOutput).endEpoch.toString()}
+                            link={
+                                isLinksDisabled || (output as DelegationOutput).startEpoch === 0
+                                    ? undefined
+                                    : `/${network}/epoch/${(output as DelegationOutput).endEpoch}`
+                            }
+                            showCopyButton={false}
+                        />
+                        {(output as DelegationOutput).startEpoch === 0 && (
+                            <Tooltip tooltipContent={EPOCH_HINT}>
+                                <div className="modal--icon margin-t-2">
+                                    <span className="material-icons">info</span>
+                                </div>
+                            </Tooltip>
+                        )}
+                    </div>
                 </React.Fragment>
             )}
         </React.Fragment>
