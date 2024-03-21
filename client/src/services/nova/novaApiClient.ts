@@ -50,6 +50,8 @@ import { IInfluxDailyResponse } from "~/models/api/nova/influx/IInfluxDailyRespo
 import { ITransactionMetadataResponse } from "~/models/api/nova/ITransactionMetadataResponse";
 import { IAnalyticStats } from "~/models/api/nova/stats/IAnalyticStats";
 import { IValidatorsResponse } from "~/models/api/nova/IValidatorsResponse";
+import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats";
+import { IEpochAnalyticStatsRequest } from "~/models/api/nova/stats/IEpochAnalyticStatsRequest";
 import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsResponse";
 
 /**
@@ -286,6 +288,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getEpochCommittee(request: IEpochCommitteeRequest): Promise<IEpochCommitteeResponse> {
         return this.callApi<unknown, IEpochCommitteeResponse>(`nova/epoch/committee/${request.network}/${request.epochIndex}`, "get");
+    }
+
+    /**
+     * Get the epoch analytics stats by epoch index.
+     * @param request The epoch analytic stats get request.
+     * @returns The epoch stats response.
+     */
+    public async epochStats(request: IEpochAnalyticStatsRequest): Promise<IEpochAnalyticStats> {
+        return this.callApi<unknown, IEpochAnalyticStats>(`nova/epoch/stats/${request.network}/${request.epochIndex}`, "get");
     }
 
     /**
