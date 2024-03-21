@@ -56,7 +56,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     network,
                     query: queryTerm,
                 });
-                if (!response || response?.error) {
+                if (!response || response?.error || response?.message) {
                     setState((prevState) => ({
                         ...prevState,
                         completion: response?.error ? "invalid" : "notFound",
@@ -236,6 +236,10 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                                     <li>
                                         <span>NFT Id</span>
                                         <span>66 Hex characters</span>
+                                    </li>
+                                    <li>
+                                        <span>Slot</span>
+                                        <span>Index or commitmentId of finalized slot</span>
                                     </li>
                                 </ul>
                                 <br />

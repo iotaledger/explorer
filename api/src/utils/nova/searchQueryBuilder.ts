@@ -55,6 +55,10 @@ export interface SearchQuery {
      * The tag of an output.
      */
     tag?: HexEncodedString;
+    /**
+     * A slot commitment id.
+     */
+    slotCommitmentId?: string;
 }
 
 /**
@@ -102,6 +106,7 @@ export class SearchQueryBuilder {
         let anchorId: string;
         let delegationId: string;
         let tag: string;
+        let slotCommitmentId: string;
 
         const queryDetails = AddressHelper.buildAddress(this.networkBechHrp, this.queryLower);
         const slotIndex = /^\d+$/.test(this.query) ? Number.parseInt(this.query, 10) : undefined;
@@ -114,6 +119,7 @@ export class SearchQueryBuilder {
             if (queryDetails?.hex && queryDetails.hex.length === 74) {
                 blockId = queryDetails.hex;
                 transactionId = queryDetails.hex;
+                slotCommitmentId = queryDetails.hex;
             } else if (queryDetails?.hex && queryDetails.hex.length === 66) {
                 // if the hex has 66 characters it might be a accoount id or a nft id
                 accountId = queryDetails.hex;
@@ -157,6 +163,7 @@ export class SearchQueryBuilder {
             anchorId,
             delegationId,
             tag,
+            slotCommitmentId,
         };
     }
 }

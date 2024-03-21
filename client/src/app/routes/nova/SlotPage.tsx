@@ -21,7 +21,7 @@ export default function SlotPage({
     slotIndex: string;
 }>): React.JSX.Element {
     const { latestSlotCommitments = [] } = useSlotsFeed();
-    const { slotCommitment: slotCommitmentDetails } = useSlotDetails(network, slotIndex);
+    const { slotCommitment: slotCommitmentDetails, slotCommitmentId } = useSlotDetails(network, slotIndex);
 
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
@@ -31,6 +31,10 @@ export default function SlotPage({
         {
             label: "Slot Index",
             value: parsedSlotIndex ?? "-",
+        },
+        {
+            label: "Commitment Id",
+            value: slotCommitmentId ?? "-",
         },
         {
             label: "RMC",

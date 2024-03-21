@@ -143,9 +143,31 @@ export class SearchExecutor {
         }
 
         if (searchQuery.slotIndex) {
-            promisesResult = {
-                slotIndex: String(searchQuery.slotIndex),
-            };
+            promises.push(
+                this.executeQuery(
+                    this.apiService.getSlotCommitment(searchQuery.slotIndex),
+                    (_) => {
+                        promisesResult = {
+                            slotIndex: String(searchQuery.slotIndex),
+                        };
+                    },
+                    "Slot commitment fetch failed",
+                ),
+            );
+        }
+
+        if (searchQuery.slotCommitmentId) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.getCommitment(searchQuery.slotCommitmentId),
+                    (result) => {
+                        promisesResult = {
+                            slotIndex: String(result.slot.slot),
+                        };
+                    },
+                    "Slot commitment fetch failed",
+                ),
+            );
         }
 
         await Promise.any(promises).catch((_) => {});
@@ -160,7 +182,7 @@ export class SearchExecutor {
             };
         }
 
-        return {};
+        return { message: "Nothing found" };
     }
 
     private async executeQuery<T>(query: Promise<T>, successHandler: (result: T) => void, failureMessage: string): Promise<void> {

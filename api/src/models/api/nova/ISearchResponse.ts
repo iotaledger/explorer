@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Block, OutputWithMetadataResponse } from "@iota/sdk-nova";
 import { IAddressDetails } from "./IAddressDetails";
-import { IResponse } from "../IResponse";
+import { IResponse } from "./IResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
