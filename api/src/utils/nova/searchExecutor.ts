@@ -147,10 +147,11 @@ export class SearchExecutor {
                 this.executeQuery(
                     this.apiService.taggedOutputs(searchQuery.tag),
                     (response) => {
-                        promisesResult = {
-                            taggedOutputs: response,
-                            error: response.error || response.message,
-                        };
+                        if (!response.basicOutputs.error || !response.nftOutputs.error) {
+                            promisesResult = {
+                                taggedOutputs: response,
+                            };
+                        }
                     },
                     "Tagged details fetch failed",
                 ),
