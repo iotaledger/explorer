@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
 import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
@@ -15,46 +15,10 @@ import "./LandingEpochSection.scss";
 const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
 
 const LandingEpochSection: React.FC = () => {
-    const [selectedEpoch, setSelectedEpoch] = useState<number | undefined>(undefined);
-    const [initialEpoch, setInitialEpoch] = useState<number | null>(null);
-    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(selectedEpoch);
+    const { name: network, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
     const { validatorStats } = useValidatorStats();
     const { committeeValidators, committeeValidatorsPoolStake, totalCommitteeStake } = validatorStats ?? {};
-
-    useEffect(() => {
-        if (selectedEpoch === undefined && initialEpoch === null) {
-            setInitialEpoch(epochIndex);
-        }
-    }, [epochIndex]);
-
-    useEffect(() => {
-        if (selectedEpoch === undefined && initialEpoch === null) {
-            setInitialEpoch(epochIndex);
-        }
-
-        if (epochIndex) {
-            setSelectedEpoch(epochIndex);
-        }
-    }, [epochIndex]);
-
-    const onNextEpochClick = useCallback(() => {
-        if (epochIndex) {
-            setSelectedEpoch(epochIndex + 1);
-        }
-    }, [epochIndex]);
-
-    const onPreviousEpochClick = useCallback(() => {
-        if (epochIndex) {
-            setSelectedEpoch(epochIndex - 1);
-        }
-    }, [epochIndex]);
-
-    const onCurrentEpochClick = useCallback(() => {
-        if (initialEpoch) {
-            setSelectedEpoch(initialEpoch);
-        }
-    }, [initialEpoch]);
 
     const commiiteeDelegatorStake =
         committeeValidatorsPoolStake === undefined || totalCommitteeStake === undefined
@@ -139,23 +103,27 @@ const LandingEpochSection: React.FC = () => {
             </div>
 
             <div className="epoch-section__controls">
-                <button className="icon-button" onClick={onPreviousEpochClick}>
-                    <span className="epoch-section__previous">
-                        <ArrowUp width={20} height={20} />
-                    </span>
-                </button>
+                <a href={epochIndex > 0 ? `/${network}/epoch/${epochIndex - 1}` : undefined} target="_blank" rel="noopener noreferrer">
+                    <button className="icon-button" disabled={epochIndex === 0}>
+                        <span className="epoch-section__previous">
+                            <ArrowUp width={20} height={20} />
+                        </span>
+                    </button>
+                </a>
 
                 <div className="epoch-section__center-buttons">
-                    <button className="nova" onClick={onCurrentEpochClick}>
-                        Current Epoch
-                    </button>
+                    <a href={`/${network}/epoch/${epochIndex}`} target="_blank" rel="noopener noreferrer">
+                        <button className="nova">Current Epoch</button>
+                    </a>
                 </div>
 
-                <button className="icon-button" onClick={onNextEpochClick}>
-                    <span className="epoch-section__next">
-                        <ArrowUp width={20} height={20} fill="red" />
-                    </span>
-                </button>
+                <a href={`/${network}/epoch/${epochIndex + 1}`} target="_blank" rel="noopener noreferrer">
+                    <button className="icon-button">
+                        <span className="epoch-section__next">
+                            <ArrowUp width={20} height={20} fill="red" />
+                        </span>
+                    </button>
+                </a>
             </div>
         </div>
     );
