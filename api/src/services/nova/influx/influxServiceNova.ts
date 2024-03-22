@@ -40,6 +40,8 @@ import {
     IInfluxDailyCache,
     IInfluxEpochAnalyticsCache,
     initializeEmptyDailyCache,
+    ManaBurnedInSlot,
+    ManaBurnedInSlotCache,
 } from "../../../models/influx/nova/IInfluxDbCache";
 import {
     IAccountActivityDailyInflux,
@@ -77,15 +79,16 @@ type EpochUpdate = ITimedEntry & {
     noPayload: number;
 };
 
-type ManaBurnedInSlot = ITimedEntry & {
-    slotIndex: number;
-    manaBurned: number;
-};
-
 /**
  * Epoch analyitics cache MAX size.
  */
 const EPOCH_CACHE_MAX = 20;
+
+/**
+ * Epoch analyitics cache MAX size.
+ */
+const MANA_BURNED_CACHE_MAX = 20;
+
 /**
  * The collect graph data interval cron expression.
  * Every hour at 59 min 55 sec
@@ -126,6 +129,11 @@ export class InfluxServiceNova extends InfluxDbClient {
     protected readonly _analyticsCache: IInfluxAnalyticsCache;
 
     /**
+     * The current influx mana burned in slot cache.
+     */
+    protected readonly _manaBurnedInSlotCache: ManaBurnedInSlotCache;
+
+    /**
      * The network in context for this client.
      */
     protected readonly _network: INetwork;
@@ -140,6 +148,7 @@ export class InfluxServiceNova extends InfluxDbClient {
         this._novatimeService = ServiceFactory.get<NovaTimeService>(`nova-time-${network.network}`);
         this._dailyCache = initializeEmptyDailyCache();
         this._epochCache = new Map();
+        this._manaBurnedInSlotCache = new Map();
         this._analyticsCache = {};
     }
 
@@ -264,6 +273,10 @@ export class InfluxServiceNova extends InfluxDbClient {
      * @param slotIndex - The slot index.
      */
     public async getManaBurnedBySlotIndex(slotIndex: number): Promise<ManaBurnedInSlot | null> {
+        if (this._manaBurnedInSlotCache.has(slotIndex)) {
+            return this._manaBurnedInSlotCache.get(slotIndex);
+        }
+
         const { from, to } = this._novatimeService.getSlotIndexToUnixTimeRange(slotIndex);
         const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
         const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
@@ -273,9 +286,12 @@ export class InfluxServiceNova extends InfluxDbClient {
         await this.queryInflux<ManaBurnedInSlot>(MANA_BURN_DAILY_QUERY.partial, fromNano, toNano)
             .then((results) => {
                 for (const update of results) {
-                    update.slotIndex = slotIndex;
+                    if (update.manaBurned !== undefined) {
+                        update.slotIndex = slotIndex;
+                        this.updateBurnedManaCache(update);
 
-                    manaBurnedResult = update;
+                        manaBurnedResult = update;
+                    }
                 }
             })
             .catch((e) => {
@@ -524,7 +540,34 @@ export class InfluxServiceNova extends InfluxDbClient {
                         lowestIndex = index;
                     }
 
-                    if (epochIndex < lowestIndex) {
+                    if (index < lowestIndex) {
+                        lowestIndex = index;
+                    }
+                }
+
+                logger.debug(`[InfluxNova] Deleting epoch index "${lowestIndex}" ("${this._network.network}")`);
+
+                this._epochCache.delete(lowestIndex);
+            }
+        }
+    }
+
+    private updateBurnedManaCache(update: ManaBurnedInSlot) {
+        if (update.slotIndex && !this._manaBurnedInSlotCache.has(update.slotIndex)) {
+            const { slotIndex } = update;
+
+            this._manaBurnedInSlotCache.set(slotIndex, update);
+
+            logger.debug(`[InfluxNova] Added slot index "${slotIndex}" to ManaBurned cache for "${this._network.network}"`);
+
+            if (this._manaBurnedInSlotCache.size > MANA_BURNED_CACHE_MAX) {
+                let lowestIndex: number;
+                for (const index of this._manaBurnedInSlotCache.keys()) {
+                    if (!lowestIndex) {
+                        lowestIndex = index;
+                    }
+
+                    if (index < lowestIndex) {
                         lowestIndex = index;
                     }
                 }

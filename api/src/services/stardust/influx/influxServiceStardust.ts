@@ -448,7 +448,7 @@ export class InfluxServiceStardust extends InfluxDbClient {
                         lowestIndex = index;
                     }
 
-                    if (milestoneIndex < lowestIndex) {
+                    if (index < lowestIndex) {
                         lowestIndex = index;
                     }
                 }
