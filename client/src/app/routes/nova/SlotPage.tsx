@@ -11,8 +11,8 @@ import { getSlotStatusFromLatestSlotCommitments, parseSlotIndexFromParams } from
 import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
 import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
 import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
-import "./SlotPage.scss";
 import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
+import "./SlotPage.scss";
 
 export default function SlotPage({
     match: {
@@ -65,7 +65,7 @@ export default function SlotPage({
                                 </div>
                             </div>
                             {dataRows.map((dataRow, index) => {
-                                if (dataRow.value || dataRow.truncatedId) {
+                                if (dataRow.value !== undefined || dataRow.truncatedId) {
                                     return <PageDataRow key={index} {...dataRow} />;
                                 }
                             })}
