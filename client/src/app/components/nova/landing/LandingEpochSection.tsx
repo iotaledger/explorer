@@ -10,6 +10,7 @@ import ArrowUp from "~assets/arrow_up.svg?react";
 import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import { clamp } from "~/helpers/clamp";
 import "./LandingEpochSection.scss";
 
 const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
@@ -38,7 +39,6 @@ const LandingEpochSection: React.FC = () => {
         const diffToEnd = unixEndTime.diff(moment());
         const duration = moment.duration(diffToEnd);
 
-        // Extract hours, minutes, and seconds from the duration
         const hours = Math.floor(duration.asHours());
         const minutes = duration.minutes();
         const seconds = duration.seconds();
@@ -69,7 +69,7 @@ const LandingEpochSection: React.FC = () => {
             subtitle: "Delegated in committee",
         },
         {
-            title: Math.min(Math.max(epochProgressPercent, 0), 100) + "%",
+            title: clamp(epochProgressPercent, 0, 100) + "%",
             subtitle: "Progress",
         },
     ];
