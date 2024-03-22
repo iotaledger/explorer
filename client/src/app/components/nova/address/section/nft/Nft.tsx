@@ -25,16 +25,25 @@ export interface NftProps {
      * The nft output.
      */
     nftOutput: NftOutput;
-}
 
-const Nft: React.FC<NftProps> = ({ nftOutput }) => {
+    /**
+     * The nft output id.
+     */
+    outputId: string;
+}
+/**
+ * The zeroed out id.
+ */
+const ZEROED_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+const Nft: React.FC<NftProps> = ({ nftOutput, outputId }) => {
     const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const [metadata, setMetadata] = useState<MetadataFeature | null>(null);
     const [issuerId, setIssuerId] = useState<string | null>(null);
+    const [nftId, setNftId] = useState<string>("");
+    const [nftBech32Address, setNftBech32Address] = useState<string>("");
     const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
-    const nftAddress = new NftAddress(nftOutput.nftId);
-    const nftBech32Address = Utils.addressToBech32(nftAddress, bech32Hrp);
-    const [isWhitelisted] = useTokenRegistryNftCheck(issuerId, nftOutput.nftId);
+    const [isWhitelisted] = useTokenRegistryNftCheck(issuerId, nftId ?? nftOutput.nftId);
     const [name, setName] = useState<string | null>();
     const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
@@ -56,6 +65,10 @@ const Nft: React.FC<NftProps> = ({ nftOutput }) => {
             if (metadata) {
                 setIssuerId(nftIssuerId);
             }
+            const nftId = nftOutput.nftId === ZEROED_ID ? Utils.computeNftId(outputId) : nftOutput.nftId;
+            setNftId(nftId);
+            const nftAddress = new NftAddress(nftId);
+            setNftBech32Address(Utils.addressToBech32(nftAddress, bech32Hrp));
         }
     }, [nftOutput]);
 
@@ -78,7 +91,7 @@ const Nft: React.FC<NftProps> = ({ nftOutput }) => {
             <div className="nft-card__metadata">
                 <Link to={`/${network}/addr/${nftBech32Address}`}>{nftImageContent}</Link>
                 <span className="nft-card__id">
-                    <TruncatedId id={nftOutput.nftId} link={`/${network}/addr/${nftBech32Address}`} />
+                    <TruncatedId id={nftId} link={`/${network}/addr/${nftBech32Address}`} />
                 </span>
             </div>
             {name && isWhitelisted && <span className="nft-card__name truncate">{name}</span>}
