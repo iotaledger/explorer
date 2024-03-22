@@ -60,11 +60,10 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
-    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails, manaInfo) : undefined;
+    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails, manaInfo, output.type === OutputType.Delegation) : undefined;
     const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
     const validatorAddress =
         output.type === OutputType.Delegation ? Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp) : "";
-
     const specialUnlockCondition =
         isSpecialCondition &&
         (output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
@@ -197,12 +196,9 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     )}
                 </React.Fragment>
             )}
-            {(output.type === OutputType.Basic ||
-                output.type === OutputType.Account ||
-                output.type === OutputType.Anchor ||
-                output.type === OutputType.Nft) &&
-                manaEntries &&
-                manaDetails?.totalMana && <KeyValueEntries isPreExpanded={true} {...manaEntries} />}
+            {output.type !== OutputType.Foundry && manaEntries && manaDetails?.totalMana && (
+                <KeyValueEntries isPreExpanded={true} {...manaEntries} />
+            )}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>

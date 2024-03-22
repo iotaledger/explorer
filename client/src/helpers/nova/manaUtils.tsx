@@ -36,38 +36,48 @@ export function buildManaDetailsForOutput(
     };
 }
 
-export function getManaKeyValueEntries(manaDetails: OutputManaDetails | null, manaInfo: BaseTokenResponse): IKeyValueEntries {
+export function getManaKeyValueEntries(
+    manaDetails: OutputManaDetails | null,
+    manaInfo: BaseTokenResponse,
+    showManaRewards: boolean = false,
+): IKeyValueEntries {
     const showDecayMana = manaDetails?.storedMana && manaDetails?.storedManaDecayed;
     const decay = showDecayMana ? Number(manaDetails?.storedMana ?? 0) - Number(manaDetails?.storedManaDecayed ?? 0) : undefined;
-    const renderStoredMana = (mana?: string | number | null): React.ReactNode => {
+
+    const renderMana = (mana?: string | number | null): React.ReactNode => {
         const [isFormatFull, setIsFormatFull] = React.useState(false);
         return (
             <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
-                {formatAmount(mana ?? "0", manaInfo, isFormatFull)}
+                {formatAmount(mana ?? 0, manaInfo, isFormatFull)}
             </span>
         );
     };
 
-    return {
+    const entries = {
         label: "Mana:",
         value: manaDetails?.totalMana,
         entries: [
             {
                 label: "Stored:",
-                value: renderStoredMana(manaDetails?.storedMana),
+                value: renderMana(manaDetails?.storedMana),
             },
             {
                 label: "Decay:",
-                value: renderStoredMana(String(decay)),
+                value: renderMana(decay),
             },
             {
                 label: "Potential:",
-                value: renderStoredMana(manaDetails?.potentialMana),
-            },
-            {
-                label: "Mana Rewards:",
-                value: renderStoredMana(manaDetails?.manaRewards),
+                value: renderMana(manaDetails?.potentialMana),
             },
         ],
     };
+
+    if (showManaRewards) {
+        entries.entries.push({
+            label: "Mana Rewards:",
+            value: renderMana(manaDetails?.manaRewards),
+        });
+    }
+
+    return entries;
 }
