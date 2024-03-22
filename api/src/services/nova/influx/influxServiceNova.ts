@@ -1,11 +1,15 @@
-import { InfluxDB } from "influx";
+/* eslint-disable import/no-unresolved */
+import { ProtocolParameters } from "@iota/sdk-nova";
+import { InfluxDB, toNanoDate } from "influx";
+import moment from "moment";
 import cron from "node-cron";
 import {
+    BLOCK_DAILY_QUERY,
+    OUTPUTS_DAILY_QUERY,
     ACCOUNT_ACTIVITY_DAILY_QUERY,
     ADDRESSES_WITH_BALANCE_DAILY_QUERY,
     ACCOUNT_ADDRESSES_WITH_BALANCE_TOTAL_QUERY,
     ANCHOR_ACTIVITY_DAILY_QUERY,
-    BLOCK_DAILY_QUERY,
     BLOCK_ISSUERS_DAILY_QUERY,
     DELEGATIONS_ACTIVITY_DAILY_QUERY,
     DELEGATION_ACTIVITY_DAILY_QUERY,
@@ -16,7 +20,6 @@ import {
     NATIVE_TOKENS_STAT_TOTAL_QUERY,
     NFT_ACTIVITY_DAILY_QUERY,
     NFT_STAT_TOTAL_QUERY,
-    OUTPUTS_DAILY_QUERY,
     STAKING_ACTIVITY_DAILY_QUERY,
     STORAGE_DEPOSIT_DAILY_QUERY,
     STORAGE_DEPOSIT_TOTAL_QUERY,
@@ -27,11 +30,19 @@ import {
     TRANSACTION_DAILY_QUERY,
     UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
     VALIDATORS_ACTIVITY_DAILY_QUERY,
+    EPOCH_STATS_QUERY_BY_EPOCH_INDEX,
     DELEGATORS_TOTAL_QUERY,
 } from "./influxQueries";
+import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
+import { IEpochAnalyticStats } from "../../../models/api/nova/stats/epoch/IEpochAnalyticStats";
 import { INetwork } from "../../../models/db/INetwork";
-import { IInfluxAnalyticsCache, IInfluxDailyCache, initializeEmptyDailyCache } from "../../../models/influx/nova/IInfluxDbCache";
+import {
+    IInfluxAnalyticsCache,
+    IInfluxDailyCache,
+    IInfluxEpochAnalyticsCache,
+    initializeEmptyDailyCache,
+} from "../../../models/influx/nova/IInfluxDbCache";
 import {
     IAccountActivityDailyInflux,
     IActiveAddressesDailyInflux,
@@ -57,8 +68,22 @@ import {
     IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { ITimedEntry } from "../../../models/influx/types";
-import { InfluxDbClient } from "../../influx/influxClient";
+import { epochIndexToUnixTimeRangeConverter, unixTimestampToEpochIndexConverter } from "../../../utils/nova/novaTimeUtils";
+import { InfluxDbClient, NANOSECONDS_IN_MILLISECOND } from "../../influx/influxClient";
+import { NodeInfoService } from "../nodeInfoService";
 
+type EpochUpdate = ITimedEntry & {
+    epochIndex: number;
+    taggedData: number;
+    candidacy: number;
+    transaction: number;
+    noPayload: number;
+};
+
+/**
+ * Epoch analyitics cache MAX size.
+ */
+const EPOCH_CACHE_MAX = 20;
 /**
  * The collect graph data interval cron expression.
  * Every hour at 59 min 55 sec
@@ -71,6 +96,12 @@ const COLLECT_GRAPHS_DATA_CRON = "55 59 * * * *";
  */
 const COLLECT_ANALYTICS_DATA_CRON = "55 58 * * * *";
 
+/*
+ * The collect analytics data interval cron expression.
+ * Every 10 minutes
+ */
+const COLLECT_EPOCH_ANALYTICS_DATA_CRON = "*/10 * * * *";
+
 export class InfluxServiceNova extends InfluxDbClient {
     /**
      * The InfluxDb Client.
@@ -81,6 +112,11 @@ export class InfluxServiceNova extends InfluxDbClient {
      * The current influx graphs cache instance.
      */
     protected readonly _dailyCache: IInfluxDailyCache;
+
+    /**
+     * The current influx epoch analytics cache instance.
+     */
+    protected readonly _epochCache: IInfluxEpochAnalyticsCache;
 
     /**
      * The current influx analytics cache instance.
@@ -95,6 +131,7 @@ export class InfluxServiceNova extends InfluxDbClient {
     constructor(network: INetwork) {
         super(network);
         this._dailyCache = initializeEmptyDailyCache();
+        this._epochCache = new Map();
         this._analyticsCache = {};
     }
 
@@ -206,6 +243,15 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._analyticsCache.delegatorsCount;
     }
 
+    public getEpochAnalyticStats(epochIndex: number): IEpochAnalyticStats | undefined {
+        return this._epochCache.get(epochIndex);
+    }
+
+    public async fetchAnalyticsForEpoch(epochIndex: number, parameters: ProtocolParameters) {
+        await this.collectEpochStatsByIndex(epochIndex, parameters);
+        return this._epochCache.get(epochIndex);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -214,6 +260,8 @@ export class InfluxServiceNova extends InfluxDbClient {
         void this.collectGraphsDaily();
         // eslint-disable-next-line no-void
         void this.collectAnalytics();
+        // eslint-disable-next-line no-void
+        void this.collectEpochStats();
 
         if (this._client) {
             cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
@@ -224,6 +272,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             cron.schedule(COLLECT_ANALYTICS_DATA_CRON, async () => {
                 // eslint-disable-next-line no-void
                 void this.collectAnalytics();
+            });
+
+            cron.schedule(COLLECT_EPOCH_ANALYTICS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectEpochStats();
             });
         }
     }
@@ -370,6 +423,88 @@ export class InfluxServiceNova extends InfluxDbClient {
             }
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing analytics for "${this._network.network}"! Cause: ${err}`);
+        }
+    }
+
+    /**
+     * Get the epoch analytics by index and set it in the cache.
+     * @param epochIndex - The epoch index.
+     * @param parameters - The protocol parameters information.
+     */
+    private async collectEpochStatsByIndex(epochIndex: number, parameters: ProtocolParameters) {
+        try {
+            const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(parameters);
+            const { from, to } = epochIndexToUnixTimeRange(epochIndex);
+            const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+            const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+
+            await this.queryInflux<EpochUpdate>(EPOCH_STATS_QUERY_BY_EPOCH_INDEX, fromNano, toNano)
+                .then((results) => {
+                    for (const update of results) {
+                        update.epochIndex = epochIndex;
+                        this.updateEpochCache(update);
+                    }
+                })
+                .catch((e) => {
+                    logger.warn(
+                        `[InfluxClient] Query ${EPOCH_STATS_QUERY_BY_EPOCH_INDEX} failed for (${this._network.network}). Cause ${e}`,
+                    );
+                });
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    /**
+     * Get the epoch analytics and set it in the cache.
+     */
+    private async collectEpochStats() {
+        try {
+            logger.debug(`[InfluxNova] Collecting epoch stats for "${this._network.network}"`);
+            const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${this._network.network}`);
+            const parameters = await nodeService.getProtocolParameters();
+            const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(parameters);
+            const epochIndex = unixTimestampToEpochIndex(moment().unix());
+            // eslint-disable-next-line no-void
+            void this.collectEpochStatsByIndex(epochIndex, parameters);
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    private updateEpochCache(update: EpochUpdate) {
+        if (update.epochIndex !== undefined && !this._epochCache.has(update.epochIndex)) {
+            const { epochIndex, transaction, candidacy, taggedData, noPayload } = update;
+            const blockCount = transaction + candidacy + taggedData + noPayload;
+            this._epochCache.set(epochIndex, {
+                epochIndex,
+                blockCount,
+                perPayloadType: {
+                    transaction,
+                    candidacy,
+                    taggedData,
+                    noPayload,
+                },
+            });
+
+            logger.debug(`[InfluxNova] Added epoch index "${epochIndex}" to cache for "${this._network.network}"`);
+
+            if (this._epochCache.size > EPOCH_CACHE_MAX) {
+                let lowestIndex: number;
+                for (const index of this._epochCache.keys()) {
+                    if (!lowestIndex) {
+                        lowestIndex = index;
+                    }
+
+                    if (epochIndex < lowestIndex) {
+                        lowestIndex = index;
+                    }
+                }
+
+                logger.debug(`[InfluxNova] Deleting epoch index "${lowestIndex}" ("${this._network.network}")`);
+
+                this._epochCache.delete(lowestIndex);
+            }
         }
     }
 }
