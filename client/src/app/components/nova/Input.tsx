@@ -2,14 +2,15 @@
 /* eslint-disable jsdoc/require-returns */
 import { Utils } from "@iota/sdk-wasm-nova/web";
 import classNames from "classnames";
-import React, { useState } from "react";
-import { useHistory, Link } from "react-router-dom";
-import Bech32Address from "../nova/address/Bech32Address";
-import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
-import OutputView from "./OutputView";
+import React, { useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
+import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { IInput } from "~models/api/nova/IInput";
+import { IPreExpandedConfig } from "~models/components";
+import Bech32Address from "../nova/address/Bech32Address";
+import OutputView from "./OutputView";
 
 interface InputProps {
     /**
@@ -20,16 +21,24 @@ interface InputProps {
      * The network in context.
      */
     readonly network: string;
+    /**
+     * Should the input be pre-expanded.
+     */
+    readonly preExpandedConfig?: IPreExpandedConfig;
 }
 
 /**
  * Component which will display an Input on stardust.
  */
-const Input: React.FC<InputProps> = ({ input, network }) => {
+const Input: React.FC<InputProps> = ({ input, network, preExpandedConfig }) => {
     const history = useHistory();
     const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+
+    useEffect(() => {
+        setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
+    }, [preExpandedConfig]);
 
     const fallbackInputView = (
         <React.Fragment>
@@ -74,7 +83,11 @@ const Input: React.FC<InputProps> = ({ input, network }) => {
 
     const outputId = Utils.computeOutputId(input.transactionId, input.transactionInputIndex);
 
-    return input.output ? <OutputView outputId={outputId} output={input.output.output} showCopyAmount={true} /> : fallbackInputView;
+    return input.output ? (
+        <OutputView outputId={outputId} output={input.output.output} showCopyAmount={true} preExpandedConfig={preExpandedConfig} />
+    ) : (
+        fallbackInputView
+    );
 };
 
 export default Input;

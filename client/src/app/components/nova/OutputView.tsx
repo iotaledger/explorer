@@ -1,48 +1,49 @@
-import React, { useState } from "react";
-import DropdownIcon from "~assets/dropdown-arrow.svg?react";
-import classNames from "classnames";
 import {
-    Output,
-    OutputType,
-    CommonOutput,
+    AccountAddress,
     AccountOutput,
     AnchorOutput,
-    FoundryOutput,
-    NftOutput,
-    TokenSchemeType,
-    SimpleTokenScheme,
+    CommonOutput,
     DelegationOutput,
-    Utils,
-    AccountAddress,
+    ExpirationUnlockCondition,
+    FoundryOutput,
     NftAddress,
+    NftOutput,
+    Output,
+    OutputType,
+    SimpleTokenScheme,
+    StorageDepositReturnUnlockCondition,
+    TimelockUnlockCondition,
+    TokenSchemeType,
     UnlockCondition,
     UnlockConditionType,
-    StorageDepositReturnUnlockCondition,
-    ExpirationUnlockCondition,
-    TimelockUnlockCondition,
+    Utils,
 } from "@iota/sdk-wasm-nova/web";
-import UnlockConditionView from "./UnlockConditionView";
-import CopyButton from "../CopyButton";
-import { Link } from "react-router-dom";
-import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
-import FeatureView from "./FeatureView";
-import TruncatedId from "../stardust/TruncatedId";
-import { HexHelper } from "~/helpers/stardust/hexHelper";
 import bigInt from "big-integer";
-import { OutputManaDetails, getManaKeyValueEntries } from "~/helpers/nova/manaUtils";
-import KeyValueEntries from "./KeyValueEntries";
-import { hasSpecialCondition, isOutputExpired, isOutputTimeLocked } from "~/helpers/nova/outputUtils";
-import Tooltip from "../Tooltip";
-import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
+import classNames from "classnames";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { DateHelper } from "~/helpers/dateHelper";
+import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
+import { OutputManaDetails, getManaKeyValueEntries } from "~/helpers/nova/manaUtils";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { hasSpecialCondition, isOutputExpired, isOutputTimeLocked } from "~/helpers/nova/outputUtils";
+import { HexHelper } from "~/helpers/stardust/hexHelper";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import DropdownIcon from "~assets/dropdown-arrow.svg?react";
+import { IPreExpandedConfig } from "~models/components";
+import CopyButton from "../CopyButton";
+import Tooltip from "../Tooltip";
+import TruncatedId from "../stardust/TruncatedId";
+import FeatureView from "./FeatureView";
+import KeyValueEntries from "./KeyValueEntries";
 import "./OutputView.scss";
+import UnlockConditionView from "./UnlockConditionView";
 
 interface OutputViewProps {
     outputId: string;
     output: Output;
     showCopyAmount: boolean;
-    isPreExpanded?: boolean;
+    preExpandedConfig?: IPreExpandedConfig;
     isLinksDisabled?: boolean;
     manaDetails?: OutputManaDetails | null;
 }
@@ -50,9 +51,9 @@ interface OutputViewProps {
 export const EPOCH_HINT =
     "When the end epoch is set to 0, it indicates that no specific end epoch has been defined for this delegation output.";
 
-const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, isPreExpanded, isLinksDisabled, manaDetails }) => {
+const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, preExpandedConfig, isLinksDisabled, manaDetails }) => {
     const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const [isExpanded, setIsExpanded] = useState(isPreExpanded ?? false);
+    const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network, protocolInfo, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
@@ -64,6 +65,11 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
     const validatorAddress =
         output.type === OutputType.Delegation ? Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp) : "";
+
+    useEffect(() => {
+        setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
+    }, [preExpandedConfig]);
+
     const specialUnlockCondition =
         isSpecialCondition &&
         (output as CommonOutput).unlockConditions.map((unlockCondition, idx) => {
@@ -255,29 +261,39 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             {isExpanded && (
                 <div className="output padding-l-t left-border">
                     {topLevelFields}
-                    {(output as CommonOutput).unlockConditions?.map((unlockCondition, idx) => (
-                        <UnlockConditionView key={idx} unlockCondition={unlockCondition} isPreExpanded={true} />
-                    ))}
+                    {(output as CommonOutput).unlockConditions?.map((unlockCondition, idx) => {
+                        const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.unlockConditions?.[idx] ?? false;
+                        return <UnlockConditionView key={idx} unlockCondition={unlockCondition} isPreExpanded={isPreExpanded} />;
+                    })}
                     {output.type !== OutputType.Delegation &&
-                        (output as CommonOutput).features?.map((feature, idx) => (
-                            <FeatureView key={idx} feature={feature} isPreExpanded={isPreExpanded} isImmutable={false} />
-                        ))}
+                        (output as CommonOutput).features?.map((feature, idx) => {
+                            const isPreExpanded = preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.features?.[idx] ?? false;
+                            return <FeatureView key={idx} feature={feature} isPreExpanded={isPreExpanded} isImmutable={false} />;
+                        })}
                     {output.type === OutputType.Account &&
-                        (output as AccountOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                        ))}
+                        (output as AccountOutput).immutableFeatures?.map((immutableFeature, idx) => {
+                            const isPreExpanded =
+                                preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                            return <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />;
+                        })}
                     {output.type === OutputType.Anchor &&
-                        (output as AnchorOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                        ))}
+                        (output as AnchorOutput).immutableFeatures?.map((immutableFeature, idx) => {
+                            const isPreExpanded =
+                                preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                            return <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />;
+                        })}
                     {output.type === OutputType.Nft &&
-                        (output as NftOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                        ))}
+                        (output as NftOutput).immutableFeatures?.map((immutableFeature, idx) => {
+                            const isPreExpanded =
+                                preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                            return <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />;
+                        })}
                     {output.type === OutputType.Foundry &&
-                        (output as FoundryOutput).immutableFeatures?.map((immutableFeature, idx) => (
-                            <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />
-                        ))}
+                        (output as FoundryOutput).immutableFeatures?.map((immutableFeature, idx) => {
+                            const isPreExpanded =
+                                preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.immutableFeatures?.[idx] ?? false;
+                            return <FeatureView key={idx} feature={immutableFeature} isPreExpanded={isPreExpanded} isImmutable={true} />;
+                        })}
                 </div>
             )}
         </div>
