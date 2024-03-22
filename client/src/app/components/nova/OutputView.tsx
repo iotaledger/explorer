@@ -230,19 +230,19 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                         />
                     </div>
                     <div className="card--label">End epoch:</div>
-                    <div className="card--value row">
+                    <div className="card--value row epoch-info">
                         <TruncatedId
                             id={(output as DelegationOutput).endEpoch.toString()}
                             link={
-                                isLinksDisabled || (output as DelegationOutput).startEpoch === 0
+                                isLinksDisabled || (output as DelegationOutput).endEpoch === 0
                                     ? undefined
                                     : `/${network}/epoch/${(output as DelegationOutput).endEpoch}`
                             }
                             showCopyButton={false}
                         />
-                        {(output as DelegationOutput).startEpoch === 0 && (
+                        {(output as DelegationOutput).endEpoch === 0 && (
                             <Tooltip tooltipContent={EPOCH_HINT}>
-                                <div className="modal--icon margin-t-2">
+                                <div className="modal--icon">
                                     <span className="material-icons">info</span>
                                 </div>
                             </Tooltip>

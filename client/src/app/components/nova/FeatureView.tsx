@@ -113,7 +113,7 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                                 />
                             </div>
                             <div className="card--label">End epoch:</div>
-                            <div className="card--value row">
+                            <div className="card--value row epoch-info epoch-info--above">
                                 <TruncatedId
                                     id={String((feature as StakingFeature).endEpoch)}
                                     link={
