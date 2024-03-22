@@ -1,5 +1,5 @@
 import moment from "moment";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
 import { useValidatorStats } from "~/helpers/nova/hooks/useValidatorStats";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
@@ -12,13 +12,49 @@ import StatDisplay from "../../StatDisplay";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./LandingEpochSection.scss";
 
-const EPOCH_TIME_FORMAT = "DD MMM YYYY";
+const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
 
 const LandingEpochSection: React.FC = () => {
+    const [selectedEpoch, setSelectedEpoch] = useState<number | undefined>(undefined);
+    const [initialEpoch, setInitialEpoch] = useState<number | null>(null);
     const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
+    const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(selectedEpoch);
     const { validatorStats } = useValidatorStats();
     const { committeeValidators, committeeValidatorsPoolStake, totalCommitteeStake } = validatorStats ?? {};
+
+    useEffect(() => {
+        if (selectedEpoch === undefined && initialEpoch === null) {
+            setInitialEpoch(epochIndex);
+        }
+    }, [epochIndex]);
+
+    useEffect(() => {
+        if (selectedEpoch === undefined && initialEpoch === null) {
+            setInitialEpoch(epochIndex);
+        }
+
+        if (epochIndex) {
+            setSelectedEpoch(epochIndex);
+        }
+    }, [epochIndex]);
+
+    const onNextEpochClick = useCallback(() => {
+        if (epochIndex) {
+            setSelectedEpoch(epochIndex + 1);
+        }
+    }, [epochIndex]);
+
+    const onPreviousEpochClick = useCallback(() => {
+        if (epochIndex) {
+            setSelectedEpoch(epochIndex - 1);
+        }
+    }, [epochIndex]);
+
+    const onCurrentEpochClick = useCallback(() => {
+        if (initialEpoch) {
+            setSelectedEpoch(initialEpoch);
+        }
+    }, [initialEpoch]);
 
     const commiiteeDelegatorStake =
         committeeValidatorsPoolStake === undefined || totalCommitteeStake === undefined
@@ -30,17 +66,29 @@ const LandingEpochSection: React.FC = () => {
     }
 
     let epochTimeRemaining = "-";
-    let epochFrom = "-";
-    let epochTo = "-";
+    let epochFrom: string = "-";
+    let epochTo: string = "-";
+
+    function getTimeRemaining(endTime: number) {
+        const unixEndTime = moment.unix(endTime);
+        const diffToEnd = unixEndTime.diff(moment());
+        const duration = moment.duration(diffToEnd);
+
+        // Extract hours, minutes, and seconds from the duration
+        const hours = Math.floor(duration.asHours());
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
+
+        const timeRemaining = `${hours}h : ${minutes}m : ${seconds}s`;
+        return timeRemaining;
+    }
 
     if (epochUnixTimeRange && registrationTime) {
         const epochStartTime = moment.unix(epochUnixTimeRange.from);
         const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
-        epochFrom = epochStartTime.format(EPOCH_TIME_FORMAT);
-        epochTo = epochEndTime.format(EPOCH_TIME_FORMAT);
-
-        const diffToEpochEnd = epochEndTime.diff(moment());
-        epochTimeRemaining = moment(diffToEpochEnd).format("H:mm:ss");
+        epochFrom = epochStartTime.format(EPOCH_DATE_FORMAT);
+        epochTo = epochEndTime.format(EPOCH_DATE_FORMAT);
+        epochTimeRemaining = getTimeRemaining(epochUnixTimeRange.to - 1);
     }
 
     const stats: IStatDisplay[] = [
@@ -57,7 +105,7 @@ const LandingEpochSection: React.FC = () => {
             subtitle: "Delegated in committee",
         },
         {
-            title: epochProgressPercent + "%",
+            title: Math.min(Math.max(epochProgressPercent, 0), 100) + "%",
             subtitle: "Progress",
         },
     ];
@@ -68,9 +116,9 @@ const LandingEpochSection: React.FC = () => {
                 <h3 className="epoch-section__header">Current Epoch: {epochIndex}</h3>
                 <div className="epoch-progress">
                     <div className="epoch-duration">
-                        <p>{epochFrom}</p>
+                        <div className="epoch-block">{epochFrom}</div>
                         <RightHalfArrow id="to-arrow" />
-                        <p>{epochTo}</p>
+                        <div className="epoch-block">{epochTo}</div>
                     </div>
 
                     <div className="time-remaining">
@@ -91,17 +139,19 @@ const LandingEpochSection: React.FC = () => {
             </div>
 
             <div className="epoch-section__controls">
-                <button className="icon-button">
+                <button className="icon-button" onClick={onPreviousEpochClick}>
                     <span className="epoch-section__previous">
                         <ArrowUp width={20} height={20} />
                     </span>
                 </button>
 
                 <div className="epoch-section__center-buttons">
-                    <button className="nova">Current Epoch</button>
+                    <button className="nova" onClick={onCurrentEpochClick}>
+                        Current Epoch
+                    </button>
                 </div>
 
-                <button className="icon-button">
+                <button className="icon-button" onClick={onNextEpochClick}>
                     <span className="epoch-section__next">
                         <ArrowUp width={20} height={20} fill="red" />
                     </span>
