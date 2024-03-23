@@ -1,7 +1,14 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Client, OutputWithMetadataResponse } from "@iota/sdk-nova";
+import {
+    Client,
+    HexEncodedString,
+    OutputWithMetadataResponse,
+    OutputsResponse,
+    BasicOutputQueryParameters,
+    NftOutputQueryParameters,
+} from "@iota/sdk-nova";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { IFoundriesResponse } from "../../models/api/nova/foundry/IFoundriesResponse";
@@ -21,8 +28,10 @@ import { IOutputDetailsResponse } from "../../models/api/nova/IOutputDetailsResp
 import { IRewardsResponse } from "../../models/api/nova/IRewardsResponse";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
 import { ISlotResponse } from "../../models/api/nova/ISlotResponse";
+import { ITaggedOutputsResponse } from "../../models/api/nova/ITaggedOutputsResponse";
 import { ITransactionDetailsResponse } from "../../models/api/nova/ITransactionDetailsResponse";
 import { ITransactionMetadataResponse } from "../../models/api/nova/ITransactionMetadataResponse";
+import { IOutputsResponse } from "../../models/api/nova/outputs/IOutputsResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { HexHelper } from "../../utils/hexHelper";
 import { SearchExecutor } from "../../utils/nova/searchExecutor";
@@ -464,6 +473,65 @@ export class NovaApiService {
         } catch {
             return { message: "Validator details not found" };
         }
+    }
+
+    /**
+     * Get the basic output Ids with specific tag feature.
+     * @param encodedTag The tag hex.
+     * @param pageSize The page size.
+     * @param cursor The cursor for pagination.
+     * @returns The basic outputs response.
+     */
+    public async taggedBasicOutputs(
+        encodedTag: HexEncodedString,
+        pageSize: number,
+        cursor?: string,
+    ): Promise<IOutputsResponse | undefined> {
+        try {
+            const params: BasicOutputQueryParameters = { tag: encodedTag, pageSize, cursor: cursor ?? "" };
+            const basicOutputIdsResponse: OutputsResponse = await this.client.basicOutputIds(params);
+
+            if (basicOutputIdsResponse?.items.length > 0) {
+                return { outputs: basicOutputIdsResponse };
+            }
+        } catch {}
+
+        return { error: `Basic outputs not found with given tag ${encodedTag}` };
+    }
+
+    /**
+     * Get the nft output Ids with specific tag feature.
+     * @param encodedTag The tag hex.
+     * @param pageSize The page size.
+     * @param cursor The cursor for pagination.
+     * @returns The nft outputs response.
+     */
+    public async taggedNftOutputs(encodedTag: HexEncodedString, pageSize: number, cursor?: string): Promise<IOutputsResponse | undefined> {
+        try {
+            const params: NftOutputQueryParameters = { tag: encodedTag, pageSize, cursor: cursor ?? "" };
+            const nftOutputIdsResponse: OutputsResponse = await this.client.nftOutputIds(params);
+
+            if (nftOutputIdsResponse?.items.length > 0) {
+                return { outputs: nftOutputIdsResponse };
+            }
+        } catch {}
+
+        return { error: `Nft outputs not found with given tag ${encodedTag}` };
+    }
+
+    /**
+     * Get the output Ids (basic/nft) with specific tag feature.
+     * @param tag The tag hex.
+     * @returns .
+     */
+    public async taggedOutputs(tag: HexEncodedString): Promise<ITaggedOutputsResponse | undefined> {
+        const basicOutputs = await this.taggedBasicOutputs(tag, 10);
+        const nftOutputs = await this.taggedNftOutputs(tag, 10);
+
+        return {
+            basicOutputs,
+            nftOutputs,
+        };
     }
 
     /**
