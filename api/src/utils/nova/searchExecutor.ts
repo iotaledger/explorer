@@ -142,6 +142,22 @@ export class SearchExecutor {
             );
         }
 
+        if (searchQuery.tag) {
+            promises.push(
+                this.executeQuery(
+                    this.apiService.taggedOutputs(searchQuery.tag),
+                    (response) => {
+                        if (!response.basicOutputs.error || !response.nftOutputs.error) {
+                            promisesResult = {
+                                taggedOutputs: response,
+                            };
+                        }
+                    },
+                    "Tagged details fetch failed",
+                ),
+            );
+        }
+
         await Promise.any(promises).catch((_) => {});
 
         if (promisesResult !== null) {
