@@ -1,6 +1,7 @@
 import { Block, OutputWithMetadataResponse } from "@iota/sdk-wasm-nova/web";
 import { IResponse } from "./IResponse";
 import { IAddressDetails } from "./IAddressDetails";
+import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -62,4 +63,9 @@ export interface ISearchResponse extends IResponse {
      * Transaction included block.
      */
     transactionBlock?: Block;
+
+    /**
+     * Basic and/or Nft tagged output ids.
+     */
+    taggedOutputs?: ITaggedOutputsResponse;
 }
