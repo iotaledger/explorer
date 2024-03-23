@@ -10,11 +10,11 @@ import { useTangleStore, VivagraphParams } from "~features/visualizer-vivagraph/
 import { getBlockParents, hexToNodeColor } from "~features/visualizer-vivagraph/lib/helpers";
 import {
     MAX_VISIBLE_BLOCKS,
-    EDGE_COLOR_CONFIRMING,
+    EDGE_COLOR_AFTER,
     EDGE_COLOR_DARK,
     EDGE_COLOR_LIGHT,
     SEARCH_RESULT_COLOR,
-    EDGE_COLOR_CONFIRMED_BY,
+    EDGE_COLOR_BEFORE,
 } from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
 import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
@@ -68,8 +68,8 @@ export const useFeed = (network: string) => {
                 getNodeConnections(selectedNodeId);
 
             highlightNodes([selectedNodeId], [], SEARCH_RESULT_COLOR);
-            highlightNodes(highlightedNodesAfter, highlightedLinksAfter, undefined, EDGE_COLOR_CONFIRMING);
-            highlightNodes(highlightedNodesBefore, highlightedLinksBefore, undefined, EDGE_COLOR_CONFIRMED_BY);
+            highlightNodes(highlightedNodesAfter, highlightedLinksAfter, undefined, EDGE_COLOR_AFTER);
+            highlightNodes(highlightedNodesBefore, highlightedLinksBefore, undefined, EDGE_COLOR_BEFORE);
         }
     }
 
