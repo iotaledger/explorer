@@ -44,12 +44,6 @@
       "~features/*": [
         "src/features/*"
       ],
-      "~hooks/*": [
-        "src/helpers/hooks/*"
-      ],
-      "~background/*": [
-        "src/assets/background/*"
-      ]
     }
   },
   "include": [
