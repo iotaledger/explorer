@@ -7,6 +7,7 @@ import { INetwork } from "~models/config/INetwork";
 import { useBlockMetadata } from "~/helpers/nova/hooks/useBlockMetadata";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import "./KeyPanel.scss";
+import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
 
 export const SelectedFeedInfo = ({
     network,
@@ -17,9 +18,12 @@ export const SelectedFeedInfo = ({
     readonly network: string;
     readonly selectedFeedItem: IFeedBlockData;
 }) => {
+    const setSelectedNode = useTangleStore((state) => state.setSelectedNode);
     const [selectedBlockMetadata, isMetadataLoading] = useBlockMetadata(network, selectedFeedItem.blockId);
 
-    const onClose = useCallback(() => {}, []);
+    const onClose = useCallback(() => {
+        setSelectedNode(null);
+    }, []);
 
     return (
         <div className="info-panel card padding-m">
