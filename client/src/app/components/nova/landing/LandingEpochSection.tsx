@@ -11,6 +11,7 @@ import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import { clamp } from "~/helpers/clamp";
+import { Link } from "react-router-dom";
 import "./LandingEpochSection.scss";
 
 const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
@@ -103,27 +104,27 @@ const LandingEpochSection: React.FC = () => {
             </div>
 
             <div className="epoch-section__controls">
-                <a href={epochIndex > 0 ? `/${network}/epoch/${epochIndex - 1}` : undefined} target="_blank" rel="noopener noreferrer">
+                <Link to={epochIndex > 0 ? `/${network}/epoch/${epochIndex - 1}` : ""}>
                     <button className="icon-button" disabled={epochIndex === 0}>
                         <span className="epoch-section__previous">
                             <ArrowUp width={20} height={20} />
                         </span>
                     </button>
-                </a>
+                </Link>
 
                 <div className="epoch-section__center-buttons">
-                    <a href={`/${network}/epoch/${epochIndex}`} target="_blank" rel="noopener noreferrer">
+                    <Link to={`/${network}/epoch/${epochIndex}`}>
                         <button className="nova">Current Epoch</button>
-                    </a>
+                    </Link>
                 </div>
 
-                <a href={`/${network}/epoch/${epochIndex + 1}`} target="_blank" rel="noopener noreferrer">
+                <Link to={`/${network}/epoch/${epochIndex + 1}`}>
                     <button className="icon-button">
                         <span className="epoch-section__next">
                             <ArrowUp width={20} height={20} fill="red" />
                         </span>
                     </button>
-                </a>
+                </Link>
             </div>
         </div>
     );
