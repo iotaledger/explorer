@@ -3,6 +3,7 @@
 import { Block, OutputWithMetadataResponse } from "@iota/sdk-nova";
 import { IAddressDetails } from "./IAddressDetails";
 import { IResponse } from "./IResponse";
+import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -49,4 +50,9 @@ export interface ISearchResponse extends IResponse {
      * A slot index.
      */
     slotIndex?: string;
+
+    /**
+     * Basic and/or Nft tagged output ids.
+     */
+    taggedOutputs?: ITaggedOutputsResponse;
 }

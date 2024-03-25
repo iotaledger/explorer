@@ -23,6 +23,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2

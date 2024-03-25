@@ -60,7 +60,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     setState((prevState) => ({
                         ...prevState,
                         completion: response?.error ? "invalid" : "notFound",
-                        invalidError: response?.error ?? "",
+                        invalidError: response?.error ?? response?.message ?? "",
                         status: "",
                         statusBusy: false,
                     }));
@@ -113,6 +113,12 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.slotIndex) {
                         route = "slot";
                         routeParam = response.slotIndex.toString();
+                    } else if (response.taggedOutputs) {
+                        route = "outputs";
+                        redirectState = {
+                            outputIds: response.taggedOutputs,
+                            tag: query,
+                        };
                     }
 
                     const getEncodedSearch = () => {
