@@ -319,6 +319,12 @@ export const routes: IRoute[] = [
         sign: true,
     },
     {
+        path: "/nova/output/tagged/:network/:tag/:outputType",
+        method: "get",
+        folder: "nova/output/tagged",
+        func: "get",
+    },
+    {
         path: "/nova/epoch/stats/:network/:epochIndex",
         method: "get",
         folder: "nova/epoch/influx",

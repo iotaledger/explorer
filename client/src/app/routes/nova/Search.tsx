@@ -56,15 +56,7 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     network,
                     query: queryTerm,
                 });
-                if (!response || response?.error) {
-                    setState((prevState) => ({
-                        ...prevState,
-                        completion: response?.error ? "invalid" : "notFound",
-                        invalidError: response?.error ?? "",
-                        status: "",
-                        statusBusy: false,
-                    }));
-                } else if (Object.keys(response).length > 0) {
+                if (response && Object.keys(response).length > 0) {
                     const routeSearch = new Map<string, string>();
                     let route = "";
                     let routeParam = query;
@@ -110,6 +102,12 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.foundryId) {
                         route = "foundry";
                         routeParam = response.foundryId;
+                    } else if (response.taggedOutputs) {
+                        route = "outputs";
+                        redirectState = {
+                            outputIds: response.taggedOutputs,
+                            tag: query,
+                        };
                     }
 
                     const getEncodedSearch = () => {
@@ -132,6 +130,14 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                         redirect: `/${network}/${route}/${routeParam}`,
                         search: getEncodedSearch(),
                         redirectState,
+                    }));
+                } else {
+                    setState((prevState) => ({
+                        ...prevState,
+                        completion: response?.error ? "invalid" : "notFound",
+                        invalidError: response?.error ?? "",
+                        status: "",
+                        statusBusy: false,
                     }));
                 }
             }, 0);
