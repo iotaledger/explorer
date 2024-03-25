@@ -1,12 +1,14 @@
 import { SignedTransactionPayload as ISignedTransactionPayload, Utils } from "@iota/sdk-wasm-nova/web";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "~/app/components/Modal";
-import Unlocks from "~/app/components/nova/Unlocks";
-import OutputView from "~/app/components/nova/OutputView";
-import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
-import transactionPayloadMessage from "~assets/modals/stardust/block/transaction-payload.json";
-import { IInput } from "~/models/api/nova/IInput";
 import Input from "~/app/components/nova/Input";
+import OutputView from "~/app/components/nova/OutputView";
+import Unlocks from "~/app/components/nova/Unlocks";
+import { IInput } from "~/models/api/nova/IInput";
+import transactionPayloadMessage from "~assets/modals/stardust/block/transaction-payload.json";
+import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
+import { getInputsPreExpandedConfig, getOutputsPreExpandedConfig } from "~helpers/nova/preExpandedConfig";
+import { IPreExpandedConfig } from "~models/components";
 
 interface SignedTransactionPayloadProps {
     readonly payload: ISignedTransactionPayload;
@@ -16,8 +18,19 @@ interface SignedTransactionPayloadProps {
 
 const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ payload, inputs, header }) => {
     const { outputs } = payload.transaction;
-    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const { bech32Hrp, name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const [inputsPreExpandedConfig, setInputsPreExpandedConfig] = useState<IPreExpandedConfig[]>([]);
+
     const transactionId = Utils.transactionId(payload);
+
+    const outputsPreExpandedConfig = getOutputsPreExpandedConfig(outputs);
+
+    useEffect(() => {
+        if (bech32Hrp) {
+            const inputsPreExpandedConfig = getInputsPreExpandedConfig(inputs, payload.unlocks, bech32Hrp);
+            setInputsPreExpandedConfig(inputsPreExpandedConfig);
+        }
+    }, [bech32Hrp]);
 
     return (
         <div className="transaction-payload">
@@ -38,7 +51,7 @@ const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ pay
                     </div>
                     <div className="transaction-payload_outputs card--content">
                         {inputs.map((input, idx) => (
-                            <Input key={idx} network={network} input={input} />
+                            <Input key={idx} network={network} input={input} preExpandedConfig={inputsPreExpandedConfig[idx]} />
                         ))}
                         <Unlocks unlocks={payload.unlocks} />
                     </div>
@@ -57,6 +70,7 @@ const SignedTransactionPayload: React.FC<SignedTransactionPayloadProps> = ({ pay
                                 outputId={Utils.computeOutputId(transactionId, idx)}
                                 output={output}
                                 showCopyAmount={true}
+                                preExpandedConfig={outputsPreExpandedConfig[idx]}
                             />
                         ))}
                     </div>

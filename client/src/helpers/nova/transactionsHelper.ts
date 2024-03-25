@@ -101,7 +101,6 @@ export class TransactionsHelper {
 
             // Inputs
             for (let i = 0; i < transaction.inputs.length; i++) {
-                let outputDetails;
                 let amount;
                 let isGenesis = false;
                 const address = unlockAddresses[i];
@@ -117,11 +116,6 @@ export class TransactionsHelper {
                     const details = response.output;
 
                     if (!response.error && details?.output && details?.metadata) {
-                        outputDetails = {
-                            output: details.output,
-                            metadata: details.metadata,
-                            outputIdProof: details.outputIdProof,
-                        };
                         amount = Number(details.output.amount);
                     }
 
@@ -132,7 +126,7 @@ export class TransactionsHelper {
                         amount,
                         isGenesis,
                         outputId,
-                        output: outputDetails,
+                        output: details,
                         address,
                     });
                 }

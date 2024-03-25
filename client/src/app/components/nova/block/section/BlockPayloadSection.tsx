@@ -18,10 +18,10 @@ interface BlockPayloadSectionProps {
     readonly transferTotal?: number;
 }
 
-const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs, outputs, transferTotal }) => {
+const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs, transferTotal }) => {
     const payload = (block.body as BasicBlockBody).payload;
 
-    if (payload?.type === PayloadType.SignedTransaction && inputs && outputs && transferTotal !== undefined) {
+    if (payload?.type === PayloadType.SignedTransaction && inputs && transferTotal !== undefined) {
         const transactionPayload = payload as ISignedTransactionPayload;
         const transaction = transactionPayload.transaction;
 
@@ -50,7 +50,6 @@ const BlockPayloadSection: React.FC<BlockPayloadSectionProps> = ({ block, inputs
 
 BlockPayloadSection.defaultProps = {
     inputs: undefined,
-    outputs: undefined,
     transferTotal: undefined,
 };
 

@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { VisualizerRouteProps } from "~app/routes/VisualizerRouteProps";
 import { useGetThemeMode } from "~/helpers/hooks/useGetThemeMode";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
 import { Wrapper } from "./components/Wrapper";
 import { useFeed } from "~features/visualizer-vivagraph/hooks/useFeed";
+import { useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
+import { GraphContext, GraphProvider } from "./GraphContext";
 import "./Visualizer.scss";
 
 const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = ({
@@ -12,25 +14,32 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
         params: { network },
     },
 }) => {
+    const selectedFeedItem = useTangleStore((state) => state.selectedNode);
     const [networkConfig] = useNetworkConfig(network);
     const themeMode = useGetThemeMode();
-    const { graphElement, renderer } = useFeed(network);
-    const [isPlaying, setIsPlaying] = React.useState<boolean>(true);
 
     return (
-        <Wrapper
-            key={network}
-            network={network}
-            networkConfig={networkConfig}
-            themeMode={themeMode}
-            isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
-            selectedFeedItem={null}
-            renderer={renderer}
-        >
-            <div className="viva" onClick={() => {}} ref={graphElement} />
-        </Wrapper>
+        <GraphProvider>
+            <Wrapper
+                key={network}
+                network={network}
+                networkConfig={networkConfig}
+                themeMode={themeMode}
+                selectedFeedItem={selectedFeedItem}
+            >
+                <Vivagraph network={network} />
+            </Wrapper>
+        </GraphProvider>
     );
+};
+
+const Vivagraph = ({ network }: { network: string }) => {
+    const graphContext = useContext(GraphContext);
+    useFeed(network);
+
+    const { graphElement } = graphContext;
+
+    return <div className="viva" ref={graphElement} />;
 };
 
 export default VisualizerInstance;
