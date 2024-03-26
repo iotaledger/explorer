@@ -55,6 +55,9 @@ import { ITaggedOutputsRequest } from "~/models/api/nova/ITaggedOutputsRequest";
 import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats";
 import { IEpochAnalyticStatsRequest } from "~/models/api/nova/stats/IEpochAnalyticStatsRequest";
 import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsResponse";
+import { IDelegationByValidatorResponse } from "~/models/api/nova/IDelegationByValidatorResponse";
+import { ISlotManaBurnedRequest } from "~/models/api/nova/stats/ISlotManaBurnedRequest";
+import { ISlotManaBurnedResponse } from "~/models/api/nova/stats/ISlotManaBurnedResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -211,6 +214,18 @@ export class NovaApiClient extends ApiClient {
     }
 
     /**
+     * Get the delegation outputs details of an address.
+     * @param request The Address Delegation outputs request.
+     * @returns The Address outputs response
+     */
+    public async delegationOutputsByValidator(request: IAddressDetailsRequest): Promise<IDelegationByValidatorResponse> {
+        return this.callApi<unknown, IDelegationByValidatorResponse>(
+            `nova/output/delegation/by-validator/${request.network}/${request.address}`,
+            "get",
+        );
+    }
+
+    /**
      * Get the associated outputs.
      * @param request The request to send.
      * @returns The response from the request.
@@ -313,6 +328,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async epochStats(request: IEpochAnalyticStatsRequest): Promise<IEpochAnalyticStats> {
         return this.callApi<unknown, IEpochAnalyticStats>(`nova/epoch/stats/${request.network}/${request.epochIndex}`, "get");
+    }
+
+    /**
+     * Get the mana burned for slot.
+     * @param request The mana burned request.
+     * @returns The epoch stats response.
+     */
+    public async getManaBurnedForSlot(request: ISlotManaBurnedRequest): Promise<ISlotManaBurnedResponse> {
+        return this.callApi<unknown, ISlotManaBurnedResponse>(`nova/slot/mana-burned/${request.network}/${request.slotIndex}`, "get");
     }
 
     /**

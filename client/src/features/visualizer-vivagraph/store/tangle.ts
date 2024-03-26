@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { IFeedBlockData } from "~models/api/nova/feed/IFeedBlockData";
+import { BlockId, BlockState, SlotIndex } from "@iota/sdk-wasm-nova/web";
 
 export interface VivagraphParams {
     color: string;
+    state: BlockState;
 }
 
 interface TangleState {
@@ -26,6 +28,11 @@ interface TangleState {
     setSearch: (search: string) => void;
 
     resetTangleStore: () => void;
+
+    // Confirmed/accepted blocks by slot
+    confirmedBlocksBySlot: Map<number, string[]>;
+    addToConfirmedBlocksBySlot: (blockId: BlockId, slot: SlotIndex) => void;
+    removeConfirmedBlocksSlot: (slot: SlotIndex) => void;
 }
 
 const INITIAL_STATE = {
@@ -33,6 +40,7 @@ const INITIAL_STATE = {
     visibleBlocks: [],
     selectedNode: null,
     search: "",
+    confirmedBlocksBySlot: new Map(),
 };
 
 export const useTangleStore = create<TangleState>()(
@@ -93,6 +101,36 @@ export const useTangleStore = create<TangleState>()(
         },
         getBlockMetadataValues: () => {
             return Array.from(get().blockIdToMetadata.values());
+        },
+
+        addToConfirmedBlocksBySlot: (blockId, slot) => {
+            set((state) => {
+                state.confirmedBlocksBySlot.has(slot)
+                    ? state.confirmedBlocksBySlot.get(slot)?.push(blockId)
+                    : state.confirmedBlocksBySlot.set(slot, [blockId]);
+                return {
+                    ...state,
+                    confirmedBlocksBySlot: state.confirmedBlocksBySlot,
+                };
+            });
+        },
+
+        removeConfirmedBlocksSlot: (slot) => {
+            set((state) => {
+                state.confirmedBlocksBySlot.delete(slot);
+
+                // Cleanup all slots that are lower than the current slot
+                for (const existingSlot of state.confirmedBlocksBySlot.keys()) {
+                    if (existingSlot < slot) {
+                        state.confirmedBlocksBySlot.delete(existingSlot);
+                    }
+                }
+
+                return {
+                    ...state,
+                    confirmedBlocksBySlot: state.confirmedBlocksBySlot,
+                };
+            });
         },
     })),
 );
