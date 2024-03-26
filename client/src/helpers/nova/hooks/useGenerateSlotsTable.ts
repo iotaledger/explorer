@@ -1,4 +1,4 @@
-import type { ISlotCommitmentWrapper } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
+import { ISlotCommitmentWrapper, SlotCommitmentStatus } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import type { ITableRow } from "~/app/components/Table";
 import { SlotTableCellType, type TSlotTableData } from "~/app/components/nova/landing/SlotTableCell";
 import { SlotStatus } from "~app/lib/enums";
@@ -38,7 +38,7 @@ function getSlotIndexTableCell(network: string, slotIndex: number, slotTimeRange
     };
 }
 
-function getFromToTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
+function getSlotTimestampTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
     if (!slotTimeRange) {
         return {
             type: SlotTableCellType.Empty,
@@ -46,11 +46,11 @@ function getFromToTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
     }
 
     const remainingTime = slotTimeRange.to - moment().unix();
-    const fromTo = remainingTime <= 0 ? moment.unix(slotTimeRange.to).format("YYYY-MM-DD hh:mm:ss") : remainingTime + "s";
+    const slotTimestamp = remainingTime <= 0 ? moment.unix(slotTimeRange.to).format("YYYY-MM-DD hh:mm:ss") : remainingTime + "s";
 
     return {
         type: SlotTableCellType.Text,
-        data: fromTo,
+        data: slotTimestamp,
     };
 }
 
@@ -70,8 +70,8 @@ function getPendingSlotTableRow(network: string, slotIndex: number, slotTimeRang
                     data: SlotStatus.Pending,
                 };
                 break;
-            case SlotTableHeadings.FromTo:
-                tableData = getFromToTableCell(slotTimeRange);
+            case SlotTableHeadings.Timestamp:
+                tableData = getSlotTimestampTableCell(slotTimeRange);
                 break;
             default:
                 tableData = {
@@ -104,7 +104,6 @@ function getSlotCommitmentTableRow(
     const referenceManaCost = commitmentWrapper.slotCommitment.referenceManaCost.toString();
     const blocks = "2000";
     const transactions = "2000";
-    const burnedMana = "200000";
     const slotStatus = commitmentWrapper.status;
 
     Object.values(SlotTableHeadings).forEach((heading) => {
@@ -143,8 +142,9 @@ function getSlotCommitmentTableRow(
                 break;
             case SlotTableHeadings.BurnedMana:
                 tableData = {
-                    type: SlotTableCellType.Text,
-                    data: burnedMana,
+                    type: SlotTableCellType.BurnedMana,
+                    shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
+                    data: slotIndex.toString(),
                 };
                 break;
             case SlotTableHeadings.Status:
@@ -153,8 +153,8 @@ function getSlotCommitmentTableRow(
                     data: slotStatus,
                 };
                 break;
-            case SlotTableHeadings.FromTo:
-                tableData = getFromToTableCell(slotTimeRange);
+            case SlotTableHeadings.Timestamp:
+                tableData = getSlotTimestampTableCell(slotTimeRange);
                 break;
         }
 

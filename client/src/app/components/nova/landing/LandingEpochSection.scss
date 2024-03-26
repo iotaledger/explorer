@@ -36,7 +36,7 @@
         flex-direction: row;
         align-items: center;
 
-        p {
+        .epoch-block {
             color: var(--body-color);
             font-size: 20px;
             line-height: 28px;
@@ -82,14 +82,20 @@
     }
 
     .epoch-progress__stats-wrapper {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        align-items: start;
-        column-gap: 24px;
+        display: flex;
+        flex-direction: row;
+        justify-content: start;
+        gap: 36px;
+        flex-wrap: wrap;
 
         @include tablet-down {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            justify-content: space-between;
+            flex-direction: row;
             row-gap: 40px;
+        }
+
+        .stat {
+            flex: 1;
         }
     }
 }
@@ -121,6 +127,9 @@
         flex-direction: row;
         align-items: center;
         justify-content: center;
+        a {
+            text-decoration: none;
+        }
 
         * + * {
             margin-left: 16px;

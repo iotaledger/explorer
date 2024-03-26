@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import Modal from "~/app/components/Modal";
 import { TSelectFeedItemNova } from "~/app/types/visualizer.types";
 import { INetwork } from "~/models/config/INetwork";
@@ -7,25 +7,34 @@ import mainHeader from "~assets/modals/visualizer/main-header.json";
 import { SelectedFeedInfo } from "./SelectedFeedInfo";
 import { ThemeMode } from "../definitions/enums";
 import { useTangleStore } from "../store/tangle";
+import { GraphContext } from "../GraphContext";
 
 export const Wrapper = ({
     children,
     network,
     networkConfig,
     themeMode,
-
-    isPlaying,
-
     selectedFeedItem,
 }: {
     readonly children: React.ReactNode;
     readonly network: string;
     readonly networkConfig: INetwork;
     readonly themeMode: ThemeMode;
-    readonly isPlaying: boolean;
     readonly selectedFeedItem: TSelectFeedItemNova;
 }) => {
-    const onToggle = useCallback(() => {}, []);
+    const { renderer } = useContext(GraphContext);
+    const [isPlaying, setIsPlaying] = useState<boolean>(true);
+
+    const onToggle = useCallback(() => {
+        if (isPlaying) {
+            renderer.current?.pause();
+        } else {
+            renderer.current?.resume();
+        }
+
+        setIsPlaying(!isPlaying);
+    }, [renderer, isPlaying]);
+
     const search = useTangleStore((state) => state.search);
     const setSearch = useTangleStore((state) => state.setSearch);
 
