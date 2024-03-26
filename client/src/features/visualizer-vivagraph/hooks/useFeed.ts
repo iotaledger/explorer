@@ -267,32 +267,32 @@ export const useFeed = (network: string) => {
     }
 
     function onSlotFinalized(slotFinalized: SlotIndex): void {
-        const slotsBefore = Array.from(confirmedBlocksBySlot.keys());
+        const previousFinalizedSlots = Array.from(confirmedBlocksBySlot.keys());
+        const allFinalizedSlots = [...previousFinalizedSlots, slotFinalized];
+        const confirmedBlocks = [];
 
-        const slots = [...slotsBefore, slotFinalized];
+        for (const slot of allFinalizedSlots) {
+            const confirmedBlockIds = confirmedBlocksBySlot.get(slot);
 
-        const blocks = [];
-        for (const slot of slots) {
-            const blockIds = confirmedBlocksBySlot.get(slot);
-            if (blockIds) {
-                blocks.push(...blockIds);
+            if (confirmedBlockIds) {
+                confirmedBlocks.push(...confirmedBlockIds);
             }
         }
 
-        if (blocks?.length) {
-            blocks.forEach((blockId) => {
-                const selectedColor = getBlockColorByState(themeMode, "finalized");
-                if (selectedColor) {
+        if (confirmedBlocks?.length) {
+            confirmedBlocks.forEach((blockId) => {
+                const finalizedBlockColor = getBlockColorByState(themeMode, "finalized");
+                if (finalizedBlockColor) {
                     updateBlockIdToMetadata(blockId, {
                         state: "finalized",
-                        color: selectedColor,
+                        color: finalizedBlockColor,
                     });
-                    updateBlockColor(blockId, selectedColor);
+                    updateBlockColor(blockId, finalizedBlockColor);
                 }
             });
         }
 
-        for (const slot of slots) {
+        for (const slot of allFinalizedSlots) {
             removeConfirmedBlocksSlot(slot);
         }
     }
