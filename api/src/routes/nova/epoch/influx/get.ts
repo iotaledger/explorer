@@ -41,10 +41,7 @@ export async function get(_: IConfiguration, request: IEpochAnalyticStatsRequest
     }
 
     const epochIndex = Number.parseInt(request.epochIndex, 10);
-    let maybeEpochStats = influxService.getEpochAnalyticStats(epochIndex);
-    if (!maybeEpochStats) {
-        maybeEpochStats = await influxService.fetchAnalyticsForEpoch(epochIndex, protocolParameters);
-    }
+    const maybeEpochStats = await influxService.getEpochAnalyticStats(epochIndex);
 
     return maybeEpochStats
         ? {

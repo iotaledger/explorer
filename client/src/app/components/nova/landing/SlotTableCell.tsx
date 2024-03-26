@@ -4,16 +4,19 @@ import React from "react";
 import StatusPill from "../StatusPill";
 import TruncatedId from "../../stardust/TruncatedId";
 import classNames from "classnames";
+import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
+import Spinner from "../../Spinner";
 
 export enum SlotTableCellType {
     StatusPill = "status-pill",
     Link = "link",
     Text = "text",
     TruncatedId = "truncated-id",
+    BurnedMana = "burned-mana",
     Empty = "empty",
 }
 
-export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IEmptyCell;
+export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IBurnedManaCell | IEmptyCell;
 
 export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JSX.Element {
     let Component: React.JSX.Element;
@@ -30,6 +33,9 @@ export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JS
             break;
         case SlotTableCellType.Empty:
             Component = <EmptyCell {...cellData} />;
+            break;
+        case SlotTableCellType.BurnedMana:
+            Component = <BurnedManaCell {...cellData} />;
             break;
         default: {
             Component = <TextCell {...cellData} />;
@@ -93,10 +99,26 @@ function TruncatedIdCell({ data, href }: ITruncatedIdCell): React.JSX.Element {
     );
 }
 
+interface IBurnedManaCell {
+    type: SlotTableCellType.BurnedMana;
+    data: string;
+    shouldLoad: boolean;
+}
+
+function BurnedManaCell({ data, shouldLoad }: IBurnedManaCell): React.JSX.Element {
+    if (!shouldLoad) {
+        return <Spinner compact />;
+    }
+
+    const { slotManaBurned, isLoading } = useSlotManaBurned(data);
+
+    return <span>{isLoading ? <Spinner compact /> : slotManaBurned?.manaBurned ?? "--"}</span>;
+}
+
 interface IEmptyCell {
     type: SlotTableCellType.Empty;
 }
 
-function EmptyCell({ type }: IEmptyCell): React.JSX.Element {
+function EmptyCell(_: IEmptyCell): React.JSX.Element {
     return <div></div>;
 }
