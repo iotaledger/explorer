@@ -25,7 +25,6 @@ import AccountBlockIssuanceSection from "./account/AccountBlockIssuanceSection";
 import AnchorStateSection from "./anchor/AnchorStateSection";
 import NftSection from "~/app/components/nova/address/section/nft/NftSection";
 import NftMetadataSection from "~/app/components/nova/address/section/nft/NftMetadataSection";
-import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 import AccountValidatorSection from "./account/AccountValidatorSection";
 import DelegationSection from "./delegation/DelegationSection";
 
@@ -269,10 +268,9 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
             defaultTabsOptions[DEFAULT_TABS.Transactions].disabled = isAddressHistoryDisabled;
             defaultTabsOptions[DEFAULT_TABS.Transactions].hidden = isAddressHistoryDisabled;
             const nftAddressState = addressState as INftAddressState;
-            const nftMetadata = nftAddressState.nftOutput ? TransactionsHelper.getNftMetadataFeature(nftAddressState.nftOutput) : null;
             tabEnums = { ...NFT_TABS, ...DEFAULT_TABS };
             tabOptions = {
-                ...buildNftAddressTabsOptions(!nftMetadata, nftAddressState.isNftDetailsLoading),
+                ...buildNftAddressTabsOptions(false, nftAddressState.isNftDetailsLoading),
                 ...defaultTabsOptions,
             };
             tabbedSections = [...(nftAddressSections ?? []), ...defaultSections];
