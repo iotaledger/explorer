@@ -47,7 +47,13 @@ export function getManaKeyValueEntries(
     const renderMana = (mana?: string | number | null): React.ReactNode => {
         const [isFormatFull, setIsFormatFull] = React.useState(false);
         return (
-            <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
+            <span
+                className="balance-base-token pointer margin-r-5"
+                onClick={(e) => {
+                    setIsFormatFull(!isFormatFull);
+                    e.stopPropagation();
+                }}
+            >
                 {formatAmount(mana ?? 0, manaInfo, isFormatFull)}
             </span>
         );
