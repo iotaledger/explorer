@@ -2,6 +2,7 @@ import { IResponse } from "../../IResponse";
 
 export interface IManaBalance {
     stored: number;
+    decay: number;
     potential: number;
 }
 
