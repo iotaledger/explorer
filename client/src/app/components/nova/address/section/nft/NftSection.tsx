@@ -29,7 +29,9 @@ const NftSection: React.FC<NftSectionProps> = ({ outputs }) => {
 
     return outputs && outputs.length > 0 ? (
         <div className="section nft--section">
-            <div className="row wrap">{page?.map((output, idx) => <Nft key={idx} nftOutput={output.output as NftOutput} />)}</div>
+            <div className="row wrap">
+                {page?.map((output, idx) => <Nft key={idx} nftOutput={output.output as NftOutput} outputId={output.metadata.outputId} />)}
+            </div>
             <Pagination
                 classNames="margin-t-t"
                 currentPage={pageNumber}

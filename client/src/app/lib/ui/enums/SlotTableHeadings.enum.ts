@@ -6,5 +6,5 @@ export enum SlotTableHeadings {
     Txs = "Txs",
     BurnedMana = "Burned mana",
     Status = "Status",
-    FromTo = "From/To",
+    Timestamp = "Timestamp",
 }
