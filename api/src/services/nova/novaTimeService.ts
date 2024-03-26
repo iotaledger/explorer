@@ -45,8 +45,8 @@ export class NovaTimeService {
         return new NovaTimeService(protocolParameters);
     }
 
-    public getUnixTimestampToSlotIndex(targetSlotIndex: number): number {
-        return this.unixTimestampToSlotIndex(targetSlotIndex);
+    public getUnixTimestampToSlotIndex(unixTimestampSeconds: number): number {
+        return this.unixTimestampToSlotIndex(unixTimestampSeconds);
     }
 
     public getSlotIndexToUnixTimeRange(targetSlotIndex: number): { from: number; to: number } {
