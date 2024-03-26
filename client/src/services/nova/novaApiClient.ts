@@ -55,6 +55,7 @@ import { ITaggedOutputsRequest } from "~/models/api/nova/ITaggedOutputsRequest";
 import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats";
 import { IEpochAnalyticStatsRequest } from "~/models/api/nova/stats/IEpochAnalyticStatsRequest";
 import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsResponse";
+import { IDelegationByValidatorResponse } from "~/models/api/nova/IDelegationByValidatorResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -206,6 +207,18 @@ export class NovaApiClient extends ApiClient {
     public async delegationOutputsDetails(request: IAddressDetailsRequest): Promise<IDelegationDetailsResponse> {
         return this.callApi<unknown, IDelegationDetailsResponse>(
             `nova/address/outputs/delegation/${request.network}/${request.address}`,
+            "get",
+        );
+    }
+
+    /**
+     * Get the delegation outputs details of an address.
+     * @param request The Address Delegation outputs request.
+     * @returns The Address outputs response
+     */
+    public async delegationOutputsByValidator(request: IAddressDetailsRequest): Promise<IDelegationByValidatorResponse> {
+        return this.callApi<unknown, IDelegationByValidatorResponse>(
+            `nova/output/delegation/by-validator/${request.network}/${request.address}`,
             "get",
         );
     }

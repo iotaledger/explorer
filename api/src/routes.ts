@@ -261,6 +261,12 @@ export const routes: IRoute[] = [
         dataBody: true,
     },
     {
+        path: "/nova/output/delegation/by-validator/:network/:address",
+        method: "get",
+        folder: "nova/output/delegation/by-validator",
+        func: "get",
+    },
+    {
         path: "/nova/account/foundries/:network/:accountAddress",
         method: "get",
         folder: "nova/account/foundries",

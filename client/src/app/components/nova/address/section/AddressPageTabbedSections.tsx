@@ -103,6 +103,7 @@ const buildAccountAddressTabsOptions = (
     hasStakingFeature: boolean,
     isAccountFoundriesLoading: boolean,
     isValidatorDetailsLoading: boolean,
+    isValidatorDelegationOutputsLoading: boolean,
 ) => ({
     [ACCOUNT_TABS.BlockIssuance]: {
         disabled: !isBlockIssuer,
@@ -119,7 +120,7 @@ const buildAccountAddressTabsOptions = (
     [ACCOUNT_TABS.Validation]: {
         disabled: !hasStakingFeature,
         hidden: !hasStakingFeature,
-        isLoading: isValidatorDetailsLoading,
+        isLoading: isValidatorDetailsLoading || isValidatorDelegationOutputsLoading,
         infoContent: validatorMessage,
     },
 });
@@ -213,6 +214,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                   <AccountValidatorSection
                       key={`account-validator-${addressBech32}`}
                       validatorDetails={(addressState as IAccountAddressState).validatorDetails}
+                      validatorDelegationOutputs={(addressState as IAccountAddressState).validatorDelegationOutputs}
                   />,
               ]
             : null;
@@ -257,6 +259,7 @@ export const AddressPageTabbedSections: React.FC<IAddressPageTabbedSectionsProps
                     accountAddressState.stakingFeature !== null,
                     accountAddressState.isFoundriesLoading,
                     accountAddressState.isValidatorDetailsLoading,
+                    accountAddressState.isValidatorDelegationOutputsLoading,
                 ),
             };
             tabbedSections = [...defaultSections, ...(accountAddressSections ?? [])];
