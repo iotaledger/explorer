@@ -25,7 +25,7 @@
     },
     "dependencies": {
         "discord.js": "^12.5.3",
-        "express": "^4.17.3",
+        "express": "^4.19.2",
         "node-fetch": "^2.6.7"
     },
     "devDependencies": {
