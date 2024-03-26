@@ -24,7 +24,7 @@ export function buildManaDetailsForOutput(
     let totalMana = BigInt(decayedMana.stored) + BigInt(decayedMana.potential);
 
     if (manaRewards !== null) {
-        totalMana += manaRewards;
+        totalMana += BigInt(manaRewards);
     }
 
     return {
