@@ -23,19 +23,21 @@
             }
         }
         .status-cell {
-            text-align: center;
+            display: flex;
+
+            .status-pill {
+                margin-right: 0px;
+            }
+
             span {
                 min-width: 68px;
+                display: flex;
+                justify-content: center;
             }
         }
 
         .slot-id {
             max-width: 165px;
-        }
-
-        .flex .status-pill {
-            margin-right: 0px;
-            text-align: center;
         }
     }
 }
