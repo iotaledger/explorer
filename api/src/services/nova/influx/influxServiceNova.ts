@@ -36,11 +36,13 @@ import {
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
 import { IEpochAnalyticStats } from "../../../models/api/nova/stats/epoch/IEpochAnalyticStats";
+import { ISlotAnalyticStats } from "../../../models/api/nova/stats/slot/ISlotAnalyticStats";
 import { INetwork } from "../../../models/db/INetwork";
 import {
     IInfluxAnalyticsCache,
     IInfluxDailyCache,
     IInfluxEpochAnalyticsCache,
+    IInfluxSlotAnalyticsCache,
     initializeEmptyDailyCache,
 } from "../../../models/influx/nova/IInfluxDbCache";
 import {
@@ -68,7 +70,12 @@ import {
     IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { ITimedEntry } from "../../../models/influx/types";
-import { epochIndexToUnixTimeRangeConverter, unixTimestampToEpochIndexConverter } from "../../../utils/nova/novaTimeUtils";
+import {
+    epochIndexToUnixTimeRangeConverter,
+    slotIndexToUnixTimeRangeConverter,
+    unixTimestampToEpochIndexConverter,
+    unixTimestampToSlotIndexConverter,
+} from "../../../utils/nova/novaTimeUtils";
 import { InfluxDbClient, NANOSECONDS_IN_MILLISECOND } from "../../influx/influxClient";
 import { NodeInfoService } from "../nodeInfoService";
 
@@ -80,10 +87,24 @@ type EpochUpdate = ITimedEntry & {
     noPayload: number;
 };
 
+type SlotUpdate = ITimedEntry & {
+    slotIndex: number;
+    taggedData: number;
+    candidacy: number;
+    transaction: number;
+    noPayload: number;
+};
+
 /**
  * Epoch analyitics cache MAX size.
  */
 const EPOCH_CACHE_MAX = 20;
+
+/**
+ * Slot analyitics cache MAX size.
+ */
+const SLOT_CACHE_MAX = 200;
+
 /**
  * The collect graph data interval cron expression.
  * Every hour at 59 min 55 sec
@@ -102,6 +123,12 @@ const COLLECT_ANALYTICS_DATA_CRON = "55 58 * * * *";
  */
 const COLLECT_EPOCH_ANALYTICS_DATA_CRON = "*/10 * * * *";
 
+/**
+ * The collect slot analytics data interval cron expression.
+ * Every 10 seconds
+ */
+const COLLECT_SLOT_ANALYTICS_DATA_CRON = "*/10 * * * * *";
+
 export class InfluxServiceNova extends InfluxDbClient {
     /**
      * The InfluxDb Client.
@@ -119,6 +146,11 @@ export class InfluxServiceNova extends InfluxDbClient {
     protected readonly _epochCache: IInfluxEpochAnalyticsCache;
 
     /**
+     * The current influx slot analytics cache instance.
+     */
+    protected readonly _slotCache: IInfluxSlotAnalyticsCache;
+
+    /**
      * The current influx analytics cache instance.
      */
     protected readonly _analyticsCache: IInfluxAnalyticsCache;
@@ -132,6 +164,7 @@ export class InfluxServiceNova extends InfluxDbClient {
         super(network);
         this._dailyCache = initializeEmptyDailyCache();
         this._epochCache = new Map();
+        this._slotCache = new Map();
         this._analyticsCache = {};
     }
 
@@ -252,6 +285,15 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._epochCache.get(epochIndex);
     }
 
+    public getSlotAnalyticStats(slotIndex: number): ISlotAnalyticStats | undefined {
+        return this._slotCache.get(slotIndex);
+    }
+
+    public async fetchAnalyticsForSlot(slotIndex: number, parameters: ProtocolParameters) {
+        await this.collectSlotStatsByIndex(slotIndex, parameters);
+        return this._slotCache.get(slotIndex);
+    }
+
     protected setupDataCollection() {
         const network = this._network.network;
         logger.verbose(`[InfluxNova] Setting up data collection for (${network}).`);
@@ -262,6 +304,8 @@ export class InfluxServiceNova extends InfluxDbClient {
         void this.collectAnalytics();
         // eslint-disable-next-line no-void
         void this.collectEpochStats();
+        // eslint-disable-next-line no-void
+        void this.collectSlotStats();
 
         if (this._client) {
             cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
@@ -277,6 +321,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             cron.schedule(COLLECT_EPOCH_ANALYTICS_DATA_CRON, async () => {
                 // eslint-disable-next-line no-void
                 void this.collectEpochStats();
+            });
+
+            cron.schedule(COLLECT_SLOT_ANALYTICS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectSlotStats();
             });
         }
     }
@@ -504,6 +553,88 @@ export class InfluxServiceNova extends InfluxDbClient {
                 logger.debug(`[InfluxNova] Deleting epoch index "${lowestIndex}" ("${this._network.network}")`);
 
                 this._epochCache.delete(lowestIndex);
+            }
+        }
+    }
+
+    /**
+     * Get the slot analytics by index and set it in the cache.
+     * @param slotIndex - The slot index.
+     * @param parameters - The protocol parameters information.
+     */
+    private async collectSlotStatsByIndex(slotIndex: number, parameters: ProtocolParameters) {
+        try {
+            const slotIndexToUnixTimeRange = slotIndexToUnixTimeRangeConverter(parameters);
+            const { from, to } = slotIndexToUnixTimeRange(slotIndex);
+            const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+            const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+
+            await this.queryInflux<SlotUpdate>(EPOCH_STATS_QUERY_BY_EPOCH_INDEX, fromNano, toNano)
+                .then((results) => {
+                    for (const update of results) {
+                        update.slotIndex = slotIndex;
+                        this.updateSlotCache(update);
+                    }
+                })
+                .catch((e) => {
+                    logger.warn(
+                        `[InfluxClient] Query ${EPOCH_STATS_QUERY_BY_EPOCH_INDEX} failed for (${this._network.network}). Cause ${e}`,
+                    );
+                });
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    /**
+     * Get the slot analytics and set it in the cache.
+     */
+    private async collectSlotStats() {
+        try {
+            logger.debug(`[InfluxNova] Collecting slot stats for "${this._network.network}"`);
+            const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${this._network.network}`);
+            const parameters = await nodeService.getProtocolParameters();
+            const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(parameters);
+            const slotIndex = unixTimestampToSlotIndex(moment().unix());
+            // eslint-disable-next-line no-void
+            void this.collectSlotStatsByIndex(slotIndex, parameters);
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing slot stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    private updateSlotCache(update: SlotUpdate) {
+        if (update.slotIndex !== undefined && !this._slotCache.has(update.slotIndex)) {
+            const { slotIndex, transaction, candidacy, taggedData, noPayload } = update;
+            const blockCount = transaction + candidacy + taggedData + noPayload;
+            this._slotCache.set(slotIndex, {
+                slotIndex,
+                blockCount,
+                perPayloadType: {
+                    transaction,
+                    candidacy,
+                    taggedData,
+                    noPayload,
+                },
+            });
+
+            logger.debug(`[InfluxNova] Added slot index "${slotIndex}" to cache for "${this._network.network}"`);
+
+            if (this._slotCache.size > SLOT_CACHE_MAX) {
+                let lowestIndex: number;
+                for (const index of this._slotCache.keys()) {
+                    if (!lowestIndex) {
+                        lowestIndex = index;
+                    }
+
+                    if (slotIndex < lowestIndex) {
+                        lowestIndex = index;
+                    }
+                }
+
+                logger.debug(`[InfluxNova] Deleting slot index "${lowestIndex}" ("${this._network.network}")`);
+
+                this._slotCache.delete(lowestIndex);
             }
         }
     }
