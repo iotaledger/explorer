@@ -17,7 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -28,16 +31,17 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.IOTALEDGER_DOCKER_USERNAME }}
           password: ${{ secrets.IOTALEDGER_DOCKER_PASSWORD }}
 
       - name: Build and push Docker image for ${{ inputs.directory }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: ./${{ inputs.directory }}
           file: ./${{ inputs.directory }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ inputs.image_tags }}
           no-cache: true
