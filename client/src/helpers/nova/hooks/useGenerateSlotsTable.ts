@@ -1,4 +1,4 @@
-import type { ISlotCommitmentWrapper } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
+import { ISlotCommitmentWrapper, SlotCommitmentStatus } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import type { ITableRow } from "~/app/components/Table";
 import { SlotTableCellType, type TSlotTableData } from "~/app/components/nova/landing/SlotTableCell";
 import { SlotStatus } from "~app/lib/enums";
@@ -102,7 +102,6 @@ function getSlotCommitmentTableRow(
     const referenceManaCost = commitmentWrapper.slotCommitment.referenceManaCost.toString();
     const blocks = "2000";
     const transactions = "2000";
-    const burnedMana = "200000";
     const slotStatus = commitmentWrapper.status;
 
     Object.values(SlotTableHeadings).forEach((heading) => {
@@ -141,8 +140,9 @@ function getSlotCommitmentTableRow(
                 break;
             case SlotTableHeadings.BurnedMana:
                 tableData = {
-                    type: SlotTableCellType.Text,
-                    data: burnedMana,
+                    type: SlotTableCellType.BurnedMana,
+                    shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
+                    data: slotIndex.toString(),
                 };
                 break;
             case SlotTableHeadings.Status:
