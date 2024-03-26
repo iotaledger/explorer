@@ -37,7 +37,7 @@ function getSlotIndexTableCell(slotIndex: number, slotTimeRange: SlotTimeRange):
     };
 }
 
-function getFromToTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
+function getSlotTimestampTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
     if (!slotTimeRange) {
         return {
             type: SlotTableCellType.Empty,
@@ -45,11 +45,11 @@ function getFromToTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
     }
 
     const remainingTime = slotTimeRange.to - moment().unix();
-    const fromTo = remainingTime <= 0 ? moment.unix(slotTimeRange.to).format("YYYY-MM-DD hh:mm:ss") : remainingTime + "s";
+    const slotTimestamp = remainingTime <= 0 ? moment.unix(slotTimeRange.to).format("YYYY-MM-DD hh:mm:ss") : remainingTime + "s";
 
     return {
         type: SlotTableCellType.Text,
-        data: fromTo,
+        data: slotTimestamp,
     };
 }
 
@@ -69,8 +69,8 @@ function getPendingSlotTableRow(slotIndex: number, slotTimeRange: SlotTimeRange)
                     data: SlotStatus.Pending,
                 };
                 break;
-            case SlotTableHeadings.FromTo:
-                tableData = getFromToTableCell(slotTimeRange);
+            case SlotTableHeadings.Timestamp:
+                tableData = getSlotTimestampTableCell(slotTimeRange);
                 break;
             default:
                 tableData = {
@@ -151,8 +151,8 @@ function getSlotCommitmentTableRow(
                     data: slotStatus,
                 };
                 break;
-            case SlotTableHeadings.FromTo:
-                tableData = getFromToTableCell(slotTimeRange);
+            case SlotTableHeadings.Timestamp:
+                tableData = getSlotTimestampTableCell(slotTimeRange);
                 break;
         }
 

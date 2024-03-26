@@ -20,6 +20,7 @@ import { IAnchorDetailsResponse } from "../../models/api/nova/IAnchorDetailsResp
 import { IBlockDetailsResponse } from "../../models/api/nova/IBlockDetailsResponse";
 import { IBlockResponse } from "../../models/api/nova/IBlockResponse";
 import { ICongestionResponse } from "../../models/api/nova/ICongestionResponse";
+import { IDelegationByValidatorResponse } from "../../models/api/nova/IDelegationByValidatorResponse";
 import { IDelegationDetailsResponse } from "../../models/api/nova/IDelegationDetailsResponse";
 import { IDelegationWithDetails } from "../../models/api/nova/IDelegationWithDetails";
 import { IEpochCommitteeResponse } from "../../models/api/nova/IEpochCommitteeResponse";
@@ -405,6 +406,7 @@ export class NovaApiService {
 
     /**
      * Get the relevant delegation output details for an address.
+     * Return the output this address is delegating.
      * @param addressBech32 The address in bech32 format.
      * @returns The delegation output details.
      */
@@ -434,6 +436,34 @@ export class NovaApiService {
 
         return {
             outputs: delegationResponse,
+        };
+    }
+
+    /**
+     * Get the delegation outputs that this address has been delegated to.
+     * Return the outputs for which this address is the 'validator'.
+     * @param addressBech32 The address in bech32 format.
+     * @returns The delegation output details.
+     */
+    public async delegationOutputDetailsByValidator(addressBech32: string): Promise<IDelegationByValidatorResponse> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.delegationOutputIds({ validator: addressBech32, cursor: cursor ?? "" });
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching delegation output ids (by-validator) failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        const outputResponses = await this.outputsDetails(outputIds);
+
+        return {
+            outputs: outputResponses,
         };
     }
 
