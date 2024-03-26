@@ -1,14 +1,21 @@
-import React from "react";
-import { ValidatorResponse } from "@iota/sdk-wasm-nova/web";
+import React, { useState } from "react";
+import { OutputWithMetadataResponse, ValidatorResponse } from "@iota/sdk-wasm-nova/web";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 
 interface AccountValidatorSectionProps {
     readonly validatorDetails: ValidatorResponse | null;
+    readonly validatorDelegationOutputs: OutputWithMetadataResponse[] | null;
 }
 
-const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ validatorDetails }) => {
+const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ validatorDetails, validatorDelegationOutputs }) => {
     if (!validatorDetails) {
         return null;
     }
+
+    const [isFormatBalance, setIsFormatBalance] = useState<boolean>(false);
+    const { name: network, tokenInfo } = useNetworkInfoNova((state) => state.networkInfo);
 
     const delegatedStake = BigInt(validatorDetails.poolStake) - BigInt(validatorDetails.validatorStake);
 
@@ -47,6 +54,23 @@ const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ valid
                     <div className="card--label margin-b-t">Latest Supported Protocol Hash</div>
                     <div className="card--value">{validatorDetails?.latestSupportedProtocolHash}</div>
                 </div>
+                {validatorDelegationOutputs && (
+                    <div className="field">
+                        <div className="card--label margin-b-t">Delegated outputs</div>
+                        {validatorDelegationOutputs?.map((output, index) => (
+                            <div key={index} className="card--value row">
+                                <TruncatedId
+                                    id={output.metadata.outputId}
+                                    link={`/${network}/output/${output.metadata.outputId}`}
+                                    showCopyButton={true}
+                                />
+                                <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-l-t">
+                                    {formatAmount(output.output.amount, tokenInfo, isFormatBalance)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
