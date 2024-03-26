@@ -50,7 +50,11 @@ export const useTangleStore = create<TangleState>()(
         resetTangleStore: () => {
             set(() => {
                 return {
-                    ...INITIAL_STATE,
+                    blockIdToMetadata: new Map(),
+                    visibleBlocks: [],
+                    selectedNode: null,
+                    search: "",
+                    confirmedBlocksBySlot: new Map(),
                 };
             });
         },
