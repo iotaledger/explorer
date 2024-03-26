@@ -55,7 +55,7 @@ export function getManaKeyValueEntries(
 
     const entries = {
         label: "Mana:",
-        value: manaDetails?.totalMana,
+        value: renderMana(manaDetails?.totalMana),
         entries: [
             {
                 label: "Stored:",

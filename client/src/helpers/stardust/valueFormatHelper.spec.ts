@@ -11,6 +11,10 @@ const tokenInfo = {
 
 describe("formatAmount", () => {
     describe("with number values", () => {
+        test("should format 0 subunit properly", () => {
+            expect(formatAmount(0, tokenInfo)).toBe("0 IOTA");
+        });
+
         test("should format 1 subunit properly", () => {
             expect(formatAmount(1, tokenInfo)).toBe("0.000001 IOTA");
         });
@@ -73,6 +77,10 @@ describe("formatAmount", () => {
     });
 
     describe("with bigint values", () => {
+        test("should format 0 subunit properly", () => {
+            expect(formatAmount(0n, tokenInfo)).toBe("0 IOTA");
+        });
+
         test("should format 1 subunit properly", () => {
             expect(formatAmount(1n, tokenInfo)).toBe("0.000001 IOTA");
         });
@@ -135,6 +143,10 @@ describe("formatAmount", () => {
     });
 
     describe("with string values", () => {
+        test("should format 0 subunit properly", () => {
+            expect(formatAmount("0", tokenInfo)).toBe("0 IOTA");
+        });
+
         test("should format 1 subunit properly", () => {
             expect(formatAmount("1", tokenInfo)).toBe("0.000001 IOTA");
         });
@@ -202,7 +214,7 @@ describe("formatAmount", () => {
         });
 
         test("should not break with Number null", () => {
-            expect(formatAmount(Number(null), tokenInfo)).toBe("");
+            expect(formatAmount(Number(null), tokenInfo)).toBe("0 IOTA");
         });
 
         test("should not break with String undefined", () => {
@@ -211,6 +223,10 @@ describe("formatAmount", () => {
 
         test("should not break with String null", () => {
             expect(formatAmount(String(null), tokenInfo)).toBe("");
+        });
+
+        test("should not break with empty String", () => {
+            expect(formatAmount("", tokenInfo)).toBe("");
         });
     });
 });

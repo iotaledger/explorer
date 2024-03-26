@@ -23,7 +23,7 @@ export function formatAmount(
     decimalPlaces: number = 2,
     trailingDecimals?: boolean,
 ): string {
-    if (value === null || value === undefined || value === "" || value === "null" || value === "undefined") {
+    if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
         return "";
     }
 
