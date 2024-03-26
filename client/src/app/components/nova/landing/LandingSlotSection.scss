@@ -15,11 +15,17 @@
 
     .slots-section__table {
         table {
-            @include tablet-down {
+            @include desktop-down {
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
                 width: 100%;
+            }
+        }
+        .status-cell {
+            text-align: center;
+            span {
+                min-width: 68px;
             }
         }
 

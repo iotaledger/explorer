@@ -53,7 +53,7 @@ function PillStatusCell({ data }: IPillStatusCell): React.JSX.Element {
     }
 
     return (
-        <div className="flex">
+        <div className="status-cell">
             <StatusPill status={status} label={data} />
         </div>
     );
