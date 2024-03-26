@@ -11,6 +11,7 @@ import { getSlotStatusFromLatestSlotCommitments, parseSlotIndexFromParams } from
 import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
 import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
 import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
+import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
 import "./SlotPage.scss";
 
 export default function SlotPage({
@@ -23,6 +24,7 @@ export default function SlotPage({
 }>): React.JSX.Element {
     const { latestSlotCommitments = [] } = useSlotsFeed();
     const { slotCommitment: slotCommitmentDetails } = useSlotDetails(network, slotIndex);
+    const { slotManaBurned } = useSlotManaBurned(slotIndex);
 
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
@@ -41,6 +43,7 @@ export default function SlotPage({
                 slotCommitmentDetails?.referenceManaCost?.toString() ??
                 "-",
         },
+        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-" },
     ];
 
     return (
@@ -62,7 +65,7 @@ export default function SlotPage({
                                 </div>
                             </div>
                             {dataRows.map((dataRow, index) => {
-                                if (dataRow.value || dataRow.truncatedId) {
+                                if (dataRow.value !== undefined || dataRow.truncatedId) {
                                     return <PageDataRow key={index} {...dataRow} />;
                                 }
                             })}

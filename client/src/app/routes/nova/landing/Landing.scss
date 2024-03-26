@@ -96,6 +96,7 @@
         display: flex;
         justify-content: center;
         width: 100%;
+        padding: 0 20px;
 
         .inner {
             display: flex;
@@ -103,7 +104,6 @@
             flex-direction: column;
             max-width: min(100%, 960px);
             margin: 0;
-            padding: 0 20px;
         }
     }
 }
