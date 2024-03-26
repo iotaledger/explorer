@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ServiceFactory } from "~/factories/serviceFactory";
-import { ThemeMode } from "~/features/visualizer-threejs/enums";
+import { ThemeMode } from "~/app/lib/enums";
 import { SettingsService } from "~/services/settingsService";
 
 export function useGetThemeMode(): ThemeMode {
