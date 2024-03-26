@@ -79,14 +79,23 @@ export function useAddressBalance(
                                   )
                                 : null;
 
+                            const totalStored = (totalManaBalance?.stored ?? 0) + Number(outputManaDetails?.storedMana ?? 0);
+                            const totalDecay = totalStored - Number(outputManaDetails?.storedManaDecayed ?? 0);
+                            const totalPotential = (totalManaBalance?.potential ?? 0) + Number(outputManaDetails?.potentialMana ?? 0);
                             totalManaBalance = {
-                                stored: (totalManaBalance?.stored ?? 0) + Number(outputManaDetails?.storedMana ?? 0),
-                                potential: (totalManaBalance?.potential ?? 0) + Number(outputManaDetails?.potentialMana ?? 0),
+                                stored: totalStored,
+                                decay: totalDecay,
+                                potential: totalPotential,
                             };
 
+                            const availableStored = (availableManaBalance?.stored ?? 0) + Number(outputManaDetails?.storedMana ?? 0);
+                            const availableDecay = availableStored - Number(outputManaDetails?.storedManaDecayed ?? 0);
+                            const availablePotential =
+                                (availableManaBalance?.potential ?? 0) + Number(outputManaDetails?.potentialMana ?? 0);
                             availableManaBalance = {
-                                stored: (availableManaBalance?.stored ?? 0) + Number(outputManaDetails?.storedMana ?? 0),
-                                potential: (availableManaBalance?.potential ?? 0) + Number(outputManaDetails?.potentialMana ?? 0),
+                                stored: availableStored,
+                                decay: availableDecay,
+                                potential: availablePotential,
                             };
                         }
                     }
