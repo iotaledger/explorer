@@ -22,7 +22,7 @@ import {
     IUnlockConditionsPerTypeDailyInflux,
     IValidatorsActivityDailyInflux,
 } from "./IInfluxTimedEntries";
-import { DayKey } from "../types";
+import { DayKey, ITimedEntry } from "../types";
 
 /**
  * The cache for influx graphs (daily).
@@ -89,6 +89,16 @@ interface ISlotAnalyticStats {
  * The epoch stats cache. Map epoch index to stats.
  */
 export type IInfluxEpochAnalyticsCache = Map<number, IEpochAnalyticStats>;
+
+export type ManaBurnedInSlot = ITimedEntry & {
+    slotIndex: number;
+    manaBurned: number;
+};
+
+/**
+ * The epoch stats cache. Map epoch index to stats.
+ */
+export type ManaBurnedInSlotCache = Map<number, ManaBurnedInSlot>;
 
 /**
  * The slot stats cache. Map slot index to stats.

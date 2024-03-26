@@ -1,5 +1,4 @@
 /* eslint-disable import/no-unresolved */
-import { ProtocolParameters } from "@iota/sdk-nova";
 import { InfluxDB, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";
@@ -35,7 +34,6 @@ import {
 } from "./influxQueries";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
-import { IEpochAnalyticStats } from "../../../models/api/nova/stats/epoch/IEpochAnalyticStats";
 import { ISlotAnalyticStats } from "../../../models/api/nova/stats/slot/ISlotAnalyticStats";
 import { INetwork } from "../../../models/db/INetwork";
 import {
@@ -44,6 +42,8 @@ import {
     IInfluxEpochAnalyticsCache,
     IInfluxSlotAnalyticsCache,
     initializeEmptyDailyCache,
+    ManaBurnedInSlot,
+    ManaBurnedInSlotCache,
 } from "../../../models/influx/nova/IInfluxDbCache";
 import {
     IAccountActivityDailyInflux,
@@ -70,14 +70,8 @@ import {
     IValidatorsActivityDailyInflux,
 } from "../../../models/influx/nova/IInfluxTimedEntries";
 import { ITimedEntry } from "../../../models/influx/types";
-import {
-    epochIndexToUnixTimeRangeConverter,
-    slotIndexToUnixTimeRangeConverter,
-    unixTimestampToEpochIndexConverter,
-    unixTimestampToSlotIndexConverter,
-} from "../../../utils/nova/novaTimeUtils";
 import { InfluxDbClient, NANOSECONDS_IN_MILLISECOND } from "../../influx/influxClient";
-import { NodeInfoService } from "../nodeInfoService";
+import { NovaTimeService } from "../novaTimeService";
 
 type EpochUpdate = ITimedEntry & {
     epochIndex: number;
@@ -104,6 +98,11 @@ const EPOCH_CACHE_MAX = 20;
  * Slot analyitics cache MAX size.
  */
 const SLOT_CACHE_MAX = 200;
+
+/*
+ * Epoch analyitics cache MAX size.
+ */
+const MANA_BURNED_CACHE_MAX = 20;
 
 /**
  * The collect graph data interval cron expression.
@@ -156,15 +155,27 @@ export class InfluxServiceNova extends InfluxDbClient {
     protected readonly _analyticsCache: IInfluxAnalyticsCache;
 
     /**
+     * The current influx mana burned in slot cache.
+     */
+    protected readonly _manaBurnedInSlotCache: ManaBurnedInSlotCache;
+
+    /**
      * The network in context for this client.
      */
     protected readonly _network: INetwork;
 
+    /**
+     * Nova time service for conversions.
+     */
+    private readonly _novatimeService: NovaTimeService;
+
     constructor(network: INetwork) {
         super(network);
+        this._novatimeService = ServiceFactory.get<NovaTimeService>(`nova-time-${network.network}`);
         this._dailyCache = initializeEmptyDailyCache();
         this._epochCache = new Map();
         this._slotCache = new Map();
+        this._manaBurnedInSlotCache = new Map();
         this._analyticsCache = {};
     }
 
@@ -276,21 +287,53 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._analyticsCache.delegatorsCount;
     }
 
-    public getEpochAnalyticStats(epochIndex: number): IEpochAnalyticStats | undefined {
+    public async getEpochAnalyticStats(epochIndex: number) {
+        if (!this._epochCache.get(epochIndex)) {
+            await this.collectEpochStatsByIndex(epochIndex);
+        }
+
         return this._epochCache.get(epochIndex);
     }
 
-    public async fetchAnalyticsForEpoch(epochIndex: number, parameters: ProtocolParameters) {
-        await this.collectEpochStatsByIndex(epochIndex, parameters);
-        return this._epochCache.get(epochIndex);
+    /**
+     * Get the manaBurned stats by slot index.
+     * @param slotIndex - The slot index.
+     */
+    public async getManaBurnedBySlotIndex(slotIndex: number): Promise<ManaBurnedInSlot | null> {
+        if (this._manaBurnedInSlotCache.has(slotIndex)) {
+            return this._manaBurnedInSlotCache.get(slotIndex);
+        }
+
+        const { from, to } = this._novatimeService.getSlotIndexToUnixTimeRange(slotIndex);
+        const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+        const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+
+        let manaBurnedResult: ManaBurnedInSlot | null = null;
+
+        await this.queryInflux<ManaBurnedInSlot>(MANA_BURN_DAILY_QUERY.partial, fromNano, toNano)
+            .then((results) => {
+                for (const update of results) {
+                    if (update.manaBurned !== undefined) {
+                        update.slotIndex = slotIndex;
+                        this.updateBurnedManaCache(update);
+
+                        manaBurnedResult = update;
+                    }
+                }
+            })
+            .catch((e) => {
+                logger.warn(`[InfluxClient] Query 'mana burned in slot' failed for (${this._network.network}). Cause ${e}`);
+            });
+
+        return manaBurnedResult;
     }
 
     public getSlotAnalyticStats(slotIndex: number): ISlotAnalyticStats | undefined {
         return this._slotCache.get(slotIndex);
     }
 
-    public async fetchAnalyticsForSlot(slotIndex: number, parameters: ProtocolParameters) {
-        await this.collectSlotStatsByIndex(slotIndex, parameters);
+    public async fetchAnalyticsForSlot(slotIndex: number) {
+        await this.collectSlotStatsByIndex(slotIndex);
         return this._slotCache.get(slotIndex);
     }
 
@@ -478,12 +521,10 @@ export class InfluxServiceNova extends InfluxDbClient {
     /**
      * Get the epoch analytics by index and set it in the cache.
      * @param epochIndex - The epoch index.
-     * @param parameters - The protocol parameters information.
      */
-    private async collectEpochStatsByIndex(epochIndex: number, parameters: ProtocolParameters) {
+    private async collectEpochStatsByIndex(epochIndex: number) {
         try {
-            const epochIndexToUnixTimeRange = epochIndexToUnixTimeRangeConverter(parameters);
-            const { from, to } = epochIndexToUnixTimeRange(epochIndex);
+            const { from, to } = this._novatimeService.getEpochIndexToUnixTimeRange(epochIndex);
             const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
             const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
 
@@ -510,12 +551,9 @@ export class InfluxServiceNova extends InfluxDbClient {
     private async collectEpochStats() {
         try {
             logger.debug(`[InfluxNova] Collecting epoch stats for "${this._network.network}"`);
-            const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${this._network.network}`);
-            const parameters = await nodeService.getProtocolParameters();
-            const unixTimestampToEpochIndex = unixTimestampToEpochIndexConverter(parameters);
-            const epochIndex = unixTimestampToEpochIndex(moment().unix());
+            const epochIndex = this._novatimeService.getUnixTimestampToEpochIndex(moment().unix());
             // eslint-disable-next-line no-void
-            void this.collectEpochStatsByIndex(epochIndex, parameters);
+            void this.collectEpochStatsByIndex(epochIndex);
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
         }
@@ -545,7 +583,34 @@ export class InfluxServiceNova extends InfluxDbClient {
                         lowestIndex = index;
                     }
 
-                    if (epochIndex < lowestIndex) {
+                    if (index < lowestIndex) {
+                        lowestIndex = index;
+                    }
+                }
+
+                logger.debug(`[InfluxNova] Deleting epoch index "${lowestIndex}" ("${this._network.network}")`);
+
+                this._epochCache.delete(lowestIndex);
+            }
+        }
+    }
+
+    private updateBurnedManaCache(update: ManaBurnedInSlot) {
+        if (update.slotIndex && !this._manaBurnedInSlotCache.has(update.slotIndex)) {
+            const { slotIndex } = update;
+
+            this._manaBurnedInSlotCache.set(slotIndex, update);
+
+            logger.debug(`[InfluxNova] Added slot index "${slotIndex}" to ManaBurned cache for "${this._network.network}"`);
+
+            if (this._manaBurnedInSlotCache.size > MANA_BURNED_CACHE_MAX) {
+                let lowestIndex: number;
+                for (const index of this._manaBurnedInSlotCache.keys()) {
+                    if (!lowestIndex) {
+                        lowestIndex = index;
+                    }
+
+                    if (index < lowestIndex) {
                         lowestIndex = index;
                     }
                 }
@@ -560,12 +625,10 @@ export class InfluxServiceNova extends InfluxDbClient {
     /**
      * Get the slot analytics by index and set it in the cache.
      * @param slotIndex - The slot index.
-     * @param parameters - The protocol parameters information.
      */
-    private async collectSlotStatsByIndex(slotIndex: number, parameters: ProtocolParameters) {
+    private async collectSlotStatsByIndex(slotIndex: number) {
         try {
-            const slotIndexToUnixTimeRange = slotIndexToUnixTimeRangeConverter(parameters);
-            const { from, to } = slotIndexToUnixTimeRange(slotIndex);
+            const { from, to } = this._novatimeService.getSlotIndexToUnixTimeRange(slotIndex);
             const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
             const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
 
@@ -592,12 +655,9 @@ export class InfluxServiceNova extends InfluxDbClient {
     private async collectSlotStats() {
         try {
             logger.debug(`[InfluxNova] Collecting slot stats for "${this._network.network}"`);
-            const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${this._network.network}`);
-            const parameters = await nodeService.getProtocolParameters();
-            const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(parameters);
-            const slotIndex = unixTimestampToSlotIndex(moment().unix());
+            const slotIndex = this._novatimeService.getUnixTimestampToSlotIndex(moment().unix());
             // eslint-disable-next-line no-void
-            void this.collectSlotStatsByIndex(slotIndex, parameters);
+            void this.collectSlotStatsByIndex(slotIndex);
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing slot stats for "${this._network.network}". Cause: ${err}`);
         }
