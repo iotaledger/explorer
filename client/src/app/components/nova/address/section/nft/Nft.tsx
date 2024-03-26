@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import bigInt from "big-integer";
 import {
     isSupportedImageFormat,
     noMetadataPlaceholder,
@@ -19,6 +20,7 @@ import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { MetadataFeature, NftAddress, NftOutput, Utils } from "@iota/sdk-wasm-nova/web";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
+import { HexHelper } from "~/helpers/stardust/hexHelper";
 
 export interface NftProps {
     /**
@@ -31,10 +33,6 @@ export interface NftProps {
      */
     outputId: string;
 }
-/**
- * The zeroed out id.
- */
-const ZEROED_ID = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 const Nft: React.FC<NftProps> = ({ nftOutput, outputId }) => {
     const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
@@ -65,7 +63,7 @@ const Nft: React.FC<NftProps> = ({ nftOutput, outputId }) => {
             if (metadata) {
                 setIssuerId(nftIssuerId);
             }
-            const nftId = nftOutput.nftId === ZEROED_ID ? Utils.computeNftId(outputId) : nftOutput.nftId;
+            const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftOutput.nftId;
             setNftId(nftId);
             const nftAddress = new NftAddress(nftId);
             setNftBech32Address(Utils.addressToBech32(nftAddress, bech32Hrp));
