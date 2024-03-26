@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import bigInt from "big-integer";
 import {
@@ -17,7 +17,7 @@ import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
 import { INftImmutableMetadata } from "~models/api/stardust/nft/INftImmutableMetadata";
 import "./Nft.scss";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
-import { MetadataFeature, NftAddress, NftOutput, Utils } from "@iota/sdk-wasm-nova/web";
+import { NftAddress, NftOutput, Utils } from "@iota/sdk-wasm-nova/web";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { TransactionsHelper } from "~/helpers/nova/transactionsHelper";
 import { HexHelper } from "~/helpers/stardust/hexHelper";
@@ -36,39 +36,25 @@ export interface NftProps {
 
 const Nft: React.FC<NftProps> = ({ nftOutput, outputId }) => {
     const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
-    const [metadata, setMetadata] = useState<MetadataFeature | null>(null);
-    const [issuerId, setIssuerId] = useState<string | null>(null);
-    const [nftId, setNftId] = useState<string>("");
-    const [nftBech32Address, setNftBech32Address] = useState<string>("");
-    const [standardMetadata, setStandardMetadata] = useState<INftImmutableMetadata | null>();
-    const [isWhitelisted] = useTokenRegistryNftCheck(issuerId, nftId ?? nftOutput.nftId);
-    const [name, setName] = useState<string | null>();
-    const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
-    useEffect(() => {
-        setName(null);
+    const metadata = TransactionsHelper.getNftMetadataFeature(nftOutput);
+    const issuerId = TransactionsHelper.getNftIssuerId(nftOutput);
+    const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftOutput.nftId;
+    const nftAddress = new NftAddress(nftId);
+    const nftBech32Address = Utils.addressToBech32(nftAddress, bech32Hrp);
+
+    let standardMetadata: INftImmutableMetadata | null = null;
+    let name: string | null = null;
+    if (metadata) {
+        standardMetadata = tryParseMetadata<INftImmutableMetadata>(Object.values(metadata.entries)[0], nftSchemeIRC27);
+
         if (standardMetadata) {
-            setName(standardMetadata.name);
+            name = standardMetadata.name;
         }
-    }, [standardMetadata]);
+    }
 
-    useEffect(() => {
-        if (nftOutput) {
-            const nftMetadata = TransactionsHelper.getNftMetadataFeature(nftOutput);
-            const nftIssuerId = TransactionsHelper.getNftIssuerId(nftOutput);
-            if (nftMetadata) {
-                setMetadata(nftMetadata);
-                setStandardMetadata(tryParseMetadata<INftImmutableMetadata>(Object.values(nftMetadata.entries)[0], nftSchemeIRC27));
-            }
-            if (metadata) {
-                setIssuerId(nftIssuerId);
-            }
-            const nftId = HexHelper.toBigInt256(nftOutput.nftId).eq(bigInt.zero) ? Utils.computeNftId(outputId) : nftOutput.nftId;
-            setNftId(nftId);
-            const nftAddress = new NftAddress(nftId);
-            setNftBech32Address(Utils.addressToBech32(nftAddress, bech32Hrp));
-        }
-    }, [nftOutput]);
+    const [isWhitelisted] = useTokenRegistryNftCheck(issuerId, nftId ?? nftOutput.nftId);
+    const [uri, isNftUriLoading] = useNftMetadataUri(standardMetadata?.uri);
 
     const unsupportedFormatOrLoading = isNftUriLoading ? loadingImagePlaceholderCompact : unsupportedImageFormatPlaceholderCompact;
 
