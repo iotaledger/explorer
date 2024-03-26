@@ -10,12 +10,14 @@ import ArrowUp from "~assets/arrow_up.svg?react";
 import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import { clamp } from "~/helpers/clamp";
+import { Link } from "react-router-dom";
 import "./LandingEpochSection.scss";
 
-const EPOCH_TIME_FORMAT = "DD MMM YYYY";
+const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
 
 const LandingEpochSection: React.FC = () => {
-    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { epochIndex, epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress();
     const { validatorStats } = useValidatorStats();
     const { committeeValidators, committeeValidatorsPoolStake, totalCommitteeStake } = validatorStats ?? {};
@@ -30,17 +32,28 @@ const LandingEpochSection: React.FC = () => {
     }
 
     let epochTimeRemaining = "-";
-    let epochFrom = "-";
-    let epochTo = "-";
+    let epochFrom: string = "-";
+    let epochTo: string = "-";
+
+    function getTimeRemaining(endTime: number) {
+        const unixEndTime = moment.unix(endTime);
+        const diffToEnd = unixEndTime.diff(moment());
+        const duration = moment.duration(diffToEnd);
+
+        const hours = Math.floor(duration.asHours());
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
+
+        const timeRemaining = `${hours}h : ${minutes}m : ${seconds}s`;
+        return timeRemaining;
+    }
 
     if (epochUnixTimeRange && registrationTime) {
         const epochStartTime = moment.unix(epochUnixTimeRange.from);
         const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
-        epochFrom = epochStartTime.format(EPOCH_TIME_FORMAT);
-        epochTo = epochEndTime.format(EPOCH_TIME_FORMAT);
-
-        const diffToEpochEnd = epochEndTime.diff(moment());
-        epochTimeRemaining = moment(diffToEpochEnd).format("H:mm:ss");
+        epochFrom = epochStartTime.format(EPOCH_DATE_FORMAT);
+        epochTo = epochEndTime.format(EPOCH_DATE_FORMAT);
+        epochTimeRemaining = getTimeRemaining(epochUnixTimeRange.to - 1);
     }
 
     const stats: IStatDisplay[] = [
@@ -57,7 +70,7 @@ const LandingEpochSection: React.FC = () => {
             subtitle: "Delegated in committee",
         },
         {
-            title: epochProgressPercent + "%",
+            title: clamp(epochProgressPercent, 0, 100) + "%",
             subtitle: "Progress",
         },
     ];
@@ -68,9 +81,9 @@ const LandingEpochSection: React.FC = () => {
                 <h3 className="epoch-section__header">Current Epoch: {epochIndex}</h3>
                 <div className="epoch-progress">
                     <div className="epoch-duration">
-                        <p>{epochFrom}</p>
+                        <div className="epoch-block">{epochFrom}</div>
                         <RightHalfArrow id="to-arrow" />
-                        <p>{epochTo}</p>
+                        <div className="epoch-block">{epochTo}</div>
                     </div>
 
                     <div className="time-remaining">
@@ -91,21 +104,27 @@ const LandingEpochSection: React.FC = () => {
             </div>
 
             <div className="epoch-section__controls">
-                <button className="icon-button">
-                    <span className="epoch-section__previous">
-                        <ArrowUp width={20} height={20} />
-                    </span>
-                </button>
+                <Link to={epochIndex > 0 ? `/${network}/epoch/${epochIndex - 1}` : ""}>
+                    <button className="icon-button" disabled={epochIndex === 0}>
+                        <span className="epoch-section__previous">
+                            <ArrowUp width={20} height={20} />
+                        </span>
+                    </button>
+                </Link>
 
                 <div className="epoch-section__center-buttons">
-                    <button className="nova">Current Epoch</button>
+                    <Link to={`/${network}/epoch/${epochIndex}`}>
+                        <button className="nova">Current Epoch</button>
+                    </Link>
                 </div>
 
-                <button className="icon-button">
-                    <span className="epoch-section__next">
-                        <ArrowUp width={20} height={20} fill="red" />
-                    </span>
-                </button>
+                <Link to={`/${network}/epoch/${epochIndex + 1}`}>
+                    <button className="icon-button">
+                        <span className="epoch-section__next">
+                            <ArrowUp width={20} height={20} fill="red" />
+                        </span>
+                    </button>
+                </Link>
             </div>
         </div>
     );

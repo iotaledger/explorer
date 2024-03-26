@@ -15,21 +15,29 @@
 
     .slots-section__table {
         table {
-            @include tablet-down {
+            @include desktop-down {
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
                 width: 100%;
             }
         }
+        .status-cell {
+            display: flex;
+
+            .status-pill {
+                margin-right: 0px;
+            }
+
+            span {
+                min-width: 68px;
+                display: flex;
+                justify-content: center;
+            }
+        }
 
         .slot-id {
             max-width: 165px;
-        }
-
-        .flex .status-pill {
-            margin-right: 0px;
-            text-align: center;
         }
     }
 }
