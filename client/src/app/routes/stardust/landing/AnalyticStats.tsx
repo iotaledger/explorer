@@ -19,9 +19,18 @@ const AnalyticStats: React.FC<AnalyticStatsProps> = ({ analytics, circulatingSup
 
     let claimedAndPercentLabels: [string, string] | undefined;
     if (analytics?.unclaimedShimmer && circulatingSupply) {
-        const totalSupplyBigInt = (BigInt(circulatingSupply) * BigInt(100)) / BigInt(80); // https://github.com/iotaledger/explorer/issues/584
-        const shimmerClaimedBigInt = totalSupplyBigInt - BigInt(analytics.unclaimedShimmer);
-        claimedAndPercentLabels = buildShimmerClaimedStats(shimmerClaimedBigInt.toString(), totalSupplyBigInt.toString(), tokenInfo);
+        // in shimmer, the circulating supply is the same as the total supply
+        const totalShimmerSupplyBigInt = BigInt(circulatingSupply);
+        // 80% of the Shimmer genesis token supply were distributed to IOTA token holders
+        // genesis distribution: https://github.com/iotaledger/tips/blob/main/tips/TIP-0032/tip-0032.md#global-parameters
+        const claimableShimmerSupplyBigInt = (totalShimmerSupplyBigInt * BigInt(80)) / BigInt(100);
+        // TEA and DAO genesis outputs are spent, so we can assume all unspent genesis outputs are stakers
+        const shimmerClaimedBigInt = claimableShimmerSupplyBigInt - BigInt(analytics.unclaimedShimmer);
+        claimedAndPercentLabels = buildShimmerClaimedStats(
+            shimmerClaimedBigInt.toString(),
+            claimableShimmerSupplyBigInt.toString(),
+            tokenInfo,
+        );
     }
 
     return analytics && !analytics.error ? (
