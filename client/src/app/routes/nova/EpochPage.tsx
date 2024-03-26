@@ -100,20 +100,20 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             <div className="label">To:</div>
                             <div className="value">{epochTo}</div>
                         </div>
+                        <div className="section--data">
+                            <div className="label">Time remaining:</div>
+                            <div className="value">{isFutureEpoch ? "Not started" : epochTimeRemaining}</div>
+                        </div>
+                        <div className="section--data">
+                            <div className="label">Progress:</div>
+                            <div className="value">{isFutureEpoch ? "0%" : `${epochProgressPercent}%`}</div>
+                        </div>
+                        <div className="section--data">
+                            <div className="label">Registration end:</div>
+                            <div className="value">{isFutureEpoch ? "-" : registrationTimeRemaining}</div>
+                        </div>
                         {!isFutureEpoch && (
                             <>
-                                <div className="section--data">
-                                    <div className="label">Time remaining:</div>
-                                    <div className="value">{epochTimeRemaining}</div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Progress:</div>
-                                    <div className="value">{epochProgressPercent}%</div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Registration end:</div>
-                                    <div className="value">{registrationTimeRemaining}</div>
-                                </div>
                                 <div className="section--data">
                                     <div className="label">Total pool stake:</div>
                                     <div className="value">{epochCommittee?.totalStake ?? 0}</div>
@@ -140,19 +140,6 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                         )}
                         {isFutureEpoch && (
                             <>
-                                <div className="section--data">
-                                    <div className="label">Time remaining:</div>
-                                    <div className="value">Not started</div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Progress:</div>
-                                    <div className="value">0%</div>
-                                </div>
-
-                                <div className="section--data">
-                                    <div className="label">Registration end:</div>
-                                    <div className="value">-</div>
-                                </div>
                                 <div className="section--data">
                                     <div className="label">Starts in:</div>
                                     <div className="value">{futureEpochStartsIn}</div>
