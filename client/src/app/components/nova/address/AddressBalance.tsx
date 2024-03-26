@@ -70,10 +70,13 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
 
     const totalStoredMana = totalManaBalance?.stored ?? null;
     const totalPotentialMana = totalManaBalance?.potential ?? null;
+    const totalDecayMana = totalManaBalance?.decay ?? null;
     const availableStoredMana = availableManaBalance?.stored ?? null;
     const availablePotentialMana = availableManaBalance?.potential ?? null;
+    const availableDecayMana = availableManaBalance?.decay ?? null;
 
     const conditionalStoredMana = availableStoredMana === null || totalStoredMana === null ? null : totalStoredMana - availableStoredMana;
+    const conditionalDecayMana = availableDecayMana === null || totalDecayMana === null ? null : totalDecayMana - availableDecayMana;
     const conditionalPotentialMana =
         availablePotentialMana === null || totalPotentialMana === null ? null : totalPotentialMana - availablePotentialMana;
 
@@ -101,12 +104,16 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
                 </div>
 
                 <div className="balance-wrapper__mana">
-                    {(availableStoredMana !== null || availablePotentialMana !== null || blockIssuanceCredits !== null) &&
+                    {(availableStoredMana !== null ||
+                        availablePotentialMana !== null ||
+                        availableDecayMana !== null ||
+                        blockIssuanceCredits !== null) &&
                         manaBalanceView(
                             "Available Mana",
                             formatManaBalanceFull,
                             setFormatManaBalanceFull,
                             availableStoredMana,
+                            availableDecayMana,
                             availablePotentialMana,
                             blockIssuanceCredits,
                             manaRewards,
@@ -117,6 +124,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
                             formatStorageBalanceFull,
                             setFormatStorageBalanceFull,
                             conditionalStoredMana,
+                            conditionalDecayMana,
                             conditionalPotentialMana,
                         )}
                 </div>
@@ -168,6 +176,7 @@ function buildManaBalanceView(manaInfo: BaseTokenResponse) {
         isFormatFull: boolean,
         setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
         storedMana: number | null,
+        decayMana: number | null,
         potentialMana: number | null,
         blockIssuanceCredits: bigint | null = null,
         manaRewards: bigint | null = null,
@@ -186,6 +195,23 @@ function buildManaBalanceView(manaInfo: BaseTokenResponse) {
                                     {formatAmount(storedMana, manaInfo, isFormatFull)}
                                 </span>
                                 <CopyButton copy={String(storedMana)} />
+                            </div>
+                        </div>
+                    ) : (
+                        <span className="margin-r-5">0</span>
+                    )}
+                </div>
+            </div>
+            <div className="balance__mana">
+                <div className="label">Decay:</div>
+                <div className="value featured">
+                    {decayMana !== null && decayMana > 0 ? (
+                        <div className="balance-value middle">
+                            <div className="row middle">
+                                <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
+                                    {formatAmount(decayMana, manaInfo, isFormatFull)}
+                                </span>
+                                <CopyButton copy={String(decayMana)} />
                             </div>
                         </div>
                     ) : (
