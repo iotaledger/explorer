@@ -55,9 +55,10 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         ? candidates?.map((candidate) => candidate.validator).filter((validator) => validator.active)
         : epochCommittee?.committee;
 
+    const epochStartTime = moment.unix(epochUnixTimeRange.from);
+    const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
+
     if (registrationTime) {
-        const epochStartTime = moment.unix(epochUnixTimeRange.from);
-        const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
         epochFrom = epochStartTime.format("DD MMM HH:mm:ss");
         epochTo = epochEndTime.format("DD MMM HH:mm:ss");
 
@@ -70,6 +71,8 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     if (isFutureEpoch) {
         const diffToEpochStart = moment.unix(epochUnixTimeRange.from).diff(moment());
         futureEpochStartsIn = moment(diffToEpochStart).format("H:mm:ss");
+        epochFrom = epochStartTime.format("DD MMM YYYY HH:mm:ss");
+        epochTo = epochEndTime.format("DD MMM YYYY HH:mm:ss");
     }
 
     return (
@@ -137,6 +140,19 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                         )}
                         {isFutureEpoch && (
                             <>
+                                <div className="section--data">
+                                    <div className="label">Time remaining:</div>
+                                    <div className="value">Not started</div>
+                                </div>
+                                <div className="section--data">
+                                    <div className="label">Progress:</div>
+                                    <div className="value">0%</div>
+                                </div>
+
+                                <div className="section--data">
+                                    <div className="label">Registration end:</div>
+                                    <div className="value">-</div>
+                                </div>
                                 <div className="section--data">
                                     <div className="label">Starts in:</div>
                                     <div className="value">{futureEpochStartsIn}</div>
