@@ -6,6 +6,7 @@ import { SlotTableHeadings } from "~/app/lib/ui/enums";
 import { Utils } from "@iota/sdk-wasm-nova/web";
 import useSlotsFeed from "./useSlotsFeed";
 import { useNovaTimeConvert } from "./useNovaTimeConvert";
+import { useNetworkInfoNova } from "../networkInfo";
 import moment from "moment";
 
 type SlotTimeRange = {
@@ -13,7 +14,7 @@ type SlotTimeRange = {
     to: number;
 } | null;
 
-function getSlotIndexTableCell(slotIndex: number, slotTimeRange: SlotTimeRange): TSlotTableData {
+function getSlotIndexTableCell(network: string, slotIndex: number, slotTimeRange: SlotTimeRange): TSlotTableData {
     if (!slotTimeRange) {
         return {
             type: SlotTableCellType.Empty,
@@ -28,7 +29,7 @@ function getSlotIndexTableCell(slotIndex: number, slotTimeRange: SlotTimeRange):
         return {
             type: SlotTableCellType.Link,
             data: slotIndexString,
-            href: `slot/${slotIndex}`,
+            href: `${network}/slot/${slotIndex}`,
         };
     }
     return {
@@ -53,7 +54,7 @@ function getSlotTimestampTableCell(slotTimeRange: SlotTimeRange): TSlotTableData
     };
 }
 
-function getPendingSlotTableRow(slotIndex: number, slotTimeRange: SlotTimeRange): ITableRow<TSlotTableData> {
+function getPendingSlotTableRow(network: string, slotIndex: number, slotTimeRange: SlotTimeRange): ITableRow<TSlotTableData> {
     const data: TSlotTableData[] = [];
 
     Object.values(SlotTableHeadings).forEach((heading) => {
@@ -61,7 +62,7 @@ function getPendingSlotTableRow(slotIndex: number, slotTimeRange: SlotTimeRange)
 
         switch (heading) {
             case SlotTableHeadings.Index:
-                tableData = getSlotIndexTableCell(slotIndex, slotTimeRange);
+                tableData = getSlotIndexTableCell(network, slotIndex, slotTimeRange);
                 break;
             case SlotTableHeadings.Status:
                 tableData = {
@@ -88,6 +89,7 @@ function getPendingSlotTableRow(slotIndex: number, slotTimeRange: SlotTimeRange)
 }
 
 function getSlotCommitmentTableRow(
+    network: string,
     slotIndex: number,
     commitmentWrapper: ISlotCommitmentWrapper | null,
     slotTimeRange: SlotTimeRange,
@@ -95,7 +97,7 @@ function getSlotCommitmentTableRow(
     const data: TSlotTableData[] = [];
 
     if (!commitmentWrapper) {
-        return getPendingSlotTableRow(slotIndex, slotTimeRange);
+        return getPendingSlotTableRow(network, slotIndex, slotTimeRange);
     }
 
     const slotCommitmentId = Utils.computeSlotCommitmentId(commitmentWrapper.slotCommitment);
@@ -109,13 +111,13 @@ function getSlotCommitmentTableRow(
 
         switch (heading) {
             case SlotTableHeadings.Index:
-                tableData = getSlotIndexTableCell(slotIndex, slotTimeRange);
+                tableData = getSlotIndexTableCell(network, slotIndex, slotTimeRange);
                 break;
             case SlotTableHeadings.Id:
                 tableData = {
                     type: SlotTableCellType.TruncatedId,
                     data: slotCommitmentId,
-                    href: `slot/${slotIndex}`,
+                    href: `${network}/slot/${slotIndex}`,
                 };
                 break;
             case SlotTableHeadings.ReferenceManaCost:
@@ -128,14 +130,14 @@ function getSlotCommitmentTableRow(
                 tableData = {
                     type: SlotTableCellType.Link,
                     data: blocks,
-                    href: `slot/${slotIndex}?tab=RefBlocks`,
+                    href: `${network}/slot/${slotIndex}?tab=RefBlocks`,
                 };
                 break;
             case SlotTableHeadings.Txs:
                 tableData = {
                     type: SlotTableCellType.Link,
                     data: transactions,
-                    href: `slot/${slotIndex}?tab=Txs`,
+                    href: `${network}/slot/${slotIndex}?tab=Txs`,
                 };
                 break;
             case SlotTableHeadings.BurnedMana:
@@ -166,13 +168,14 @@ function getSlotCommitmentTableRow(
 }
 
 export function useGenerateSlotsTable(): ITableRow<TSlotTableData>[] {
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
     const { currentSlotIndex, currentSlotTimeRange, latestSlotCommitments, latestSlotIndexes } = useSlotsFeed();
 
     const rows: ITableRow<TSlotTableData>[] = [];
 
     if (currentSlotIndex !== null) {
-        const currentSlotRow = getPendingSlotTableRow(currentSlotIndex, currentSlotTimeRange);
+        const currentSlotRow = getPendingSlotTableRow(network, currentSlotIndex, currentSlotTimeRange);
         rows.push(currentSlotRow);
     }
 
@@ -180,7 +183,7 @@ export function useGenerateSlotsTable(): ITableRow<TSlotTableData>[] {
         latestSlotIndexes?.map((slotIndex) => {
             const commitmentWrapper = latestSlotCommitments?.find((commitment) => commitment.slotCommitment.slot === slotIndex) ?? null;
             const slotTimeRange = slotIndexToUnixTimeRange?.(slotIndex) ?? null;
-            const row = getSlotCommitmentTableRow(slotIndex, commitmentWrapper, slotTimeRange);
+            const row = getSlotCommitmentTableRow(network, slotIndex, commitmentWrapper, slotTimeRange);
             rows.push(row);
         });
     }
