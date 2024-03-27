@@ -7,6 +7,7 @@ import {
     AnchorAddress,
     Utils,
     ImplicitAccountCreationAddress,
+    RestrictedAddress,
 } from "@iota/sdk-wasm-nova/web";
 import { HexHelper } from "../stardust/hexHelper";
 import { IAddressDetails } from "~models/api/nova/IAddressDetails";
@@ -58,7 +59,12 @@ export class AddressHelper {
         };
     }
 
-    private static buildAddressFromTypes(address: Address, hrp: string): IAddressDetails {
+    private static buildAddressFromTypes(
+        address: Address,
+        hrp: string,
+        restricted: boolean = false,
+        capabilities?: number[],
+    ): IAddressDetails {
         let hex: string = "";
         let bech32: string = "";
 
@@ -74,15 +80,24 @@ export class AddressHelper {
             const implicitAccountCreationAddress = plainToInstance(ImplicitAccountCreationAddress, address);
             const innerAddress = implicitAccountCreationAddress.address();
             hex = (innerAddress as Ed25519Address).pubKeyHash;
+        } else if (address.type === AddressType.Restricted) {
+            const restrictedAddress = RestrictedAddress.parse(address) as RestrictedAddress;
+            const capabilities = Array.from(restrictedAddress.getAllowedCapabilities());
+            const innerAddress = Address.parse(restrictedAddress.address);
+
+            return this.buildAddressFromTypes(innerAddress, hrp, true, capabilities);
         }
 
         bech32 = Utils.addressToBech32(address, hrp);
+        const label = restricted ? `Restricted ${AddressHelper.typeLabel(address.type)}` : AddressHelper.typeLabel(address.type);
 
         return {
             bech32,
             hex,
             type: address.type,
-            label: AddressHelper.typeLabel(address.type),
+            label,
+            restricted,
+            capabilities,
         };
     }
 
