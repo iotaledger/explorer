@@ -65,6 +65,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
     const validatorAddress =
         output.type === OutputType.Delegation ? Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp) : "";
+    const delegationId = getDelegationId(outputId, output);
 
     useEffect(() => {
         setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
@@ -210,7 +211,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     <div className="card--label">Delegated amount:</div>
                     <div className="card--value row">{Number((output as DelegationOutput).delegatedAmount)}</div>
                     <div className="card--label">Delegation Id:</div>
-                    <div className="card--value row">{(output as DelegationOutput).delegationId}</div>
+                    <div className="card--value row">{delegationId}</div>
                     <div className="card--label">Validator Address:</div>
                     <div className="card--value row">
                         <TruncatedId
@@ -318,6 +319,19 @@ function buildAddressForAccountOrNft(outputId: string, output: Output, bech32Hrp
     }
 
     return bech32;
+}
+
+function getDelegationId(outputId: string, output: Output): string {
+    let delegationId: string = "";
+
+    if (output.type === OutputType.Delegation) {
+        const delegationIdFromOutput = (output as DelegationOutput).delegationId;
+        delegationId = HexHelper.toBigInt256(delegationIdFromOutput).eq(bigInt.zero)
+            ? Utils.computeDelegationId(outputId)
+            : delegationIdFromOutput;
+    }
+
+    return delegationId;
 }
 
 function getOutputTypeName(type: OutputType): string {
