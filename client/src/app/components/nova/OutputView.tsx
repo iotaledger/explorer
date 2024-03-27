@@ -34,10 +34,11 @@ import { IPreExpandedConfig } from "~models/components";
 import CopyButton from "../CopyButton";
 import Tooltip from "../Tooltip";
 import TruncatedId from "../stardust/TruncatedId";
-import FeatureView from "./FeaturesView";
+import FeatureView from "./FeatureView";
 import KeyValueEntries from "./KeyValueEntries";
 import "./OutputView.scss";
 import UnlockConditionView from "./UnlockConditionView";
+import { NameHelper } from "~/helpers/nova/nameHelper";
 
 interface OutputViewProps {
     outputId: string;
@@ -48,7 +49,11 @@ interface OutputViewProps {
     manaDetails?: OutputManaDetails | null;
 }
 
+export const EPOCH_HINT =
+    "When the end epoch is set to 0, it indicates that no specific end epoch has been defined for this delegation output.";
+
 const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmount, preExpandedConfig, isLinksDisabled, manaDetails }) => {
+    const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? false);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const { bech32Hrp, name: network, protocolInfo, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
@@ -57,8 +62,11 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
     const accountOrNftBech32 = buildAddressForAccountOrNft(outputId, output, bech32Hrp);
     const outputIdTransactionPart = `${outputId.slice(0, 8)}....${outputId.slice(-8, -4)}`;
     const outputIdIndexPart = outputId.slice(-4);
-    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails) : undefined;
+    const manaEntries = manaDetails ? getManaKeyValueEntries(manaDetails, manaInfo, output.type === OutputType.Delegation) : undefined;
     const isSpecialCondition = hasSpecialCondition(output as CommonOutput);
+    const validatorAddress =
+        output.type === OutputType.Delegation ? Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp) : "";
+    const delegationId = getDelegationId(outputId, output);
 
     useEffect(() => {
         setIsExpanded(preExpandedConfig?.isAllPreExpanded ?? preExpandedConfig?.isPreExpanded ?? isExpanded ?? false);
@@ -93,7 +101,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             </div>
             <div className="output-header">
                 <button type="button" className="output-type--name color">
-                    {getOutputTypeName(output.type)}
+                    {NameHelper.getOutputTypeName(output.type)}
                 </button>
                 <div className="output-id--link">
                     (
@@ -196,24 +204,54 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     )}
                 </React.Fragment>
             )}
-            {(output.type === OutputType.Basic ||
-                output.type === OutputType.Account ||
-                output.type === OutputType.Anchor ||
-                output.type === OutputType.Nft) &&
-                manaEntries &&
-                manaDetails?.totalMana && <KeyValueEntries isPreExpanded={true} {...manaEntries} />}
+            {output.type !== OutputType.Foundry && manaEntries && manaDetails?.totalMana && (
+                <KeyValueEntries isPreExpanded={true} {...manaEntries} />
+            )}
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
                     <div className="card--value row">{Number((output as DelegationOutput).delegatedAmount)}</div>
                     <div className="card--label">Delegation Id:</div>
-                    <div className="card--value row">{(output as DelegationOutput).delegationId}</div>
+                    <div className="card--value row">{delegationId}</div>
                     <div className="card--label">Validator Address:</div>
-                    <div className="card--value row">{Utils.addressToBech32((output as DelegationOutput).validatorAddress, bech32Hrp)}</div>
+                    <div className="card--value row">
+                        <TruncatedId
+                            id={validatorAddress}
+                            link={isLinksDisabled ? undefined : `/${network}/addr/${validatorAddress}`}
+                            showCopyButton
+                        />
+                    </div>
                     <div className="card--label">Start epoch:</div>
-                    <div className="card--value row">{(output as DelegationOutput).startEpoch}</div>
+                    <div className="card--value row">
+                        <TruncatedId
+                            id={(output as DelegationOutput).startEpoch.toString()}
+                            link={
+                                isLinksDisabled || (output as DelegationOutput).startEpoch === 0
+                                    ? undefined
+                                    : `/${network}/epoch/${(output as DelegationOutput).startEpoch}`
+                            }
+                            showCopyButton={false}
+                        />
+                    </div>
                     <div className="card--label">End epoch:</div>
-                    <div className="card--value row">{(output as DelegationOutput).endEpoch}</div>
+                    <div className="card--value row epoch-info">
+                        <TruncatedId
+                            id={(output as DelegationOutput).endEpoch.toString()}
+                            link={
+                                isLinksDisabled || (output as DelegationOutput).endEpoch === 0
+                                    ? undefined
+                                    : `/${network}/epoch/${(output as DelegationOutput).endEpoch}`
+                            }
+                            showCopyButton={false}
+                        />
+                        {(output as DelegationOutput).endEpoch === 0 && (
+                            <Tooltip tooltipContent={EPOCH_HINT}>
+                                <div className="modal--icon">
+                                    <span className="material-icons">info</span>
+                                </div>
+                            </Tooltip>
+                        )}
+                    </div>
                 </React.Fragment>
             )}
         </React.Fragment>
@@ -284,21 +322,23 @@ function buildAddressForAccountOrNft(outputId: string, output: Output, bech32Hrp
     return bech32;
 }
 
-function getOutputTypeName(type: OutputType): string {
-    switch (type) {
-        case OutputType.Basic:
-            return "Basic";
-        case OutputType.Account:
-            return "Account";
-        case OutputType.Anchor:
-            return "Anchor";
-        case OutputType.Foundry:
-            return "Foundry";
-        case OutputType.Nft:
-            return "Nft";
-        case OutputType.Delegation:
-            return "Delegation";
+/**
+ * Get delegation id for Delegation output.
+ * @param outputId The id of the output.
+ * @param output The output.
+ * @returns The delegation id.
+ */
+function getDelegationId(outputId: string, output: Output): string {
+    let delegationId: string = "";
+
+    if (output.type === OutputType.Delegation) {
+        const delegationIdFromOutput = (output as DelegationOutput).delegationId;
+        delegationId = HexHelper.toBigInt256(delegationIdFromOutput).eq(bigInt.zero)
+            ? Utils.computeDelegationId(outputId)
+            : delegationIdFromOutput;
     }
+
+    return delegationId;
 }
 
 /**

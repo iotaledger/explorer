@@ -23,11 +23,7 @@ export function formatAmount(
     decimalPlaces: number = 2,
     trailingDecimals?: boolean,
 ): string {
-    if (value === 0 || value === 0n) {
-        return `0 ${formatFull ? tokenInfo.subunit ?? tokenInfo.unit : tokenInfo.unit}`;
-    }
-
-    if (!value || value === "null" || value === "undefined") {
+    if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
         return "";
     }
 

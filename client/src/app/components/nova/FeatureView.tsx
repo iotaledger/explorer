@@ -14,7 +14,13 @@ import classNames from "classnames";
 import React, { useState } from "react";
 import AddressView from "./address/AddressView";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
-import DataToggle from "../DataToggle";
+import DataToggle from "~/app/components/DataToggle";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
+import Tooltip from "~/app/components/Tooltip";
+import { EPOCH_HINT } from "./OutputView";
+import { NameHelper } from "~/helpers/nova/nameHelper";
 
 interface FeatureViewProps {
     /**
@@ -34,6 +40,7 @@ interface FeatureViewProps {
 }
 
 const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreExpanded }) => {
+    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isExpanded, setIsExpanded] = useState<boolean>(isPreExpanded ?? false);
 
     return (
@@ -42,7 +49,7 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                 <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
-                <div className="card--label">{getFeatureTypeName(feature.type, isImmutable)}</div>
+                <div className="card--label">{NameHelper.getFeatureTypeName(feature.type, isImmutable)}</div>
             </div>
             {isExpanded && (
                 <div className="padding-l-t left-border">
@@ -52,8 +59,8 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                         <div className="card--value row">
                             {Object.entries((feature as MetadataFeature).entries).map(([key, value], index) => (
                                 <div key={index}>
-                                    <div className="label margin-t-m">{key}</div>
-                                    <div className="value row middle margin-t-t">
+                                    <div className="card--label">{key}:</div>
+                                    <div className="card--value row middle margin-t-t">
                                         <DataToggle sourceData={value} withSpacedHex={true} />
                                     </div>
                                 </div>
@@ -89,13 +96,42 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                     {feature.type === FeatureType.Staking && (
                         <div className="padding-l-t left-border">
                             <div className="card--label">Staked amount:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).stakedAmount)}</div>
+                            <div className="card--value row">
+                                {formatAmount((feature as StakingFeature).stakedAmount, tokenInfo, false)}
+                            </div>
                             <div className="card--label">Fixed cost:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).fixedCost)}</div>
+                            <div className="card--value row">{formatAmount((feature as StakingFeature).fixedCost, manaInfo, false)}</div>
                             <div className="card--label">Start epoch:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).startEpoch)}</div>
+                            <div className="card--value row">
+                                <TruncatedId
+                                    id={String((feature as StakingFeature).startEpoch)}
+                                    link={
+                                        (feature as StakingFeature).startEpoch === 0
+                                            ? undefined
+                                            : `/${network}/epoch/${(feature as StakingFeature).startEpoch}`
+                                    }
+                                    showCopyButton={false}
+                                />
+                            </div>
                             <div className="card--label">End epoch:</div>
-                            <div className="card--value row">{Number((feature as StakingFeature).endEpoch)}</div>
+                            <div className="card--value row epoch-info epoch-info--above">
+                                <TruncatedId
+                                    id={String((feature as StakingFeature).endEpoch)}
+                                    link={
+                                        (feature as StakingFeature).endEpoch === 0
+                                            ? undefined
+                                            : `/${network}/epoch/${(feature as StakingFeature).endEpoch}`
+                                    }
+                                    showCopyButton={false}
+                                />
+                                {(feature as StakingFeature).endEpoch === 0 && (
+                                    <Tooltip tooltipContent={EPOCH_HINT}>
+                                        <div className="modal--icon margin-t-2">
+                                            <span className="material-icons">info</span>
+                                        </div>
+                                    </Tooltip>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -103,42 +139,5 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
         </div>
     );
 };
-
-function getFeatureTypeName(type: FeatureType, isImmutable: boolean): string {
-    let name: string = "";
-
-    switch (type) {
-        case FeatureType.Sender:
-            name = "Sender";
-            break;
-        case FeatureType.Issuer:
-            name = "Issuer";
-            break;
-        case FeatureType.Metadata:
-            name = "Metadata";
-            break;
-        case FeatureType.StateMetadata:
-            name = "State Metadata";
-            break;
-        case FeatureType.Tag:
-            name = "Tag";
-            break;
-        case FeatureType.NativeToken:
-            name = "Native Token";
-            break;
-        case FeatureType.BlockIssuer:
-            name = "Block Issuer";
-            break;
-        case FeatureType.Staking:
-            name = "Staking";
-            break;
-    }
-
-    if (name) {
-        return isImmutable ? `Immutable ${name}` : name;
-    }
-
-    return "Unknown Feature";
-}
 
 export default FeatureView;
