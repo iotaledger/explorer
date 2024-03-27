@@ -41,6 +41,11 @@
             font-size: 20px;
             line-height: 28px;
             font-weight: 500;
+
+            @include tablet-down {
+                display: flex;
+                text-align: center;
+            }
         }
 
         svg#to-arrow {
@@ -84,19 +89,10 @@
     .epoch-progress__stats-wrapper {
         display: flex;
         flex-direction: row;
-        justify-content: start;
-        gap: 36px;
+        justify-content: space-between;
+        column-gap: 32px;
+        row-gap: 40px;
         flex-wrap: wrap;
-
-        @include tablet-down {
-            justify-content: space-between;
-            flex-direction: row;
-            row-gap: 40px;
-        }
-
-        .stat {
-            flex: 1;
-        }
     }
 }
 
