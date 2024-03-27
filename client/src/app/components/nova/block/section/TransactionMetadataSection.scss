@@ -1,0 +1,29 @@
+@import "../../../../../scss/variables";
+@import "../../../../../scss/fonts";
+@import "../../../../../scss/mixins";
+@import "../../../../../scss/media-queries";
+
+.metadata-section {
+    .allotments__header {
+        @include font-size(36px);
+        line-height: 120%;
+        margin-bottom: 48px;
+    }
+
+    .allotments__table {
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        table {
+            @include desktop-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+        }
+        .table-container table thead th {
+            padding-bottom: 8px;
+        }
+    }
+}
