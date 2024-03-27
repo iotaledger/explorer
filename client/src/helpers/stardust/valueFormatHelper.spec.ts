@@ -137,6 +137,10 @@ describe("formatAmount", () => {
             expect(formatAmount(1450896407249092n, tokenInfo)).toBe("1450896407.24 IOTA");
         });
 
+        test("should not break formatting a bigint over Number.MAX_SAFE_INTEGER", () => {
+            expect(formatAmount(9007199254740993n, tokenInfo)).toBe("9007199254.74 IOTA");
+        });
+
         test("should honour format full (bigint)", () => {
             expect(formatAmount(1n, tokenInfo, true)).toBe("1 micro");
         });
@@ -203,6 +207,10 @@ describe("formatAmount", () => {
             expect(formatAmount("1450896407249092", tokenInfo)).toBe("1450896407.24 IOTA");
         });
 
+        test("should not break formatting a bigint over Number.MAX_SAFE_INTEGER", () => {
+            expect(formatAmount("9007199254740993", tokenInfo)).toBe("9007199254.74 IOTA");
+        });
+
         test("should honour format full (number)", () => {
             expect(formatAmount("1", tokenInfo, true)).toBe("1 micro");
         });
@@ -223,6 +231,10 @@ describe("formatAmount", () => {
 
         test("should not break with String null", () => {
             expect(formatAmount(String(null), tokenInfo)).toBe("");
+        });
+
+        test("should not break with empty String", () => {
+            expect(formatAmount("", tokenInfo)).toBe("");
         });
     });
 });
