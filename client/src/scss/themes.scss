@@ -65,6 +65,7 @@
     --transparent-button-bg-hover: #{$iota2-blue-700}14;
     --transparent-button-bg-active: #{$iota2-blue-700}29;
     --icon-button-border: rgb(0 0 0 / 16%);
+    --scrollbar-thumb: var(--header-color, #{$gray-6});
 
     body.darkmode {
         --body-background: #091326;
@@ -124,6 +125,7 @@
         --transparent-button-bg-hover: #{$white}14;
         --transparent-button-bg-active: #{$white}29;
         --icon-button-border: rgb(255 255 255 / 16%);
+        --scrollbar-thumb: var(--header-color, #{$gray-5});
     }
 
     body.shimmer {
@@ -168,5 +170,6 @@
         --amount-color: #{$iota2-blue-600};
         --body-color: #{$white};
         --header-color: rgb(255 255 255 / 80%);
+        --scrollbar-thumb: #{$iota2-gray-400};
     }
 }
