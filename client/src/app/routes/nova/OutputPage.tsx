@@ -59,6 +59,8 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     const isSpent = spentSlotIndex !== null;
     const transactionIdSpent = spent?.transactionId ?? null;
     const outputIndex = computeOutputIndexFromOutputId(outputId);
+    const commitmentId = outputMetadataResponse?.included?.commitmentId;
+    const slotIndex = outputMetadataResponse?.included?.slot;
 
     let outputManaDetails: OutputManaDetails | null = null;
     if (output && createdSlotIndex && protocolInfo) {
@@ -113,6 +115,15 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
                                     <div className="label">Transaction ID</div>
                                     <div className="value code highlight row middle">
                                         <TruncatedId id={transactionId} link={`/${network}/transaction/${transactionId}`} showCopyButton />
+                                    </div>
+                                </div>
+                            )}
+
+                            {commitmentId && (
+                                <div className="section--data">
+                                    <div className="label">Commitment ID</div>
+                                    <div className="value code highlight row middle">
+                                        <TruncatedId id={commitmentId} link={`/${network}/slot/${slotIndex}`} showCopyButton />
                                     </div>
                                 </div>
                             )}

@@ -1,4 +1,4 @@
-import { PayloadType, UnlockType } from "@iota/sdk-wasm-nova/web";
+import { FeatureType, OutputType, PayloadType, UnlockType } from "@iota/sdk-wasm-nova/web";
 
 export class NameHelper {
     /**
@@ -59,5 +59,71 @@ export class NameHelper {
         }
 
         return payloadType;
+    }
+
+    /**
+     * Get the name for the output type.
+     * @param type The type to get the name for.
+     * @returns The output type name.
+     */
+    public static getOutputTypeName(type: OutputType): string {
+        switch (type) {
+            case OutputType.Basic:
+                return "Basic";
+            case OutputType.Account:
+                return "Account";
+            case OutputType.Anchor:
+                return "Anchor";
+            case OutputType.Foundry:
+                return "Foundry";
+            case OutputType.Nft:
+                return "Nft";
+            case OutputType.Delegation:
+                return "Delegation";
+            default:
+                return "Unknown Output";
+        }
+    }
+    /**
+     * Get the name for the feature type.
+     * @param type The type to get the name for.
+     * @param isImmutable Whether the feature is immutable or not.
+     * @returns The feature type name.
+     */
+    public static getFeatureTypeName(type: FeatureType, isImmutable: boolean): string {
+        let name: string = "";
+
+        switch (type) {
+            case FeatureType.Sender:
+                name = "Sender";
+                break;
+            case FeatureType.Issuer:
+                name = "Issuer";
+                break;
+            case FeatureType.Metadata:
+                name = "Metadata";
+                break;
+            case FeatureType.StateMetadata:
+                name = "State Metadata";
+                break;
+            case FeatureType.Tag:
+                name = "Tag";
+                break;
+            case FeatureType.NativeToken:
+                name = "Native Token";
+                break;
+            case FeatureType.BlockIssuer:
+                name = "Block Issuer";
+                break;
+            case FeatureType.Staking:
+                name = "Staking";
+                break;
+        }
+
+        if (name) {
+            return isImmutable ? `Immutable ${name}` : name;
+        }
+
+        return "Unknown Feature";
     }
 }
