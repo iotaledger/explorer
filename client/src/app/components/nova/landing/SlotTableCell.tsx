@@ -90,7 +90,7 @@ interface IStatsCell {
 }
 
 function StatsCell({ data, href, shouldLoad, statsType }: IStatsCell): React.JSX.Element {
-    const [slotStats, isLoading] = useSlotStats(data);
+    const [slotStats, isLoading] = useSlotStats(shouldLoad ? data : null);
     if (!shouldLoad) {
         return <Spinner compact />;
     }
@@ -129,12 +129,10 @@ interface IBurnedManaCell {
 }
 
 function BurnedManaCell({ data, shouldLoad }: IBurnedManaCell): React.JSX.Element {
+    const { slotManaBurned, isLoading } = useSlotManaBurned(shouldLoad ? data : null);
     if (!shouldLoad) {
         return <Spinner compact />;
     }
-
-    const { slotManaBurned, isLoading } = useSlotManaBurned(data);
-
     return <span>{isLoading ? <Spinner compact /> : slotManaBurned?.manaBurned ?? "--"}</span>;
 }
 
