@@ -5,8 +5,8 @@ import StatusPill from "../StatusPill";
 import TruncatedId from "../../stardust/TruncatedId";
 import classNames from "classnames";
 import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
-import Spinner from "../../Spinner";
 import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
+import Spinner from "../../Spinner";
 import { Link } from "react-router-dom";
 
 export enum SlotTableCellType {
@@ -78,7 +78,7 @@ interface ILinkCell {
 }
 
 function LinkCell({ data, href }: ILinkCell): React.JSX.Element {
-    return <a href={href}>{data}</a>;
+    return <Link to={href}>{data}</Link>;
 }
 
 interface IStatsCell {

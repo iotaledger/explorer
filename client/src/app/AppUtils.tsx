@@ -51,6 +51,11 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
             disabled: !hasStatisticsSupport || !hasNetworks,
         },
         {
+            label: "Validators",
+            url: `/${network}/validators/`,
+            disabled: !hasNetworks || network !== ALPHANET,
+        },
+        {
             label: "Utilities",
             disabled: network !== CHRYSALIS_MAINNET || !hasNetworks,
             routes: [
