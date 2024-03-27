@@ -66,6 +66,10 @@
     --transparent-button-bg-active: #{$iota2-blue-700}29;
     --icon-button-border: rgb(0 0 0 / 16%);
     --scrollbar-thumb: var(--header-color, #{$gray-6});
+    --footer-bg-color: #{$gray-11};
+    --footer-logo-fill: rgb(246 248 252);
+    --footer-text-color: #{$gray-3};
+    --footer-heading-color: #{$gray-6};
 
     body.darkmode {
         --body-background: #091326;
@@ -158,6 +162,10 @@
         --amount-color: #{$iota2-blue-700};
         --body-color: #1d1d1d;
         --header-color: #{$iota2-gray-600};
+        --footer-bg-color: #{white};
+        --footer-logo-fill: var(--body-color);
+        --footer-text-color: var(--body-color);
+        --footer-heading-color: #{$iota2-gray-400};
     }
 
     body.iota2.darkmode {
@@ -171,5 +179,7 @@
         --body-color: #{$white};
         --header-color: rgb(255 255 255 / 80%);
         --scrollbar-thumb: #{$iota2-gray-400};
+        --footer-bg-color: #{black};
+        --footer-heading-color: rgb(255 255 255 / 48%);
     }
 }
