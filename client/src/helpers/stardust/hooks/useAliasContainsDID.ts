@@ -1,4 +1,4 @@
-import { AliasOutput, hexToBytes } from "@iota/sdk-wasm/web";
+import { AliasOutput, hexToBytes } from "@iota/sdk-wasm-stardust/web";
 import { useEffect, useState } from "react";
 import { Converter } from "~helpers/stardust/convertUtils";
 

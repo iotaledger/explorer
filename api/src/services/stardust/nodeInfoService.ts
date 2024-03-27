@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk";
+import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk-stardust";
 import { NodeInfoError } from "../../errors/nodeInfoError";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetwork } from "../../models/db/INetwork";

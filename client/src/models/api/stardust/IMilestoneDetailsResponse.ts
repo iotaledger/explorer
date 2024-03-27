@@ -1,4 +1,4 @@
-import { MilestonePayload } from "@iota/sdk-wasm/web";
+import { MilestonePayload } from "@iota/sdk-wasm-stardust/web";
 import { IResponse } from "../IResponse";
 
 export interface IMilestoneDetailsResponse extends IResponse {

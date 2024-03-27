@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
-import initSdkStardust from "@iota/sdk-wasm/web";
+import initSdkStardust from "@iota/sdk-wasm-stardust/web";
 import initSdkNova from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import { createRoot } from "react-dom/client";

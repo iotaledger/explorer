@@ -1,4 +1,4 @@
-import { Address } from "@iota/sdk-wasm/web";
+import { Address } from "@iota/sdk-wasm-stardust/web";
 
 export interface AddressProps {
     /**

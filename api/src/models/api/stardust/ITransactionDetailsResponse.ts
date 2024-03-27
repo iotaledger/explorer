@@ -1,4 +1,4 @@
-import { Block } from "@iota/sdk";
+import { Block } from "@iota/sdk-stardust";
 import { IResponse } from "../IResponse";
 
 export interface ITransactionDetailsResponse extends IResponse {

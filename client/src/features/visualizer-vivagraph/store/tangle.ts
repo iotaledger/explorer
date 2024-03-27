@@ -46,7 +46,17 @@ const INITIAL_STATE = {
 export const useTangleStore = create<TangleState>()(
     devtools((set, get) => ({
         ...INITIAL_STATE,
-
+        resetTangleStore: () => {
+            set(() => {
+                return {
+                    blockIdToMetadata: new Map(),
+                    visibleBlocks: [],
+                    selectedNode: null,
+                    search: "",
+                    confirmedBlocksBySlot: new Map(),
+                };
+            });
+        },
         setSearch: (search) => {
             set(() => {
                 return {
