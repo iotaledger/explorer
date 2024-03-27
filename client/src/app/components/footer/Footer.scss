@@ -79,7 +79,7 @@ footer {
                         }
 
                         &:first-child {
-                            color: $gray-3;
+                            color: var(--footer-heading-color);
                         }
 
                         .data-label {
@@ -100,7 +100,7 @@ footer {
 
                 display: flex;
                 justify-content: space-between;
-                color: $gray-6;
+                color: var(--footer-heading-color);
                 font-family: $inter;
 
                 div {
@@ -140,7 +140,7 @@ footer {
                     ul {
                         li {
                             a {
-                                color: $main-green;
+                                color: var(--link-color);
                             }
                         }
                     }
