@@ -6,17 +6,20 @@ import TruncatedId from "../../stardust/TruncatedId";
 import classNames from "classnames";
 import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
 import Spinner from "../../Spinner";
+import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
+import { Link } from "react-router-dom";
 
 export enum SlotTableCellType {
     StatusPill = "status-pill",
     Link = "link",
     Text = "text",
     TruncatedId = "truncated-id",
+    Stats = "stats",
     BurnedMana = "burned-mana",
     Empty = "empty",
 }
 
-export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IBurnedManaCell | IEmptyCell;
+export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IStatsCell | IBurnedManaCell | IEmptyCell;
 
 export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JSX.Element {
     let Component: React.JSX.Element;
@@ -33,6 +36,9 @@ export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JS
             break;
         case SlotTableCellType.Empty:
             Component = <EmptyCell {...cellData} />;
+            break;
+        case SlotTableCellType.Stats:
+            Component = <StatsCell {...cellData} />;
             break;
         case SlotTableCellType.BurnedMana:
             Component = <BurnedManaCell {...cellData} />;
@@ -73,6 +79,23 @@ interface ILinkCell {
 
 function LinkCell({ data, href }: ILinkCell): React.JSX.Element {
     return <a href={href}>{data}</a>;
+}
+
+interface IStatsCell {
+    data: string;
+    type: SlotTableCellType.Stats;
+    href: string;
+    statsType: "blocks" | "transactions";
+    shouldLoad?: boolean;
+}
+
+function StatsCell({ data, href, shouldLoad, statsType }: IStatsCell): React.JSX.Element {
+    const [slotStats, isLoading] = useSlotStats(data);
+    if (!shouldLoad) {
+        return <Spinner compact />;
+    }
+    const stat = statsType === "blocks" ? slotStats?.blockCount : slotStats?.perPayloadType?.transaction;
+    return <span>{isLoading ? <Spinner compact /> : stat ? <Link to={href}>{stat}</Link> : "--"}</span>;
 }
 
 interface ITextCell {

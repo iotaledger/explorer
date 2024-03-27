@@ -1,4 +1,6 @@
-export interface ISlotAnalyticStats {
+import { IResponse } from "../IResponse";
+
+export interface ISlotAnalyticStatsResponse extends IResponse {
     slotIndex?: number;
     blockCount?: number;
     perPayloadType?: {

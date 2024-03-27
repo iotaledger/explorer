@@ -4,14 +4,16 @@ import Spinner from "~/app/components/Spinner";
 import Pagination from "~/app/components/Pagination";
 import { ISlotBlock } from "~/models/api/nova/ISlotBlocksResponse";
 import "./SlotBlocksSection.scss";
+import useSlotBlocks from "~/helpers/nova/hooks/useSlotBlocks";
 
 interface SlotBlocksSectionProps {
-    readonly blocks: ISlotBlock[] | null;
+    readonly slotIndex: string | null;
 }
 
 const PAGE_SIZE: number = 10;
 
-const SlotBlocksSection: React.FC<SlotBlocksSectionProps> = ({ blocks }) => {
+const SlotBlocksSection: React.FC<SlotBlocksSectionProps> = ({ slotIndex }) => {
+    const { blocks } = useSlotBlocks(slotIndex);
     const [currentPage, setCurrentPage] = useState<ISlotBlock[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
 
@@ -66,7 +68,7 @@ const SlotBlocksSection: React.FC<SlotBlocksSectionProps> = ({ blocks }) => {
 };
 
 SlotBlocksSection.defaultProps = {
-    blocks: undefined,
+    slotIndex: undefined,
 };
 
 export default SlotBlocksSection;

@@ -86,7 +86,7 @@ export const OUTPUTS_DAILY_QUERY = {
     `,
 };
 
-export const EPOCH_STATS_QUERY_BY_EPOCH_INDEX = `
+export const BLOCK_STATS_QUERY = `
     SELECT
         sum("transaction_count") AS "transaction",
         sum("tagged_data_count") AS "taggedData",

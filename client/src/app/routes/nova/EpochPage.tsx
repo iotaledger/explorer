@@ -32,7 +32,7 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
     const { epochUnixTimeRange: currentEpochUnixTimeRange } = useEpochProgress();
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
-    const [epochStats] = useEpochStats(network, epochIndex);
+    const [epochStats] = useEpochStats(epochIndex);
     const { validators: candidates } = useValidators();
 
     if (

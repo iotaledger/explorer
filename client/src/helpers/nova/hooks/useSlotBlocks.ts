@@ -4,6 +4,7 @@ import { useIsMounted } from "~/helpers/hooks/useIsMounted";
 import { ISlotBlock } from "~/models/api/nova/ISlotBlocksResponse";
 import { NOVA } from "~/models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
+import { useNetworkInfoNova } from "../networkInfo";
 
 interface IUseSlotBlocks {
     blocks: ISlotBlock[] | null;
@@ -11,7 +12,8 @@ interface IUseSlotBlocks {
     error: string | undefined;
 }
 
-export default function useSlotBlocks(network: string, slotIndex: string): IUseSlotBlocks {
+export default function useSlotBlocks(slotIndex: string | null): IUseSlotBlocks {
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [slotBlocks, setSlotBlocks] = useState<ISlotBlock[] | null>(null);

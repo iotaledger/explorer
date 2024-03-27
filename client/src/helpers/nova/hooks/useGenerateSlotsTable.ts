@@ -102,8 +102,6 @@ function getSlotCommitmentTableRow(
 
     const slotCommitmentId = Utils.computeSlotCommitmentId(commitmentWrapper.slotCommitment);
     const referenceManaCost = commitmentWrapper.slotCommitment.referenceManaCost.toString();
-    const blocks = "2000";
-    const transactions = "2000";
     const slotStatus = commitmentWrapper.status;
 
     Object.values(SlotTableHeadings).forEach((heading) => {
@@ -128,16 +126,20 @@ function getSlotCommitmentTableRow(
                 break;
             case SlotTableHeadings.Blocks:
                 tableData = {
-                    type: SlotTableCellType.Link,
-                    data: blocks,
+                    type: SlotTableCellType.Stats,
+                    data: slotIndex.toString(),
                     href: `${network}/slot/${slotIndex}?tab=RefBlocks`,
+                    statsType: "blocks",
+                    shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
                 break;
             case SlotTableHeadings.Txs:
                 tableData = {
-                    type: SlotTableCellType.Link,
-                    data: transactions,
+                    type: SlotTableCellType.Stats,
+                    data: slotIndex.toString(),
                     href: `${network}/slot/${slotIndex}?tab=Txs`,
+                    statsType: "transactions",
+                    shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
                 break;
             case SlotTableHeadings.BurnedMana:
