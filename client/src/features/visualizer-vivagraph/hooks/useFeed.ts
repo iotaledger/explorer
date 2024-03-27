@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useContext } from "react";
-import { type BlockMetadataResponse } from "@iota/sdk-wasm-nova/web";
+import { type BlockMetadataResponse, Utils, BlockState, SlotIndex } from "@iota/sdk-wasm-nova/web";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
 import Viva from "vivagraphjs";
@@ -35,6 +35,9 @@ export const useFeed = (network: string) => {
     const deleteBlockIdToMetadata = useTangleStore((state) => state.deleteBlockIdToMetadata);
     const updateBlockIdToMetadata = useTangleStore((state) => state.updateBlockIdToMetadata);
     const search = useTangleStore((state) => state.search);
+    const addToConfirmedBlocksBySlot = useTangleStore((state) => state.addToConfirmedBlocksBySlot);
+    const removeConfirmedBlocksSlot = useTangleStore((state) => state.removeConfirmedBlocksSlot);
+    const confirmedBlocksBySlot = useTangleStore((state) => state.confirmedBlocksBySlot);
     const themeMode = useGetThemeMode();
 
     const graphContext = useContext(GraphContext);
@@ -209,8 +212,9 @@ export const useFeed = (network: string) => {
             const blockMetadata = getBlockIdToMetadata(blockId);
 
             if (!blockMetadata) {
-                const color = getBlockColorByState(themeMode, "pending");
-                createBlock(blockId, { ...newBlock, color: color }, now);
+                const initState = "pending";
+                const color = getBlockColorByState(themeMode, initState);
+                createBlock(blockId, { ...newBlock, color: color, state: initState }, now);
 
                 const parentIds = getBlockParents(newBlock);
                 const existingBlockIds = getBlockMetadataKeys();
@@ -232,12 +236,61 @@ export const useFeed = (network: string) => {
             const selectedColor = getBlockColorByState(themeMode, metadataUpdate.blockState);
 
             updateBlockIdToMetadata(metadataUpdate.blockId, { color: selectedColor });
-            updateBlockColor(metadataUpdate.blockId, selectedColor);
+
+            const blockMetadata = getBlockIdToMetadata(metadataUpdate.blockId);
+            if (blockMetadata) {
+                const previousBlockState = blockMetadata.state;
+                const wasConfirmedBeforeAccepted = previousBlockState === "accepted" && metadataUpdate.blockState === "confirmed";
+
+                if (!wasConfirmedBeforeAccepted) {
+                    updateBlockIdToMetadata(metadataUpdate.blockId, {
+                        state: metadataUpdate.blockState,
+                    });
+                }
+
+                updateBlockColor(metadataUpdate.blockId, selectedColor);
+                const acceptedStates: BlockState[] = ["confirmed", "accepted"];
+                if (acceptedStates.includes(metadataUpdate.blockState)) {
+                    const slot = Utils.computeSlotIndex(metadataUpdate.blockId);
+                    addToConfirmedBlocksBySlot(metadataUpdate.blockId, slot);
+                }
+            }
+        }
+    }
+
+    function onSlotFinalized(slotFinalized: SlotIndex): void {
+        const slotsBefore = Array.from(confirmedBlocksBySlot.keys());
+
+        const slots = [...slotsBefore, slotFinalized];
+
+        const blocks = [];
+        for (const slot of slots) {
+            const blockIds = confirmedBlocksBySlot.get(slot);
+            if (blockIds) {
+                blocks.push(...blockIds);
+            }
+        }
+
+        if (blocks?.length) {
+            blocks.forEach((blockId) => {
+                const selectedColor = getBlockColorByState(themeMode, "finalized");
+                if (selectedColor) {
+                    updateBlockIdToMetadata(blockId, {
+                        state: "finalized",
+                        color: selectedColor,
+                    });
+                    updateBlockColor(blockId, selectedColor);
+                }
+            });
+        }
+
+        for (const slot of slots) {
+            removeConfirmedBlocksSlot(slot);
         }
     }
 
     const feedSubscriptionStart = () => {
-        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate, () => {});
+        feedService.subscribeBlocks(onNewBlock, onBlockMetadataUpdate, onSlotFinalized);
     };
 
     useEffect(() => {
