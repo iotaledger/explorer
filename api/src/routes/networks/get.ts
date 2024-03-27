@@ -2,6 +2,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetworkGetResponse } from "../../models/api/INetworkGetResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
 import { NetworkService } from "../../services/networkService";
+import { NodeInfoService } from "../../services/stardust/nodeInfoService";
 
 /**
  * Get the networks.
@@ -19,28 +20,37 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
             // and copy the fields needed by the client
             // as we don't want to expose all the information
             .filter((n) => !n.isHidden && n.isEnabled)
-            .map((n) => ({
-                network: n.network,
-                label: n.label,
-                protocolVersion: n.protocolVersion,
-                coordinatorAddress: n.coordinatorAddress,
-                coordinatorSecurityLevel: n.coordinatorSecurityLevel,
-                isEnabled: n.isEnabled,
-                showMarket: n.showMarket,
-                uiTheme: n.uiTheme,
-                hasStatisticsSupport:
-                    Boolean(n.analyticsInfluxDbEndpoint) &&
-                    Boolean(n.analyticsInfluxDbDatabase) &&
-                    Boolean(n.analyticsInfluxDbUsername) &&
-                    Boolean(n.analyticsInfluxDbPassword),
-                description: n.description,
-                bechHrp: n.bechHrp,
-                didExample: n.didExample,
-                faucet: n.faucet,
-                milestoneInterval: n.milestoneInterval,
-                circulatingSupply: n.circulatingSupply,
-                identityResolverEnabled: n.identityResolverEnabled,
-                tokenRegistryEndpoint: n.tokenRegistryEndpoint,
-            })),
+            .map((n) => {
+                const nodeInfoService = ServiceFactory.get<NodeInfoService>(`node-info-${n.network}`);
+                let circulatingSupplyFromSupplyTracker: number | null = null;
+
+                if (nodeInfoService) {
+                    circulatingSupplyFromSupplyTracker = nodeInfoService.circulatingSupply;
+                }
+
+                return {
+                    network: n.network,
+                    label: n.label,
+                    protocolVersion: n.protocolVersion,
+                    coordinatorAddress: n.coordinatorAddress,
+                    coordinatorSecurityLevel: n.coordinatorSecurityLevel,
+                    isEnabled: n.isEnabled,
+                    showMarket: n.showMarket,
+                    uiTheme: n.uiTheme,
+                    hasStatisticsSupport:
+                        Boolean(n.analyticsInfluxDbEndpoint) &&
+                        Boolean(n.analyticsInfluxDbDatabase) &&
+                        Boolean(n.analyticsInfluxDbUsername) &&
+                        Boolean(n.analyticsInfluxDbPassword),
+                    description: n.description,
+                    bechHrp: n.bechHrp,
+                    didExample: n.didExample,
+                    faucet: n.faucet,
+                    milestoneInterval: n.milestoneInterval,
+                    circulatingSupply: circulatingSupplyFromSupplyTracker ?? n.circulatingSupply,
+                    identityResolverEnabled: n.identityResolverEnabled,
+                    tokenRegistryEndpoint: n.tokenRegistryEndpoint,
+                };
+            }),
     };
 }

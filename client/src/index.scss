@@ -45,6 +45,7 @@ body {
     transition: background 0.3s;
     background: var(--body-background);
 
+    /* stylelint-disable selector-max-id */
     #root {
         display: flex;
         flex-direction: column;
@@ -71,6 +72,7 @@ body {
             color: var(--active-item-color);
         }
     }
+    /* stylelint-enable selector-max-id */
 }
 
 ::-webkit-scrollbar-track {
@@ -85,5 +87,5 @@ body {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 0;
-    background-color: var(--header-color);
+    background-color: var(--scrollbar-thumb);
 }

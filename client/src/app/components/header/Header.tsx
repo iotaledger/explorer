@@ -114,29 +114,31 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                         </Link>
                         {routes &&
                             routes.length > 0 &&
-                            routes.map((route) =>
-                                !routeIsDropdown(route) ? (
-                                    <Link
-                                        key={route.url}
-                                        to={route.url}
-                                        target={route.isExternal ? "_blank" : undefined}
-                                        rel={route.isExternal ? "noopener noreferrer" : undefined}
-                                        onClick={closeDropdowns}
-                                        className={classNames("navigation--item", {
-                                            "active-item": route.url === window.location.pathname,
-                                        })}
-                                    >
-                                        {route.label}
-                                    </Link>
-                                ) : (
-                                    <HeaderDropdown
-                                        key={route.label}
-                                        {...route}
-                                        isExpanded={expandedDropdownLabel === route.label}
-                                        setExpandedDropdownId={setExpandedDropdownLabel}
-                                    />
-                                ),
-                            )}
+                            routes
+                                .filter((route) => !route.disabled)
+                                .map((route) =>
+                                    !routeIsDropdown(route) ? (
+                                        <Link
+                                            key={route.url}
+                                            to={route.url}
+                                            target={route.isExternal ? "_blank" : undefined}
+                                            rel={route.isExternal ? "noopener noreferrer" : undefined}
+                                            onClick={closeDropdowns}
+                                            className={classNames("navigation--item", {
+                                                "active-item": route.url === window.location.pathname,
+                                            })}
+                                        >
+                                            {route.label}
+                                        </Link>
+                                    ) : (
+                                        <HeaderDropdown
+                                            key={route.label}
+                                            {...route}
+                                            isExpanded={expandedDropdownLabel === route.label}
+                                            setExpandedDropdownId={setExpandedDropdownLabel}
+                                        />
+                                    ),
+                                )}
 
                         {isMarketed && (
                             <div className="mobile-fiat">
@@ -183,26 +185,32 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                             <ul>
                                 {routes &&
                                     routes.length > 0 &&
-                                    routes.map((route) =>
-                                        !routeIsDropdown(route) ? (
-                                            <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
-                                                <li className="menu--expanded__item" key={route.url}>
-                                                    <span className={classNames({ "active-item": route.url === window.location.pathname })}>
-                                                        {route.label}
-                                                    </span>
-                                                </li>
-                                            </Link>
-                                        ) : (
-                                            <HeaderDropdown
-                                                key={route.label}
-                                                {...route}
-                                                isExpanded={route.label === expandedDropdownLabel}
-                                                setExpandedDropdownId={setExpandedDropdownLabel}
-                                                setIsMenuExpanded={setIsMenuExpanded}
-                                                mobileOnly
-                                            />
-                                        ),
-                                    )}
+                                    routes
+                                        .filter((route) => !route.disabled)
+                                        .map((route) =>
+                                            !routeIsDropdown(route) ? (
+                                                <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
+                                                    <li className="menu--expanded__item" key={route.url}>
+                                                        <span
+                                                            className={classNames({
+                                                                "active-item": route.url === window.location.pathname,
+                                                            })}
+                                                        >
+                                                            {route.label}
+                                                        </span>
+                                                    </li>
+                                                </Link>
+                                            ) : (
+                                                <HeaderDropdown
+                                                    key={route.label}
+                                                    {...route}
+                                                    isExpanded={route.label === expandedDropdownLabel}
+                                                    setExpandedDropdownId={setExpandedDropdownLabel}
+                                                    setIsMenuExpanded={setIsMenuExpanded}
+                                                    mobileOnly
+                                                />
+                                            ),
+                                        )}
                             </ul>
                         </div>
                     </div>

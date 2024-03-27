@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "3.3.4",
+    "version": "3.3.6",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "type": "module",
     "repository": {
@@ -115,6 +115,7 @@
     ],
     "lint-staged": {
         "src/**/*.{ts,js,tsx,jsx}": "eslint --cache --fix",
-        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write"
+        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write",
+        "src/**/*.scss": "stylelint --fix"
     }
 }

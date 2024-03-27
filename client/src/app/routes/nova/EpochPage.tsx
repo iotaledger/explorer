@@ -55,9 +55,10 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         ? candidates?.map((candidate) => candidate.validator).filter((validator) => validator.active)
         : epochCommittee?.committee;
 
+    const epochStartTime = moment.unix(epochUnixTimeRange.from);
+    const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
+
     if (registrationTime) {
-        const epochStartTime = moment.unix(epochUnixTimeRange.from);
-        const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
         epochFrom = epochStartTime.format("DD MMM HH:mm:ss");
         epochTo = epochEndTime.format("DD MMM HH:mm:ss");
 
@@ -70,6 +71,8 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     if (isFutureEpoch) {
         const diffToEpochStart = moment.unix(epochUnixTimeRange.from).diff(moment());
         futureEpochStartsIn = moment(diffToEpochStart).format("H:mm:ss");
+        epochFrom = epochStartTime.format("DD MMM YYYY HH:mm:ss");
+        epochTo = epochEndTime.format("DD MMM YYYY HH:mm:ss");
     }
 
     return (
@@ -97,20 +100,20 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             <div className="label">To:</div>
                             <div className="value">{epochTo}</div>
                         </div>
+                        <div className="section--data">
+                            <div className="label">Time remaining:</div>
+                            <div className="value">{isFutureEpoch ? "Not started" : epochTimeRemaining}</div>
+                        </div>
+                        <div className="section--data">
+                            <div className="label">Progress:</div>
+                            <div className="value">{isFutureEpoch ? "0%" : `${epochProgressPercent}%`}</div>
+                        </div>
+                        <div className="section--data">
+                            <div className="label">Registration end:</div>
+                            <div className="value">{isFutureEpoch ? "-" : registrationTimeRemaining}</div>
+                        </div>
                         {!isFutureEpoch && (
                             <>
-                                <div className="section--data">
-                                    <div className="label">Time remaining:</div>
-                                    <div className="value">{epochTimeRemaining}</div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Progress:</div>
-                                    <div className="value">{epochProgressPercent}%</div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Registration end:</div>
-                                    <div className="value">{registrationTimeRemaining}</div>
-                                </div>
                                 <div className="section--data">
                                     <div className="label">Total pool stake:</div>
                                     <div className="value">{epochCommittee?.totalStake ?? 0}</div>

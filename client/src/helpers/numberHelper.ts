@@ -12,4 +12,8 @@ export class NumberHelper {
     public static isNumeric(value: string): boolean {
         return /^-?\d+$/.test(value);
     }
+
+    public static isNumber(value?: number | null): boolean {
+        return value !== null && value !== undefined && !isNaN(value);
+    }
 }

@@ -477,6 +477,19 @@ export class StardustApiService {
     }
 
     /**
+     * Get the circulating supply from inx-supply-tracking (in base token).
+     * @returns The circulating supply.
+     */
+    public async circulatingSupply(): Promise<number | null> {
+        const path: string = "api/supply/v1/";
+        const methodPath: string = "circulating";
+        const method = "GET";
+        const circulatingSupply: number | null = await this.nodePluginFetch<number | null>(path, method, methodPath);
+
+        return circulatingSupply;
+    }
+
+    /**
      * Find item on the stardust network.
      * @param query The query to use for finding items.
      * @returns The item found.
