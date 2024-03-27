@@ -1,5 +1,4 @@
 /* eslint-disable unicorn/prefer-top-level-await */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
 import initSdkStardust from "@iota/sdk-wasm-stardust/web";

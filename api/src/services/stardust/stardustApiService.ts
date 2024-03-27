@@ -1,4 +1,3 @@
-/* eslint-disable no-warning-comments */
 import { OutputResponse, Client, IOutputsResponse, HexEncodedString, Utils, NftQueryParameter } from "@iota/sdk-stardust";
 import { NodeInfoService } from "./nodeInfoService";
 import { ServiceFactory } from "../../factories/serviceFactory";
