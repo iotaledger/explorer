@@ -1,13 +1,6 @@
 name: Nova Deploy Workflow
 
-on:
-  workflow_dispatch:
-    inputs:
-      deployment:
-        type: boolean
-        description: "Deploy after build?"
-        required: false
-        default: false
+on: workflow_dispatch
 
 env:
   DEPLOY_ENV: nova
@@ -40,7 +33,6 @@ jobs:
 
   deploy_to_server:
     name: Deploy Production to Server
-    if: ${{ github.event.inputs.deployment == true }}
     needs: [set_env_vars, use-reusable-workflow]
     runs-on: ubuntu-latest
     steps:
