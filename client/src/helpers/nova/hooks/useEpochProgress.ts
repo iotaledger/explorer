@@ -1,6 +1,7 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNovaTimeConvert } from "./useNovaTimeConvert";
+import { NumberHelper } from "~helpers/numberHelper";
 
 /**
  * Returns the epoch progress information for the provided index or the current epoch if no index is provided.
@@ -35,13 +36,24 @@ export function useEpochProgress(index?: number): {
         };
     }, [index]);
 
+    const determineCurrentEpochIndex = (providedIndex: number | undefined, currentTime: number): number => {
+        if (providedIndex !== undefined && NumberHelper.isNumber(providedIndex)) {
+            return providedIndex;
+        } else if (unixTimestampToEpochIndex) {
+            const epochIndex = unixTimestampToEpochIndex(currentTime);
+            if (!NumberHelper.isNumber(epochIndex)) {
+                throw new Error("Failed to convert timestamp to a valid epoch index.");
+            }
+            return epochIndex;
+        } else {
+            throw new Error("unixTimestampToEpochIndex function is unavailable.");
+        }
+    };
+
     const checkEpochIndex = () => {
         if (unixTimestampToEpochIndex && epochIndexToUnixTimeRange) {
             const now = moment().unix();
-            let currentEpochIndex = index ?? null;
-            if (!currentEpochIndex) {
-                currentEpochIndex = unixTimestampToEpochIndex(now);
-            }
+            const currentEpochIndex = determineCurrentEpochIndex(index, now);
 
             const epochTimeRange = epochIndexToUnixTimeRange(currentEpochIndex);
 
