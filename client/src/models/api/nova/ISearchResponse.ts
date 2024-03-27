@@ -65,6 +65,11 @@ export interface ISearchResponse extends IResponse {
     transactionBlock?: Block;
 
     /**
+     * A slot index.
+     */
+    slotIndex?: string;
+
+    /**
      * Basic and/or Nft tagged output ids.
      */
     taggedOutputs?: ITaggedOutputsResponse;

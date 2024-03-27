@@ -4,9 +4,9 @@ import { SlotTableCellType, type TSlotTableData } from "~/app/components/nova/la
 import { SlotStatus } from "~app/lib/enums";
 import { SlotTableHeadings } from "~/app/lib/ui/enums";
 import { Utils } from "@iota/sdk-wasm-nova/web";
-import { useNetworkInfoNova } from "../networkInfo";
 import useSlotsFeed from "./useSlotsFeed";
 import { useNovaTimeConvert } from "./useNovaTimeConvert";
+import { useNetworkInfoNova } from "../networkInfo";
 import moment from "moment";
 
 type SlotTimeRange = {
@@ -168,9 +168,9 @@ function getSlotCommitmentTableRow(
 }
 
 export function useGenerateSlotsTable(): ITableRow<TSlotTableData>[] {
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
     const { currentSlotIndex, currentSlotTimeRange, latestSlotCommitments, latestSlotIndexes } = useSlotsFeed();
-    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
 
     const rows: ITableRow<TSlotTableData>[] = [];
 

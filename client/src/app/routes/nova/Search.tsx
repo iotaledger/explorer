@@ -56,7 +56,15 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     network,
                     query: queryTerm,
                 });
-                if (response && Object.keys(response).length > 0) {
+                if (!response || response?.error || response?.message) {
+                    setState((prevState) => ({
+                        ...prevState,
+                        completion: response?.error ? "invalid" : "notFound",
+                        invalidError: response?.error ?? response?.message ?? "",
+                        status: "",
+                        statusBusy: false,
+                    }));
+                } else if (Object.keys(response).length > 0) {
                     const routeSearch = new Map<string, string>();
                     let route = "";
                     let routeParam = query;
@@ -102,6 +110,9 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                     } else if (response.foundryId) {
                         route = "foundry";
                         routeParam = response.foundryId;
+                    } else if (response.slotIndex) {
+                        route = "slot";
+                        routeParam = response.slotIndex.toString();
                     } else if (response.taggedOutputs) {
                         route = "outputs";
                         redirectState = {
@@ -130,14 +141,6 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                         redirect: `/${network}/${route}/${routeParam}`,
                         search: getEncodedSearch(),
                         redirectState,
-                    }));
-                } else {
-                    setState((prevState) => ({
-                        ...prevState,
-                        completion: response?.error ? "invalid" : "notFound",
-                        invalidError: response?.error ?? "",
-                        status: "",
-                        statusBusy: false,
                     }));
                 }
             }, 0);
@@ -239,6 +242,10 @@ const Search: React.FC<RouteComponentProps<SearchRouteProps>> = (props) => {
                                     <li>
                                         <span>NFT Id</span>
                                         <span>66 Hex characters</span>
+                                    </li>
+                                    <li>
+                                        <span>Slot</span>
+                                        <span>Index or commitmentId of finalized slot</span>
                                     </li>
                                 </ul>
                                 <br />
