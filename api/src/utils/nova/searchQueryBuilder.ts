@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
-/* eslint-disable import/no-unresolved */
 import { AddressType, HexEncodedString } from "@iota/sdk-nova";
 import { AddressHelper } from "./addressHelper";
 import { IAddressDetails } from "../../models/api/nova/IAddressDetails";

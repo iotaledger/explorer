@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import { InfluxDB, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";

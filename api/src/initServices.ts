@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
 import { ClientOptions as INovaClientOptions, Client as NovaClient } from "@iota/sdk-nova";
 import { IClientOptions as IStardustClientOptions, Client as StardustClient } from "@iota/sdk-stardust";
