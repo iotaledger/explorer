@@ -591,6 +591,21 @@ export class NovaApiService {
     }
 
     /**
+     * Get the slot commitment by commitment id.
+     * @param slotCommitmentId The slot commitment id to get the commitment for.
+     * @returns The slot commitment.
+     */
+    public async getCommitment(slotCommitmentId: string): Promise<ISlotResponse> {
+        try {
+            const slot = await this.client.getCommitment(slotCommitmentId);
+
+            return { slot };
+        } catch (e) {
+            logger.error(`Failed fetching slot with commitment id ${slotCommitmentId}. Cause: ${e}`);
+        }
+    }
+
+    /**
      * Get the epoch committee.
      * @param epochIndex The epoch index to get the committee for.
      * @returns The epoch committee.

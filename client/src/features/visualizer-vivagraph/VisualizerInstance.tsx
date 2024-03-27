@@ -19,17 +19,13 @@ const VisualizerInstance: React.FC<RouteComponentProps<VisualizerRouteProps>> = 
     const themeMode = useGetThemeMode();
 
     return (
-        <GraphProvider>
-            <Wrapper
-                key={network}
-                network={network}
-                networkConfig={networkConfig}
-                themeMode={themeMode}
-                selectedFeedItem={selectedFeedItem}
-            >
-                <Vivagraph network={network} />
-            </Wrapper>
-        </GraphProvider>
+        <div key={network}>
+            <GraphProvider>
+                <Wrapper network={network} networkConfig={networkConfig} themeMode={themeMode} selectedFeedItem={selectedFeedItem}>
+                    <Vivagraph network={network} />
+                </Wrapper>
+            </GraphProvider>
+        </div>
     );
 };
 
