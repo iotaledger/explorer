@@ -38,6 +38,7 @@ import FeatureView from "./FeatureView";
 import KeyValueEntries from "./KeyValueEntries";
 import "./OutputView.scss";
 import UnlockConditionView from "./UnlockConditionView";
+import { NameHelper } from "~/helpers/nova/nameHelper";
 
 interface OutputViewProps {
     outputId: string;
@@ -100,7 +101,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             </div>
             <div className="output-header">
                 <button type="button" className="output-type--name color">
-                    {getOutputTypeName(output.type)}
+                    {NameHelper.getOutputTypeName(output.type)}
                 </button>
                 <div className="output-id--link">
                     (
@@ -321,6 +322,12 @@ function buildAddressForAccountOrNft(outputId: string, output: Output, bech32Hrp
     return bech32;
 }
 
+/**
+ * Get delegation id for Delegation output.
+ * @param outputId The id of the output.
+ * @param output The output.
+ * @returns The delegation id.
+ */
 function getDelegationId(outputId: string, output: Output): string {
     let delegationId: string = "";
 
@@ -332,23 +339,6 @@ function getDelegationId(outputId: string, output: Output): string {
     }
 
     return delegationId;
-}
-
-function getOutputTypeName(type: OutputType): string {
-    switch (type) {
-        case OutputType.Basic:
-            return "Basic";
-        case OutputType.Account:
-            return "Account";
-        case OutputType.Anchor:
-            return "Anchor";
-        case OutputType.Foundry:
-            return "Foundry";
-        case OutputType.Nft:
-            return "Nft";
-        case OutputType.Delegation:
-            return "Delegation";
-    }
 }
 
 /**

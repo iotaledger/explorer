@@ -20,6 +20,7 @@ import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import Tooltip from "~/app/components/Tooltip";
 import { EPOCH_HINT } from "./OutputView";
+import { NameHelper } from "~/helpers/nova/nameHelper";
 
 interface FeatureViewProps {
     /**
@@ -48,7 +49,7 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                 <div className={classNames("margin-r-t", "card--content--dropdown", { opened: isExpanded })}>
                     <DropdownIcon />
                 </div>
-                <div className="card--label">{getFeatureTypeName(feature.type, isImmutable)}</div>
+                <div className="card--label">{NameHelper.getFeatureTypeName(feature.type, isImmutable)}</div>
             </div>
             {isExpanded && (
                 <div className="padding-l-t left-border">
@@ -58,8 +59,8 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
                         <div className="card--value row">
                             {Object.entries((feature as MetadataFeature).entries).map(([key, value], index) => (
                                 <div key={index}>
-                                    <div className="label margin-t-m">{key}</div>
-                                    <div className="value row middle margin-t-t">
+                                    <div className="card--label">{key}:</div>
+                                    <div className="card--value row middle margin-t-t">
                                         <DataToggle sourceData={value} withSpacedHex={true} />
                                     </div>
                                 </div>
@@ -138,42 +139,5 @@ const FeatureView: React.FC<FeatureViewProps> = ({ feature, isImmutable, isPreEx
         </div>
     );
 };
-
-function getFeatureTypeName(type: FeatureType, isImmutable: boolean): string {
-    let name: string = "";
-
-    switch (type) {
-        case FeatureType.Sender:
-            name = "Sender";
-            break;
-        case FeatureType.Issuer:
-            name = "Issuer";
-            break;
-        case FeatureType.Metadata:
-            name = "Metadata";
-            break;
-        case FeatureType.StateMetadata:
-            name = "State Metadata";
-            break;
-        case FeatureType.Tag:
-            name = "Tag";
-            break;
-        case FeatureType.NativeToken:
-            name = "Native Token";
-            break;
-        case FeatureType.BlockIssuer:
-            name = "Block Issuer";
-            break;
-        case FeatureType.Staking:
-            name = "Staking";
-            break;
-    }
-
-    if (name) {
-        return isImmutable ? `Immutable ${name}` : name;
-    }
-
-    return "Unknown Feature";
-}
 
 export default FeatureView;
