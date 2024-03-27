@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Block, OutputWithMetadataResponse } from "@iota/sdk-nova";
 import { IAddressDetails } from "./IAddressDetails";
+import { IResponse } from "./IResponse";
 import { ITaggedOutputsResponse } from "./ITaggedOutputsResponse";
-import { IResponse } from "../IResponse";
 
 export interface ISearchResponse extends IResponse {
     /**
@@ -45,6 +45,11 @@ export interface ISearchResponse extends IResponse {
      * Transaction included block.
      */
     transactionBlock?: Block;
+
+    /**
+     * A slot index.
+     */
+    slotIndex?: string;
 
     /**
      * Basic and/or Nft tagged output ids.
