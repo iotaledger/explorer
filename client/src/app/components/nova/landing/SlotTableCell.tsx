@@ -95,7 +95,7 @@ function StatsCell({ data, href, shouldLoad, statsType }: IStatsCell): React.JSX
         return <Spinner compact />;
     }
     const stat = statsType === "blocks" ? slotStats?.blockCount : slotStats?.perPayloadType?.transaction;
-    return <span>{isLoading ? <Spinner compact /> : stat ? <Link to={href}>{stat}</Link> : "--"}</span>;
+    return <span>{isLoading ? <Spinner compact /> : stat ? <Link to={href}>{stat}</Link> : "0"}</span>;
 }
 
 interface ITextCell {
