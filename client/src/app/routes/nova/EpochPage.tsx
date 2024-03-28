@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import mainHeaderMessage from "~assets/modals/nova/epoch/main-header.json";
 import { useEpochProgress } from "~/helpers/nova/hooks/useEpochProgress";
@@ -12,6 +12,8 @@ import { useEpochStats } from "~/helpers/nova/hooks/useEpochStats";
 import EpochControls from "~/app/components/nova/epoch/EpochControls";
 import { useValidators } from "~/helpers/nova/hooks/useValidators";
 import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 export interface EpochPageProps {
     /**
@@ -30,6 +32,8 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         params: { network, epochIndex },
     },
 }) => {
+    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const [isFormatBalance, setIsFormatBalance] = useState(false);
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
     const { epochUnixTimeRange: currentEpochUnixTimeRange } = useEpochProgress();
     const { epochCommittee } = useEpochCommittee(network, epochIndex);
@@ -116,16 +120,30 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             <>
                                 <div className="section--data">
                                     <div className="label">Total pool stake:</div>
-                                    <div className="value">{epochCommittee?.totalStake ?? 0}</div>
+                                    <div className="value">
+                                        <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
+                                            {formatAmount(epochCommittee?.totalStake ?? 0, tokenInfo, isFormatBalance)}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Total validator stake:</div>
-                                    <div className="value">{epochCommittee?.totalValidatorStake ?? 0}</div>
+                                    <div className="value">
+                                        <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
+                                            {formatAmount(epochCommittee?.totalValidatorStake ?? 0, tokenInfo, isFormatBalance)}
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="section--data">
                                     <div className="label">Total delegated stake:</div>
                                     <div className="value">
-                                        {Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0)}
+                                        <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
+                                            {formatAmount(
+                                                Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0),
+                                                tokenInfo,
+                                                isFormatBalance,
+                                            )}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="section--data">
