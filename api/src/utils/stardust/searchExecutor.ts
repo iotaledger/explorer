@@ -25,29 +25,6 @@ export class SearchExecutor {
         const promises: Promise<void>[] = [];
         let promisesResult: ISearchResponse | null = null;
 
-        if (searchQuery.did) {
-            promises.push(
-                new Promise((resolve, reject) => {
-                    this.apiService
-                        .aliasDetails(searchQuery.aliasId)
-                        .then((aliasOutputs) => {
-                            if (aliasOutputs) {
-                                promisesResult = {
-                                    aliasId: searchQuery.aliasId,
-                                    did: searchQuery.did,
-                                };
-                                resolve();
-                            } else {
-                                reject(new Error("Output (aliasId) not present"));
-                            }
-                        })
-                        .catch((_) => {
-                            reject(new Error("Output (aliasId) fetch failed"));
-                        });
-                }),
-            );
-        }
-
         if (searchQuery.milestoneIndex) {
             promises.push(
                 new Promise((resolve, reject) => {
@@ -165,6 +142,7 @@ export class SearchExecutor {
                             if (aliasOutputs) {
                                 promisesResult = {
                                     aliasId: searchQuery.aliasId,
+                                    did: searchQuery.did,
                                 };
                                 resolve();
                             } else {
