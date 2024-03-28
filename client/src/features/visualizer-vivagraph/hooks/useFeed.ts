@@ -141,6 +141,23 @@ export const useFeed = (network: string) => {
         const highlightedLinksBefore: string[] = [];
         const usedNodes: string[] = [nodeId];
         const nodesToProcess = [nodeId];
+        enum Direction {
+            from = "from",
+            to = "to",
+        }
+        const processedNodeDirections: { [nodeId: string]: Direction | undefined } = {};
+
+        function getNodeDirection(currentNodeId: string, connectedNodeId: string, link: Viva.Graph.ILink<unknown>) {
+            const currentNodeIdDirection = processedNodeDirections[currentNodeId];
+            if (!currentNodeIdDirection) {
+                const connectedNodeDirection = link.toId === connectedNodeId ? Direction.to : Direction.from;
+                processedNodeDirections[connectedNodeId] = connectedNodeDirection;
+                return connectedNodeDirection;
+            } else {
+                processedNodeDirections[connectedNodeId] = currentNodeIdDirection;
+                return currentNodeIdDirection;
+            }
+        }
 
         while (nodesToProcess.length > 0) {
             const currentNodeId = nodesToProcess.shift();
@@ -149,10 +166,12 @@ export const useFeed = (network: string) => {
                 graphContext.graph.current?.forEachLinkedNode(currentNodeId, (connectedNode, link) => {
                     if (!usedNodes.includes(connectedNode.id)) {
                         usedNodes.push(connectedNode.id); // Add this line
-                        if (link.toId === currentNodeId) {
+                        const direction = getNodeDirection(currentNodeId, connectedNode.id, link);
+                        if (direction === Direction.to) {
                             highlightedNodesBefore.push(connectedNode.id);
                             highlightedLinksBefore.push(link.id);
-                        } else {
+                        }
+                        if (direction === Direction.from) {
                             highlightedNodesAfter.push(connectedNode.id);
                             highlightedLinksAfter.push(link.id);
                         }
@@ -379,3 +398,13 @@ export const useFeed = (network: string) => {
         resetCounter,
     };
 };
+
+// 0x2387755f851a8d7fef4da7229417a9e1a87c5ce5be4f5188cecc1f6a33443a2036d90000
+// Strong parents
+// 0x55835e7fc5b84855079a6fc40555d14059d0c31af1d3ff5239d1dece6be4da6b36d90000
+
+// 0x55835e7fc5b84855079a6fc40555d14059d0c31af1d3ff5239d1dece6be4da6b36d90000
+// Strong parents
+// 0xb8d8be35ba42c6aee01c0ef56016e0ba190e2f136d619746b670f0691f08e0fc36d90000
+// 0xd28e2f07963a98038d997fb05515f1bcaf7c9cf1b7e768b052b133e5e86cf47236d90000
+// 0xd31562728964a0857357b337c2b131d08ad52e7d33b8f719b2d50d3383aa4c7f36d90000
