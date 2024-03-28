@@ -91,7 +91,7 @@ export const BLOCK_STATS_QUERY = `
         sum("transaction_count") AS "transaction",
         sum("tagged_data_count") AS "taggedData",
         sum("candidacy_announcement_count") AS "candidacy",
-        sum("no_payload_count") AS "noPayload"
+        sum("validation_count") AS "noPayload"
     FROM "iota_block_activity"
     WHERE time >= $from and time <= $to
 `;
