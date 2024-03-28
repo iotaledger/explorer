@@ -71,16 +71,16 @@ export const useFeed = (network: string) => {
         const forcedGotSearch = useTangleStore.getState().search;
         if (search || forcedGotSearch) {
             const nodeIds = getSearchResultNodeIds(search || forcedGotSearch);
-            highlightNodes(nodeIds, [], SEARCH_RESULT_COLOR, 0);
+            updateElementsColor(nodeIds, [], SEARCH_RESULT_COLOR, undefined);
         }
 
         if (selectedNodeId) {
-            const { nodes: nodesBefore, links: linksBefore } = getNodeConnections(selectedNodeId, "toId");
-            const { nodes: nodesAfter, links: linksAfter } = getNodeConnections(selectedNodeId, "fromId");
+            const { links: linksBefore } = getNodeConnections(selectedNodeId, "toId");
+            const { links: linksAfter } = getNodeConnections(selectedNodeId, "fromId");
 
-            highlightNodes([selectedNodeId], [], SEARCH_RESULT_COLOR);
-            highlightNodes(nodesAfter, linksAfter, undefined, EDGE_COLOR_AFTER);
-            highlightNodes(nodesBefore, linksBefore, undefined, EDGE_COLOR_BEFORE);
+            updateElementsColor([selectedNodeId], undefined, SEARCH_RESULT_COLOR);
+            updateElementsColor(undefined, linksAfter, undefined, EDGE_COLOR_AFTER);
+            updateElementsColor(undefined, linksBefore, undefined, EDGE_COLOR_BEFORE);
         }
     }
 
@@ -99,13 +99,13 @@ export const useFeed = (network: string) => {
         });
     }
 
-    function highlightNodes(nodeIds: string[], linkIds: string[], nodeColor?: string, linkColor?: number) {
-        if (nodeColor) {
+    function updateElementsColor(nodeIds?: string[], linkIds?: string[], nodeColor?: string, linkColor?: number) {
+        if (nodeColor && nodeIds?.length) {
             for (const nodeId of nodeIds) {
                 updateBlockColor(nodeId, nodeColor);
             }
         }
-        if (linkColor) {
+        if (linkColor && linkIds?.length) {
             for (const linkId of linkIds) {
                 updateLineColor(linkId, linkColor);
             }
