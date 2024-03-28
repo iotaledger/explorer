@@ -1,0 +1,43 @@
+@import "../../../../../scss/fonts";
+@import "../../../../../scss/mixins";
+@import "../../../../../scss/media-queries";
+@import "../../../../../scss/variables";
+
+.metadata-section {
+    .allotments__section {
+        font-family: $metropolis;
+        padding: 0 !important;
+
+        .allotments__header {
+            width: fit-content;
+            padding-bottom: 16px;
+        }
+
+        .allotments__wrapper {
+            .allotment-item {
+                display: grid;
+                grid-template-columns: 3fr 1fr;
+                align-items: center;
+                justify-content: start;
+
+                &:not(:last-child) {
+                    margin-bottom: 12px;
+                }
+
+                .allotment-item__address,
+                .allotment-item__amount {
+                    display: flex;
+                    justify-content: start;
+                }
+
+                .allotment-item__address {
+                    width: 100%;
+                }
+                .allotment-item__amount {
+                    width: 100%;
+                    margin-left: 16px;
+                }
+            }
+        }
+    }
+}

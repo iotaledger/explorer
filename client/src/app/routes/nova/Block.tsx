@@ -40,8 +40,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         params: { network, blockId },
     },
 }) => {
-    const { tokenInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { tokenInfo, manaInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+    const [isFormattedMaxBurnedMana, setIsFormattedMaxBurnedMana] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
@@ -195,7 +196,17 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div>
                     <div className="section--data">
                         <div className="label">Max Burned Mana</div>
-                        <div className="value code">{Number(blockBody.asBasic().maxBurnedMana)}</div>
+                        <div className="value code">
+                            {Number(blockBody.asBasic().maxBurnedMana)}
+                            <span
+                                className="pointer"
+                                onClick={() => {
+                                    setIsFormattedMaxBurnedMana(!isFormattedMaxBurnedMana);
+                                }}
+                            >
+                                {formatAmount(blockBody.asBasic().maxBurnedMana, manaInfo, !isFormattedMaxBurnedMana)}
+                            </span>
+                        </div>
                     </div>
                     {blockBody.asBasic().payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
