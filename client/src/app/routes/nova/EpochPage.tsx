@@ -6,7 +6,6 @@ import Modal from "~/app/components/Modal";
 import NotFound from "~/app/components/NotFound";
 import moment from "moment";
 import useEpochCommittee from "~/helpers/nova/hooks/useEpochCommittee";
-import TruncatedId from "~/app/components/stardust/TruncatedId";
 import "./EpochPage.scss";
 import { useEpochStats } from "~/helpers/nova/hooks/useEpochStats";
 import EpochControls from "~/app/components/nova/epoch/EpochControls";
@@ -14,6 +13,10 @@ import { useValidators } from "~/helpers/nova/hooks/useValidators";
 import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import SlotTableCellWrapper, { TSlotTableData } from "~/app/components/nova/landing/SlotTableCell";
+import { useGenerateCommitteeTable } from "~/helpers/nova/hooks/useGenerateCommitteeTable";
+import { CommitteeTableHeadings } from "~/app/lib/ui/enums/CommitteeTableHeadings.enum";
+import Table, { ITableRow } from "~/app/components/Table";
 
 export interface EpochPageProps {
     /**
@@ -32,7 +35,7 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         params: { network, epochIndex },
     },
 }) => {
-    const { tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isFormatBalance, setIsFormatBalance] = useState(false);
     const { epochUnixTimeRange, epochProgressPercent, registrationTime } = useEpochProgress(Number(epochIndex));
     const { epochUnixTimeRange: currentEpochUnixTimeRange } = useEpochProgress();
@@ -59,6 +62,9 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
     const validators = isFutureEpoch
         ? candidates?.map((candidate) => candidate.validator).filter((validator) => validator.active)
         : epochCommittee?.committee;
+
+    const tableData: ITableRow<TSlotTableData>[] = useGenerateCommitteeTable(validators ?? [], network, tokenInfo, manaInfo);
+    const tableHeadings = Object.values(CommitteeTableHeadings);
 
     const epochStartTime = moment.unix(epochUnixTimeRange.from);
     const epochEndTime = moment.unix(epochUnixTimeRange.to - 1);
@@ -165,35 +171,7 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             </>
                         )}
                     </div>
-
-                    {(validators ?? []).length > 0 && (
-                        <div className="section all-validators__section">
-                            <h2 className="all-validators__header">{isFutureEpoch ? "Candidates" : "Committee"}</h2>
-                            <div className="all-validators__wrapper">
-                                <div className="validator-item table-header">
-                                    <div className="validator-item__address">Address</div>
-                                    <div className="validator-item__fixed-cost">Cost</div>
-                                    <div className="validator-item__pool-stake">Pool stake</div>
-                                    <div className="validator-item__validator-stake">Validator stake</div>
-                                    <div className="validator-item__delegator-stake">Delegated stake</div>
-                                </div>
-                                {validators?.map((validator, idx) => {
-                                    const delegatorStake = Number(validator.poolStake) - Number(validator.validatorStake);
-                                    return (
-                                        <div className="validator-item" key={`validator-${idx}`}>
-                                            <div className="validator-item__address">
-                                                <TruncatedId id={validator.address} />
-                                            </div>
-                                            <div className="validator-item__fixed-cost">{validator.fixedCost.toString()}</div>
-                                            <div className="validator-item__pool-stake">{validator.poolStake.toString()}</div>
-                                            <div className="validator-item__validator-stake">{validator.validatorStake.toString()}</div>
-                                            <div className="validator-item__delegator-stake">{delegatorStake}</div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
+                    <Table headings={tableHeadings} data={tableData} TableDataComponent={SlotTableCellWrapper} />
                 </div>
             </div>
         </section>
