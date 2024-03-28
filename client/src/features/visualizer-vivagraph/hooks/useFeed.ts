@@ -176,6 +176,12 @@ export const useFeed = (network: string) => {
             nodeUI.color = hexToNodeColor(color);
         }
     }
+    function updateBlockSize(blockId: string, size: number) {
+        const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
+        if (nodeUI) {
+            nodeUI.size = size;
+        }
+    }
 
     function updateLineColor(lineId: string, color: number) {
         if (graphContext.graphics.current) {
@@ -196,6 +202,7 @@ export const useFeed = (network: string) => {
             feedItem: newBlock,
             added: addedTime,
         });
+        updateBlockSize(blockId, 20);
         updateBlockColor(blockId, newBlock.color);
         const visibleBlocks = getVisibleBlocks();
         const updatedVisibleBlocks = [...visibleBlocks, blockId];
