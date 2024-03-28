@@ -1,4 +1,4 @@
-import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";

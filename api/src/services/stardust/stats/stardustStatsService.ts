@@ -1,4 +1,4 @@
-import { Client } from "@iota/sdk";
+import { Client } from "@iota/sdk-stardust";
 import { BaseStatsService } from "./baseStatsService";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";

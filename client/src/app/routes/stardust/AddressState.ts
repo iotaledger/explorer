@@ -9,7 +9,7 @@ import {
     Output,
     OutputResponse,
     OutputType,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import { Reducer, useContext, useEffect, useReducer } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { useAliasContainsDID } from "~/helpers/stardust/hooks/useAliasContainsDID";

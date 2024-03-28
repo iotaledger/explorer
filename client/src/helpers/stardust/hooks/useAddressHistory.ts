@@ -6,7 +6,7 @@ import { ITransactionHistoryItem, ITransactionHistoryResponse } from "~models/ap
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { groupOutputsByTransactionId } from "~app/components/stardust/history/transactionHistoryUtils";
-import { OutputResponse } from "@iota/sdk-wasm/web";
+import { OutputResponse } from "@iota/sdk-wasm-stardust/web";
 
 const OUTPUT_PAGE_SIZE = 10;
 const TX_PAGE_SIZE = 10;

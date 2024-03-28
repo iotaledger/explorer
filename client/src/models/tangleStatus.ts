@@ -1,4 +1,4 @@
-import { CONFLICT_REASON_STRINGS, IBlockMetadata } from "@iota/sdk-wasm/web";
+import { CONFLICT_REASON_STRINGS, IBlockMetadata } from "@iota/sdk-wasm-stardust/web";
 
 export type TangleStatus = "unknown" | "pending" | "referenced" | "milestone";
 

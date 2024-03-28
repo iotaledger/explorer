@@ -10,7 +10,7 @@ import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { DateHelper } from "~/helpers/dateHelper";
 import MilestoneSignaturesSection from "~/app/components/stardust/block/payload/milestone/MilestoneSignaturesSection";
-import { Ed25519Signature } from "@iota/sdk-wasm/web";
+import { Ed25519Signature } from "@iota/sdk-wasm-stardust/web";
 import { useInputsAndOutputs } from "~/helpers/nova/hooks/useInputsAndOutputs";
 import BlockPayloadSection from "~/app/components/nova/block/section/BlockPayloadSection";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";

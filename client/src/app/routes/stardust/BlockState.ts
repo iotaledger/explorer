@@ -1,4 +1,4 @@
-import { IBlockMetadata } from "@iota/sdk-wasm/web";
+import { IBlockMetadata } from "@iota/sdk-wasm-stardust/web";
 import { TangleStatus } from "~models/tangleStatus";
 
 export interface BlockMetadata {

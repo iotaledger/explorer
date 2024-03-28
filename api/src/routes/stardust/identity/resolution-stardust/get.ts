@@ -1,5 +1,5 @@
 import { IotaDID, IotaDocument, IotaIdentityClient } from "@iota/identity-wasm-stardust/node";
-import { Client } from "@iota/sdk-wasm/node";
+import { Client } from "@iota/sdk-wasm-stardust/node";
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IIdentityStardustResolveRequest } from "../../../../models/api/stardust/identity/IIdentityStardustResolveRequest";
 import { IIdentityStardustResolveResponse } from "../../../../models/api/stardust/identity/IIdentityStardustResolveResponse";

@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
 import { buildShimmerClaimedStats, COMMAS_REGEX } from "./ShimmerClaimedUtils";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";

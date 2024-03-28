@@ -1,4 +1,4 @@
-import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/sdk-wasm/web";
+import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/sdk-wasm-stardust/web";
 
 export function resolveTransitiveUnlock(unlocks: Unlock[], unlockIndex: number): SignatureUnlock {
     const unlock = unlocks[unlockIndex];

@@ -1,4 +1,4 @@
-import { AliasOutput, FoundryOutput, NftOutput } from "@iota/sdk-wasm/web";
+import { AliasOutput, FoundryOutput, NftOutput } from "@iota/sdk-wasm-stardust/web";
 import { optional } from "@ruffy/ts-optional";
 import React from "react";
 import Feature from "../../Feature";

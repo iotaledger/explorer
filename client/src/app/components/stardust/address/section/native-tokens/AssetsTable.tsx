@@ -1,4 +1,4 @@
-import { OutputType, OutputResponse, CommonOutput } from "@iota/sdk-wasm/web";
+import { OutputType, OutputResponse, CommonOutput } from "@iota/sdk-wasm-stardust/web";
 import React, { useEffect, useState } from "react";
 import Asset from "./Asset";
 import { IToken } from "~models/api/stardust/foundry/IToken";

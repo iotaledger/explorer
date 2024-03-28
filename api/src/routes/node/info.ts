@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { INetworkBoundGetRequest } from "../../models/api/INetworkBoundGetRequest";
 import { INodeInfoResponse as INovaNodeInfoResponse } from "../../models/api/nova/INodeInfoResponse";

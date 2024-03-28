@@ -1,6 +1,6 @@
 /* eslint-disable react/static-property-placement */
 /* eslint-disable max-len */
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import React, { Component, ReactNode } from "react";
 import { ReceiptPayloadProps } from "./ReceiptPayloadProps";
 import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";

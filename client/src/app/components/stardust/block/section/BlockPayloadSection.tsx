@@ -6,7 +6,7 @@ import {
     MilestonePayload as IMilestonePayload,
     RegularTransactionEssence,
     TaggedDataPayload as ITaggedDataPayload,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import * as H from "history";
 import React from "react";
 import { IInput } from "~models/api/stardust/IInput";

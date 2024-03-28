@@ -1,4 +1,4 @@
-import { AddressType, AliasOutput, NftOutput } from "@iota/sdk-wasm/web";
+import { AddressType, AliasOutput, NftOutput } from "@iota/sdk-wasm-stardust/web";
 import { useEffect, useState } from "react";
 import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
 import { ServiceFactory } from "~factories/serviceFactory";

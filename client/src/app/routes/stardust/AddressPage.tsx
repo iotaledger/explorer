@@ -1,4 +1,4 @@
-import { AddressType } from "@iota/sdk-wasm/web";
+import { AddressType } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useAddressPageState } from "./AddressState";

@@ -5,7 +5,7 @@ import {
     FoundryOutput,
     ImmutableAliasAddressUnlockCondition,
     MetadataFeature,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { FoundryProps } from "./FoundryProps";

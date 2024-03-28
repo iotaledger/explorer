@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent } from "@iota/sdk";
+import { INodeInfoBaseToken, IRent } from "@iota/sdk-stardust";
 import { IResponse } from "../IResponse";
 
 /**

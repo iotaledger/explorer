@@ -7,7 +7,7 @@ import {
     Unlock,
     UnlockConditionType,
     Utils,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import { Bech32AddressHelper } from "~/helpers/stardust/bech32AddressHelper";
 import { IInput } from "~models/api/stardust/IInput";
 import { IOutput } from "~models/api/stardust/IOutput";

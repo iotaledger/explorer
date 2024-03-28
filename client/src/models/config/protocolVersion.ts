@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-spaces */
 export const LEGACY = "legacy";
 export const CHRYSALIS = "chrysalis";
 export const STARDUST = "stardust";

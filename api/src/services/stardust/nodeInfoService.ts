@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk";
+import { INodeInfoBaseToken, IRent, Client } from "@iota/sdk-stardust";
 import cron from "node-cron";
 import { StardustApiService } from "./stardustApiService";
 import { NodeInfoError } from "../../errors/nodeInfoError";

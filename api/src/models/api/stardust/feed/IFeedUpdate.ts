@@ -1,4 +1,4 @@
-import { Block, MilestonePayload } from "@iota/sdk";
+import { Block, MilestonePayload } from "@iota/sdk-stardust";
 import { IFeedItemMetadata } from "./IFeedItemMetadata";
 
 type IFeedBlockUpdate = Block;

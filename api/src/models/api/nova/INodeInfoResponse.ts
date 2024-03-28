@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { InfoResponse } from "@iota/sdk-nova";
 import { IResponse } from "../IResponse";
 

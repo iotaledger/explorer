@@ -1,4 +1,4 @@
-import { Block, PayloadType, Unlock } from "@iota/sdk-wasm/web";
+import { Block, PayloadType, Unlock } from "@iota/sdk-wasm-stardust/web";
 import { useContext, useEffect, useState } from "react";
 import NetworkContext from "~app/context/NetworkContext";
 import { ServiceFactory } from "~factories/serviceFactory";

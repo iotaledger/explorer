@@ -1,4 +1,4 @@
-import { Block } from "@iota/sdk-wasm/web";
+import { Block } from "@iota/sdk-wasm-stardust/web";
 import { IResponse } from "../IResponse";
 
 export interface ITransactionDetailsResponse extends IResponse {

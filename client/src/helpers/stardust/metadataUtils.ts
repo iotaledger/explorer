@@ -1,4 +1,4 @@
-import { HexEncodedString, hexToUtf8 } from "@iota/sdk-wasm/web";
+import { HexEncodedString, hexToUtf8 } from "@iota/sdk-wasm-stardust/web";
 import * as jsonschema from "jsonschema";
 /**
  * Tries to parse hex data into metadata.

@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/sdk";
+import { HexEncodedString } from "@iota/sdk-stardust";
 import { IResponse } from "../../IResponse";
 
 export interface IBlockChildrenResponse extends IResponse {

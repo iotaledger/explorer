@@ -1,6 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { Client, ValidatorResponse, CommitteeResponse } from "@iota/sdk-nova";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";

@@ -1,4 +1,4 @@
-import { UnlockCondition } from "@iota/sdk-wasm/web";
+import { UnlockCondition } from "@iota/sdk-wasm-stardust/web";
 
 export interface UnlockConditionProps {
     /**

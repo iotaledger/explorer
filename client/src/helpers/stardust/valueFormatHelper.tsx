@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
 import Tooltip from "~app/components/Tooltip";
 import BigDecimal from "../bigDecimal";

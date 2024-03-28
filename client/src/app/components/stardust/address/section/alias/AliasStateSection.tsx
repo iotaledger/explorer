@@ -1,4 +1,4 @@
-import { AliasOutput } from "@iota/sdk-wasm/web";
+import { AliasOutput } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
 import DataToggle from "../../../../DataToggle";
 

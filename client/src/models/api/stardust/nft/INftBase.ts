@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/sdk-wasm/web";
+import { HexEncodedString } from "@iota/sdk-wasm-stardust/web";
 
 export interface INftBase {
     /**

@@ -1,4 +1,4 @@
-import { NftAddress } from "@iota/sdk-wasm/web";
+import { NftAddress } from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {

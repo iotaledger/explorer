@@ -1,4 +1,4 @@
-import { ConflictReason } from "@iota/sdk";
+import { ConflictReason } from "@iota/sdk-stardust";
 
 export interface IFeedItemMetadata {
     /**

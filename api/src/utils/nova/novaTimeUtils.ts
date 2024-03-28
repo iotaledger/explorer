@@ -1,6 +1,4 @@
 /* eslint-disable no-bitwise */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { ProtocolParameters } from "@iota/sdk-nova";
 
 // Note: genesisUnixTimestamp is the first second that falls into genesisSlot + 1
