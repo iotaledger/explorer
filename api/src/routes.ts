@@ -336,4 +336,10 @@ export const routes: IRoute[] = [
         folder: "nova/epoch/influx",
         func: "get",
     },
+    {
+        path: "/nova/slot/stats/:network/:slotIndex",
+        method: "get",
+        folder: "nova/slot/blocks/stats",
+        func: "get",
+    },
 ];

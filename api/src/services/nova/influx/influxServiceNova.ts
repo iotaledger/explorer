@@ -29,8 +29,8 @@ import {
     TRANSACTION_DAILY_QUERY,
     UNLOCK_CONDITIONS_PER_TYPE_DAILY_QUERY,
     VALIDATORS_ACTIVITY_DAILY_QUERY,
-    EPOCH_STATS_QUERY_BY_EPOCH_INDEX,
     DELEGATORS_TOTAL_QUERY,
+    BLOCK_STATS_QUERY,
 } from "./influxQueries";
 import { ServiceFactory } from "../../../factories/serviceFactory";
 import logger from "../../../logger";
@@ -39,6 +39,7 @@ import {
     IInfluxAnalyticsCache,
     IInfluxDailyCache,
     IInfluxEpochAnalyticsCache,
+    IInfluxSlotAnalyticsCache,
     initializeEmptyDailyCache,
     ManaBurnedInSlot,
     ManaBurnedInSlotCache,
@@ -79,12 +80,25 @@ type EpochUpdate = ITimedEntry & {
     noPayload: number;
 };
 
+type SlotUpdate = ITimedEntry & {
+    slotIndex: number;
+    taggedData: number;
+    candidacy: number;
+    transaction: number;
+    noPayload: number;
+};
+
 /**
  * Epoch analyitics cache MAX size.
  */
 const EPOCH_CACHE_MAX = 20;
 
 /**
+ * Slot analyitics cache MAX size.
+ */
+const SLOT_CACHE_MAX = 200;
+
+/*
  * Epoch analyitics cache MAX size.
  */
 const MANA_BURNED_CACHE_MAX = 20;
@@ -107,6 +121,12 @@ const COLLECT_ANALYTICS_DATA_CRON = "55 58 * * * *";
  */
 const COLLECT_EPOCH_ANALYTICS_DATA_CRON = "*/10 * * * *";
 
+/**
+ * The collect slot analytics data interval cron expression.
+ * Every 10 seconds
+ */
+const COLLECT_SLOT_ANALYTICS_DATA_CRON = "*/10 * * * * *";
+
 export class InfluxServiceNova extends InfluxDbClient {
     /**
      * The InfluxDb Client.
@@ -122,6 +142,11 @@ export class InfluxServiceNova extends InfluxDbClient {
      * The current influx epoch analytics cache instance.
      */
     protected readonly _epochCache: IInfluxEpochAnalyticsCache;
+
+    /**
+     * The current influx slot analytics cache instance.
+     */
+    protected readonly _slotCache: IInfluxSlotAnalyticsCache;
 
     /**
      * The current influx analytics cache instance.
@@ -148,6 +173,7 @@ export class InfluxServiceNova extends InfluxDbClient {
         this._novatimeService = ServiceFactory.get<NovaTimeService>(`nova-time-${network.network}`);
         this._dailyCache = initializeEmptyDailyCache();
         this._epochCache = new Map();
+        this._slotCache = new Map();
         this._manaBurnedInSlotCache = new Map();
         this._analyticsCache = {};
     }
@@ -268,6 +294,14 @@ export class InfluxServiceNova extends InfluxDbClient {
         return this._epochCache.get(epochIndex);
     }
 
+    public async getSlotAnalyticStats(slotIndex: number) {
+        if (!this._slotCache.get(slotIndex)) {
+            await this.collectSlotStatsByIndex(slotIndex);
+        }
+
+        return this._slotCache.get(slotIndex);
+    }
+
     /**
      * Get the manaBurned stats by slot index.
      * @param slotIndex - The slot index.
@@ -311,6 +345,8 @@ export class InfluxServiceNova extends InfluxDbClient {
         void this.collectAnalytics();
         // eslint-disable-next-line no-void
         void this.collectEpochStats();
+        // eslint-disable-next-line no-void
+        void this.collectSlotStats();
 
         if (this._client) {
             cron.schedule(COLLECT_GRAPHS_DATA_CRON, async () => {
@@ -326,6 +362,11 @@ export class InfluxServiceNova extends InfluxDbClient {
             cron.schedule(COLLECT_EPOCH_ANALYTICS_DATA_CRON, async () => {
                 // eslint-disable-next-line no-void
                 void this.collectEpochStats();
+            });
+
+            cron.schedule(COLLECT_SLOT_ANALYTICS_DATA_CRON, async () => {
+                // eslint-disable-next-line no-void
+                void this.collectSlotStats();
             });
         }
     }
@@ -485,7 +526,7 @@ export class InfluxServiceNova extends InfluxDbClient {
             const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
             const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
 
-            await this.queryInflux<EpochUpdate>(EPOCH_STATS_QUERY_BY_EPOCH_INDEX, fromNano, toNano)
+            await this.queryInflux<EpochUpdate>(BLOCK_STATS_QUERY, fromNano, toNano)
                 .then((results) => {
                     for (const update of results) {
                         update.epochIndex = epochIndex;
@@ -493,9 +534,7 @@ export class InfluxServiceNova extends InfluxDbClient {
                     }
                 })
                 .catch((e) => {
-                    logger.warn(
-                        `[InfluxClient] Query ${EPOCH_STATS_QUERY_BY_EPOCH_INDEX} failed for (${this._network.network}). Cause ${e}`,
-                    );
+                    logger.warn(`[InfluxClient] Query ${BLOCK_STATS_QUERY} failed for (${this._network.network}). Cause ${e}`);
                 });
         } catch (err) {
             logger.warn(`[InfluxNova] Failed refreshing epoch stats for "${this._network.network}". Cause: ${err}`);
@@ -574,7 +613,82 @@ export class InfluxServiceNova extends InfluxDbClient {
 
                 logger.debug(`[InfluxNova] Deleting epoch index "${lowestIndex}" ("${this._network.network}")`);
 
-                this._epochCache.delete(lowestIndex);
+                this._manaBurnedInSlotCache.delete(lowestIndex);
+            }
+        }
+    }
+
+    /**
+     * Get the slot analytics by index and set it in the cache.
+     * @param slotIndex - The slot index.
+     */
+    private async collectSlotStatsByIndex(slotIndex: number) {
+        try {
+            const { from, to } = this._novatimeService.getSlotIndexToUnixTimeRange(slotIndex);
+            const fromNano = toNanoDate((moment(Number(from) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+            const toNano = toNanoDate((moment(Number(to) * 1000).valueOf() * NANOSECONDS_IN_MILLISECOND).toString());
+
+            await this.queryInflux<SlotUpdate>(BLOCK_STATS_QUERY, fromNano, toNano)
+                .then((results) => {
+                    for (const update of results) {
+                        update.slotIndex = slotIndex;
+                        this.updateSlotCache(update);
+                    }
+                })
+                .catch((e) => {
+                    logger.warn(`[InfluxClient] Query ${BLOCK_STATS_QUERY} failed for (${this._network.network}). Cause ${e}`);
+                });
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing slot stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    /**
+     * Get the slot analytics and set it in the cache.
+     */
+    private async collectSlotStats() {
+        try {
+            logger.debug(`[InfluxNova] Collecting slot stats for "${this._network.network}"`);
+            const slotIndex = this._novatimeService.getUnixTimestampToSlotIndex(moment().unix());
+            // eslint-disable-next-line no-void
+            void this.collectSlotStatsByIndex(slotIndex);
+        } catch (err) {
+            logger.warn(`[InfluxNova] Failed refreshing slot stats for "${this._network.network}". Cause: ${err}`);
+        }
+    }
+
+    private updateSlotCache(update: SlotUpdate) {
+        if (update.slotIndex !== undefined && !this._slotCache.has(update.slotIndex)) {
+            const { slotIndex, transaction, candidacy, taggedData, noPayload } = update;
+            const blockCount = transaction + candidacy + taggedData + noPayload;
+            this._slotCache.set(slotIndex, {
+                slotIndex,
+                blockCount,
+                perPayloadType: {
+                    transaction,
+                    candidacy,
+                    taggedData,
+                    noPayload,
+                },
+            });
+
+            logger.debug(`[InfluxNova] Added slot index "${slotIndex}" to cache for "${this._network.network}"`);
+
+            if (this._slotCache.size > SLOT_CACHE_MAX) {
+                let lowestIndex: number;
+                for (const index of this._slotCache.keys()) {
+                    if (!lowestIndex) {
+                        lowestIndex = index;
+                    }
+
+                    if (slotIndex < lowestIndex) {
+                        lowestIndex = index;
+                    }
+                }
+
+                logger.debug(`[InfluxNova] Deleting slot index "${lowestIndex}" ("${this._network.network}")`);
+
+                this._slotCache.delete(lowestIndex);
             }
         }
     }
