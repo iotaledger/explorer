@@ -1,5 +1,5 @@
 import type { ITableRow } from "~/app/components/Table";
-import { SlotTableCellType, type TSlotTableData } from "~/app/components/nova/landing/SlotTableCell";
+import { TableCellType, type TTableData } from "~/app/components/nova/TableCell";
 import { BaseTokenResponse, CommitteeMember, ValidatorResponse } from "@iota/sdk-wasm-nova/web";
 import { CommitteeTableHeadings } from "~/app/lib/ui/enums/CommitteeTableHeadings.enum";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
@@ -9,41 +9,41 @@ function getCommitteeTableRow(
     tokenInfo: BaseTokenResponse,
     manaInfo: BaseTokenResponse,
     validator: ValidatorResponse | CommitteeMember,
-): ITableRow<TSlotTableData> {
-    const data: TSlotTableData[] = [];
+): ITableRow<TTableData> {
+    const data: TTableData[] = [];
 
     Object.values(CommitteeTableHeadings).forEach((heading) => {
-        let tableData: TSlotTableData | null = null;
+        let tableData: TTableData | null = null;
 
         switch (heading) {
             case CommitteeTableHeadings.Address:
                 tableData = {
-                    type: SlotTableCellType.TruncatedId,
+                    type: TableCellType.TruncatedId,
                     data: validator.address,
-                    href: `/${network}/slot/${validator.address}`,
+                    href: `/${network}/addr/${validator.address}`,
                 };
                 break;
             case CommitteeTableHeadings.Cost:
                 tableData = {
-                    type: SlotTableCellType.Text,
+                    type: TableCellType.Text,
                     data: formatAmount(validator.fixedCost, manaInfo),
                 };
                 break;
             case CommitteeTableHeadings.PoolStake:
                 tableData = {
-                    type: SlotTableCellType.Text,
+                    type: TableCellType.Text,
                     data: formatAmount(validator.poolStake, tokenInfo),
                 };
                 break;
             case CommitteeTableHeadings.ValidatorStake:
                 tableData = {
-                    type: SlotTableCellType.Text,
+                    type: TableCellType.Text,
                     data: formatAmount(validator.validatorStake, tokenInfo),
                 };
                 break;
             case CommitteeTableHeadings.DelegatedStake:
                 tableData = {
-                    type: SlotTableCellType.Text,
+                    type: TableCellType.Text,
                     data: formatAmount(BigInt(validator.poolStake) - BigInt(validator.validatorStake), tokenInfo),
                 };
                 break;
@@ -66,10 +66,10 @@ export function useGenerateCommitteeTable(
     network: string,
     tokenInfo: BaseTokenResponse,
     manaInfo: BaseTokenResponse,
-): ITableRow<TSlotTableData>[] {
-    const rows: ITableRow<TSlotTableData>[] = [];
+): ITableRow<TTableData>[] {
+    const rows: ITableRow<TTableData>[] = [];
 
-    validators?.map((validator, idx) => {
+    validators?.map((validator) => {
         const row = getCommitteeTableRow(network, tokenInfo, manaInfo, validator);
         rows.push(row);
     });

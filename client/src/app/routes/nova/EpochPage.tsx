@@ -13,7 +13,7 @@ import { useValidators } from "~/helpers/nova/hooks/useValidators";
 import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
-import SlotTableCellWrapper, { TSlotTableData } from "~/app/components/nova/landing/SlotTableCell";
+import TableCellWrapper, { TTableData } from "~/app/components/nova/TableCell";
 import { useGenerateCommitteeTable } from "~/helpers/nova/hooks/useGenerateCommitteeTable";
 import { CommitteeTableHeadings } from "~/app/lib/ui/enums/CommitteeTableHeadings.enum";
 import Table, { ITableRow } from "~/app/components/Table";
@@ -63,7 +63,7 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         ? candidates?.map((candidate) => candidate.validator).filter((validator) => validator.active)
         : epochCommittee?.committee;
 
-    const tableData: ITableRow<TSlotTableData>[] = useGenerateCommitteeTable(validators ?? [], network, tokenInfo, manaInfo);
+    const tableData: ITableRow<TTableData>[] = useGenerateCommitteeTable(validators ?? [], network, tokenInfo, manaInfo);
     const tableHeadings = Object.values(CommitteeTableHeadings);
 
     const epochStartTime = moment.unix(epochUnixTimeRange.from);
@@ -171,7 +171,18 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             </>
                         )}
                     </div>
-                    <Table headings={tableHeadings} data={tableData} TableDataComponent={SlotTableCellWrapper} />
+                    <div className="section section--committee">
+                        <div className="section--header row row--tablet-responsive middle space-between">
+                            <div className="row middle">
+                                <h2>{isFutureEpoch ? "Candidates" : "Committee"}</h2>
+                            </div>
+                        </div>
+                        <div className="section--data">
+                            <div className="committee--section__table">
+                                <Table headings={tableHeadings} data={tableData} TableDataComponent={TableCellWrapper} />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
