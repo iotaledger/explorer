@@ -1,29 +1,43 @@
-@import "../../../../../scss/variables";
 @import "../../../../../scss/fonts";
 @import "../../../../../scss/mixins";
 @import "../../../../../scss/media-queries";
+@import "../../../../../scss/variables";
 
 .metadata-section {
-    .allotments__header {
-        @include font-size(36px);
-        line-height: 120%;
-        margin-bottom: 48px;
-    }
+    .allotments__section {
+        font-family: $metropolis;
+        padding: 0 !important;
 
-    .allotments__table {
-        font-family: inherit;
-        font-size: inherit;
-        font-weight: inherit;
-        table {
-            @include desktop-down {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                width: 100%;
-            }
+        .allotments__header {
+            width: fit-content;
+            padding-bottom: 16px;
         }
-        .table-container table thead th {
-            padding-bottom: 8px;
+
+        .allotments__wrapper {
+            .allotment-item {
+                display: grid;
+                grid-template-columns: 3fr 1fr;
+                align-items: center;
+                justify-content: start;
+
+                &:not(:last-child) {
+                    margin-bottom: 12px;
+                }
+
+                .allotment-item__address,
+                .allotment-item__amount {
+                    display: flex;
+                    justify-content: start;
+                }
+
+                .allotment-item__address {
+                    width: 100%;
+                }
+                .allotment-item__amount {
+                    width: 100%;
+                    margin-left: 16px;
+                }
+            }
         }
     }
 }

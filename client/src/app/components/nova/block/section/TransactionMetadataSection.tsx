@@ -5,7 +5,6 @@ import {
     TransactionState,
     Utils,
     AccountAddress,
-    BaseTokenResponse,
 } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import Spinner from "../../../Spinner";
@@ -13,10 +12,9 @@ import ContextInputView from "../../ContextInputView";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { PillStatus } from "~/app/lib/ui/enums";
 import StatusPill from "~/app/components/nova/StatusPill";
-import Table, { ITableRow } from "~/app/components/Table";
-import AllotmentsTableCellWrapper, { AllotmentTableCellType, TAllotmentsTableData } from "./AllotmentsTableCell";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./TransactionMetadataSection.scss";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
 
 interface TransactionMetadataSectionProps {
     readonly transaction?: Transaction;
@@ -32,18 +30,9 @@ const TRANSACTION_STATE_TO_PILL_STATUS: Record<TransactionState, PillStatus> = {
     failed: PillStatus.Error,
 };
 
-enum AllotmentsTableHeadings {
-    address = "Address",
-    amount = "Amount",
-}
-
 const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({ transaction, transactionMetadata, metadataError }) => {
     const { name: network, manaInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const pillStatus: PillStatus | undefined = TRANSACTION_STATE_TO_PILL_STATUS[transactionMetadata?.transactionState ?? "pending"];
-    const tableHeadings = Object.values(AllotmentsTableHeadings);
-    const tableData: ITableRow<TAllotmentsTableData>[] = transaction
-        ? generateAllotmentsTable(transaction, network, manaInfo, bech32Hrp)
-        : [];
 
     return (
         <div className="section metadata-section">
@@ -81,14 +70,30 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                     <ContextInputView contextInput={contextInput} key={idx} />
                                 ))}
                                 {transaction?.allotments && (
-                                    <div className="section--data">
-                                        <div className="label">Mana Allotments</div>
-                                        <div className="value allotments__table">
-                                            <Table
-                                                headings={tableHeadings}
-                                                data={tableData}
-                                                TableDataComponent={AllotmentsTableCellWrapper}
-                                            />
+                                    <div className="section allotments__section">
+                                        <h3 className="allotments__header">Mana Allotments</h3>
+                                        <div className="allotments__wrapper">
+                                            <div className="allotment-item table-header">
+                                                <div className="allotment-item__address label">Address</div>
+                                                <div className="allotment-item__amount label">Amount</div>
+                                            </div>
+                                            {transaction?.allotments.map((allotment, idx) => {
+                                                const accountAddress = new AccountAddress(allotment.accountId);
+                                                const accountBech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
+                                                return (
+                                                    <div className="allotment-item" key={`allotment-${idx}`}>
+                                                        <div className="allotment-item__address value truncate highlight">
+                                                            <TruncatedId
+                                                                id={allotment.accountId}
+                                                                link={`/${network}/addr/${accountBech32}`}
+                                                            />
+                                                        </div>
+                                                        <div className="allotment-item__amount value">
+                                                            {formatAmount(allotment.mana, manaInfo, false)}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 )}
@@ -100,48 +105,6 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
         </div>
     );
 };
-
-export function generateAllotmentsTable(
-    transaction: Transaction,
-    network: string,
-    manaInfo: BaseTokenResponse,
-    bech32Hrp: string,
-): ITableRow<TAllotmentsTableData>[] {
-    const rows: ITableRow<TAllotmentsTableData>[] = [];
-
-    transaction?.allotments?.map((allotment, idx) => {
-        const data: TAllotmentsTableData[] = [];
-
-        Object.values(AllotmentsTableHeadings).forEach((heading) => {
-            let tableData: TAllotmentsTableData;
-
-            switch (heading) {
-                case AllotmentsTableHeadings.address: {
-                    const accountAddress = new AccountAddress(allotment.accountId);
-                    const accountBech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
-                    tableData = {
-                        type: AllotmentTableCellType.TruncatedId,
-                        data: allotment.accountId,
-                        href: `${network}/addr/${accountBech32}`,
-                    };
-                    break;
-                }
-                case AllotmentsTableHeadings.amount: {
-                    tableData = {
-                        type: AllotmentTableCellType.Text,
-                        data: formatAmount(allotment.mana, manaInfo, false),
-                    };
-                    break;
-                }
-            }
-
-            data.push(tableData);
-        });
-        rows.push({ id: allotment.accountId, data });
-    });
-
-    return rows;
-}
 
 TransactionMetadataSection.defaultProps = {
     transactionMetadata: undefined,
