@@ -82,7 +82,9 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
 
     return (
         <div className="balance-wrapper">
-            <Icon icon="wallet" boxed />
+            <div className="balance-wrapper__icon">
+                <Icon icon="wallet" boxed />
+            </div>
             <div className="balance-wrapper__inner">
                 <div className="balance-wrapper__base-token">
                     {baseTokenBalanceView(
