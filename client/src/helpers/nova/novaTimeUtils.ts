@@ -1,4 +1,5 @@
 import { ProtocolParametersResponse } from "@iota/sdk-wasm-nova/web";
+import moment from "moment";
 
 // Note: genesisUnixTimestamp is the first second that falls into genesisSlot + 1
 
@@ -151,4 +152,22 @@ export function getRegistrationSlotFromEpochIndex(protocolInfo: ProtocolParamete
 
         return registrationSlot;
     };
+}
+
+/**
+ * Get time remaining format ex.(15h : 12m : 9s).
+ * @param time The time to format.
+ * @returns Formatted time.
+ */
+export function getTimeRemaining(time: number) {
+    const unixEndTime = moment.unix(time);
+    const diffToEnd = unixEndTime.diff(moment());
+    const duration = moment.duration(diffToEnd);
+
+    const hours = Math.floor(duration.asHours());
+    const minutes = duration.minutes();
+    const seconds = duration.seconds();
+
+    const timeRemaining = `${hours}h : ${minutes}m : ${seconds}s`;
+    return timeRemaining;
 }

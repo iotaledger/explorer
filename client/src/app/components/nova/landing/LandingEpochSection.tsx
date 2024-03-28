@@ -13,6 +13,7 @@ import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import { clamp } from "~/helpers/clamp";
 import { Link } from "react-router-dom";
 import "./LandingEpochSection.scss";
+import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
 
 const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
 
@@ -34,19 +35,6 @@ const LandingEpochSection: React.FC = () => {
     let epochTimeRemaining = "-";
     let epochFrom: string = "-";
     let epochTo: string = "-";
-
-    function getTimeRemaining(endTime: number) {
-        const unixEndTime = moment.unix(endTime);
-        const diffToEnd = unixEndTime.diff(moment());
-        const duration = moment.duration(diffToEnd);
-
-        const hours = Math.floor(duration.asHours());
-        const minutes = duration.minutes();
-        const seconds = duration.seconds();
-
-        const timeRemaining = `${hours}h : ${minutes}m : ${seconds}s`;
-        return timeRemaining;
-    }
 
     if (epochUnixTimeRange && registrationTime) {
         const epochStartTime = moment.unix(epochUnixTimeRange.from);
