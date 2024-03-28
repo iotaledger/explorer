@@ -29,7 +29,7 @@ function getSlotIndexTableCell(network: string, slotIndex: number, slotTimeRange
         return {
             type: SlotTableCellType.Link,
             data: slotIndexString,
-            href: `${network}/slot/${slotIndex}`,
+            href: `/${network}/slot/${slotIndex}`,
         };
     }
     return {
@@ -115,7 +115,7 @@ function getSlotCommitmentTableRow(
                 tableData = {
                     type: SlotTableCellType.TruncatedId,
                     data: slotCommitmentId,
-                    href: `${network}/slot/${slotIndex}`,
+                    href: `/${network}/slot/${slotIndex}`,
                 };
                 break;
             case SlotTableHeadings.ReferenceManaCost:
@@ -128,7 +128,7 @@ function getSlotCommitmentTableRow(
                 tableData = {
                     type: SlotTableCellType.Stats,
                     data: slotIndex.toString(),
-                    href: `${network}/slot/${slotIndex}?tab=RefBlocks`,
+                    href: `/${network}/slot/${slotIndex}?tab=RefBlocks`,
                     statsType: "blocks",
                     shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
@@ -137,7 +137,7 @@ function getSlotCommitmentTableRow(
                 tableData = {
                     type: SlotTableCellType.Stats,
                     data: slotIndex.toString(),
-                    href: `${network}/slot/${slotIndex}?tab=Txs`,
+                    href: `/${network}/slot/${slotIndex}?tab=Txs`,
                     statsType: "transactions",
                     shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
