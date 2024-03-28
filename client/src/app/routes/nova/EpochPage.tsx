@@ -11,6 +11,7 @@ import "./EpochPage.scss";
 import { useEpochStats } from "~/helpers/nova/hooks/useEpochStats";
 import EpochControls from "~/app/components/nova/epoch/EpochControls";
 import { useValidators } from "~/helpers/nova/hooks/useValidators";
+import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
 
 export interface EpochPageProps {
     /**
@@ -63,14 +64,13 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         epochTo = epochEndTime.format("DD MMM HH:mm:ss");
 
         const diffToEpochEnd = epochEndTime.diff(moment());
-        epochTimeRemaining = diffToEpochEnd > 0 ? moment(diffToEpochEnd).format("H:mm:ss") : "Finished";
+        epochTimeRemaining = diffToEpochEnd > 0 ? getTimeRemaining(epochUnixTimeRange.to - 1) : "Finished";
 
         registrationTimeRemaining = moment.unix(registrationTime).fromNow();
     }
 
     if (isFutureEpoch) {
-        const diffToEpochStart = moment.unix(epochUnixTimeRange.from).diff(moment());
-        futureEpochStartsIn = moment(diffToEpochStart).format("H:mm:ss");
+        futureEpochStartsIn = getTimeRemaining(epochUnixTimeRange.from);
         epochFrom = epochStartTime.format("DD MMM YYYY HH:mm:ss");
         epochTo = epochEndTime.format("DD MMM YYYY HH:mm:ss");
     }
