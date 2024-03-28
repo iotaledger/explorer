@@ -86,12 +86,12 @@ export const OUTPUTS_DAILY_QUERY = {
     `,
 };
 
-export const EPOCH_STATS_QUERY_BY_EPOCH_INDEX = `
+export const BLOCK_STATS_QUERY = `
     SELECT
         sum("transaction_count") AS "transaction",
         sum("tagged_data_count") AS "taggedData",
         sum("candidacy_announcement_count") AS "candidacy",
-        sum("no_payload_count") AS "noPayload"
+        sum("validation_count") AS "noPayload"
     FROM "iota_block_activity"
     WHERE time >= $from and time <= $to
 `;

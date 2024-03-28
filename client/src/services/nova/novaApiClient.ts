@@ -58,6 +58,8 @@ import { IValidatorStatsResponse } from "~/models/api/nova/IValidatorStatsRespon
 import { IDelegationByValidatorResponse } from "~/models/api/nova/IDelegationByValidatorResponse";
 import { ISlotManaBurnedRequest } from "~/models/api/nova/stats/ISlotManaBurnedRequest";
 import { ISlotManaBurnedResponse } from "~/models/api/nova/stats/ISlotManaBurnedResponse";
+import { ISlotAnalyticStatsRequest } from "~/models/api/nova/stats/ISlotAnalyticStatsRequest";
+import { ISlotAnalyticStatsResponse } from "~/models/api/nova/stats/ISlotAnalyticStatsResponse";
 
 /**
  * Class to handle api communications on nova.
@@ -319,6 +321,15 @@ export class NovaApiClient extends ApiClient {
      */
     public async getEpochCommittee(request: IEpochCommitteeRequest): Promise<IEpochCommitteeResponse> {
         return this.callApi<unknown, IEpochCommitteeResponse>(`nova/epoch/committee/${request.network}/${request.epochIndex}`, "get");
+    }
+
+    /**
+     * Get the slot analytics stats by slot index.
+     * @param request The slot analytic stats get request.
+     * @returns The slot stats response.
+     */
+    public async slotStats(request: ISlotAnalyticStatsRequest): Promise<ISlotAnalyticStatsResponse> {
+        return this.callApi<unknown, ISlotAnalyticStatsResponse>(`nova/slot/stats/${request.network}/${request.slotIndex}`, "get");
     }
 
     /**
