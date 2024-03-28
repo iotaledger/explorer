@@ -2,6 +2,7 @@ import React from "react";
 import * as H from "history";
 import { IAddressDetails } from "~/models/api/nova/IAddressDetails";
 import TruncatedId from "../../stardust/TruncatedId";
+import { CAPABILITY_FLAG_TO_DESCRIPTION } from "~/app/lib/constants/allowed.capabilities";
 
 interface Bech32AddressProps {
     network?: string;
@@ -12,6 +13,9 @@ interface Bech32AddressProps {
 }
 
 const Bech32Address: React.FC<Bech32AddressProps> = ({ network, history, addressDetails, advancedMode, hideLabel }) => {
+    const isRestricted = addressDetails?.restricted ?? false;
+    const capabilites = addressDetails?.capabilities ?? [];
+
     return (
         <div className="bech32-address">
             {addressDetails?.bech32 && (
@@ -46,6 +50,18 @@ const Bech32Address: React.FC<Bech32AddressProps> = ({ network, history, address
                         )}
                         {!history && <TruncatedId id={addressDetails?.hex} showCopyButton />}
                     </div>
+                </div>
+            )}
+            {isRestricted && capabilites.length > 0 && (
+                <div className="section--data">
+                    <div className="label">Allowed capabilities</div>
+                    <ul style={{ marginLeft: "24px" }}>
+                        {capabilites.map((capability, index) => (
+                            <li key={index} className="value">
+                                {CAPABILITY_FLAG_TO_DESCRIPTION[capability] ?? "unknown"}
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             )}
         </div>

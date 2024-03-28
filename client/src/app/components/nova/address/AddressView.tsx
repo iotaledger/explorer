@@ -18,7 +18,7 @@ const AddressView: React.FC<AddressViewProps> = ({ address }) => {
         <div className="address-type">
             <div className="card--label">{NameHelper.getAddressTypeName(address.type)}</div>
             <div className="card--value">
-                <TruncatedId id={addressDetails.bech32} link={link} showCopyButton />
+                <TruncatedId id={addressDetails.bech32} link={link} linkState={{ addressDetails }} showCopyButton />
             </div>
         </div>
     );
