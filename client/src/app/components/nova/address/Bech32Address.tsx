@@ -13,8 +13,8 @@ interface Bech32AddressProps {
 }
 
 const Bech32Address: React.FC<Bech32AddressProps> = ({ network, history, addressDetails, advancedMode, hideLabel }) => {
-    const isRestricted = addressDetails?.restricted ?? false;
-    const capabilites = addressDetails?.capabilities ?? [];
+    const isRestricted = !!addressDetails?.restricted;
+    const capabilites = addressDetails?.restricted?.capabilities ?? [];
 
     return (
         <div className="bech32-address">

@@ -10,7 +10,7 @@ import {
     RestrictedAddress,
 } from "@iota/sdk-wasm-nova/web";
 import { HexHelper } from "../stardust/hexHelper";
-import { IAddressDetails } from "~models/api/nova/IAddressDetails";
+import { IAddressDetails, IRestrictedAddressDetails } from "~models/api/nova/IAddressDetails";
 import { plainToInstance } from "class-transformer";
 
 export class AddressHelper {
@@ -29,6 +29,7 @@ export class AddressHelper {
         let bech32;
         let hex;
         let type;
+        let restricted;
 
         if (Utils.isAddressValid(addressString)) {
             try {
@@ -40,6 +41,7 @@ export class AddressHelper {
                     bech32 = addressDetails.bech32;
                     type = addressDetails.type;
                     hex = addressDetails.hex;
+                    restricted = addressDetails.restricted;
                 }
             } catch {}
         }
@@ -56,17 +58,14 @@ export class AddressHelper {
             hex: hex ? HexHelper.addPrefix(hex) : hex,
             type: type ?? typeHint,
             label: AddressHelper.typeLabel(type),
+            restricted,
         };
     }
 
-    private static buildAddressFromTypes(
-        address: Address,
-        hrp: string,
-        restricted: boolean = false,
-        capabilities?: number[],
-    ): IAddressDetails {
+    private static buildAddressFromTypes(address: Address, hrp: string): IAddressDetails {
         let hex: string = "";
         let bech32: string = "";
+        let restricted: IRestrictedAddressDetails | undefined;
 
         if (address.type === AddressType.Ed25519) {
             hex = (address as Ed25519Address).pubKeyHash;
@@ -84,12 +83,19 @@ export class AddressHelper {
             const restrictedAddress = RestrictedAddress.parse(address) as RestrictedAddress;
             const capabilities = Array.from(restrictedAddress.getAllowedCapabilities());
             const innerAddress = Address.parse(restrictedAddress.address);
+            const innerAddressDetails = this.buildAddressFromTypes(innerAddress, hrp);
 
-            return this.buildAddressFromTypes(innerAddress, hrp, true, capabilities);
+            restricted = {
+                bech32: innerAddressDetails.bech32,
+                innerAddressType: innerAddress.type,
+                capabilities,
+            };
         }
 
         bech32 = Utils.addressToBech32(address, hrp);
-        const label = restricted ? `Restricted ${AddressHelper.typeLabel(address.type)}` : AddressHelper.typeLabel(address.type);
+        const label = restricted
+            ? `Restricted ${AddressHelper.typeLabel(restricted.innerAddressType)}`
+            : AddressHelper.typeLabel(address.type);
 
         return {
             bech32,
@@ -97,7 +103,6 @@ export class AddressHelper {
             type: address.type,
             label,
             restricted,
-            capabilities,
         };
     }
 
