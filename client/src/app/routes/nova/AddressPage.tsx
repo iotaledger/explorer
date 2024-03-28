@@ -17,6 +17,8 @@ import Ed25519AddressView from "~/app/components/nova/address/Ed25519AddressView
 import NftAddressView from "~/app/components/nova/address/NftAddressView";
 import AnchorAddressView from "~/app/components/nova/address/AnchorAddressView";
 import ImplicitAccountCreationAddressView from "~/app/components/nova/address/ImplicitAccountCreationAddressView";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { AddressHelper } from "~/helpers/nova/addressHelper";
 import "./AddressPage.scss";
 
 const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
@@ -24,13 +26,24 @@ const AddressPage: React.FC<RouteComponentProps<AddressRouteProps>> = ({
         params: { address: addressString },
     },
 }) => {
+    const { bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     const isValidBech32Address = Utils.isAddressValid(addressString);
 
     if (!isValidBech32Address) {
         return <AddressNotFoundPage address={addressString} />;
     }
 
-    const parsedAddress = Utils.parseBech32Address(addressString);
+    let parsedAddress = Utils.parseBech32Address(addressString);
+
+    if (parsedAddress.type === AddressType.Restricted) {
+        const addressDetails = AddressHelper.buildAddress(bech32Hrp, parsedAddress);
+
+        const innerAddressBech32 = addressDetails.restricted?.bech32;
+
+        if (innerAddressBech32) {
+            parsedAddress = Utils.parseBech32Address(innerAddressBech32);
+        }
+    }
 
     const renderAddressView = (parsedAddress: Address) => {
         switch (parsedAddress.type) {

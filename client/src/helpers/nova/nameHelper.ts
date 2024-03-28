@@ -1,6 +1,30 @@
-import { FeatureType, OutputType, PayloadType, UnlockType } from "@iota/sdk-wasm-nova/web";
+import { AddressType, FeatureType, OutputType, PayloadType, UnlockType } from "@iota/sdk-wasm-nova/web";
 
 export class NameHelper {
+    /**
+     * Get the label for an address type.
+     * @param type The address type to get the name for.
+     * @returns The address type name.
+     */
+    public static getAddressTypeName(type: AddressType, isRestricted = false): string {
+        switch (type) {
+            case AddressType.Ed25519:
+                return "Ed25519";
+            case AddressType.Account:
+                return "Account";
+            case AddressType.Nft:
+                return "Nft";
+            case AddressType.Anchor:
+                return "Anchor";
+            case AddressType.ImplicitAccountCreation:
+                return "ImplicitAccountCreation";
+            case AddressType.Restricted:
+                return "Restricted";
+            default:
+                return "Unknown";
+        }
+    }
+
     /**
      * Get the name for the unlock type.
      * @param type The type to get the name for.
