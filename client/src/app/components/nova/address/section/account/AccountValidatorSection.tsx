@@ -10,11 +10,13 @@ interface AccountValidatorSectionProps {
 }
 
 const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ validatorDetails, validatorDelegationOutputs }) => {
+    const [isFormatBalance, setIsFormatBalance] = useState<boolean>(false);
+    const [formatManaValuesFull, setFormatManaValuesFull] = useState<boolean>(false);
+    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((state) => state.networkInfo);
+
     if (!validatorDetails) {
         return null;
     }
-    const [isFormatBalance, setIsFormatBalance] = useState<boolean>(false);
-    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((state) => state.networkInfo);
 
     const delegatedStake = BigInt(validatorDetails.poolStake) - BigInt(validatorDetails.validatorStake);
 
@@ -31,19 +33,27 @@ const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ valid
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Pool Stake</div>
-                    <div className="card--value">{formatAmount(validatorDetails.poolStake, tokenInfo, false)}</div>
+                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
+                        {formatAmount(validatorDetails.poolStake, tokenInfo, formatManaValuesFull)}
+                    </div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Validator Stake</div>
-                    <div className="card--value">{formatAmount(validatorDetails.validatorStake, tokenInfo, false)}</div>
+                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
+                        {formatAmount(validatorDetails.validatorStake, tokenInfo, formatManaValuesFull)}
+                    </div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Delegated Stake</div>
-                    <div className="card--value">{formatAmount(delegatedStake, tokenInfo, false)}</div>
+                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
+                        {formatAmount(delegatedStake, tokenInfo, formatManaValuesFull)}
+                    </div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Fixed Cost</div>
-                    <div className="card--value">{formatAmount(validatorDetails?.fixedCost, manaInfo, false)}</div>
+                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
+                        {formatAmount(validatorDetails?.fixedCost, manaInfo, formatManaValuesFull)}
+                    </div>
                 </div>
                 <div className="field">
                     <div className="card--label margin-b-t">Latest Supported Protocol Version</div>

@@ -1,6 +1,8 @@
 import React from "react";
 import { BlockIssuerFeature, CongestionResponse, Ed25519PublicKeyHashBlockIssuerKey } from "@iota/sdk-wasm-nova/web";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./AccountBlockIssuanceSection.scss";
 
 interface AccountBlockIssuanceSectionProps {
@@ -9,22 +11,33 @@ interface AccountBlockIssuanceSectionProps {
 }
 
 const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = ({ blockIssuerFeature, congestion }) => {
+    const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const [formatFull, setFormatFull] = React.useState(false);
+
     return (
         <div className="section transaction--section">
             <div className="card block-issuance--card">
                 {congestion && (
                     <>
                         <div className="field">
-                            <div className="card--label margin-b-t">Current Slot</div>
+                            <div className="card--label margin-b-t">Estimate for slot</div>
                             <div className="card--value">{congestion.slot}</div>
                         </div>
                         <div className="field">
+                            <div className="card--label margin-b-t">Ready?</div>
+                            <div className="card--value">{congestion.ready ? "Yes" : "No"}</div>
+                        </div>
+                        <div className="field">
                             <div className="card--label margin-b-t">Block Issuance Credit</div>
-                            <div className="card--value">{congestion.blockIssuanceCredits.toString()}</div>
+                            <div className="card--value pointer" onClick={() => setFormatFull(!formatFull)}>
+                                {formatAmount(congestion.blockIssuanceCredits, tokenInfo, formatFull)}
+                            </div>
                         </div>
                         <div className="field">
                             <div className="card--label margin-b-t">Referenced Mana Cost</div>
-                            <div className="card--value">{congestion.referenceManaCost.toString()}</div>
+                            <div className="card--value pointer" onClick={() => setFormatFull(!formatFull)}>
+                                {formatAmount(congestion.referenceManaCost, manaInfo, formatFull)}
+                            </div>
                         </div>
                     </>
                 )}
