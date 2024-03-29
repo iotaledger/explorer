@@ -83,6 +83,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         if (block?.isValidation()) {
             setBlockBody(block?.body.asValidation());
             setPageTitle(`Validation Block`);
+            setTransactionId(null);
         }
     }, [block]);
 
