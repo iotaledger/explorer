@@ -144,21 +144,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div className="label">Issuing Time</div>
                 <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
-            {blockCost !== null && (
-                <div className="section--data">
-                    <div className="label">Block cost</div>
-                    <div className="value code">
-                        <span
-                            className="pointer"
-                            onClick={() => {
-                                setIsFormattedMana(!isFormattedMana);
-                            }}
-                        >
-                            {formatAmount(blockCost, manaInfo, isFormattedMana)}
-                        </span>
-                    </div>
-                </div>
-            )}
             <div className="section--data">
                 <div className="label">Slot Commitment</div>
                 <div className="value code highlight">
@@ -215,6 +200,21 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             )}
             {blockBody?.isBasic() && (
                 <div>
+                    {blockCost !== null && (
+                        <div className="section--data">
+                            <div className="label">Block Cost</div>
+                            <div className="value code">
+                                <span
+                                    className="pointer"
+                                    onClick={() => {
+                                        setIsFormattedMana(!isFormattedMana);
+                                    }}
+                                >
+                                    {formatAmount(blockCost, manaInfo, isFormattedMana)}
+                                </span>
+                            </div>
+                        </div>
+                    )}
                     <div className="section--data">
                         <div className="label">Max Burned Mana</div>
                         <div className="value code">
