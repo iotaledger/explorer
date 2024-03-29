@@ -6,7 +6,7 @@ import {
     Utils,
     AccountAddress,
 } from "@iota/sdk-wasm-nova/web";
-import React from "react";
+import React, { useState } from "react";
 import Spinner from "../../../Spinner";
 import ContextInputView from "../../ContextInputView";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
@@ -32,6 +32,7 @@ const TRANSACTION_STATE_TO_PILL_STATUS: Record<TransactionState, PillStatus> = {
 
 const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({ transaction, transactionMetadata, metadataError }) => {
     const { name: network, manaInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const [isFormattedMana, setIsFormattedMana] = useState(false);
     const pillStatus: PillStatus | undefined = TRANSACTION_STATE_TO_PILL_STATUS[transactionMetadata?.transactionState ?? "pending"];
 
     return (
@@ -89,7 +90,14 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                                             />
                                                         </div>
                                                         <div className="allotment-item__amount value">
-                                                            {formatAmount(allotment.mana, manaInfo, false)}
+                                                            <span
+                                                                className="pointer"
+                                                                onClick={() => {
+                                                                    setIsFormattedMana(!isFormattedMana);
+                                                                }}
+                                                            >
+                                                                {formatAmount(allotment.mana, manaInfo, isFormattedMana)}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 );

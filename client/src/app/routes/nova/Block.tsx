@@ -41,8 +41,8 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     },
 }) => {
     const { tokenInfo, manaInfo, bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const [isFormattedBalance, setIsFormattedBalance] = useState(true);
-    const [isFormattedMaxBurnedMana, setIsFormattedMaxBurnedMana] = useState(true);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(false);
+    const [isFormattedMana, setIsFormattedMana] = useState(false);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
@@ -147,7 +147,16 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             {blockCost !== null && (
                 <div className="section--data">
                     <div className="label">Block cost</div>
-                    <div className="value code">{formatAmount(blockCost, tokenInfo, true)}</div>
+                    <div className="value code">
+                        <span
+                            className="pointer"
+                            onClick={() => {
+                                setIsFormattedMana(!isFormattedMana);
+                            }}
+                        >
+                            {formatAmount(blockCost, manaInfo, isFormattedMana)}
+                        </span>
+                    </div>
                 </div>
             )}
             <div className="section--data">
@@ -209,14 +218,13 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                     <div className="section--data">
                         <div className="label">Max Burned Mana</div>
                         <div className="value code">
-                            {Number(blockBody.asBasic().maxBurnedMana)}
                             <span
                                 className="pointer"
                                 onClick={() => {
-                                    setIsFormattedMaxBurnedMana(!isFormattedMaxBurnedMana);
+                                    setIsFormattedMana(!isFormattedMana);
                                 }}
                             >
-                                {formatAmount(blockBody.asBasic().maxBurnedMana, manaInfo, !isFormattedMaxBurnedMana)}
+                                {formatAmount(blockBody.asBasic().maxBurnedMana, manaInfo, isFormattedMana)}
                             </span>
                         </div>
                     </div>
@@ -225,7 +233,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                             <div className="label">Amount Transacted</div>
                             <div className="amount-transacted value row middle">
                                 <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
-                                    {formatAmount(transferTotal, tokenInfo, !isFormattedBalance)}
+                                    {formatAmount(transferTotal, tokenInfo, isFormattedBalance)}
                                 </span>
                             </div>
                         </div>
