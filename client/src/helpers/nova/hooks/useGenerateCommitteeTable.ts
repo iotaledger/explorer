@@ -2,7 +2,6 @@ import type { ITableRow } from "~/app/components/Table";
 import { TableCellType, type TTableData } from "~/app/components/nova/TableCell";
 import { BaseTokenResponse, CommitteeMember, ValidatorResponse } from "@iota/sdk-wasm-nova/web";
 import { CommitteeTableHeadings } from "~/app/lib/ui/enums/CommitteeTableHeadings.enum";
-import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 
 function getCommitteeTableRow(
     network: string,
@@ -14,7 +13,7 @@ function getCommitteeTableRow(
 
     Object.values(CommitteeTableHeadings).forEach((heading) => {
         let tableData: TTableData | null = null;
-
+        const delegatedStake = BigInt(validator.poolStake) - BigInt(validator.validatorStake);
         switch (heading) {
             case CommitteeTableHeadings.Address:
                 tableData = {
@@ -25,26 +24,30 @@ function getCommitteeTableRow(
                 break;
             case CommitteeTableHeadings.Cost:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: formatAmount(validator.fixedCost, manaInfo),
+                    type: TableCellType.Formatted,
+                    data: validator.fixedCost,
+                    tokenInfo: manaInfo,
                 };
                 break;
             case CommitteeTableHeadings.PoolStake:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: formatAmount(validator.poolStake, tokenInfo),
+                    type: TableCellType.Formatted,
+                    data: validator.poolStake,
+                    tokenInfo,
                 };
                 break;
             case CommitteeTableHeadings.ValidatorStake:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: formatAmount(validator.validatorStake, tokenInfo),
+                    type: TableCellType.Formatted,
+                    data: validator.validatorStake,
+                    tokenInfo,
                 };
                 break;
             case CommitteeTableHeadings.DelegatedStake:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: formatAmount(BigInt(validator.poolStake) - BigInt(validator.validatorStake), tokenInfo),
+                    type: TableCellType.Formatted,
+                    data: delegatedStake,
+                    tokenInfo,
                 };
                 break;
             default:

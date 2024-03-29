@@ -1,6 +1,6 @@
 import { SlotStatus } from "~/app/lib/enums";
 import { PillStatus } from "~/app/lib/ui/enums";
-import React from "react";
+import React, { useState } from "react";
 import StatusPill from "./StatusPill";
 import TruncatedId from "../stardust/TruncatedId";
 import classNames from "classnames";
@@ -8,6 +8,8 @@ import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
 import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
 import Spinner from "../Spinner";
 import { Link } from "react-router-dom";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import { BaseTokenResponse } from "@iota/sdk-wasm-nova/web";
 
 export enum TableCellType {
     StatusPill = "status-pill",
@@ -16,10 +18,19 @@ export enum TableCellType {
     TruncatedId = "truncated-id",
     Stats = "stats",
     BurnedMana = "burned-mana",
+    Formatted = "formatted",
     Empty = "empty",
 }
 
-export type TTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IStatsCell | IBurnedManaCell | IEmptyCell;
+export type TTableData =
+    | IPillStatusCell
+    | ITextCell
+    | ILinkCell
+    | ITruncatedIdCell
+    | IStatsCell
+    | IBurnedManaCell
+    | IFormattedCell
+    | IEmptyCell;
 
 export default function TableCellWrapper(cellData: TTableData): React.JSX.Element {
     let Component: React.JSX.Element;
@@ -42,6 +53,9 @@ export default function TableCellWrapper(cellData: TTableData): React.JSX.Elemen
             break;
         case TableCellType.BurnedMana:
             Component = <BurnedManaCell {...cellData} />;
+            break;
+        case TableCellType.Formatted:
+            Component = <FormattedCell {...cellData} />;
             break;
         default: {
             Component = <TextCell {...cellData} />;
@@ -106,6 +120,23 @@ interface ITextCell {
 
 function TextCell({ data, highlight }: ITextCell): React.JSX.Element {
     return <span className={classNames({ highlight })}>{data}</span>;
+}
+
+interface IFormattedCell {
+    data: string | number | bigint;
+    type: TableCellType.Formatted;
+    tokenInfo: BaseTokenResponse;
+    isFormatted?: boolean;
+}
+
+function FormattedCell({ data, tokenInfo, isFormatted }: IFormattedCell): React.JSX.Element {
+    const [isFormattedAmount, setIsFormattedAmount] = useState(isFormatted);
+
+    return (
+        <span onClick={() => setIsFormattedAmount(!isFormattedAmount)} className="pointer margin-r-5">
+            {formatAmount(data, tokenInfo, isFormattedAmount)}
+        </span>
+    );
 }
 
 interface ITruncatedIdCell {
