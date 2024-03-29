@@ -116,7 +116,7 @@ interface ITruncatedIdCell {
 
 function TruncatedIdCell({ data, href }: ITruncatedIdCell): React.JSX.Element {
     return (
-        <div className="slot-id">
+        <div className="truncated-id-cell">
             <TruncatedId id={data} link={href} />
         </div>
     );
