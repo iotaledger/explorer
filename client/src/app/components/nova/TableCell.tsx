@@ -112,12 +112,13 @@ interface ITruncatedIdCell {
     data: string;
     type: TableCellType.TruncatedId;
     href: string;
+    shouldCopy?: boolean;
 }
 
-function TruncatedIdCell({ data, href }: ITruncatedIdCell): React.JSX.Element {
+function TruncatedIdCell({ data, href, shouldCopy }: ITruncatedIdCell): React.JSX.Element {
     return (
         <div className="truncated-id-cell">
-            <TruncatedId id={data} link={href} />
+            <TruncatedId id={data} link={href} showCopyButton={shouldCopy} />
         </div>
     );
 }

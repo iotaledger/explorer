@@ -28,6 +28,7 @@ function getValidatorTableRow(
                     type: TableCellType.TruncatedId,
                     data: address,
                     href: `/${network}/addr/${address}`,
+                    shouldCopy: true,
                 };
                 break;
             case ValidatorsTableHeadings.Candidate:
