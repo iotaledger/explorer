@@ -1,9 +1,11 @@
 import {
+    AccountAddress,
     BlockIssuanceCreditContextInput,
     CommitmentContextInput,
     ContextInput,
     ContextInputType,
     RewardContextInput,
+    Utils,
 } from "@iota/sdk-wasm-nova/web";
 import React from "react";
 import TruncatedId from "../stardust/TruncatedId";
@@ -14,7 +16,7 @@ interface IContextInputViewProps {
 }
 
 const ContextInputView: React.FC<IContextInputViewProps> = ({ contextInput }) => {
-    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
     if (contextInput.type === ContextInputType.COMMITMENT) {
         const input = contextInput as CommitmentContextInput;
 
@@ -26,12 +28,14 @@ const ContextInputView: React.FC<IContextInputViewProps> = ({ contextInput }) =>
         );
     } else if (contextInput.type === ContextInputType.BLOCK_ISSUANCE_CREDIT) {
         const input = contextInput as BlockIssuanceCreditContextInput;
+        const accountAddress = new AccountAddress(input.accountId);
+        const bech32Address = Utils.addressToBech32(accountAddress, bech32Hrp);
 
         return (
             <div className="section--data">
                 <div className="label">Account</div>
-                <div className="value code">
-                    <TruncatedId id={input.accountId} link={`/${network}/account/${input.accountId}`} showCopyButton />
+                <div className="value code highlight">
+                    <TruncatedId id={input.accountId} link={`/${network}/account/${bech32Address}`} showCopyButton />
                 </div>
             </div>
         );
