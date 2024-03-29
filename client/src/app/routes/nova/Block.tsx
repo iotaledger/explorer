@@ -40,8 +40,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         params: { network, blockId },
     },
 }) => {
-    const { tokenInfo, bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+    const { tokenInfo, manaInfo, bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(false);
+    const [isFormattedMana, setIsFormattedMana] = useState(false);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
@@ -143,12 +144,6 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div className="label">Issuing Time</div>
                 <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
-            {blockCost !== null && (
-                <div className="section--data">
-                    <div className="label">Block cost</div>
-                    <div className="value code">{formatAmount(blockCost, tokenInfo, true)}</div>
-                </div>
-            )}
             <div className="section--data">
                 <div className="label">Slot Commitment</div>
                 <div className="value code highlight">
@@ -205,16 +200,40 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             )}
             {blockBody?.isBasic() && (
                 <div>
+                    {blockCost !== null && (
+                        <div className="section--data">
+                            <div className="label">Block Cost</div>
+                            <div className="value code">
+                                <span
+                                    className="pointer"
+                                    onClick={() => {
+                                        setIsFormattedMana(!isFormattedMana);
+                                    }}
+                                >
+                                    {formatAmount(blockCost, manaInfo, isFormattedMana)}
+                                </span>
+                            </div>
+                        </div>
+                    )}
                     <div className="section--data">
                         <div className="label">Max Burned Mana</div>
-                        <div className="value code">{Number(blockBody.asBasic().maxBurnedMana)}</div>
+                        <div className="value code">
+                            <span
+                                className="pointer"
+                                onClick={() => {
+                                    setIsFormattedMana(!isFormattedMana);
+                                }}
+                            >
+                                {formatAmount(blockBody.asBasic().maxBurnedMana, manaInfo, isFormattedMana)}
+                            </span>
+                        </div>
                     </div>
                     {blockBody.asBasic().payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
                             <div className="label">Amount Transacted</div>
                             <div className="amount-transacted value row middle">
                                 <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
-                                    {formatAmount(transferTotal, tokenInfo, !isFormattedBalance)}
+                                    {formatAmount(transferTotal, tokenInfo, isFormattedBalance)}
                                 </span>
                             </div>
                         </div>

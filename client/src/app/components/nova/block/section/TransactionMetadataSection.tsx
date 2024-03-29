@@ -6,13 +6,15 @@ import {
     Utils,
     AccountAddress,
 } from "@iota/sdk-wasm-nova/web";
-import React from "react";
+import React, { useState } from "react";
 import Spinner from "../../../Spinner";
-import TruncatedId from "~/app/components/stardust/TruncatedId";
 import ContextInputView from "../../ContextInputView";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { PillStatus } from "~/app/lib/ui/enums";
 import StatusPill from "~/app/components/nova/StatusPill";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import "./TransactionMetadataSection.scss";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
 
 interface TransactionMetadataSectionProps {
     readonly transaction?: Transaction;
@@ -29,7 +31,8 @@ const TRANSACTION_STATE_TO_PILL_STATUS: Record<TransactionState, PillStatus> = {
 };
 
 const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({ transaction, transactionMetadata, metadataError }) => {
-    const { name: network, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, manaInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const [isFormattedMana, setIsFormattedMana] = useState(false);
     const pillStatus: PillStatus | undefined = TRANSACTION_STATE_TO_PILL_STATUS[transactionMetadata?.transactionState ?? "pending"];
 
     return (
@@ -68,22 +71,38 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                     <ContextInputView contextInput={contextInput} key={idx} />
                                 ))}
                                 {transaction?.allotments && (
-                                    <div className="section--data">
-                                        <div className="label">Mana Allotment Accounts</div>
-                                        {transaction?.allotments?.map((allotment, idx) => {
-                                            const accountAddress = new AccountAddress(allotment.accountId);
-                                            const accountBech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
-
-                                            return (
-                                                <div className="value code highlight margin-b-t" key={idx}>
-                                                    <TruncatedId
-                                                        id={allotment.accountId}
-                                                        link={`/${network}/addr/${accountBech32}`}
-                                                        showCopyButton
-                                                    />
-                                                </div>
-                                            );
-                                        })}
+                                    <div className="section allotments__section">
+                                        <h3 className="allotments__header">Mana Allotments</h3>
+                                        <div className="allotments__wrapper">
+                                            <div className="allotment-item table-header">
+                                                <div className="allotment-item__address label">Address</div>
+                                                <div className="allotment-item__amount label">Amount</div>
+                                            </div>
+                                            {transaction?.allotments.map((allotment, idx) => {
+                                                const accountAddress = new AccountAddress(allotment.accountId);
+                                                const accountBech32 = Utils.addressToBech32(accountAddress, bech32Hrp);
+                                                return (
+                                                    <div className="allotment-item" key={`allotment-${idx}`}>
+                                                        <div className="allotment-item__address value truncate highlight">
+                                                            <TruncatedId
+                                                                id={allotment.accountId}
+                                                                link={`/${network}/addr/${accountBech32}`}
+                                                            />
+                                                        </div>
+                                                        <div className="allotment-item__amount value">
+                                                            <span
+                                                                className="pointer"
+                                                                onClick={() => {
+                                                                    setIsFormattedMana(!isFormattedMana);
+                                                                }}
+                                                            >
+                                                                {formatAmount(allotment.mana, manaInfo, isFormattedMana)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 )}
                             </>
