@@ -40,7 +40,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         params: { network, blockId },
     },
 }) => {
-    const { tokenInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
+    const { tokenInfo, bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [isFormattedBalance, setIsFormattedBalance] = useState(true);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
@@ -49,6 +49,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     const [transactionId, setTransactionId] = useState<string | null>(null);
     const { transactionMetadata } = useTransactionMetadata(network, transactionId);
     const [pageTitle, setPageTitle] = useState<string>("Block");
+    let blockCost: number | null = null;
 
     function updatePageTitle(type: PayloadType | undefined): void {
         let title = null;
@@ -98,6 +99,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 transferTotal={transferTotal ?? undefined}
             />,
         );
+
+        if (protocolInfo?.parameters?.workScoreParameters) {
+            blockCost = Utils.blockWorkScore(block, protocolInfo?.parameters.workScoreParameters);
+        }
     }
 
     if (transactionMetadata) {
@@ -138,6 +143,12 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div className="label">Issuing Time</div>
                 <div className="value code">{DateHelper.formatShort(Number(block.header.issuingTime) / 1000000)}</div>
             </div>
+            {blockCost !== null && (
+                <div className="section--data">
+                    <div className="label">Block cost</div>
+                    <div className="value code">{formatAmount(blockCost, tokenInfo, true)}</div>
+                </div>
+            )}
             <div className="section--data">
                 <div className="label">Slot Commitment</div>
                 <div className="value code highlight">
