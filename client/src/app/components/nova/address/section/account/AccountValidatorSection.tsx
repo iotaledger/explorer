@@ -10,11 +10,11 @@ interface AccountValidatorSectionProps {
 }
 
 const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ validatorDetails, validatorDelegationOutputs }) => {
+    const [isFormatBalance, setIsFormatBalance] = useState<boolean>(false);
+    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((state) => state.networkInfo);
     if (!validatorDetails) {
         return null;
     }
-    const [isFormatBalance, setIsFormatBalance] = useState<boolean>(false);
-    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((state) => state.networkInfo);
 
     const delegatedStake = BigInt(validatorDetails.poolStake) - BigInt(validatorDetails.validatorStake);
 
