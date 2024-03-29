@@ -29,22 +29,20 @@
             padding-bottom: 16px;
         }
 
-        .committee--section__table {
-            table {
-                @include tablet-down {
-                    display: block;
-                    overflow-x: auto;
-                    white-space: nowrap;
-                    width: 100%;
-                }
+        table {
+            @include tablet-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
             }
+        }
 
-            .truncated-id-cell {
-                max-width: 250px;
+        .truncated-id-cell {
+            max-width: 250px;
 
-                @include desktop-down {
-                    max-width: 165px;
-                }
+            @include desktop-down {
+                max-width: 165px;
             }
         }
     }

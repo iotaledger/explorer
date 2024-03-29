@@ -178,9 +178,7 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                             </div>
                         </div>
                         <div className="section--data">
-                            <div className="committee--section__table">
-                                <Table headings={tableHeadings} data={tableData} TableDataComponent={TableCellWrapper} />
-                            </div>
+                            <Table headings={tableHeadings} data={tableData} TableDataComponent={TableCellWrapper} />
                         </div>
                     </div>
                 </div>
