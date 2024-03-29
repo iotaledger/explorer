@@ -74,6 +74,17 @@ interface IEpochAnalyticStats {
     };
 }
 
+interface ISlotAnalyticStats {
+    slotIndex: number;
+    blockCount: number;
+    perPayloadType: {
+        transaction: number;
+        taggedData: number;
+        candidacy: number;
+        noPayload: number;
+    };
+}
+
 /**
  * The epoch stats cache. Map epoch index to stats.
  */
@@ -88,6 +99,11 @@ export type ManaBurnedInSlot = ITimedEntry & {
  * The epoch stats cache. Map epoch index to stats.
  */
 export type ManaBurnedInSlotCache = Map<number, ManaBurnedInSlot>;
+
+/**
+ * The slot stats cache. Map slot index to stats.
+ */
+export type IInfluxSlotAnalyticsCache = Map<number, ISlotAnalyticStats>;
 
 /**
  * The helper to initialize empty maps
