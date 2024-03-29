@@ -5,4 +5,11 @@ export interface IAddressDetails {
     hex?: string;
     type?: AddressType;
     label?: string;
+    restricted?: IRestrictedAddressDetails;
+}
+
+export interface IRestrictedAddressDetails {
+    bech32: string;
+    innerAddressType?: AddressType;
+    capabilities?: number[];
 }
