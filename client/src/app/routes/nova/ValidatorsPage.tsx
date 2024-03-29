@@ -20,10 +20,8 @@ const ValidatorsPage: React.FC = () => {
                             <h1>Validators</h1>
                         </div>
                     </div>
-                    <div className="section--data">
-                        <div className="validator--section__table">
-                            <Table headings={tableHeadings} data={tableData} TableDataComponent={TableCellWrapper} />
-                        </div>
+                    <div className="section__validators">
+                        <Table headings={tableHeadings} data={tableData} TableDataComponent={TableCellWrapper} />
                     </div>
                     {error && <p className="danger">Failed to retrieve validators. {error}</p>}
                 </div>
