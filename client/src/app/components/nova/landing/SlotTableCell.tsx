@@ -5,6 +5,7 @@ import StatusPill from "../StatusPill";
 import TruncatedId from "../../stardust/TruncatedId";
 import classNames from "classnames";
 import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
+import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
 import Spinner from "../../Spinner";
 import { Link } from "react-router-dom";
 
@@ -13,11 +14,12 @@ export enum SlotTableCellType {
     Link = "link",
     Text = "text",
     TruncatedId = "truncated-id",
+    Stats = "stats",
     BurnedMana = "burned-mana",
     Empty = "empty",
 }
 
-export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IBurnedManaCell | IEmptyCell;
+export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IStatsCell | IBurnedManaCell | IEmptyCell;
 
 export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JSX.Element {
     let Component: React.JSX.Element;
@@ -34,6 +36,9 @@ export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JS
             break;
         case SlotTableCellType.Empty:
             Component = <EmptyCell {...cellData} />;
+            break;
+        case SlotTableCellType.Stats:
+            Component = <StatsCell {...cellData} />;
             break;
         case SlotTableCellType.BurnedMana:
             Component = <BurnedManaCell {...cellData} />;
@@ -76,6 +81,23 @@ function LinkCell({ data, href }: ILinkCell): React.JSX.Element {
     return <Link to={href}>{data}</Link>;
 }
 
+interface IStatsCell {
+    data: string;
+    type: SlotTableCellType.Stats;
+    href: string;
+    statsType: "blocks" | "transactions";
+    shouldLoad?: boolean;
+}
+
+function StatsCell({ data, href, shouldLoad, statsType }: IStatsCell): React.JSX.Element {
+    const [slotStats, isLoading] = useSlotStats(shouldLoad ? data : null);
+    if (!shouldLoad) {
+        return <Spinner compact />;
+    }
+    const stat = statsType === "blocks" ? slotStats?.blockCount : slotStats?.perPayloadType?.transaction;
+    return <span>{isLoading ? <Spinner compact /> : stat ? <Link to={href}>{stat}</Link> : "0"}</span>;
+}
+
 interface ITextCell {
     data: string;
     type: SlotTableCellType.Text;
@@ -107,12 +129,10 @@ interface IBurnedManaCell {
 }
 
 function BurnedManaCell({ data, shouldLoad }: IBurnedManaCell): React.JSX.Element {
+    const { slotManaBurned, isLoading } = useSlotManaBurned(shouldLoad ? data : null);
     if (!shouldLoad) {
         return <Spinner compact />;
     }
-
-    const { slotManaBurned, isLoading } = useSlotManaBurned(data);
-
     return <span>{isLoading ? <Spinner compact /> : slotManaBurned?.manaBurned ?? "--"}</span>;
 }
 
