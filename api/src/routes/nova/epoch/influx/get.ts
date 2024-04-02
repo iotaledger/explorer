@@ -6,7 +6,6 @@ import { IConfiguration } from "../../../../models/configuration/IConfiguration"
 import { NOVA } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
 import { InfluxServiceNova } from "../../../../services/nova/influx/influxServiceNova";
-import { NodeInfoService } from "../../../../services/nova/nodeInfoService";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -33,10 +32,7 @@ export async function get(_: IConfiguration, request: IEpochAnalyticStatsRequest
     }
 
     const influxService = ServiceFactory.get<InfluxServiceNova>(`influxdb-${request.network}`);
-    const nodeService = ServiceFactory.get<NodeInfoService>(`node-info-${request.network}`);
-    const protocolParameters = await nodeService.getProtocolParameters();
-
-    if (!influxService || !protocolParameters) {
+    if (!influxService) {
         return { error: "Influx service not found for this network." };
     }
 

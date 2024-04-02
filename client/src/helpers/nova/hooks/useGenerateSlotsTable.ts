@@ -1,6 +1,6 @@
 import { ISlotCommitmentWrapper, SlotCommitmentStatus } from "~/models/api/nova/ILatestSlotCommitmentsResponse";
 import type { ITableRow } from "~/app/components/Table";
-import { SlotTableCellType, type TSlotTableData } from "~/app/components/nova/landing/SlotTableCell";
+import { TableCellType, type TTableData } from "~/app/components/nova/TableCell";
 import { SlotStatus } from "~app/lib/enums";
 import { SlotTableHeadings } from "~/app/lib/ui/enums";
 import { Utils } from "@iota/sdk-wasm-nova/web";
@@ -14,10 +14,10 @@ type SlotTimeRange = {
     to: number;
 } | null;
 
-function getSlotIndexTableCell(network: string, slotIndex: number, slotTimeRange: SlotTimeRange): TSlotTableData {
+function getSlotIndexTableCell(network: string, slotIndex: number, slotTimeRange: SlotTimeRange): TTableData {
     if (!slotTimeRange) {
         return {
-            type: SlotTableCellType.Empty,
+            type: TableCellType.Empty,
         };
     }
 
@@ -27,21 +27,21 @@ function getSlotIndexTableCell(network: string, slotIndex: number, slotTimeRange
 
     if (showLink) {
         return {
-            type: SlotTableCellType.Link,
+            type: TableCellType.Link,
             data: slotIndexString,
-            href: `${network}/slot/${slotIndex}`,
+            href: `/${network}/slot/${slotIndex}`,
         };
     }
     return {
-        type: SlotTableCellType.Text,
+        type: TableCellType.Text,
         data: slotIndexString,
     };
 }
 
-function getSlotTimestampTableCell(slotTimeRange: SlotTimeRange): TSlotTableData {
+function getSlotTimestampTableCell(slotTimeRange: SlotTimeRange): TTableData {
     if (!slotTimeRange) {
         return {
-            type: SlotTableCellType.Empty,
+            type: TableCellType.Empty,
         };
     }
 
@@ -49,16 +49,16 @@ function getSlotTimestampTableCell(slotTimeRange: SlotTimeRange): TSlotTableData
     const slotTimestamp = remainingTime <= 0 ? moment.unix(slotTimeRange.to).format("YYYY-MM-DD hh:mm:ss") : remainingTime + "s";
 
     return {
-        type: SlotTableCellType.Text,
+        type: TableCellType.Text,
         data: slotTimestamp,
     };
 }
 
-function getPendingSlotTableRow(network: string, slotIndex: number, slotTimeRange: SlotTimeRange): ITableRow<TSlotTableData> {
-    const data: TSlotTableData[] = [];
+function getPendingSlotTableRow(network: string, slotIndex: number, slotTimeRange: SlotTimeRange): ITableRow<TTableData> {
+    const data: TTableData[] = [];
 
     Object.values(SlotTableHeadings).forEach((heading) => {
-        let tableData: TSlotTableData;
+        let tableData: TTableData;
 
         switch (heading) {
             case SlotTableHeadings.Index:
@@ -66,7 +66,7 @@ function getPendingSlotTableRow(network: string, slotIndex: number, slotTimeRang
                 break;
             case SlotTableHeadings.Status:
                 tableData = {
-                    type: SlotTableCellType.StatusPill,
+                    type: TableCellType.StatusPill,
                     data: SlotStatus.Pending,
                 };
                 break;
@@ -75,7 +75,7 @@ function getPendingSlotTableRow(network: string, slotIndex: number, slotTimeRang
                 break;
             default:
                 tableData = {
-                    type: SlotTableCellType.Empty,
+                    type: TableCellType.Empty,
                 };
         }
 
@@ -93,8 +93,8 @@ function getSlotCommitmentTableRow(
     slotIndex: number,
     commitmentWrapper: ISlotCommitmentWrapper | null,
     slotTimeRange: SlotTimeRange,
-): ITableRow<TSlotTableData> {
-    const data: TSlotTableData[] = [];
+): ITableRow<TTableData> {
+    const data: TTableData[] = [];
 
     if (!commitmentWrapper) {
         return getPendingSlotTableRow(network, slotIndex, slotTimeRange);
@@ -102,12 +102,10 @@ function getSlotCommitmentTableRow(
 
     const slotCommitmentId = Utils.computeSlotCommitmentId(commitmentWrapper.slotCommitment);
     const referenceManaCost = commitmentWrapper.slotCommitment.referenceManaCost.toString();
-    const blocks = "2000";
-    const transactions = "2000";
     const slotStatus = commitmentWrapper.status;
 
     Object.values(SlotTableHeadings).forEach((heading) => {
-        let tableData: TSlotTableData;
+        let tableData: TTableData;
 
         switch (heading) {
             case SlotTableHeadings.Index:
@@ -115,41 +113,45 @@ function getSlotCommitmentTableRow(
                 break;
             case SlotTableHeadings.Id:
                 tableData = {
-                    type: SlotTableCellType.TruncatedId,
+                    type: TableCellType.TruncatedId,
                     data: slotCommitmentId,
-                    href: `${network}/slot/${slotIndex}`,
+                    href: `/${network}/slot/${slotIndex}`,
                 };
                 break;
             case SlotTableHeadings.ReferenceManaCost:
                 tableData = {
-                    type: SlotTableCellType.Text,
+                    type: TableCellType.Text,
                     data: referenceManaCost,
                 };
                 break;
             case SlotTableHeadings.Blocks:
                 tableData = {
-                    type: SlotTableCellType.Link,
-                    data: blocks,
-                    href: `${network}/slot/${slotIndex}?tab=RefBlocks`,
+                    type: TableCellType.Stats,
+                    data: slotIndex.toString(),
+                    href: `/${network}/slot/${slotIndex}?tab=RefBlocks`,
+                    statsType: "blocks",
+                    shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
                 break;
             case SlotTableHeadings.Txs:
                 tableData = {
-                    type: SlotTableCellType.Link,
-                    data: transactions,
-                    href: `${network}/slot/${slotIndex}?tab=Txs`,
+                    type: TableCellType.Stats,
+                    data: slotIndex.toString(),
+                    href: `/${network}/slot/${slotIndex}?tab=Txs`,
+                    statsType: "transactions",
+                    shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
                 break;
             case SlotTableHeadings.BurnedMana:
                 tableData = {
-                    type: SlotTableCellType.BurnedMana,
+                    type: TableCellType.BurnedMana,
                     shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                     data: slotIndex.toString(),
                 };
                 break;
             case SlotTableHeadings.Status:
                 tableData = {
-                    type: SlotTableCellType.StatusPill,
+                    type: TableCellType.StatusPill,
                     data: slotStatus,
                 };
                 break;
@@ -167,12 +169,12 @@ function getSlotCommitmentTableRow(
     };
 }
 
-export function useGenerateSlotsTable(): ITableRow<TSlotTableData>[] {
+export function useGenerateSlotsTable(): ITableRow<TTableData>[] {
     const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
     const { currentSlotIndex, currentSlotTimeRange, latestSlotCommitments, latestSlotIndexes } = useSlotsFeed();
 
-    const rows: ITableRow<TSlotTableData>[] = [];
+    const rows: ITableRow<TTableData>[] = [];
 
     if (currentSlotIndex !== null) {
         const currentSlotRow = getPendingSlotTableRow(network, currentSlotIndex, currentSlotTimeRange);

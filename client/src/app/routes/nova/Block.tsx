@@ -40,8 +40,9 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         params: { network, blockId },
     },
 }) => {
-    const { tokenInfo, bech32Hrp } = useNetworkInfoNova((s) => s.networkInfo);
-    const [isFormattedBalance, setIsFormattedBalance] = useState(true);
+    const { tokenInfo, manaInfo, bech32Hrp, protocolInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const [isFormattedBalance, setIsFormattedBalance] = useState(false);
+    const [isFormattedMana, setIsFormattedMana] = useState(false);
     const [block, isLoading, blockError] = useBlock(network, blockId);
     const [blockMetadata] = useBlockMetadata(network, blockId);
     const [inputs, outputs, transferTotal] = useInputsAndOutputs(network, block);
@@ -49,6 +50,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
     const [transactionId, setTransactionId] = useState<string | null>(null);
     const { transactionMetadata } = useTransactionMetadata(network, transactionId);
     const [pageTitle, setPageTitle] = useState<string>("Block");
+    let blockCost: number | null = null;
 
     function updatePageTitle(type: PayloadType | undefined): void {
         let title = null;
@@ -82,6 +84,7 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
         if (block?.isValidation()) {
             setBlockBody(block?.body.asValidation());
             setPageTitle(`Validation Block`);
+            setTransactionId(null);
         }
     }, [block]);
 
@@ -97,6 +100,10 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 transferTotal={transferTotal ?? undefined}
             />,
         );
+
+        if (protocolInfo?.parameters?.workScoreParameters) {
+            blockCost = Utils.blockWorkScore(block, protocolInfo?.parameters.workScoreParameters);
+        }
     }
 
     if (transactionMetadata) {
@@ -193,16 +200,40 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
             )}
             {blockBody?.isBasic() && (
                 <div>
+                    {blockCost !== null && (
+                        <div className="section--data">
+                            <div className="label">Block Cost</div>
+                            <div className="value code">
+                                <span
+                                    className="pointer"
+                                    onClick={() => {
+                                        setIsFormattedMana(!isFormattedMana);
+                                    }}
+                                >
+                                    {formatAmount(blockCost, manaInfo, isFormattedMana)}
+                                </span>
+                            </div>
+                        </div>
+                    )}
                     <div className="section--data">
                         <div className="label">Max Burned Mana</div>
-                        <div className="value code">{Number(blockBody.asBasic().maxBurnedMana)}</div>
+                        <div className="value code">
+                            <span
+                                className="pointer"
+                                onClick={() => {
+                                    setIsFormattedMana(!isFormattedMana);
+                                }}
+                            >
+                                {formatAmount(blockBody.asBasic().maxBurnedMana, manaInfo, isFormattedMana)}
+                            </span>
+                        </div>
                     </div>
                     {blockBody.asBasic().payload?.type === PayloadType.SignedTransaction && transferTotal !== null && (
                         <div className="section--data">
                             <div className="label">Amount Transacted</div>
                             <div className="amount-transacted value row middle">
                                 <span onClick={() => setIsFormattedBalance(!isFormattedBalance)} className="pointer margin-r-5">
-                                    {formatAmount(transferTotal, tokenInfo, !isFormattedBalance)}
+                                    {formatAmount(transferTotal, tokenInfo, isFormattedBalance)}
                                 </span>
                             </div>
                         </div>

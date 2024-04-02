@@ -1,41 +1,46 @@
 import { SlotStatus } from "~/app/lib/enums";
 import { PillStatus } from "~/app/lib/ui/enums";
 import React from "react";
-import StatusPill from "../StatusPill";
-import TruncatedId from "../../stardust/TruncatedId";
+import StatusPill from "./StatusPill";
+import TruncatedId from "../stardust/TruncatedId";
 import classNames from "classnames";
 import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
-import Spinner from "../../Spinner";
+import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
+import Spinner from "../Spinner";
 import { Link } from "react-router-dom";
 
-export enum SlotTableCellType {
+export enum TableCellType {
     StatusPill = "status-pill",
     Link = "link",
     Text = "text",
     TruncatedId = "truncated-id",
+    Stats = "stats",
     BurnedMana = "burned-mana",
     Empty = "empty",
 }
 
-export type TSlotTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IBurnedManaCell | IEmptyCell;
+export type TTableData = IPillStatusCell | ITextCell | ILinkCell | ITruncatedIdCell | IStatsCell | IBurnedManaCell | IEmptyCell;
 
-export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JSX.Element {
+export default function TableCellWrapper(cellData: TTableData): React.JSX.Element {
     let Component: React.JSX.Element;
 
     switch (cellData.type) {
-        case SlotTableCellType.StatusPill:
+        case TableCellType.StatusPill:
             Component = <PillStatusCell {...cellData} />;
             break;
-        case SlotTableCellType.Link:
+        case TableCellType.Link:
             Component = <LinkCell {...cellData} />;
             break;
-        case SlotTableCellType.TruncatedId:
+        case TableCellType.TruncatedId:
             Component = <TruncatedIdCell {...cellData} />;
             break;
-        case SlotTableCellType.Empty:
+        case TableCellType.Empty:
             Component = <EmptyCell {...cellData} />;
             break;
-        case SlotTableCellType.BurnedMana:
+        case TableCellType.Stats:
+            Component = <StatsCell {...cellData} />;
+            break;
+        case TableCellType.BurnedMana:
             Component = <BurnedManaCell {...cellData} />;
             break;
         default: {
@@ -49,7 +54,7 @@ export default function SlotTableCellWrapper(cellData: TSlotTableData): React.JS
 
 interface IPillStatusCell {
     data: string;
-    type: SlotTableCellType.StatusPill;
+    type: TableCellType.StatusPill;
 }
 
 function PillStatusCell({ data }: IPillStatusCell): React.JSX.Element {
@@ -68,7 +73,7 @@ function PillStatusCell({ data }: IPillStatusCell): React.JSX.Element {
 
 interface ILinkCell {
     data: string;
-    type: SlotTableCellType.Link;
+    type: TableCellType.Link;
     href: string;
 }
 
@@ -76,9 +81,26 @@ function LinkCell({ data, href }: ILinkCell): React.JSX.Element {
     return <Link to={href}>{data}</Link>;
 }
 
+interface IStatsCell {
+    data: string;
+    type: TableCellType.Stats;
+    href: string;
+    statsType: "blocks" | "transactions";
+    shouldLoad?: boolean;
+}
+
+function StatsCell({ data, href, shouldLoad, statsType }: IStatsCell): React.JSX.Element {
+    const [slotStats, isLoading] = useSlotStats(shouldLoad ? data : null);
+    if (!shouldLoad) {
+        return <Spinner compact />;
+    }
+    const stat = statsType === "blocks" ? slotStats?.blockCount : slotStats?.perPayloadType?.transaction;
+    return <span>{isLoading ? <Spinner compact /> : stat ? <Link to={href}>{stat}</Link> : "0"}</span>;
+}
+
 interface ITextCell {
     data: string;
-    type: SlotTableCellType.Text;
+    type: TableCellType.Text;
     highlight?: boolean;
 }
 
@@ -88,36 +110,34 @@ function TextCell({ data, highlight }: ITextCell): React.JSX.Element {
 
 interface ITruncatedIdCell {
     data: string;
-    type: SlotTableCellType.TruncatedId;
+    type: TableCellType.TruncatedId;
     href: string;
 }
 
 function TruncatedIdCell({ data, href }: ITruncatedIdCell): React.JSX.Element {
     return (
-        <div className="slot-id">
+        <div className="truncated-id-cell">
             <TruncatedId id={data} link={href} />
         </div>
     );
 }
 
 interface IBurnedManaCell {
-    type: SlotTableCellType.BurnedMana;
+    type: TableCellType.BurnedMana;
     data: string;
     shouldLoad: boolean;
 }
 
 function BurnedManaCell({ data, shouldLoad }: IBurnedManaCell): React.JSX.Element {
+    const { slotManaBurned, isLoading } = useSlotManaBurned(shouldLoad ? data : null);
     if (!shouldLoad) {
         return <Spinner compact />;
     }
-
-    const { slotManaBurned, isLoading } = useSlotManaBurned(data);
-
     return <span>{isLoading ? <Spinner compact /> : slotManaBurned?.manaBurned ?? "--"}</span>;
 }
 
 interface IEmptyCell {
-    type: SlotTableCellType.Empty;
+    type: TableCellType.Empty;
 }
 
 function EmptyCell(_: IEmptyCell): React.JSX.Element {
