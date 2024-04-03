@@ -313,7 +313,7 @@ export const useFeed = (network: string) => {
             graphContext.graph.current = Viva.Graph.graph<INodeData, unknown>();
             graphContext.graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
             const layout = Viva.Graph.Layout.forceDirected(graphContext.graph.current, {
-                springLength: 10,
+                springLength: 30,
                 springCoeff: 0.0001,
                 stableThreshold: 0.15,
                 gravity: -2,
