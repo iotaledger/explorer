@@ -210,7 +210,17 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
-                    <div className="card--value row">{Number((output as DelegationOutput).delegatedAmount)}</div>
+                    <div className="card--value row">
+                        <span
+                            className="pointer"
+                            onClick={(e) => {
+                                setIsFormattedBalance(!isFormattedBalance);
+                                e.stopPropagation();
+                            }}
+                        >
+                            {formatAmount(Number((output as DelegationOutput).delegatedAmount), tokenInfo, !isFormattedBalance)}
+                        </span>
+                    </div>
                     <div className="card--label">Delegation Id:</div>
                     <div className="card--value row">{delegationId}</div>
                     <div className="card--label">Validator Address:</div>
