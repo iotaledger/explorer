@@ -2,7 +2,6 @@ import type { ITableRow } from "~/app/components/Table";
 import { TableCellType, type TTableData } from "~/app/components/nova/TableCell";
 import { BaseTokenResponse } from "@iota/sdk-wasm-nova/web";
 import { ValidatorsTableHeadings } from "~/app/lib/ui/enums/ValidatorsTableHeadings.enum";
-import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import { useNetworkInfoNova } from "../networkInfo";
 import { IValidator } from "~/models/api/nova/IValidatorsResponse";
 
@@ -18,7 +17,7 @@ function getValidatorTableRow(
     const address = validatorResponse.address;
     const inCommittee = validator.inCommittee;
     const delegatedStake = validatorResponse.poolStake - validatorResponse.validatorStake;
-    const stake = `${formatAmount(validatorResponse.validatorStake, tokenInfo)}/${formatAmount(delegatedStake, tokenInfo)}`;
+
     Object.values(ValidatorsTableHeadings).forEach((heading) => {
         let tableData: TTableData | null = null;
 
@@ -28,6 +27,7 @@ function getValidatorTableRow(
                     type: TableCellType.TruncatedId,
                     data: address,
                     href: `/${network}/addr/${address}`,
+                    shouldCopy: true,
                 };
                 break;
             case ValidatorsTableHeadings.Candidate:
@@ -44,20 +44,30 @@ function getValidatorTableRow(
                 break;
             case ValidatorsTableHeadings.FixedCost:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: formatAmount(validatorResponse.fixedCost, manaInfo),
+                    type: TableCellType.Formatted,
+                    data: validatorResponse.fixedCost,
+                    tokenInfo: manaInfo,
                 };
                 break;
-            case ValidatorsTableHeadings.Stake:
+            case ValidatorsTableHeadings.ValidatorStake:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: stake,
+                    type: TableCellType.Formatted,
+                    data: validatorResponse.validatorStake,
+                    tokenInfo,
+                };
+                break;
+            case ValidatorsTableHeadings.DelegatedStake:
+                tableData = {
+                    type: TableCellType.Formatted,
+                    data: delegatedStake,
+                    tokenInfo,
                 };
                 break;
             case ValidatorsTableHeadings.PoolStake:
                 tableData = {
-                    type: TableCellType.Text,
-                    data: formatAmount(validatorResponse.poolStake, tokenInfo),
+                    type: TableCellType.Formatted,
+                    data: validatorResponse.poolStake,
+                    tokenInfo,
                 };
                 break;
             case ValidatorsTableHeadings.RankedByStake:
