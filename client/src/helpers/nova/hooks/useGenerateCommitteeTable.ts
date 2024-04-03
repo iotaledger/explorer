@@ -20,6 +20,7 @@ function getCommitteeTableRow(
                     type: TableCellType.TruncatedId,
                     data: validator.address,
                     href: `/${network}/addr/${validator.address}`,
+                    shouldCopy: true,
                 };
                 break;
             case CommitteeTableHeadings.Cost:
