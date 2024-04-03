@@ -10,10 +10,10 @@ export const ORPHANED_BLOCK_COLOR = "#C026D3";
 export const DROPPED_BLOCK_COLOR = ORPHANED_BLOCK_COLOR;
 export const SEARCH_RESULT_COLOR = "#1EC15A";
 export const HOVERED_BLOCK_COLOR = SEARCH_RESULT_COLOR;
-export const EDGE_COLOR_DARK: number = 0xffffff33;
-export const EDGE_COLOR_LIGHT: number = 0x00000055;
-export const EDGE_COLOR_AFTER: number = 0xff5aaaff;
-export const EDGE_COLOR_BEFORE: number = 0x0000ffff;
+export const EDGE_COLOR_DARK: number = 0xffffff20;
+export const EDGE_COLOR_LIGHT: number = 0x00000045;
+export const EDGE_COLOR_AFTER: number = 0xff5aaa55;
+export const EDGE_COLOR_BEFORE: number = 0x0000ff55;
 
 // colors by theme
 export const PENDING_BLOCK_COLOR_LIGHTMODE = "#A6C3FC";
