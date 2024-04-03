@@ -3,7 +3,8 @@ export enum ValidatorsTableHeadings {
     Candidate = "Candidate",
     Elected = "Elected",
     FixedCost = "Fixed Cost",
-    Stake = "Own/Delegated Stake",
     PoolStake = "Pool Stake",
+    ValidatorStake = "Validator Stake",
+    DelegatedStake = "Delegated Stake",
     RankedByStake = "Ranked by Stake",
 }
