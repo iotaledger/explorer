@@ -48,19 +48,23 @@ const UnlockConditionView: React.FC<UnlockConditionViewProps> = ({ unlockConditi
                             </div>
                         </React.Fragment>
                     )}
-                    {unlockCondition.type === UnlockConditionType.Timelock && (unlockCondition as TimelockUnlockCondition).slotIndex && (
+                    {/** @ts-expect-error The ACTUAL runtime field is 'slot', not 'slotIndex'. https://github.com/iotaledger/iota-sdk/issues/2217 */}
+                    {unlockCondition.type === UnlockConditionType.Timelock && (unlockCondition as TimelockUnlockCondition).slot && (
                         <React.Fragment>
                             <div className="card--label">Slot index</div>
-                            <div className="card--value row">{(unlockCondition as TimelockUnlockCondition).slotIndex}</div>
+                            {/** @ts-expect-error The ACTUAL runtime field is 'slot', not 'slotIndex'. https://github.com/iotaledger/iota-sdk/issues/2217 */}
+                            <div className="card--value row">{(unlockCondition as TimelockUnlockCondition).slot}</div>
                         </React.Fragment>
                     )}
                     {unlockCondition.type === UnlockConditionType.Expiration && (
                         <React.Fragment>
                             <AddressView address={(unlockCondition as ExpirationUnlockCondition).returnAddress} />
-                            {(unlockCondition as ExpirationUnlockCondition).slotIndex && (
+                            {/** @ts-expect-error The ACTUAL runtime field is 'slot', not 'slotIndex'. https://github.com/iotaledger/iota-sdk/issues/2217 */}
+                            {(unlockCondition as ExpirationUnlockCondition).slot && (
                                 <React.Fragment>
                                     <div className="card--label">Slot index</div>
-                                    <div className="card--value row">{(unlockCondition as ExpirationUnlockCondition).slotIndex}</div>
+                                    {/** @ts-expect-error The ACTUAL runtime field is 'slot', not 'slotIndex'. https://github.com/iotaledger/iota-sdk/issues/2217 */}
+                                    <div className="card--value row">{(unlockCondition as ExpirationUnlockCondition).slot}</div>
                                 </React.Fragment>
                             )}
                         </React.Fragment>
