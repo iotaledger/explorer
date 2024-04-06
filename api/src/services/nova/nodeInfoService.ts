@@ -7,7 +7,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import logger from "../../logger";
 import { INetwork } from "../../models/db/INetwork";
 
-// The cron interval value to update the circulating supply every 10 minutes.
+// The cron interval value to update the node info every 10 minutes.
 const NODE_INFO_UPDATE_INTERVAL = "*/10 * * * *";
 
 /**
