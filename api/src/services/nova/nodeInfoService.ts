@@ -8,7 +8,7 @@ import logger from "../../logger";
 import { INetwork } from "../../models/db/INetwork";
 
 // The cron interval value to update the node info every 10 minutes.
-const NODE_INFO_UPDATE_INTERVAL = "*/10 * * * *";
+const NODE_INFO_UPDATE_INTERVAL = "*/1 * * * *";
 
 /**
  * Class to handle Nova protocol node info.
