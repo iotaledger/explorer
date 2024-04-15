@@ -2,11 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
-import initStardustSdk from "@iota/sdk-wasm/web";
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
-import App from "~app/App";
 import { AppRouteProps } from "~app/AppRouteProps";
 import { ServiceFactory } from "~factories/serviceFactory";
 import "./index.scss";
@@ -25,38 +23,39 @@ import { NodeInfoService } from "~services/nodeInfoService";
 import { SettingsService } from "~services/settingsService";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
 import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
+import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
-import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
+import { Loader } from "~app/components/Loader";
+
+const App = lazy(() => import("~app/App"));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
 
-initialiseServices()
-    .then(async () => {
-        // load the wasm
-        const origin = window?.location?.origin ?? "";
-        await initStardustSdk(origin + "/wasm/iota_sdk_stardust_wasm_bg.wasm");
-
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const container = document.querySelector("#root")!;
-        const root = createRoot(container);
-        root.render(
-            <BrowserRouter>
+const AppInitializer = () => {
+    return (
+        <BrowserRouter>
+            <Suspense fallback={<Loader />}>
                 <Route
                     exact={true}
                     path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
                     component={(props: RouteComponentProps<AppRouteProps>) => <App {...props} />}
                 />
-            </BrowserRouter>,
-        );
-    })
-    .catch((err) => console.error(err));
+            </Suspense>
+        </BrowserRouter>
+    );
+};
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const container = document.getElementById("root")!;
+const root = createRoot(container);
+root.render(<AppInitializer />);
 
 /**
  * Register all the services.
  */
-async function initialiseServices(): Promise<void> {
+export async function initialiseServices(): Promise<void> {
     ServiceFactory.register(`api-client-${LEGACY}`, () => new LegacyApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${CHRYSALIS}`, () => new ChrysalisApiClient(apiEndpoint));
     ServiceFactory.register(`api-client-${STARDUST}`, () => new StardustApiClient(apiEndpoint));

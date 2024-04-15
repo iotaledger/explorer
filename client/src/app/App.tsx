@@ -8,10 +8,13 @@ import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
+import Loader from "~app/components/Loader";
 import buildAppRoutes from "./routes";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { isShimmerUiTheme } from "~helpers/networkHelper";
 import { scrollToTop } from "~helpers/pageUtils";
+import { useWasmLoader } from "~helpers/hooks/useWasmLoader";
+import { useInitServicesLoader } from "~helpers/hooks/useInitServicesLoader";
 import { INetwork } from "~models/config/INetwork";
 import { MAINNET } from "~models/config/networkType";
 import { STARDUST } from "~models/config/protocolVersion";
@@ -27,14 +30,17 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
 }) => {
     const [networks, setNetworks] = useState<INetwork[]>([]);
     const [networksLoaded, setNetworksLoaded] = useState(false);
+    const { isServicesLoaded } = useInitServicesLoader();
 
     useEffect(() => {
+        if (!isServicesLoaded) return;
+
         const networkService = ServiceFactory.get<NetworkService>("network");
         const networkConfigs = networkService.networks();
 
         setNetworks(networkConfigs);
         setNetworksLoaded(true);
-    }, []);
+    }, [isServicesLoaded]);
 
     useEffect(() => {
         if (networksLoaded && !network) {
@@ -45,6 +51,8 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
 
     const networkConfig = networks.find((n) => n.network === network);
     const protocolVersion = networkConfig?.protocolVersion ?? STARDUST;
+    const { isMainWasmLoaded } = useWasmLoader(isServicesLoaded, networksLoaded, networkConfig?.protocolVersion);
+
     const identityResolverEnabled = protocolVersion !== STARDUST && (networkConfig?.identityResolverEnabled ?? true);
     const currentNetworkName = networkConfig?.network;
     const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
@@ -58,6 +66,10 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
         body?.classList.add("shimmer");
     } else {
         body?.classList.remove("shimmer");
+    }
+
+    if (!networksLoaded || !isMainWasmLoaded || !isServicesLoaded) {
+        return <Loader />;
     }
 
     const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", withNetworkContext);
