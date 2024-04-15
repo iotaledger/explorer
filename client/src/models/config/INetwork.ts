@@ -74,4 +74,8 @@ export interface INetwork {
      * Url endpoint for token registry.
      */
     tokenRegistryEndpoint?: string;
+    /**
+     * Max results for API requests.
+     */
+    apiMaxResults?: number;
 }
