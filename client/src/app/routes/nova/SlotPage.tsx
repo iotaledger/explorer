@@ -15,6 +15,7 @@ import "./SlotPage.scss";
 import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
 import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
 import moment from "moment";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 export default function SlotPage({
     match: {
@@ -24,6 +25,7 @@ export default function SlotPage({
     network: string;
     slotIndex: string;
 }>): React.JSX.Element {
+    const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { latestSlotCommitments = [] } = useSlotsFeed();
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
     const { slotCommitment: slotCommitmentDetails, slotCommitmentId } = useSlotDetails(network, slotIndex);
@@ -52,8 +54,9 @@ export default function SlotPage({
                 slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
                 slotCommitmentDetails?.referenceManaCost?.toString() ??
                 "-",
+            tokenInfo: manaInfo,
         },
-        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-" },
+        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-", tokenInfo: manaInfo },
         { label: "Blocks", value: slotStats?.blockCount ?? "0" },
         { label: "Transactions", value: slotStats?.perPayloadType?.transaction ?? "0" },
     ];
