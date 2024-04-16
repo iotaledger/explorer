@@ -1,5 +1,5 @@
-import { NetworkType } from "./networkType";
-import { ProtocolVersion } from "./protocolVersion";
+import { CUSTOM, NetworkType } from "./networkType";
+import { LEGACY, ProtocolVersion } from "./protocolVersion";
 import { Theme } from "./uiTheme";
 
 /**
@@ -79,3 +79,12 @@ export interface INetwork {
      */
     apiMaxResults?: number;
 }
+
+export const networkConfigDefault: INetwork = {
+    label: "Custom network",
+    network: CUSTOM,
+    protocolVersion: LEGACY,
+    hasStatisticsSupport: false,
+    isEnabled: false,
+    apiMaxResults: 10000,
+};

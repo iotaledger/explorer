@@ -16,8 +16,7 @@ import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import "./Tag.scss";
-import { INetwork } from "~/models/config/INetwork";
-import { CUSTOM } from "~/models/config/networkType";
+import { INetwork, networkConfigDefault } from "~/models/config/INetwork";
 import { NetworkService } from "~/services/networkService";
 
 /**
@@ -45,14 +44,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         const networkService = ServiceFactory.get<NetworkService>("network");
-        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || {
-            label: "Custom network",
-            network: CUSTOM,
-            protocolVersion: LEGACY,
-            hasStatisticsSupport: false,
-            isEnabled: false,
-            apiMaxResults: 10000,
-        };
+        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || networkConfigDefault;
 
         let tag;
         let tagFill;
