@@ -44,6 +44,15 @@ export class AssociatedOutputsHelper {
         );
 
         promises.push(
+            // Basic output -> owner address expired outputs
+            this.fetchAssociatedOutputIds<QueryParameter[]>(
+                async (query) => client.basicOutputIds(query),
+                [{ address }, { expiresBefore: Math.floor(Date.now() / 1000) }],
+                AssociationType.BASIC_ADDRESS_EXPIRED,
+            ),
+        );
+
+        promises.push(
             // Basic output -> storage return address
             this.fetchAssociatedOutputIds<QueryParameter>(
                 async (query) => client.basicOutputIds([query]),
@@ -143,6 +152,15 @@ export class AssociatedOutputsHelper {
         );
 
         promises.push(
+            // Nft output -> owner address expired outputs
+            this.fetchAssociatedOutputIds<NftQueryParameter[]>(
+                async (query) => client.nftOutputIds(query),
+                [{ address }, { expiresBefore: Math.floor(Date.now() / 1000) }],
+                AssociationType.NFT_ADDRESS_EXPIRED,
+            ),
+        );
+
+        promises.push(
             // Nft output -> storage return address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
                 async (query) => client.nftOutputIds([query]),
@@ -197,7 +215,15 @@ export class AssociatedOutputsHelper {
 
         do {
             try {
-                const response = typeof args === "string" ? await fetch(args) : await fetch({ ...args, cursor });
+                let requestArgs: T = null;
+                if (typeof args === "string") {
+                    requestArgs = args;
+                } else if (Array.isArray(args)) {
+                    requestArgs = cursor ? ([...args, { cursor }] as T) : args;
+                } else {
+                    requestArgs = { ...args, cursor };
+                }
+                const response = await fetch(requestArgs);
 
                 if (typeof response === "string") {
                     const outputIds = associationToOutputIds.get(association);

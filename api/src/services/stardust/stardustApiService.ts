@@ -249,18 +249,21 @@ export class StardustApiService {
     public async basicOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
+        const expiredIds = await this.basicExpiredOutputIdsByAddress(addressBech32);
+        const notClaimedIds = await this.basicNotClaimedOutputIdsByAddress(addressBech32);
 
         do {
             try {
                 const outputIdsResponse = await this.client.basicOutputIds([{ address: addressBech32 }, { cursor: cursor ?? "" }]);
 
-                outputIds = outputIds.concat(outputIdsResponse.items);
+                outputIds = outputIds.concat(outputIdsResponse.items.filter((id) => !expiredIds.includes(id)));
                 cursor = outputIdsResponse.cursor;
             } catch (e) {
                 logger.error(`Fetching basic output ids failed. Cause: ${e}`);
             }
         } while (cursor);
 
+        outputIds = outputIds.concat(notClaimedIds);
         const outputResponses = await this.outputsDetails(outputIds);
 
         return {
@@ -303,18 +306,21 @@ export class StardustApiService {
     public async nftOutputDetailsByAddress(addressBech32: string): Promise<IAddressDetailsResponse> {
         let cursor: string | undefined;
         let outputIds: string[] = [];
+        const expiredIds = await this.nftExpiredOutputIdsByAddress(addressBech32);
+        const notClaimedIds = await this.nftNotClaimedOutputIdsByAddress(addressBech32);
 
         do {
             try {
                 const outputIdsResponse = await this.client.nftOutputIds([{ address: addressBech32 }, { cursor: cursor ?? "" }]);
 
-                outputIds = outputIds.concat(outputIdsResponse.items);
+                outputIds = outputIds.concat(outputIdsResponse.items.filter((id) => !expiredIds.includes(id)));
                 cursor = outputIdsResponse.cursor;
             } catch (e) {
                 logger.error(`Fetching nft output ids failed. Cause: ${e}`);
             }
         } while (cursor);
 
+        outputIds = outputIds.concat(notClaimedIds);
         const outputResponses = await this.outputsDetails(outputIds);
         return {
             outputs: outputResponses,
@@ -497,6 +503,116 @@ export class StardustApiService {
      */
     public async search(query: string): Promise<ISearchResponse> {
         return new SearchExecutor(this.network, new SearchQueryBuilder(query, this.network.bechHrp).build()).run();
+    }
+
+    /**
+     * Get the expired basic output ids for an address (outputs no longer owned by the address but by the expirationReturnAddress).
+     * @param addressBech32 The address in bech32 format.
+     * @returns The basic output ids.
+     */
+    private async basicExpiredOutputIdsByAddress(addressBech32: string): Promise<string[]> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        do {
+            try {
+                const outputIdsResponse = await this.client.basicOutputIds([
+                    { address: addressBech32 },
+                    { expiresBefore: currentTimestamp },
+                    { cursor: cursor ?? "" },
+                ]);
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching expired basic output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        return outputIds;
+    }
+
+    /**
+     * Get the expired ntf output ids for an address (outputs no longer owned by the address but by the expirationReturnAddress).
+     * @param addressBech32 The address in bech32 format.
+     * @returns The nft output ids.
+     */
+    private async nftExpiredOutputIdsByAddress(addressBech32: string): Promise<string[]> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        do {
+            try {
+                const outputIdsResponse = await this.client.nftOutputIds([
+                    { address: addressBech32 },
+                    { expiresBefore: currentTimestamp },
+                    { cursor: cursor ?? "" },
+                ]);
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching expired nft output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        return outputIds;
+    }
+
+    /**
+     * Get the not claimed ntf output ids for an address (outputs owned by the expirationReturnAddress).
+     * @param expirationReturnAddress The address in bech32 format.
+     * @returns The nft output ids.
+     */
+    private async basicNotClaimedOutputIdsByAddress(expirationReturnAddress: string): Promise<string[]> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.basicOutputIds([
+                    { expirationReturnAddress },
+                    { expiresBefore: currentTimestamp },
+                    { cursor: cursor ?? "" },
+                ]);
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching not claimed nft output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        return outputIds;
+    }
+
+    /**
+     * Get the not claimed ntf output ids for an address (outputs owned by the expirationReturnAddress).
+     * @param expirationReturnAddress The address in bech32 format.
+     * @returns The nft output ids.
+     */
+    private async nftNotClaimedOutputIdsByAddress(expirationReturnAddress: string): Promise<string[]> {
+        let cursor: string | undefined;
+        let outputIds: string[] = [];
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+
+        do {
+            try {
+                const outputIdsResponse = await this.client.nftOutputIds([
+                    { expirationReturnAddress },
+                    { expiresBefore: currentTimestamp },
+                    { cursor: cursor ?? "" },
+                ]);
+
+                outputIds = outputIds.concat(outputIdsResponse.items);
+                cursor = outputIdsResponse.cursor;
+            } catch (e) {
+                logger.error(`Fetching not claimed nft output ids failed. Cause: ${e}`);
+            }
+        } while (cursor);
+
+        return outputIds;
     }
 
     /**
