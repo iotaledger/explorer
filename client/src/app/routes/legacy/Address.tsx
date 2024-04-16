@@ -10,8 +10,10 @@ import { DateHelper } from "~helpers/dateHelper";
 import { TrytesHelper } from "~helpers/trytesHelper";
 import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { LEGACY } from "~models/config/protocolVersion";
+import { INetwork, networkConfigDefault } from "~models/config/INetwork";
 import { LegacyTangleCacheService } from "~services/legacy/legacyTangleCacheService";
 import { SettingsService } from "~services/settingsService";
+import { NetworkService } from "~services/networkService";
 import AsyncComponent from "../../components/AsyncComponent";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
@@ -44,6 +46,9 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
         this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || networkConfigDefault;
+
         let address;
         let checksum;
         if (
@@ -55,6 +60,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
         }
 
         this.state = {
+            networkConfig: network,
             statusBusy: 0,
             status: "Finding transactions...",
             formatFull: false,
@@ -93,7 +99,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
                         this.props.match.params.network,
                         "address",
                         this.props.match.params.address,
-                        250,
+                        this.state.networkConfig.apiMaxResults,
                     );
 
                     let status = "";
