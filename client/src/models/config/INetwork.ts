@@ -75,7 +75,7 @@ export interface INetwork {
      */
     tokenRegistryEndpoint?: string;
     /**
-     * Max results for API requests.
+     * Max results for API requests (only used in legacy for now).
      */
     apiMaxResults?: number;
 }

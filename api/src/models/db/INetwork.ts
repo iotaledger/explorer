@@ -174,7 +174,7 @@ export interface INetwork {
     identityResolverEnabled?: boolean;
 
     /**
-     * Max results for API requests.
+     * Max results for API requests (only used in legacy for now).
      */
     apiMaxResults?: number;
 }
