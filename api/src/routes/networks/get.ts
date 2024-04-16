@@ -50,6 +50,7 @@ export async function get(_: IConfiguration): Promise<INetworkGetResponse> {
                     circulatingSupply: circulatingSupplyFromSupplyTracker ?? n.circulatingSupply,
                     identityResolverEnabled: n.identityResolverEnabled,
                     tokenRegistryEndpoint: n.tokenRegistryEndpoint,
+                    apiMaxResults: n.apiMaxResults,
                 };
             }),
     };

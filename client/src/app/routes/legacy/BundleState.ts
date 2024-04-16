@@ -1,8 +1,14 @@
+import { INetwork } from "~/models/config/INetwork";
 import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { ConfirmationState } from "~models/confirmationState";
 import { CurrencyState } from "../../components/CurrencyState";
 
 export interface BundleState extends CurrencyState {
+    /**
+     * The name of the network.
+     */
+    networkConfig: INetwork;
+
     /**
      * The bundle hash.
      */
