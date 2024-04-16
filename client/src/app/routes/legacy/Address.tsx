@@ -10,8 +10,7 @@ import { DateHelper } from "~helpers/dateHelper";
 import { TrytesHelper } from "~helpers/trytesHelper";
 import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { LEGACY } from "~models/config/protocolVersion";
-import { INetwork } from "~models/config/INetwork";
-import { CUSTOM } from "~models/config/networkType";
+import { INetwork, networkConfigDefault } from "~models/config/INetwork";
 import { LegacyTangleCacheService } from "~services/legacy/legacyTangleCacheService";
 import { SettingsService } from "~services/settingsService";
 import { NetworkService } from "~services/networkService";
@@ -48,14 +47,7 @@ class Address extends AsyncComponent<RouteComponentProps<AddressRouteProps>, Add
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
         const networkService = ServiceFactory.get<NetworkService>("network");
-        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || {
-            label: "Custom network",
-            network: CUSTOM,
-            protocolVersion: LEGACY,
-            hasStatisticsSupport: false,
-            isEnabled: false,
-            apiMaxResults: 10000,
-        };
+        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || networkConfigDefault;
 
         let address;
         let checksum;
