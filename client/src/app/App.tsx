@@ -8,7 +8,6 @@ import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
 import Header from "./components/header/Header";
-import Loader from "~app/components/Loader";
 import buildAppRoutes from "./routes";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { isShimmerUiTheme } from "~helpers/networkHelper";
@@ -21,6 +20,7 @@ import { STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
 import { NodeInfoService } from "~services/nodeInfoService";
 import "./App.scss";
+import Spinner from "~app/components/Spinner";
 
 const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
     history,
@@ -69,7 +69,11 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
     }
 
     if (!networksLoaded || !isMainWasmLoaded || !isServicesLoaded) {
-        return <Loader />;
+        return (
+            <div className={"fixed-center-page"}>
+                <Spinner />
+            </div>
+        );
     }
 
     const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", withNetworkContext);

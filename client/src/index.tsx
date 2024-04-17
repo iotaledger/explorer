@@ -26,7 +26,7 @@ import { StardustFeedClient } from "~services/stardust/stardustFeedClient";
 import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
-import { Loader } from "~app/components/Loader";
+import Spinner from "~app/components/Spinner";
 
 const App = lazy(() => import("~app/App"));
 
@@ -36,7 +36,13 @@ const apiEndpoint = (window as any).env.API_ENDPOINT;
 const AppInitializer = () => {
     return (
         <BrowserRouter>
-            <Suspense fallback={<Loader />}>
+            <Suspense
+                fallback={
+                    <div className={"fixed-center-page"}>
+                        <Spinner />
+                    </div>
+                }
+            >
                 <Route
                     exact={true}
                     path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
