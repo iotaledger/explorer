@@ -2,13 +2,14 @@
 
 .balance-wrapper {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    gap: 24px;
 
     .icon {
         margin-right: 16px;
     }
 
-    .balance-wrapper__inner {
+    .balance-wrapper--row {
         display: flex;
         flex-direction: row;
         gap: 40px;

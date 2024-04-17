@@ -1,0 +1,82 @@
+@import "../../scss/fonts";
+@import "../../scss/mixins";
+@import "../../scss/media-queries";
+@import "../../scss/variables";
+
+.card-info {
+  width: 100%;
+  background: var(--card-body);
+  border-radius: 6px;
+  padding: 24px;
+  font-family: $inter;
+
+  .card-info--title,
+  .card-info--detail-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--card-color);
+  }
+
+  .card-info--amount,
+  .card-info--detail-amount {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--body-color);
+  }
+
+  .card-info--header-title {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+  }
+  .card-info--tooltip {
+    margin-left: 6px;
+
+    .material-icons {
+      font-size: 18px;
+      color: #b0bfd9;
+      padding-left: 5px;
+    }
+    .tooltip {
+      height: 18px;
+    }
+  }
+
+  .card-info--amount-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .card-info--amount {
+    font-size: 20px;
+  }
+  .card-info--copy {
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+  }
+  .card-info--details-divider {
+    margin-top: 16px;
+    border-top: 1px solid $gray-3;
+  }
+  .card-info--details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card-info--detail {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .card-info--detail-amount {
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+}

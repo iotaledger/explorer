@@ -7,6 +7,7 @@ import CopyButton from "../../CopyButton";
 import Icon from "../../Icon";
 import Tooltip from "../../Tooltip";
 import "./AddressBalance.scss";
+import { CardInfo } from "~app/components/CardInfo";
 
 interface AddressBalanceProps {
     /**
@@ -80,46 +81,86 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     const conditionalPotentialMana =
         availablePotentialMana === null || totalPotentialMana === null ? null : totalPotentialMana - availablePotentialMana;
 
+    const availableBaseTokenAmount = (() => {
+        const balance = shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance;
+        return balance && balance > 0 ? formatAmount(balance, tokenInfo, formatBaseTokenBalanceFull) : 0;
+    })();
+
+    const manaFactory = (
+        mana: bigint | number | null | undefined,
+        title: string,
+        isFormat: boolean,
+        setFormat: React.Dispatch<React.SetStateAction<boolean>>
+    ) => {
+        if (mana !== null && mana !== undefined && mana > 0) {
+            return {
+                title: title,
+                amount: formatAmount(mana, manaInfo, isFormat),
+                copyAmount: String(mana),
+                onClickAmount: () => setFormat(!isFormat)
+            };
+        }
+
+        return null;
+    };
+
+
     return (
         <div className="balance-wrapper">
-            <div className="balance-wrapper__icon">
-                <Icon icon="wallet" boxed />
-            </div>
-            <div className="balance-wrapper__inner">
-                <div className="balance-wrapper__base-token">
-                    {baseTokenBalanceView(
-                        "Available Base Token",
-                        formatBaseTokenBalanceFull,
-                        setFormatBaseTokenBalanceFull,
-                        false,
-                        shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance,
-                    )}
-                    {shouldShowExtendedBalance &&
-                        baseTokenBalanceView(
-                            "Conditionally Locked Base Token",
-                            formatConditionalBalanceFull,
-                            setFormatConditionalBalanceFull,
-                            true,
-                            conditionalBaseTokenBalance,
-                        )}
-                    {baseTokenBalanceView("Storage Deposit", formatStorageBalanceFull, setFormatStorageBalanceFull, false, storageDeposit)}
-                </div>
+            <div className="balance-wrapper--row">
+                <CardInfo
+                    title="Available Base Token"
+                    amount={availableBaseTokenAmount}
+                    onClickAmount={() => setFormatBaseTokenBalanceFull(!formatBaseTokenBalanceFull)}
+                    tokenInfo={tokenInfo}
+                    copyAmount={String(availableBaseTokenAmount)}
+                    details={[]}
+                />
+                {shouldShowExtendedBalance && (
+                    <CardInfo
+                        title="Conditionally Locked Base Token"
+                        amount={formatAmount(conditionalBaseTokenBalance, tokenInfo, formatConditionalBalanceFull)}
+                        onClickAmount={() => setFormatConditionalBalanceFull(!formatConditionalBalanceFull)}
+                        tokenInfo={tokenInfo}
+                        copyAmount={String(conditionalBaseTokenBalance)}
+                        tooltip={CONDITIONAL_BALANCE_INFO}
+                    />
+                )}
 
+                <CardInfo
+                    title="Storage Deposit"
+                    amount={storageDeposit ? formatAmount(storageDeposit, tokenInfo, formatStorageBalanceFull) : 0}
+                    onClickAmount={() => setFormatStorageBalanceFull(!formatStorageBalanceFull)}
+                    tokenInfo={tokenInfo}
+                    copyAmount={String(storageDeposit)}
+                />
+            </div>
+            <div className="balance-wrapper--row">
+                <CardInfo
+                    title="Available Mana"
+                    tokenInfo={tokenInfo}
+                    details={[
+                        manaFactory(availableStoredMana, "Stored:", formatManaBalanceFull, setFormatManaBalanceFull),
+                        manaFactory(availableDecayMana, "Decay:", formatManaBalanceFull, setFormatManaBalanceFull),
+                        manaFactory(availablePotentialMana, "Potential:", formatManaBalanceFull, setFormatManaBalanceFull),
+                        manaFactory(blockIssuanceCredits, "Block issuance credits:", formatManaBalanceFull, setFormatManaBalanceFull),
+                        manaFactory(manaRewards, "Mana rewards:", formatManaBalanceFull, setFormatManaBalanceFull),
+                    ]}
+                />
+
+                <CardInfo
+                    title="Conditionally Locked Mana"
+                    tokenInfo={tokenInfo}
+                    details={[
+                        manaFactory(conditionalStoredMana, "Stored:", formatStorageBalanceFull, setFormatStorageBalanceFull),
+                        manaFactory(conditionalDecayMana, "Decay:", formatStorageBalanceFull, setFormatStorageBalanceFull),
+                        manaFactory(conditionalPotentialMana, "Potential:", formatStorageBalanceFull, setFormatStorageBalanceFull),
+                    ]}
+                />
+            </div>
+            <div className="balance-wrapper--row">
                 <div className="balance-wrapper__mana">
-                    {(availableStoredMana !== null ||
-                        availablePotentialMana !== null ||
-                        availableDecayMana !== null ||
-                        blockIssuanceCredits !== null) &&
-                        manaBalanceView(
-                            "Available Mana",
-                            formatManaBalanceFull,
-                            setFormatManaBalanceFull,
-                            availableStoredMana,
-                            availableDecayMana,
-                            availablePotentialMana,
-                            blockIssuanceCredits,
-                            manaRewards,
-                        )}
+
                     {(conditionalStoredMana !== null || conditionalPotentialMana !== null) &&
                         manaBalanceView(
                             "Conditionally Locked Mana",
