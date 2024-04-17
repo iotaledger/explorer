@@ -5,10 +5,23 @@ export const MAINNET = "mainnet";
 const DEVNET = "devnet";
 export const SHIMMER = "shimmer";
 const TESTNET = "testnet";
+const IOTA_TESTNET = "iota-testnet";
+const SHIMMER_TESTNET = "shimmer-testnet";
 const ALPHANET = "alphanet";
 const CUSTOM = "custom";
 
-const networkTypes = [LEGACY_MAINNET, CHRYSALIS_MAINNET, MAINNET, DEVNET, SHIMMER, TESTNET, ALPHANET, CUSTOM] as const;
+const networkTypes = [
+    LEGACY_MAINNET,
+    CHRYSALIS_MAINNET,
+    MAINNET,
+    DEVNET,
+    SHIMMER,
+    TESTNET,
+    IOTA_TESTNET,
+    SHIMMER_TESTNET,
+    ALPHANET,
+    CUSTOM,
+] as const;
 
 /**
  * The network type.
