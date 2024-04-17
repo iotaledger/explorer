@@ -50,7 +50,7 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
                 // special case for alias unlock where the signature is the state controller address but the unlock condition is the alias address
                 const { referencedStateControllerAddress, referencedAliasAddress } = getReferencedAddresses(
                     inputs,
-                    unlocks,
+                    unlocks[idx],
                     idx,
                     bech32Hrp,
                 );
@@ -106,21 +106,19 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
 
 function getReferencedAddresses(
     inputs: IInput[],
-    unlocks: Unlock[],
+    unlock: Unlock,
     idx: number,
     bech32Hrp: string,
 ): { referencedStateControllerAddress: string; referencedAliasAddress: string } {
     let referencedStateControllerAddress = "";
     let referencedAliasAddress = "";
-    const unlock = unlocks[idx];
     if (unlock.type === UnlockType.Alias) {
-        // get the referenced alias output
         const referencedAliasInput = inputs[(unlock as AliasUnlock).reference];
-        // get the referenced alias address
-        const referencedOutput = referencedAliasInput?.output?.output as unknown as AliasOutput;
-        referencedAliasAddress = Bech32AddressHelper.buildAddress(bech32Hrp, referencedOutput.aliasId, AddressType.Alias)?.bech32 || "";
-        // get referenced state controller address
-        const referencedStateControllerAddressUC = referencedOutput.unlockConditions.find(
+        const referencedAliasOutput = referencedAliasInput?.output?.output as unknown as AliasOutput;
+        referencedAliasAddress =
+            Bech32AddressHelper.buildAddress(bech32Hrp, referencedAliasOutput.aliasId, AddressType.Alias)?.bech32 || "";
+
+        const referencedStateControllerAddressUC = referencedAliasOutput.unlockConditions.find(
             (uc) => uc.type === UnlockConditionType.StateControllerAddress,
         ) as StateControllerAddressUnlockCondition;
         referencedStateControllerAddress =
