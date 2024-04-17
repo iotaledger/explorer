@@ -3,7 +3,6 @@ import React, { ReactNode } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { LandingState } from "./LandingState";
 import { ServiceFactory } from "~factories/serviceFactory";
-import { NumberHelper } from "~helpers/numberHelper";
 import { INetwork } from "~models/config/INetwork";
 import { CUSTOM } from "~models/config/networkType";
 import { LEGACY } from "~models/config/protocolVersion";
@@ -101,18 +100,6 @@ class Landing extends Feeds<RouteComponentProps<LandingRouteProps>, LandingState
                             </div>
                             {this.state.networkConfig.isEnabled && (
                                 <div className="row space-between info-boxes">
-                                    <div className="info-box">
-                                        <span className="info-box--title">Transactions per sec</span>
-                                        <div className="info-box--value">
-                                            <span className="download-rate">
-                                                {NumberHelper.roundTo(Number(this.state.itemsPerSecond), 1) || "--"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="info-box">
-                                        <span className="info-box--title">Inclusion rate</span>
-                                        <span className="info-box--value">{this.state.confirmedItemsPerSecondPercent}</span>
-                                    </div>
                                     {this.state.networkConfig.showMarket && (
                                         <div className="info-box">
                                             <span className="info-box--title">IOTA Market Cap</span>
