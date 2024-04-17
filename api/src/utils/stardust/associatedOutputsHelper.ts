@@ -8,7 +8,7 @@ import {
     AddressType,
 } from "@iota/sdk";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { AssociationType } from "../../models/api/stardust/IAssociationsResponse";
+import { AssociationType, IAssociation } from "../../models/api/stardust/IAssociationsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
 
@@ -197,6 +197,38 @@ export class AssociatedOutputsHelper {
         );
 
         await Promise.all(promises);
+    }
+
+    /**
+     * Retrieves the associations between output types and output IDs.
+     * @returns An array of associations.
+     */
+    public getAssociations(): IAssociation[] {
+        const associations: IAssociation[] = [];
+        for (const [type, outputIds] of this.associationToOutputIds.entries()) {
+            if (type !== AssociationType.BASIC_ADDRESS_EXPIRED && type !== AssociationType.NFT_ADDRESS_EXPIRED) {
+                if (
+                    type === AssociationType.BASIC_ADDRESS &&
+                    this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED)?.length > 0
+                ) {
+                    // remove expired basic outputs from basic address associations if they exist
+                    const expiredIds = this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED);
+                    const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
+                    associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                } else if (
+                    type === AssociationType.NFT_ADDRESS &&
+                    this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED)?.length > 0
+                ) {
+                    // remove expired nft outputs from nft address associations if they exist
+                    const expiredIds = this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED);
+                    const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
+                    associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                } else {
+                    associations.push({ type, outputIds: outputIds.reverse() });
+                }
+            }
+        }
+        return associations;
     }
 
     /**
