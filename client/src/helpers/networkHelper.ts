@@ -3,11 +3,13 @@ import {
     CHRYSALIS_MAINNET,
     CUSTOM,
     DEVNET,
+    IOTA_TESTNET,
     LEGACY_MAINNET,
     MAINNET,
     NetworkType,
     SHIMMER,
-    TESTNET,
+    SHIMMER_TESTNET,
+    TESTNET
 } from "~models/config/networkType";
 import { SHIMMER_UI, Theme } from "~models/config/uiTheme";
 
@@ -21,26 +23,29 @@ export const getNetworkOrder = (networkType: NetworkType) => {
         case MAINNET: {
             return 0;
         }
-        case CHRYSALIS_MAINNET: {
+        case SHIMMER: {
             return 1;
         }
-        case SHIMMER: {
+        case IOTA_TESTNET: {
             return 2;
         }
-        case TESTNET: {
+        case SHIMMER_TESTNET: {
             return 3;
         }
-        case ALPHANET: {
+        case DEVNET: {
             return 4;
         }
-        case LEGACY_MAINNET: {
+        case CHRYSALIS_MAINNET: {
             return 5;
         }
-        case DEVNET: {
+        case LEGACY_MAINNET: {
             return 6;
         }
-        default: {
+        case ALPHANET: {
             return 7;
+        }
+        default: {
+            return 8;
         }
     }
 };

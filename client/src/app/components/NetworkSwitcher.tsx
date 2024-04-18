@@ -2,9 +2,10 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import DevnetIcon from "~assets/devnet.svg?react";
 import MainnetIcon from "~assets/mainnet.svg?react";
+import ShimmerIcon from "~assets/shimmer-logo-header.svg?react";
 import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 import { getNetworkOrder } from "~helpers/networkHelper";
-import { MAINNET } from "~models/config/networkType";
+import { MAINNET, IOTA_TESTNET, SHIMMER_TESTNET, SHIMMER, NetworkType } from "~models/config/networkType";
 import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
 import "./NetworkSwitcher.scss";
 
@@ -18,6 +19,24 @@ const PROTOCOL_VERIONS_TO_LABEL = {
  * Component which will show the switcher.
  */
 class NetworkSwitcher extends Component<NetworkSwitcherProps> {
+    /**
+     * Get the appropriate icon based on the network type.
+     * @param networkType The network type.
+     * @returns The icon component.
+     */
+    getIcon(networkType: NetworkType) {
+        switch (networkType) {
+            case MAINNET:
+            case IOTA_TESTNET:
+                return <MainnetIcon />;
+            case SHIMMER:
+            case SHIMMER_TESTNET:
+                return <ShimmerIcon />;
+            default:
+                return <DevnetIcon />;
+        }
+    }
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -56,7 +75,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                             onClick={() => onChange(network.network)}
                                         >
                                             <div className="network--icon row middle center">
-                                                {network.network === MAINNET ? <MainnetIcon /> : <DevnetIcon />}
+                                                {this.getIcon(network.network)}
                                             </div>
                                             <div className="network--content">
                                                 <div className="label">{network.label}</div>
