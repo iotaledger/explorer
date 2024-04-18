@@ -74,9 +74,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                             className={classNames("network--card row middle", { selected: network.label === label })}
                                             onClick={() => onChange(network.network)}
                                         >
-                                            <div className="network--icon row middle center">
-                                                {this.getIcon(network.network)}
-                                            </div>
+                                            <div className="network--icon row middle center">{this.getIcon(network.network)}</div>
                                             <div className="network--content">
                                                 <div className="label">{network.label}</div>
                                                 <div className="protocol">{PROTOCOL_VERIONS_TO_LABEL[network.protocolVersion]}</div>

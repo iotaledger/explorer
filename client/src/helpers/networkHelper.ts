@@ -9,7 +9,7 @@ import {
     NetworkType,
     SHIMMER,
     SHIMMER_TESTNET,
-    TESTNET
+    TESTNET,
 } from "~models/config/networkType";
 import { SHIMMER_UI, Theme } from "~models/config/uiTheme";
 
