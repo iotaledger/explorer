@@ -65,6 +65,6 @@ test("formatAmount should format big values properly", () => {
     expect(formatAmount(1450896407249092, tokenInfo)).toBe("1450896407.24 IOTA");
 });
 
-test("Edge case: 6500004000 should return 6500.004000 (not 6500.004)", () => {
+test("Edge case: 6500004000 should return 6500.00 (not 6500.004)", () => {
     expect(formatAmount(6500004000, tokenInfo, false, 2, true)).toBe("6500.00 IOTA");
 });
