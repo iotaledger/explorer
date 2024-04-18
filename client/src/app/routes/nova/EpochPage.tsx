@@ -17,6 +17,7 @@ import TableCellWrapper, { TTableData } from "~/app/components/nova/TableCell";
 import { useGenerateCommitteeTable } from "~/helpers/nova/hooks/useGenerateCommitteeTable";
 import { CommitteeTableHeadings } from "~/app/lib/ui/enums/CommitteeTableHeadings.enum";
 import Table, { ITableRow } from "~/app/components/Table";
+import { CardInfo, CardInfoProps } from "~/app/components/CardInfo";
 
 export interface EpochPageProps {
     /**
@@ -85,6 +86,40 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         epochTo = epochEndTime.format("DD MMM YYYY HH:mm:ss");
     }
 
+    const defaultData: CardInfoProps[] = [
+        { title: "From", value: epochFrom },
+        { title: "To", value: epochTo },
+        { title: "Time remaining:", value: isFutureEpoch ? "Not started" : epochTimeRemaining },
+        { title: "Progress", value: isFutureEpoch ? "0%" : `${epochProgressPercent}%` },
+        { title: "Registration end", value: isFutureEpoch ? "-" : registrationTimeRemaining },
+    ];
+    const epochData: CardInfoProps[] = [
+        {
+            title: "Total pool stake:",
+            value: formatAmount(epochCommittee?.totalStake ?? 0, tokenInfo, isFormatBalance),
+            onClickValue: () => setIsFormatBalance(!isFormatBalance),
+            showCopyBtn: true,
+        },
+        {
+            title: "Total validator stake",
+            value: formatAmount(epochCommittee?.totalValidatorStake ?? 0, tokenInfo, isFormatBalance),
+            onClickValue: () => setIsFormatBalance(!isFormatBalance),
+            showCopyBtn: true,
+        },
+        {
+            title: "Total delegated stake",
+            value: formatAmount(
+                Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0),
+                tokenInfo,
+                isFormatBalance,
+            ),
+            onClickValue: () => setIsFormatBalance(!isFormatBalance),
+            showCopyBtn: true,
+        },
+        { title: "Blocks", value: epochStats?.blockCount ?? "0" },
+        { title: "Transactions", value: epochStats?.perPayloadType?.transaction ?? "0" },
+    ];
+
     return (
         <section className="epoch-page">
             <div className="wrapper">
@@ -102,74 +137,18 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
                                 <h2>General</h2>
                             </div>
                         </div>
-                        <div className="section--data">
-                            <div className="label">From:</div>
-                            <div className="value">{epochFrom}</div>
+                        <div className="card-info-wrapper">
+                            {defaultData.map((data, index) => {
+                                return <CardInfo key={index} title={data.title} value={data.value} onClickValue={data.onClickValue} />;
+                            })}
+
+                            {!isFutureEpoch &&
+                                epochData.map((data, index) => {
+                                    return <CardInfo key={index} title={data.title} value={data.value} onClickValue={data.onClickValue} />;
+                                })}
+
+                            {isFutureEpoch && <CardInfo title="Starts in:" value={futureEpochStartsIn} />}
                         </div>
-                        <div className="section--data">
-                            <div className="label">To:</div>
-                            <div className="value">{epochTo}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Time remaining:</div>
-                            <div className="value">{isFutureEpoch ? "Not started" : epochTimeRemaining}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Progress:</div>
-                            <div className="value">{isFutureEpoch ? "0%" : `${epochProgressPercent}%`}</div>
-                        </div>
-                        <div className="section--data">
-                            <div className="label">Registration end:</div>
-                            <div className="value">{isFutureEpoch ? "-" : registrationTimeRemaining}</div>
-                        </div>
-                        {!isFutureEpoch && (
-                            <>
-                                <div className="section--data">
-                                    <div className="label">Total pool stake:</div>
-                                    <div className="value">
-                                        <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
-                                            {formatAmount(epochCommittee?.totalStake ?? 0, tokenInfo, isFormatBalance)}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Total validator stake:</div>
-                                    <div className="value">
-                                        <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
-                                            {formatAmount(epochCommittee?.totalValidatorStake ?? 0, tokenInfo, isFormatBalance)}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Total delegated stake:</div>
-                                    <div className="value">
-                                        <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
-                                            {formatAmount(
-                                                Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0),
-                                                tokenInfo,
-                                                isFormatBalance,
-                                            )}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Blocks:</div>
-                                    <div className="value">{epochStats?.blockCount ?? 0}</div>
-                                </div>
-                                <div className="section--data">
-                                    <div className="label">Transactions:</div>
-                                    <div className="value">{epochStats?.perPayloadType?.transaction ?? 0}</div>
-                                </div>
-                            </>
-                        )}
-                        {isFutureEpoch && (
-                            <>
-                                <div className="section--data">
-                                    <div className="label">Starts in:</div>
-                                    <div className="value">{futureEpochStartsIn}</div>
-                                </div>
-                            </>
-                        )}
                     </div>
                     <div className="section section--committee">
                         <div className="section--header row row--tablet-responsive middle space-between">

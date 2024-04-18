@@ -10,7 +10,7 @@ export interface CardInfoDetail {
     showCopyBtn?: boolean;
 }
 
-interface CardInfoProps {
+export interface CardInfoProps {
     /**
      * The title of the card.
      */

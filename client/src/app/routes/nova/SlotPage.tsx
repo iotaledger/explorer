@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import useSlotDetails from "~/helpers/nova/hooks/useSlotDetails";
 import useSlotsFeed from "~/helpers/nova/hooks/useSlotsFeed";
-import PageDataRow, { IPageDataRow } from "~/app/components/nova/PageDataRow";
 import Modal from "~/app/components/Modal";
 import mainHeaderMessage from "~assets/modals/nova/slot/main-header.json";
 import NotFound from "~/app/components/NotFound";
@@ -16,6 +15,9 @@ import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
 import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
 import moment from "moment";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
+import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { CardInfo, CardInfoProps } from "~/app/components/CardInfo";
+import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 
 export default function SlotPage({
     match: {
@@ -31,6 +33,7 @@ export default function SlotPage({
     const { slotCommitment: slotCommitmentDetails, slotCommitmentId } = useSlotDetails(network, slotIndex);
     const { slotManaBurned } = useSlotManaBurned(slotIndex);
     const [slotStats] = useSlotStats(slotIndex);
+    const [formatManaAmounts, setFormatManaAmounts] = useState(false);
 
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
@@ -38,27 +41,31 @@ export default function SlotPage({
     const slotTimeRange = parsedSlotIndex && slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(parsedSlotIndex) : null;
     const slotTimestamp = getSlotTimestamp(slotTimeRange);
 
-    const dataRows: IPageDataRow[] = [
+    const rmc =
+        slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
+        slotCommitmentDetails?.referenceManaCost?.toString() ??
+        "-";
+    const manaBurned = slotManaBurned?.manaBurned ? formatAmount(slotManaBurned?.manaBurned, manaInfo, formatManaAmounts) : "-";
+    const slotData: CardInfoProps[] = [
         {
-            label: "Slot Index",
+            title: "Slot Index",
             value: parsedSlotIndex ?? "-",
         },
+        { title: "Timestamp", value: slotTimestamp ?? "-" },
         {
-            label: "Commitment Id",
-            value: slotCommitmentId ?? "-",
+            title: "RMC",
+            value: formatAmount(rmc, manaInfo, formatManaAmounts),
+            onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
+            showCopyBtn: true,
         },
-        { label: "Timestamp", value: slotTimestamp ?? "-" },
         {
-            label: "RMC",
-            value:
-                slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
-                slotCommitmentDetails?.referenceManaCost?.toString() ??
-                "-",
-            tokenInfo: manaInfo,
+            title: "Mana burned",
+            value: manaBurned,
+            onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
+            showCopyBtn: true,
         },
-        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-", tokenInfo: manaInfo },
-        { label: "Blocks", value: slotStats?.blockCount ?? "0" },
-        { label: "Transactions", value: slotStats?.perPayloadType?.transaction ?? "0" },
+        { title: "Blocks", value: slotStats?.blockCount ?? "0" },
+        { title: "Transactions", value: slotStats?.perPayloadType?.transaction ?? "0" },
     ];
 
     return (
@@ -79,11 +86,17 @@ export default function SlotPage({
                                     <h2>General</h2>
                                 </div>
                             </div>
-                            {dataRows.map((dataRow, index) => {
-                                if (dataRow.value !== undefined || dataRow.truncatedId) {
-                                    return <PageDataRow key={index} {...dataRow} />;
-                                }
-                            })}
+                            <div className="section--data">
+                                <div className="label">Commitment Id</div>
+                                <div className="value code">
+                                    <TruncatedId id={slotCommitmentId ?? "-"} />
+                                </div>
+                            </div>
+                            <div className="card-info-wrapper">
+                                {slotData.map((data, index) => {
+                                    return <CardInfo key={index} title={data.title} value={data.value} onClickValue={data.onClickValue} />;
+                                })}
+                            </div>
                         </div>
                     ) : (
                         <NotFound query={slotIndex} searchTarget="slot" />

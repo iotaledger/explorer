@@ -4,6 +4,7 @@ import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./AccountBlockIssuanceSection.scss";
+import { CardInfo, CardInfoProps } from "~/app/components/CardInfo";
 
 interface AccountBlockIssuanceSectionProps {
     readonly blockIssuerFeature: BlockIssuerFeature | null;
@@ -11,55 +12,50 @@ interface AccountBlockIssuanceSectionProps {
 }
 
 const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = ({ blockIssuerFeature, congestion }) => {
-    const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [formatFull, setFormatFull] = React.useState(false);
 
+    const congestionData: CardInfoProps[] = [
+        { title: "Estimate for slot", value: congestion?.slot },
+        { title: "Ready?", value: congestion?.ready ? "Yes" : "No" },
+        {
+            title: "Block Issuance Credit",
+            value: formatAmount(congestion?.blockIssuanceCredits ?? "0", manaInfo, formatFull),
+            onClickValue: () => setFormatFull(!formatFull),
+            showCopyBtn: true,
+        },
+        {
+            title: "Referenced Mana Cost",
+            value: formatAmount(congestion?.referenceManaCost ?? "0", manaInfo, formatFull),
+            onClickValue: () => setFormatFull(!formatFull),
+            showCopyBtn: true,
+        },
+    ];
     return (
-        <div className="section transaction--section">
-            <div className="card block-issuance--card">
-                {congestion && (
-                    <>
-                        <div className="field">
-                            <div className="card--label margin-b-t">Estimate for slot</div>
-                            <div className="card--value">{congestion.slot}</div>
-                        </div>
-                        <div className="field">
-                            <div className="card--label margin-b-t">Ready?</div>
-                            <div className="card--value">{congestion.ready ? "Yes" : "No"}</div>
-                        </div>
-                        <div className="field">
-                            <div className="card--label margin-b-t">Block Issuance Credit</div>
-                            <div className="card--value pointer" onClick={() => setFormatFull(!formatFull)}>
-                                {formatAmount(congestion.blockIssuanceCredits, tokenInfo, formatFull)}
-                            </div>
-                        </div>
-                        <div className="field">
-                            <div className="card--label margin-b-t">Referenced Mana Cost</div>
-                            <div className="card--value pointer" onClick={() => setFormatFull(!formatFull)}>
-                                {formatAmount(congestion.referenceManaCost, manaInfo, formatFull)}
-                            </div>
-                        </div>
-                    </>
-                )}
-                {blockIssuerFeature && (
-                    <>
-                        <div className="field">
-                            <div className="card--label margin-b-t">Expiry Slot</div>
-                            <div className="card--value">{blockIssuerFeature.expirySlot}</div>
-                        </div>
-                        <div className="field">
-                            {blockIssuerFeature.blockIssuerKeys.map((key) => (
-                                <React.Fragment key={(key as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash}>
-                                    <span className="card--label margin-b-t">Public Key:</span>
-                                    <div className="card--value public-key">
-                                        <TruncatedId id={(key as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash} showCopyButton />
-                                    </div>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </>
-                )}
+        <div className="section section--block-issuance">
+            <div className="card-info-wrapper">
+                {congestion &&
+                    congestionData.map((data, index) => {
+                        return (
+                            <CardInfo
+                                key={index}
+                                title={data.title}
+                                value={data.value}
+                                onClickValue={data.onClickValue}
+                                showCopyBtn={data.showCopyBtn}
+                            />
+                        );
+                    })}
+                {blockIssuerFeature && <CardInfo title="Expiry Slot" value={blockIssuerFeature.expirySlot} />}
             </div>
+            {blockIssuerFeature?.blockIssuerKeys.map((key) => (
+                <div className="section--data margin-t-m" key={(key as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash}>
+                    <div className="label">Public Key</div>
+                    <div className="value code">
+                        <TruncatedId id={(key as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash} showCopyButton />
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };
