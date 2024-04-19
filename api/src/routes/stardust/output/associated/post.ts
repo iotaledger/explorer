@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IAssociationsRequest } from "../../../../models/api/stardust/IAssociationsRequest";
 import { IAssociationsRequestBody } from "../../../../models/api/stardust/IAssociationsRequestBody";
-import { IAssociation, IAssociationsResponse } from "../../../../models/api/stardust/IAssociationsResponse";
+import { IAssociationsResponse } from "../../../../models/api/stardust/IAssociationsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -33,12 +33,7 @@ export async function post(
 
     const helper = new AssociatedOutputsHelper(networkConfig, body.addressDetails);
     await helper.fetch();
-    const result = helper.associationToOutputIds;
-
-    const associations: IAssociation[] = [];
-    for (const [type, outputIds] of result.entries()) {
-        associations.push({ type, outputIds: outputIds.reverse() });
-    }
+    const associations = helper.getAssociations();
 
     return {
         associations,
