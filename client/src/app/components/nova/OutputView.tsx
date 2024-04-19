@@ -99,7 +99,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             >
                 <DropdownIcon />
             </div>
-            <div className={"card--content__account"}>
+            <div className="card--content__account">
                 <div className="output-header">
                     <button type="button" className="output-type--name color">
                         {NameHelper.getOutputTypeName(output.type)}
@@ -122,7 +122,7 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
                     </div>
                     {specialUnlockCondition}
                 </div>
-                <div className={"flex items-center"}>
+                <div className="row middle">
                     {showCopyAmount && (
                         <div className="card--value pointer amount-size row end">
                             <span
