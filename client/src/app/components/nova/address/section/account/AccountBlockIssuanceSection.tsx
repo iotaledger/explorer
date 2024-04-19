@@ -11,7 +11,7 @@ interface AccountBlockIssuanceSectionProps {
 }
 
 const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = ({ blockIssuerFeature, congestion }) => {
-    const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const [formatFull, setFormatFull] = React.useState(false);
 
     return (
@@ -30,7 +30,7 @@ const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = 
                         <div className="field">
                             <div className="card--label margin-b-t">Block Issuance Credit</div>
                             <div className="card--value pointer" onClick={() => setFormatFull(!formatFull)}>
-                                {formatAmount(congestion.blockIssuanceCredits, tokenInfo, formatFull)}
+                                {formatAmount(congestion.blockIssuanceCredits, manaInfo, formatFull)}
                             </div>
                         </div>
                         <div className="field">
