@@ -48,19 +48,19 @@ const UnlockConditionView: React.FC<UnlockConditionViewProps> = ({ unlockConditi
                             </div>
                         </React.Fragment>
                     )}
-                    {unlockCondition.type === UnlockConditionType.Timelock && (unlockCondition as TimelockUnlockCondition).slotIndex && (
+                    {unlockCondition.type === UnlockConditionType.Timelock && (unlockCondition as TimelockUnlockCondition).slot && (
                         <React.Fragment>
                             <div className="card--label">Slot index</div>
-                            <div className="card--value row">{(unlockCondition as TimelockUnlockCondition).slotIndex}</div>
+                            <div className="card--value row">{(unlockCondition as TimelockUnlockCondition).slot}</div>
                         </React.Fragment>
                     )}
                     {unlockCondition.type === UnlockConditionType.Expiration && (
                         <React.Fragment>
                             <AddressView address={(unlockCondition as ExpirationUnlockCondition).returnAddress} />
-                            {(unlockCondition as ExpirationUnlockCondition).slotIndex && (
+                            {(unlockCondition as ExpirationUnlockCondition).slot && (
                                 <React.Fragment>
                                     <div className="card--label">Slot index</div>
-                                    <div className="card--value row">{(unlockCondition as ExpirationUnlockCondition).slotIndex}</div>
+                                    <div className="card--value row">{(unlockCondition as ExpirationUnlockCondition).slot}</div>
                                 </React.Fragment>
                             )}
                         </React.Fragment>

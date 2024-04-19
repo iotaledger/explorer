@@ -45,60 +45,23 @@
                 }
             }
 
-            .all-validators__section {
+            .section__validators {
                 font-family: $metropolis;
-                margin-top: 40px;
-                background-color: $gray-1;
-                border-radius: 8px;
 
-                .all-validators__header {
-                    width: fit-content;
-                    margin: 0 auto;
-                    padding: 20px;
+                table {
+                    @include tablet-down {
+                        display: block;
+                        overflow-x: auto;
+                        white-space: nowrap;
+                        width: 100%;
+                    }
                 }
 
-                .all-validators__wrapper {
-                    margin: 0 20px 20px;
+                .truncated-id-cell {
+                    max-width: 250px;
 
-                    .validator-item {
-                        display: grid;
-                        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-                        margin: 0px 12px;
-                        align-items: center;
-                        line-height: 32px;
-                        justify-content: center;
-                        background-color: $gray-3;
-                        border-radius: 4px;
-
-                        &.table-header {
-                            background-color: $gray-5;
-                        }
-
-                        &:not(:last-child) {
-                            margin-bottom: 12px;
-                        }
-
-                        .validator-item__address,
-                        .validator-item__is-candidate,
-                        .validator-item__is-elected,
-                        .validator-item__fixed-cost,
-                        .validator-item__stake,
-                        .validator-item__cumulative-stake,
-                        .validator-item__delegators,
-                        .validator-item__rank {
-                            display: flex;
-                            margin: 0 auto;
-                            justify-content: center;
-                        }
-
-                        .validator-item__stake {
-                            text-align: center;
-                            line-height: 20px;
-                        }
-
-                        .validator-item__address {
-                            width: 120px;
-                        }
+                    @include desktop-down {
+                        max-width: 165px;
                     }
                 }
             }

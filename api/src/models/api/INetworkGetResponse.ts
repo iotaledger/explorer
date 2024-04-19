@@ -75,4 +75,8 @@ interface INetworkView {
      * If Identity Resolver tool should be supported.
      */
     identityResolverEnabled?: boolean;
+    /**
+     * Max results for API requests (only used in legacy for now).
+     */
+    apiMaxResults?: number;
 }

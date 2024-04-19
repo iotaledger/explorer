@@ -1,24 +1,24 @@
-import { useEffect, useRef, useState, useContext } from "react";
-import { type BlockMetadataResponse, Utils, BlockState, SlotIndex } from "@iota/sdk-wasm-nova/web";
-import { ServiceFactory } from "~factories/serviceFactory";
-import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
+import { BlockState, SlotIndex, Utils, type BlockMetadataResponse } from "@iota/sdk-wasm-nova/web";
+import { useContext, useEffect, useRef, useState } from "react";
 import Viva from "vivagraphjs";
+import { IFeedBlockData } from "~/models/api/nova/feed/IFeedBlockData";
+import { ServiceFactory } from "~factories/serviceFactory";
+import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
+import {
+    EDGE_COLOR_AFTER,
+    EDGE_COLOR_BEFORE,
+    EDGE_COLOR_DARK,
+    EDGE_COLOR_LIGHT,
+    MAX_VISIBLE_BLOCKS,
+    SEARCH_RESULT_COLOR,
+} from "~features/visualizer-vivagraph/definitions/constants";
+import { getBlockParents, hexToNodeColor } from "~features/visualizer-vivagraph/lib/helpers";
+import { VivagraphParams, useTangleStore } from "~features/visualizer-vivagraph/store/tangle";
+import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
 import { INodeData } from "~models/graph/nova/INodeData";
 import { NovaFeedClient } from "~services/nova/novaFeedClient";
 import { buildNodeShader } from "../lib/buildNodeShader";
-import { useTangleStore, VivagraphParams } from "~features/visualizer-vivagraph/store/tangle";
-import { getBlockParents, hexToNodeColor } from "~features/visualizer-vivagraph/lib/helpers";
-import {
-    MAX_VISIBLE_BLOCKS,
-    EDGE_COLOR_AFTER,
-    EDGE_COLOR_DARK,
-    EDGE_COLOR_LIGHT,
-    SEARCH_RESULT_COLOR,
-    EDGE_COLOR_BEFORE,
-} from "~features/visualizer-vivagraph/definitions/constants";
 import { getBlockColorByState } from "../lib/helpers";
-import { useGetThemeMode } from "~helpers/hooks/useGetThemeMode";
-import { GraphContext } from "~features/visualizer-vivagraph/GraphContext";
 
 export const useFeed = (network: string) => {
     const [feedService] = useState<NovaFeedClient>(ServiceFactory.get<NovaFeedClient>(`feed-${network}`));
@@ -71,16 +71,16 @@ export const useFeed = (network: string) => {
         const forcedGotSearch = useTangleStore.getState().search;
         if (search || forcedGotSearch) {
             const nodeIds = getSearchResultNodeIds(search || forcedGotSearch);
-            highlightNodes(nodeIds, [], SEARCH_RESULT_COLOR, 0);
+            updateElementsColor(nodeIds, [], SEARCH_RESULT_COLOR, undefined);
         }
 
         if (selectedNodeId) {
-            const { highlightedNodesAfter, highlightedNodesBefore, highlightedLinksAfter, highlightedLinksBefore } =
-                getNodeConnections(selectedNodeId);
+            const { links: linksBefore } = getNodeConnections(selectedNodeId, "toId");
+            const { links: linksAfter } = getNodeConnections(selectedNodeId, "fromId");
 
-            highlightNodes([selectedNodeId], [], SEARCH_RESULT_COLOR);
-            highlightNodes(highlightedNodesAfter, highlightedLinksAfter, undefined, EDGE_COLOR_AFTER);
-            highlightNodes(highlightedNodesBefore, highlightedLinksBefore, undefined, EDGE_COLOR_BEFORE);
+            updateElementsColor([selectedNodeId], undefined, SEARCH_RESULT_COLOR);
+            updateElementsColor(undefined, linksAfter, undefined, EDGE_COLOR_AFTER);
+            updateElementsColor(undefined, linksBefore, undefined, EDGE_COLOR_BEFORE);
         }
     }
 
@@ -99,13 +99,13 @@ export const useFeed = (network: string) => {
         });
     }
 
-    function highlightNodes(nodeIds: string[], linkIds: string[], nodeColor?: string, linkColor?: number) {
-        if (nodeColor) {
+    function updateElementsColor(nodeIds?: string[], linkIds?: string[], nodeColor?: string, linkColor?: number) {
+        if (nodeColor && nodeIds?.length) {
             for (const nodeId of nodeIds) {
                 updateBlockColor(nodeId, nodeColor);
             }
         }
-        if (linkColor) {
+        if (linkColor && linkIds?.length) {
             for (const linkId of linkIds) {
                 updateLineColor(linkId, linkColor);
             }
@@ -129,16 +129,15 @@ export const useFeed = (network: string) => {
         return [];
     }
 
-    function getNodeConnections(nodeId: string): {
-        highlightedNodesAfter: string[];
-        highlightedNodesBefore: string[];
-        highlightedLinksAfter: string[];
-        highlightedLinksBefore: string[];
+    function getNodeConnections(
+        nodeId: string,
+        field: "fromId" | "toId",
+    ): {
+        nodes: string[];
+        links: string[];
     } {
-        const highlightedNodesAfter: string[] = [];
-        const highlightedNodesBefore: string[] = [];
-        const highlightedLinksAfter: string[] = [];
-        const highlightedLinksBefore: string[] = [];
+        const nodes: string[] = [];
+        const links: string[] = [];
         const usedNodes: string[] = [nodeId];
         const nodesToProcess = [nodeId];
 
@@ -148,25 +147,20 @@ export const useFeed = (network: string) => {
             if (currentNodeId) {
                 graphContext.graph.current?.forEachLinkedNode(currentNodeId, (connectedNode, link) => {
                     if (!usedNodes.includes(connectedNode.id)) {
-                        usedNodes.push(connectedNode.id); // Add this line
-                        if (link.toId === currentNodeId) {
-                            highlightedNodesBefore.push(connectedNode.id);
-                            highlightedLinksBefore.push(link.id);
-                        } else {
-                            highlightedNodesAfter.push(connectedNode.id);
-                            highlightedLinksAfter.push(link.id);
+                        if (link[field] === currentNodeId) {
+                            nodes.push(connectedNode.id);
+                            links.push(link.id);
+                            usedNodes.push(connectedNode.id);
+                            nodesToProcess.push(connectedNode.id);
                         }
-                        nodesToProcess.push(connectedNode.id);
                     }
                 });
             }
         }
 
         return {
-            highlightedNodesAfter,
-            highlightedNodesBefore,
-            highlightedLinksAfter,
-            highlightedLinksBefore,
+            nodes,
+            links,
         };
     }
 
@@ -174,6 +168,12 @@ export const useFeed = (network: string) => {
         const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
         if (nodeUI) {
             nodeUI.color = hexToNodeColor(color);
+        }
+    }
+    function updateBlockSize(blockId: string, size: number) {
+        const nodeUI = graphContext.graphics.current?.getNodeUI(blockId);
+        if (nodeUI) {
+            nodeUI.size = size;
         }
     }
 
@@ -196,6 +196,7 @@ export const useFeed = (network: string) => {
             feedItem: newBlock,
             added: addedTime,
         });
+        updateBlockSize(blockId, 20);
         updateBlockColor(blockId, newBlock.color);
         const visibleBlocks = getVisibleBlocks();
         const updatedVisibleBlocks = [...visibleBlocks, blockId];
@@ -312,7 +313,7 @@ export const useFeed = (network: string) => {
             graphContext.graph.current = Viva.Graph.graph<INodeData, unknown>();
             graphContext.graphics.current = Viva.Graph.View.webglGraphics<INodeData, unknown>();
             const layout = Viva.Graph.Layout.forceDirected(graphContext.graph.current, {
-                springLength: 10,
+                springLength: 30,
                 springCoeff: 0.0001,
                 stableThreshold: 0.15,
                 gravity: -2,

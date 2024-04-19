@@ -4,6 +4,7 @@ import { ServiceFactory } from "~factories/serviceFactory";
 import { NOVA } from "~models/config/protocolVersion";
 import { NovaApiClient } from "~/services/nova/novaApiClient";
 import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats";
+import { useNetworkInfoNova } from "../networkInfo";
 
 /**
  * Fetch the epoch stats
@@ -11,7 +12,8 @@ import { IEpochAnalyticStats } from "~/models/api/nova/stats/IEpochAnalyticStats
  * @param epochIndex The epoch index
  * @returns The epoch stats and a loading bool.
  */
-export function useEpochStats(network: string, epochIndex: string | null): [IEpochAnalyticStats | null, boolean] {
+export function useEpochStats(epochIndex: string | null): [IEpochAnalyticStats | null, boolean] {
+    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
     const isMounted = useIsMounted();
     const [apiClient] = useState(ServiceFactory.get<NovaApiClient>(`api-client-${NOVA}`));
     const [epochStats, setEpochStats] = useState<IEpochAnalyticStats | null>(null);

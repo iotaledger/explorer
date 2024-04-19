@@ -55,10 +55,18 @@ export default class BigDecimal {
     }
 
     public toString(): string {
-        const s = this.n.toString().padStart(this.decimals + 1, "0");
-        const whole = this.decimals === 0 ? s : s.slice(0, -this.decimals);
-        const frac = this.decimals === 0 ? "" : s.slice(-this.decimals);
+        let negative = false;
+        let s = this.n.toString();
+
+        if (s.startsWith("-")) {
+            negative = true;
+            s = s.slice(1);
+        }
+
+        const padded = s.padStart(this.decimals + 1, "0");
+        const whole = this.decimals === 0 ? padded : padded.slice(0, -this.decimals);
+        const frac = this.decimals === 0 ? "" : padded.slice(-this.decimals);
         const hasFrac = Number(frac) !== 0;
-        return whole + (hasFrac ? "." : "") + frac.replace(/\.?0+$/, "");
+        return (negative ? "-" : "") + whole + (hasFrac ? "." : "") + frac.replace(/\.?0+$/, "");
     }
 }

@@ -210,7 +210,17 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             {output.type === OutputType.Delegation && (
                 <React.Fragment>
                     <div className="card--label">Delegated amount:</div>
-                    <div className="card--value row">{Number((output as DelegationOutput).delegatedAmount)}</div>
+                    <div className="card--value row">
+                        <span
+                            className="pointer"
+                            onClick={(e) => {
+                                setIsFormattedBalance(!isFormattedBalance);
+                                e.stopPropagation();
+                            }}
+                        >
+                            {formatAmount(Number((output as DelegationOutput).delegatedAmount), tokenInfo, !isFormattedBalance)}
+                        </span>
+                    </div>
                     <div className="card--label">Delegation Id:</div>
                     <div className="card--value row">{delegationId}</div>
                     <div className="card--label">Validator Address:</div>
@@ -366,22 +376,23 @@ function getSpecialUnlockConditionContent(
         );
     } else if (unlockCondition.type === UnlockConditionType.Expiration) {
         const expirationUnlockCondition = unlockCondition as ExpirationUnlockCondition;
-        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(expirationUnlockCondition.slotIndex) : null;
+        const eucSlot = expirationUnlockCondition.slot;
+        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(eucSlot) : null;
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
         return (
             <React.Fragment>
                 <span>Expiration Unlock Condition{isExpiredOrTimeLocked ? " (Expired)" : ""}</span> <br />
-                {time ? <span>Time: {time} </span> : <span>Slot: {expirationUnlockCondition.slotIndex}</span>}
+                {time ? <span>Time: {time} </span> : <span>Slot: {eucSlot}</span>}
             </React.Fragment>
         );
     } else if (unlockCondition.type === UnlockConditionType.Timelock) {
         const timelockUnlockCondition = unlockCondition as TimelockUnlockCondition;
-        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slotIndex) : null;
+        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slot) : null;
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
         return (
             <React.Fragment>
                 <span>Timelock Unlock Condition{isExpiredOrTimeLocked ? " (TimeLocked)" : ""}</span> <br />
-                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slotIndex}</span>}
+                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slot}</span>}
             </React.Fragment>
         );
     }

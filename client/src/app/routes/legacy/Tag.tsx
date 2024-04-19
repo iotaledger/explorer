@@ -16,6 +16,8 @@ import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import Spinner from "../../components/Spinner";
 import "./Tag.scss";
+import { INetwork, networkConfigDefault } from "~/models/config/INetwork";
+import { NetworkService } from "~/services/networkService";
 
 /**
  * Component which will show the tag page.
@@ -41,6 +43,9 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
         this._settingsService = ServiceFactory.get<SettingsService>("settings");
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || networkConfigDefault;
+
         let tag;
         let tagFill;
         if (this.props.match.params.tag.length <= 27 && TrytesHelper.isTrytes(this.props.match.params.tag)) {
@@ -54,6 +59,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
         }
 
         this.state = {
+            networkConfig: network,
             statusBusy: 0,
             status: "Finding transactions...",
             tag,
@@ -86,7 +92,7 @@ class Tag extends AsyncComponent<RouteComponentProps<TagRouteProps>, TagState> {
                         this.props.match.params.network,
                         "tag",
                         this.props.match.params.tag,
-                        250,
+                        this.state.networkConfig.apiMaxResults,
                     );
 
                     let status = "";

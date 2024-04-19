@@ -10,6 +10,7 @@ import { NodeInfoService as NodeInfoServiceNova } from "~services/nova/nodeInfoS
 import { MANA_INFO_DEFAULT, useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { NavigationRoute } from "./lib/interfaces";
 import { InfoResponse } from "@iota/sdk-wasm-nova/web";
+import { NOVA, STARDUST } from "~/models/config/protocolVersion";
 
 export const networkContextWrapper = (currentNetwork: string | undefined, nodeInfo: IStardustNodeInfo | null, uiTheme: Theme | undefined) =>
     function withNetworkContext(wrappedComponent: ReactNode) {
@@ -32,7 +33,11 @@ export const networkContextWrapper = (currentNetwork: string | undefined, nodeIn
 export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]): NavigationRoute[] => {
     const hasNetworks = networks.length > 0 && currentNetwork !== undefined;
 
-    const { network, hasStatisticsSupport } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
+    const { network, protocolVersion, hasStatisticsSupport } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
+
+    const isStardust = hasNetworks && currentNetwork.protocolVersion === STARDUST;
+    const isNova = hasNetworks && currentNetwork.protocolVersion === NOVA;
+    const isStardustOrNova = isStardust || isNova;
 
     const routes: NavigationRoute[] = [
         {
@@ -43,21 +48,21 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
         {
             label: "Visualizer",
             url: `/${network}/visualizer/`,
-            disabled: !hasNetworks,
+            disabled: !hasNetworks || !isStardustOrNova,
         },
         {
             label: "Statistics",
             url: `/${network}/statistics/`,
-            disabled: !hasStatisticsSupport || !hasNetworks,
+            disabled: !hasNetworks || !hasStatisticsSupport || !isStardustOrNova,
         },
         {
             label: "Validators",
             url: `/${network}/validators/`,
-            disabled: !hasNetworks || network !== ALPHANET,
+            disabled: !hasNetworks || protocolVersion !== NOVA,
         },
         {
             label: "Utilities",
-            disabled: network !== CHRYSALIS_MAINNET || !hasNetworks,
+            disabled: !hasNetworks || network !== CHRYSALIS_MAINNET,
             routes: [
                 { label: "Streams v0", url: `/${network}/streams/0/` },
                 {
@@ -69,6 +74,7 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
         },
         {
             label: "EVM",
+            disabled: !hasNetworks || !isStardust,
             routes: [
                 {
                     label: "ShimmerEVM Explorer",
