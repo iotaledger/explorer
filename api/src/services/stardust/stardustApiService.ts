@@ -560,7 +560,7 @@ export class StardustApiService {
     }
 
     /**
-     * Get the not claimed ntf output ids for an address (outputs owned by the expirationReturnAddress).
+     * Get the not claimed basic output ids for an address (outputs owned by the expirationReturnAddress).
      * @param expirationReturnAddress The address in bech32 format.
      * @returns The nft output ids.
      */
