@@ -4,6 +4,7 @@ import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse"
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import "./AddressBalance.scss";
 import { CardInfo, CardInfoDetail } from "~app/components/CardInfo";
+import { NumberHelper } from "~helpers/numberHelper";
 
 interface AddressBalanceProps {
     /**
@@ -75,8 +76,11 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
         availablePotentialMana === null || totalPotentialMana === null ? null : totalPotentialMana - availablePotentialMana;
 
     const availableBaseTokenAmount = (() => {
-        const balance = shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance;
-        return balance && balance > 0 ? formatAmount(balance, tokenInfo, formatBaseTokenBalanceFull) : 0;
+        const balance = (shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance) || 0;
+        return {
+            formatted: formatAmount(balance, tokenInfo, formatBaseTokenBalanceFull),
+            full: balance,
+        };
     })();
 
     const manaFactory = (
@@ -90,26 +94,34 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
                 title: title,
                 value: formatAmount(mana, manaInfo, isFormat),
                 onClickValue: () => setFormat(!isFormat),
-                showCopyBtn: true,
+                copyValue: String(mana),
             };
         }
 
         return {
             title: title,
-            value: 0,
+            value: formatAmount(0, manaInfo, isFormat),
             onClickValue: () => {},
-            showCopyBtn: false,
+            copyValue: "0",
         };
     };
 
+    const availableManaSum = NumberHelper.sumValues(
+        availableStoredMana,
+        availableDecayMana,
+        availablePotentialMana,
+        blockIssuanceCredits,
+        manaRewards,
+    );
+    const conditionallyLockedManaSum = NumberHelper.sumValues(conditionalStoredMana, conditionalDecayMana, conditionalPotentialMana);
     return (
         <div className="balance-wrapper nova">
             <div className="balance-wrapper--row">
                 <CardInfo
                     title="Available Base Token"
-                    value={availableBaseTokenAmount}
+                    value={availableBaseTokenAmount.formatted}
                     onClickValue={() => setFormatBaseTokenBalanceFull(!formatBaseTokenBalanceFull)}
-                    showCopyBtn
+                    copyValue={String(availableBaseTokenAmount.full)}
                 />
                 {shouldShowExtendedBalance && (
                     <CardInfo
@@ -117,20 +129,24 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
                         value={formatAmount(conditionalBaseTokenBalance, tokenInfo, formatConditionalBalanceFull)}
                         onClickValue={() => setFormatConditionalBalanceFull(!formatConditionalBalanceFull)}
                         tooltip={CONDITIONAL_BALANCE_INFO}
-                        showCopyBtn
+                        copyValue={String(conditionalBaseTokenBalance)}
                     />
                 )}
 
                 <CardInfo
                     title="Storage Deposit"
-                    value={storageDeposit ? formatAmount(storageDeposit, tokenInfo, formatStorageBalanceFull) : 0}
+                    value={formatAmount(storageDeposit || 0, tokenInfo, formatStorageBalanceFull)}
                     onClickValue={() => setFormatStorageBalanceFull(!formatStorageBalanceFull)}
-                    showCopyBtn
+                    copyValue={String(storageDeposit || 0)}
                 />
             </div>
             <div className="balance-wrapper--row">
                 <CardInfo
                     title="Available Mana"
+                    value={formatAmount(availableManaSum, manaInfo, formatManaBalanceFull)}
+                    onClickValue={() => setFormatManaBalanceFull(!formatManaBalanceFull)}
+                    copyValue={String(availableManaSum)}
+                    options={{ headerDirectionRow: true }}
                     details={[
                         manaFactory(availableStoredMana, "Stored:", formatManaBalanceFull, setFormatManaBalanceFull),
                         manaFactory(availableDecayMana, "Decay:", formatManaBalanceFull, setFormatManaBalanceFull),
@@ -146,6 +162,10 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
 
                 <CardInfo
                     title="Conditionally Locked Mana"
+                    value={formatAmount(conditionallyLockedManaSum, manaInfo, formatStorageBalanceFull)}
+                    onClickValue={() => setFormatStorageBalanceFull(!formatStorageBalanceFull)}
+                    copyValue={String(conditionallyLockedManaSum)}
+                    options={{ headerDirectionRow: true }}
                     details={[
                         manaFactory(conditionalStoredMana, "Stored:", formatStorageBalanceFull, setFormatStorageBalanceFull),
                         manaFactory(conditionalDecayMana, "Decay:", formatStorageBalanceFull, setFormatStorageBalanceFull),
