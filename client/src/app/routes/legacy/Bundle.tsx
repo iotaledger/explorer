@@ -8,8 +8,10 @@ import { DateHelper } from "~helpers/dateHelper";
 import { TrytesHelper } from "~helpers/trytesHelper";
 import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { LEGACY } from "~models/config/protocolVersion";
+import { INetwork, networkConfigDefault } from "~models/config/INetwork";
 import { ConfirmationState } from "~models/confirmationState";
 import { LegacyTangleCacheService } from "~services/legacy/legacyTangleCacheService";
+import { NetworkService } from "~services/networkService";
 import Confirmation from "../../components/Confirmation";
 import CopyButton from "../../components/CopyButton";
 import Currency from "../../components/Currency";
@@ -34,12 +36,16 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
 
         this._tangleCacheService = ServiceFactory.get<LegacyTangleCacheService>(`tangle-cache-${LEGACY}`);
 
+        const networkService = ServiceFactory.get<NetworkService>("network");
+        const network: INetwork = (props.match.params.network && networkService.get(props.match.params.network)) || networkConfigDefault;
+
         let bundle;
         if (this.props.match.params.bundle.length === 81 && TrytesHelper.isTrytes(this.props.match.params.bundle)) {
             bundle = props.match.params.bundle;
         }
 
         this.state = {
+            networkConfig: network,
             statusBusy: true,
             status: "Finding bundle transactions...",
             bundle,
@@ -62,6 +68,7 @@ class Bundle extends Currency<RouteComponentProps<BundleRouteProps>, BundleState
                 this.props.match.params.network,
                 "bundle",
                 this.props.match.params.bundle,
+                this.state.networkConfig.apiMaxResults,
             );
 
             const bundleGroupsPlain = await this._tangleCacheService.getBundleGroups(this.props.match.params.network, txHashes);
