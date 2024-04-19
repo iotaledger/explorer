@@ -94,7 +94,12 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
             };
         }
 
-        return null;
+        return {
+            title: title,
+            value: 0,
+            onClickValue: () => {},
+            showCopyBtn: false,
+        };
     };
 
     return (
@@ -130,8 +135,12 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
                         manaFactory(availableStoredMana, "Stored:", formatManaBalanceFull, setFormatManaBalanceFull),
                         manaFactory(availableDecayMana, "Decay:", formatManaBalanceFull, setFormatManaBalanceFull),
                         manaFactory(availablePotentialMana, "Potential:", formatManaBalanceFull, setFormatManaBalanceFull),
-                        manaFactory(blockIssuanceCredits, "Block issuance credits:", formatManaBalanceFull, setFormatManaBalanceFull),
-                        manaFactory(manaRewards, "Mana rewards:", formatManaBalanceFull, setFormatManaBalanceFull),
+                        blockIssuanceCredits !== null
+                            ? manaFactory(blockIssuanceCredits, "Block issuance credits:", formatManaBalanceFull, setFormatManaBalanceFull)
+                            : null,
+                        manaRewards !== null
+                            ? manaFactory(manaRewards, "Mana rewards:", formatManaBalanceFull, setFormatManaBalanceFull)
+                            : null,
                     ]}
                 />
 
