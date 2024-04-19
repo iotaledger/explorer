@@ -41,9 +41,14 @@ export class LegacyTangleHelper {
         try {
             const client = new LegacyClient(network.provider, network.user, network.password);
 
+            let maxResults = limit || network.apiMaxResults;
+            if (maxResults > network.apiMaxResults) {
+                maxResults = network.apiMaxResults;
+            }
+
             const response = await client.findTransactions({
                 ...findReq,
-                maxresults: 5000,
+                maxresults: maxResults,
             });
 
             if (response?.txHashes && response.txHashes.length > 0) {
@@ -51,7 +56,7 @@ export class LegacyTangleHelper {
                 cursor.node = hashes.length;
 
                 if (limit === undefined) {
-                    cursor.hasMore = hashes.length === 5000;
+                    cursor.hasMore = hashes.length === maxResults;
                 } else {
                     cursor.hasMore = hashes.length > limit;
                     if (hashes.length > limit) {
