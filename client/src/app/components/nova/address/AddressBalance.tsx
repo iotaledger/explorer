@@ -240,7 +240,7 @@ function buildManaBalanceView(manaInfo: BaseTokenResponse) {
                 <div className="balance__mana">
                     <div className="label">Block issuance credits:</div>
                     <div className="value featured">
-                        {blockIssuanceCredits && blockIssuanceCredits > 0 ? (
+                        {blockIssuanceCredits ? (
                             <div className="balance-value middle">
                                 <div className="row middle">
                                     <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>

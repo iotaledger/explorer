@@ -82,6 +82,14 @@ describe("formatAmount", () => {
         test("should honour format full (number)", () => {
             expect(formatAmount(1, tokenInfo, true)).toBe("1 micro");
         });
+
+        test("should not break with negative value", () => {
+            expect(formatAmount(-2193144968, tokenInfo)).toBe("-2193.14 IOTA");
+        });
+
+        test("should not break with negative decimal value", () => {
+            expect(formatAmount(-2144, tokenInfo)).toBe("-0.002144 IOTA");
+        });
     });
 
     describe("with bigint values", () => {
@@ -160,6 +168,14 @@ describe("formatAmount", () => {
         test("should honour format full (bigint)", () => {
             expect(formatAmount(1n, tokenInfo, true)).toBe("1 micro");
         });
+
+        test("should not break with negative value", () => {
+            expect(formatAmount(-2193144968n, tokenInfo)).toBe("-2193.14 IOTA");
+        });
+
+        test("should not break with negative decimal value", () => {
+            expect(formatAmount(-2144n, tokenInfo)).toBe("-0.002144 IOTA");
+        });
     });
 
     describe("with string values", () => {
@@ -237,6 +253,14 @@ describe("formatAmount", () => {
 
         test("should honour format full (number)", () => {
             expect(formatAmount("1", tokenInfo, true)).toBe("1 micro");
+        });
+
+        test("should not break with negative value", () => {
+            expect(formatAmount("-2193144968", tokenInfo)).toBe("-2193.14 IOTA");
+        });
+
+        test("should not break with negative decimal value", () => {
+            expect(formatAmount("-2144", tokenInfo)).toBe("-0.002144 IOTA");
         });
     });
 
