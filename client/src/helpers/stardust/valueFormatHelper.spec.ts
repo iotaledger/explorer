@@ -71,8 +71,24 @@ describe("formatAmount", () => {
             expect(formatAmount(1450896407249092, tokenInfo)).toBe("1450896407.24 IOTA");
         });
 
+        test("should honour 2 decimals arg even if has tailing decimals: format 6500004000 -> (6500.00 instead of 6500.004)", () => {
+            expect(formatAmount(6500004000, tokenInfo, false, 2, true)).toBe("6500.00 IOTA");
+        });
+
+        test("should honour 3 decimal arg even if has tailing decimals: format 6500000400 -> (6500.000 instead of 6500.0004)", () => {
+            expect(formatAmount(6500000400, tokenInfo, false, 3, true)).toBe("6500.000 IOTA");
+        });
+
         test("should honour format full (number)", () => {
             expect(formatAmount(1, tokenInfo, true)).toBe("1 micro");
+        });
+
+        test("should not break with negative value", () => {
+            expect(formatAmount(-2193144968, tokenInfo)).toBe("-2193.14 IOTA");
+        });
+
+        test("should not break with negative decimal value", () => {
+            expect(formatAmount(-2144, tokenInfo)).toBe("-0.002144 IOTA");
         });
     });
 
@@ -141,8 +157,24 @@ describe("formatAmount", () => {
             expect(formatAmount(9007199254740993n, tokenInfo)).toBe("9007199254.74 IOTA");
         });
 
+        test("should honour 2 decimals arg even if has tailing decimals: format 6500004000 -> (6500.00 instead of 6500.004)", () => {
+            expect(formatAmount(6500004000n, tokenInfo, false, 2, true)).toBe("6500.00 IOTA");
+        });
+
+        test("should honour 3 decimal arg even if has tailing decimals: format 6500000400 -> (6500.000 instead of 6500.0004)", () => {
+            expect(formatAmount(6500000400n, tokenInfo, false, 3, true)).toBe("6500.000 IOTA");
+        });
+
         test("should honour format full (bigint)", () => {
             expect(formatAmount(1n, tokenInfo, true)).toBe("1 micro");
+        });
+
+        test("should not break with negative value", () => {
+            expect(formatAmount(-2193144968n, tokenInfo)).toBe("-2193.14 IOTA");
+        });
+
+        test("should not break with negative decimal value", () => {
+            expect(formatAmount(-2144n, tokenInfo)).toBe("-0.002144 IOTA");
         });
     });
 
@@ -211,8 +243,24 @@ describe("formatAmount", () => {
             expect(formatAmount("9007199254740993", tokenInfo)).toBe("9007199254.74 IOTA");
         });
 
+        test("should honour 2 decimals arg even if has tailing decimals: format 6500004000 -> (6500.00 instead of 6500.004)", () => {
+            expect(formatAmount("6500004000", tokenInfo, false, 2, true)).toBe("6500.00 IOTA");
+        });
+
+        test("should honour 3 decimal arg even if has tailing decimals: format 6500000400 -> (6500.000 instead of 6500.0004)", () => {
+            expect(formatAmount("6500000400", tokenInfo, false, 3, true)).toBe("6500.000 IOTA");
+        });
+
         test("should honour format full (number)", () => {
             expect(formatAmount("1", tokenInfo, true)).toBe("1 micro");
+        });
+
+        test("should not break with negative value", () => {
+            expect(formatAmount("-2193144968", tokenInfo)).toBe("-2193.14 IOTA");
+        });
+
+        test("should not break with negative decimal value", () => {
+            expect(formatAmount("-2144", tokenInfo)).toBe("-0.002144 IOTA");
         });
     });
 

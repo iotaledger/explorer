@@ -380,7 +380,6 @@ function getSpecialUnlockConditionContent(
         );
     } else if (unlockCondition.type === UnlockConditionType.Expiration) {
         const expirationUnlockCondition = unlockCondition as ExpirationUnlockCondition;
-        // @ts-expect-error The ACTUAL runtime field is 'slot', not 'slotIndex'. https://github.com/iotaledger/iota-sdk/issues/2217
         const eucSlot = expirationUnlockCondition.slot;
         const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(eucSlot) : null;
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
@@ -392,12 +391,12 @@ function getSpecialUnlockConditionContent(
         );
     } else if (unlockCondition.type === UnlockConditionType.Timelock) {
         const timelockUnlockCondition = unlockCondition as TimelockUnlockCondition;
-        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slotIndex) : null;
+        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slot) : null;
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
         return (
             <React.Fragment>
                 <span>Timelock Unlock Condition{isExpiredOrTimeLocked ? " (TimeLocked)" : ""}</span> <br />
-                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slotIndex}</span>}
+                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slot}</span>}
             </React.Fragment>
         );
     }

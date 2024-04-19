@@ -5,6 +5,8 @@ export const MAINNET = "mainnet";
 export const DEVNET = "devnet";
 export const SHIMMER = "shimmer";
 export const TESTNET = "testnet";
+export const IOTA_TESTNET = "iota-testnet";
+export const SHIMMER_TESTNET = "shimmer-testnet";
 export const ALPHANET = "alphanet";
 export const CUSTOM = "custom";
 
@@ -18,5 +20,7 @@ export type NetworkType =
     | typeof DEVNET
     | typeof SHIMMER
     | typeof TESTNET
+    | typeof IOTA_TESTNET
+    | typeof SHIMMER_TESTNET
     | typeof ALPHANET
     | typeof CUSTOM;

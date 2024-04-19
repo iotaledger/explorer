@@ -2,6 +2,7 @@ import { IResponse } from "../IResponse";
 
 export enum AssociationType {
     BASIC_ADDRESS,
+    BASIC_ADDRESS_EXPIRED,
     BASIC_SENDER,
     BASIC_EXPIRATION_RETURN,
     BASIC_STORAGE_RETURN,
@@ -12,6 +13,7 @@ export enum AssociationType {
     ALIAS_ID,
     FOUNDRY_ALIAS,
     NFT_ADDRESS,
+    NFT_ADDRESS_EXPIRED,
     NFT_STORAGE_RETURN,
     NFT_EXPIRATION_RETURN,
     NFT_ISSUER,

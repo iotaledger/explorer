@@ -51,33 +51,40 @@ export function formatNumberWithCommas(value: bigint): string {
     return value.toLocaleString("en", { useGrouping: true });
 }
 
+function trimTrailingZeros(numberStr: string) {
+    return numberStr.replace(/\.0+$|(\.\d*?)0+$/, "$1");
+}
+
 /**
  * Format amount to two decimal places without rounding off.
  * @param value The raw amount to format.
  * @param precision The decimal places to show.
+ * @param forceShowDecimal The should show decimal anyway.
  * @returns The formatted amount.
  */
-function toFixedNoRound(value: number | string, precision: number = 2, trailingDecimals?: boolean): string {
-    const defaultDecimals = "0".repeat(precision);
-    const valueString = `${value}`;
-    const [integer, fraction = defaultDecimals] = valueString.split(".");
+function toFixedNoRound(value: number | string, precision: number = 2, forceShowDecimal?: boolean): string {
+    const [integer, fraction = ""] = `${value}`.split(".");
+    const truncatedFraction = fraction.padEnd(precision, "0").substring(0, precision);
 
-    if (fraction === defaultDecimals && !trailingDecimals) {
-        return valueString;
+    if (forceShowDecimal) {
+        return `${integer}.${truncatedFraction}`;
+    }
+
+    if (Number(integer) === 0) {
+        if (Number(fraction) === 0) {
+            return integer;
+        }
+        if (Number(truncatedFraction) === 0) {
+            return `${integer}.${fraction}`;
+        }
+        return trimTrailingZeros(`${integer}.${truncatedFraction}`);
     }
 
     if (!precision) {
         return integer;
     }
 
-    const truncatedFraction = fraction.slice(0, precision);
-
-    // avoid 0.00 case
-    if (!Number(truncatedFraction)) {
-        return `${integer}.${fraction}`;
-    }
-
-    return `${integer}.${truncatedFraction}`;
+    return trimTrailingZeros(`${integer}.${truncatedFraction}`);
 }
 
 /**

@@ -1,7 +1,13 @@
+import { INetwork } from "~/models/config/INetwork";
 import { ICachedTransaction } from "~models/api/ICachedTransaction";
 import { ITransactionsCursor } from "~models/api/legacy/ITransactionsCursor";
 
 export interface TagState {
+    /**
+     * The name of the network.
+     */
+    networkConfig: INetwork;
+
     /**
      * The tag to display.
      */
