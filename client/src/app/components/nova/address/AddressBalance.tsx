@@ -85,7 +85,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
         isFormat: boolean,
         setFormat: React.Dispatch<React.SetStateAction<boolean>>,
     ): CardInfoDetail | null => {
-        if (mana !== null && mana !== undefined && mana > 0) {
+        if (mana !== null && mana !== undefined) {
             return {
                 title: title,
                 value: formatAmount(mana, manaInfo, isFormat),
