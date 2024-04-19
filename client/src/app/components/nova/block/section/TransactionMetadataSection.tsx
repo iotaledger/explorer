@@ -84,10 +84,7 @@ const TransactionMetadataSection: React.FC<TransactionMetadataSectionProps> = ({
                                                 return (
                                                     <div className="allotment-item" key={`allotment-${idx}`}>
                                                         <div className="allotment-item__address value truncate highlight">
-                                                            <TruncatedId
-                                                                id={allotment.accountId}
-                                                                link={`/${network}/addr/${accountBech32}`}
-                                                            />
+                                                            <TruncatedId id={accountBech32} link={`/${network}/addr/${accountBech32}`} />
                                                         </div>
                                                         <div className="allotment-item__amount value">
                                                             <span

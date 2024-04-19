@@ -1,5 +1,4 @@
 import {
-    AccountAddress,
     FeatureType,
     FoundryOutput,
     MetadataFeature,
@@ -59,7 +58,6 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
     const [isFormattedBalance, setIsFormattedBalance] = useState<boolean>(true);
     const [foundryDetails, isFoundryDetailsLoading, foundryError] = useFoundryDetails(network, foundryId);
     const [foundryOutput, setFoundryOutput] = useState<FoundryOutput>();
-    const [controllerAccountId, setControllerAccountId] = useState<string>();
     const [controllerAccountBech32, setControllerAccountBech32] = useState<Bech32Address>();
     const [tokenMetadata, setTokenMetadata] = useState<ITokenMetadata | null>();
     const [tokensCount, setTokensCount] = useState<number>(0);
@@ -68,7 +66,6 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
         if (foundryDetails) {
             const output = foundryDetails?.output as FoundryOutput;
             const immutableAccountUnlockCondition = output.unlockConditions[0] as ImmutableAccountAddressUnlockCondition;
-            const accountId = (immutableAccountUnlockCondition.address as AccountAddress).accountId;
             const bech32 = Utils.addressToBech32(immutableAccountUnlockCondition.address, bech32Hrp);
 
             const immutableFeatures = (foundryDetails?.output as FoundryOutput).immutableFeatures;
@@ -81,9 +78,9 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
                 );
                 setTokenMetadata(parsedMetadata);
             }
+
             if (isMounted) {
                 setFoundryOutput(output);
-                setControllerAccountId(accountId);
                 setControllerAccountBech32(bech32);
             }
         }
@@ -109,11 +106,15 @@ const FoundryPage: React.FC<RouteComponentProps<FoundryPageProps>> = ({
                             <span className="margin-r-t">{serialNumber}</span>
                         </div>
                     </div>
-                    {controllerAccountId && controllerAccountBech32 && (
+                    {controllerAccountBech32 && (
                         <div className="section--data">
                             <div className="label">Controller Account</div>
                             <div className="value code highlight">
-                                <TruncatedId id={controllerAccountId} link={`/${network}/addr/${controllerAccountBech32}`} showCopyButton />
+                                <TruncatedId
+                                    id={controllerAccountBech32}
+                                    link={`/${network}/addr/${controllerAccountBech32}`}
+                                    showCopyButton
+                                />
                             </div>
                         </div>
                     )}
