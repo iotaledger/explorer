@@ -5,7 +5,7 @@ import MainnetIcon from "~assets/mainnet.svg?react";
 import ShimmerIcon from "~assets/shimmer-logo-header.svg?react";
 import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 import { getNetworkOrder } from "~helpers/networkHelper";
-import { MAINNET, IOTA_TESTNET, SHIMMER_TESTNET, SHIMMER, NetworkType } from "~models/config/networkType";
+import { MAINNET, SHIMMER, NetworkType } from "~models/config/networkType";
 import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
 import "./NetworkSwitcher.scss";
 
@@ -27,10 +27,8 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
     getIcon(networkType: NetworkType) {
         switch (networkType) {
             case MAINNET:
-            case IOTA_TESTNET:
                 return <MainnetIcon />;
             case SHIMMER:
-            case SHIMMER_TESTNET:
                 return <ShimmerIcon />;
             default:
                 return <DevnetIcon />;
