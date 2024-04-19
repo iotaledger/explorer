@@ -103,7 +103,7 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     };
 
     return (
-        <div className="balance-wrapper">
+        <div className="balance-wrapper nova">
             <div className="balance-wrapper--row">
                 <CardInfo
                     title="Available Base Token"
