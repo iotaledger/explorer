@@ -29,7 +29,7 @@ export function isOutputExpired(output: CommonOutput, protocolParameters: Protoc
     const expirationUnlockCondition = output.unlockConditions.find(
         (unlockCondition) => unlockCondition.type === UnlockConditionType.Expiration,
     ) as ExpirationUnlockCondition;
-    const outputSlotIndex = expirationUnlockCondition?.slotIndex;
+    const outputSlotIndex = expirationUnlockCondition?.slot;
     const maxCommittableAge = protocolParameters?.parameters?.maxCommittableAge ?? null;
     const minCommittableAge = protocolParameters?.parameters?.minCommittableAge ?? null;
 
@@ -59,6 +59,6 @@ export function isOutputTimeLocked(output: CommonOutput, protocolParameters: Pro
     } else {
         const unixTimestampToSlotIndex = unixTimestampToSlotIndexConverter(protocolParameters);
         const currentSlotIndex = unixTimestampToSlotIndex(moment().unix());
-        return currentSlotIndex + minCommittableAge < timelockUnlockCondition.slotIndex;
+        return currentSlotIndex + minCommittableAge < timelockUnlockCondition.slot;
     }
 }
