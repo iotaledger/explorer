@@ -15,9 +15,18 @@
     pointer-events: none;
     gap: 20px;
 
+    @include tablet-down {
+        flex-direction: column;
+        gap: 8px;
+    }
+
     .card {
         background: var(--body-background);
         padding: 16px 32px;
+
+        @include tablet-down {
+            padding: 8px 16px;
+        }
     }
 
     .key-panel-list {
@@ -25,6 +34,10 @@
         flex-direction: row;
         flex-wrap: wrap;
         gap: 32px;
+
+        @include tablet-down {
+            gap: 8px;
+        }
 
         .key-panel-item {
             display: flex;
@@ -67,6 +80,23 @@
         align-items: center;
         pointer-events: none;
 
+        @include tablet-down {
+            width: 100%;
+        }
+
+        .card {
+            @include tablet-down {
+                width: 100%;
+            }
+        }
+
+        .card--label,
+        .card--value {
+            @include tablet-down {
+                height: auto;
+            }
+        }
+
         .card--label {
             justify-content: flex-start;
         }
@@ -78,6 +108,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+
+            .card--value {
+                margin-bottom: 0;
+            }
+
+            @include tablet-down {
+                justify-content: start;
+                flex-direction: row;
+                width: 100%;
+                gap: 8px;
+            }
         }
 
         @include tablet-down {

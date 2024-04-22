@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { Block, BlockMetadataResponse, SlotIndex } from "@iota/sdk-nova";
 
 interface IFeedBlockUpdate {
