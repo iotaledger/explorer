@@ -33,13 +33,13 @@ function getValidatorTableRow(
             case ValidatorsTableHeadings.Candidate:
                 tableData = {
                     type: TableCellType.Text,
-                    data: (!inCommittee).toString(),
+                    data: validatorResponse.active ? "Yes" : "No",
                 };
                 break;
             case ValidatorsTableHeadings.Elected:
                 tableData = {
                     type: TableCellType.Text,
-                    data: inCommittee.toString(),
+                    data: inCommittee ? "Yes" : "No",
                 };
                 break;
             case ValidatorsTableHeadings.FixedCost:
