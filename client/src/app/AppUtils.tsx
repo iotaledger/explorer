@@ -6,6 +6,7 @@ import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkTy
 import { IOTA_UI, Theme } from "~models/config/uiTheme";
 import { IReducedNodeInfo } from "~services/nodeInfoService";
 import { NavigationRoute } from "./lib/interfaces";
+import { STARDUST } from "~/models/config/protocolVersion";
 
 export const networkContextWrapper = (currentNetwork: string | undefined, nodeInfo: IReducedNodeInfo | null, uiTheme: Theme | undefined) =>
     function withNetworkContext(wrappedComponent: ReactNode) {
@@ -30,6 +31,8 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
 
     const { network, hasStatisticsSupport } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
 
+    const isStardust = hasNetworks && currentNetwork.protocolVersion === STARDUST;
+
     const routes: NavigationRoute[] = [
         {
             label: "Explorer",
@@ -39,12 +42,12 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
         {
             label: "Visualizer",
             url: `/${network}/visualizer/`,
-            disabled: !hasNetworks,
+            disabled: !hasNetworks || !isStardust,
         },
         {
             label: "Statistics",
             url: `/${network}/statistics/`,
-            disabled: !hasStatisticsSupport || !hasNetworks,
+            disabled: !hasNetworks || !hasStatisticsSupport || !isStardust,
         },
         {
             label: "Utilities",
@@ -60,6 +63,7 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
         },
         {
             label: "EVM",
+            disabled: !hasNetworks || !isStardust,
             routes: [
                 {
                     label: "ShimmerEVM Explorer",
