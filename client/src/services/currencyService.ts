@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import { ChrysalisApiClient } from "./chrysalis/chrysalisApiClient";
 import { SettingsService } from "./settingsService";
 import { ServiceFactory } from "~factories/serviceFactory";

@@ -1,4 +1,4 @@
-import { ReceiptMilestoneOption } from "@iota/sdk-wasm/web";
+import { ReceiptMilestoneOption } from "@iota/sdk-wasm-stardust/web";
 import * as H from "history";
 
 export interface ReceiptPayloadProps {

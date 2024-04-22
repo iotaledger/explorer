@@ -1,4 +1,13 @@
-import { AddressType, Block, FeatureType, InputType, OutputType, PayloadType, UnlockConditionType, UnlockType } from "@iota/sdk-wasm/web";
+import {
+    AddressType,
+    Block,
+    FeatureType,
+    InputType,
+    OutputType,
+    PayloadType,
+    UnlockConditionType,
+    UnlockType,
+} from "@iota/sdk-wasm-stardust/web";
 
 export class NameHelper {
     /**
