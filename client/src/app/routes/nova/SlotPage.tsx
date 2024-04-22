@@ -12,6 +12,10 @@ import { SLOT_STATUS_TO_PILL_STATUS } from "~/app/lib/constants/slot.constants";
 import SlotBlocksSection from "~/app/components/nova/slot/blocks/SlotBlocksSection";
 import { useSlotManaBurned } from "~/helpers/nova/hooks/useSlotManaBurned";
 import "./SlotPage.scss";
+import { useSlotStats } from "~/helpers/nova/hooks/useSlotStats";
+import { useNovaTimeConvert } from "~/helpers/nova/hooks/useNovaTimeConvert";
+import moment from "moment";
+import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 
 export default function SlotPage({
     match: {
@@ -21,13 +25,18 @@ export default function SlotPage({
     network: string;
     slotIndex: string;
 }>): React.JSX.Element {
+    const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { latestSlotCommitments = [] } = useSlotsFeed();
+    const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
     const { slotCommitment: slotCommitmentDetails, slotCommitmentId } = useSlotDetails(network, slotIndex);
     const { slotManaBurned } = useSlotManaBurned(slotIndex);
+    const [slotStats] = useSlotStats(slotIndex);
 
     const parsedSlotIndex = parseSlotIndexFromParams(slotIndex);
     const slotStatus = getSlotStatusFromLatestSlotCommitments(parsedSlotIndex, latestSlotCommitments);
     const slotFromSlotCommitments = latestSlotCommitments.find((slot) => slot.slotCommitment.slot === parsedSlotIndex);
+    const slotTimeRange = parsedSlotIndex && slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(parsedSlotIndex) : null;
+    const slotTimestamp = getSlotTimestamp(slotTimeRange);
 
     const dataRows: IPageDataRow[] = [
         {
@@ -38,14 +47,18 @@ export default function SlotPage({
             label: "Commitment Id",
             value: slotCommitmentId ?? "-",
         },
+        { label: "Timestamp", value: slotTimestamp ?? "-" },
         {
             label: "RMC",
             value:
                 slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
                 slotCommitmentDetails?.referenceManaCost?.toString() ??
                 "-",
+            tokenInfo: manaInfo,
         },
-        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-" },
+        { label: "Mana burned", value: slotManaBurned?.manaBurned ?? "-", tokenInfo: manaInfo },
+        { label: "Blocks", value: slotStats?.blockCount ?? "0" },
+        { label: "Transactions", value: slotStats?.perPayloadType?.transaction ?? "0" },
     ];
 
     return (
@@ -81,4 +94,15 @@ export default function SlotPage({
             </div>
         </section>
     );
+
+    function getSlotTimestamp(slotTimeRange: { from: number; to: number } | null): string {
+        if (!slotTimeRange) {
+            return "-";
+        }
+
+        const remainingTime = slotTimeRange.to - moment().unix();
+        const slotTimestamp = remainingTime <= 0 ? moment.unix(slotTimeRange.to).format("DD MMM YYYY HH:mm:ss") : remainingTime + "s";
+
+        return slotTimestamp;
+    }
 }

@@ -10,13 +10,16 @@ jobs:
     name: Set Environment Variables
     runs-on: ubuntu-latest
     outputs:
-      version_tag: ${{ steps.env_vars.outputs.version_tag }}
+      version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
     steps:
-      - name: Set up the version tag for docker images and deploy environment
-        id: env_vars
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up the version tag for docker images
+        id: set_version_tag
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "VERSION_TAG=$COMMIT_HASH" >> $GITHUB_ENV
+          echo "VERSION_TAG=$COMMIT_HASH" >> $GITHUB_OUTPUT
 
   use-reusable-workflow:
     strategy:
