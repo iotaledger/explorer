@@ -1,4 +1,4 @@
-import { Unlock } from "@iota/sdk-wasm/web";
+import { Unlock } from "@iota/sdk-wasm-stardust/web";
 import { IInput } from "~models/api/stardust/IInput";
 import { IOutput } from "~models/api/stardust/IOutput";
 

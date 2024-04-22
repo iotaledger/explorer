@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm-stardust/web";
 import { StardustApiClient } from "../stardust/stardustApiClient";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { INodeInfoResponse as IStardustInfoResponse } from "~models/api/stardust/INodeInfoResponse";

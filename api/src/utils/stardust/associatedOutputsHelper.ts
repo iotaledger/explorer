@@ -6,7 +6,7 @@ import {
     FoundryQueryParameter,
     NftQueryParameter,
     AddressType,
-} from "@iota/sdk";
+} from "@iota/sdk-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { AssociationType, IAssociation } from "../../models/api/stardust/IAssociationsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";

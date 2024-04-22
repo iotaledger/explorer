@@ -1,4 +1,4 @@
-import { Output } from "@iota/sdk-wasm/web";
+import { Output } from "@iota/sdk-wasm-stardust/web";
 import { IBech32AddressDetails } from "../IBech32AddressDetails";
 
 export interface IOutput {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import initSdkStardust from "@iota/sdk-wasm/web";
+import initSdkStardust from "@iota/sdk-wasm-stardust/web";
 import initSdkNova from "@iota/sdk-wasm-nova/web";
 import { NOVA, STARDUST } from "~models/config/protocolVersion";
 

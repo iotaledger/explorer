@@ -1,4 +1,4 @@
-import { Ed25519Signature } from "@iota/sdk-wasm/web";
+import { Ed25519Signature } from "@iota/sdk-wasm-stardust/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";

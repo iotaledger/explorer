@@ -1,4 +1,4 @@
-import { MilestonePayload, PayloadType, TransactionPayload, Utils } from "@iota/sdk-wasm/web";
+import { MilestonePayload, PayloadType, TransactionPayload, Utils } from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { BlockProps } from "./BlockProps";
