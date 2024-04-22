@@ -11,15 +11,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /usr/src/app
 
 # Copy everything from current Folder
-# COPY . ./
-
-# Copy iota-sdk-nova deps REMOVE THIS for prod
-# Get Rust
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-ENV PATH="${PATH}:/root/.cargo/bin"
-
-COPY ./client ./
-COPY ./iota-sdk/ ../iota-sdk/
+COPY . ./
 
 # A minimal NGINX configuration
 RUN echo 'server {\
