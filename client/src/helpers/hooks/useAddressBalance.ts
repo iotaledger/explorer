@@ -1,9 +1,11 @@
 import { AddressType, AliasOutput, NftOutput } from "@iota/sdk-wasm/web";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import NetworkContext from "~/app/context/NetworkContext";
 import { IBech32AddressDetails } from "~/models/api/IBech32AddressDetails";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { STARDUST } from "~models/config/protocolVersion";
 import { StardustApiClient } from "~services/stardust/stardustApiClient";
+import { TransactionsHelper } from "../stardust/transactionsHelper";
 import { useIsMounted } from "./useIsMounted";
 
 /**
@@ -23,6 +25,7 @@ export function useAddressBalance(
     const [balance, setBalance] = useState<number | null>(null);
     const [availableBalance, setAvailableBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const { rentStructure } = useContext(NetworkContext);
 
     useEffect(() => {
         setIsLoading(true);
@@ -48,8 +51,9 @@ export function useAddressBalance(
                     }
                     if (output) {
                         const outputBalance = Number(output.amount);
+                        const minStorageDeposit = TransactionsHelper.computeStorageDeposit([output], rentStructure);
                         totalBalance = Number(totalBalance ?? 0) + outputBalance;
-                        availableBalance = Number(availableBalance ?? 0) + outputBalance;
+                        availableBalance = Number(availableBalance ?? 0) + outputBalance - minStorageDeposit;
                     }
                     setBalance(totalBalance);
                     setAvailableBalance(availableBalance);
