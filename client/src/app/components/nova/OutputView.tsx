@@ -99,42 +99,46 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             >
                 <DropdownIcon />
             </div>
-            <div className="output-header">
-                <button type="button" className="output-type--name color">
-                    {NameHelper.getOutputTypeName(output.type)}
-                </button>
-                <div className="output-id--link">
-                    (
-                    {isLinksDisabled ? (
-                        <div className="margin-r-t">
-                            <span className="highlight">{outputIdTransactionPart}</span>
-                            <span className="highlight">{outputIdIndexPart}</span>
+            <div className="card--content__account">
+                <div className="output-header">
+                    <button type="button" className="output-type--name color">
+                        {NameHelper.getOutputTypeName(output.type)}
+                    </button>
+                    <div className="output-id--link">
+                        (
+                        {isLinksDisabled ? (
+                            <div className="margin-r-t">
+                                <span className="highlight">{outputIdTransactionPart}</span>
+                                <span className="highlight">{outputIdIndexPart}</span>
+                            </div>
+                        ) : (
+                            <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
+                                <span>{outputIdTransactionPart}</span>
+                                <span className="highlight">{outputIdIndexPart}</span>
+                            </Link>
+                        )}
+                        )
+                        <CopyButton copy={String(outputId)} />
+                    </div>
+                    {specialUnlockCondition}
+                </div>
+                <div className="row middle">
+                    {showCopyAmount && (
+                        <div className="card--value pointer amount-size row end">
+                            <span
+                                className="pointer"
+                                onClick={(e) => {
+                                    setIsFormattedBalance(!isFormattedBalance);
+                                    e.stopPropagation();
+                                }}
+                            >
+                                {formatAmount(output.amount, tokenInfo, !isFormattedBalance)}
+                            </span>
                         </div>
-                    ) : (
-                        <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
-                            <span>{outputIdTransactionPart}</span>
-                            <span className="highlight">{outputIdIndexPart}</span>
-                        </Link>
                     )}
-                    )
-                    <CopyButton copy={String(outputId)} />
+                    {showCopyAmount && <CopyButton copy={output.amount} />}
                 </div>
-                {specialUnlockCondition}
             </div>
-            {showCopyAmount && (
-                <div className="card--value pointer amount-size row end">
-                    <span
-                        className="pointer"
-                        onClick={(e) => {
-                            setIsFormattedBalance(!isFormattedBalance);
-                            e.stopPropagation();
-                        }}
-                    >
-                        {formatAmount(output.amount, tokenInfo, !isFormattedBalance)}
-                    </span>
-                </div>
-            )}
-            {showCopyAmount && <CopyButton copy={output.amount} />}
         </div>
     );
 
@@ -376,7 +380,6 @@ function getSpecialUnlockConditionContent(
         );
     } else if (unlockCondition.type === UnlockConditionType.Expiration) {
         const expirationUnlockCondition = unlockCondition as ExpirationUnlockCondition;
-        // @ts-expect-error The ACTUAL runtime field is 'slot', not 'slotIndex'. https://github.com/iotaledger/iota-sdk/issues/2217
         const eucSlot = expirationUnlockCondition.slot;
         const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(eucSlot) : null;
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
@@ -388,12 +391,12 @@ function getSpecialUnlockConditionContent(
         );
     } else if (unlockCondition.type === UnlockConditionType.Timelock) {
         const timelockUnlockCondition = unlockCondition as TimelockUnlockCondition;
-        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slotIndex) : null;
+        const slotTimeRange = slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(timelockUnlockCondition.slot) : null;
         const time = slotTimeRange ? DateHelper.format(DateHelper.milliseconds(slotTimeRange?.from)) : null;
         return (
             <React.Fragment>
                 <span>Timelock Unlock Condition{isExpiredOrTimeLocked ? " (TimeLocked)" : ""}</span> <br />
-                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slotIndex}</span>}
+                {time ? <span>Time: {time} </span> : <span>Slot: {timelockUnlockCondition.slot}</span>}
             </React.Fragment>
         );
     }

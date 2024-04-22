@@ -4,9 +4,16 @@
 @import "../../../scss/variables";
 
 .epoch-page {
+    .wrapper {
+        padding: 0 20px;
+    }
     .epoch-page--header {
         display: flex;
         justify-content: space-between;
+
+        @include tablet-down {
+            flex-direction: column;
+        }
     }
 
     .validators-page__header {

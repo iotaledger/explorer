@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "3.3.6",
+    "version": "3.3.8-rc.2",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "type": "module",
     "repository": {
@@ -28,8 +28,8 @@
         "@iota/iota.js": "^1.8.6",
         "@iota/mam-legacy": "github:iotaledger/mam.js#fddc95f60539b9a31a4db1b5b56e0dedb8994883",
         "@iota/mam.js": "^1.6.2",
-        "@iota/sdk-wasm": "1.1.1",
-        "@iota/sdk-wasm-nova": "../iota-sdk/bindings/wasm",
+        "@iota/sdk-wasm-stardust": "npm:@iota/sdk-wasm@1.1.1",
+        "@iota/sdk-wasm-nova": "npm:@iota/sdk-wasm@^2.0.0-alpha.3",
         "@iota/util.js": "^1.8.6",
         "classnames": "^2.3.1",
         "d3-array": "^3.2.1",
@@ -41,7 +41,7 @@
         "d3-shape": "^3.1.0",
         "d3-time": "^3.1.0",
         "d3-time-format": "^4.1.0",
-        "express": "^4.18.1",
+        "express": "^4.19.2",
         "jsonschema": "^1.4.1",
         "moment": "^2.29.4",
         "qr.js": "0.0.0",
@@ -98,7 +98,7 @@
         "stylelint-config-sass-guidelines": "^9.0.1",
         "stylelint-config-standard-scss": "^5.0.0",
         "typescript": "^4.9.3",
-        "vite": "^4.5.2",
+        "vite": "^4.5.3",
         "vite-aliases": "^0.11.3",
         "vite-plugin-node-polyfills": "^0.16.0",
         "vite-plugin-svgr": "^4.2.0",
@@ -115,7 +115,6 @@
     ],
     "lint-staged": {
         "src/**/*.{ts,js,tsx,jsx}": "eslint --cache --fix",
-        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write",
-        "src/**/*.scss": "stylelint --fix"
+        "src/**/*.{ts,js,tsx,jsx,scss,css}": "prettier --ignore-path=.prettierignore --write"
     }
 }

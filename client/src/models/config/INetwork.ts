@@ -1,5 +1,5 @@
-import { NetworkType } from "./networkType";
-import { ProtocolVersion } from "./protocolVersion";
+import { CUSTOM, NetworkType } from "./networkType";
+import { LEGACY, ProtocolVersion } from "./protocolVersion";
 import { Theme } from "./uiTheme";
 
 /**
@@ -74,4 +74,17 @@ export interface INetwork {
      * Url endpoint for token registry.
      */
     tokenRegistryEndpoint?: string;
+    /**
+     * Max results for API requests (only used in legacy for now).
+     */
+    apiMaxResults?: number;
 }
+
+export const networkConfigDefault: INetwork = {
+    label: "Custom network",
+    network: CUSTOM,
+    protocolVersion: LEGACY,
+    hasStatisticsSupport: false,
+    isEnabled: false,
+    apiMaxResults: 10000,
+};

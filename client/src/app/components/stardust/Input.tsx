@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { Utils } from "@iota/sdk-wasm/web";
+import { Utils } from "@iota/sdk-wasm-stardust/web";
 import classNames from "classnames";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";

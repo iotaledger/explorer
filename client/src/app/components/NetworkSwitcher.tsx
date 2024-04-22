@@ -2,10 +2,11 @@ import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import DevnetIcon from "~assets/devnet.svg?react";
 import MainnetIcon from "~assets/mainnet.svg?react";
+import ShimmerIcon from "~assets/shimmer-logo-header.svg?react";
 import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 import { getNetworkOrder } from "~helpers/networkHelper";
-import { MAINNET } from "~models/config/networkType";
 import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
+import { MAINNET, SHIMMER, NetworkType } from "~models/config/networkType";
 import "./NetworkSwitcher.scss";
 
 const PROTOCOL_VERIONS_TO_LABEL = {
@@ -19,6 +20,22 @@ const PROTOCOL_VERIONS_TO_LABEL = {
  * Component which will show the switcher.
  */
 class NetworkSwitcher extends Component<NetworkSwitcherProps> {
+    /**
+     * Get the appropriate icon based on the network type.
+     * @param networkType The network type.
+     * @returns The icon component.
+     */
+    getIcon(networkType: NetworkType) {
+        switch (networkType) {
+            case MAINNET:
+                return <MainnetIcon />;
+            case SHIMMER:
+                return <ShimmerIcon />;
+            default:
+                return <DevnetIcon />;
+        }
+    }
+
     /**
      * Render the component.
      * @returns The node to render.
@@ -56,9 +73,7 @@ class NetworkSwitcher extends Component<NetworkSwitcherProps> {
                                             className={classNames("network--card row middle", { selected: network.label === label })}
                                             onClick={() => onChange(network.network)}
                                         >
-                                            <div className="network--icon row middle center">
-                                                {network.network === MAINNET ? <MainnetIcon /> : <DevnetIcon />}
-                                            </div>
+                                            <div className="network--icon row middle center">{this.getIcon(network.network)}</div>
                                             <div className="network--content">
                                                 <div className="label">{network.label}</div>
                                                 <div className="protocol">{PROTOCOL_VERIONS_TO_LABEL[network.protocolVersion]}</div>

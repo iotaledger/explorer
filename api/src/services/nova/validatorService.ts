@@ -1,6 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { Client, ValidatorResponse, CommitteeResponse } from "@iota/sdk-nova";
 import cron from "node-cron";
 import { ServiceFactory } from "../../factories/serviceFactory";
@@ -9,9 +6,9 @@ import { INetwork } from "../../models/db/INetwork";
 
 /**
  * The collect validators interval cron expression.
- * Every hour at 55 min 55 sec
+ * Every 10 minutes
  */
-const COLLECT_VALIDATORS_CRON = "55 55 * * * *";
+const COLLECT_VALIDATORS_CRON = "*/10 * * * *";
 
 export class ValidatorService {
     /**

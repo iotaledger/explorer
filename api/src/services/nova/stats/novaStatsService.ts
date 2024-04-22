@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Client } from "@iota/sdk-nova";
 import { BaseStatsService } from "./baseStatsService";
 import { ServiceFactory } from "../../../factories/serviceFactory";

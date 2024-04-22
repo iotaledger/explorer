@@ -6,9 +6,9 @@ import {
     FoundryQueryParameter,
     NftQueryParameter,
     AddressType,
-} from "@iota/sdk";
+} from "@iota/sdk-stardust";
 import { ServiceFactory } from "../../factories/serviceFactory";
-import { AssociationType } from "../../models/api/stardust/IAssociationsResponse";
+import { AssociationType, IAssociation } from "../../models/api/stardust/IAssociationsResponse";
 import { IBech32AddressDetails } from "../../models/api/stardust/IBech32AddressDetails";
 import { INetwork } from "../../models/db/INetwork";
 
@@ -40,6 +40,15 @@ export class AssociatedOutputsHelper {
                 async (query) => client.basicOutputIds([query]),
                 { address },
                 AssociationType.BASIC_ADDRESS,
+            ),
+        );
+
+        promises.push(
+            // Basic output -> owner address expired outputs
+            this.fetchAssociatedOutputIds<QueryParameter[]>(
+                async (query) => client.basicOutputIds(query),
+                [{ address }, { expiresBefore: Math.floor(Date.now() / 1000) }],
+                AssociationType.BASIC_ADDRESS_EXPIRED,
             ),
         );
 
@@ -143,6 +152,15 @@ export class AssociatedOutputsHelper {
         );
 
         promises.push(
+            // Nft output -> owner address expired outputs
+            this.fetchAssociatedOutputIds<NftQueryParameter[]>(
+                async (query) => client.nftOutputIds(query),
+                [{ address }, { expiresBefore: Math.floor(Date.now() / 1000) }],
+                AssociationType.NFT_ADDRESS_EXPIRED,
+            ),
+        );
+
+        promises.push(
             // Nft output -> storage return address
             this.fetchAssociatedOutputIds<NftQueryParameter>(
                 async (query) => client.nftOutputIds([query]),
@@ -182,6 +200,38 @@ export class AssociatedOutputsHelper {
     }
 
     /**
+     * Retrieves the associations between output types and output IDs.
+     * @returns An array of associations.
+     */
+    public getAssociations(): IAssociation[] {
+        const associations: IAssociation[] = [];
+        for (const [type, outputIds] of this.associationToOutputIds.entries()) {
+            if (type !== AssociationType.BASIC_ADDRESS_EXPIRED && type !== AssociationType.NFT_ADDRESS_EXPIRED) {
+                if (
+                    type === AssociationType.BASIC_ADDRESS &&
+                    this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED)?.length > 0
+                ) {
+                    // remove expired basic outputs from basic address associations if they exist
+                    const expiredIds = this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED);
+                    const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
+                    associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                } else if (
+                    type === AssociationType.NFT_ADDRESS &&
+                    this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED)?.length > 0
+                ) {
+                    // remove expired nft outputs from nft address associations if they exist
+                    const expiredIds = this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED);
+                    const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
+                    associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                } else {
+                    associations.push({ type, outputIds: outputIds.reverse() });
+                }
+            }
+        }
+        return associations;
+    }
+
+    /**
      * Generic helper function for fetching associated outputs.
      * @param fetch The function for the API call
      * @param args The parameters to pass to the call
@@ -197,7 +247,15 @@ export class AssociatedOutputsHelper {
 
         do {
             try {
-                const response = typeof args === "string" ? await fetch(args) : await fetch({ ...args, cursor });
+                let requestArgs: T = null;
+                if (typeof args === "string") {
+                    requestArgs = args;
+                } else if (Array.isArray(args)) {
+                    requestArgs = cursor ? ([...args, { cursor }] as T) : args;
+                } else {
+                    requestArgs = { ...args, cursor };
+                }
+                const response = await fetch(requestArgs);
 
                 if (typeof response === "string") {
                     const outputIds = associationToOutputIds.get(association);

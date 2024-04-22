@@ -1,7 +1,7 @@
 {
     "name": "explorer-api",
     "description": "API for Tangle Explorer",
-    "version": "3.3.6",
+    "version": "3.3.8-rc.2",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "repository": {
         "type": "git",
@@ -26,7 +26,7 @@
         "node": ">=16 <=16.20.2"
     },
     "dependencies": {
-        "@google-cloud/logging-winston": "^5.3.0",
+        "@google-cloud/logging-winston": "^6.0.0",
         "@iota/core": "^1.0.0-beta.30",
         "@iota/crypto.js": "^1.8.6",
         "@iota/identity-wasm": "^0.5.0-dev.6",
@@ -34,9 +34,9 @@
         "@iota/identity-wasm-stardust": "npm:@iota/identity-wasm@^1.1.0",
         "@iota/iota.js-chrysalis": "npm:@iota/iota.js@^1.8.6",
         "@iota/mqtt.js": "^1.8.6",
-        "@iota/sdk": "1.1.1",
-        "@iota/sdk-nova": "../iota-sdk/bindings/nodejs",
-        "@iota/sdk-wasm": "^1.0.4",
+        "@iota/sdk-stardust": "npm:@iota/sdk@1.1.1",
+        "@iota/sdk-nova": "npm:@iota/sdk@2.0.0-alpha.7",
+        "@iota/sdk-wasm-stardust": "npm:@iota/sdk-wasm@1.1.1",
         "@iota/util.js": "^1.8.6",
         "@iota/validators": "^1.0.0-beta.30",
         "@types/node-cron": "^3.0.2",
@@ -44,7 +44,7 @@
         "big-integer": "^1.6.51",
         "compression": "^1.7.4",
         "dotenv": "^16.0.3",
-        "express": "^4.18.1",
+        "express": "^4.19.2",
         "influx": "^5.9.3",
         "jszip": "^3.10.1",
         "lint-staged": "^14.0.1",

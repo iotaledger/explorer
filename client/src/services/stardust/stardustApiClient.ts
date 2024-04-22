@@ -1,4 +1,4 @@
-import { IOutputsResponse } from "@iota/sdk-wasm/web";
+import { IOutputsResponse } from "@iota/sdk-wasm-stardust/web";
 import { FetchHelper } from "~helpers/fetchHelper";
 import { IDIDResolverRequest } from "~models/api/IDIDResolverRequest";
 import { IDIDResolverResponse } from "~models/api/IDIDResolverResponse";

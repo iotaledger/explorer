@@ -10,7 +10,7 @@ import Spinner from "~/app/components/Spinner";
 import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { DateHelper } from "~/helpers/dateHelper";
 import MilestoneSignaturesSection from "~/app/components/stardust/block/payload/milestone/MilestoneSignaturesSection";
-import { Ed25519Signature } from "@iota/sdk-wasm/web";
+import { Ed25519Signature } from "@iota/sdk-wasm-stardust/web";
 import { useInputsAndOutputs } from "~/helpers/nova/hooks/useInputsAndOutputs";
 import BlockPayloadSection from "~/app/components/nova/block/section/BlockPayloadSection";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
@@ -154,12 +154,14 @@ const Block: React.FC<RouteComponentProps<BlockProps>> = ({
                 <div className="label">Latest Finalized Slot</div>
                 <div className="value code">{block.header.latestFinalizedSlot}</div>
             </div>
-            <div className="section--data">
-                <div className="label">Issuer</div>
-                <div className="value code highlight">
-                    <TruncatedId id={block.header.issuerId} link={`/${network}/addr/${issuerAddress}`} showCopyButton={true} />
+            {issuerAddress && (
+                <div className="section--data">
+                    <div className="label">Issuer</div>
+                    <div className="value code highlight">
+                        <TruncatedId id={issuerAddress} link={`/${network}/addr/${issuerAddress}`} showCopyButton={true} />
+                    </div>
                 </div>
-            </div>
+            )}
             <div className="section--data row row--tablet-responsive">
                 {blockBody?.strongParents && (
                     <div className="truncate margin-b-s margin-r-m">
