@@ -3,7 +3,7 @@ import type { ITableRow } from "~/app/components/Table";
 import { TableCellType, type TTableData } from "~/app/components/nova/TableCell";
 import { SlotStatus } from "~app/lib/enums";
 import { SlotTableHeadings } from "~/app/lib/ui/enums";
-import { Utils } from "@iota/sdk-wasm-nova/web";
+import { BaseTokenResponse, Utils } from "@iota/sdk-wasm-nova/web";
 import useSlotsFeed from "./useSlotsFeed";
 import { useNovaTimeConvert } from "./useNovaTimeConvert";
 import { useNetworkInfoNova } from "../networkInfo";
@@ -93,6 +93,7 @@ function getSlotCommitmentTableRow(
     slotIndex: number,
     commitmentWrapper: ISlotCommitmentWrapper | null,
     slotTimeRange: SlotTimeRange,
+    tokenInfo: BaseTokenResponse,
 ): ITableRow<TTableData> {
     const data: TTableData[] = [];
 
@@ -120,8 +121,10 @@ function getSlotCommitmentTableRow(
                 break;
             case SlotTableHeadings.ReferenceManaCost:
                 tableData = {
-                    type: TableCellType.Text,
+                    type: TableCellType.Formatted,
                     data: referenceManaCost,
+                    tokenInfo,
+                    isFormatted: true,
                 };
                 break;
             case SlotTableHeadings.Blocks:
@@ -170,7 +173,7 @@ function getSlotCommitmentTableRow(
 }
 
 export function useGenerateSlotsTable(): ITableRow<TTableData>[] {
-    const { name: network } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
     const { currentSlotIndex, currentSlotTimeRange, latestSlotCommitments, latestSlotIndexes } = useSlotsFeed();
 
@@ -185,7 +188,7 @@ export function useGenerateSlotsTable(): ITableRow<TTableData>[] {
         latestSlotIndexes?.map((slotIndex) => {
             const commitmentWrapper = latestSlotCommitments?.find((commitment) => commitment.slotCommitment.slot === slotIndex) ?? null;
             const slotTimeRange = slotIndexToUnixTimeRange?.(slotIndex) ?? null;
-            const row = getSlotCommitmentTableRow(network, slotIndex, commitmentWrapper, slotTimeRange);
+            const row = getSlotCommitmentTableRow(network, slotIndex, commitmentWrapper, slotTimeRange, manaInfo);
             rows.push(row);
         });
     }
