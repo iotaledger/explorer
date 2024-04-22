@@ -22,13 +22,13 @@ const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = 
             title: "Block Issuance Credit",
             value: formatAmount(congestion?.blockIssuanceCredits ?? "0", manaInfo, formatFull),
             onClickValue: () => setFormatFull(!formatFull),
-            showCopyBtn: true,
+            copyValue: formatAmount(congestion?.blockIssuanceCredits ?? "0", manaInfo, true),
         },
         {
             title: "Referenced Mana Cost",
             value: formatAmount(congestion?.referenceManaCost ?? "0", manaInfo, formatFull),
             onClickValue: () => setFormatFull(!formatFull),
-            showCopyBtn: true,
+            copyValue: formatAmount(congestion?.referenceManaCost ?? "0", manaInfo, true),
         },
     ];
     return (
@@ -42,7 +42,7 @@ const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = 
                                 title={data.title}
                                 value={data.value}
                                 onClickValue={data.onClickValue}
-                                showCopyBtn={data.showCopyBtn}
+                                copyValue={data.copyValue}
                             />
                         );
                     })}

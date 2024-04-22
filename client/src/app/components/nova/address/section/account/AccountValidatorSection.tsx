@@ -33,25 +33,25 @@ const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ valid
             title: "Total pool stake:",
             value: formatAmount(validatorDetails.poolStake, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            showCopyBtn: true,
+            copyValue: formatAmount(validatorDetails.poolStake, tokenInfo, true),
         },
         {
             title: "Total validator stake",
             value: formatAmount(validatorDetails?.validatorStake ?? 0, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            showCopyBtn: true,
+            copyValue: formatAmount(validatorDetails?.validatorStake ?? 0, tokenInfo, true),
         },
         {
             title: "Total delegated stake",
             value: formatAmount(delegatedStake, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            showCopyBtn: true,
+            copyValue: formatAmount(delegatedStake, tokenInfo, true),
         },
         {
             title: "Fixed cost",
             value: formatAmount(validatorDetails?.fixedCost, manaInfo, formatManaValuesFull),
             onClickValue: () => setFormatManaValuesFull(!formatManaValuesFull),
-            showCopyBtn: true,
+            copyValue: formatAmount(validatorDetails?.fixedCost, manaInfo, true),
         },
         { title: "Latest Supported Protocol Version", value: validatorDetails.latestSupportedProtocolVersion },
     ];
@@ -66,7 +66,7 @@ const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ valid
                             title={data.title}
                             value={data.value}
                             onClickValue={data.onClickValue}
-                            showCopyBtn={data.showCopyBtn}
+                            copyValue={data.copyValue}
                         />
                     );
                 })}

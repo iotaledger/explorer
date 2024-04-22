@@ -93,28 +93,26 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
         { title: "Progress", value: isFutureEpoch ? "0%" : `${epochProgressPercent}%` },
         { title: "Registration end", value: isFutureEpoch ? "-" : registrationTimeRemaining },
     ];
+
+    const delegatedStake = Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0);
     const epochData: CardInfoProps[] = [
         {
             title: "Total pool stake:",
             value: formatAmount(epochCommittee?.totalStake ?? 0, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            showCopyBtn: true,
+            copyValue: formatAmount(epochCommittee?.totalStake ?? 0, tokenInfo, true),
         },
         {
             title: "Total validator stake",
             value: formatAmount(epochCommittee?.totalValidatorStake ?? 0, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            showCopyBtn: true,
+            copyValue: formatAmount(epochCommittee?.totalValidatorStake ?? 0, tokenInfo, true),
         },
         {
             title: "Total delegated stake",
-            value: formatAmount(
-                Number(epochCommittee?.totalStake ?? 0) - Number(epochCommittee?.totalValidatorStake ?? 0),
-                tokenInfo,
-                isFormatBalance,
-            ),
+            value: formatAmount(delegatedStake, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            showCopyBtn: true,
+            copyValue: formatAmount(delegatedStake, tokenInfo, true),
         },
         { title: "Blocks", value: epochStats?.blockCount ?? "0" },
         { title: "Transactions", value: epochStats?.perPayloadType?.transaction ?? "0" },
@@ -144,7 +142,15 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
 
                             {!isFutureEpoch &&
                                 epochData.map((data, index) => {
-                                    return <CardInfo key={index} title={data.title} value={data.value} onClickValue={data.onClickValue} />;
+                                    return (
+                                        <CardInfo
+                                            key={index}
+                                            title={data.title}
+                                            value={data.value}
+                                            onClickValue={data.onClickValue}
+                                            copyValue={data.copyValue}
+                                        />
+                                    );
                                 })}
 
                             {isFutureEpoch && <CardInfo title="Starts in:" value={futureEpochStartsIn} />}

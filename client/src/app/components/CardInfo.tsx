@@ -12,7 +12,7 @@ export interface CardInfoDetail {
     copyValue?: string;
 }
 
-interface CardInfoProps {
+export interface CardInfoProps {
     /**
      * The title of the card.
      */
