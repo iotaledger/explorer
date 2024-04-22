@@ -35,7 +35,7 @@ const ContextInputView: React.FC<IContextInputViewProps> = ({ contextInput }) =>
             <div className="section--data">
                 <div className="label">Account</div>
                 <div className="value code highlight">
-                    <TruncatedId id={input.accountId} link={`/${network}/account/${bech32Address}`} showCopyButton />
+                    <TruncatedId id={bech32Address} link={`/${network}/account/${bech32Address}`} showCopyButton />
                 </div>
             </div>
         );
