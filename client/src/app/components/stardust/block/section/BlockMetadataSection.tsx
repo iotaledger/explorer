@@ -1,4 +1,4 @@
-import { HexEncodedString, IBlockMetadata } from "@iota/sdk-wasm/web";
+import { HexEncodedString, IBlockMetadata } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
 import Spinner from "../../../Spinner";
 import InclusionState from "../../InclusionState";

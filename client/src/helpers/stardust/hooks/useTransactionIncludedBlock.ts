@@ -1,4 +1,4 @@
-import { Block } from "@iota/sdk-wasm/web";
+import { Block } from "@iota/sdk-wasm-stardust/web";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { ServiceFactory } from "~factories/serviceFactory";
