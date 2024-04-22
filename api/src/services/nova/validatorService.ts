@@ -6,9 +6,9 @@ import { INetwork } from "../../models/db/INetwork";
 
 /**
  * The collect validators interval cron expression.
- * Every hour at 55 min 55 sec
+ * Every 10 minutes
  */
-const COLLECT_VALIDATORS_CRON = "55 55 * * * *";
+const COLLECT_VALIDATORS_CRON = "*/10 * * * *";
 
 export class ValidatorService {
     /**
