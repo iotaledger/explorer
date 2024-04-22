@@ -51,9 +51,9 @@ export function useAddressBalance(
                     }
                     if (output) {
                         const outputBalance = Number(output.amount);
-                        const minStorageDeposit = TransactionsHelper.computeStorageDeposit([output], rentStructure);
+                        const outputStorageDeposit = TransactionsHelper.computeStorageDeposit([output], rentStructure);
                         totalBalance = Number(totalBalance ?? 0) + outputBalance;
-                        availableBalance = Number(availableBalance ?? 0) + outputBalance - minStorageDeposit;
+                        availableBalance = Number(availableBalance ?? 0) + outputBalance - outputStorageDeposit;
                     }
                     setBalance(totalBalance);
                     setAvailableBalance(availableBalance);
