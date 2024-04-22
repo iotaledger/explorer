@@ -1,18 +1,21 @@
 @import "../../../../scss/media-queries";
 
-.balance-wrapper {
+.balance-wrapper.nova {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    gap: 24px;
 
     .icon {
         margin-right: 16px;
     }
 
-    .balance-wrapper__inner {
+    .balance-wrapper--row {
         display: flex;
-        flex-direction: column;
-
+        flex-direction: row;
+        gap: 40px;
+        @include tablet-down {
+            flex-direction: column;
+        }
         .balance-wrapper__base-token {
             margin-bottom: 12px;
         }
@@ -20,10 +23,14 @@
         .balance-wrapper__base-token,
         .balance-wrapper__mana {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+
             .balance {
                 display: flex;
                 flex-direction: column;
+                gap: 10px;
 
                 .icon {
                     align-self: center;
@@ -34,8 +41,6 @@
                 }
 
                 &:not(:last-child) {
-                    margin-right: 40px;
-
                     @include tablet-down {
                         margin-right: 0px;
                     }
@@ -60,6 +65,7 @@
                 .balance-fiat {
                     color: #b0bfd9;
                     font-size: 18px;
+                    white-space: nowrap;
                 }
 
                 .balance-heading {
@@ -74,12 +80,8 @@
 
                 .balance__mana {
                     display: flex;
-                    align-items: center;
-                    margin-left: 8px;
-
-                    .value {
-                        margin-left: 4px;
-                    }
+                    flex-direction: column;
+                    margin-left: 0;
                 }
             }
         }
