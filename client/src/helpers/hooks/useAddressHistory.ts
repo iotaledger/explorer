@@ -121,12 +121,13 @@ export function useAddressHistory(
                 );
 
                 outputsWithDetails = [...outputsWithDetails, ...fulfilledOutputs].sort((a, b) => {
-                    // Ensure that entries with equal timestamp, but different isSpent,
-                    // have the spending before the depositing
-                    if (a.milestoneTimestamp === b.milestoneTimestamp && a.isSpent !== b.isSpent) {
-                        return a.isSpent ? 1 : -1;
+                    // Sort by milestoneTimestamp in descending order (newest first)
+                    if (a.milestoneTimestamp !== b.milestoneTimestamp) {
+                        return b.milestoneTimestamp - a.milestoneTimestamp;
                     }
-                    return 1;
+                    // If milestoneTimestamp is the same, prioritize 'isSpent'
+                    // Place 'isSpent: true' after 'isSpent: false' if timestamps are equal
+                    return a.isSpent ? 1 : -1;
                 });
 
                 transactionIdToOutputs = groupOutputsByTransactionId(outputsWithDetails);
