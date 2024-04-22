@@ -2,45 +2,6 @@
 @import "../../../../scss/fonts";
 @import "../../../../scss/media-queries";
 
-.epoch-section__controls {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: 32px;
-
-    span {
-        display: flex;
-
-        path {
-            fill: var(--icon-fill-color);
-        }
-    }
-
-    .epoch-section__previous {
-        transform: rotate(-90deg);
-    }
-
-    .epoch-section__next {
-        transform: rotate(90deg);
-    }
-
-    .epoch-section__center-buttons {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-
-        a {
-            text-decoration: none;
-        }
-
-        * + * {
-            margin-left: 16px;
-        }
-    }
-}
-
 .current-epoch-wrapper {
     font-family: $metropolis;
     background-color: var(--box-bg-color);
@@ -87,9 +48,8 @@
             }
         }
 
-        svg.to-arrow {
+        svg#to-arrow {
             margin: 0 16px;
-
             path {
                 fill: var(--icon-fill-color);
             }
@@ -100,11 +60,6 @@
         display: flex;
         flex-direction: column;
         align-items: end;
-
-        @include tablet-down {
-            align-items: center;
-            margin-top: 24px;
-        }
 
         p {
             color: var(--header-color);
@@ -118,6 +73,11 @@
             color: var(--body-color);
             font-weight: 600;
         }
+
+        @include tablet-down {
+            align-items: center;
+            margin-top: 24px;
+        }
     }
 
     .epoch-progress__wrapper {
@@ -128,9 +88,47 @@
 
     .epoch-progress__stats-wrapper {
         display: flex;
-        flex-flow: row wrap;
+        flex-direction: row;
         justify-content: space-between;
         column-gap: 32px;
         row-gap: 40px;
+        flex-wrap: wrap;
+    }
+}
+
+.epoch-section__controls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 32px;
+
+    span {
+        display: flex;
+        path {
+            fill: var(--icon-fill-color);
+        }
+    }
+
+    .epoch-section__previous {
+        transform: rotate(-90deg);
+    }
+
+    .epoch-section__next {
+        transform: rotate(90deg);
+    }
+
+    .epoch-section__center-buttons {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        a {
+            text-decoration: none;
+        }
+
+        * + * {
+            margin-left: 16px;
+        }
     }
 }

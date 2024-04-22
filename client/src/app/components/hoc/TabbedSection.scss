@@ -12,13 +12,10 @@
 
         &::-webkit-scrollbar {
             height: 4px;
-
             &-track {
                 background-color: var(--associated-outputs-tabs-bg);
             }
-
             &-thumb {
-                /* stylelint-disable-next-line property-no-vendor-prefix */
                 -webkit-border-radius: 8px;
                 border-radius: 8px;
             }
@@ -35,7 +32,7 @@
             }
 
             @include phone-down {
-                padding: 12px;
+                padding: 12px 12px;
             }
 
             &.active {
@@ -61,17 +58,17 @@
                 color: $gray-6;
                 border-radius: 0;
                 white-space: nowrap;
-                border: 0;
+                border: none;
                 padding-right: 4px;
-
-                @include phone-down {
-                    font-size: 14px;
-                    padding: 3px 5px;
-                }
 
                 &:focus {
                     box-shadow: none;
                     outline: none;
+                }
+
+                @include phone-down {
+                    font-size: 14px;
+                    padding: 3px 5px;
                 }
             }
 

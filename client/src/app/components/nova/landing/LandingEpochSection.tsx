@@ -70,7 +70,7 @@ const LandingEpochSection: React.FC = () => {
                 <div className="epoch-progress">
                     <div className="epoch-duration">
                         <div className="epoch-block">{epochFrom}</div>
-                        <RightHalfArrow className="to-arrow" />
+                        <RightHalfArrow id="to-arrow" />
                         <div className="epoch-block">{epochTo}</div>
                     </div>
 

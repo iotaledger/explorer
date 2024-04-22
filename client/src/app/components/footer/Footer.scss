@@ -4,46 +4,15 @@
 @import "../../../scss/variables";
 
 footer {
-    ul li {
-        @include font-size(12px, 18px);
-
-        margin-bottom: 8px;
-        font-family: $inter;
-        font-weight: 500;
-
-        a {
-            color: var(--footer-text-color);
-            font-family: inherit;
-            letter-spacing: 0.5px;
-            text-decoration: none;
-
-            &:hover {
-                text-decoration: underline;
-            }
-        }
-
-        pre {
-            font-family: inherit;
-        }
-
-        &:first-child {
-            color: var(--footer-heading-color);
-        }
-
-        .data-label {
-            margin-right: 5px;
-        }
-    }
-
     .footer--content {
         display: flex;
         justify-content: center;
-        padding: 40px 20px 0;
+        padding: 40px 20px 0px 20px;
         background-color: var(--footer-bg-color);
         color: $white;
 
         @include tablet-down {
-            padding: 32px 24px 24px;
+            padding: 32px 24px 24px 24px;
         }
 
         .inner {
@@ -86,13 +55,44 @@ footer {
 
                 ul {
                     list-style: none;
+
+                    li {
+                        @include font-size(12px, 18px);
+
+                        margin-bottom: 8px;
+                        font-family: $inter;
+                        font-weight: 500;
+
+                        a {
+                            color: var(--footer-text-color);
+                            font-family: inherit;
+                            letter-spacing: 0.5px;
+                            text-decoration: none;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+
+                        pre {
+                            font-family: inherit;
+                        }
+
+                        &:first-child {
+                            color: var(--footer-heading-color);
+                        }
+
+                        .data-label {
+                            margin-right: 5px;
+                        }
+                    }
                 }
             }
 
             .sep {
                 margin-bottom: 24px;
                 border: 0;
-                border-top: 1px solid rgb(255 255 255 / 12%);
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
             }
 
             .foundation-data {
@@ -103,6 +103,10 @@ footer {
                 color: var(--footer-heading-color);
                 font-family: $inter;
 
+                div {
+                    width: 25%;
+                }
+
                 @include tablet-down {
                     flex-direction: column;
 
@@ -110,27 +114,35 @@ footer {
                         width: 100%;
                         margin-top: 0;
                         text-align: center;
-                    }
 
-                    div img {
-                        margin-bottom: 24px;
+                        img {
+                            margin-bottom: 24px;
+                        }
                     }
-                }
-
-                div {
-                    width: 25%;
                 }
 
                 section {
                     width: 25%;
                     margin-bottom: 28px;
 
-                    &:last-of-type {
-                        width: 50%;
+                    @include tablet-down {
+                        width: 100%;
                     }
 
-                    .footer-link {
-                        color: var(--link-color);
+                    &:last-of-type {
+                        width: 50%;
+
+                        @include tablet-down {
+                            width: 100%;
+                        }
+                    }
+
+                    ul {
+                        li {
+                            a {
+                                color: var(--link-color);
+                            }
+                        }
                     }
                 }
             }
@@ -144,8 +156,6 @@ footer {
         padding: 0;
 
         .social--media__item {
-            @include font-size(16px, 18px);
-
             display: flex;
             align-items: center;
             justify-content: center;
@@ -155,6 +165,18 @@ footer {
             letter-spacing: 0.5px;
             text-decoration: none;
 
+            svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            @include font-size(16px, 18px);
+
+            span {
+                margin-left: 16px;
+                font-weight: 500;
+            }
+
             @include desktop-down {
                 padding-bottom: 16px 8px;
 
@@ -162,20 +184,10 @@ footer {
                     display: none;
                 }
             }
-
-            svg {
-                width: 24px;
-                height: 24px;
-            }
-
-            span {
-                margin-left: 16px;
-                font-weight: 500;
-            }
         }
     }
 
-    .logo-footer {
+    #logo-footer {
         path {
             fill: var(--footer-logo-fill);
         }
