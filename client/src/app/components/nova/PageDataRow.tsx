@@ -16,12 +16,12 @@ export interface IPageDataRow {
     tokenInfo?: BaseTokenResponse;
 }
 const PageDataRow = ({ label, value, truncatedId, highlight, tokenInfo }: IPageDataRow): React.JSX.Element => {
-    const [isFormatBalance, setIsFormatBalance] = useState(false);
+    const [isFormatBalance, setIsFormatBalance] = useState(true);
 
     const renderValue = () => {
         if (truncatedId) {
             return <TruncatedId id={truncatedId.id} link={truncatedId.link} showCopyButton={truncatedId.showCopyButton} />;
-        } else if (tokenInfo && value && Number.parseInt(value.toString(), 10)) {
+        } else if (tokenInfo && value) {
             return (
                 <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-r-5">
                     {formatAmount(value ?? 0, tokenInfo, isFormatBalance)}
