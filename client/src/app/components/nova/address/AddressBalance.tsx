@@ -4,6 +4,7 @@ import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse"
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import "./AddressBalance.scss";
 import { CardInfo, CardInfoDetail } from "~app/components/CardInfo";
+import { NumberHelper } from "~helpers/numberHelper";
 
 interface AddressBalanceProps {
     /**
@@ -36,6 +37,21 @@ interface AddressBalanceProps {
     readonly storageDeposit?: number | null;
 }
 
+type FormatField =
+    | "baseTokenBalance"
+    | "conditionalBaseTokenBalance"
+    | "storageDeposit"
+    | "availableManaBalance"
+    | "availableStoredMana"
+    | "availableDecayMana"
+    | "availablePotentialMana"
+    | "blockIssuanceCredits"
+    | "manaRewards"
+    | "conditionallyLockedMana"
+    | "conditionalStoredMana"
+    | "conditionalDecayMana"
+    | "conditionalPotentialMana";
+
 const CONDITIONAL_BALANCE_INFO =
     "These funds reside within outputs with additional unlock conditions which might be potentially un-lockable";
 
@@ -49,10 +65,23 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     storageDeposit,
 }) => {
     const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const [formatBaseTokenBalanceFull, setFormatBaseTokenBalanceFull] = useState(false);
-    const [formatManaBalanceFull, setFormatManaBalanceFull] = useState(false);
-    const [formatConditionalBalanceFull, setFormatConditionalBalanceFull] = useState(false);
-    const [formatStorageBalanceFull, setFormatStorageBalanceFull] = useState(false);
+    const [isFormat, setIsFormat] = useState<{ [k in FormatField]: boolean }>({
+        baseTokenBalance: false,
+        conditionalBaseTokenBalance: false,
+        storageDeposit: false,
+
+        availableManaBalance: false,
+        availableStoredMana: false,
+        availableDecayMana: false,
+        availablePotentialMana: false,
+        blockIssuanceCredits: false,
+        manaRewards: false,
+
+        conditionallyLockedMana: false,
+        conditionalStoredMana: false,
+        conditionalDecayMana: false,
+        conditionalPotentialMana: false,
+    });
 
     if (totalBaseTokenBalance === null) {
         return null;
@@ -75,72 +104,125 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
         availablePotentialMana === null || totalPotentialMana === null ? null : totalPotentialMana - availablePotentialMana;
 
     const availableBaseTokenAmount = (() => {
-        const balance = shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance;
-        return balance && balance > 0 ? formatAmount(balance, tokenInfo, formatBaseTokenBalanceFull) : 0;
+        const balance = (shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance) || 0;
+        return {
+            formatted: formatAmount(balance, tokenInfo, isFormat.baseTokenBalance),
+            full: balance,
+        };
     })();
 
     const manaFactory = (
         mana: bigint | number | null | undefined,
         title: string,
         isFormat: boolean,
-        setFormat: React.Dispatch<React.SetStateAction<boolean>>,
+        toggleFormat: () => void,
     ): CardInfoDetail | null => {
-        if (mana !== null && mana !== undefined && mana > 0) {
+        if (mana !== null && mana !== undefined) {
             return {
                 title: title,
                 value: formatAmount(mana, manaInfo, isFormat),
-                onClickValue: () => setFormat(!isFormat),
-                showCopyBtn: true,
+                onClickValue: toggleFormat,
+                copyValue: String(mana),
             };
         }
 
-        return null;
+        return {
+            title: title,
+            value: formatAmount(0, manaInfo, isFormat),
+            onClickValue: toggleFormat,
+            copyValue: "0",
+        };
+    };
+
+    const availableManaSum = NumberHelper.sumValues(
+        availableStoredMana,
+        availableDecayMana,
+        availablePotentialMana,
+        blockIssuanceCredits,
+        manaRewards,
+    );
+    const conditionallyLockedManaSum = NumberHelper.sumValues(conditionalStoredMana, conditionalDecayMana, conditionalPotentialMana);
+
+    const toggleFormat = (field: FormatField) => () => {
+        setIsFormat((prev) => ({ ...prev, [field]: !prev[field] }));
     };
 
     return (
-        <div className="balance-wrapper">
+        <div className="balance-wrapper nova">
             <div className="balance-wrapper--row">
                 <CardInfo
                     title="Available Base Token"
-                    value={availableBaseTokenAmount}
-                    onClickValue={() => setFormatBaseTokenBalanceFull(!formatBaseTokenBalanceFull)}
-                    showCopyBtn
+                    value={availableBaseTokenAmount.formatted}
+                    onClickValue={toggleFormat("baseTokenBalance")}
+                    copyValue={String(availableBaseTokenAmount.full)}
                 />
                 {shouldShowExtendedBalance && (
                     <CardInfo
                         title="Conditionally Locked Base Token"
-                        value={formatAmount(conditionalBaseTokenBalance, tokenInfo, formatConditionalBalanceFull)}
-                        onClickValue={() => setFormatConditionalBalanceFull(!formatConditionalBalanceFull)}
+                        value={formatAmount(conditionalBaseTokenBalance, tokenInfo, isFormat.conditionalBaseTokenBalance)}
+                        onClickValue={toggleFormat("conditionalBaseTokenBalance")}
                         tooltip={CONDITIONAL_BALANCE_INFO}
-                        showCopyBtn
+                        copyValue={String(conditionalBaseTokenBalance)}
                     />
                 )}
 
                 <CardInfo
                     title="Storage Deposit"
-                    value={storageDeposit ? formatAmount(storageDeposit, tokenInfo, formatStorageBalanceFull) : 0}
-                    onClickValue={() => setFormatStorageBalanceFull(!formatStorageBalanceFull)}
-                    showCopyBtn
+                    value={formatAmount(storageDeposit || 0, tokenInfo, isFormat.storageDeposit)}
+                    onClickValue={toggleFormat("storageDeposit")}
+                    copyValue={String(storageDeposit || 0)}
                 />
             </div>
             <div className="balance-wrapper--row">
                 <CardInfo
                     title="Available Mana"
+                    value={formatAmount(availableManaSum, manaInfo, isFormat.availableManaBalance)}
+                    onClickValue={toggleFormat("availableManaBalance")}
+                    copyValue={String(availableManaSum)}
+                    options={{ headerDirectionRow: true }}
                     details={[
-                        manaFactory(availableStoredMana, "Stored:", formatManaBalanceFull, setFormatManaBalanceFull),
-                        manaFactory(availableDecayMana, "Decay:", formatManaBalanceFull, setFormatManaBalanceFull),
-                        manaFactory(availablePotentialMana, "Potential:", formatManaBalanceFull, setFormatManaBalanceFull),
-                        manaFactory(blockIssuanceCredits, "Block issuance credits:", formatManaBalanceFull, setFormatManaBalanceFull),
-                        manaFactory(manaRewards, "Mana rewards:", formatManaBalanceFull, setFormatManaBalanceFull),
+                        manaFactory(availableStoredMana, "Stored:", isFormat.availableStoredMana, toggleFormat("availableStoredMana")),
+                        manaFactory(availableDecayMana, "Decay:", isFormat.availableDecayMana, toggleFormat("availableDecayMana")),
+                        manaFactory(
+                            availablePotentialMana,
+                            "Potential:",
+                            isFormat.availablePotentialMana,
+                            toggleFormat("availablePotentialMana"),
+                        ),
+                        blockIssuanceCredits !== null
+                            ? manaFactory(
+                                  blockIssuanceCredits,
+                                  "Block issuance credits:",
+                                  isFormat.blockIssuanceCredits,
+                                  toggleFormat("blockIssuanceCredits"),
+                              )
+                            : null,
+                        manaRewards !== null
+                            ? manaFactory(manaRewards, "Mana rewards:", isFormat.manaRewards, toggleFormat("manaRewards"))
+                            : null,
                     ]}
                 />
 
                 <CardInfo
                     title="Conditionally Locked Mana"
+                    value={formatAmount(conditionallyLockedManaSum, manaInfo, isFormat.conditionallyLockedMana)}
+                    onClickValue={toggleFormat("conditionallyLockedMana")}
+                    copyValue={String(conditionallyLockedManaSum)}
+                    options={{ headerDirectionRow: true }}
                     details={[
-                        manaFactory(conditionalStoredMana, "Stored:", formatStorageBalanceFull, setFormatStorageBalanceFull),
-                        manaFactory(conditionalDecayMana, "Decay:", formatStorageBalanceFull, setFormatStorageBalanceFull),
-                        manaFactory(conditionalPotentialMana, "Potential:", formatStorageBalanceFull, setFormatStorageBalanceFull),
+                        manaFactory(
+                            conditionalStoredMana,
+                            "Stored:",
+                            isFormat.conditionalStoredMana,
+                            toggleFormat("conditionalStoredMana"),
+                        ),
+                        manaFactory(conditionalDecayMana, "Decay:", isFormat.conditionalDecayMana, toggleFormat("conditionalDecayMana")),
+                        manaFactory(
+                            conditionalPotentialMana,
+                            "Potential:",
+                            isFormat.conditionalPotentialMana,
+                            toggleFormat("conditionalPotentialMana"),
+                        ),
                     ]}
                 />
             </div>

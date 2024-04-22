@@ -1,16 +1,18 @@
 import React from "react";
 import CopyButton from "~app/components/CopyButton";
 import Tooltip from "~app/components/Tooltip";
+import classNames from "classnames";
+
 import "./CardInfo.scss";
 
 export interface CardInfoDetail {
     title: string;
     value?: number | string | null;
     onClickValue?: () => void;
-    showCopyBtn?: boolean;
+    copyValue?: string;
 }
 
-export interface CardInfoProps {
+interface CardInfoProps {
     /**
      * The title of the card.
      */
@@ -18,16 +20,19 @@ export interface CardInfoProps {
     tooltip?: string;
     value?: number | string | null;
     onClickValue?: () => void;
-    showCopyBtn?: boolean;
+    copyValue?: string;
     details?: (CardInfoDetail | null)[];
+    options?: {
+        headerDirectionRow?: boolean;
+    };
 }
 
-export const CardInfo = ({ details, tooltip, title, value, onClickValue = () => {}, showCopyBtn }: CardInfoProps) => {
+export const CardInfo = ({ options, details, tooltip, title, value, onClickValue = () => {}, copyValue }: CardInfoProps) => {
     const detailsFiltered = (details?.filter((i) => i !== null) as CardInfoDetail[]) || [];
 
     return (
         <div className="card-info">
-            <div className="card-info--header">
+            <div className={classNames("card-info--header", { "row middle space-between": !!options?.headerDirectionRow })}>
                 <div className="card-info--header-title">
                     <div className="card-info__title">{title}</div>
                     {!!tooltip && (
@@ -38,16 +43,14 @@ export const CardInfo = ({ details, tooltip, title, value, onClickValue = () => 
                         </div>
                     )}
                 </div>
-                {!!value && (
-                    <div className="card-info__value-wrap" onClick={onClickValue}>
-                        <div className="card-info__value">{value}</div>
-                        {isValueNotZero(value) && showCopyBtn && (
-                            <div className="card-info__copy">
-                                <CopyButton copy={String(value)} />
-                            </div>
-                        )}
-                    </div>
-                )}
+                <div className="card-info__value-wrap" onClick={onClickValue}>
+                    <div className="card-info__value">{value}</div>
+                    {isValueNotZero(value) && !!copyValue && (
+                        <div className="card-info__copy">
+                            <CopyButton copy={String(copyValue)} />
+                        </div>
+                    )}
+                </div>
             </div>
             {!!detailsFiltered.length && (
                 <div className="card-info__details">
@@ -57,9 +60,9 @@ export const CardInfo = ({ details, tooltip, title, value, onClickValue = () => 
                             <div className="card-info__detail-title">{detail.title}</div>
                             <div className="card-info__detail-value" onClick={detail.onClickValue}>
                                 {detail.value !== null ? detail.value : "-"}
-                                {isValueNotZero(detail.value) && detail.showCopyBtn && (
+                                {isValueNotZero(detail.value) && !!detail.copyValue && (
                                     <div className="card-info__copy">
-                                        <CopyButton copy={String(detail.value)} />
+                                        <CopyButton copy={String(detail.copyValue)} />
                                     </div>
                                 )}
                             </div>
