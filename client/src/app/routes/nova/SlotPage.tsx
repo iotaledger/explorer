@@ -57,7 +57,7 @@ export default function SlotPage({
             title: "RMC",
             value: formatAmount(rmc, manaInfo, formatManaAmounts),
             onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
-            copyValue: formatAmount(rmc, manaInfo, formatManaAmounts, true),
+            copyValue: formatAmount(rmc, manaInfo, true),
         },
         {
             title: "Mana burned",
