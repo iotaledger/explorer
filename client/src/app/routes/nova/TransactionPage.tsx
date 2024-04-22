@@ -95,6 +95,8 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
         );
     }
 
+    const issuerAddress = block?.header.issuerId ? Utils.addressToBech32(new AccountAddress(block.header.issuerId), bech32Hrp) : null;
+
     const transactionContent = block ? (
         <React.Fragment>
             <div className="section--header row row--tablet-responsive middle space-between">
@@ -126,16 +128,14 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                     <TruncatedId id={block.header.slotCommitmentId} />
                 </div>
             </div>
-            <div className="section--data">
-                <div className="label">Issuer</div>
-                <div className="value code highlight">
-                    <TruncatedId
-                        id={block.header.issuerId}
-                        link={`/${network}/addr/${Utils.addressToBech32(new AccountAddress(block.header.issuerId), bech32Hrp)}`}
-                        showCopyButton={true}
-                    />
+            {issuerAddress && (
+                <div className="section--data">
+                    <div className="label">Issuer</div>
+                    <div className="value code highlight">
+                        <TruncatedId id={issuerAddress} link={`/${network}/addr/${issuerAddress}`} showCopyButton={true} />
+                    </div>
                 </div>
-            </div>
+            )}
             {transferTotal !== null && (
                 <div className="section--data">
                     <div className="label">Amount Transacted</div>
