@@ -9,10 +9,12 @@ import {
     FoundryOutputQueryParameters,
     NftOutputQueryParameters,
 } from "@iota/sdk-nova";
+import moment from "moment";
 import { ServiceFactory } from "../../factories/serviceFactory";
 import { IAddressDetails } from "../../models/api/nova/IAddressDetails";
-import { AssociationType } from "../../models/api/nova/IAssociationsResponse";
+import { AssociationType, IAssociation } from "../../models/api/nova/IAssociationsResponse";
 import { INetwork } from "../../models/db/INetwork";
+import { NovaTimeService } from "../../services/nova/novaTimeService";
 
 /**
  * Helper class to fetch associated outputs of an address on stardust.
@@ -34,6 +36,8 @@ export class AssociatedOutputsHelper {
         const address = this.addressDetails.bech32;
 
         const client = ServiceFactory.get<Client>(`client-${network}`);
+        const novatimeService = ServiceFactory.get<NovaTimeService>(`nova-time-${network}`);
+        const currentSlotIndex = novatimeService.getUnixTimestampToSlotIndex(moment().unix());
         const promises: Promise<void>[] = [];
 
         // BASIC OUTPUTS
@@ -44,6 +48,15 @@ export class AssociatedOutputsHelper {
                 async (query) => client.basicOutputIds(query),
                 { address },
                 AssociationType.BASIC_ADDRESS,
+            ),
+        );
+
+        promises.push(
+            // Basic output -> owner address expired outputs
+            this.fetchAssociatedOutputIds<BasicOutputQueryParameters>(
+                async (query) => client.basicOutputIds(query),
+                { address, expiresBefore: currentSlotIndex },
+                AssociationType.BASIC_ADDRESS_EXPIRED,
             ),
         );
 
@@ -211,6 +224,15 @@ export class AssociatedOutputsHelper {
         );
 
         promises.push(
+            // Nft output -> owner address expired outputs
+            this.fetchAssociatedOutputIds<NftOutputQueryParameters>(
+                async (query) => client.nftOutputIds(query),
+                { address, expiresBefore: currentSlotIndex },
+                AssociationType.NFT_ADDRESS_EXPIRED,
+            ),
+        );
+
+        promises.push(
             // Nft output -> storage return address
             this.fetchAssociatedOutputIds<NftOutputQueryParameters>(
                 async (query) => client.nftOutputIds(query),
@@ -247,6 +269,42 @@ export class AssociatedOutputsHelper {
         );
 
         await Promise.all(promises);
+    }
+
+    /**
+     * Retrieves the associations between output types and output IDs.
+     * @returns An array of associations.
+     */
+    public getAssociations(): IAssociation[] {
+        const associations: IAssociation[] = [];
+        for (const [type, outputIds] of this.associationToOutputIds.entries()) {
+            if (type !== AssociationType.BASIC_ADDRESS_EXPIRED && type !== AssociationType.NFT_ADDRESS_EXPIRED) {
+                if (
+                    type === AssociationType.BASIC_ADDRESS &&
+                    this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED)?.length > 0
+                ) {
+                    // remove expired basic outputs from basic address associations if they exist
+                    const expiredIds = this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED);
+                    const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
+                    if (filteredOutputIds.length > 0) {
+                        associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                    }
+                } else if (
+                    type === AssociationType.NFT_ADDRESS &&
+                    this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED)?.length > 0
+                ) {
+                    // remove expired nft outputs from nft address associations if they exist
+                    const expiredIds = this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED);
+                    const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
+                    if (filteredOutputIds.length > 0) {
+                        associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                    }
+                } else {
+                    associations.push({ type, outputIds: outputIds.reverse() });
+                }
+            }
+        }
+        return associations;
     }
 
     /**
