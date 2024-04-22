@@ -1,12 +1,10 @@
-import { BaseTokenResponse } from "@iota/sdk-wasm-nova/web";
 import React, { useState } from "react";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { IManaBalance } from "~/models/api/nova/address/IAddressBalanceResponse";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
-import CopyButton from "../../CopyButton";
-import Icon from "../../Icon";
-import Tooltip from "../../Tooltip";
 import "./AddressBalance.scss";
+import { CardInfo, CardInfoDetail } from "~app/components/CardInfo";
+import { NumberHelper } from "~helpers/numberHelper";
 
 interface AddressBalanceProps {
     /**
@@ -39,6 +37,21 @@ interface AddressBalanceProps {
     readonly storageDeposit?: number | null;
 }
 
+type FormatField =
+    | "baseTokenBalance"
+    | "conditionalBaseTokenBalance"
+    | "storageDeposit"
+    | "availableManaBalance"
+    | "availableStoredMana"
+    | "availableDecayMana"
+    | "availablePotentialMana"
+    | "blockIssuanceCredits"
+    | "manaRewards"
+    | "conditionallyLockedMana"
+    | "conditionalStoredMana"
+    | "conditionalDecayMana"
+    | "conditionalPotentialMana";
+
 const CONDITIONAL_BALANCE_INFO =
     "These funds reside within outputs with additional unlock conditions which might be potentially un-lockable";
 
@@ -52,17 +65,27 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     storageDeposit,
 }) => {
     const { tokenInfo, manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
-    const [formatBaseTokenBalanceFull, setFormatBaseTokenBalanceFull] = useState(false);
-    const [formatManaBalanceFull, setFormatManaBalanceFull] = useState(false);
-    const [formatConditionalBalanceFull, setFormatConditionalBalanceFull] = useState(false);
-    const [formatStorageBalanceFull, setFormatStorageBalanceFull] = useState(false);
+    const [isFormat, setIsFormat] = useState<{ [k in FormatField]: boolean }>({
+        baseTokenBalance: false,
+        conditionalBaseTokenBalance: false,
+        storageDeposit: false,
+
+        availableManaBalance: false,
+        availableStoredMana: false,
+        availableDecayMana: false,
+        availablePotentialMana: false,
+        blockIssuanceCredits: false,
+        manaRewards: false,
+
+        conditionallyLockedMana: false,
+        conditionalStoredMana: false,
+        conditionalDecayMana: false,
+        conditionalPotentialMana: false,
+    });
 
     if (totalBaseTokenBalance === null) {
         return null;
     }
-
-    const baseTokenBalanceView = buildBaseTokenBalanceView(tokenInfo);
-    const manaBalanceView = buildManaBalanceView(manaInfo);
 
     const conditionalBaseTokenBalance =
         !availableBaseTokenBalance || !totalBaseTokenBalance ? undefined : totalBaseTokenBalance - availableBaseTokenBalance;
@@ -80,205 +103,132 @@ const AddressBalance: React.FC<AddressBalanceProps> = ({
     const conditionalPotentialMana =
         availablePotentialMana === null || totalPotentialMana === null ? null : totalPotentialMana - availablePotentialMana;
 
-    return (
-        <div className="balance-wrapper">
-            <Icon icon="wallet" boxed />
-            <div className="balance-wrapper__inner">
-                <div className="balance-wrapper__base-token">
-                    {baseTokenBalanceView(
-                        "Available Base Token",
-                        formatBaseTokenBalanceFull,
-                        setFormatBaseTokenBalanceFull,
-                        false,
-                        shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance,
-                    )}
-                    {shouldShowExtendedBalance &&
-                        baseTokenBalanceView(
-                            "Conditionally Locked Base Token",
-                            formatConditionalBalanceFull,
-                            setFormatConditionalBalanceFull,
-                            true,
-                            conditionalBaseTokenBalance,
-                        )}
-                    {baseTokenBalanceView("Storage Deposit", formatStorageBalanceFull, setFormatStorageBalanceFull, false, storageDeposit)}
-                </div>
+    const availableBaseTokenAmount = (() => {
+        const balance = (shouldShowExtendedBalance ? availableBaseTokenBalance : totalBaseTokenBalance) || 0;
+        return {
+            formatted: formatAmount(balance, tokenInfo, isFormat.baseTokenBalance),
+            full: balance,
+        };
+    })();
 
-                <div className="balance-wrapper__mana">
-                    {(availableStoredMana !== null ||
-                        availablePotentialMana !== null ||
-                        availableDecayMana !== null ||
-                        blockIssuanceCredits !== null) &&
-                        manaBalanceView(
-                            "Available Mana",
-                            formatManaBalanceFull,
-                            setFormatManaBalanceFull,
-                            availableStoredMana,
-                            availableDecayMana,
+    const manaFactory = (
+        mana: bigint | number | null | undefined,
+        title: string,
+        isFormat: boolean,
+        toggleFormat: () => void,
+    ): CardInfoDetail | null => {
+        if (mana !== null && mana !== undefined) {
+            return {
+                title: title,
+                value: formatAmount(mana, manaInfo, isFormat),
+                onClickValue: toggleFormat,
+                copyValue: String(mana),
+            };
+        }
+
+        return {
+            title: title,
+            value: formatAmount(0, manaInfo, isFormat),
+            onClickValue: toggleFormat,
+            copyValue: "0",
+        };
+    };
+
+    const availableManaSum = NumberHelper.sumValues(
+        availableStoredMana,
+        availableDecayMana,
+        availablePotentialMana,
+        blockIssuanceCredits,
+        manaRewards,
+    );
+    const conditionallyLockedManaSum = NumberHelper.sumValues(conditionalStoredMana, conditionalDecayMana, conditionalPotentialMana);
+
+    const toggleFormat = (field: FormatField) => () => {
+        setIsFormat((prev) => ({ ...prev, [field]: !prev[field] }));
+    };
+
+    return (
+        <div className="balance-wrapper nova">
+            <div className="balance-wrapper--row">
+                <CardInfo
+                    title="Available Base Token"
+                    value={availableBaseTokenAmount.formatted}
+                    onClickValue={toggleFormat("baseTokenBalance")}
+                    copyValue={String(availableBaseTokenAmount.full)}
+                />
+                {shouldShowExtendedBalance && (
+                    <CardInfo
+                        title="Conditionally Locked Base Token"
+                        value={formatAmount(conditionalBaseTokenBalance, tokenInfo, isFormat.conditionalBaseTokenBalance)}
+                        onClickValue={toggleFormat("conditionalBaseTokenBalance")}
+                        tooltip={CONDITIONAL_BALANCE_INFO}
+                        copyValue={String(conditionalBaseTokenBalance)}
+                    />
+                )}
+
+                <CardInfo
+                    title="Storage Deposit"
+                    value={formatAmount(storageDeposit || 0, tokenInfo, isFormat.storageDeposit)}
+                    onClickValue={toggleFormat("storageDeposit")}
+                    copyValue={String(storageDeposit || 0)}
+                />
+            </div>
+            <div className="balance-wrapper--row">
+                <CardInfo
+                    title="Available Mana"
+                    value={formatAmount(availableManaSum, manaInfo, isFormat.availableManaBalance)}
+                    onClickValue={toggleFormat("availableManaBalance")}
+                    copyValue={String(availableManaSum)}
+                    options={{ headerDirectionRow: true }}
+                    details={[
+                        manaFactory(availableStoredMana, "Stored:", isFormat.availableStoredMana, toggleFormat("availableStoredMana")),
+                        manaFactory(availableDecayMana, "Decay:", isFormat.availableDecayMana, toggleFormat("availableDecayMana")),
+                        manaFactory(
                             availablePotentialMana,
-                            blockIssuanceCredits,
-                            manaRewards,
-                        )}
-                    {(conditionalStoredMana !== null || conditionalPotentialMana !== null) &&
-                        manaBalanceView(
-                            "Conditionally Locked Mana",
-                            formatStorageBalanceFull,
-                            setFormatStorageBalanceFull,
+                            "Potential:",
+                            isFormat.availablePotentialMana,
+                            toggleFormat("availablePotentialMana"),
+                        ),
+                        blockIssuanceCredits !== null
+                            ? manaFactory(
+                                  blockIssuanceCredits,
+                                  "Block issuance credits:",
+                                  isFormat.blockIssuanceCredits,
+                                  toggleFormat("blockIssuanceCredits"),
+                              )
+                            : null,
+                        manaRewards !== null
+                            ? manaFactory(manaRewards, "Mana rewards:", isFormat.manaRewards, toggleFormat("manaRewards"))
+                            : null,
+                    ]}
+                />
+
+                <CardInfo
+                    title="Conditionally Locked Mana"
+                    value={formatAmount(conditionallyLockedManaSum, manaInfo, isFormat.conditionallyLockedMana)}
+                    onClickValue={toggleFormat("conditionallyLockedMana")}
+                    copyValue={String(conditionallyLockedManaSum)}
+                    options={{ headerDirectionRow: true }}
+                    details={[
+                        manaFactory(
                             conditionalStoredMana,
-                            conditionalDecayMana,
+                            "Stored:",
+                            isFormat.conditionalStoredMana,
+                            toggleFormat("conditionalStoredMana"),
+                        ),
+                        manaFactory(conditionalDecayMana, "Decay:", isFormat.conditionalDecayMana, toggleFormat("conditionalDecayMana")),
+                        manaFactory(
                             conditionalPotentialMana,
-                        )}
-                </div>
+                            "Potential:",
+                            isFormat.conditionalPotentialMana,
+                            toggleFormat("conditionalPotentialMana"),
+                        ),
+                    ]}
+                />
             </div>
         </div>
     );
 };
-
-function buildBaseTokenBalanceView(tokenInfo: BaseTokenResponse) {
-    const baseTokenBalanceView = (
-        label: string,
-        isFormatFull: boolean,
-        setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
-        showInfo: boolean,
-        amount?: number | null,
-    ) => (
-        <div className="balance">
-            <div className="row middle balance-heading">
-                <div className="label">{label}</div>
-                {showInfo && (
-                    <Tooltip tooltipContent={CONDITIONAL_BALANCE_INFO}>
-                        <span className="material-icons">info</span>
-                    </Tooltip>
-                )}
-            </div>
-            <div className="value featured">
-                {amount && amount > 0 ? (
-                    <div className="balance-value middle">
-                        <div className="row middle">
-                            <span onClick={() => setIsFormatFull(!isFormatFull)} className="balance-base-token pointer margin-r-5">
-                                {formatAmount(amount, tokenInfo, isFormatFull)}
-                            </span>
-                            <CopyButton copy={String(amount)} />
-                        </div>
-                    </div>
-                ) : (
-                    <span className="margin-r-5">0</span>
-                )}
-            </div>
-        </div>
-    );
-
-    return baseTokenBalanceView;
-}
-
-function buildManaBalanceView(manaInfo: BaseTokenResponse) {
-    const manaTokenBalanceView = (
-        label: string,
-        isFormatFull: boolean,
-        setIsFormatFull: React.Dispatch<React.SetStateAction<boolean>>,
-        storedMana: number | null,
-        decayMana: number | null,
-        potentialMana: number | null,
-        blockIssuanceCredits: bigint | null = null,
-        manaRewards: bigint | null = null,
-    ) => (
-        <div className="balance">
-            <div className="row middle balance-heading">
-                <div className="label">{label}</div>
-            </div>
-            <div className="balance__mana">
-                <div className="label">Stored:</div>
-                <div className="value featured">
-                    {storedMana !== null && storedMana > 0 ? (
-                        <div className="balance-value middle">
-                            <div className="row middle">
-                                <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
-                                    {formatAmount(storedMana, manaInfo, isFormatFull)}
-                                </span>
-                                <CopyButton copy={String(storedMana)} />
-                            </div>
-                        </div>
-                    ) : (
-                        <span className="margin-r-5">0</span>
-                    )}
-                </div>
-            </div>
-            <div className="balance__mana">
-                <div className="label">Decay:</div>
-                <div className="value featured">
-                    {decayMana !== null && decayMana > 0 ? (
-                        <div className="balance-value middle">
-                            <div className="row middle">
-                                <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
-                                    {formatAmount(decayMana, manaInfo, isFormatFull)}
-                                </span>
-                                <CopyButton copy={String(decayMana)} />
-                            </div>
-                        </div>
-                    ) : (
-                        <span className="margin-r-5">0</span>
-                    )}
-                </div>
-            </div>
-            <div className="balance__mana">
-                <div className="label">Potential:</div>
-                <div className="value featured">
-                    {potentialMana !== null && potentialMana > 0 ? (
-                        <div className="balance-value middle">
-                            <div className="row middle">
-                                <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
-                                    {formatAmount(potentialMana, manaInfo, isFormatFull)}
-                                </span>
-                                <CopyButton copy={String(potentialMana)} />
-                            </div>
-                        </div>
-                    ) : (
-                        <span className="margin-r-5">0</span>
-                    )}
-                </div>
-            </div>
-            {blockIssuanceCredits !== null && (
-                <div className="balance__mana">
-                    <div className="label">Block issuance credits:</div>
-                    <div className="value featured">
-                        {blockIssuanceCredits ? (
-                            <div className="balance-value middle">
-                                <div className="row middle">
-                                    <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
-                                        {formatAmount(blockIssuanceCredits.toString(), manaInfo, isFormatFull)}
-                                    </span>
-                                    <CopyButton copy={blockIssuanceCredits.toString()} />
-                                </div>
-                            </div>
-                        ) : (
-                            <span className="margin-r-5">0</span>
-                        )}
-                    </div>
-                </div>
-            )}
-            {manaRewards !== null && (
-                <div className="balance__mana">
-                    <div className="label">Mana rewards:</div>
-                    <div className="value featured">
-                        {manaRewards && manaRewards > 0 ? (
-                            <div className="balance-value middle">
-                                <div className="row middle">
-                                    <span className="balance-base-token pointer margin-r-5" onClick={() => setIsFormatFull(!isFormatFull)}>
-                                        {formatAmount(manaRewards.toString(), manaInfo, isFormatFull)}
-                                    </span>
-                                    <CopyButton copy={manaRewards.toString()} />
-                                </div>
-                            </div>
-                        ) : (
-                            <span className="margin-r-5">0</span>
-                        )}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-
-    return manaTokenBalanceView;
-}
 
 AddressBalance.defaultProps = {
     totalBaseTokenBalance: null,
