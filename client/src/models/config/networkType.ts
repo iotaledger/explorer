@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-spaces */
 export const LEGACY_MAINNET = "legacy-mainnet";
 export const CHRYSALIS_MAINNET = "chrysalis-mainnet";
 export const MAINNET = "mainnet";

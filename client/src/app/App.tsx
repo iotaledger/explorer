@@ -45,7 +45,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
 
     useEffect(() => {
         if (networksLoaded && !network) {
-            network = networks.length > 0 ? networks[0].network : MAINNET;
+            network = networks.find((n) => n.network === MAINNET)?.network ?? networks[0]?.network ?? MAINNET;
             history.replace(`/${network}`);
         }
     }, [networksLoaded]);

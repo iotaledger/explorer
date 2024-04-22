@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import { Axis, axisBottom, axisLeft } from "d3-axis";
 import { format } from "d3-format";
 import { NumberValue, ScaleLinear, ScaleTime } from "d3-scale";
