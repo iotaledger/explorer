@@ -1,8 +1,13 @@
 import { OutputWithMetadataResponse, ValidatorResponse } from "@iota/sdk-wasm-nova/web";
 import React, { useState } from "react";
-import TruncatedId from "~/app/components/stardust/TruncatedId";
+import { CardInfo, CardInfoProps } from "~/app/components/CardInfo";
 import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
+import "./AccountValidatorSection.scss";
+import Table, { ITableRow } from "~/app/components/Table";
+import TableCellWrapper, { TTableData } from "../../../TableCell";
+import { DelegationOutputsTableHeadings } from "~/app/lib/ui/enums/DelegationOutputsTableHeadings.enum";
+import { useGenerateDelegatedOutputsTable } from "~/helpers/nova/hooks/useGenerateDelegatedOutputsTable";
 
 interface AccountValidatorSectionProps {
     readonly validatorDetails: ValidatorResponse | null;
@@ -12,74 +17,62 @@ interface AccountValidatorSectionProps {
 const AccountValidatorSection: React.FC<AccountValidatorSectionProps> = ({ validatorDetails, validatorDelegationOutputs }) => {
     const [isFormatBalance, setIsFormatBalance] = useState<boolean>(false);
     const [formatManaValuesFull, setFormatManaValuesFull] = useState<boolean>(false);
-    const { name: network, tokenInfo, manaInfo } = useNetworkInfoNova((state) => state.networkInfo);
+    const { tokenInfo, manaInfo } = useNetworkInfoNova((state) => state.networkInfo);
+    const tableData: ITableRow<TTableData>[] = useGenerateDelegatedOutputsTable(validatorDelegationOutputs ?? []);
+    const tableHeadings = Object.values(DelegationOutputsTableHeadings);
 
     if (!validatorDetails) {
         return null;
     }
 
     const delegatedStake = BigInt(validatorDetails.poolStake) - BigInt(validatorDetails.validatorStake);
+    const validationData: CardInfoProps[] = [
+        { title: "Active", value: validatorDetails.active ? "Yes" : "No" },
+        { title: "Staking End Epoch", value: validatorDetails.stakingEndEpoch },
+        {
+            title: "Total pool stake:",
+            value: formatAmount(validatorDetails.poolStake, tokenInfo, isFormatBalance),
+            onClickValue: () => setIsFormatBalance(!isFormatBalance),
+            copyValue: String(validatorDetails.poolStake),
+        },
+        {
+            title: "Total validator stake",
+            value: formatAmount(validatorDetails?.validatorStake ?? 0, tokenInfo, isFormatBalance),
+            onClickValue: () => setIsFormatBalance(!isFormatBalance),
+            copyValue: String(validatorDetails?.validatorStake),
+        },
+        {
+            title: "Total delegated stake",
+            value: formatAmount(delegatedStake, tokenInfo, isFormatBalance),
+            onClickValue: () => setIsFormatBalance(!isFormatBalance),
+            copyValue: String(delegatedStake),
+        },
+        {
+            title: "Fixed cost",
+            value: formatAmount(validatorDetails?.fixedCost, manaInfo, formatManaValuesFull),
+            onClickValue: () => setFormatManaValuesFull(!formatManaValuesFull),
+            copyValue: String(validatorDetails?.fixedCost),
+        },
+        { title: "Latest Supported Protocol Version", value: validatorDetails.latestSupportedProtocolVersion },
+    ];
 
     return (
-        <div className="section transaction--section">
-            <div className="card controlled-foundry--card">
-                <div className="field">
-                    <div className="card--label margin-b-t">Active</div>
-                    <div className="card--value">{validatorDetails.active ? "Yes" : "No"}</div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Staking End Epoch</div>
-                    <div className="card--value">{validatorDetails.stakingEndEpoch}</div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Pool Stake</div>
-                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
-                        {formatAmount(validatorDetails.poolStake, tokenInfo, formatManaValuesFull)}
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Validator Stake</div>
-                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
-                        {formatAmount(validatorDetails.validatorStake, tokenInfo, formatManaValuesFull)}
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Delegated Stake</div>
-                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
-                        {formatAmount(delegatedStake, tokenInfo, formatManaValuesFull)}
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Fixed Cost</div>
-                    <div className="card--value pointer" onClick={() => setFormatManaValuesFull(!formatManaValuesFull)}>
-                        {formatAmount(validatorDetails?.fixedCost, manaInfo, formatManaValuesFull)}
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Latest Supported Protocol Version</div>
-                    <div className="card--value">{validatorDetails?.latestSupportedProtocolVersion}</div>
-                </div>
-                <div className="field">
-                    <div className="card--label margin-b-t">Latest Supported Protocol Hash</div>
-                    <div className="card--value">{validatorDetails?.latestSupportedProtocolHash}</div>
-                </div>
-                {validatorDelegationOutputs && (
-                    <div className="field">
-                        <div className="card--label margin-b-t">Delegated outputs</div>
-                        {validatorDelegationOutputs?.map((output, index) => (
-                            <div key={index} className="card--value row">
-                                <TruncatedId
-                                    id={output.metadata.outputId}
-                                    link={`/${network}/output/${output.metadata.outputId}`}
-                                    showCopyButton={true}
-                                />
-                                <span onClick={() => setIsFormatBalance(!isFormatBalance)} className="pointer margin-l-t">
-                                    {formatAmount(output.output.amount, tokenInfo, isFormatBalance)}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                )}
+        <div className="section section--account-validator">
+            <div className="card-info-wrapper">
+                {validationData.map((data, index) => {
+                    return (
+                        <CardInfo
+                            key={index}
+                            title={data.title}
+                            value={data.value}
+                            onClickValue={data.onClickValue}
+                            copyValue={data.copyValue}
+                        />
+                    );
+                })}
+            </div>
+            <div className="section--data delegation-outputs">
+                <Table headings={tableHeadings} data={tableData} TableDataComponent={TableCellWrapper} />
             </div>
         </div>
     );
