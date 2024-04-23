@@ -7,6 +7,7 @@ export const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[
         "Basic",
         [
             AssociationType.BASIC_ADDRESS,
+            AssociationType.BASIC_ADDRESS_EXPIRED,
             AssociationType.BASIC_SENDER,
             AssociationType.BASIC_EXPIRATION_RETURN,
             AssociationType.BASIC_STORAGE_RETURN,
@@ -33,6 +34,7 @@ export const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[
         [
             AssociationType.NFT_ID,
             AssociationType.NFT_ADDRESS,
+            AssociationType.NFT_ADDRESS_EXPIRED,
             AssociationType.NFT_STORAGE_RETURN,
             AssociationType.NFT_EXPIRATION_RETURN,
             AssociationType.NFT_ISSUER,
@@ -43,6 +45,7 @@ export const outputTypeToAssociations: Map<AssociatedOutputTab, AssociationType[
 
 export const ASSOCIATION_TYPE_TO_LABEL = {
     [AssociationType.BASIC_ADDRESS]: "Address Unlock Condition",
+    [AssociationType.BASIC_ADDRESS_EXPIRED]: "Address Unlock Condition (expired)",
     [AssociationType.BASIC_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
     [AssociationType.BASIC_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
     [AssociationType.BASIC_SENDER]: "Sender Feature",
@@ -60,6 +63,7 @@ export const ASSOCIATION_TYPE_TO_LABEL = {
     [AssociationType.FOUNDRY_ACCOUNT]: "Controlling Account",
     [AssociationType.NFT_ID]: "Nft Id",
     [AssociationType.NFT_ADDRESS]: "Address Unlock Condition",
+    [AssociationType.NFT_ADDRESS_EXPIRED]: "Address Unlock Condition (expired)",
     [AssociationType.NFT_STORAGE_RETURN]: "Storage Deposit Return Unlock Condition",
     [AssociationType.NFT_EXPIRATION_RETURN]: "Expiration Return Unlock Condtition",
     [AssociationType.NFT_ISSUER]: "Issuer Feature",

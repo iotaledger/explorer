@@ -2,6 +2,7 @@ import { IResponse } from "../IResponse";
 
 export enum AssociationType {
     BASIC_ADDRESS,
+    BASIC_ADDRESS_EXPIRED,
     BASIC_STORAGE_RETURN,
     BASIC_EXPIRATION_RETURN,
     BASIC_SENDER,
@@ -18,6 +19,7 @@ export enum AssociationType {
     DELEGATION_VALIDATOR,
     FOUNDRY_ACCOUNT,
     NFT_ADDRESS,
+    NFT_ADDRESS_EXPIRED,
     NFT_STORAGE_RETURN,
     NFT_EXPIRATION_RETURN,
     NFT_ISSUER,

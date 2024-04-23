@@ -235,9 +235,6 @@ function initNovaServices(networkConfig: INetwork): void {
     void NovaClient.create(novaClientParams).then((novaClient) => {
         ServiceFactory.register(`client-${networkConfig.network}`, () => novaClient);
 
-        const novaApiService = new NovaApiService(networkConfig);
-        ServiceFactory.register(`api-service-${networkConfig.network}`, () => novaApiService);
-
         // eslint-disable-next-line no-void
         void NodeInfoServiceNova.build(networkConfig).then((nodeInfoService) => {
             ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
@@ -249,6 +246,9 @@ function initNovaServices(networkConfig: INetwork): void {
         NovaTimeService.build(novaClient)
             .then((novaTimeService) => {
                 ServiceFactory.register(`nova-time-${networkConfig.network}`, () => novaTimeService);
+
+                const novaApiService = new NovaApiService(networkConfig);
+                ServiceFactory.register(`api-service-${networkConfig.network}`, () => novaApiService);
 
                 const influxDBService = new InfluxServiceNova(networkConfig);
                 influxDBService

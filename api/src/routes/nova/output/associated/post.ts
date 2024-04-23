@@ -1,7 +1,7 @@
 import { ServiceFactory } from "../../../../factories/serviceFactory";
 import { IAssociationsRequest } from "../../../../models/api/nova/IAssociationsRequest";
 import { IAssociationsRequestBody } from "../../../../models/api/nova/IAssociationsRequestBody";
-import { IAssociation, IAssociationsResponse } from "../../../../models/api/nova/IAssociationsResponse";
+import { IAssociationsResponse } from "../../../../models/api/nova/IAssociationsResponse";
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { NOVA } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
@@ -33,13 +33,7 @@ export async function post(
 
     const helper = new AssociatedOutputsHelper(networkConfig, body.addressDetails);
     await helper.fetch();
-    const result = helper.associationToOutputIds;
-
-    const associations: IAssociation[] = [];
-    for (const [type, outputIds] of result.entries()) {
-        associations.push({ type, outputIds: outputIds.reverse() });
-    }
-
+    const associations = helper.getAssociations();
     return {
         associations,
     };
