@@ -2,8 +2,8 @@
 import { AccountAddress, BasicBlockBody, SignedTransactionPayload, Utils } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import metadataInfoMessage from "~assets/modals/stardust/block/metadata.json";
-import transactionPayloadMessage from "~assets/modals/stardust/transaction/main-header.json";
+import metadataInfoMessage from "~assets/modals/nova/block/main-info.json";
+import transactionPayloadMessage from "~assets/modals/nova/block/transaction-payload.json";
 import { useBlockMetadata } from "~helpers/nova/hooks/useBlockMetadata";
 import { useInputsAndOutputs } from "~helpers/nova/hooks/useInputsAndOutputs";
 import { useTransactionIncludedBlock } from "~helpers/nova/hooks/useTransactionIncludedBlock";

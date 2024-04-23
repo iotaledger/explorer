@@ -1,5 +1,5 @@
 import React from "react";
-import addressMainHeaderInfo from "~assets/modals/stardust/address/main-header.json";
+import addressMainHeaderInfo from "~assets/modals/nova/address/main-header.json";
 import Modal from "../../Modal";
 import NotFound from "../../NotFound";
 

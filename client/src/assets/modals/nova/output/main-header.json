@@ -1,0 +1,11 @@
+{
+    "title": "Output",
+    "description": "<p>Output is a fundamental concept within the UTXO (Unspent Transaction Output) model used by the ledger. Outputs represent the results of transactions and can be attached with various conditions and features that dictate how they can be unlocked and used in future transactions. Unspent outputs define the owner of the tokens, the kind of tokens and their amount, as well as conditions by which you can unlock them.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#transactions",
+            "isExternal": true
+        }
+    ]
+}

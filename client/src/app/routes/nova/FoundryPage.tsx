@@ -8,8 +8,8 @@ import {
 } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
-import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
-import foundryMainHeaderInfo from "~assets/modals/stardust/foundry/main-header.json";
+import nativeTokensMessage from "~assets/modals/nova/address/native-token.json";
+import foundryMainHeaderInfo from "~assets/modals/nova/output/foundries.json";
 import tokenSchemeIRC30 from "~assets/schemas/token-schema-IRC30.json";
 import { useFoundryDetails } from "~helpers/nova/hooks/useFoundryDetails";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";

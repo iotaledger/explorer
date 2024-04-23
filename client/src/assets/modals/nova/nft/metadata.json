@@ -1,0 +1,16 @@
+{
+    "title": "Metadata",
+    "description": "<p>IRC27 is a series of standards to support interoperable and universal NFT systems throughout the IOTA ecosystem, to provide a more robust and secure system for creators and buyers.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://github.com/iotaledger/tips/blob/main/tips/TIP-0027/tip-0027.md",
+            "isExternal": true
+        },
+        {
+            "label": "Nft Output",
+            "href": "https://github.com/iotaledger/tips/blob/tip43/tips/TIP-0043/tip-0043.md#nft-output",
+            "isExternal": true
+        }
+    ]
+}
