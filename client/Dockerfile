@@ -24,6 +24,9 @@ RUN echo 'server {\
     }\
   }' > /etc/nginx/sites-available/default
 
+# Set Content-Type so streaming compilation works
+RUN mv ./nginx/wasm.conf /etc/nginx/conf.d/wasm.conf
+
 # Running required steps to prepare the web app prod build
 RUN npm install
 RUN npm run build
