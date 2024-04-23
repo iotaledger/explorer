@@ -49,6 +49,24 @@
                 }
             }
 
+            .card--content__account {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+
+                @include phone-down {
+                    flex-direction: column;
+                    margin-bottom: 8px;
+
+                    .amount-size {
+                        @include font-size(13px);
+                        margin-top: 4px;
+                        margin-left: 0px;
+                        padding-left: 4px;
+                    }
+                }
+            }
+
             .link {
                 @include font-size(14px);
 
