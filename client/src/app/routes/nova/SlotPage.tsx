@@ -46,7 +46,6 @@ export default function SlotPage({
         slotCommitmentDetails?.referenceManaCost?.toString() ??
         "-";
     const manaBurned = slotManaBurned?.manaBurned ? formatAmount(slotManaBurned?.manaBurned, manaInfo, formatManaAmounts) : "-";
-    const copyManaBurned = slotManaBurned?.manaBurned ? formatAmount(slotManaBurned?.manaBurned, manaInfo, true) : "-";
     const slotData: CardInfoProps[] = [
         {
             title: "Slot Index",
@@ -57,13 +56,13 @@ export default function SlotPage({
             title: "RMC",
             value: formatAmount(rmc, manaInfo, formatManaAmounts),
             onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
-            copyValue: formatAmount(rmc, manaInfo, true),
+            copyValue: String(rmc),
         },
         {
             title: "Mana burned",
             value: manaBurned,
             onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
-            copyValue: copyManaBurned,
+            copyValue: String(slotManaBurned?.manaBurned),
         },
         { title: "Blocks", value: slotStats?.blockCount ?? "0" },
         { title: "Transactions", value: slotStats?.perPayloadType?.transaction ?? "0" },

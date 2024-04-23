@@ -22,13 +22,13 @@ const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = 
             title: "Block Issuance Credit",
             value: formatAmount(congestion?.blockIssuanceCredits ?? "0", manaInfo, formatFull),
             onClickValue: () => setFormatFull(!formatFull),
-            copyValue: formatAmount(congestion?.blockIssuanceCredits ?? "0", manaInfo, true),
+            copyValue: String(congestion?.blockIssuanceCredits),
         },
         {
             title: "Referenced Mana Cost",
             value: formatAmount(congestion?.referenceManaCost ?? "0", manaInfo, formatFull),
             onClickValue: () => setFormatFull(!formatFull),
-            copyValue: formatAmount(congestion?.referenceManaCost ?? "0", manaInfo, true),
+            copyValue: String(congestion?.referenceManaCost),
         },
     ];
     return (
