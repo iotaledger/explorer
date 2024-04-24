@@ -179,7 +179,6 @@ export class TransactionsHelper {
 
             sortedOutputs = [...outputs, ...remainderOutputs];
             this.sortInputsAndOuputsByIndex(sortedOutputs);
-            this.sortInputsAndOuputsByIndex(inputs);
         }
 
         return { inputs, unlocks, outputs: sortedOutputs, unlockAddresses, transferTotal };
