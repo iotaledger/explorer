@@ -58,9 +58,7 @@ export class ChronicleService {
 
         do {
             try {
-                const params = {
-                    cursor: request.cursor,
-                };
+                const params = { cursor };
                 const response = await FetchHelper.json<never, ISlotBlocksResponse>(
                     this.chronicleEndpoint,
                     `${CHRONICLE_ENDPOINTS.slotBlocks}${params ? `${FetchHelper.urlParams(params)}` : ""}`.replace(
