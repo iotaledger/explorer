@@ -25,8 +25,8 @@
 
     &.status__ {
         &success {
-            background-color: var(--message-confirmed-bg);
-            color: $mint-green-7;
+            background-color: $block-confirmed;
+            color: #3b3b3b;
         }
 
         &error {
@@ -34,8 +34,8 @@
         }
 
         &pending {
-            background-color: var(--light-bg);
-            color: #8493ad;
+            background-color: $block-pending;
+            color: white;
         }
     }
 }
