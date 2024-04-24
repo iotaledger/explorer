@@ -181,7 +181,6 @@ export class TransactionsHelper {
 
             sortedOutputs = [...outputs, ...remainderOutputs];
             this.sortInputsAndOuputsByIndex(sortedOutputs);
-            this.sortInputsAndOuputsByIndex(inputs);
         }
 
         return { inputs, outputs: sortedOutputs, unlockAddresses, transferTotal };
@@ -191,7 +190,7 @@ export class TransactionsHelper {
      * Sort inputs and outputs in assending order by index.
      * @param items Inputs or Outputs.
      */
-    public static sortInputsAndOuputsByIndex(items: IInput[] | IOutput[]) {
+    public static sortInputsAndOuputsByIndex(items: IOutput[]) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items.sort((a: any, b: any) => {
             const firstIndex: string = a.id ? a.id.slice(-4) : a.outputId.slice(-4);
