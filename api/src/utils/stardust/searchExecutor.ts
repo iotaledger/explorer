@@ -53,7 +53,7 @@ export class SearchExecutor {
                     this.apiService
                         .milestoneDetailsById(searchQuery.milestoneId)
                         .then((milestoneDetails) => {
-                            if (milestoneDetails) {
+                            if (milestoneDetails.blockId) {
                                 promisesResult = {
                                     milestone: milestoneDetails,
                                 };
@@ -139,7 +139,7 @@ export class SearchExecutor {
                     this.apiService
                         .aliasDetails(searchQuery.aliasId)
                         .then((aliasOutputs) => {
-                            if (aliasOutputs) {
+                            if (aliasOutputs.aliasDetails) {
                                 promisesResult = {
                                     aliasId: searchQuery.aliasId,
                                     did: searchQuery.did,
@@ -162,7 +162,7 @@ export class SearchExecutor {
                     this.apiService
                         .nftDetails(searchQuery.nftId)
                         .then((nftOutputs) => {
-                            if (nftOutputs) {
+                            if (nftOutputs.nftDetails) {
                                 promisesResult = {
                                     nftId: searchQuery.nftId,
                                 };
