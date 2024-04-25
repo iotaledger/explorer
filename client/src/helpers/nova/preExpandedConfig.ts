@@ -58,7 +58,7 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
                                 )?.bech32;
 
                                 // special case for account unlock
-                                const referencedAccountAddress = getReferencedAddresses(inputs, unlocks[idx], bech32Hrp);
+                                const referencedAccountAddress = getReferencedAddress(inputs, unlocks[idx], bech32Hrp);
 
                                 return unlockAddress === unlockSignatureAddress || unlockAddress === referencedAccountAddress;
                             }
@@ -95,7 +95,7 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
     return inputsPreExpandedConfig;
 }
 
-function getReferencedAddresses(inputs: IInput[], unlock: Unlock, bech32Hrp: string): string {
+function getReferencedAddress(inputs: IInput[], unlock: Unlock, bech32Hrp: string): string {
     let referencedAccountAddress = "";
     if (unlock.type === UnlockType.Account) {
         const referencedAccountInput = inputs[(unlock as AccountUnlock).reference];
