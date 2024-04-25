@@ -39,18 +39,13 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
             const matchExpandCondition = commonOutput.unlockConditions?.find((unlockCondition) =>
                 INPUT_EXPAND_CONDITIONS.includes(unlockCondition.type),
             );
+
             preExpandedConfig = {
                 isPreExpanded: !!matchExpandCondition,
             };
+
             if (commonOutput.unlockConditions.length > 0) {
-                // unlockSignatureAddress is allready calculated in the input
                 const unlockSignatureAddress = input.address.bech32;
-                // special case for account unlock where the signature is the state controller address but the unlock condition is the account address
-                const { referencedStateControllerAddress, referencedAccountAddress } = getReferencedAddresses(
-                    inputs,
-                    unlocks[idx],
-                    bech32Hrp,
-                );
 
                 preExpandedConfig = {
                     ...preExpandedConfig,
@@ -61,11 +56,11 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
                                     bech32Hrp,
                                     (unlockCondition as AddressUnlockCondition).address,
                                 )?.bech32;
-                                return (
-                                    unlockAddress === unlockSignatureAddress ||
-                                    (unlockAddress === referencedAccountAddress &&
-                                        referencedStateControllerAddress === unlockSignatureAddress)
-                                );
+
+                                // special case for account unlock
+                                const referencedAccountAddress = getReferencedAddresses(inputs, unlocks[idx], bech32Hrp);
+
+                                return unlockAddress === unlockSignatureAddress || unlockAddress === referencedAccountAddress;
                             }
                             case UnlockConditionType.Expiration: {
                                 const unlockAddress = AddressHelper.buildAddress(
@@ -100,25 +95,17 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
     return inputsPreExpandedConfig;
 }
 
-function getReferencedAddresses(
-    inputs: IInput[],
-    unlock: Unlock,
-    bech32Hrp: string,
-): { referencedStateControllerAddress: string; referencedAccountAddress: string } {
-    let referencedStateControllerAddress = "";
+function getReferencedAddresses(inputs: IInput[], unlock: Unlock, bech32Hrp: string): string {
     let referencedAccountAddress = "";
     if (unlock.type === UnlockType.Account) {
         const referencedAccountInput = inputs[(unlock as AccountUnlock).reference];
         const referencedAccountOutput = referencedAccountInput?.output?.output as unknown as AccountOutput;
-        referencedAccountAddress =
-            AddressHelper.buildAddress(bech32Hrp, referencedAccountOutput.accountId, AddressType.Account)?.bech32 || "";
-
-        const referencedStateControllerAddressUC = referencedAccountOutput.unlockConditions.find(
-            (uc) => uc.type === UnlockConditionType.StateControllerAddress,
-        ) as StateControllerAddressUnlockCondition;
-        referencedStateControllerAddress = AddressHelper.buildAddress(bech32Hrp, referencedStateControllerAddressUC.address)?.bech32 || "";
+        if (referencedAccountOutput?.accountId) {
+            referencedAccountAddress =
+                AddressHelper.buildAddress(bech32Hrp, referencedAccountOutput.accountId, AddressType.Account)?.bech32 || "";
+        }
     }
-    return { referencedStateControllerAddress, referencedAccountAddress };
+    return referencedAccountAddress;
 }
 
 /**
