@@ -214,7 +214,9 @@ export class AssociatedOutputsHelper {
                     // remove expired basic outputs from basic address associations if they exist
                     const expiredIds = this.associationToOutputIds.get(AssociationType.BASIC_ADDRESS_EXPIRED);
                     const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
-                    associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                    if (filteredOutputIds.length > 0) {
+                        associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                    }
                 } else if (
                     type === AssociationType.NFT_ADDRESS &&
                     this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED)?.length > 0
@@ -222,7 +224,9 @@ export class AssociatedOutputsHelper {
                     // remove expired nft outputs from nft address associations if they exist
                     const expiredIds = this.associationToOutputIds.get(AssociationType.NFT_ADDRESS_EXPIRED);
                     const filteredOutputIds = outputIds.filter((id) => !expiredIds?.includes(id));
-                    associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                    if (filteredOutputIds.length > 0) {
+                        associations.push({ type, outputIds: filteredOutputIds.reverse() });
+                    }
                 } else {
                     associations.push({ type, outputIds: outputIds.reverse() });
                 }
