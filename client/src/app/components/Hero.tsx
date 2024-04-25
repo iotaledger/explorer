@@ -14,13 +14,22 @@ interface IHero {
 }
 
 export default function Hero({ network, subtitle, overline, networkStats, assetStats }: IHero): React.JSX.Element {
-    const theme = useGetThemeMode();
-
-    const backgroundImage = HERO_BACKGROUNDS[theme];
+    const activeTheme = useGetThemeMode();
     return (
         <div id="hero">
             <div className="bg-container">
-                <img src={backgroundImage} className="bg-image" alt="background" />
+                {Object.entries(HERO_BACKGROUNDS).map(([theme, backgroundUrl]) => (
+                    <video
+                        key={backgroundUrl}
+                        autoPlay
+                        playsInline
+                        loop
+                        muted
+                        className={activeTheme === theme ? "bg--active" : "bg--hidden"}
+                    >
+                        <source src={backgroundUrl} type="video/mp4" />
+                    </video>
+                ))}
             </div>
             <div className="wrapper">
                 <div className="inner">
