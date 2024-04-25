@@ -1,4 +1,7 @@
 import {
+    AccountOutput,
+    AccountUnlock,
+    AddressType,
     AddressUnlockCondition,
     CommonOutput,
     ExpirationUnlockCondition,
@@ -7,12 +10,11 @@ import {
     StateControllerAddressUnlockCondition,
     Unlock,
     UnlockConditionType,
-    Utils,
+    UnlockType,
 } from "@iota/sdk-wasm-nova/web";
 import { AddressHelper } from "~/helpers/nova/addressHelper";
 import { IInput } from "~models/api/nova/IInput";
 import { IPreExpandedConfig } from "~models/components";
-import { resolveTransitiveUnlock } from "./resolveTransiviteUnlock";
 
 const OUTPUT_EXPAND_CONDITIONS: UnlockConditionType[] = [
     UnlockConditionType.Address,
@@ -37,25 +39,28 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
             const matchExpandCondition = commonOutput.unlockConditions?.find((unlockCondition) =>
                 INPUT_EXPAND_CONDITIONS.includes(unlockCondition.type),
             );
+
             preExpandedConfig = {
                 isPreExpanded: !!matchExpandCondition,
             };
-            if (input?.output?.output && "unlockConditions" in input.output.output) {
-                const commmonOutput = input.output.output as unknown as CommonOutput;
 
-                const signatureUnlock = resolveTransitiveUnlock(unlocks, idx);
-                const unlockSignatureAddress = Utils.addressToBech32(Utils.publicKeyHash(signatureUnlock.signature.publicKey), bech32Hrp);
+            if (commonOutput.unlockConditions.length > 0) {
+                const unlockSignatureAddress = input.address.bech32;
 
                 preExpandedConfig = {
                     ...preExpandedConfig,
-                    unlockConditions: commmonOutput.unlockConditions?.map((unlockCondition) => {
+                    unlockConditions: commonOutput.unlockConditions.map((unlockCondition) => {
                         switch (unlockCondition.type) {
                             case UnlockConditionType.Address: {
                                 const unlockAddress = AddressHelper.buildAddress(
                                     bech32Hrp,
                                     (unlockCondition as AddressUnlockCondition).address,
                                 )?.bech32;
-                                return unlockAddress === unlockSignatureAddress;
+
+                                // special case for account unlock
+                                const referencedAccountAddress = getReferencedAddress(inputs, unlocks[idx], bech32Hrp);
+
+                                return unlockAddress === unlockSignatureAddress || unlockAddress === referencedAccountAddress;
                             }
                             case UnlockConditionType.Expiration: {
                                 const unlockAddress = AddressHelper.buildAddress(
@@ -88,6 +93,19 @@ export function getInputsPreExpandedConfig(inputs: IInput[], unlocks: Unlock[], 
         return preExpandedConfig;
     });
     return inputsPreExpandedConfig;
+}
+
+function getReferencedAddress(inputs: IInput[], unlock: Unlock, bech32Hrp: string): string {
+    let referencedAccountAddress = "";
+    if (unlock.type === UnlockType.Account) {
+        const referencedAccountInput = inputs[(unlock as AccountUnlock).reference];
+        const referencedAccountOutput = referencedAccountInput?.output?.output as unknown as AccountOutput;
+        if (referencedAccountOutput?.accountId) {
+            referencedAccountAddress =
+                AddressHelper.buildAddress(bech32Hrp, referencedAccountOutput.accountId, AddressType.Account)?.bech32 || "";
+        }
+    }
+    return referencedAccountAddress;
 }
 
 /**
