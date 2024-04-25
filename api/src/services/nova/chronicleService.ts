@@ -67,9 +67,7 @@ export class ChronicleService {
                     ),
                     "get",
                 );
-                // Hardcoded to null for now because chronicle always returns the same cursor: https://github.com/iotaledger/inx-chronicle/issues/1362
-                cursor = null;
-                // cursor = response.cursor;
+                cursor = response.cursor;
 
                 if (response.blocks) {
                     slotBlocks.push(...response.blocks);
