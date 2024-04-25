@@ -31,7 +31,8 @@ import StardustBlock from "./routes/stardust/Block";
 import StardustFoundry from "./routes/stardust/Foundry";
 import { Landing as StardustLanding } from "./routes/stardust/landing/Landing";
 import NovaLanding from "./routes/nova/landing/Landing";
-import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
+import NftRedirectRouteStardust from "./routes/stardust/NftRedirectRoute";
+import NftRedirectRouteNova from "./routes/nova/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
 import NovaBlockPage from "./routes/nova/Block";
@@ -169,7 +170,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/visualizer/" key={keys.next().value} component={StardustVisualizer} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={StardustSearch} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={StardustAddressPage} />,
-        <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRoute} />,
+        <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRouteStardust} />,
         <Route path="/:network/block/:blockId" key={keys.next().value} component={StardustBlock} />,
         <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={StardustTransactionPage} />,
         <Route path="/:network/output/:outputId" key={keys.next().value} component={StardustOutputPage} />,
@@ -189,6 +190,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/epoch/:epochIndex" key={keys.next().value} component={NovaEpochPage} />,
         <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={NovaTransactionPage} />,
         <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={NovaFoundryPage} />,
+        <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRouteNova} />,
         <Route path="/:network/statistics" key={keys.next().value} component={NovaStatisticsPage} />,
         <Route path="/:network/validators" key={keys.next().value} component={ValidatorsPage} />,
         <Route path="/:network/outputs" key={keys.next().value} component={NovaOutputsPage} />,
