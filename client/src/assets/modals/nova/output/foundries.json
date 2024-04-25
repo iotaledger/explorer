@@ -1,5 +1,5 @@
 {
-    "title": "Native Token Features and Foundries",
+    "title": "Foundries",
     "description": "<p>A foundry output is an output that controls the supply of user defined native tokens. It can mint and melt tokens according to the policy defined in the Token Scheme field of the output. Foundries can only be created and controlled by accounts.</p>",
     "links": [
         {

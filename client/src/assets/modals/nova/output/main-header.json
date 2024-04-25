@@ -1,6 +1,6 @@
 {
     "title": "Output",
-    "description": "<p>Output is a fundamental concept within the UTXO (Unspent Transaction Output) model used by the ledger. Outputs represent the results of transactions and can be attached with various conditions and features that dictate how they can be unlocked and used in future transactions. Unspent outputs define the owner of the tokens, the kind of tokens and their amount, as well as conditions by which you can unlock them.</p>",
+    "description": "<p>All hex searches work with and without 0x prefix.<br />The following formats are supported:</p><ol><li><b>Blocks</b> 74 Hex characters</li><li><b>Block using Transaction Id</b> 74 Hex characters</li><li><b>Account Id</b> 66 Hex characters</li><li><b>Nft Id</b> 66 Hex characters</li><li><b>Anchor Id</b> 66 Hex characters</li><li><b>Delegation Id</b> 66 Hex characters</li><li><b>Foundry Id</b> 78 Hex characters and first byte is 08</li><li><b>Outputs</b> 78 Hex characters</li><li><b>Addresses</b> Bech32 Format</li><li><b>SlotIndex</b> a unique index number</li><li><b>Slot Commitment ID</b> the identifier of the slot this block commits to.</li><li><b>Epoch</b> a unique index number</li><li><b>Token Id</b> 76 Hex characters</li><li><b>NFT Id</b> 64 Hex characters</li></ol>",
     "links": [
         {
             "label": "Read more",

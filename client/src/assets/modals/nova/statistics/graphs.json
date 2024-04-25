@@ -45,7 +45,7 @@
     },
     "outputs": {
         "title": "Outputs",
-        "description": "<p>As transactions create new outputs and exhaust the old ones, the total amount of base tokens stays the same, but their owners change. Outputs of special types are also used for NFTs, foundries, and aliases.</p>",
+        "description": "<p>As transactions create new outputs and exhaust the old ones, the total amount of base tokens stays the same, but their owners change. Outputs of special types are also used for NFTs, foundries, and anchors.</p>",
         "links": [
             {
                 "label": "Read more",
@@ -71,7 +71,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://github.com/iotaledger/tips/blob/tip41/tips/TIP-0041/tip-0041.md",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#outputs",
                 "isExternal": true
             }
         ]

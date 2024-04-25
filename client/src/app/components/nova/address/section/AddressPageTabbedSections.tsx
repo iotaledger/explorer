@@ -6,7 +6,7 @@ import bicMessage from "~assets/modals/nova/account/bic.json";
 import validatorMessage from "~assets/modals/nova/account/validator.json";
 import delegationMessage from "~assets/modals/nova/delegation.json";
 import nftMetadataMessage from "~assets/modals/nova/nft/metadata.json";
-import nftWikiMessage from "~assets/modals/nova/nft/nft-concept.json";
+import nftOutputMessage from "~assets/modals/nova/nft/nft-output.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
 import nativeTokensMessage from "~assets/modals/nova/address/native-token.json";
@@ -84,14 +84,14 @@ const buildDefaultTabsOptions = (
         hidden: nftsCount === 0,
         counter: nftsCount,
         isLoading: isNftOutputsLoading,
-        infoContent: nftWikiMessage,
+        infoContent: nftOutputMessage,
     },
     [DEFAULT_TABS.Delegation]: {
         disabled: delegationCount === 0,
         hidden: delegationCount === 0,
         counter: delegationCount,
         isLoading: isDelegationOutputsLoading,
-        infoContent: delegationMessage, // done
+        infoContent: delegationMessage,
     },
 });
 
@@ -108,7 +108,7 @@ const buildAccountAddressTabsOptions = (
         disabled: !isBlockIssuer,
         hidden: !isBlockIssuer,
         isLoading: isCongestionLoading,
-        infoContent: bicMessage, // done
+        infoContent: bicMessage,
     },
     [ACCOUNT_TABS.Foundries]: {
         disabled: foundriesCount === 0,
