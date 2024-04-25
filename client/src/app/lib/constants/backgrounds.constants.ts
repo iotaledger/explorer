@@ -1,8 +1,9 @@
-import HeroTestnetLight from "~/assets/background/hero-testnet-light.png";
-import HeroTestnetDark from "~/assets/background/hero-testnet-dark.png";
 import { ThemeMode } from "../enums";
 
+const LIGHTMODE_BACKGROUND_URL = "https://files.iota.org/media/explorer_hero_nova_light.mp4";
+const DARKMODE_BACKGROUND_URL = "https://files.iota.org/media/explorer_hero_nova_dark.mp4";
+
 export const HERO_BACKGROUNDS: Record<ThemeMode, string> = {
-    [ThemeMode.Light]: HeroTestnetLight,
-    [ThemeMode.Dark]: HeroTestnetDark,
+    [ThemeMode.Light]: LIGHTMODE_BACKGROUND_URL,
+    [ThemeMode.Dark]: DARKMODE_BACKGROUND_URL,
 };
