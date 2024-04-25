@@ -100,13 +100,13 @@ const EpochPage: React.FC<RouteComponentProps<EpochPageProps>> = ({
             title: "Total pool stake:",
             value: formatAmount(epochCommittee?.totalStake ?? 0, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            copyValue: String(epochCommittee?.totalStake),
+            copyValue: epochCommittee?.totalStake ? String(epochCommittee?.totalStake) : undefined,
         },
         {
             title: "Total validator stake",
             value: formatAmount(epochCommittee?.totalValidatorStake ?? 0, tokenInfo, isFormatBalance),
             onClickValue: () => setIsFormatBalance(!isFormatBalance),
-            copyValue: String(epochCommittee?.totalValidatorStake),
+            copyValue: epochCommittee?.totalValidatorStake ? String(epochCommittee?.totalValidatorStake) : undefined,
         },
         {
             title: "Total delegated stake",
