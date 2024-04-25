@@ -2,6 +2,19 @@
 @import "../../scss/mixins";
 @import "../../scss/variables";
 
+.fixed-center-page {
+    background: var(--body-background);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .spinner {
     position: relative;
     top: 20px;
