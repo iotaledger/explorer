@@ -99,45 +99,43 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
             >
                 <DropdownIcon />
             </div>
-            <div className="card--content__account">
-                <div className="output-header">
-                    <button type="button" className="output-type--name color">
-                        {NameHelper.getOutputTypeName(output.type)}
-                    </button>
-                    <div className="output-id--link">
-                        (
-                        {isLinksDisabled ? (
-                            <div className="margin-r-t">
-                                <span className="highlight">{outputIdTransactionPart}</span>
-                                <span className="highlight">{outputIdIndexPart}</span>
-                            </div>
-                        ) : (
-                            <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
-                                <span>{outputIdTransactionPart}</span>
-                                <span className="highlight">{outputIdIndexPart}</span>
-                            </Link>
-                        )}
-                        )
-                        <CopyButton copy={String(outputId)} />
-                    </div>
-                    {specialUnlockCondition}
-                </div>
-                <div className="row middle">
-                    {showCopyAmount && (
-                        <div className="card--value pointer amount-size row end">
-                            <span
-                                className="pointer"
-                                onClick={(e) => {
-                                    setIsFormattedBalance(!isFormattedBalance);
-                                    e.stopPropagation();
-                                }}
-                            >
-                                {formatAmount(output.amount, tokenInfo, !isFormattedBalance)}
-                            </span>
+            <div className="output-header">
+                <button type="button" className="output-type--name color">
+                    {NameHelper.getOutputTypeName(output.type)}
+                </button>
+                <div className="output-id--link">
+                    (
+                    {isLinksDisabled ? (
+                        <div className="margin-r-t">
+                            <span className="highlight">{outputIdTransactionPart}</span>
+                            <span className="highlight">{outputIdIndexPart}</span>
                         </div>
+                    ) : (
+                        <Link to={`/${network}/output/${outputId}`} className="margin-r-t">
+                            <span>{outputIdTransactionPart}</span>
+                            <span className="highlight">{outputIdIndexPart}</span>
+                        </Link>
                     )}
-                    {showCopyAmount && <CopyButton copy={output.amount} />}
+                    )
+                    <CopyButton copy={String(outputId)} />
                 </div>
+                {specialUnlockCondition}
+            </div>
+            <div className="row middle">
+                {showCopyAmount && (
+                    <div className="card--value pointer amount-size row end">
+                        <span
+                            className="pointer"
+                            onClick={(e) => {
+                                setIsFormattedBalance(!isFormattedBalance);
+                                e.stopPropagation();
+                            }}
+                        >
+                            {formatAmount(output.amount, tokenInfo, !isFormattedBalance)}
+                        </span>
+                    </div>
+                )}
+                {showCopyAmount && <CopyButton copy={output.amount} />}
             </div>
         </div>
     );

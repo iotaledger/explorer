@@ -19,6 +19,8 @@ import TruncatedId from "~/app/components/stardust/TruncatedId";
 import { CardInfo, CardInfoProps } from "~/app/components/CardInfo";
 import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 
+const FALLBACK_STRING = "-";
+
 export default function SlotPage({
     match: {
         params: { network, slotIndex },
@@ -44,25 +46,25 @@ export default function SlotPage({
     const rmc =
         slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
         slotCommitmentDetails?.referenceManaCost?.toString() ??
-        "-";
-    const manaBurned = slotManaBurned?.manaBurned ? formatAmount(slotManaBurned?.manaBurned, manaInfo, formatManaAmounts) : "-";
+        FALLBACK_STRING;
+    const manaBurned = slotManaBurned?.manaBurned ? formatAmount(slotManaBurned?.manaBurned, manaInfo, formatManaAmounts) : FALLBACK_STRING;
     const slotData: CardInfoProps[] = [
         {
             title: "Slot Index",
-            value: parsedSlotIndex ?? "-",
+            value: parsedSlotIndex ?? FALLBACK_STRING,
         },
-        { title: "Timestamp", value: slotTimestamp ?? "-" },
+        { title: "Timestamp", value: slotTimestamp ?? FALLBACK_STRING },
         {
             title: "RMC",
             value: formatAmount(rmc, manaInfo, formatManaAmounts),
             onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
-            copyValue: String(rmc),
+            copyValue: rmc !== FALLBACK_STRING ? String(rmc) : undefined,
         },
         {
             title: "Mana burned",
             value: manaBurned,
             onClickValue: () => setFormatManaAmounts(!formatManaAmounts),
-            copyValue: String(slotManaBurned?.manaBurned),
+            copyValue: slotManaBurned?.manaBurned ? String(slotManaBurned?.manaBurned) : undefined,
         },
         { title: "Blocks", value: slotStats?.blockCount ?? "0" },
         { title: "Transactions", value: slotStats?.perPayloadType?.transaction ?? "0" },
@@ -89,7 +91,7 @@ export default function SlotPage({
                             <div className="section--data">
                                 <div className="label">Commitment Id</div>
                                 <div className="value code">
-                                    <TruncatedId id={slotCommitmentId ?? "-"} />
+                                    <TruncatedId id={slotCommitmentId ?? FALLBACK_STRING} />
                                 </div>
                             </div>
                             <div className="card-info-wrapper">
