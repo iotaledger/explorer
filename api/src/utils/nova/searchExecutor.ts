@@ -111,6 +111,7 @@ export class SearchExecutor {
                             promisesResult = {
                                 output: response.output,
                             };
+                            return response.output;
                         }
                     },
                     "Delegation id fetch failed",
@@ -198,7 +199,7 @@ export class SearchExecutor {
             );
         }
 
-        await Promise.any(promises).catch((_) => {});
+        await Promise.allSettled(promises);
 
         if (promisesResult !== null) {
             return promisesResult;
@@ -217,10 +218,10 @@ export class SearchExecutor {
         try {
             const result = await query;
             if (result) {
-                successHandler(result);
-            } else {
-                throw new Error(failureMessage);
+                return successHandler(result);
             }
+
+            throw new Error(failureMessage);
         } catch {
             throw new Error(`${failureMessage}`);
         }
