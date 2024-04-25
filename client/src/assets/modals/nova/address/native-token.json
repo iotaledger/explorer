@@ -4,12 +4,12 @@
     "links": [
         {
             "label": "Read more",
-            "href": "https://github.com/iotaledger/tips/blob/tip38/tips/TIP-0038/tip-0038.md",
+            "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/multi-asset-ledger/#native-tokens",
             "isExternal": true
         },
         {
             "label": "Native Token",
-            "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/multi-asset-ledger/#native-tokens",
+            "href": "https://github.com/iotaledger/tips/blob/tip38/tips/TIP-0038/tip-0038.md",
             "isExternal": true
         }
     ]
