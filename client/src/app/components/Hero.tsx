@@ -19,7 +19,14 @@ export default function Hero({ network, subtitle, overline, networkStats, assetS
         <div id="hero">
             <div className="bg-container">
                 {Object.entries(HERO_BACKGROUNDS).map(([theme, backgroundUrl]) => (
-                    <video key={backgroundUrl} autoPlay loop muted className={activeTheme === theme ? "bg--active" : "bg--hidden"}>
+                    <video
+                        key={backgroundUrl}
+                        autoPlay
+                        playsInline
+                        loop
+                        muted
+                        className={activeTheme === theme ? "bg--active" : "bg--hidden"}
+                    >
                         <source src={backgroundUrl} type="video/mp4" />
                     </video>
                 ))}
