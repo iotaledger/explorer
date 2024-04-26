@@ -3,6 +3,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { NovaApiService } from "../../services/nova/novaApiService";
+import { ValidationHelper } from "../validationHelper";
 
 export class SearchExecutor {
     /**
@@ -24,165 +25,243 @@ export class SearchExecutor {
 
         if (searchQuery.blockId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.block(searchQuery.blockId),
-                    (response) => {
-                        promisesResult = {
-                            block: response.block,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Block fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .block(searchQuery.blockId)
+                        .then((response) => {
+                            if (response.block) {
+                                promisesResult = {
+                                    block: response.block,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Block fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Block fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.outputId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.outputDetails(searchQuery.outputId),
-                    (response) => {
-                        promisesResult = {
-                            output: response.output,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Output fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .outputDetails(searchQuery.outputId)
+                        .then((response) => {
+                            if (response.output) {
+                                promisesResult = {
+                                    output: response.output,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Output fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Output fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.accountId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.accountDetails(searchQuery.accountId),
-                    (response) => {
-                        promisesResult = {
-                            accountId: response.accountOutputDetails ? searchQuery.accountId : undefined,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Account id fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .accountDetails(searchQuery.accountId)
+                        .then((response) => {
+                            if (response.accountOutputDetails) {
+                                promisesResult = {
+                                    accountId: searchQuery.accountId,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Account id fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Account id fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.nftId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.nftDetails(searchQuery.nftId),
-                    (response) => {
-                        promisesResult = {
-                            nftId: response.nftOutputDetails ? searchQuery.nftId : undefined,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Nft id fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .nftDetails(searchQuery.nftId)
+                        .then((response) => {
+                            if (response.nftOutputDetails) {
+                                promisesResult = {
+                                    nftId: searchQuery.nftId,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Nft id fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Nft id fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.anchorId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.anchorDetails(searchQuery.anchorId),
-                    (response) => {
-                        promisesResult = {
-                            anchorId: response.anchorOutputDetails ? searchQuery.anchorId : undefined,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Anchor id fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .anchorDetails(searchQuery.anchorId)
+                        .then((response) => {
+                            if (response.anchorOutputDetails) {
+                                promisesResult = {
+                                    anchorId: searchQuery.anchorId,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Anchor id fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Anchor id fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.delegationId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.delegationDetails(searchQuery.delegationId),
-                    (response) => {
-                        promisesResult = {
-                            output: response.output,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Delegation id fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .delegationDetails(searchQuery.delegationId)
+                        .then((response) => {
+                            if (response.output) {
+                                promisesResult = {
+                                    output: response.output,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Delegation id fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Delegation id fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.transactionId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.transactionIncludedBlock(searchQuery.transactionId),
-                    (response) => {
-                        promisesResult = {
-                            transactionBlock: response.block,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Transaction included block fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .transactionIncludedBlock(searchQuery.transactionId)
+                        .then((response) => {
+                            if (response.block) {
+                                promisesResult = {
+                                    transactionBlock: response.block,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Transaction included block fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Transaction included block fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.foundryId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.foundryDetails(searchQuery.foundryId),
-                    (response) => {
-                        promisesResult = {
-                            foundryId: response.foundryDetails ? searchQuery.foundryId : undefined,
-                            error: response.error || response.message,
-                        };
-                    },
-                    "Foundry details fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .foundryDetails(searchQuery.foundryId)
+                        .then((response) => {
+                            if (response.foundryDetails) {
+                                promisesResult = {
+                                    foundryId: searchQuery.foundryId,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Foundry details fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Foundry details fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.slotIndex) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.getSlotCommitment(searchQuery.slotIndex),
-                    (_) => {
-                        promisesResult = {
-                            slotIndex: String(searchQuery.slotIndex),
-                        };
-                    },
-                    "Slot commitment fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .getSlotCommitment(searchQuery.slotIndex)
+                        .then((response) => {
+                            if (ValidationHelper.isNumber(response?.slot?.slot)) {
+                                promisesResult = {
+                                    slotIndex: String(response.slot?.slot),
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Slot commitment fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Slot commitment fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.slotCommitmentId) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.getCommitment(searchQuery.slotCommitmentId),
-                    (result) => {
-                        promisesResult = {
-                            slotIndex: String(result.slot.slot),
-                        };
-                    },
-                    "Slot commitment fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .getCommitment(searchQuery.slotCommitmentId)
+                        .then((response) => {
+                            if (ValidationHelper.isNumber(response?.slot?.slot)) {
+                                promisesResult = {
+                                    slotIndex: String(response.slot.slot),
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Slot commitment fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Slot commitment fetch failed"));
+                        });
+                }),
             );
         }
 
         if (searchQuery.tag) {
             promises.push(
-                this.executeQuery(
-                    this.apiService.taggedOutputs(searchQuery.tag),
-                    (response) => {
-                        if (!response.basicOutputs.error || !response.nftOutputs.error) {
-                            promisesResult = {
-                                taggedOutputs: response,
-                            };
-                        }
-                    },
-                    "Tagged details fetch failed",
-                ),
+                new Promise((resolve, reject) => {
+                    this.apiService
+                        .taggedOutputs(searchQuery.tag)
+                        .then((response) => {
+                            if (response?.basicOutputs?.outputs || response?.nftOutputs?.outputs) {
+                                promisesResult = {
+                                    taggedOutputs: response,
+                                };
+                                resolve();
+                            } else {
+                                reject(new Error("Tagged details fetch failed"));
+                            }
+                        })
+                        .catch((_) => {
+                            reject(new Error("Tagged details fetch failed"));
+                        });
+                }),
             );
         }
 
@@ -199,18 +278,5 @@ export class SearchExecutor {
         }
 
         return { message: "Nothing found" };
-    }
-
-    private async executeQuery<T>(query: Promise<T>, successHandler: (result: T) => void, failureMessage: string): Promise<void> {
-        try {
-            const result = await query;
-            if (result) {
-                successHandler(result);
-            } else {
-                throw new Error(failureMessage);
-            }
-        } catch {
-            throw new Error(`${failureMessage}`);
-        }
     }
 }
