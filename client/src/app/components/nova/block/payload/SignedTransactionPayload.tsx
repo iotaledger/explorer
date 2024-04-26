@@ -5,7 +5,7 @@ import Input from "~/app/components/nova/Input";
 import OutputView from "~/app/components/nova/OutputView";
 import Unlocks from "~/app/components/nova/Unlocks";
 import { IInput } from "~/models/api/nova/IInput";
-import transactionPayloadMessage from "~assets/modals/stardust/block/transaction-payload.json";
+import transactionPayloadMessage from "~assets/modals/nova/block/transaction-payload.json";
 import { useNetworkInfoNova } from "~helpers/nova/networkInfo";
 import { getInputsPreExpandedConfig, getOutputsPreExpandedConfig } from "~helpers/nova/preExpandedConfig";
 import { IPreExpandedConfig } from "~models/components";

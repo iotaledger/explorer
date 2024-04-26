@@ -1,0 +1,11 @@
+{
+    "title": "Foundries",
+    "description": "<p>A foundry output is an output that controls the supply of user defined native tokens. It can mint and melt tokens according to the policy defined in the Token Scheme field of the output. Foundries can only be created and controlled by accounts.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://github.com/iotaledger/tips/blob/tip44/tips/TIP-0044/tip-0044.md#foundry-output",
+            "isExternal": true
+        }
+    ]
+}

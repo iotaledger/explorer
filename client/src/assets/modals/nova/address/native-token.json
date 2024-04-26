@@ -1,0 +1,16 @@
+{
+    "title": "Native Tokens",
+    "description": "<p>Native Tokens is a custom, user-defined tokens. Fungible tokens, called native tokens, are minted and melted in token foundries. You can think of them as of a custom currency. The list of Native Tokens in Basic, Alias, NFT and Foundry Outputs is replaced by a Native Token Feature that holds a single Native Token which can only be present in Basic and Foundry Outputs.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/multi-asset-ledger/#native-tokens",
+            "isExternal": true
+        },
+        {
+            "label": "Native Token",
+            "href": "https://github.com/iotaledger/tips/blob/tip38/tips/TIP-0038/tip-0038.md",
+            "isExternal": true
+        }
+    ]
+}

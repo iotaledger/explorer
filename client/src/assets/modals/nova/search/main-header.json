@@ -1,0 +1,4 @@
+{
+    "title": "Search Criteria",
+    "description": "<p>All hex searches work with and without 0x prefix.<br />The following formats are supported:</p><ol><li><b>Blocks</b> 74 Hex characters</li><li><b>Block using Transaction Id</b> 74 Hex characters</li><li><b>Account Id</b> 66 Hex characters</li><li><b>Nft Id</b> 66 Hex characters</li><li><b>Anchor Id</b> 66 Hex characters</li><li><b>Delegation Id</b> 66 Hex characters</li><li><b>Foundry Id</b> 78 Hex characters</li><li><b>Outputs</b> 78 Hex characters</li><li><b>Addresses</b> Bech32 Format</li><li><b>SlotIndex</b> a unique index number</li><li><b>Slot Commitment ID</b> the identifier of the slot this block commits to.</li><li><b>Epoch</b> a unique index number</li><li><b>Token Id</b> 78 Hex characters</li></ol>"
+}

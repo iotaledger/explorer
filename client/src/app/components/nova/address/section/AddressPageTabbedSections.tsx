@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import associatedOuputsMessage from "~assets/modals/stardust/address/associated-outputs.json";
-import foundriesMessage from "~assets/modals/stardust/alias/foundries.json";
-import stateMessage from "~assets/modals/stardust/alias/state.json";
+import associatedOuputsMessage from "~assets/modals/nova/address/associated-outputs.json";
+import foundriesMessage from "~assets/modals/nova/output/foundries.json";
+import anchorOutputMessage from "~assets/modals/nova/output/anchor.json";
 import bicMessage from "~assets/modals/nova/account/bic.json";
 import validatorMessage from "~assets/modals/nova/account/validator.json";
 import delegationMessage from "~assets/modals/nova/delegation.json";
-import nftMetadataMessage from "~assets/modals/stardust/nft/metadata.json";
-import addressNftsMessage from "~assets/modals/stardust/address/nfts-in-wallet.json";
+import nftMetadataMessage from "~assets/modals/nova/nft/metadata.json";
+import nftOutputMessage from "~assets/modals/nova/nft/nft-output.json";
 import TabbedSection from "../../../hoc/TabbedSection";
 import AssociatedOutputs from "./association/AssociatedOutputs";
-import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
-import transactionHistoryMessage from "~assets/modals/stardust/address/transaction-history.json";
+import nativeTokensMessage from "~assets/modals/nova/address/native-token.json";
+import transactionHistoryMessage from "~assets/modals/nova/address/transaction-history.json";
 import { IAccountAddressState } from "~/helpers/nova/hooks/useAccountAddressState";
 import { INftAddressState } from "~/helpers/nova/hooks/useNftAddressState";
 import { IAnchorAddressState } from "~/helpers/nova/hooks/useAnchorAddressState";
@@ -84,7 +84,7 @@ const buildDefaultTabsOptions = (
         hidden: nftsCount === 0,
         counter: nftsCount,
         isLoading: isNftOutputsLoading,
-        infoContent: addressNftsMessage,
+        infoContent: nftOutputMessage,
     },
     [DEFAULT_TABS.Delegation]: {
         disabled: delegationCount === 0,
@@ -129,7 +129,7 @@ const buildAnchorAddressTabsOptions = (isAnchorStateTabDisabled: boolean, isAnch
         disabled: isAnchorStateTabDisabled,
         hidden: isAnchorStateTabDisabled,
         isLoading: isAnchorDetailsLoading,
-        infoContent: stateMessage,
+        infoContent: anchorOutputMessage,
     },
 });
 

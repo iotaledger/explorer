@@ -1,0 +1,11 @@
+{
+    "title": "Transaction History",
+    "description": "<p>The history of all transactions for this address. It displays all blocks that consume or create outputs targeting this address.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#transactions",
+            "isExternal": true
+        }
+    ]
+}

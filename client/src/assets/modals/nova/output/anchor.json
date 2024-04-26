@@ -1,0 +1,11 @@
+{
+    "title": "An Anchor Output",
+    "description": "<p>An Anchor Output represents an output in the ledger with two control levels and a permanent Anchor Address. The anchor owns other outputs that are locked under Anchor Address. The anchor keeps track of state transitions (State Index counter) and can be used to anchor layer 2 state as metadata into the UTXO ledger. The Anchor ID, the unique identifier, is generated deterministically by the protocol and is not allowed to change in any future state transitions.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://github.com/iotaledger/tips/blob/tip54/tips/TIP-0054/tip-0054.md",
+            "isExternal": true
+        }
+    ]
+}

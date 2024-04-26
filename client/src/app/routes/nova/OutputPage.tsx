@@ -1,5 +1,5 @@
 import React from "react";
-import mainMessage from "~assets/modals/stardust/output/main-header.json";
+import mainMessage from "~assets/modals/nova/output/main-header.json";
 import { Link, RouteComponentProps } from "react-router-dom";
 import Modal from "~/app/components/Modal";
 import NotFound from "~/app/components/NotFound";

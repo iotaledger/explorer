@@ -7,10 +7,11 @@ import { IDropdownRoute, IRoute } from "~/app/lib/interfaces";
 import mainChrysalisMessage from "~assets/modals/chrysalis/search/main-header.json";
 import mainLegacyMessage from "~assets/modals/legacy/search/main-header.json";
 import mainStardustMessage from "~assets/modals/stardust/search/main-header.json";
+import mainNovaMessage from "~assets/modals/nova/search/main-header.json";
 import ShimmerLogo from "~assets/shimmer-logo-header.svg?react";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { isMarketedNetwork, isShimmerUiTheme } from "~helpers/networkHelper";
-import { CHRYSALIS, LEGACY, ProtocolVersion, STARDUST } from "~models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, ProtocolVersion, STARDUST } from "~models/config/protocolVersion";
 import { SettingsService } from "~services/settingsService";
 import FiatSelector from "../FiatSelector";
 import Modal from "../Modal";
@@ -26,6 +27,7 @@ const MODAL_MESSAGE: { [key in ProtocolVersion]?: { title: string; description: 
     [LEGACY]: mainLegacyMessage,
     [CHRYSALIS]: mainChrysalisMessage,
     [STARDUST]: mainStardustMessage,
+    [NOVA]: mainNovaMessage,
 };
 
 interface IHeader {
