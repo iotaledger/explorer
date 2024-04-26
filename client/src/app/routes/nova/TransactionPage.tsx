@@ -2,7 +2,6 @@
 import { AccountAddress, BasicBlockBody, SignedTransactionPayload, Utils } from "@iota/sdk-wasm-nova/web";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import metadataInfoMessage from "~assets/modals/nova/block/main-info.json";
 import transactionPayloadMessage from "~assets/modals/nova/block/transaction-payload.json";
 import { useBlockMetadata } from "~helpers/nova/hooks/useBlockMetadata";
 import { useInputsAndOutputs } from "~helpers/nova/hooks/useInputsAndOutputs";
@@ -154,9 +153,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
                         isLoading: isInputsAndOutputsLoading,
                         infoContent: transactionPayloadMessage,
                     },
-                    [TRANSACTION_PAGE_TABS.Metadata]: {
-                        infoContent: metadataInfoMessage,
-                    },
+                    [TRANSACTION_PAGE_TABS.Metadata]: {},
                 }}
             >
                 {tabbedSections}
