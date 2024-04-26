@@ -249,7 +249,7 @@ export class SearchExecutor {
                     this.apiService
                         .taggedOutputs(searchQuery.tag)
                         .then((response) => {
-                            if (!response.basicOutputs.error || !response.nftOutputs.error) {
+                            if (response?.basicOutputs?.outputs || response?.nftOutputs?.outputs) {
                                 promisesResult = {
                                     taggedOutputs: response,
                                 };
