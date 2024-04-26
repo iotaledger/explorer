@@ -8,9 +8,4 @@ export interface ISlotBlocksRequest {
      * The slot index to get the details for.
      */
     slotIndex: string;
-
-    /**
-     * The cursor state for the request.
-     */
-    cursor?: string;
 }

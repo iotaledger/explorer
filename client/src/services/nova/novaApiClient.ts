@@ -305,13 +305,7 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async getSlotBlocks(request: ISlotBlocksRequest): Promise<ISlotBlocksResponse> {
-        const params = {
-            cursor: request.cursor,
-        };
-        return this.callApi<unknown, ISlotBlocksResponse>(
-            `nova/slot/blocks/chronicle/${request.network}/${request.slotIndex}${FetchHelper.urlParams(params)}`,
-            "get",
-        );
+        return this.callApi<unknown, ISlotBlocksResponse>(`nova/slot/blocks/chronicle/${request.network}/${request.slotIndex}`, "get");
     }
 
     /**

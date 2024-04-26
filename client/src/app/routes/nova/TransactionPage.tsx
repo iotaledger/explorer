@@ -125,7 +125,7 @@ const TransactionPage: React.FC<RouteComponentProps<TransactionPageProps>> = ({
             <div className="section--data">
                 <div className="label">Slot Commitment</div>
                 <div className="value code">
-                    <TruncatedId id={block.header.slotCommitmentId} />
+                    <TruncatedId id={block.header.slotCommitmentId} showCopyButton />
                 </div>
             </div>
             {issuerAddress && (

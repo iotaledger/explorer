@@ -131,7 +131,7 @@ function getSlotCommitmentTableRow(
                 tableData = {
                     type: TableCellType.Stats,
                     data: slotIndex.toString(),
-                    href: `/${network}/slot/${slotIndex}?tab=RefBlocks`,
+                    href: `/${network}/slot/${slotIndex}`,
                     statsType: "blocks",
                     shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
@@ -140,7 +140,7 @@ function getSlotCommitmentTableRow(
                 tableData = {
                     type: TableCellType.Stats,
                     data: slotIndex.toString(),
-                    href: `/${network}/slot/${slotIndex}?tab=Txs`,
+                    href: `/${network}/slot/${slotIndex}`,
                     statsType: "transactions",
                     shouldLoad: slotStatus === SlotCommitmentStatus.Finalized,
                 };
