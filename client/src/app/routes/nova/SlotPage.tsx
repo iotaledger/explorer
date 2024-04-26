@@ -89,7 +89,7 @@ export default function SlotPage({
                             <div className="section--data">
                                 <div className="label">Commitment Id</div>
                                 <div className="value code">
-                                    <TruncatedId id={slotCommitmentId ?? "-"} />
+                                    <TruncatedId id={slotCommitmentId ?? "-"} showCopyButton />
                                 </div>
                             </div>
                             <div className="card-info-wrapper">
