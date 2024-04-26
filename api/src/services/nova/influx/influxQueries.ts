@@ -93,7 +93,7 @@ export const BLOCK_STATS_QUERY = `
         sum("candidacy_announcement_count") AS "candidacy",
         sum("validation_count") AS "noPayload"
     FROM "iota_block_activity"
-    WHERE time >= $from and time <= $to
+    WHERE time >= $from and time < $to
 `;
 
 export const TOKENS_HELD_BY_OUTPUTS_DAILY_QUERY = {
