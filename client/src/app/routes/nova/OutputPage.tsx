@@ -63,7 +63,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     const slotIndex = outputMetadataResponse?.included?.slot;
 
     let outputManaDetails: OutputManaDetails | null = null;
-    if (output && createdSlotIndex && protocolInfo) {
+    if (output && createdSlotIndex !== null && protocolInfo) {
         const untilSlotIndex = spentSlotIndex ? spentSlotIndex : latestConfirmedSlot > 0 ? latestConfirmedSlot : null;
         outputManaDetails = untilSlotIndex
             ? buildManaDetailsForOutput(output, createdSlotIndex, untilSlotIndex, protocolInfo.parameters, manaRewards?.rewards ?? null)
