@@ -67,7 +67,7 @@ export function useAddressBalance(
                         const createdSlotIndex = (included?.slot as number) ?? null;
                         const spentSlotIndex = (spent?.slot as number) ?? null;
 
-                        if (output && createdSlotIndex && protocolInfo) {
+                        if (output && createdSlotIndex !== null && protocolInfo) {
                             const untilSlotIndex = spentSlotIndex ? spentSlotIndex : latestConfirmedSlot > 0 ? latestConfirmedSlot : null;
                             const outputManaDetails = untilSlotIndex
                                 ? buildManaDetailsForOutput(
