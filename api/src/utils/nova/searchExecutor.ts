@@ -3,6 +3,7 @@ import { ServiceFactory } from "../../factories/serviceFactory";
 import { ISearchResponse } from "../../models/api/nova/ISearchResponse";
 import { INetwork } from "../../models/db/INetwork";
 import { NovaApiService } from "../../services/nova/novaApiService";
+import { ValidationHelper } from "../validationHelper";
 
 export class SearchExecutor {
     /**
@@ -120,6 +121,7 @@ export class SearchExecutor {
                                 promisesResult = {
                                     anchorId: searchQuery.anchorId,
                                 };
+                                resolve();
                             } else {
                                 reject(new Error("Anchor id fetch failed"));
                             }
@@ -143,11 +145,11 @@ export class SearchExecutor {
                                 };
                                 resolve();
                             } else {
-                                reject(new Error("Anchor id fetch failed"));
+                                reject(new Error("Delegation id fetch failed"));
                             }
                         })
                         .catch((_) => {
-                            reject(new Error("Anchor id fetch failed"));
+                            reject(new Error("Delegation id fetch failed"));
                         });
                 }),
             );
@@ -203,9 +205,9 @@ export class SearchExecutor {
                     this.apiService
                         .getSlotCommitment(searchQuery.slotIndex)
                         .then((response) => {
-                            if (searchQuery.slotIndex) {
+                            if (ValidationHelper.isNumber(response?.slot?.slot)) {
                                 promisesResult = {
-                                    slotIndex: String(searchQuery.slotIndex),
+                                    slotIndex: String(response.slot?.slot),
                                 };
                                 resolve();
                             } else {
@@ -225,7 +227,7 @@ export class SearchExecutor {
                     this.apiService
                         .getCommitment(searchQuery.slotCommitmentId)
                         .then((response) => {
-                            if (response?.slot?.slot) {
+                            if (ValidationHelper.isNumber(response?.slot?.slot)) {
                                 promisesResult = {
                                     slotIndex: String(response.slot.slot),
                                 };
