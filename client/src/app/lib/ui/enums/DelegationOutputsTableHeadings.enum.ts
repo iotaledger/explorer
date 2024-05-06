@@ -1,4 +1,4 @@
 export enum DelegationOutputsTableHeadings {
-    OutputId = "Output Id",
+    OutputId = "Delegations",
     Amount = "Amount",
 }
