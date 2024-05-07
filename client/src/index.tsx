@@ -1,10 +1,11 @@
 /* eslint-disable unicorn/prefer-top-level-await */
 // needed for features from @iota/sdk which use reflection (decorators)
 import "reflect-metadata";
-import React, { Suspense, lazy } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, RouteComponentProps } from "react-router-dom";
 import { AppRouteProps } from "~app/AppRouteProps";
+import App from "~app/App";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 import { ChrysalisApiClient } from "~services/chrysalis/chrysalisApiClient";
@@ -28,9 +29,6 @@ import { TokenRegistryClient } from "~services/stardust/tokenRegistryClient";
 import "./index.scss";
 import "@fontsource/ibm-plex-mono";
 import "@fontsource/material-icons";
-import Spinner from "~app/components/Spinner";
-
-const App = lazy(() => import("~app/App"));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const apiEndpoint = (window as any).env.API_ENDPOINT;
@@ -38,29 +36,19 @@ const apiEndpoint = (window as any).env.API_ENDPOINT;
 const AppInitializer = () => {
     return (
         <BrowserRouter>
-            <Suspense
-                fallback={
-                    <div className={"fixed-center-page"}>
-                        <Spinner />
-                    </div>
-                }
-            >
-                <Route
-                    exact={true}
-                    path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
-                    component={(props: RouteComponentProps<AppRouteProps>) => <App {...props} />}
-                />
-            </Suspense>
+            <Route
+                exact={true}
+                path="/:network?/:action?/:param1?/:param2?/:param3?/:param4?/:param5?"
+                component={(props: RouteComponentProps<AppRouteProps>) => <App {...props} />}
+            />
         </BrowserRouter>
     );
 };
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const container = document.getElementById("root")!;
-if (!container.hasChildNodes()) {
-    const root = createRoot(container);
-    root.render(<AppInitializer />);
-}
+const root = createRoot(container);
+root.render(<AppInitializer />);
 
 /**
  * Register all the services.
