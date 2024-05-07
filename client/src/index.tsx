@@ -45,10 +45,8 @@ const AppInitializer = () => {
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const container = document.getElementById("root")!;
-if (!container.hasChildNodes()) {
-    const root = createRoot(container);
-    root.render(<AppInitializer />);
-}
+const root = createRoot(container);
+root.render(<AppInitializer />);
 
 /**
  * Register all the services.
