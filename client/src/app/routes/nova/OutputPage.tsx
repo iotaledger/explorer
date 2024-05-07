@@ -11,6 +11,7 @@ import { useNetworkInfoNova } from "~/helpers/nova/networkInfo";
 import { buildManaDetailsForOutput, OutputManaDetails } from "~/helpers/nova/manaUtils";
 import { Converter } from "~/helpers/stardust/convertUtils";
 import { useOutputManaRewards } from "~/helpers/nova/hooks/useOutputManaRewards";
+import { Utils } from "@iota/sdk-wasm-nova/web";
 import "./OutputPage.scss";
 
 interface OutputPageProps {
@@ -54,7 +55,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     const { blockId, included, spent } = outputMetadataResponse ?? {};
 
     const transactionId = included?.transactionId ?? null;
-    const createdSlotIndex = (included?.slot as number) ?? null;
+    const createdSlotIndex = transactionId ? Utils.computeSlotIndex(transactionId) : null;
     const spentSlotIndex = (spent?.slot as number) ?? null;
     const isSpent = spentSlotIndex !== null;
     const transactionIdSpent = spent?.transactionId ?? null;
