@@ -578,10 +578,12 @@ export class NovaApiService {
     /**
      * Get the output mana rewards.
      * @param outputId The outputId to get the rewards for.
+     * @param slotIndex The slotIndex to get the rewards for.
      * @returns The mana rewards.
      */
-    public async getRewards(outputId: string): Promise<IRewardsResponse> {
-        const manaRewardsResponse = await this.client.getOutputManaRewards(outputId);
+    public async getRewards(outputId: string, slotIndex?: string): Promise<IRewardsResponse> {
+        const parsedSlotIndex = slotIndex === undefined ? undefined : Number.parseInt(slotIndex, 10);
+        const manaRewardsResponse = await this.client.getOutputManaRewards(outputId, parsedSlotIndex);
 
         return manaRewardsResponse ? { outputId, manaRewards: manaRewardsResponse } : { outputId, message: "Rewards data not found" };
     }

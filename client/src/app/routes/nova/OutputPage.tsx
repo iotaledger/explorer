@@ -32,7 +32,7 @@ const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     },
 }) => {
     const { output, outputMetadataResponse, error } = useOutputDetails(network, outputId);
-    const { manaRewards } = useOutputManaRewards(network, outputId);
+    const { manaRewards } = useOutputManaRewards(network, outputId, outputMetadataResponse?.spent?.slot);
     const { protocolInfo, latestConfirmedSlot } = useNetworkInfoNova((s) => s.networkInfo);
 
     if (error) {

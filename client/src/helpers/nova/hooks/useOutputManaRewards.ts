@@ -36,7 +36,7 @@ export function useOutputManaRewards(
             // eslint-disable-next-line no-void
             void (async () => {
                 apiClient
-                    .getRewards({ network, outputId })
+                    .getRewards({ network, outputId, slotIndex })
                     .then((response) => {
                         if (isMounted) {
                             const manaRewards = response.manaRewards;
