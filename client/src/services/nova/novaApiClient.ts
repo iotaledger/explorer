@@ -287,7 +287,8 @@ export class NovaApiClient extends ApiClient {
      * @returns The response from the request.
      */
     public async getRewards(request: IRewardsRequest): Promise<IRewardsResponse> {
-        return this.callApi<unknown, IRewardsResponse>(`nova/output/rewards/${request.network}/${request.outputId}`, "get");
+        const params = FetchHelper.urlParams({ slotIndex: request.slotIndex });
+        return this.callApi<unknown, IRewardsResponse>(`nova/output/rewards/${request.network}/${request.outputId}${params}`, "get");
     }
 
     /**

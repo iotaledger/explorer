@@ -9,11 +9,11 @@ import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
  * Get the output rewards.
- * @param config The configuration.
+ * @param _ The configuration.
  * @param request The request.
  * @returns The response.
  */
-export async function get(config: IConfiguration, request: IRewardsRequest): Promise<IRewardsResponse> {
+export async function get(_: IConfiguration, request: IRewardsRequest): Promise<IRewardsResponse> {
     const networkService = ServiceFactory.get<NetworkService>("network");
     const networks = networkService.networkNames();
     ValidationHelper.oneOf(request.network, networks, "network");
@@ -26,5 +26,5 @@ export async function get(config: IConfiguration, request: IRewardsRequest): Pro
     }
 
     const novaApiService = ServiceFactory.get<NovaApiService>(`api-service-${networkConfig.network}`);
-    return novaApiService.getRewards(request.outputId);
+    return novaApiService.getRewards(request.outputId, request.slotIndex);
 }

@@ -109,7 +109,11 @@ export const useAccountAddressState = (address: AccountAddress): [IAccountAddres
     );
 
     const { accountOutput, accountOutputMetadata, isLoading: isAccountDetailsLoading } = useAccountDetails(network, address.accountId);
-    const { manaRewards: outputManaRewards } = useOutputManaRewards(network, accountOutputMetadata?.outputId ?? "");
+    const { manaRewards: outputManaRewards } = useOutputManaRewards(
+        network,
+        accountOutputMetadata?.outputId ?? "",
+        accountOutputMetadata?.spent?.slot,
+    );
 
     const [addressBasicOutputs, isBasicOutputsLoading] = useAddressBasicOutputs(network, state.addressDetails?.bech32 ?? null);
     const [addressNftOutputs, isNftOutputsLoading] = useAddressNftOutputs(network, state.addressDetails?.bech32 ?? null);
