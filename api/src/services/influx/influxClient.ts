@@ -1,4 +1,4 @@
-import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
+import { INanoDate, InfluxDB, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import logger from "../../logger";
 import { INetwork } from "../../models/db/INetwork";
@@ -46,7 +46,7 @@ export abstract class InfluxDbClient {
         const password = this._network.analyticsInfluxDbPassword;
 
         if (host && database && username && password) {
-            logger.verbose(`[InfluxClient Found configuration for (${network})]`);
+            logger.verbose(`[InfluxClient] Found configuration for (${network})]`);
             const token = Buffer.from(`${username}:${password}`, "utf8").toString("base64");
             const options = {
                 headers: {
@@ -56,30 +56,14 @@ export abstract class InfluxDbClient {
 
             const influxDbClient = new InfluxDB({ protocol, port, host, database, username, password, options });
 
-            return influxDbClient
-                .ping(1500)
-                .then((pingResults: IPingStats[]) => {
-                    if (pingResults.length > 0) {
-                        const anyHostIsOnline = pingResults.some((ping) => ping.online);
+            this._client = influxDbClient;
+            this.setupDataCollection();
+            logger.info(`[InfluxClient] Client started for "${network}"...`);
 
-                        if (anyHostIsOnline) {
-                            logger.info(`[InfluxClient Client started for "${network}"...`);
-                            this._client = influxDbClient;
-                            this.setupDataCollection();
-                        }
-
-                        return anyHostIsOnline;
-                    }
-
-                    return false;
-                })
-                .catch((e) => {
-                    logger.verbose(`[InfluxClient Ping failed for "${network}". ${e}`);
-                    return false;
-                });
+            return true;
         }
 
-        logger.warn(`[InfluxClient Configuration not found for "${network}".`);
+        logger.warn(`[InfluxClient] Configuration not found for "${network}".`);
         return false;
     }
 
@@ -104,7 +88,7 @@ export abstract class InfluxDbClient {
 
         if (debug) {
             logger.debug(
-                `[InfluxClient Refreshing ${description} from date
+                `[InfluxClient] Refreshing ${description} from date
                 ${fromNanoDate ? fromNanoDate.toISOString() : null} (${this._network.network})`,
             );
         }
@@ -117,7 +101,7 @@ export abstract class InfluxDbClient {
                     if (this.isAnyFieldNotNull<T>(update)) {
                         if (debug) {
                             logger.debug(
-                                `[InfluxClient Setting ${description} cache entry (${network}): ${moment(update.time).format(
+                                `[InfluxClient] Setting ${description} cache entry (${network}): ${moment(update.time).format(
                                     DAY_KEY_FORMAT,
                                 )}`,
                             );
@@ -126,7 +110,7 @@ export abstract class InfluxDbClient {
                         cacheEntryToFetch.set(moment(update.time).format(DAY_KEY_FORMAT), update);
                     } else if (debug) {
                         logger.warn(
-                            `[InfluxClient Found empty result entry while populating cache (${network}).
+                            `[InfluxClient] Found empty result entry while populating cache (${network}).
                             ${JSON.stringify(update)}`,
                         );
                     }
