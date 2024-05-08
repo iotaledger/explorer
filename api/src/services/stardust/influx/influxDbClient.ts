@@ -1,4 +1,4 @@
-import { INanoDate, InfluxDB, IPingStats, IResults, toNanoDate } from "influx";
+import { INanoDate, InfluxDB, IResults, toNanoDate } from "influx";
 import moment from "moment";
 import cron from "node-cron";
 import {
@@ -134,7 +134,7 @@ export abstract class InfluxDbClient {
 
     /**
      * Build a new client instance asynchronously.
-     * @returns Boolean representing that the client ping succeeded.
+     * @returns Boolean representing that the client was initialised.
      */
     public async buildClient(): Promise<boolean> {
         const protocol = this._network.analyticsInfluxDbProtocol || "https";
@@ -157,27 +157,11 @@ export abstract class InfluxDbClient {
 
             const influxDbClient = new InfluxDB({ protocol, port, host, database, username, password, options });
 
-            return influxDbClient
-                .ping(1500)
-                .then((pingResults: IPingStats[]) => {
-                    if (pingResults.length > 0) {
-                        const anyHostIsOnline = pingResults.some((ping) => ping.online);
+            this._client = influxDbClient;
+            this.setupDataCollection();
+            logger.info(`[InfluxDb] Client started for "${network}"...`);
 
-                        if (anyHostIsOnline) {
-                            logger.info(`[InfluxDb] Client started for "${network}"...`);
-                            this._client = influxDbClient;
-                            this.setupDataCollection();
-                        }
-
-                        return anyHostIsOnline;
-                    }
-
-                    return false;
-                })
-                .catch((e) => {
-                    logger.verbose(`[InfluxDb] Ping failed for "${network}". ${e}`);
-                    return false;
-                });
+            return true;
         }
 
         logger.warn(`[InfluxDb] Configuration not found for "${network}".`);
