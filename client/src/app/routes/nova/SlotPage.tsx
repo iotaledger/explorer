@@ -31,7 +31,7 @@ export default function SlotPage({
 }>): React.JSX.Element {
     const { manaInfo } = useNetworkInfoNova((s) => s.networkInfo);
     const { latestSlotCommitments = [] } = useSlotsFeed();
-    const { slotIndexToUnixTimeRange } = useNovaTimeConvert();
+    const { slotIndexToUnixTimeRange, slotIndexToEpochIndex } = useNovaTimeConvert();
     const { slotCommitment: slotCommitmentDetails, slotCommitmentId } = useSlotDetails(network, slotIndex);
     const { slotManaBurned } = useSlotManaBurned(slotIndex);
     const [slotStats] = useSlotStats(slotIndex);
@@ -42,6 +42,7 @@ export default function SlotPage({
     const slotFromSlotCommitments = latestSlotCommitments.find((slot) => slot.slotCommitment.slot === parsedSlotIndex);
     const slotTimeRange = parsedSlotIndex && slotIndexToUnixTimeRange ? slotIndexToUnixTimeRange(parsedSlotIndex) : null;
     const slotTimestamp = getSlotTimestamp(slotTimeRange);
+    const epochIndex = parsedSlotIndex && slotIndexToEpochIndex ? slotIndexToEpochIndex(parsedSlotIndex) : null;
 
     const rmc =
         slotFromSlotCommitments?.slotCommitment?.referenceManaCost?.toString() ??
@@ -54,6 +55,10 @@ export default function SlotPage({
             value: parsedSlotIndex ?? FALLBACK_STRING,
         },
         { title: "Timestamp", value: slotTimestamp ?? FALLBACK_STRING },
+        {
+            title: "Epoch Index",
+            value: epochIndex ?? FALLBACK_STRING,
+        },
         {
             title: "RMC",
             value: formatAmount(rmc, manaInfo, formatManaAmounts),
