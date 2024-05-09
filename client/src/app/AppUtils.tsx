@@ -75,6 +75,11 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
                     url: "https://explorer.evm.testnet.shimmer.network/",
                     isExternal: true,
                 },
+                {
+                    label: "IOTA EVM Testnet Explorer",
+                    url: "https://explorer.evm.testnet.iotaledger.net/",
+                    isExternal: true,
+                },
             ],
         },
     ];
