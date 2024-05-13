@@ -3,16 +3,16 @@ import { Link, RouteComponentProps } from "react-router-dom";
 import OutputPageProps from "./OutputPageProps";
 import mainMessage from "~assets/modals/stardust/output/main-header.json";
 import { DateHelper } from "~helpers/dateHelper";
-import { useOutputDetails } from "~helpers/hooks/useOutputDetails";
+import { useOutputDetails } from "~helpers/stardust/hooks/useOutputDetails";
 import { formatSpecialBlockId } from "~helpers/stardust/valueFormatHelper";
 import CopyButton from "../../components/CopyButton";
 import Modal from "../../components/Modal";
 import NotFound from "../../components/NotFound";
 import Output from "../../components/stardust/Output";
-import "./OutputPage.scss";
 import TransactionIdView from "~/app/components/stardust/history/TransactionIdView";
 import { TransactionsHelper } from "~/helpers/stardust/transactionsHelper";
 import { getTransactionLink } from "~/app/components/stardust/history/transactionHistoryUtils";
+import "./OutputPage.scss";
 
 const OutputPage: React.FC<RouteComponentProps<OutputPageProps>> = ({
     match: {

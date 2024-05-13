@@ -9,3 +9,4 @@ public/env.js
 build/**
 
 tsconfig.json
+package-lock.json

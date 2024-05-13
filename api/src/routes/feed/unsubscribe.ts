@@ -4,7 +4,7 @@ import logger from "../../logger";
 import { IFeedUnsubscribeRequest } from "../../models/api/IFeedUnsubscribeRequest";
 import { IResponse } from "../../models/api/IResponse";
 import { IConfiguration } from "../../models/configuration/IConfiguration";
-import { CHRYSALIS, LEGACY, STARDUST } from "../../models/db/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "../../models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "../../models/services/chrysalis/IItemsService";
 import { IItemsService as IItemsServiceLegacy } from "../../models/services/legacy/IItemsService";
 import { NetworkService } from "../../services/networkService";
@@ -48,6 +48,9 @@ export async function unsubscribe(_: IConfiguration, socket: SocketIO.Socket, re
                 service?.unsubscribeBlocks(request.subscriptionId);
                 service?.unsubscribeMilestones(request.subscriptionId);
             }
+        } else if (networkConfig.protocolVersion === NOVA) {
+            const service = ServiceFactory.get<StardustFeed>(`feed-${request.network}`);
+            service?.unsubscribeBlocks(request.subscriptionId);
         } else {
             return {
                 error: "Network protocol not supported for feed.",

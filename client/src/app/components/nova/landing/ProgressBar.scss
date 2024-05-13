@@ -1,0 +1,26 @@
+@import "../../../../scss/variables";
+
+.progress-bar__wrapper {
+    .progress-bar {
+        position: relative;
+        background-color: #{$iota2-blue-300};
+        border-radius: 4px;
+        overflow: hidden;
+
+        &.large {
+            height: 32px;
+        }
+        &.small {
+            height: 8px;
+        }
+
+        .progress-bar__fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: #{$iota2-blue-700};
+            transition: width 0.3s ease;
+        }
+    }
+}

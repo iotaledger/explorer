@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ASSOCIATION_TYPE_TO_LABEL } from "./AssociatedOutputsUtils";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";
 import { DateHelper } from "~helpers/dateHelper";
-import { useOutputsDetails } from "~helpers/hooks/useOutputsDetails";
+import { useOutputsDetails } from "~helpers/stardust/hooks/useOutputsDetails";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { AssociationType } from "~models/api/stardust/IAssociationsResponse";
 import NetworkContext from "../../../../../context/NetworkContext";

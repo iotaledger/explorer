@@ -1,0 +1,35 @@
+@import "./../../scss/variables.scss";
+
+.table-container {
+    table {
+        color: var(--body-color);
+        width: 100%;
+        max-width: 100%;
+
+        thead {
+            text-align: left;
+            th {
+                padding-top: 16px;
+                padding-bottom: 32px;
+            }
+        }
+
+        th,
+        td {
+            padding-right: 28px;
+            border: 1px;
+        }
+
+        tbody {
+            td {
+                padding-top: 11px;
+                padding-bottom: 11px;
+            }
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--link-color);
+        }
+    }
+}

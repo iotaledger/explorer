@@ -1,6 +1,6 @@
 /* eslint-disable no-void */
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { useAddressHistory } from "~helpers/hooks/useAddressHistory";
+import { useAddressHistory } from "~helpers/stardust/hooks/useAddressHistory";
 import NetworkContext from "~app/context/NetworkContext";
 import DownloadModal from "../DownloadModal";
 import { getTransactionHistoryRecords } from "./transactionHistoryUtils";

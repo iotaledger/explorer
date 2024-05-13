@@ -1,0 +1,102 @@
+@import "../../../../scss/media-queries";
+
+.balance-wrapper.nova {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .icon {
+        margin-right: 16px;
+    }
+
+    .balance-wrapper--row {
+        display: flex;
+        flex-direction: row;
+        gap: 40px;
+        @include tablet-down {
+            flex-direction: column;
+        }
+        .balance-wrapper__base-token {
+            margin-bottom: 12px;
+        }
+
+        .balance-wrapper__base-token,
+        .balance-wrapper__mana {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+
+            .balance {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                .icon {
+                    align-self: center;
+
+                    @include tablet-down {
+                        display: none;
+                    }
+                }
+
+                &:not(:last-child) {
+                    @include tablet-down {
+                        margin-right: 0px;
+                    }
+                }
+
+                .balance-value {
+                    display: flex;
+                    flex-direction: column;
+
+                    @include tablet-down {
+                        flex-direction: row;
+                    }
+
+                    .balance-value--inline {
+                        @include tablet-down {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+
+                .balance-base-token,
+                .balance-fiat {
+                    color: #b0bfd9;
+                    font-size: 18px;
+                    white-space: nowrap;
+                }
+
+                .balance-heading {
+                    height: 20px;
+
+                    .material-icons {
+                        font-size: 18px;
+                        color: #b0bfd9;
+                        padding-left: 5px;
+                    }
+                }
+
+                .balance__mana {
+                    display: flex;
+                    flex-direction: column;
+                    margin-left: 0;
+                }
+            }
+        }
+
+        @include tablet-down {
+            .balance-wrapper__base-token,
+            .balance-wrapper__mana {
+                flex-direction: column;
+
+                .balance {
+                    &:not(:first-child) {
+                        margin-top: 8px;
+                    }
+                }
+            }
+        }
+    }
+}

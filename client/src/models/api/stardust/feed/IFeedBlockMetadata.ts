@@ -1,4 +1,4 @@
-import { ConflictReason } from "@iota/sdk-wasm/web";
+import { ConflictReason } from "@iota/sdk-wasm-stardust/web";
 
 export interface IFeedBlockMetadata {
     /**

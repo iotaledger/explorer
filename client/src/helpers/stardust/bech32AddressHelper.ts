@@ -1,5 +1,5 @@
 import { Bech32Helper } from "@iota/iota.js";
-import { Address, AddressType, AliasAddress, Ed25519Address, NftAddress } from "@iota/sdk-wasm/web";
+import { Address, AddressType, AliasAddress, Ed25519Address, NftAddress } from "@iota/sdk-wasm-stardust/web";
 import { Converter } from "./convertUtils";
 import { HexHelper } from "./hexHelper";
 import { IBech32AddressDetails } from "~models/api/IBech32AddressDetails";

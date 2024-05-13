@@ -1,4 +1,4 @@
-import { Output } from "@iota/sdk-wasm/web";
+import { Output } from "@iota/sdk-wasm-stardust/web";
 import { IPreExpandedConfig } from "~models/components";
 
 export interface OutputProps {

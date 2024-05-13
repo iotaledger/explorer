@@ -5,14 +5,14 @@ import {
     FoundryOutput,
     ImmutableAliasAddressUnlockCondition,
     MetadataFeature,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 import { FoundryProps } from "./FoundryProps";
 import nativeTokensMessage from "~assets/modals/stardust/address/assets-in-wallet.json";
 import foundryMainHeaderInfo from "~assets/modals/stardust/foundry/main-header.json";
 import tokenSchemeIRC30 from "~assets/schemas/token-schema-IRC30.json";
-import { useFoundryDetails } from "~helpers/hooks/useFoundryDetails";
+import { useFoundryDetails } from "~helpers/stardust/hooks/useFoundryDetails";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";
 import { isMarketedNetwork } from "~helpers/networkHelper";
 import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";

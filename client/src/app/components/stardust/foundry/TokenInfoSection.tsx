@@ -1,6 +1,6 @@
-import { SimpleTokenScheme, TokenScheme, TokenSchemeType } from "@iota/sdk-wasm/web";
+import { SimpleTokenScheme, TokenScheme, TokenSchemeType } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
-import { useTokenRegistryNativeTokenCheck } from "~helpers/hooks/useTokenRegistryNativeTokenCheck";
+import { useTokenRegistryNativeTokenCheck } from "~helpers/stardust/hooks/useTokenRegistryNativeTokenCheck";
 import { formatNumberWithCommas } from "~helpers/stardust/valueFormatHelper";
 import { ITokenMetadata } from "~models/api/stardust/foundry/ITokenMetadata";
 import "./TokenInfoSection.scss";

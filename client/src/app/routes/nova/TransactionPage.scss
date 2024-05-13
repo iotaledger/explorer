@@ -1,0 +1,89 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.transaction-page {
+    display: flex;
+    flex-direction: column;
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 25px;
+
+            @include desktop-down {
+                flex: unset;
+                width: 100%;
+                max-width: 100%;
+                margin: 40px 24px;
+                padding-right: 24px;
+                padding-left: 24px;
+
+                > .row {
+                    flex-direction: column;
+                }
+            }
+
+            @include tablet-down {
+                margin: 28px 0;
+            }
+
+            .transation-page--header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .section {
+                padding-top: 44px;
+
+                .section--header {
+                    margin-top: 44px;
+                }
+            }
+
+            .card--content__account {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+
+                @include phone-down {
+                    flex-direction: column;
+                    margin-bottom: 8px;
+
+                    .amount-size {
+                        @include font-size(13px);
+                        margin-top: 4px;
+                        margin-left: 0px;
+                        padding-left: 4px;
+                    }
+                }
+            }
+
+            .link {
+                @include font-size(14px);
+
+                max-width: 100%;
+                color: var(--link-color);
+                font-family: $ibm-plex-mono;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                line-height: 20px;
+            }
+        }
+
+        .section--data {
+            .amount-transacted {
+                @include font-size(15px);
+                font-weight: 700;
+            }
+        }
+    }
+}

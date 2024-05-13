@@ -10,7 +10,7 @@ import {
     OutputResponse,
     OutputType,
     Utils,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import React, { useEffect, useState } from "react";
 import Nft from "./Nft";
 import { useIsMounted } from "~helpers/hooks/useIsMounted";

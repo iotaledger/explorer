@@ -1,15 +1,14 @@
 import moment from "moment";
 import React, { useState } from "react";
 import Datetime from "react-datetime";
-// import { useTransactionHistoryDownload } from "~helpers/hooks/useTransactionHistoryDownload";
 import Spinner from "../Spinner";
 import Tooltip from "../Tooltip";
-import "./DownloadModal.scss";
 import "react-datetime/css/react-datetime.css";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { ChrysalisApiClient } from "~services/chrysalis/chrysalisApiClient";
 import { CHRYSALIS } from "~models/config/protocolVersion";
-import { triggerDownload } from "~helpers/hooks/useTransactionHistoryDownload";
+import { triggerDownload } from "~helpers/stardust/hooks/useTransactionHistoryDownload";
+import "./DownloadModal.scss";
 
 interface DownloadModalProps {
     readonly network: string;

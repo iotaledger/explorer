@@ -3,7 +3,7 @@ import {
     MilestonePayload as IMilestonePayload,
     ProtocolParamsMilestoneOption,
     ReceiptMilestoneOption,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import React, { ReactNode } from "react";
 import { MilestonePayloadProps } from "./MilestonePayloadProps";
 import MilestoneSignaturesSection from "./MilestoneSignaturesSection";

@@ -1,4 +1,4 @@
-import { OutputResponse } from "@iota/sdk";
+import { OutputResponse } from "@iota/sdk-stardust";
 import { IResponse } from "./IResponse";
 
 export interface IOutputDetailsResponse extends IResponse {

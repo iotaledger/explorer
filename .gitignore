@@ -19,4 +19,6 @@ config.staging.json
 config.prod.json
 env.js
 
+iota-sdk
+
 **/.eslintcache

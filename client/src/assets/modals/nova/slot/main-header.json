@@ -1,0 +1,11 @@
+{
+    "title": "Slot",
+    "description": "<p>Each block in IOTA 2.0 contains a commitment to the content of a certain slot in the past. A slot commitment is a hash value that encapsulates all the crucial information about a slot (such as accepted blocks and transactions, the index of the slot, etc.).</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/consensus/preliminaries/#slot-commitment-chain",
+            "isExternal": true
+        }
+    ]
+}

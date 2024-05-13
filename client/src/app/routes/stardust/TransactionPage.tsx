@@ -1,14 +1,14 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/sdk-wasm/web";
+import { PayloadType, RegularTransactionEssence, TransactionPayload as ITransactionPayload, Utils } from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { TransactionPageProps } from "./TransactionPageProps";
 import metadataInfoMessage from "~assets/modals/stardust/block/metadata.json";
 import transactionPayloadMessage from "~assets/modals/stardust/transaction/main-header.json";
-import { useBlockChildren } from "~helpers/hooks/useBlockChildren";
-import { useBlockMetadata } from "~helpers/hooks/useBlockMetadata";
-import { useInputsAndOutputs } from "~helpers/hooks/useInputsAndOutputs";
-import { useTransactionIncludedBlock } from "~helpers/hooks/useTransactionIncludedBlock";
+import { useBlockChildren } from "~helpers/stardust/hooks/useBlockChildren";
+import { useBlockMetadata } from "~helpers/stardust/hooks/useBlockMetadata";
+import { useInputsAndOutputs } from "~helpers/stardust/hooks/useInputsAndOutputs";
+import { useTransactionIncludedBlock } from "~helpers/stardust/hooks/useTransactionIncludedBlock";
 import { isMarketedNetwork } from "~helpers/networkHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import FiatValue from "../../components/FiatValue";

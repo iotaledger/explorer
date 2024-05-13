@@ -1,76 +1,49 @@
-name: Nova Deply Workflow (with SDK build)
+name: Nova Deploy Workflow
 
-on:
-  workflow_dispatch:
-    inputs:
-      TARGET_COMMIT:
-        description: 'Target Commit Hash for the SDK'
-        required: true
-        default: '2.0'
+on: workflow_dispatch
+
+env:
+  DEPLOY_ENV: nova
 
 jobs:
-  build:
+  set_env_vars:
+    name: Set Environment Variables
     runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.set_version_tag.outputs.version_tag }}
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up the version tag for docker images
+        id: set_version_tag
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "VERSION_TAG=$COMMIT_HASH" >> $GITHUB_OUTPUT
+
+  use-reusable-workflow:
+    strategy:
+      matrix:
+        directory: [api, client]
+    name: Build Images
+    needs: set_env_vars
+    uses: ./.github/workflows/build-images.reusable.yaml
+    with:
+      directory: ${{ matrix.directory }}
+      image_tags: |
+        iotaledger/explorer-${{ matrix.directory }}:${{ needs.set_env_vars.outputs.version_tag }}
+    secrets: inherit
+
+  deploy_to_server:
+    name: Deploy Production to Server
+    needs: [set_env_vars, use-reusable-workflow]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.2
         with:
-          node-version: '16'
+          ssh-private-key: ${{ secrets.UPDATER_SSH_PRIVATE_KEY }}
 
-      - name: Install System Dependencies
+      - name: Deploy to Server
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python2 gcc-multilib g++-multilib build-essential libssl-dev rpm libsecret-1-dev software-properties-common apt-transport-https libudev-dev libusb-1.0-0-dev llvm-dev libclang-dev clang yarn
-          echo 'LIBCLANG_PATH=/usr/lib/llvm-11/lib' >> $GITHUB_ENV
-          echo 'DEBUG=electron-builder' >> $GITHUB_ENV
-          echo 'PATH=/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/snap' >> $GITHUB_ENV
-
-      - name: Install Rust and wasm-bindgen-cli
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source $HOME/.cargo/env
-          cargo install wasm-bindgen-cli
-          rustup target add wasm32-unknown-unknown
-
-      - name: Global Git Configuration
-        run: git config --global --add safe.directory ${{ github.workspace }}
-
-      - name: Yarn Add crypto-browserify
-        run: yarn add crypto-browserify
-
-      - name: Setup SDK
-        run: |
-          git clone -b 2.0 https://github.com/iotaledger/iota-sdk
-          echo "Checking out nova-sdk commit ${{ github.event.inputs.TARGET_COMMIT }}"
-          git checkout ${{ github.event.inputs.TARGET_COMMIT }}
-
-      - name: Build Node.js Bindings
-        run: |
-          cd iota-sdk/bindings/nodejs
-          echo "Renaming nodejs sdk (sdk-nova)"
-          sed -i.bak '2s/.*/    \"name\": \"@iota\/sdk-nova\",/' package.json
-          rm package.json.bak
-          echo "Building nodejs bindings"
-          yarn
-          yarn build
-          cd ..
-
-      - name: Build WASM Bindings
-        run: |
-          cd wasm
-          echo "Renaming wasm sdk (sdk-wasm-nova)"
-          sed -i.bak '2s/.*/    \"name\": \"@iota\/sdk-wasm-nova\",/' package.json
-          rm package.json.bak
-          echo "Building wasm bindings"
-          yarn
-          yarn build
-          cd ../..
-        env:
-          TARGET_COMMIT: ${{ github.event.inputs.TARGET_COMMIT }}
-
-      - name: See what we got
-        run: |
-          find -ls
+          ssh -o StrictHostKeyChecking=no updater@${{ secrets.EXPLORER_NOVA_GATEWAY }} "${{ env.DEPLOY_ENV }} ${{ needs.set_env_vars.outputs.version_tag }}"

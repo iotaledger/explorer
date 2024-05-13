@@ -72,6 +72,17 @@
             top: 20px;
             right: 20px;
 
+            outline: none;
+
+            &:hover {
+                background-color: transparent;
+            }
+
+            &:focus {
+                box-shadow: none;
+                outline: none;
+            }
+
             .pause-button {
                 padding: 6px;
                 color: var(--header-icon-color);

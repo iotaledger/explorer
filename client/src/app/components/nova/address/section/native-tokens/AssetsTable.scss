@@ -1,0 +1,102 @@
+@import "../../../../../../scss/fonts";
+@import "../../../../../../scss/media-queries";
+@import "../../../../../../scss/mixins";
+@import "../../../../../../scss/variables";
+@import "../../../../../../scss/themes";
+
+.asset-table {
+    width: 100%;
+    border-spacing: 12px 28px;
+    border-collapse: separate;
+
+    @include tablet-down {
+        display: none;
+    }
+
+    tr {
+        @include font-size(14px);
+
+        color: $gray-7;
+        font-family: $inter;
+        letter-spacing: 0.5px;
+
+        th {
+            @include font-size(12px);
+
+            color: $gray-6;
+            font-weight: 600;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        td {
+            color: var(--body-color);
+
+            &.highlight {
+                color: var(--link-color);
+                @include font-size(14px);
+
+                font-family: $ibm-plex-mono;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                line-height: 20px;
+
+                a {
+                    max-width: 200px;
+                }
+            }
+            &.truncate {
+                max-width: 150px;
+            }
+        }
+    }
+}
+
+.asset-cards {
+    display: none;
+
+    @include tablet-down {
+        display: block;
+
+        .asset-card {
+            margin-bottom: 48px;
+
+            .field {
+                margin-bottom: 8px;
+
+                .label {
+                    color: $gray-6;
+                    font-family: $inter;
+                    letter-spacing: 0.5px;
+
+                    @include font-size(14px, 21px);
+                }
+
+                .value {
+                    @include font-size(14px, 21px);
+
+                    color: var(--body-color);
+                    font-family: $metropolis;
+                    font-weight: 700;
+
+                    .highlight {
+                        color: var(--link-color);
+                        @include font-size(14px);
+
+                        font-family: $ibm-plex-mono;
+                        font-weight: normal;
+                        letter-spacing: 0.02em;
+                        line-height: 20px;
+                        max-width: 200px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.token__logo {
+    vertical-align: middle;
+    height: 16px;
+    width: 16px;
+}

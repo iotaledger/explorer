@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/sdk-wasm/web";
+import { HexEncodedString } from "@iota/sdk-wasm-stardust/web";
 import { IResponse } from "../IResponse";
 
 export interface IBlockChildrenResponse extends IResponse {

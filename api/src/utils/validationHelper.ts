@@ -13,6 +13,10 @@ export class ValidationHelper {
         }
     }
 
+    public static isNumber(value?: number | null): boolean {
+        return typeof value === "number" && !Number.isNaN(value);
+    }
+
     /**
      * Does the string have some content and is a decimal number.
      * @param str The string to validate.

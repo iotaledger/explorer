@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import React, { ReactNode } from "react";
 import Currency from "./Currency";
 import { FiatValueProps } from "./FiatValueProps";

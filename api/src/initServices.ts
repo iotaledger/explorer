@@ -1,11 +1,12 @@
 import { MqttClient as ChrysalisMqttClient } from "@iota/mqtt.js";
-import { IClientOptions, Client as StardustClient } from "@iota/sdk";
+import { ClientOptions as INovaClientOptions, Client as NovaClient } from "@iota/sdk-nova";
+import { IClientOptions as IStardustClientOptions, Client as StardustClient } from "@iota/sdk-stardust";
 import { ServiceFactory } from "./factories/serviceFactory";
 import logger from "./logger";
 import { IConfiguration } from "./models/configuration/IConfiguration";
 import { ICurrencyState } from "./models/db/ICurrencyState";
 import { INetwork } from "./models/db/INetwork";
-import { CHRYSALIS, LEGACY, STARDUST } from "./models/db/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "./models/db/protocolVersion";
 import { IItemsService as IItemsServiceChrysalis } from "./models/services/chrysalis/IItemsService";
 import { IFeedService } from "./models/services/IFeedService";
 import { IItemsService as IItemsServiceLegacy } from "./models/services/legacy/IItemsService";
@@ -20,17 +21,31 @@ import { LegacyStatsService } from "./services/legacy/legacyStatsService";
 import { ZmqService } from "./services/legacy/zmqService";
 import { LocalStorageService } from "./services/localStorageService";
 import { NetworkService } from "./services/networkService";
-import { ChronicleService } from "./services/stardust/chronicleService";
+import { ChronicleService as ChronicleServiceNova } from "./services/nova/chronicleService";
+import { NovaFeed } from "./services/nova/feed/novaFeed";
+import { InfluxServiceNova } from "./services/nova/influx/influxServiceNova";
+import { NodeInfoService as NodeInfoServiceNova } from "./services/nova/nodeInfoService";
+import { NovaApiService } from "./services/nova/novaApiService";
+import { NovaTimeService } from "./services/nova/novaTimeService";
+import { NovaStatsService } from "./services/nova/stats/novaStatsService";
+import { ValidatorService } from "./services/nova/validatorService";
+import { ChronicleService as ChronicleServiceStardust } from "./services/stardust/chronicleService";
 import { StardustFeed } from "./services/stardust/feed/stardustFeed";
-import { InfluxDBService } from "./services/stardust/influx/influxDbService";
-import { NodeInfoService } from "./services/stardust/nodeInfoService";
+import { InfluxServiceStardust } from "./services/stardust/influx/influxServiceStardust";
+import { NodeInfoService as NodeInfoServiceStardust } from "./services/stardust/nodeInfoService";
 import { StardustApiService } from "./services/stardust/stardustApiService";
 import { StardustStatsService } from "./services/stardust/stats/stardustStatsService";
+
+// iota-sdk debug
+// initLogger();
 
 const CURRENCY_UPDATE_INTERVAL_MS = 5 * 60000;
 
 const isKnownProtocolVersion = (networkConfig: INetwork) =>
-    networkConfig.protocolVersion === LEGACY || networkConfig.protocolVersion === CHRYSALIS || networkConfig.protocolVersion === STARDUST;
+    networkConfig.protocolVersion === LEGACY ||
+    networkConfig.protocolVersion === CHRYSALIS ||
+    networkConfig.protocolVersion === STARDUST ||
+    networkConfig.protocolVersion === NOVA;
 
 /**
  * Initialise all the services for the workers.
@@ -60,11 +75,16 @@ export async function initServices(config: IConfiguration) {
                     initStardustServices(networkConfig);
                     break;
                 }
+                case NOVA: {
+                    initNovaServices(networkConfig);
+                    break;
+                }
                 default:
             }
         }
     }
 
+    // Init for legacy and chrysalis Zmq/Mqtt
     for (const networkConfig of enabledNetworks) {
         if (isKnownProtocolVersion(networkConfig)) {
             if (networkConfig.protocolVersion === LEGACY) {
@@ -143,15 +163,17 @@ function initChrysalisServices(networkConfig: INetwork): void {
 function initStardustServices(networkConfig: INetwork): void {
     logger.verbose(`Initializing Stardust services for ${networkConfig.network}`);
 
-    const stardustClientParams: IClientOptions = {
+    const stardustClientParams: IStardustClientOptions = {
         primaryNode: networkConfig.provider,
     };
 
     if (networkConfig.permaNodeEndpoint) {
         stardustClientParams.nodes = [networkConfig.permaNodeEndpoint];
+        // Client with permanode needs the ignoreNodeHealth as chronicle is considered "not healthy" by the sdk
+        // Related: https://github.com/iotaledger/inx-chronicle/issues/1302
         stardustClientParams.ignoreNodeHealth = true;
 
-        const chronicleService = new ChronicleService(networkConfig);
+        const chronicleService = new ChronicleServiceStardust(networkConfig);
         ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
     }
 
@@ -162,7 +184,7 @@ function initStardustServices(networkConfig: INetwork): void {
     ServiceFactory.register(`api-service-${networkConfig.network}`, () => stardustApiService);
 
     // eslint-disable-next-line no-void
-    void NodeInfoService.build(networkConfig).then((nodeInfoService) => {
+    void NodeInfoServiceStardust.build(networkConfig).then((nodeInfoService) => {
         ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
 
         const stardustFeed = new StardustFeed(networkConfig);
@@ -172,7 +194,7 @@ function initStardustServices(networkConfig: INetwork): void {
     const stardustStatsService = new StardustStatsService(networkConfig);
     ServiceFactory.register(`stats-${networkConfig.network}`, () => stardustStatsService);
 
-    const influxDBService = new InfluxDBService(networkConfig);
+    const influxDBService = new InfluxServiceStardust(networkConfig);
     influxDBService
         .buildClient()
         .then((hasClient) => {
@@ -182,6 +204,71 @@ function initStardustServices(networkConfig: INetwork): void {
             }
         })
         .catch((e) => logger.warn(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
+}
+
+/**
+ * Register services for nova network
+ * @param networkConfig The Network Config.
+ */
+function initNovaServices(networkConfig: INetwork): void {
+    logger.verbose(`Initializing Nova services for ${networkConfig.network}`);
+
+    const novaClientParams: INovaClientOptions = {
+        primaryNodes: [networkConfig.provider],
+    };
+
+    if (networkConfig.permaNodeEndpoint) {
+        const chronicleNode = {
+            url: networkConfig.permaNodeEndpoint,
+            permanode: true,
+        };
+        novaClientParams.primaryNodes.push(chronicleNode);
+
+        const chronicleService = new ChronicleServiceNova(networkConfig);
+        ServiceFactory.register(`chronicle-${networkConfig.network}`, () => chronicleService);
+    }
+
+    const novaStatsService = new NovaStatsService(networkConfig);
+    ServiceFactory.register(`stats-${networkConfig.network}`, () => novaStatsService);
+
+    // eslint-disable-next-line no-void
+    void NovaClient.create(novaClientParams).then((novaClient) => {
+        ServiceFactory.register(`client-${networkConfig.network}`, () => novaClient);
+
+        // eslint-disable-next-line no-void
+        void NodeInfoServiceNova.build(networkConfig).then((nodeInfoService) => {
+            ServiceFactory.register(`node-info-${networkConfig.network}`, () => nodeInfoService);
+
+            const novaFeed = new NovaFeed(networkConfig);
+            ServiceFactory.register(`feed-${networkConfig.network}`, () => novaFeed);
+        });
+
+        NovaTimeService.build(novaClient)
+            .then((novaTimeService) => {
+                ServiceFactory.register(`nova-time-${networkConfig.network}`, () => novaTimeService);
+
+                const novaApiService = new NovaApiService(networkConfig);
+                ServiceFactory.register(`api-service-${networkConfig.network}`, () => novaApiService);
+
+                const influxDBService = new InfluxServiceNova(networkConfig);
+                influxDBService
+                    .buildClient()
+                    .then((hasClient) => {
+                        logger.debug(`[InfluxDb] Registering client with name "${networkConfig.network}". Has client: ${hasClient}`);
+                        if (hasClient) {
+                            ServiceFactory.register(`influxdb-${networkConfig.network}`, () => influxDBService);
+                        }
+                    })
+                    .catch((e) => logger.error(`Failed to build influxDb client for "${networkConfig.network}". Cause: ${e}`));
+            })
+            .catch((err) => {
+                logger.error(`Failed building [novaTimeService]. Cause: ${err}`);
+            });
+
+        const validatorService = new ValidatorService(networkConfig);
+        validatorService.setupValidatorsCollection();
+        ServiceFactory.register(`validator-service-${networkConfig.network}`, () => validatorService);
+    });
 }
 
 /**

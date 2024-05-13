@@ -23,7 +23,7 @@ import {
     UnlockConditionType,
     Utils,
     UTXOInput,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import bigInt from "big-integer";
 import { Converter } from "./convertUtils";
 import { HexHelper } from "./hexHelper";

@@ -1,4 +1,4 @@
-import { NftAddress } from "@iota/sdk-wasm/web";
+import { NftAddress } from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -12,8 +12,8 @@ import {
 } from "./NftMetadataUtils";
 import { NftProps } from "./NftProps";
 import nftSchemeIRC27 from "~assets/schemas/nft-schema-IRC27.json";
-import { useNftMetadataUri } from "~helpers/hooks/useNftMetadataUri";
-import { useTokenRegistryNftCheck } from "~helpers/hooks/useTokenRegistryNftCheck";
+import { useNftMetadataUri } from "~helpers/stardust/hooks/useNftMetadataUri";
+import { useTokenRegistryNftCheck } from "~helpers/stardust/hooks/useTokenRegistryNftCheck";
 import { Bech32AddressHelper } from "~helpers/stardust/bech32AddressHelper";
 import { tryParseMetadata } from "~helpers/stardust/metadataUtils";
 import { INftImmutableMetadata } from "~models/api/stardust/nft/INftImmutableMetadata";

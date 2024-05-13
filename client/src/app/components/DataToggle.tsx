@@ -1,4 +1,4 @@
-import { HexEncodedString } from "@iota/sdk-wasm/web";
+import { HexEncodedString } from "@iota/sdk-wasm-stardust/web";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import CopyButton from "./CopyButton";

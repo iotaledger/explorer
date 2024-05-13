@@ -12,4 +12,21 @@ export class NumberHelper {
     public static isNumeric(value: string): boolean {
         return /^-?\d+$/.test(value);
     }
+
+    public static isNumber(value?: number | null): boolean {
+        return value !== null && value !== undefined && !isNaN(value);
+    }
+
+    public static sumValues(...args: (bigint | number | string | null | undefined)[]): number {
+        return args.reduce<number>((acc, cur) => {
+            const value = cur || 0; // Convert null or undefined to 0
+            if (typeof value === "bigint" || typeof value === "number") {
+                return acc + Number(value);
+            } else if (typeof value === "string") {
+                return acc + Number(value) || 0;
+            } else {
+                return acc;
+            }
+        }, 0);
+    }
 }

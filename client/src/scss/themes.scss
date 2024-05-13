@@ -59,6 +59,17 @@
     --statistics-select-border: #{$gray-1};
     --calendar-bg: #{$white};
     --calendar-hover: #{$gray-1};
+    --box-bg-color: #{$iota2-gray-100};
+    --box-bg-secondary-color: #{$iota2-blue-700}14;
+    --icon-fill-color: #{$iota2-blue-700};
+    --transparent-button-bg-hover: #{$iota2-blue-700}14;
+    --transparent-button-bg-active: #{$iota2-blue-700}29;
+    --icon-button-border: rgb(0 0 0 / 16%);
+    --scrollbar-thumb: var(--header-color, #{$gray-6});
+    --footer-bg-color: #{$gray-11};
+    --footer-logo-fill: rgb(246 248 252);
+    --footer-text-color: #{$gray-3};
+    --footer-heading-color: #{$gray-6};
 
     body.darkmode {
         --body-background: #091326;
@@ -76,11 +87,11 @@
         --header-label-color: #{$gray-3};
         --header-icon-color: #{$gray-5};
         --header-svg-bg: #202e4a;
-        --border-color: #{$gray-5};
+        --border-color: #{$gray-5}42;
         --fiat-acronym-color: #{$white};
         --expanded-color: #{$gray-5};
         --light-bg: #48577614;
-        --input-border-color: #{$gray-5};
+        --input-border-color: #{$gray-5}42;
         --input-focus-border-color: #{$gray-3};
         --modal-color: #{$gray-3};
         --message-confirmed-bg: rgb(0 224 202 / 20%);
@@ -112,6 +123,13 @@
         --statistics-select-border: #{$gray-8};
         --calendar-bg: #{$gray-9};
         --calendar-hover: #{$gray-7};
+        --box-bg-color: #000000;
+        --box-bg-secondary-color: #ffffff14;
+        --icon-fill-color: #{$white};
+        --transparent-button-bg-hover: #{$white}14;
+        --transparent-button-bg-active: #{$white}29;
+        --icon-button-border: rgb(255 255 255 / 16%);
+        --scrollbar-thumb: var(--header-color, #{$gray-5});
     }
 
     body.shimmer {
@@ -130,5 +148,38 @@
         --body-background: #00121f;
         --header-bg: #00121f;
         --navbar-bg: #00121f;
+    }
+
+    body.iota2 {
+        --link-color: #{$iota2-blue-700};
+        --link-highlight: #{$iota2-blue-700};
+        --associated-outputs-tabs-active: #{iota2-gray-300};
+        --tabbed-section-tab-active: #{$iota2-blue-700};
+        --pagination-bg-hover-color: #{iota2-gray-300};
+        --pagination-bg-selected-color: #{$iota2-blue-600};
+        --header-bg: #f2f6f9;
+        --navbar-bg: rgb(255 255 255 / 20%);
+        --amount-color: #{$iota2-blue-700};
+        --body-color: #1d1d1d;
+        --header-color: #{$iota2-gray-600};
+        --footer-bg-color: #{white};
+        --footer-logo-fill: var(--body-color);
+        --footer-text-color: var(--body-color);
+        --footer-heading-color: #{$iota2-gray-400};
+    }
+
+    body.iota2.darkmode {
+        --body-background: #0d1117;
+        --header-bg: #000000;
+        --navbar-bg: #000000;
+        --link-color: #{$iota2-blue-600};
+        --link-highlight: #{$iota2-blue-600};
+        --tabbed-section-tab-active: #{$iota2-blue-600};
+        --amount-color: #{$iota2-blue-600};
+        --body-color: #{$white};
+        --header-color: rgb(255 255 255 / 80%);
+        --scrollbar-thumb: #{$iota2-gray-400};
+        --footer-bg-color: #{black};
+        --footer-heading-color: rgb(255 255 255 / 48%);
     }
 }

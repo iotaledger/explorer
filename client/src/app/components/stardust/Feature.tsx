@@ -1,4 +1,4 @@
-import { FeatureType, IssuerFeature, MetadataFeature, SenderFeature, TagFeature } from "@iota/sdk-wasm/web";
+import { FeatureType, IssuerFeature, MetadataFeature, SenderFeature, TagFeature } from "@iota/sdk-wasm-stardust/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import Address from "./address/Address";

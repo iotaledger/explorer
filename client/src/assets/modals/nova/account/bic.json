@@ -1,0 +1,11 @@
+{
+    "title": "Block Issuance Credit",
+    "description": "<p>(BIC) is the form of Mana used as an anti-spam mechanism to the block issuance process.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#block-issuance-credits-bic",
+            "isExternal": true
+        }
+    ]
+}

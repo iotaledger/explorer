@@ -1,4 +1,4 @@
-import { Block, OutputResponse, IOutputsResponse } from "@iota/sdk-wasm/web";
+import { Block, OutputResponse, IOutputsResponse } from "@iota/sdk-wasm-stardust/web";
 import { IAssociationsResponse } from "./IAssociationsResponse";
 import { IMilestoneBlocksResponse } from "./IMilestoneBlocksResponse";
 import { IMilestoneDetailsResponse } from "./IMilestoneDetailsResponse";

@@ -23,6 +23,15 @@
         justify-content: center;
         font-family: $metropolis;
 
+        .icon {
+            margin-left: 12px;
+
+            span {
+                transition: transform 0.2s ease;
+                color: var(--header-icon-color);
+            }
+        }
+
         &.opened {
             .icon {
                 span {
@@ -33,6 +42,10 @@
 
         .network--switcher__dropdown {
             text-align: center;
+
+            @include desktop-down {
+                width: 100%;
+            }
 
             .label {
                 @include font-size(16px, 18px);
@@ -49,19 +62,6 @@
                 font-weight: 600;
                 letter-spacing: 0.15em;
                 text-transform: uppercase;
-            }
-
-            @include desktop-down {
-                width: 100%;
-            }
-        }
-
-        .icon {
-            margin-left: 12px;
-
-            span {
-                transition: transform 0.2s ease;
-                color: var(--header-icon-color);
             }
         }
     }
@@ -113,6 +113,7 @@
             }
         }
 
+        /* stylelint-disable max-nesting-depth, selector-max-compound-selectors */
         .network {
             display: flex;
             flex-direction: row;
@@ -130,8 +131,20 @@
                     border-radius: 12px;
                     cursor: pointer;
 
+                    .network--icon {
+                        min-width: 64px;
+                        height: 64px;
+                        border-radius: 8px;
+                        background: $gray-2;
+                        background: var(--header-svg-bg);
+
+                        svg path {
+                            fill: var(--header-icon-color);
+                        }
+                    }
+
                     &.selected {
-                        background: rgba(20, 202, 191, 0.08);
+                        background: rgb(20 202 191 / 8%);
 
                         .network--icon {
                             background: $mint-green-6;
@@ -146,41 +159,31 @@
                         background: var(--light-bg);
                     }
 
-                    .network--icon {
-                        min-width: 64px;
-                        height: 64px;
-                        border-radius: 8px;
-                        background: $gray-2;
-                        background: var(--header-svg-bg);
-
-                        svg path {
-                            fill: var(--header-icon-color);
-                        }
-                    }
-
                     .network--content {
                         margin-left: 24px;
 
                         .label {
+                            @include font-size(16px, 24px);
+
                             color: var(--body-color);
                             font-family: $metropolis;
                             font-weight: 600;
                             letter-spacing: 0.01em;
-
-                            @include font-size(16px, 24px);
                         }
 
                         .protocol {
+                            @include font-size(12px, 18px);
+
                             color: var(--expanded-color);
                             font-family: $inter;
                             font-weight: 500;
                             letter-spacing: 0.5px;
-
-                            @include font-size(12px, 18px);
                         }
                     }
                 }
             }
         }
+
+        /* stylelint-enable max-nesting-depth, selector-max-compound-selectors */
     }
 }

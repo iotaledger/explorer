@@ -16,7 +16,7 @@ declare module "vivagraphjs" {
         }
         export interface IGraph<T, U> {
             getLink: (nodeA: string, nodeB: string) => ILink<U> | undefined;
-            addLink: (nodeA: string, nodeB: string, data?: U) => void;
+            addLink: (nodeA: string, nodeB: string, data?: U) => ILink<U>;
             removeLink: (link: ILink<U>) => void;
             getNode: (node: string) => INode<T, U> | undefined;
             addNode: (node: string, data?: T) => INode<T, U>;

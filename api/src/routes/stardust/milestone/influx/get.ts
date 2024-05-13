@@ -4,7 +4,7 @@ import { IMilestoneAnalyticStats } from "../../../../models/api/stats/IMilestone
 import { IConfiguration } from "../../../../models/configuration/IConfiguration";
 import { STARDUST } from "../../../../models/db/protocolVersion";
 import { NetworkService } from "../../../../services/networkService";
-import { InfluxDBService } from "../../../../services/stardust/influx/influxDbService";
+import { InfluxServiceStardust } from "../../../../services/stardust/influx/influxServiceStardust";
 import { ValidationHelper } from "../../../../utils/validationHelper";
 
 /**
@@ -25,7 +25,7 @@ export async function get(_: IConfiguration, request: IMilestoneStatsRequest): P
         return {};
     }
 
-    const influxService = ServiceFactory.get<InfluxDBService>(`influxdb-${request.network}`);
+    const influxService = ServiceFactory.get<InfluxServiceStardust>(`influxdb-${request.network}`);
 
     if (!influxService) {
         return { error: "Influx service not found for this network." };

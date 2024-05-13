@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { BlockTangleStateProps } from "./BlockTangleStateProps";
-import { useMilestoneDetails } from "~helpers/hooks/useMilestoneDetails";
+import { useMilestoneDetails } from "~helpers/stardust/hooks/useMilestoneDetails";
 import Tooltip from "../../Tooltip";
 import "./BlockTangleState.scss";
 import { DateHelper } from "~/helpers/dateHelper";

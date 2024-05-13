@@ -7,10 +7,11 @@ import { IDropdownRoute, IRoute } from "~/app/lib/interfaces";
 import mainChrysalisMessage from "~assets/modals/chrysalis/search/main-header.json";
 import mainLegacyMessage from "~assets/modals/legacy/search/main-header.json";
 import mainStardustMessage from "~assets/modals/stardust/search/main-header.json";
+import mainNovaMessage from "~assets/modals/nova/search/main-header.json";
 import ShimmerLogo from "~assets/shimmer-logo-header.svg?react";
 import { ServiceFactory } from "~factories/serviceFactory";
 import { isMarketedNetwork, isShimmerUiTheme } from "~helpers/networkHelper";
-import { CHRYSALIS, LEGACY, ProtocolVersion, STARDUST } from "~models/config/protocolVersion";
+import { CHRYSALIS, LEGACY, NOVA, ProtocolVersion, STARDUST } from "~models/config/protocolVersion";
 import { SettingsService } from "~services/settingsService";
 import FiatSelector from "../FiatSelector";
 import Modal from "../Modal";
@@ -22,10 +23,11 @@ import "./Header.scss";
 
 const NETWORK_DROPDOWN_LABEL = "Network Switcher";
 
-const MODAL_MESSAGE: Record<ProtocolVersion, { title: string; description: string }> = {
+const MODAL_MESSAGE: { [key in ProtocolVersion]?: { title: string; description: string } } = {
     [LEGACY]: mainLegacyMessage,
     [CHRYSALIS]: mainChrysalisMessage,
     [STARDUST]: mainStardustMessage,
+    [NOVA]: mainNovaMessage,
 };
 
 interface IHeader {
@@ -49,6 +51,7 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
     const isNetworkSwitcherExpanded = expandedDropdownLabel === NETWORK_DROPDOWN_LABEL;
     const isShimmerUi = isShimmerUiTheme(currentNetwork?.uiTheme);
     const isMarketed = isMarketedNetwork(currentNetwork?.network);
+    const modalMessage = currentNetwork?.protocolVersion ? MODAL_MESSAGE[currentNetwork.protocolVersion] : undefined;
 
     useEffect(() => {
         saveThemeAndDispatchEvent(darkMode);
@@ -150,9 +153,7 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                             protocolVersion={protocolVersion}
                         />
 
-                        {currentNetwork?.protocolVersion && (
-                            <Modal icon="info" data={MODAL_MESSAGE[currentNetwork.protocolVersion]} showModal={setShow} />
-                        )}
+                        {modalMessage && <Modal icon="info" data={modalMessage} showModal={setShow} />}
 
                         {/* ----- Only visible in desktop ----- */}
                         {isMarketed && (
@@ -186,26 +187,32 @@ export default function Header({ rootPath, currentNetwork, networks, history, ac
                             <ul>
                                 {routes &&
                                     routes.length > 0 &&
-                                    routes.map((route) =>
-                                        !routeIsDropdown(route) ? (
-                                            <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
-                                                <li className="menu--expanded__item" key={route.url}>
-                                                    <span className={classNames({ "active-item": route.url === window.location.pathname })}>
-                                                        {route.label}
-                                                    </span>
-                                                </li>
-                                            </Link>
-                                        ) : (
-                                            <HeaderDropdown
-                                                key={route.label}
-                                                {...route}
-                                                isExpanded={route.label === expandedDropdownLabel}
-                                                setExpandedDropdownId={setExpandedDropdownLabel}
-                                                setIsMenuExpanded={setIsMenuExpanded}
-                                                mobileOnly
-                                            />
-                                        ),
-                                    )}
+                                    routes
+                                        .filter((route) => !route.disabled)
+                                        .map((route) =>
+                                            !routeIsDropdown(route) ? (
+                                                <Link key={route.url} to={route.url} onClick={resetExpandedDropdowns}>
+                                                    <li className="menu--expanded__item" key={route.url}>
+                                                        <span
+                                                            className={classNames({
+                                                                "active-item": route.url === window.location.pathname,
+                                                            })}
+                                                        >
+                                                            {route.label}
+                                                        </span>
+                                                    </li>
+                                                </Link>
+                                            ) : (
+                                                <HeaderDropdown
+                                                    key={route.label}
+                                                    {...route}
+                                                    isExpanded={route.label === expandedDropdownLabel}
+                                                    setExpandedDropdownId={setExpandedDropdownLabel}
+                                                    setIsMenuExpanded={setIsMenuExpanded}
+                                                    mobileOnly
+                                                />
+                                            ),
+                                        )}
                             </ul>
                         </div>
                     </div>

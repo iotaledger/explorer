@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useState } from "react";
 import Datetime from "react-datetime";
-import { useTransactionHistoryDownload } from "~helpers/hooks/useTransactionHistoryDownload";
+import { useTransactionHistoryDownload } from "~helpers/stardust/hooks/useTransactionHistoryDownload";
 import Spinner from "../Spinner";
 import Tooltip from "../Tooltip";
 import "./DownloadModal.scss";

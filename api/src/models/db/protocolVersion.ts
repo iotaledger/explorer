@@ -2,8 +2,9 @@
 export const LEGACY = "legacy";
 export const CHRYSALIS = "chrysalis";
 export const STARDUST = "stardust";
+export const NOVA = "nova";
 
-const protocolVersions = [LEGACY, CHRYSALIS, STARDUST] as const;
+const protocolVersions = [LEGACY, CHRYSALIS, STARDUST, NOVA] as const;
 
 /**
  * The protocol versions.

@@ -1,0 +1,42 @@
+@import "../../../../../../scss/fonts";
+@import "../../../../../../scss/media-queries";
+@import "../../../../../../scss/mixins";
+@import "../../../../../../scss/variables";
+@import "../../../../../../scss/themes";
+
+.section--delegations {
+    .card-info-wrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+
+        @include phone-down {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+
+    .delegation-outputs {
+        font-family: $metropolis;
+
+        .table-container table thead th {
+            padding-bottom: 16px;
+        }
+
+        table {
+            @include tablet-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+        }
+
+        .truncated-id-cell {
+            max-width: 400px;
+
+            @include desktop-down {
+                max-width: 165px;
+            }
+        }
+    }
+}

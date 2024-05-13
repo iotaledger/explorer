@@ -1,8 +1,8 @@
-import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { CommonOutput, INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import moment from "moment/moment";
 
 import { DateHelper } from "~helpers/dateHelper";
-import { OutputWithDetails } from "~helpers/hooks/useAddressHistory";
+import { OutputWithDetails } from "~helpers/stardust/hooks/useAddressHistory";
 import { STARDUST_SUPPLY_INCREASE_OUTPUT_TICKER, TransactionsHelper } from "~helpers/stardust/transactionsHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import { CHRYSALIS_MAINNET } from "~models/config/networkType";

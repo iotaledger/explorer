@@ -10,9 +10,15 @@
     button {
         border: none;
         background-color: transparent;
+        outline: none;
+
+        &:hover {
+            background-color: transparent;
+        }
 
         &:focus {
             box-shadow: none;
+            outline: none;
         }
     }
 
@@ -20,6 +26,16 @@
         display: flex;
         align-items: center;
         padding: 0 8px;
+        outline: none;
+
+        &:hover {
+            background-color: transparent;
+        }
+
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
 
         span {
             color: #b0bfd9;
@@ -102,6 +118,9 @@
             .modal--actions {
                 margin: 24px 0;
                 pointer-events: auto;
+                display: flex;
+                gap: 8px;
+
                 .modal--action {
                     @include font-size(14px, 21px);
 

@@ -1,4 +1,4 @@
-import { HexEncodedString, MilestonePayload } from "@iota/sdk-wasm/web";
+import { HexEncodedString, MilestonePayload } from "@iota/sdk-wasm-stardust/web";
 import { IFeedBlockMetadata } from "./IFeedBlockMetadata";
 
 interface IFeedBlockProperties {

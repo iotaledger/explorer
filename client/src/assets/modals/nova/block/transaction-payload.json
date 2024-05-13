@@ -1,0 +1,16 @@
+{
+    "title": "Transaction Payload",
+    "description": "<p>This block is a transaction: the outputs on the left got consumed to create outputs on the right. You can find the owners of the new outputs in their address unlock conditions.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/shimmer/introduction/explanations/ledger/simple_transfers",
+            "isExternal": true
+        },
+        {
+            "label": "IOTA 2.0 Transaction Payload",
+            "href": "https://github.com/iotaledger/tips/blob/tip45/tips/TIP-0045/tip-0045.md",
+            "isExternal": true
+        }
+    ]
+}

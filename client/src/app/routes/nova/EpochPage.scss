@@ -1,0 +1,70 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.epoch-page {
+    .wrapper {
+        padding: 0 20px;
+    }
+    .epoch-page--header {
+        display: flex;
+        justify-content: space-between;
+
+        @include tablet-down {
+            flex-direction: column;
+        }
+    }
+
+    .validators-page__header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .header__title {
+            margin-bottom: 8px;
+        }
+    }
+
+    .section--committee {
+        font-family: $metropolis;
+        margin-top: 16px;
+        padding-top: 0;
+        margin-bottom: 34px;
+
+        .table-container table thead th {
+            padding-bottom: 16px;
+        }
+
+        table {
+            @include tablet-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+        }
+
+        .truncated-id-cell {
+            max-width: 250px;
+
+            @include desktop-down {
+                max-width: 165px;
+            }
+        }
+    }
+
+    .card-info-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+
+        @include tablet-down {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include phone-down {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+}

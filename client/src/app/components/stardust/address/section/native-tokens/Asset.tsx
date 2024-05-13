@@ -1,12 +1,12 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/sdk-wasm/web";
+import { FoundryOutput, MetadataFeature, FeatureType } from "@iota/sdk-wasm-stardust/web";
 import { Validator as JsonSchemaValidator } from "jsonschema";
 import React, { ReactElement, useEffect, useState } from "react";
 import { AssetProps } from "./AssetProps";
 import tokenSchemeIRC30 from "~assets/schemas/token-schema-IRC30.json";
-import { useFoundryDetails } from "~helpers/hooks/useFoundryDetails";
-import { useTokenRegistryNativeTokenCheck } from "~helpers/hooks/useTokenRegistryNativeTokenCheck";
+import { useFoundryDetails } from "~helpers/stardust/hooks/useFoundryDetails";
+import { useTokenRegistryNativeTokenCheck } from "~helpers/stardust/hooks/useTokenRegistryNativeTokenCheck";
 import { Converter } from "~helpers/stardust/convertUtils";
 import { ITokenMetadata } from "~models/api/stardust/foundry/ITokenMetadata";
 import Spinner from "../../../../Spinner";

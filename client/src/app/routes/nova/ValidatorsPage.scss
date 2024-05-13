@@ -1,0 +1,70 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.validators-page {
+    display: flex;
+    flex-direction: column;
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 25px;
+
+            @include desktop-down {
+                flex: unset;
+                width: 100%;
+                max-width: 100%;
+                margin: 40px 24px;
+                padding-right: 24px;
+                padding-left: 24px;
+
+                > .row {
+                    flex-direction: column;
+                }
+            }
+
+            @include tablet-down {
+                margin: 28px 0;
+            }
+
+            .validators-page__header {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+
+                .header__title {
+                    margin-bottom: 8px;
+                }
+            }
+
+            .section__validators {
+                font-family: $metropolis;
+
+                table {
+                    @include tablet-down {
+                        display: block;
+                        overflow-x: auto;
+                        white-space: nowrap;
+                        width: 100%;
+                    }
+                }
+
+                .truncated-id-cell {
+                    max-width: 250px;
+
+                    @include desktop-down {
+                        max-width: 165px;
+                    }
+                }
+            }
+        }
+    }
+}

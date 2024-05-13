@@ -1,0 +1,16 @@
+{
+    "title": "Non-fungible Tokens (NFTs)",
+    "description": "<p>Non-fungible tokens, so-called NFTs, are different from native tokens because each token must be unique and must have some immutable data attached to them.</p>",
+    "links": [
+        {
+            "label": "Read more",
+            "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/multi-asset-ledger/#non-fungible-tokens-nfts",
+            "isExternal": true
+        },
+        {
+            "label": "NFT Output",
+            "href": "https://github.com/iotaledger/tips/blob/tip43/tips/TIP-0043/tip-0043.md",
+            "isExternal": true
+        }
+    ]
+}

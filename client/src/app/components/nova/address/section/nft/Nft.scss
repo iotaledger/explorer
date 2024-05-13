@@ -1,0 +1,38 @@
+@import "../../../../../../scss/fonts";
+@import "../../../../../../scss/mixins";
+@import "../../../../../../scss/variables";
+
+.nft-card {
+    display: flex;
+    width: 200px;
+    height: 235px;
+    flex-direction: column;
+    font-family: $inter;
+    margin: 4px 8px;
+
+    &__metadata {
+        height: 208px;
+    }
+
+    &__image {
+        border-radius: 8px;
+        object-fit: cover;
+        width: 200px;
+        height: 180px;
+    }
+
+    &__name {
+        @include font-size(14px);
+        font-weight: 400;
+        width: 100%;
+        text-align: center;
+        color: var(--body-color);
+    }
+
+    &__id {
+        @include font-size(14px);
+        font-family: $ibm-plex-mono;
+        font-weight: normal;
+        color: var(--link-color);
+    }
+}

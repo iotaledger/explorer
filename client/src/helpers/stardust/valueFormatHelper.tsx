@@ -1,7 +1,7 @@
-import { UnitsHelper } from "@iota/iota.js";
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import React from "react";
 import Tooltip from "~app/components/Tooltip";
+import BigDecimal from "../bigDecimal";
 
 /**
  * The id of the Genesis block.
@@ -17,22 +17,29 @@ const GENESIS_BLOCK_ID = "0x0000000000000000000000000000000000000000000000000000
  * @returns The formatted string.
  */
 export function formatAmount(
-    value: number,
+    value: number | bigint | string,
     tokenInfo: INodeInfoBaseToken,
     formatFull: boolean = false,
     decimalPlaces: number = 2,
     trailingDecimals?: boolean,
 ): string {
+    if (value === null || value === undefined || value === "" || isNaN(Number(value))) {
+        return "";
+    }
+
     if (formatFull) {
         return `${value} ${tokenInfo.subunit ?? tokenInfo.unit}`;
     }
 
-    const baseTokenValue = value / Math.pow(10, tokenInfo.decimals);
-    const formattedAmount = toFixedNoRound(baseTokenValue, decimalPlaces, trailingDecimals);
+    const valueBigDecimal =
+        typeof value === "string"
+            ? new BigDecimal(value, tokenInfo.decimals, false)
+            : new BigDecimal(value.toString(), tokenInfo.decimals, false);
 
-    // useMetricPrefix is broken cause it passes a float value to formatBest
-    const amount = tokenInfo.useMetricPrefix ? UnitsHelper.formatBest(baseTokenValue) : `${formattedAmount} `;
-    return `${amount}${tokenInfo.unit}`;
+    const baseTokenValue = valueBigDecimal.divide(Math.pow(10, tokenInfo.decimals).toString());
+    const formattedAmount = toFixedNoRound(baseTokenValue.toString(), decimalPlaces, trailingDecimals);
+
+    return `${formattedAmount} ${tokenInfo.unit}`;
 }
 
 /**

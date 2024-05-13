@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { RouteComponentProps } from "react-router-dom";
 import { AppRouteProps } from "./AppRouteProps";
-import { buildMetaLabel, getFooterItems, getPages, getFaviconHelmet, networkContextWrapper } from "./AppUtils";
+import { buildMetaLabel, getFooterItems, getPages, getFaviconHelmet, networkContextWrapper, populateNetworkInfoNova } from "./AppUtils";
 import Disclaimer from "./components/Disclaimer";
 import Footer from "./components/footer/Footer";
 import ShimmerFooter from "./components/footer/ShimmerFooter";
@@ -16,9 +16,10 @@ import { useWasmLoader } from "~helpers/hooks/useWasmLoader";
 import { useInitServicesLoader } from "~helpers/hooks/useInitServicesLoader";
 import { INetwork } from "~models/config/INetwork";
 import { MAINNET } from "~models/config/networkType";
-import { STARDUST } from "~models/config/protocolVersion";
+import { IOTA_UI, IOTA2_UI, SHIMMER_UI } from "~models/config/uiTheme";
+import { NOVA, STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
-import { NodeInfoService } from "~services/nodeInfoService";
+import { NodeInfoService as NodeInfoServiceStardust } from "~services/stardust/nodeInfoService";
 import "./App.scss";
 import Spinner from "~app/components/Spinner";
 
@@ -56,16 +57,29 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
     const identityResolverEnabled = protocolVersion !== STARDUST && (networkConfig?.identityResolverEnabled ?? true);
     const currentNetworkName = networkConfig?.network;
     const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
-    const nodeService = ServiceFactory.get<NodeInfoService>("node-info");
+    const nodeService = ServiceFactory.get<NodeInfoServiceStardust>("node-info-stardust");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetworkName, nodeInfo, networkConfig?.uiTheme);
     scrollToTop();
 
+    if (networkConfig?.protocolVersion === NOVA) {
+        populateNetworkInfoNova(networkConfig.network);
+    }
+
     const body = document.querySelector("body");
-    if (isShimmer) {
-        body?.classList.add("shimmer");
-    } else {
-        body?.classList.remove("shimmer");
+    switch (networkConfig?.uiTheme) {
+        case SHIMMER_UI:
+            body?.classList.add("shimmer");
+            body?.classList.remove("iota2");
+            break;
+        case IOTA_UI:
+            body?.classList.remove("shimmer");
+            body?.classList.remove("iota2");
+            break;
+        case IOTA2_UI:
+            body?.classList.remove("shimmer");
+            body?.classList.add("iota2");
+            break;
     }
 
     if (!networksLoaded || !isMainWasmLoaded || !isServicesLoaded) {

@@ -1,4 +1,4 @@
-import { CommonOutput, INodeInfoBaseToken, OutputResponse } from "@iota/sdk";
+import { CommonOutput, INodeInfoBaseToken, OutputResponse } from "@iota/sdk-stardust";
 import JSZip from "jszip";
 import moment from "moment";
 import { ServiceFactory } from "../../../../factories/serviceFactory";

@@ -1,4 +1,4 @@
-import { IResponse } from "@iota/sdk";
+import { IResponse } from "@iota/sdk-stardust";
 
 export interface IDistributionEntry {
     addressCount: string;

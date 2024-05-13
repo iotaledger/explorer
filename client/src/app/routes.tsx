@@ -26,20 +26,34 @@ import { TransactionRouteProps as LegacyTransactionRouteProps } from "./routes/l
 import LegacyVisualizer from "./routes/legacy/Visualizer";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
+import NovaAddressPage from "./routes/nova/AddressPage";
 import StardustBlock from "./routes/stardust/Block";
 import StardustFoundry from "./routes/stardust/Foundry";
 import { Landing as StardustLanding } from "./routes/stardust/landing/Landing";
-import NftRedirectRoute from "./routes/stardust/NftRedirectRoute";
+import NovaLanding from "./routes/nova/landing/Landing";
+import NftRedirectRouteStardust from "./routes/stardust/NftRedirectRoute";
+import NftRedirectRouteNova from "./routes/nova/NftRedirectRoute";
 import StardustOutputList from "./routes/stardust/OutputList";
 import StardustOutputPage from "./routes/stardust/OutputPage";
+import NovaBlockPage from "./routes/nova/Block";
+import NovaTransactionPage from "./routes/nova/TransactionPage";
+import NovaOutputPage from "./routes/nova/OutputPage";
+import NovaOutputsPage from "./routes/nova/OutputsPage";
+import NovaFoundryPage from "./routes/nova/FoundryPage";
+import NovaSearch from "./routes/nova/Search";
+import NovaEpochPage from "./routes/nova/EpochPage";
+import NovaSlotPage from "./routes/nova/SlotPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
+import NovaStatisticsPage from "./routes/nova/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
 import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
+import Visualizer from "./routes/nova/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
-import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
+import ValidatorsPage from "./routes/nova/ValidatorsPage";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 
 /**
  * Generator for keys in routes. Gives an incremented value on every next().
@@ -156,7 +170,7 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/visualizer/" key={keys.next().value} component={StardustVisualizer} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={StardustSearch} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={StardustAddressPage} />,
-        <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRoute} />,
+        <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRouteStardust} />,
         <Route path="/:network/block/:blockId" key={keys.next().value} component={StardustBlock} />,
         <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={StardustTransactionPage} />,
         <Route path="/:network/output/:outputId" key={keys.next().value} component={StardustOutputPage} />,
@@ -165,12 +179,30 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/statistics" key={keys.next().value} component={StardustStatisticsPage} />,
     ];
 
+    const novaRoutes = [
+        <Route exact path="/:network" key={keys.next().value} component={NovaLanding} />,
+        <Route path="/:network/addr/:address" key={keys.next().value} component={NovaAddressPage} />,
+        <Route path="/:network/visualizer/" key={keys.next().value} component={Visualizer} />,
+        <Route path="/:network/block/:blockId" key={keys.next().value} component={NovaBlockPage} />,
+        <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
+        <Route path="/:network/search/:query?" key={keys.next().value} component={NovaSearch} />,
+        <Route path="/:network/slot/:slotIndex" key={keys.next().value} component={NovaSlotPage} />,
+        <Route path="/:network/epoch/:epochIndex" key={keys.next().value} component={NovaEpochPage} />,
+        <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={NovaTransactionPage} />,
+        <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={NovaFoundryPage} />,
+        <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRouteNova} />,
+        <Route path="/:network/statistics" key={keys.next().value} component={NovaStatisticsPage} />,
+        <Route path="/:network/validators" key={keys.next().value} component={ValidatorsPage} />,
+        <Route path="/:network/outputs" key={keys.next().value} component={NovaOutputsPage} />,
+    ];
+
     return (
         <Switch>
             {commonRoutes}
             {protocolVersion === LEGACY && legacyRoutes}
             {protocolVersion === CHRYSALIS && chrysalisRoutes}
             {protocolVersion === STARDUST && withNetworkContext(stardustRoutes)}
+            {protocolVersion === NOVA && novaRoutes}
         </Switch>
     );
 };

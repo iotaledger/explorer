@@ -6,13 +6,17 @@ import CopyButton from "../CopyButton";
 interface TruncatedIdProps {
     readonly id: string;
     readonly link?: string;
+    readonly linkState?: Record<string, unknown>;
     readonly showCopyButton?: boolean;
 }
 
-const TruncatedId: React.FC<TruncatedIdProps> = ({ id, link, showCopyButton }) => {
+const TruncatedId: React.FC<TruncatedIdProps> = ({ id, link, linkState, showCopyButton }) => {
     const content =
         link && link.length > 0 ? (
-            <Link to={link} className={classNames("truncate", "highlight", { "margin-r-t": showCopyButton })}>
+            <Link
+                to={{ pathname: link, state: linkState }}
+                className={classNames("truncate", "highlight", { "margin-r-t": showCopyButton })}
+            >
                 {id}
             </Link>
         ) : (

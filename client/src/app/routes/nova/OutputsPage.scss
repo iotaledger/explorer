@@ -1,0 +1,90 @@
+@import "../../../scss/fonts";
+@import "../../../scss/mixins";
+@import "../../../scss/media-queries";
+@import "../../../scss/variables";
+
+.output-list {
+    display: flex;
+    flex-direction: column;
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: $desktop-width;
+            margin: 40px 25px;
+
+            @include desktop-down {
+                flex: unset;
+                width: 100%;
+                max-width: 100%;
+                margin: 40px 24px;
+                padding-right: 24px;
+                padding-left: 24px;
+
+                > .row {
+                    flex-direction: column;
+                }
+            }
+
+            @include tablet-down {
+                margin: 28px 0;
+            }
+
+            .ouput-list--header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .output-list__basic,
+            .output-list__nft {
+                .load-more--button {
+                    margin: 24px 0 8px 0;
+                    align-self: center;
+                    font-family: $metropolis;
+                    width: fit-content;
+                    padding: 4px 8px;
+                    cursor: pointer;
+
+                    &:hover {
+                        button {
+                            color: var(--link-highlight);
+                        }
+                    }
+
+                    button {
+                        padding: 6px;
+                        color: var(--header-icon-color);
+                    }
+                }
+
+                .outputs-over-limit {
+                    margin: 20px auto 0;
+                    align-items: center;
+                    background-color: var(--header-svg-bg);
+                    color: var(--body-color);
+                    font-family: $inter;
+                    font-size: 0.875rem;
+                    padding: 10px 24px;
+                }
+            }
+
+            .section {
+                padding-top: 44px;
+
+                .section--header {
+                    margin-top: 44px;
+                }
+
+                .card--content__output {
+                    margin-top: 20px;
+                }
+            }
+        }
+    }
+}

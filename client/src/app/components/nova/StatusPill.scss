@@ -1,0 +1,41 @@
+@import "./../../../scss/fonts";
+@import "./../../../scss/mixins";
+@import "./../../../scss/media-queries";
+@import "./../../../scss/variables";
+
+.status-pill {
+    @include font-size(12px);
+
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 6px;
+    outline: none;
+    color: $gray-midnight;
+    font-family: $inter;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+
+    @include phone-down {
+        height: 32px;
+    }
+
+    &.status__ {
+        &success {
+            background-color: #0000db;
+            color: white;
+        }
+
+        &error {
+            background-color: var(--message-conflicting-bg);
+        }
+
+        &pending {
+            background-color: var(--light-bg);
+            color: #8493ad;
+        }
+    }
+}

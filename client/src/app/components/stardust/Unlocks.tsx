@@ -1,4 +1,4 @@
-import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/sdk-wasm/web";
+import { ReferenceUnlock, SignatureUnlock, Unlock, UnlockType } from "@iota/sdk-wasm-stardust/web";
 import classNames from "classnames";
 import React, { useState } from "react";
 import DropdownIcon from "~assets/dropdown-arrow.svg?react";

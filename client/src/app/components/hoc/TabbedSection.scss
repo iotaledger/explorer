@@ -54,7 +54,7 @@
             }
 
             button.tab {
-                background: var(--associated-outputs-tabs-bg);
+                background: transparent;
                 color: $gray-6;
                 border-radius: 0;
                 white-space: nowrap;
@@ -63,6 +63,7 @@
 
                 &:focus {
                     box-shadow: none;
+                    outline: none;
                 }
 
                 @include phone-down {

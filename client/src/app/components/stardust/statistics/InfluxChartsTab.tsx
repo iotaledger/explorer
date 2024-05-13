@@ -5,7 +5,7 @@ import LineChart from "./charts/LineChart";
 import StackedBarChart from "./charts/StackedBarChart";
 import StackedLineChart from "./charts/StackedLineChart";
 import graphMessages from "~assets/modals/stardust/statistics/graphs.json";
-import { useChartsState } from "~helpers/hooks/useChartsState";
+import { useChartsState } from "~helpers/stardust/hooks/useChartsState";
 import { idGenerator } from "~helpers/stardust/statisticsUtils";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../context/NetworkContext";
@@ -35,8 +35,9 @@ export const InfluxChartsTab: React.FC = () => {
         analyticStats,
     ] = useChartsState();
 
-    const lockedStorageDepositValue =
-        formatAmount(Number(analyticStats?.lockedStorageDeposit), tokenInfo).replace(COMMAS_REGEX, ",") ?? "-";
+    const lockedStorageDepositValue = analyticStats?.lockedStorageDeposit
+        ? formatAmount(analyticStats.lockedStorageDeposit, tokenInfo).replace(COMMAS_REGEX, ",")
+        : "-";
 
     const ids = idGenerator();
 

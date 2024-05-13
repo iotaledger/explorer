@@ -1,0 +1,303 @@
+{
+    "blocks": {
+        "title": "Blocks",
+        "description": "<p>Nova nodes issue blocks to exchange data, including the information about token transactions. The higher readings could indicate a higher overall activity on the network.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures#the-blocks",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyBlocks": {
+        "title": "Daily Blocks",
+        "description": "<p>How many blocks the network has issued in a day. The values are separated by the block payload type.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://github.com/iotaledger/tips/blob/main/tips/TIP-0024/tip-0024.md#payloads",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyBlockIssuer": {
+        "title": "Daily Block Issuers",
+        "description": "<p>Tracks the number of registered and active Block Issuers in the network on a daily basis.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/communication-layer/#block-creation",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyTransactions": {
+        "title": "Daily Transactions",
+        "description": "<p>How many transactions the network has processed in a day. The values are separated between confirmed transactions and conflicting transactions (these were rejected).</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#transactions",
+                "isExternal": true
+            }
+        ]
+    },
+    "outputs": {
+        "title": "Outputs",
+        "description": "<p>As transactions create new outputs and exhaust the old ones, the total amount of base tokens stays the same, but their owners change. Outputs of special types are also used for NFTs, foundries, and anchors.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#transactions",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalOutputs": {
+        "title": "Total Outputs by Type",
+        "description": "<p>How many outputs are there of each output type. The more special outputs there are, the more NFTs, native assets, and smart contract chains is there on the network.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#outputs",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalTokens": {
+        "title": "Total Tokens by Output Type",
+        "description": "<p>The base token distribution by each output type on a given day. The base tokens that belong to outputs of the special types are mostly locked as security deposits.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#outputs",
+                "isExternal": true
+            }
+        ]
+    },
+    "addressesAndTokens": {
+        "title": "Addresses and Tokens",
+        "description": "<p>Addresses own unspent outputs, and the sum of the tokens in these outputs makes the balance of the address. As each wallet has multiple addresses, and a person can have multiple wallets, this data does not represent the number of the Shimmer users, but it could correlate with it.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/smart-contracts/accounts-addresses-and-fees/",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalAddressesWithTokens": {
+        "title": "Total Addresses with Tokens",
+        "description": "<p>The total number of addresses that are referenced by unspent outputs, which is measured daily.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/smart-contracts/accounts-addresses-and-fees/",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalAddresses": {
+        "title": "Total Addresses with Tokens",
+        "description": "<p>The total number of addresses that are referenced by unspent outputs, which is measured daily.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/smart-contracts/accounts-addresses-and-fees/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyActiveAddresses": {
+        "title": "Daily Active Addresses",
+        "description": "<p>How many addresses sent or received a transaction in a day.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/smart-contracts/accounts-addresses-and-fees/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailySentTokens": {
+        "title": "Daily Sent Tokens",
+        "description": "<p>The volume of transactions in base tokens in a day.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/smart-contracts/accounts-addresses-and-fees/",
+                "isExternal": true
+            }
+        ]
+    },
+    "specialOutputsActivity": {
+        "title": "Special Outputs Activity",
+        "description": "<p>The activity on the network that is associated with things like minting and sending NFTs, or updating the state of an alias output.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#outputs",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyAnchorActivity": {
+        "title": "Daily Anchor Activity",
+        "description": "<p>The daily activity over all anchor outputs. It counts the network changes that involve anchor outputs and group them by their nature: how many anchor outputs were created and destroyed, how many times governors changed, and how many times anchor states were updated.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://github.com/iotaledger/tips/blob/tip54/tips/TIP-0054/tip-0054.md",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyNftActivity": {
+        "title": "Daily NFT Activity",
+        "description": "<p>The daily activity over all NFT outputs. It counts the network changes that involve NFT outputs and group them by their nature: how many NFT outputs were created and destroyed, and how many times had they change hands.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://github.com/iotaledger/tips/blob/tip43/tips/TIP-0043/tip-0043.md#nft-output",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyAccountActivity": {
+        "title": "Daily Account Activity",
+        "description": "<p>The daily activity over all Account outputs. It counts the network changes that involve Account outputs and group them by their nature: how many Account outputs were created and destroyed, and how many times had they change hands.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#accounts",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyFoundryActivity": {
+        "title": "Daily Foundry Activity",
+        "description": "<p>The daily activity over all Foundry outputs. It counts the network changes that involve Foundry outputs and group them by their nature: how many Founrdy outputs were created and destroyed, and how many times had they change hands.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyDelegationActivity": {
+        "title": "Daily Delegation Activity",
+        "description": "<p>The daily activity over all Delegation outputs. It counts the network changes that involve Delegation outputs and group them by their nature: how many Delegation outputs were created and destroyed, and how many times had they change hands.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#delegation",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyValidatorsActivity": {
+        "title": "Daily Validators Activity",
+        "description": "<p>The daily activity over all Validators. It counts the total number of validators and candidates for validator committee.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/validators/",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyDelegatorsActivity": {
+        "title": "Daily Delegators Activity",
+        "description": "<p>The daily activity over all Delegators. It counts the total number of delegators.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#staking-and-delegation-1",
+                "isExternal": true
+            }
+        ]
+    },
+    "dailyStakingActivity": {
+        "title": "Daily Staking Activity",
+        "description": "<p>The daily total Staked amount.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#staking-and-delegation-1",
+                "isExternal": true
+            }
+        ]
+    },
+    "unlockConditions": {
+        "title": "Unlock Conditions",
+        "description": "<p>Outputs can limit access to their associated tokens through unlock conditions. They are commonly used to relieve the old storage deposit with the tokens of the new owner, or to limit the output by the time when it is should be claimed.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#unlocks",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalUnlockConditions": {
+        "title": "Total Unlock Conditions",
+        "description": "<p>The total amount of outputs that have unlock conditions, by the condition type.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#unlocks",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalLockedTokens": {
+        "title": "Total Locked Tokens",
+        "description": "<p>The total amount of base tokens that are locked by the unlock conditions, by the condition type.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/data-structures/#unlocks",
+                "isExternal": true
+            }
+        ]
+    },
+    "dataStorage": {
+        "title": "Data Storage",
+        "description": "<p>The statistics about the data storage on the network. The total storage is limited, but the more base tokens an output has, the more information it can store. This is called the storage deposit.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/storage-deposit",
+                "isExternal": true
+            }
+        ]
+    },
+    "totalLedgerSize": {
+        "title": "Total Ledger Size",
+        "description": "<p>The total size of the ledger, measured daily. The ledger presents the information as a structure of key-value pairs, and the graph separates the total amount of key bytes from the value bytes.</p>"
+    },
+    "totalStorageDeposit": {
+        "title": "Total Storage Deposit",
+        "description": "<p>The total amount of base tokens that are locked as the storage deposit.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://github.com/iotaledger/tips/blob/tip47/tips/TIP-0047/tip-0047.md",
+                "isExternal": true
+            }
+        ]
+    },
+    "manaBurned": {
+        "title": "Mana Burned",
+        "description": "<p>The total amount of base tokens that are locked as the storage deposit.</p>",
+        "links": [
+            {
+                "label": "Read more",
+                "href": "https://wiki.iota.org/learn/protocols/iota2.0/core-concepts/mana/#mana",
+                "isExternal": true
+            }
+        ]
+    }
+}

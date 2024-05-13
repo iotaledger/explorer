@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMilestoneStats } from "~helpers/hooks/useMilestoneStats";
+import { useMilestoneStats } from "~helpers/stardust/hooks/useMilestoneStats";
 import Spinner from "../../../components/Spinner";
 
 interface MilestoneFeedAnalyicsProps {

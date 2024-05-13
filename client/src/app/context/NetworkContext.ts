@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken, IRent } from "@iota/sdk-wasm-stardust/web";
 import { createContext } from "react";
 import { IOTA_UI } from "~models/config/uiTheme";
 

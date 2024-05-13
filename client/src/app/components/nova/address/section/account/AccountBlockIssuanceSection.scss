@@ -1,0 +1,18 @@
+@import "../../../../../../scss/mixins";
+@import "../../../../../../scss/media-queries";
+
+.section--block-issuance {
+    .card-info-wrapper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+
+        @include tablet-down {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include phone-down {
+            grid-template-columns: repeat(1, 1fr);
+        }
+    }
+}

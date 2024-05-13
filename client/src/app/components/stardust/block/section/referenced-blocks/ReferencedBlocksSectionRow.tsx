@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { useContext, useState } from "react";
-import { useBlock } from "~helpers/hooks/useBlock";
-import { useInputsAndOutputs } from "~helpers/hooks/useInputsAndOutputs";
+import { useBlock } from "~helpers/stardust/hooks/useBlock";
+import { useInputsAndOutputs } from "~helpers/stardust/hooks/useInputsAndOutputs";
 import { NameHelper } from "~helpers/stardust/nameHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 import NetworkContext from "../../../../../context/NetworkContext";

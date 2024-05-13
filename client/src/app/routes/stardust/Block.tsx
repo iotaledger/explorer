@@ -1,4 +1,4 @@
-import { MilestonePayload, PayloadType, TransactionPayload, Utils } from "@iota/sdk-wasm/web";
+import { MilestonePayload, PayloadType, TransactionPayload, Utils } from "@iota/sdk-wasm-stardust/web";
 import React, { useContext, useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { BlockProps } from "./BlockProps";
@@ -8,11 +8,11 @@ import milestonePayloadInfo from "~assets/modals/stardust/block/milestone-payloa
 import referencedBlocksInfo from "~assets/modals/stardust/block/milestone-referenced-blocks.json";
 import taggedDataPayloadInfo from "~assets/modals/stardust/block/tagged-data-payload.json";
 import transactionPayloadInfo from "~assets/modals/stardust/block/transaction-payload.json";
-import { useBlock } from "~helpers/hooks/useBlock";
-import { useBlockChildren } from "~helpers/hooks/useBlockChildren";
-import { useBlockMetadata } from "~helpers/hooks/useBlockMetadata";
-import { useInputsAndOutputs } from "~helpers/hooks/useInputsAndOutputs";
-import { useMilestoneReferencedBlocks } from "~helpers/hooks/useMilestoneReferencedBlock";
+import { useBlock } from "~helpers/stardust/hooks/useBlock";
+import { useBlockChildren } from "~helpers/stardust/hooks/useBlockChildren";
+import { useBlockMetadata } from "~helpers/stardust/hooks/useBlockMetadata";
+import { useInputsAndOutputs } from "~helpers/stardust/hooks/useInputsAndOutputs";
+import { useMilestoneReferencedBlocks } from "~helpers/stardust/hooks/useMilestoneReferencedBlock";
 import { isMarketedNetwork } from "~helpers/networkHelper";
 import { NameHelper } from "~helpers/stardust/nameHelper";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";

@@ -1,0 +1,146 @@
+@import "../../../../../scss/fonts";
+@import "../../../../../scss/media-queries";
+@import "../../../../../scss/mixins";
+@import "../../../../../scss/variables";
+@import "../../../../../scss/themes";
+
+.refblocks {
+    .refblocks__table {
+        width: 100%;
+        border-spacing: 0 18px;
+        border-collapse: separate;
+
+        @include tablet-down {
+            display: none;
+        }
+
+        tr {
+            @include font-size(14px);
+
+            color: $gray-6;
+            font-family: $inter;
+            letter-spacing: 0.5px;
+
+            th {
+                @include font-size(12px);
+
+                color: $gray-6;
+                font-weight: 800;
+                text-align: left;
+                text-transform: uppercase;
+            }
+        }
+
+        .refblocks__table-head {
+            .refblocks__block-id {
+                width: 800px;
+            }
+
+            .refblocks__payload {
+                width: 180px;
+                white-space: nowrap;
+            }
+
+            .refblocks__tx-value {
+                text-align: right !important;
+            }
+        }
+
+        .refblocks__table-body {
+            .refblocks__block-id {
+                color: var(--link-color);
+                font-family: $ibm-plex-mono;
+                text-align: left;
+
+                div {
+                    width: 800px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    @include desktop-down {
+                        width: 500px;
+                    }
+                }
+            }
+            .refblocks__tx-value div {
+                text-align: right;
+                color: $gray-7;
+                font-weight: 600;
+                font-family: $inter;
+                font-size: 0.875rem;
+                letter-spacing: 0.5px;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    .refblocks__cards {
+        display: none;
+        margin-top: 16px;
+
+        @include tablet-down {
+            display: block;
+
+            .card {
+                &:not(:last-child) {
+                    margin-bottom: 8px;
+                }
+
+                .field {
+                    display: flex;
+                    margin: 8px 0 0 8px;
+                    margin-bottom: 8px;
+
+                    .label {
+                        color: $gray-6;
+                        font-family: $inter;
+                        letter-spacing: 0.5px;
+                        white-space: nowrap;
+                        margin-right: 8px;
+                        @include font-size(14px, 21px);
+                    }
+
+                    .card--value {
+                        @include font-size(14px, 21px);
+                        font-weight: 700;
+
+                        &.value__block-id {
+                            width: 350px;
+                            @include phone-down {
+                                width: 200px;
+                            }
+                            color: var(--link-color);
+                            font-family: $ibm-plex-mono;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+
+                        &--payload {
+                            @include font-size(14px);
+                            font-family: $ibm-plex-mono;
+                            color: #485776;
+                        }
+
+                        &--tx-value {
+                            color: $gray-7;
+                            font-weight: 600;
+                            font-family: $inter;
+                            font-size: 0.875rem;
+                            letter-spacing: 0.5px;
+                        }
+                    }
+                }
+
+                .spinner {
+                    margin-left: 8px;
+                    margin-bottom: 4px;
+                }
+            }
+        }
+    }
+
+    .pagination {
+        margin-top: 28px;
+    }
+}

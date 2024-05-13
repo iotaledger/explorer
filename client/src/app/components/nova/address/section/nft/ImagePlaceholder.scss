@@ -1,0 +1,51 @@
+@import "../../../../../../scss/mixins.scss";
+@import "../../../../../../scss/fonts.scss";
+@import "../../../../../../scss/media-queries";
+
+.nft-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 398px;
+    height: 398px;
+    border-radius: 1em;
+
+    @include desktop-down {
+        min-width: 300px;
+        height: 290px;
+    }
+
+    @include tablet-down {
+        align-self: center;
+        width: 100%;
+        max-width: 300px;
+        height: 280px;
+    }
+
+    &__content {
+        display: flex;
+
+        @include font-size(28px);
+        padding: 10px;
+        letter-spacing: 0.16em;
+        font-family: $metropolis-light;
+        line-height: 1.5em;
+        text-align: center;
+        color: var(--body-color);
+    }
+
+    &.compact {
+        min-width: 200px;
+        height: 180px;
+        margin-bottom: 4px;
+
+        .nft-image-placeholder__content {
+            @include font-size(16px);
+            letter-spacing: 0.1em;
+            font-family: $metropolis-light;
+            line-height: 1.5em;
+            text-align: center;
+            color: var(--body-color);
+        }
+    }
+}

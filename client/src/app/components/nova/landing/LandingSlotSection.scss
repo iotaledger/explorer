@@ -1,0 +1,45 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+
+.slots-section {
+    font-family: $metropolis;
+    margin-top: 80px;
+
+    .slots-section__header {
+        @include font-size(36px);
+
+        line-height: 120%;
+        margin-bottom: 48px;
+    }
+
+    .slots-section__table {
+        table {
+            @include desktop-down {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+        }
+
+        .status-cell {
+            display: flex;
+
+            .status-pill {
+                margin-right: 0;
+            }
+
+            span {
+                min-width: 68px;
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+        .truncated-id-cell {
+            max-width: 165px;
+        }
+    }
+}

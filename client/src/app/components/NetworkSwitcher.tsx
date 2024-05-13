@@ -5,14 +5,15 @@ import MainnetIcon from "~assets/mainnet.svg?react";
 import ShimmerIcon from "~assets/shimmer-logo-header.svg?react";
 import { NetworkSwitcherProps } from "./NetworkSwitcherProps";
 import { getNetworkOrder } from "~helpers/networkHelper";
+import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 import { MAINNET, SHIMMER, NetworkType } from "~models/config/networkType";
-import { CHRYSALIS, LEGACY, STARDUST } from "~models/config/protocolVersion";
 import "./NetworkSwitcher.scss";
 
 const PROTOCOL_VERIONS_TO_LABEL = {
     [LEGACY]: "Legacy",
     [CHRYSALIS]: "Chrysalis",
     [STARDUST]: "Stardust",
+    [NOVA]: "Nova",
 };
 
 /**

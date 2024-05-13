@@ -1,4 +1,4 @@
-import { INodeInfoBaseToken } from "@iota/sdk-wasm/web";
+import { INodeInfoBaseToken } from "@iota/sdk-wasm-stardust/web";
 import BigDecimal from "~helpers/bigDecimal";
 import { formatAmount } from "~helpers/stardust/valueFormatHelper";
 
@@ -11,7 +11,7 @@ export const buildShimmerClaimedStats = (claimed: string, supply: string, tokenI
 
     const formatFull = bigInt < Math.pow(10, tokenInfo.decimals - 3);
     const decimals = bigInt < Math.pow(10, tokenInfo.decimals) ? 3 : bigInt < Math.pow(10, tokenInfo.decimals + 2) ? 2 : 0;
-    claimedFinal = formatAmount(Number(claimedFinal), tokenInfo, formatFull, decimals);
+    claimedFinal = formatAmount(claimedFinal, tokenInfo, formatFull, decimals);
     claimedFinal = claimedFinal.replaceAll(COMMAS_REGEX, ",");
 
     const claimedPercentBd = new BigDecimal("100", 2).multiply(claimedBd.toString()).divide(supply);

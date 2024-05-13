@@ -1,4 +1,4 @@
-import { TaggedDataPayload } from "@iota/sdk-wasm/web";
+import { TaggedDataPayload } from "@iota/sdk-wasm-stardust/web";
 import * as H from "history";
 
 export interface TaggedDataPayloadProps {

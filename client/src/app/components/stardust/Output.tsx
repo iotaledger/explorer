@@ -17,7 +17,7 @@ import {
     UnlockCondition as IUnlockCondition,
     UnlockConditionType,
     Utils,
-} from "@iota/sdk-wasm/web";
+} from "@iota/sdk-wasm-stardust/web";
 import classNames from "classnames";
 import React, { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";

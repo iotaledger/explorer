@@ -1,0 +1,109 @@
+@import "../../../../scss/fonts";
+@import "../../../../scss/mixins";
+@import "../../../../scss/media-queries";
+@import "../../../../scss/variables";
+@import "../../../../scss/themes";
+
+.landing-nova {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 80px;
+
+    .header-wrapper {
+        position: relative;
+        z-index: 0;
+        overflow: hidden;
+        background: var(--header-bg);
+
+        .inner {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            flex: 1;
+
+            .header {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                min-height: 400px;
+
+                @include desktop-down {
+                    justify-content: start;
+                }
+
+                @include tablet-down {
+                    justify-content: center;
+                }
+
+                .header--title {
+                    text-align: center;
+
+                    @include desktop-down {
+                        margin: 0;
+                        margin-bottom: 28px;
+                        margin-left: 160px;
+                    }
+
+                    @include tablet-down {
+                        margin-bottom: 172px;
+                        margin-left: 0px;
+                    }
+
+                    h1 {
+                        @include font-size(48px, 58px);
+
+                        font-family: $metropolis-semi-bold;
+                        letter-spacing: 0.02em;
+
+                        @include phone-down {
+                            @include font-size(32px, 36px);
+                        }
+                    }
+
+                    h2 {
+                        @include font-size(16px, 24px);
+
+                        color: $mint-green-6;
+                        font-family: $metropolis-bold;
+                        letter-spacing: 0.15em;
+                        text-transform: uppercase;
+                    }
+
+                    .network-name {
+                        text-align: center;
+                    }
+                }
+
+                .switcher {
+                    margin: 0 20px 20px 20px;
+                }
+
+                @include phone-down {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 24px;
+    }
+
+    .wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        padding: 0 20px;
+
+        .inner {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            max-width: min(100%, 960px);
+            margin: 0;
+        }
+    }
+}
