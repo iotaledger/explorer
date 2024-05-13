@@ -12,7 +12,7 @@ import StatDisplay from "../../StatDisplay";
 import { clamp } from "~/helpers/clamp";
 import { Link } from "react-router-dom";
 import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
-import { formatAmountWithMetricUnit } from "~/helpers/nova/formatAmountWithMetricUnit";
+import { formatRawAmountWithMetricUnit } from "~/helpers/nova/formatRawAmountWithMetricUnit";
 import "./LandingEpochSection.scss";
 
 const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
@@ -50,11 +50,11 @@ const LandingEpochSection: React.FC = () => {
             subtitle: "Validators",
         },
         {
-            title: `${totalCommitteeStake !== undefined ? formatAmountWithMetricUnit(totalCommitteeStake, tokenInfo) : "--"}`,
+            title: `${totalCommitteeStake !== undefined ? formatRawAmountWithMetricUnit(totalCommitteeStake, tokenInfo) : "--"}`,
             subtitle: "Staked in committee",
         },
         {
-            title: `${commiiteeDelegatorStake !== undefined ? formatAmountWithMetricUnit(commiiteeDelegatorStake, tokenInfo) : "--"}`,
+            title: `${commiiteeDelegatorStake !== undefined ? formatRawAmountWithMetricUnit(commiiteeDelegatorStake, tokenInfo) : "--"}`,
             subtitle: "Delegated in committee",
         },
         {

@@ -8,7 +8,7 @@ import { useNetworkStats } from "~/helpers/nova/hooks/useNetworkStats";
 import Hero from "~/app/components/Hero";
 import { IStatDisplay } from "~/app/lib/interfaces";
 import { StatDisplaySize } from "~/app/lib/enums";
-import { formatAmountWithMetricUnit } from "~/helpers/nova/formatAmountWithMetricUnit";
+import { formatRawAmountWithMetricUnit } from "~/helpers/nova/formatRawAmountWithMetricUnit";
 import "./Landing.scss";
 
 const Landing: React.FC = () => {
@@ -52,12 +52,12 @@ const Landing: React.FC = () => {
             size: StatDisplaySize.Small,
         },
         {
-            title: `${totalValidatorsStake !== undefined ? formatAmountWithMetricUnit(totalValidatorsStake, tokenInfo) : "--"}`,
+            title: `${totalValidatorsStake !== undefined ? formatRawAmountWithMetricUnit(totalValidatorsStake, tokenInfo) : "--"}`,
             subtitle: "Total Staked",
             size: StatDisplaySize.Small,
         },
         {
-            title: `${totalDelegatedStake !== null ? formatAmountWithMetricUnit(totalDelegatedStake, tokenInfo) : "--"}`,
+            title: `${totalDelegatedStake !== null ? formatRawAmountWithMetricUnit(totalDelegatedStake, tokenInfo) : "--"}`,
             subtitle: "Total Delegated",
             size: StatDisplaySize.Small,
         },
