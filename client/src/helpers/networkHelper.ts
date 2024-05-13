@@ -3,6 +3,7 @@ import {
     CHRYSALIS_MAINNET,
     CUSTOM,
     DEVNET,
+    IOTA2_TESTNET,
     IOTA_TESTNET,
     LEGACY_MAINNET,
     MAINNET,
@@ -26,7 +27,8 @@ export const getNetworkOrder = (networkType: NetworkType) => {
         case SHIMMER: {
             return 1;
         }
-        case IOTA_TESTNET: {
+        case IOTA_TESTNET:
+        case IOTA2_TESTNET: {
             return 2;
         }
         case SHIMMER_TESTNET: {

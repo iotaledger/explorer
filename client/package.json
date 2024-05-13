@@ -1,7 +1,7 @@
 {
     "name": "explorer-client",
     "description": "Tangle Explorer UI",
-    "version": "3.3.10-rc.2",
+    "version": "3.3.11",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "type": "module",
     "repository": {

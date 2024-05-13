@@ -7,6 +7,7 @@ export const SHIMMER = "shimmer";
 const TESTNET = "testnet";
 const IOTA_TESTNET = "iota-testnet";
 const SHIMMER_TESTNET = "shimmer-testnet";
+const IOTA2_TESTNET = "iota2-testnet";
 const ALPHANET = "alphanet";
 const CUSTOM = "custom";
 
@@ -19,6 +20,7 @@ const networkTypes = [
     TESTNET,
     IOTA_TESTNET,
     SHIMMER_TESTNET,
+    IOTA2_TESTNET,
     ALPHANET,
     CUSTOM,
 ] as const;
