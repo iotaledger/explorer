@@ -2,7 +2,17 @@ import React, { ReactNode } from "react";
 import { Helmet } from "react-helmet";
 import NetworkContext from "./context/NetworkContext";
 import { INetwork } from "~models/config/INetwork";
-import { ALPHANET, CHRYSALIS_MAINNET, DEVNET, LEGACY_MAINNET, MAINNET, NetworkType, SHIMMER, TESTNET } from "~models/config/networkType";
+import {
+    ALPHANET,
+    CHRYSALIS_MAINNET,
+    DEVNET,
+    IOTA2_TESTNET,
+    LEGACY_MAINNET,
+    MAINNET,
+    NetworkType,
+    SHIMMER,
+    TESTNET,
+} from "~models/config/networkType";
 import { IOTA_UI, Theme } from "~models/config/uiTheme";
 import { IStardustNodeInfo } from "~services/stardust/nodeInfoService";
 import { ServiceFactory } from "~/factories/serviceFactory";
@@ -132,7 +142,8 @@ export const buildMetaLabel = (network: NetworkType | undefined): string => {
             metaLabel = "Shimmer Explorer";
             break;
         }
-        case TESTNET: {
+        case TESTNET:
+        case IOTA2_TESTNET: {
             metaLabel = "Testnet Explorer";
             break;
         }
