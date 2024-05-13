@@ -9,11 +9,11 @@ import RightHalfArrow from "~assets/right-half-arrow.svg?react";
 import ArrowUp from "~assets/arrow_up.svg?react";
 import ProgressBar from "./ProgressBar";
 import StatDisplay from "../../StatDisplay";
-import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import { clamp } from "~/helpers/clamp";
 import { Link } from "react-router-dom";
-import "./LandingEpochSection.scss";
 import { getTimeRemaining } from "~/helpers/nova/novaTimeUtils";
+import { formatRawAmountWithMetricUnit } from "~/helpers/nova/formatRawAmountWithMetricUnit";
+import "./LandingEpochSection.scss";
 
 const EPOCH_DATE_FORMAT = "DD MMM YYYY HH:mm:ss";
 
@@ -50,11 +50,11 @@ const LandingEpochSection: React.FC = () => {
             subtitle: "Validators",
         },
         {
-            title: `${totalCommitteeStake !== undefined ? formatAmount(totalCommitteeStake, tokenInfo) : "--"}`,
+            title: `${totalCommitteeStake !== undefined ? formatRawAmountWithMetricUnit(totalCommitteeStake, tokenInfo) : "--"}`,
             subtitle: "Staked in committee",
         },
         {
-            title: `${commiiteeDelegatorStake !== undefined ? formatAmount(commiiteeDelegatorStake, tokenInfo) : "--"}`,
+            title: `${commiiteeDelegatorStake !== undefined ? formatRawAmountWithMetricUnit(commiiteeDelegatorStake, tokenInfo) : "--"}`,
             subtitle: "Delegated in committee",
         },
         {
