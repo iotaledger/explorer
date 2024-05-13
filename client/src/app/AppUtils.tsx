@@ -175,7 +175,7 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
 export const populateNetworkInfoNova = (networkName: string, networkLabel: string) => {
     const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
     if (nodeService) {
-        const nodeInfo: InfoResponse = nodeService.get(networkLabel);
+        const nodeInfo: InfoResponse = nodeService.get(networkName);
         const protocolInfo =
             nodeInfo?.protocolParameters.reduce((params, cur) => {
                 return params.startEpoch > cur.startEpoch ? params : cur;
