@@ -12,7 +12,7 @@ import { formatAmount } from "~/helpers/stardust/valueFormatHelper";
 import "./Landing.scss";
 
 const Landing: React.FC = () => {
-    const { name: network, tokenInfo } = useNetworkInfoNova((s) => s.networkInfo);
+    const { name: network, tokenInfo, label: networkLabel } = useNetworkInfoNova((s) => s.networkInfo);
     const { chronicleAnalyticStats } = useChronicleAnalytics();
     const { validatorStats } = useValidatorStats();
     const { blocksPerSecond, confirmationRate } = useNetworkStats(network);
@@ -65,7 +65,7 @@ const Landing: React.FC = () => {
 
     return (
         <div className="landing-nova">
-            <Hero network={network} overline="Explore network" networkStats={networkStats} assetStats={assetsStats} />
+            <Hero network={networkLabel} overline="Explore network" networkStats={networkStats} assetStats={assetsStats} />
             <div className="wrapper">
                 <div className="inner">
                     <LandingEpochSection />

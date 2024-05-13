@@ -63,7 +63,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
     scrollToTop();
 
     if (networkConfig?.protocolVersion === NOVA) {
-        populateNetworkInfoNova(networkConfig.network);
+        populateNetworkInfoNova(networkConfig.network, networkConfig.label);
     }
 
     const body = document.querySelector("body");
