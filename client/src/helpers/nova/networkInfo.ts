@@ -12,6 +12,7 @@ export const MANA_INFO_DEFAULT = {
 
 interface INetworkInfo {
     name: string;
+    label: string;
     tokenInfo: BaseTokenResponse;
     manaInfo: BaseTokenResponse;
     protocolVersion: number;
@@ -28,6 +29,7 @@ interface NetworkInfoState {
 export const useNetworkInfoNova = create<NetworkInfoState>((set) => ({
     networkInfo: {
         name: "",
+        label: "",
         tokenInfo: {
             name: "",
             tickerSymbol: "",

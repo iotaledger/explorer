@@ -177,7 +177,7 @@ export const getFaviconHelmet = (isShimmer: boolean) => {
     );
 };
 
-export const populateNetworkInfoNova = (networkName: string) => {
+export const populateNetworkInfoNova = (networkName: string, networkLabel: string) => {
     const nodeService = ServiceFactory.get<NodeInfoServiceNova>("node-info-nova");
     if (nodeService) {
         const nodeInfo: InfoResponse = nodeService.get(networkName);
@@ -193,6 +193,7 @@ export const populateNetworkInfoNova = (networkName: string) => {
 
             setNetworkInfoNova({
                 name: networkName,
+                label: networkLabel,
                 tokenInfo: nodeInfo?.baseToken ?? {},
                 manaInfo: MANA_INFO_DEFAULT,
                 protocolVersion: protocolInfo?.parameters.version ?? -1,
