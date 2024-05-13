@@ -16,12 +16,12 @@ export function formatAmountWithMetricUnit(value: number | bigint | string, toke
 
     const formattedValue = UnitsHelper.formatBest(amount, 0);
 
-    // remove leading lowercase "i" from formatted value
-    const lastIIndex = formattedValue.lastIndexOf("i");
-    if (lastIIndex === -1) return `${formattedValue} ${tokenInfo.unit}`;
+    // Remove iota unit if it exists
+    const lastIotaIndex = formattedValue.lastIndexOf("i");
+    if (lastIotaIndex === -1) return `${formattedValue} ${tokenInfo.unit}`;
 
     const formattedAmountWithToken =
-        formattedValue.substring(0, lastIIndex) + formattedValue.substring(lastIIndex + 1) + `${tokenInfo.unit}`;
+        formattedValue.substring(0, lastIotaIndex) + formattedValue.substring(lastIotaIndex + 1) + `${tokenInfo.unit}`;
 
     return formattedAmountWithToken;
 }
