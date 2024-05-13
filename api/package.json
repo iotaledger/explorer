@@ -35,7 +35,7 @@
         "@iota/iota.js-chrysalis": "npm:@iota/iota.js@^1.8.6",
         "@iota/mqtt.js": "^1.8.6",
         "@iota/sdk-stardust": "npm:@iota/sdk@1.1.1",
-        "@iota/sdk-nova": "npm:@iota/sdk@2.0.0-alpha.7",
+        "@iota/sdk-nova": "npm:@iota/sdk@2.0.0-beta.1",
         "@iota/sdk-wasm-stardust": "npm:@iota/sdk-wasm@1.1.1",
         "@iota/util.js": "^1.8.6",
         "@iota/validators": "^1.0.0-beta.30",
