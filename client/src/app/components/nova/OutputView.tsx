@@ -92,14 +92,14 @@ const OutputView: React.FC<OutputViewProps> = ({ outputId, output, showCopyAmoun
 
     const header = (
         <div onClick={() => setIsExpanded(!isExpanded)} className="card--value card-header--wrapper">
-            <div
-                className={classNames("card--content--dropdown", {
-                    opened: isExpanded,
-                })}
-            >
-                <DropdownIcon />
-            </div>
             <div className="output-header">
+                <div
+                    className={classNames("card--content--dropdown", {
+                        opened: isExpanded,
+                    })}
+                >
+                    <DropdownIcon />
+                </div>
                 <button type="button" className="output-type--name color">
                     {NameHelper.getOutputTypeName(output.type)}
                 </button>
