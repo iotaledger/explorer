@@ -31,6 +31,7 @@
 
         &error {
             background-color: var(--message-conflicting-bg);
+            color: var(--body-color);
         }
 
         &pending {
