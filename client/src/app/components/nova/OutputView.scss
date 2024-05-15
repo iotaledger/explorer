@@ -33,6 +33,10 @@
                 height: auto;
             }
 
+            @include phone-down {
+                flex-wrap: wrap;
+            }
+
             .output-header {
                 display: flex;
                 width: 100%;
@@ -62,6 +66,9 @@
                 }
             }
 
+            .row.middle {
+                margin: 5px 10px;
+            }
             .amount-size {
                 width: min-content;
                 text-align: end;
