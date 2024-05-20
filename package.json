@@ -6,12 +6,10 @@
         "setup:client": "cd client && npm install && npm run postinstall",
         "setup:api": "cd api && npm install && npm run build-compile && npm run build-config",
         "setup:dev": "npm run clear && npm run prepare && npm run setup:client && npm run setup:api",
-        "setup:dev-build-sdk": "npm run clear && npm run setup:sdk-nova-local && npm run prepare && npm run setup:client && npm run setup:api",
         "clear": "rimraf api/node_modules api/dist client/node_modules client/build",
         "dev": "concurrently 'cd api && npm run start-dev' 'cd client && npm run start'",
         "prepare": "husky install",
         "format": "concurrently 'cd api && npm run format' 'cd client && npm run format'",
-        "setup:sdk-nova-local": "./setup_nova.sh",
         "tag:release": "./scripts/tag_release.sh"
     },
     "devDependencies": {
