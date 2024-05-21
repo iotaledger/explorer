@@ -5,7 +5,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#blocks-and-outputs",
+                "href": "https://wiki.iota.org/tips/tips/TIP-0024/",
                 "isExternal": true
             }
         ]
@@ -16,7 +16,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://github.com/iotaledger/tips/blob/main/tips/TIP-0024/tip-0024.md#payloads",
+                "href": "https://wiki.iota.org/tips/tips/TIP-0024/#payloads",
                 "isExternal": true
             }
         ]
@@ -38,7 +38,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#blocks-and-outputs",
+                "href": "https://wiki.iota.org/tips/tips/TIP-0024/",
                 "isExternal": true
             }
         ]
@@ -60,7 +60,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/storage-deposit/",
                 "isExternal": true
             }
         ]
@@ -71,7 +71,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/output-unlock-conditions/",
                 "isExternal": true
             }
         ]
@@ -82,7 +82,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/output-unlock-conditions/",
                 "isExternal": true
             }
         ]
@@ -93,7 +93,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/output-unlock-conditions/",
                 "isExternal": true
             }
         ]
@@ -159,7 +159,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#unlock-conditions-addresses-and-seeds",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/output-unlock-conditions/",
                 "isExternal": true
             }
         ]
@@ -170,7 +170,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/outputs/#unlock-conditions",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/output-unlock-conditions/",
                 "isExternal": true
             }
         ]
@@ -181,7 +181,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/outputs/#unlock-conditions",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/output-unlock-conditions/",
                 "isExternal": true
             }
         ]
@@ -225,7 +225,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/storage-deposit/",
                 "isExternal": true
             }
         ]
@@ -240,7 +240,7 @@
         "links": [
             {
                 "label": "Read more",
-                "href": "https://wiki.iota.org/shimmer/learn/welcome/#storage-deposits",
+                "href": "https://wiki.iota.org/learn/protocols/stardust/core-concepts/storage-deposit/",
                 "isExternal": true
             }
         ]
