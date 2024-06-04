@@ -87,6 +87,16 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
             disabled: !hasNetworks || !isStardust,
             routes: [
                 {
+                    label: "IOTA EVM Explorer",
+                    url: "https://explorer.evm.iota.org/",
+                    isExternal: true,
+                },
+                {
+                    label: "IOTA EVM Testnet Explorer",
+                    url: "https://explorer.evm.testnet.iotaledger.net/",
+                    isExternal: true,
+                },
+                {
                     label: "ShimmerEVM Explorer",
                     url: "https://explorer.evm.shimmer.network/",
                     isExternal: true,
@@ -94,11 +104,6 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
                 {
                     label: "ShimmerEVM Testnet Explorer",
                     url: "https://explorer.evm.testnet.shimmer.network/",
-                    isExternal: true,
-                },
-                {
-                    label: "IOTA EVM Testnet Explorer",
-                    url: "https://explorer.evm.testnet.iotaledger.net/",
                     isExternal: true,
                 },
             ],
