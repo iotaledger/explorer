@@ -50,7 +50,7 @@ const AccountBlockIssuanceSection: React.FC<AccountBlockIssuanceSectionProps> = 
             </div>
             {blockIssuerFeature?.blockIssuerKeys.map((key) => (
                 <div className="section--data margin-t-m" key={(key as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash}>
-                    <div className="label">Public Key</div>
+                    <div className="label">Public Key Hash</div>
                     <div className="value code">
                         <TruncatedId id={(key as Ed25519PublicKeyHashBlockIssuerKey).pubKeyHash} showCopyButton />
                     </div>
