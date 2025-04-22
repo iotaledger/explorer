@@ -9,7 +9,6 @@ import ChrysalisLanding from "./routes/chrysalis/Landing";
 import ChrysalisMessage from "./routes/chrysalis/Message";
 import { MessageProps as ChrysalisMessageProps } from "./routes/chrysalis/MessageProps";
 import ChrysalisSearch from "./routes/chrysalis/Search";
-import ChrysalisVisualizer from "./routes/chrysalis/Visualizer";
 import IdentityResolver from "./routes/IdentityResolver";
 import { IdentityResolverProps } from "./routes/IdentityResolverProps";
 import { LandingRouteProps } from "./routes/LandingRouteProps";
@@ -23,7 +22,6 @@ import LegacyTag from "./routes/legacy/Tag";
 import { TagRouteProps as LegacyTagRouteProps } from "./routes/legacy/TagRouteProps";
 import LegacyTransaction from "./routes/legacy/Transaction";
 import { TransactionRouteProps as LegacyTransactionRouteProps } from "./routes/legacy/TransactionRouteProps";
-import LegacyVisualizer from "./routes/legacy/Visualizer";
 import { SearchRouteProps } from "./routes/SearchRouteProps";
 import StardustAddressPage from "./routes/stardust/AddressPage";
 import NovaAddressPage from "./routes/nova/AddressPage";
@@ -44,14 +42,9 @@ import NovaSearch from "./routes/nova/Search";
 import NovaEpochPage from "./routes/nova/EpochPage";
 import NovaSlotPage from "./routes/nova/SlotPage";
 import StardustSearch from "./routes/stardust/Search";
-import StardustStatisticsPage from "./routes/stardust/statistics/StatisticsPage";
-import NovaStatisticsPage from "./routes/nova/statistics/StatisticsPage";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
-import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
-import Visualizer from "./routes/nova/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
-import { VisualizerRouteProps } from "./routes/VisualizerRouteProps";
 import ValidatorsPage from "./routes/nova/ValidatorsPage";
 import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
 
@@ -100,11 +93,6 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
             component={(props: RouteComponentProps<LandingRouteProps>) => <LegacyLanding {...props} />}
         />,
         <Route
-            path="/:network/visualizer/"
-            key={keys.next().value}
-            component={(props: RouteComponentProps<VisualizerRouteProps>) => <LegacyVisualizer {...props} />}
-        />,
-        <Route
             path="/:network/search/:query?"
             key={keys.next().value}
             component={(props: RouteComponentProps<SearchRouteProps>) => <LegacySearch {...props} />}
@@ -144,11 +132,6 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
             component={(props: RouteComponentProps<SearchRouteProps>) => <ChrysalisSearch {...props} />}
         />,
         <Route
-            path="/:network/visualizer/"
-            key={keys.next().value}
-            component={(props: RouteComponentProps<VisualizerRouteProps>) => <ChrysalisVisualizer {...props} />}
-        />,
-        <Route
             path="/:network/message/:messageId"
             key={keys.next().value}
             component={(props: RouteComponentProps<ChrysalisMessageProps>) => <ChrysalisMessage {...props} />}
@@ -167,7 +150,6 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
 
     const stardustRoutes = [
         <Route exact path="/:network" key={keys.next().value} component={StardustLanding} />,
-        <Route path="/:network/visualizer/" key={keys.next().value} component={StardustVisualizer} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={StardustSearch} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={StardustAddressPage} />,
         <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRouteStardust} />,
@@ -176,13 +158,11 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/output/:outputId" key={keys.next().value} component={StardustOutputPage} />,
         <Route path="/:network/outputs" key={keys.next().value} component={StardustOutputList} />,
         <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={StardustFoundry} />,
-        <Route path="/:network/statistics" key={keys.next().value} component={StardustStatisticsPage} />,
     ];
 
     const novaRoutes = [
         <Route exact path="/:network" key={keys.next().value} component={NovaLanding} />,
         <Route path="/:network/addr/:address" key={keys.next().value} component={NovaAddressPage} />,
-        <Route path="/:network/visualizer/" key={keys.next().value} component={Visualizer} />,
         <Route path="/:network/block/:blockId" key={keys.next().value} component={NovaBlockPage} />,
         <Route path="/:network/output/:outputId" key={keys.next().value} component={NovaOutputPage} />,
         <Route path="/:network/search/:query?" key={keys.next().value} component={NovaSearch} />,
@@ -191,7 +171,6 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/transaction/:transactionId" key={keys.next().value} component={NovaTransactionPage} />,
         <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={NovaFoundryPage} />,
         <Route path="/:network/nft/:nftId" key={keys.next().value} component={NftRedirectRouteNova} />,
-        <Route path="/:network/statistics" key={keys.next().value} component={NovaStatisticsPage} />,
         <Route path="/:network/validators" key={keys.next().value} component={ValidatorsPage} />,
         <Route path="/:network/outputs" key={keys.next().value} component={NovaOutputsPage} />,
     ];
