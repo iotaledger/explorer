@@ -1,11 +1,7 @@
 import classNames from "classnames";
 import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import AnalyticStats from "./AnalyticStats";
 import InfoBox from "./InfoBox";
-import MilestoneFeed from "./MilestoneFeed";
-import { useBlockFeed } from "~helpers/stardust/hooks/useBlockFeed";
-import { useChronicleAnalytics } from "~helpers/stardust/hooks/useChronicleAnalytics";
 import { useCurrencyService } from "~helpers/stardust/hooks/useCurrencyService";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
@@ -20,10 +16,8 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
     },
 }) => {
     const { tokenInfo } = useContext(NetworkContext);
-    const [milestones, latestMilestoneIndex] = useBlockFeed(network);
     const [networkConfig] = useNetworkConfig(network);
     const [blocksPerSecond, , confirmedBlocksPerSecondPercent] = useNetworkStats(network);
-    const [networkAnalytics] = useChronicleAnalytics(network);
     const [price, marketCap] = useCurrencyService(network === "mainnet");
 
     const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
@@ -49,32 +43,25 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
                         />
                     </div>
                 </div>
-                <AnalyticStats analytics={networkAnalytics} circulatingSupply={networkConfig.circulatingSupply} tokenInfo={tokenInfo} />
             </div>
             <div className={classNames("wrapper feeds-wrapper")}>
                 <div className="inner">
                     <div className="feeds-section">
-                        <div className="row wrap feeds">
-                            <div className="feed section">
-                                <MilestoneFeed
-                                    networkConfig={networkConfig}
-                                    milestones={milestones}
-                                    latestMilestoneIndex={latestMilestoneIndex ?? undefined}
-                                />
-                            </div>
-                        </div>
                         <div className="card margin-t-m">
-                            <div className="card--content description">{networkConfig.description}</div>
-                            {networkConfig.faucet && (
-                                <div className="card--content faucet">
-                                    <span>
-                                        Get tokens from the{" "}
-                                        <a className="data-link link" href={networkConfig.faucet} target="_blank" rel="noopener noreferrer">
-                                            Faucet
-                                        </a>
-                                    </span>
-                                </div>
-                            )}
+                            <div className="card--value card--value__no-margin description col row middle" style={{ whiteSpace: "nowrap" }}>
+                                <p>
+                                    <span>This network is superseded by </span>
+                                    {/* TODO: Set proper link */}
+                                    <a href="https://explorer.rebased.iota.org" target="_blank" rel="noopener noreferrer">
+                                        Mainnet (rebased)
+                                    </a>
+                                    .
+                                </p>
+                                <p>
+                                    {/* TODO: Add exact Milestone */}
+                                    <span>It can only be used to browse historic data before milestone XYZ</span>
+                                </p>
+                            </div>
                         </div>
                         {!networkConfig.isEnabled && (
                             <div className="card margin-t-m">
