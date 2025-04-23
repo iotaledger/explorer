@@ -43,10 +43,12 @@ import NovaEpochPage from "./routes/nova/EpochPage";
 import NovaSlotPage from "./routes/nova/SlotPage";
 import StardustSearch from "./routes/stardust/Search";
 import StardustTransactionPage from "./routes/stardust/TransactionPage";
+import { Visualizer as StardustVisualizer } from "./routes/stardust/Visualizer";
 import StreamsV0 from "./routes/StreamsV0";
 import { StreamsV0RouteProps } from "./routes/StreamsV0RouteProps";
 import ValidatorsPage from "./routes/nova/ValidatorsPage";
 import { CHRYSALIS, LEGACY, NOVA, STARDUST } from "~models/config/protocolVersion";
+import { SHIMMER } from "~/models/config/networkType";
 
 /**
  * Generator for keys in routes. Gives an incremented value on every next().
@@ -60,7 +62,11 @@ function* keyGenerator(count: number): IterableIterator<number> {
     }
 }
 
-const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedComponent: React.ReactNode) => JSX.Element | null) => {
+const buildAppRoutes = (
+    protocolVersion: string,
+    networkName: string,
+    withNetworkContext: (wrappedComponent: React.ReactNode) => JSX.Element | null,
+) => {
     const keys = keyGenerator(0);
 
     const commonRoutes = [
@@ -84,6 +90,8 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
     if (protocolVersion !== STARDUST) {
         commonRoutes.push(IdentiyResolverRoute);
     }
+
+    const isShimmer = networkName === SHIMMER;
 
     const legacyRoutes = [
         <Route
@@ -159,6 +167,10 @@ const buildAppRoutes = (protocolVersion: string, withNetworkContext: (wrappedCom
         <Route path="/:network/outputs" key={keys.next().value} component={StardustOutputList} />,
         <Route path="/:network/foundry/:foundryId" key={keys.next().value} component={StardustFoundry} />,
     ];
+
+    if (isShimmer) {
+        stardustRoutes.push(<Route path="/:network/visualizer/" key={keys.next().value} component={StardustVisualizer} />);
+    }
 
     const novaRoutes = [
         <Route exact path="/:network" key={keys.next().value} component={NovaLanding} />,

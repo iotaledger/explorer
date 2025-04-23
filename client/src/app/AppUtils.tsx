@@ -46,12 +46,18 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
     const { network, protocolVersion } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
 
     const isStardust = hasNetworks && currentNetwork.protocolVersion === STARDUST;
+    const isShimmer = hasNetworks && currentNetwork.network === SHIMMER;
 
     const routes: NavigationRoute[] = [
         {
             label: "Explorer",
             url: `/${network}/`,
             disabled: !hasNetworks,
+        },
+        {
+            label: "Visualizer",
+            url: `/${network}/visualizer/`,
+            disabled: !hasNetworks || !isShimmer,
         },
         {
             label: "Validators",

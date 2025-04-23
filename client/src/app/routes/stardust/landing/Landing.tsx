@@ -1,13 +1,18 @@
 import classNames from "classnames";
 import React, { useContext } from "react";
 import { RouteComponentProps } from "react-router-dom";
+import AnalyticStats from "./AnalyticStats";
 import InfoBox from "./InfoBox";
+import MilestoneFeed from "./MilestoneFeed";
+import { useBlockFeed } from "~helpers/stardust/hooks/useBlockFeed";
+import { useChronicleAnalytics } from "~helpers/stardust/hooks/useChronicleAnalytics";
 import { useCurrencyService } from "~helpers/stardust/hooks/useCurrencyService";
 import { useNetworkConfig } from "~helpers/hooks/useNetworkConfig";
 import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
 import { isShimmerUiTheme } from "~helpers/networkHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
+import { SHIMMER } from "~/models/config/networkType";
 import "./Landing.scss";
 
 export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
@@ -16,15 +21,18 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
     },
 }) => {
     const { tokenInfo } = useContext(NetworkContext);
+    const [milestones, latestMilestoneIndex] = useBlockFeed(network);
     const [networkConfig] = useNetworkConfig(network);
     const [blocksPerSecond, , confirmedBlocksPerSecondPercent] = useNetworkStats(network);
+    const [networkAnalytics] = useChronicleAnalytics(network);
     const [price, marketCap] = useCurrencyService(network === "mainnet");
 
-    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
+    const isShimmerTheme = isShimmerUiTheme(networkConfig?.uiTheme);
+    const isShimmer = networkConfig && networkConfig.network === SHIMMER;
 
     return (
         <div className="landing-stardust">
-            <div className={classNames("header-wrapper", { shimmer: isShimmer }, { iota: !isShimmer })}>
+            <div className={classNames("header-wrapper", { shimmer: isShimmerTheme }, { iota: !isShimmerTheme })}>
                 <div className="inner">
                     <div className="header">
                         <div className="header--title">
@@ -43,38 +51,56 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
                         />
                     </div>
                 </div>
+                {isShimmer && (
+                    <AnalyticStats analytics={networkAnalytics} circulatingSupply={networkConfig.circulatingSupply} tokenInfo={tokenInfo} />
+                )}
             </div>
-            <div className={classNames("wrapper feeds-wrapper")}>
-                <div className="inner">
-                    <div className="feeds-section">
-                        <div className="card margin-t-m">
-                            <div className="card--value card--value__no-margin description col row middle" style={{ whiteSpace: "nowrap" }}>
-                                <p>
-                                    <span>This network is superseded by </span>
-                                    {/* TODO: Set proper link */}
-                                    <a href="https://explorer.rebased.iota.org" target="_blank" rel="noopener noreferrer">
-                                        Mainnet (rebased)
-                                    </a>
-                                    .
-                                </p>
-                                <p>
-                                    {/* TODO: Add exact Milestone */}
-                                    <span>It can only be used to browse historic data before milestone XYZ</span>
-                                </p>
-                            </div>
-                        </div>
-                        {!networkConfig.isEnabled && (
-                            <div className="card margin-t-m">
-                                <div className="card--content description">
-                                    {networkConfig.isEnabled === undefined
-                                        ? "This network is not recognised."
-                                        : "This network is currently disabled in explorer."}
+            {isShimmer && (
+                <div className={classNames("wrapper feeds-wrapper")}>
+                    <div className="inner">
+                        <div className="feeds-section">
+                            {isShimmer && (
+                                <div className="row wrap feeds">
+                                    <div className="feed section">
+                                        <MilestoneFeed
+                                            networkConfig={networkConfig}
+                                            milestones={milestones}
+                                            latestMilestoneIndex={latestMilestoneIndex ?? undefined}
+                                        />
+                                    </div>
                                 </div>
+                            )}
+                            <div className="card margin-t-m">
+                                <div className="card--content description">{networkConfig.description}</div>
+                                {networkConfig.faucet && (
+                                    <div className="card--content faucet">
+                                        <span>
+                                            Get tokens from the{" "}
+                                            <a
+                                                className="data-link link"
+                                                href={networkConfig.faucet}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Faucet
+                                            </a>
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                            {!networkConfig.isEnabled && (
+                                <div className="card margin-t-m">
+                                    <div className="card--content description">
+                                        {networkConfig.isEnabled === undefined
+                                            ? "This network is not recognised."
+                                            : "This network is currently disabled in explorer."}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
