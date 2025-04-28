@@ -20,9 +20,10 @@
         }
 
         .disclaimer-banner {
-            margin: 30px;
             padding: 20px;
-            background-color: $iota2-teal-500;
+            border-radius: 0;
+            border: 1px solid $iota2-teal-500;
+            background-color: rgba($iota2-teal-500, 0.2);
 
             p {
                 color: var(--body-color);
