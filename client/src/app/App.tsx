@@ -137,10 +137,11 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
                                         </a>
                                         .
                                     </p>
-                                    <p>
-                                        {/* TODO: Add exact Milestone */}
-                                        <span>It can only be used to browse historic data before milestone XYZ</span>
-                                    </p>
+                                    {/** TODO: Add exact Milestone https://github.com/iotaledger/explorer/issues/1497
+                                        <p>
+                                            <span>It can only be used to browse historic data before milestone XYZ</span>
+                                        </p>
+                                    **/}
                                 </div>
                             </div>
                         )}
