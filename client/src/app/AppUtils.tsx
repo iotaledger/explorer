@@ -43,11 +43,10 @@ export const networkContextWrapper = (currentNetwork: string | undefined, nodeIn
 export const getPages = (currentNetwork: INetwork | undefined, networks: INetwork[]): NavigationRoute[] => {
     const hasNetworks = networks.length > 0 && currentNetwork !== undefined;
 
-    const { network, protocolVersion, hasStatisticsSupport } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
+    const { network, protocolVersion } = currentNetwork ?? { network: "", hasStatisticsSupport: false };
 
     const isStardust = hasNetworks && currentNetwork.protocolVersion === STARDUST;
-    const isNova = hasNetworks && currentNetwork.protocolVersion === NOVA;
-    const isStardustOrNova = isStardust || isNova;
+    const isShimmer = hasNetworks && currentNetwork.network === SHIMMER;
 
     const routes: NavigationRoute[] = [
         {
@@ -58,12 +57,7 @@ export const getPages = (currentNetwork: INetwork | undefined, networks: INetwor
         {
             label: "Visualizer",
             url: `/${network}/visualizer/`,
-            disabled: !hasNetworks || !isStardustOrNova,
-        },
-        {
-            label: "Statistics",
-            url: `/${network}/statistics/`,
-            disabled: !hasNetworks || !hasStatisticsSupport || !isStardustOrNova,
+            disabled: !hasNetworks || !isShimmer,
         },
         {
             label: "Validators",
@@ -124,9 +118,7 @@ export const getFooterItems = (currentNetwork: string, networks: INetwork[], ide
     if (networks.length > 0) {
         let footerArray = networks.filter((network) => network.isEnabled).map((n) => ({ label: n.label, url: n.network.toString() }));
 
-        footerArray = footerArray
-            .concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` })
-            .concat({ label: "Visualizer", url: `${currentNetwork}/visualizer/` });
+        footerArray = footerArray.concat({ label: "Streams v0", url: `${currentNetwork}/streams/0/` });
 
         if (identityResolverEnabled) {
             footerArray.push({ label: "Identity Resolver", url: `${currentNetwork}/identity-resolver/` });

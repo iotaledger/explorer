@@ -18,6 +18,18 @@
         @include desktop-down {
             margin-top: calc(2 * #{$navbar-height-mobile});
         }
+
+        .disclaimer-banner {
+            padding: 20px;
+            border-radius: 0;
+            border: 1px solid $iota2-teal-500;
+            background-color: rgba($iota2-teal-500, 0.2);
+
+            p {
+                color: var(--body-color);
+                font-size: 16px;
+            }
+        }
     }
 
     .maintenance {

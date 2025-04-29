@@ -12,6 +12,7 @@ import { useNetworkStats } from "~helpers/stardust/hooks/useNetworkStats";
 import { isShimmerUiTheme } from "~helpers/networkHelper";
 import NetworkContext from "../../../context/NetworkContext";
 import { LandingRouteProps } from "../../LandingRouteProps";
+import { SHIMMER } from "~/models/config/networkType";
 import "./Landing.scss";
 
 export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
@@ -26,11 +27,12 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
     const [networkAnalytics] = useChronicleAnalytics(network);
     const [price, marketCap] = useCurrencyService(network === "mainnet");
 
-    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
+    const isShimmerTheme = isShimmerUiTheme(networkConfig?.uiTheme);
+    const isShimmer = networkConfig && networkConfig.network === SHIMMER;
 
     return (
         <div className="landing-stardust">
-            <div className={classNames("header-wrapper", { shimmer: isShimmer }, { iota: !isShimmer })}>
+            <div className={classNames("header-wrapper", { shimmer: isShimmerTheme }, { iota: !isShimmerTheme })}>
                 <div className="inner">
                     <div className="header">
                         <div className="header--title">
@@ -49,45 +51,56 @@ export const Landing: React.FC<RouteComponentProps<LandingRouteProps>> = ({
                         />
                     </div>
                 </div>
-                <AnalyticStats analytics={networkAnalytics} circulatingSupply={networkConfig.circulatingSupply} tokenInfo={tokenInfo} />
+                {isShimmer && (
+                    <AnalyticStats analytics={networkAnalytics} circulatingSupply={networkConfig.circulatingSupply} tokenInfo={tokenInfo} />
+                )}
             </div>
-            <div className={classNames("wrapper feeds-wrapper")}>
-                <div className="inner">
-                    <div className="feeds-section">
-                        <div className="row wrap feeds">
-                            <div className="feed section">
-                                <MilestoneFeed
-                                    networkConfig={networkConfig}
-                                    milestones={milestones}
-                                    latestMilestoneIndex={latestMilestoneIndex ?? undefined}
-                                />
+            {isShimmer && (
+                <div className={classNames("wrapper feeds-wrapper")}>
+                    <div className="inner">
+                        <div className="feeds-section">
+                            {isShimmer && (
+                                <div className="row wrap feeds">
+                                    <div className="feed section">
+                                        <MilestoneFeed
+                                            networkConfig={networkConfig}
+                                            milestones={milestones}
+                                            latestMilestoneIndex={latestMilestoneIndex ?? undefined}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            <div className="card margin-t-m">
+                                <div className="card--content description">{networkConfig.description}</div>
+                                {networkConfig.faucet && (
+                                    <div className="card--content faucet">
+                                        <span>
+                                            Get tokens from the{" "}
+                                            <a
+                                                className="data-link link"
+                                                href={networkConfig.faucet}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Faucet
+                                            </a>
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                        <div className="card margin-t-m">
-                            <div className="card--content description">{networkConfig.description}</div>
-                            {networkConfig.faucet && (
-                                <div className="card--content faucet">
-                                    <span>
-                                        Get tokens from the{" "}
-                                        <a className="data-link link" href={networkConfig.faucet} target="_blank" rel="noopener noreferrer">
-                                            Faucet
-                                        </a>
-                                    </span>
+                            {!networkConfig.isEnabled && (
+                                <div className="card margin-t-m">
+                                    <div className="card--content description">
+                                        {networkConfig.isEnabled === undefined
+                                            ? "This network is not recognised."
+                                            : "This network is currently disabled in explorer."}
+                                    </div>
                                 </div>
                             )}
                         </div>
-                        {!networkConfig.isEnabled && (
-                            <div className="card margin-t-m">
-                                <div className="card--content description">
-                                    {networkConfig.isEnabled === undefined
-                                        ? "This network is not recognised."
-                                        : "This network is currently disabled in explorer."}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

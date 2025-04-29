@@ -16,6 +16,12 @@
 
 ---
 
+## ⚠️ Deprecated Repository
+
+**This repository is no longer maintained and has been deprecated in favor of [explorer (rebased)](https://github.com/iotaledger/iota/tree/develop/apps/explorer).**
+
+Please refer to the new repository for the latest updates, bug fixes, and features.
+
 ## About
 
 This repository is where the IOTA Foundation hosts the open-source code for the [Tangle Explorer website](https://explorer.iota.org/).

@@ -15,7 +15,7 @@ import { scrollToTop } from "~helpers/pageUtils";
 import { useWasmLoader } from "~helpers/hooks/useWasmLoader";
 import { useInitServicesLoader } from "~helpers/hooks/useInitServicesLoader";
 import { INetwork } from "~models/config/INetwork";
-import { MAINNET } from "~models/config/networkType";
+import { MAINNET, SHIMMER } from "~models/config/networkType";
 import { IOTA_UI, IOTA2_UI, SHIMMER_UI } from "~models/config/uiTheme";
 import { NOVA, STARDUST } from "~models/config/protocolVersion";
 import { NetworkService } from "~services/networkService";
@@ -56,7 +56,9 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
 
     const identityResolverEnabled = protocolVersion !== STARDUST && (networkConfig?.identityResolverEnabled ?? true);
     const currentNetworkName = networkConfig?.network;
-    const isShimmer = isShimmerUiTheme(networkConfig?.uiTheme);
+    const isShimmerTheme = isShimmerUiTheme(networkConfig?.uiTheme);
+    const isShimmer = networkConfig && networkConfig.network === SHIMMER;
+    const isStardust = networkConfig && networkConfig.protocolVersion === STARDUST;
     const nodeService = ServiceFactory.get<NodeInfoServiceStardust>("node-info-stardust");
     const nodeInfo = networkConfig?.network ? nodeService.get(networkConfig?.network) : null;
     const withNetworkContext = networkContextWrapper(currentNetworkName, nodeInfo, networkConfig?.uiTheme);
@@ -90,14 +92,14 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
         );
     }
 
-    const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", withNetworkContext);
+    const routes = buildAppRoutes(networkConfig?.protocolVersion ?? "", networkConfig?.network ?? "", withNetworkContext);
     const pages = getPages(networkConfig, networks);
 
     const metaLabel = buildMetaLabel(currentNetworkName);
-    const faviconHelmet = getFaviconHelmet(isShimmer);
+    const faviconHelmet = getFaviconHelmet(isShimmerTheme);
 
     return (
-        <div className={classNames("app", { shimmer: isShimmer })}>
+        <div className={classNames("app", { shimmer: isShimmerTheme })}>
             <Helmet>
                 <meta name="apple-mobile-web-app-title" content={metaLabel} />
                 <meta name="application-name" content={metaLabel} />
@@ -122,6 +124,27 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
                                 <div className="maintenance-inner">The network provided does not exist, please check the url.</div>
                             </div>
                         )}
+                        {isStardust && !isShimmer && (
+                            <div className="card disclaimer-banner">
+                                <div
+                                    className="card--value card--value__no-margin description col row middle"
+                                    style={{ whiteSpace: "nowrap" }}
+                                >
+                                    <p>
+                                        <span>This network is superseded by </span>
+                                        <a href="https://explorer.iota.org" target="_blank" rel="noopener noreferrer">
+                                            Mainnet (rebased)
+                                        </a>
+                                        .
+                                    </p>
+                                    {/** TODO: Add exact Milestone https://github.com/iotaledger/explorer/issues/1497
+                                        <p>
+                                            <span>It can only be used to browse historic data before milestone XYZ</span>
+                                        </p>
+                                    **/}
+                                </div>
+                            </div>
+                        )}
                         {networkConfig && routes}
                     </React.Fragment>
                 ) : (
@@ -130,7 +153,7 @@ const App: React.FC<RouteComponentProps<AppRouteProps>> = ({
                     </div>
                 )}
             </div>
-            {isShimmer ? (
+            {isShimmerTheme ? (
                 <ShimmerFooter dynamic={getFooterItems(currentNetworkName ?? "", networks, identityResolverEnabled)} />
             ) : (
                 <Footer dynamic={getFooterItems(currentNetworkName ?? "", networks, identityResolverEnabled)} />
