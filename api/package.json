@@ -1,7 +1,7 @@
 {
     "name": "explorer-api",
     "description": "API for Tangle Explorer",
-    "version": "4.1.0-rc.1",
+    "version": "4.1.0",
     "author": "Martyn Janes <martyn.janes@iota.org>",
     "repository": {
         "type": "git",
