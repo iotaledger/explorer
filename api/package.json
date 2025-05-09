@@ -47,7 +47,7 @@
         "express": "^4.19.2",
         "influx": "^5.9.3",
         "jszip": "^3.10.1",
-        "lint-staged": "^14.0.1",
+        "lint-staged": "^15.2.9",
         "moment": "^2.29.4",
         "node-cron": "^3.0.2",
         "node-fetch": "^2.6.7",
