@@ -1,11 +1,14 @@
 import * as identity from "@iota/identity-wasm/web";
 import {
     DomainLinkageConfiguration,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     EdDSAJwsVerifier,
     JwtCredentialValidationOptions,
     JwtDomainLinkageValidator,
     LinkedDomainService,
+    IJwsVerifier,
 } from "@iota/identity-wasm/web";
+import { p256 } from "@noble/curves/p256";
 import React, { Fragment, useEffect, useState } from "react";
 import DIDDomainResolver from "./domains/DIDDomainResolver";
 import { DIDResolverProps } from "./DIDResolverProps";
@@ -146,6 +149,15 @@ const IdentityStardustResolver: React.FC<DIDResolverProps> = ({ resolvedDID, net
 // }
 export default IdentityStardustResolver;
 
+class EcDSAVerifier implements IJwsVerifier {
+    constructor() {}
+    verify(alg: identity.JwsAlgorithm, signingInput: Uint8Array, decodedSignature: Uint8Array, publicKey: identity.Jwk) {
+        // eslint-disable-next-line no-console
+        console.log(publicKey);
+        p256.verify(decodedSignature, signingInput, new Uint8Array());
+    }
+}
+
 async function constructVerifiedDomains(resolvedDID: IDIDResolverResponse): Promise<Map<string, Promise<void>>> {
     const newVerifiedDomains = new Map<string, Promise<void>>();
     const origin = window?.location?.origin ?? "";
@@ -178,7 +190,7 @@ async function constructVerifiedDomains(resolvedDID: IDIDResolverResponse): Prom
                                         parsedConfigurationResource = DomainLinkageConfiguration.fromJSON(jsonResponse);
 
                                         try {
-                                            new JwtDomainLinkageValidator(new EdDSAJwsVerifier()).validateLinkage(
+                                            new JwtDomainLinkageValidator(new EcDSAVerifier()).validateLinkage(
                                                 didDocument,
                                                 parsedConfigurationResource,
                                                 domain,
