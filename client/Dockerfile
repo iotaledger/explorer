@@ -28,7 +28,8 @@ RUN echo 'server {\
 RUN mv ./nginx/wasm.conf /etc/nginx/conf.d/wasm.conf
 
 # Running required steps to prepare the web app prod build
-RUN npm install
+# Seems to fail for arm64 images if maxsockets is not set to 1. https://github.com/npm/cli/issues/4652#issuecomment-1157594100
+RUN npm install --maxsockets 1
 RUN npm run build
 
 # Expose port 80
